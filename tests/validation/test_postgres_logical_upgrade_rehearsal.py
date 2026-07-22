@@ -84,6 +84,7 @@ def valid_rendered_topology_json(
                     },
                     "image": SOURCE_IMAGE,
                     "networks": {"default": None},
+                    "pull_policy": "never",
                     "volumes": [
                         {
                             "type": "volume",
@@ -111,6 +112,7 @@ def valid_rendered_topology_json(
                     },
                     "image": TARGET_IMAGE,
                     "networks": {"default": None},
+                    "pull_policy": "never",
                     "volumes": [
                         {
                             "type": "volume",
@@ -590,9 +592,21 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             fake_bin.mkdir()
             docker = fake_bin / "docker"
             docker.write_text(
-                "#!/bin/sh\n"
-                "if [ \"$*\" = \"compose version\" ]; then exit 0; fi\n"
-                "exit 71\n",
+                textwrap.dedent(
+                    f"""\
+                    #!/bin/sh
+                    case "$*" in
+                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_IMAGE_ID!r}
+                        ;;
+                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_IMAGE_ID!r}
+                        ;;
+                      "compose version") exit 0 ;;
+                      *) exit 71 ;;
+                    esac
+                    """
+                ),
                 encoding="utf-8",
             )
             docker.chmod(docker.stat().st_mode | stat.S_IXUSR)
@@ -692,8 +706,6 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     OPERATION_DEADLINE=$((SECONDS + 30))
                     run_bounded() {{
-                      local requested="$1"
-                      shift
                       printf '%s\n' "$*" >> {calls!s}
                       case "${{@: -1}}" in
                         "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_ID" ;;
@@ -739,8 +751,6 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         f"""\
                         OPERATION_DEADLINE=$((SECONDS + 30))
                         run_bounded() {{
-                          local requested="$1"
-                          shift
                           printf '%s\n' "$*" >> {calls!s}
                           {response}
                         }}
@@ -826,6 +836,12 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
+                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_IMAGE_ID!r}
+                        ;;
+                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_IMAGE_ID!r}
+                        ;;
                       "compose version") exit 0 ;;
                       *"config --format json")
                         printf '%s\\n' {valid_rendered_topology_json()!r}
@@ -879,7 +895,39 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             self.assertNotIn(value, text)
 
     def test_bad_target_major_fails_preflight(self) -> None:
-        result = self.run_script("--negative-case", "bad-target-major")
+        with tempfile.TemporaryDirectory(prefix="ior-bad-major-", dir="/tmp") as tmp:
+            fake_bin = Path(tmp)
+            docker = fake_bin / "docker"
+            rendered = valid_rendered_topology_json("__PROJECT__", "__PASSWORD__")
+            docker.write_text(
+                textwrap.dedent(
+                    f"""\
+                    #!/bin/sh
+                    case "$*" in
+                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_IMAGE_ID!r}
+                        ;;
+                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_IMAGE_ID!r}
+                        ;;
+                      "compose version") exit 0 ;;
+                      *"config --format json")
+                        printf '%s\n' {rendered!r} | sed \
+                          -e "s/__PROJECT__/$3/g" \
+                          -e "s/__PASSWORD__/$IOR_POSTGRES_PASSWORD/g"
+                        ;;
+                      *) exit 0 ;;
+                    esac
+                    """
+                ),
+                encoding="utf-8",
+            )
+            docker.chmod(docker.stat().st_mode | stat.S_IXUSR)
+            result = self.run_script(
+                "--negative-case",
+                "bad-target-major",
+                extra_env={"PATH": f"{fake_bin}:{os.environ['PATH']}"},
+            )
         self.assertEqual(result.returncode, 10, result.stdout + result.stderr)
         self.assertIn("failure_class=preflight", result.stdout)
         self.assertIn("reason=bad-target-major", result.stdout)
@@ -943,6 +991,12 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     #!/bin/sh
                     printf '%s\\n' "$*" >> "$IOR_TEST_DOCKER_CALLS"
                     case "$*" in
+                      "image inspect --format {{{{.Id}}}} {SOURCE_IMAGE}")
+                        printf '%s\\n' {SOURCE_IMAGE_ID!r}
+                        ;;
+                      "image inspect --format {{{{.Id}}}} {TARGET_IMAGE}")
+                        printf '%s\\n' {TARGET_IMAGE_ID!r}
+                        ;;
                       "compose version") exit 0 ;;
                       *"config --format json") printf '%s\\n' {valid_rendered_topology_json()!r}; exit 0 ;;
                       *"ps -aq"*) exit 0 ;;

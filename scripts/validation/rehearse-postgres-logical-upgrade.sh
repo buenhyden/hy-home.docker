@@ -4,6 +4,10 @@ set -o pipefail
 
 SOURCE_IMAGE='postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
 TARGET_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+DUMP_CLIENT_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+SOURCE_IMAGE_ID='sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+TARGET_IMAGE_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+DUMP_CLIENT_IMAGE_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 PROJECT_PREFIX='hyhome-ior-20260719'
 TOTAL_TIMEOUT=420
 CLEANUP_RESERVE_SECONDS=60
@@ -505,6 +509,7 @@ allowed_keys = {
     "healthcheck",
     "image",
     "networks",
+    "pull_policy",
     "volumes",
 }
 for name, expected_target_path in {
@@ -553,6 +558,8 @@ for name, expected_target_path in {
         reject("unsafe-volume")
     if set(volume) - {"type", "target", "volume", "source", "read_only"}:
         reject("unsafe-volume")
+    if service.get("pull_policy") != "never":
+        reject("unsafe-pull-policy")
 PY
 }
 
@@ -695,6 +702,30 @@ assert_no_project_collisions() {
   esac
 }
 
+assert_exact_local_image_identity() {
+  local role="$1"
+  local image="$2"
+  local expected_id="$3"
+  local observed_id
+
+  observed_id="$(run_bounded docker image inspect --format '{{.Id}}' "$image" 2>/dev/null)" || {
+    print_failure preflight "${role}-image-not-local"
+    return 10
+  }
+  [ -n "$observed_id" ] && [[ "$observed_id" != *$'\n'* ]] && \
+    [ "$observed_id" = "$expected_id" ] || {
+    print_failure preflight "${role}-image-id-drift"
+    return 10
+  }
+}
+
+assert_exact_local_image_identities() {
+  assert_exact_local_image_identity source "$SOURCE_IMAGE" "$SOURCE_IMAGE_ID" || return $?
+  assert_exact_local_image_identity target "$TARGET_IMAGE" "$TARGET_IMAGE_ID" || return $?
+  assert_exact_local_image_identity \
+    dump-client "$DUMP_CLIENT_IMAGE" "$DUMP_CLIENT_IMAGE_ID" || return $?
+}
+
 assert_safe_images_paths_and_project() {
   local required
   local command_name
@@ -705,6 +736,22 @@ assert_safe_images_paths_and_project() {
   }
   [ "$TARGET_IMAGE" = 'postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
     print_failure preflight target-image-drift
+    return 10
+  }
+  [ "$DUMP_CLIENT_IMAGE" = 'postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight dump-client-image-drift
+    return 10
+  }
+  [ "$SOURCE_IMAGE_ID" = 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+    print_failure preflight source-image-id-drift
+    return 10
+  }
+  [ "$TARGET_IMAGE_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight target-image-id-drift
+    return 10
+  }
+  [ "$DUMP_CLIENT_IMAGE_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight dump-client-image-id-drift
     return 10
   }
   [ "${IOR_PROJECT_PREFIX:-$PROJECT_PREFIX}" = "$PROJECT_PREFIX" ] || {
@@ -735,6 +782,7 @@ assert_safe_images_paths_and_project() {
       return 10
     }
   done
+  assert_exact_local_image_identities || return $?
   if ! run_bounded docker compose version >>"$RUNTIME_LOG" 2>&1; then
     print_failure preflight docker-compose-unavailable
     return 10
@@ -811,7 +859,7 @@ start_source_and_wait() {
 
   verify_evidence_ownership || return 20
   SOURCE_OWNED=true
-  if ! run_bounded docker compose -p "$SOURCE_PROJECT" -f "$COMPOSE_FILE" up -d --no-deps source >>"$RUNTIME_LOG" 2>&1; then
+  if ! run_bounded docker compose -p "$SOURCE_PROJECT" -f "$COMPOSE_FILE" up -d --pull never --no-build --no-deps source >>"$RUNTIME_LOG" 2>&1; then
     print_failure readiness source-start-failed
     return 20
   fi
@@ -933,11 +981,12 @@ create_owned_dump_client() {
   DUMP_CLIENT_MAY_EXIST=true
   export PGPASSWORD="$IOR_POSTGRES_PASSWORD"
   DUMP_CLIENT_ID="$(run_bounded docker create \
+    --pull=never \
     --network "${SOURCE_PROJECT}_default" \
     --label "${CLIENT_LABEL_OWNER}=${PROJECT_PREFIX}" \
     --label "${CLIENT_LABEL_RUN}=${RUN_ID}" \
     -e PGPASSWORD \
-    "$TARGET_IMAGE" \
+    "$DUMP_CLIENT_IMAGE" \
     sh -ec 'exec pg_dump -Fc --no-owner --no-acl -h source -U rehearsal -d rehearsal -f /tmp/rehearsal.dump' \
     2>>"$RUNTIME_LOG")"
   status=$?
@@ -1002,7 +1051,7 @@ start_target_and_wait() {
 
   verify_evidence_ownership || return 20
   TARGET_OWNED=true
-  if ! run_bounded docker compose -p "$TARGET_PROJECT" -f "$COMPOSE_FILE" up -d --no-deps target >>"$RUNTIME_LOG" 2>&1; then
+  if ! run_bounded docker compose -p "$TARGET_PROJECT" -f "$COMPOSE_FILE" up -d --pull never --no-build --no-deps target >>"$RUNTIME_LOG" 2>&1; then
     print_failure readiness target-start-failed
     return 20
   fi
