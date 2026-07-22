@@ -36,8 +36,13 @@ VERDICT_KEYS = {
     "role",
     "source_revision",
     "build_context_sha256",
+    "oci_manifest_digest",
     "image_config_digest",
     "oci_archive_sha256",
+    "docker_archive_sha256",
+    "local_image_ref",
+    "runtime_image_id",
+    "runtime_identity_kind",
     "policy_id",
     "verdict",
     "exception_id",
@@ -65,10 +70,20 @@ RECORD_KEYS = {
     "build_context_sha256",
     "policy_id",
     "policy_sha256",
+    "baseline_oci_manifest_digest",
+    "candidate_oci_manifest_digest",
     "baseline_image_config_digest",
     "candidate_image_config_digest",
     "baseline_oci_archive_sha256",
     "candidate_oci_archive_sha256",
+    "baseline_docker_archive_sha256",
+    "candidate_docker_archive_sha256",
+    "baseline_local_image_ref",
+    "candidate_local_image_ref",
+    "baseline_runtime_image_id",
+    "candidate_runtime_image_id",
+    "baseline_runtime_identity_kind",
+    "candidate_runtime_identity_kind",
     "baseline_verdict_sha256",
     "candidate_verdict_sha256",
     "verification_pair_manifest_sha256",
@@ -149,7 +164,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         return ("other", mode)
 
     def render_delivery_compose(
-        self, role: str, digest: str, port: int
+        self, role: str, image_ref: str, port: int
     ) -> dict[str, object]:
         env = os.environ.copy()
         env.update(
@@ -157,7 +172,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 "DRE_TASK_ID": "2026-07-19-dre",
                 "DRE_ROLE": role,
                 "DRE_HOST_PORT": str(port),
-                "DRE_IMAGE_CONFIG_DIGEST": digest,
+                "DRE_IMAGE_REF": image_ref,
             }
         )
         result = subprocess.run(
@@ -293,13 +308,14 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 "generation",
                 "schema_version",
                 "source_revision",
+                "subjects",
                 "verdict_sha256",
             },
             set(manifest),
         )
-        self.assertEqual(2, manifest["schema_version"])
+        self.assertEqual(3, manifest["schema_version"])
         self.assertEqual(
-            "hyhome-verification-verdict-pair-v2", manifest["generation"]
+            "hyhome-verification-verdict-pair-v3", manifest["generation"]
         )
         self.assertEqual(
             "sha256:" + hashlib.sha256(BASELINE.read_bytes()).hexdigest(),
@@ -416,12 +432,20 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
     def test_rendered_delivery_topology_is_exact_and_cannot_build_or_pull(self) -> None:
         owner = "task:2026-07-19-deployment-release-engineering-remediation"
         cases = (
-            ("baseline", "sha256:" + "1" * 64, 18080),
-            ("canary", "sha256:" + "2" * 64, 18081),
+            (
+                "baseline",
+                "hyhome.local/sample-web-service:baseline-" + "1" * 64,
+                18080,
+            ),
+            (
+                "canary",
+                "hyhome.local/sample-web-service:candidate-" + "2" * 64,
+                18081,
+            ),
         )
-        for role, digest, port in cases:
+        for role, image_ref, port in cases:
             with self.subTest(role=role):
-                rendered = self.render_delivery_compose(role, digest, port)
+                rendered = self.render_delivery_compose(role, image_ref, port)
                 service = rendered["services"]["web"]
                 network = rendered["networks"]["sample-internal"]
                 labels = {
@@ -430,7 +454,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                     "org.hyhome.delivery.role": role,
                 }
                 self.assertNotIn("build", service)
-                self.assertEqual(digest, service["image"])
+                self.assertEqual(image_ref, service["image"])
                 self.assertEqual("never", service["pull_policy"])
                 self.assertEqual(labels, service["labels"])
                 self.assertEqual(labels, network["labels"])
@@ -614,6 +638,35 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             rehearsal.index("validate_local_image_objects"),
         )
 
+    def test_pair_manifest_rejects_subject_substitution_with_valid_verdict_hashes(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            pair_path = root / "verification-verdict.pair.json"
+            pair = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
+            expected_hashes = dict(pair["verdict_sha256"])
+            pair["subjects"]["baseline"]["runtime_image_id"] = "sha256:" + "6" * 64
+            pair_path.write_text(
+                json.dumps(pair, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    BASELINE_VERDICT_PATH={BASELINE!s}
+                    CANDIDATE_VERDICT_PATH={CANDIDATE!s}
+                    PAIR_MANIFEST_PATH={pair_path!s}
+                    load_and_validate_verdict baseline "$BASELINE_VERDICT_PATH" || exit $?
+                    load_and_validate_verdict candidate "$CANDIDATE_VERDICT_PATH" || exit $?
+                    assert_distinct_subjects_and_same_revision || exit $?
+                    load_and_validate_pair_manifest
+                    """
+                )
+            )
+        self.assertEqual(expected_hashes, pair["verdict_sha256"])
+        self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+        self.assertIn("pair-manifest-subject-mismatch", result.stderr)
+
     def test_snapshot_revalidation_rejects_content_and_identity_drift(self) -> None:
         for mutation, command, expected_code in (
             (
@@ -724,28 +777,36 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 Path(raw),
                 "remote.json",
                 lambda p: p.update(
-                    image_config_digest="ghcr.io/example/service@sha256:" + "1" * 64
+                    local_image_ref="ghcr.io/example/service@sha256:" + "1" * 64
                 ),
             )
             result = self.run_sourced(f"load_and_validate_verdict baseline {path!s}")
         self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
     def test_local_image_objects_are_exactly_inspected_before_start(self) -> None:
-        baseline_digest = "sha256:" + "1" * 64
-        candidate_digest = "sha256:" + "2" * 64
+        baseline_id = "sha256:" + "1" * 64
+        candidate_id = "sha256:" + "5" * 64
+        baseline_ref = "hyhome.local/sample-web-service:baseline-" + "1" * 64
+        candidate_ref = "hyhome.local/sample-web-service:candidate-" + "2" * 64
         with tempfile.TemporaryDirectory() as raw:
             call_log = Path(raw) / "calls.log"
             result = self.run_sourced(
                 textwrap.dedent(
                     f"""\
-                    VERDICT_IMAGE_CONFIG_DIGEST[baseline]={baseline_digest}
-                    VERDICT_IMAGE_CONFIG_DIGEST[candidate]={candidate_digest}
+                    VERDICT_LOCAL_IMAGE_REF[baseline]={baseline_ref}
+                    VERDICT_LOCAL_IMAGE_REF[candidate]={candidate_ref}
+                    VERDICT_RUNTIME_IMAGE_ID[baseline]={baseline_id}
+                    VERDICT_RUNTIME_IMAGE_ID[candidate]={candidate_id}
                     DRE_OPERATION_DEADLINE=$((SECONDS + 30))
                     dre_operation_bounded() {{
                       local requested="$1"
                       shift
                       printf '%s\n' "$*" >>{call_log!s}
-                      printf '%s\n' "${{@: -1}}"
+                      case "${{@: -1}}" in
+                        *baseline-*) printf '%s|baseline\n' '{baseline_id}' ;;
+                        *candidate-*) printf '%s|candidate\n' '{candidate_id}' ;;
+                        *) return 1 ;;
+                      esac
                     }}
                     validate_local_image_objects
                     """
@@ -758,10 +819,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(2, len(calls))
-        for digest, call in zip((baseline_digest, candidate_digest), calls):
-            self.assertEqual(
-                f"docker image inspect --format {{{{.Id}}}} {digest}", call
-            )
+        for reference, call in zip((baseline_ref, candidate_ref), calls):
+            self.assertTrue(call.startswith("docker image inspect --format "), call)
+            self.assertTrue(call.endswith(reference), call)
 
         script = SCRIPT.read_text(encoding="utf-8")
         rehearsal = script.split("dre_rehearse() {", 1)[1].split(
@@ -822,6 +882,110 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertIn("docker inspect --format '{{.Image}}'", text)
         self.assertIn("running-image-identity-mismatch", text)
 
+    def test_tag_substitution_fails_before_between_and_after_start(self) -> None:
+        runtime_id = "sha256:" + "1" * 64
+        wrong_id = "sha256:" + "9" * 64
+        reference = "hyhome.local/sample-web-service:baseline-" + "1" * 64
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            for boundary, body, expected_class in (
+                (
+                    "before",
+                    textwrap.dedent(
+                        f"""\
+                        VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
+                        VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
+                        dre_operation_bounded() {{ printf '%s|baseline\n' '{wrong_id}'; }}
+                        dre_compose() {{ touch {root / 'before-compose'!s}; }}
+                        start_baseline
+                        """
+                    ),
+                    20,
+                ),
+                (
+                    "between",
+                    textwrap.dedent(
+                        f"""\
+                        BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
+                        CANARY_PROJECT=hyhome-dre-20260719-12345-canary
+                        VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
+                        VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
+                        dre_operation_bounded() {{ printf '%s|baseline\n' '{wrong_id}'; }}
+                        dre_compose() {{ touch {root / 'between-compose'!s}; }}
+                        start_canary
+                        """
+                    ),
+                    30,
+                ),
+            ):
+                with self.subTest(boundary=boundary):
+                    result = self.run_sourced(body)
+                    self.assertEqual(
+                        expected_class,
+                        result.returncode,
+                        result.stdout + result.stderr,
+                    )
+                    self.assertIn("local-image-object-ambiguous", result.stderr)
+                    self.assertFalse((root / f"{boundary}-compose").exists())
+
+            counter = root / "image-inspect-count"
+            counter.write_text("0\n", encoding="utf-8")
+            after = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    TASK_ID=2026-07-19-dre
+                    BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
+                    CANARY_PROJECT=hyhome-dre-20260719-12345-canary
+                    VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
+                    VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
+                    dre_compose() {{ touch {root / 'after-compose'!s}; }}
+                    dre_operation_bounded() {{
+                      local requested="$1"
+                      shift
+                      if [[ "$1" == docker && "$2" == image && "$3" == inspect ]]; then
+                        local count
+                        count="$(<{counter!s})"
+                        ((count += 1))
+                        printf '%s\n' "$count" >{counter!s}
+                        if (( count <= 2 )); then
+                          printf '%s|baseline\n' '{runtime_id}'
+                        else
+                          printf '%s|baseline\n' '{wrong_id}'
+                        fi
+                      elif [[ "$1" == docker && "$2" == ps ]]; then
+                        printf 'baseline-container'
+                      elif [[ "$1" == docker && "$2" == inspect ]]; then
+                        printf '%s\n' '{runtime_id}'
+                      else
+                        return 99
+                      fi
+                    }}
+                    start_baseline
+                    """
+                )
+            )
+            self.assertEqual(20, after.returncode, after.stdout + after.stderr)
+            self.assertIn("local-image-object-ambiguous", after.stderr)
+            self.assertTrue((root / "after-compose").exists())
+            self.assertEqual("3", counter.read_text(encoding="utf-8").strip())
+
+    def test_started_container_must_match_bound_runtime_image_id(self) -> None:
+        expected = "sha256:" + "1" * 64
+        observed = "sha256:" + "2" * 64
+        result = self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                VERDICT_RUNTIME_IMAGE_ID[baseline]={expected}
+                validate_local_image_object() {{ :; }}
+                dre_query_owned_container_id() {{ printf 'baseline-container'; }}
+                dre_operation_bounded() {{ printf '%s\n' '{observed}'; }}
+                validate_started_image_identity baseline hyhome-dre-20260719-12345-baseline 30
+                """
+            )
+        )
+        self.assertEqual(30, result.returncode, result.stdout + result.stderr)
+        self.assertIn("running-image-identity-mismatch", result.stderr)
+
     def test_compose_uses_only_bound_local_reference_without_pull_or_build(
         self,
     ) -> None:
@@ -838,34 +1002,40 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertIn("--pull never --no-build", script)
 
     def test_local_image_object_rejects_missing_mismatch_or_multiple_ids(self) -> None:
-        digest = "sha256:" + "1" * 64
+        runtime_id = "sha256:" + "1" * 64
+        reference = "hyhome.local/sample-web-service:baseline-" + "1" * 64
         cases = {
             "missing": "return 1",
-            "mismatch": "printf '%s\\n' 'sha256:" + "2" * 64 + "'",
-            "multiple": f"printf '%s\\n%s\\n' '{digest}' '{digest}'",
+            "mismatch": "printf '%s|baseline\\n' 'sha256:" + "2" * 64 + "'",
+            "wrong-role": f"printf '%s|candidate\\n' '{runtime_id}'",
+            "multiple": f"printf '%s|baseline\\n%s|baseline\\n' '{runtime_id}' '{runtime_id}'",
         }
         for name, response in cases.items():
             with self.subTest(name=name):
                 result = self.run_sourced(
                     textwrap.dedent(
                         f"""\
+                        VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
+                        VERDICT_RUNTIME_IMAGE_ID[baseline]={runtime_id}
                         DRE_OPERATION_DEADLINE=$((SECONDS + 30))
                         dre_operation_bounded() {{ {response}; }}
-                        validate_local_image_object baseline {digest}
+                        validate_local_image_object baseline
                         """
                     )
                 )
                 self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
     def test_start_commands_deny_pull_and_build(self) -> None:
-        digest = "sha256:" + "1" * 64
+        reference = "hyhome.local/sample-web-service:baseline-" + "1" * 64
         result = self.run_sourced(
             textwrap.dedent(
                 f"""\
                 TASK_ID=2026-07-19-dre
                 BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
                 CANARY_PROJECT=hyhome-dre-20260719-12345-canary
-                VERDICT_IMAGE_CONFIG_DIGEST[baseline]={digest}
+                VERDICT_LOCAL_IMAGE_REF[baseline]={reference}
+                validate_local_image_object() {{ :; }}
+                validate_started_image_identity() {{ :; }}
                 dre_timeout() {{ printf '%s\n' "$*"; }}
                 start_baseline
                 """
@@ -1042,7 +1212,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             "TASK_ID=2026-07-19-dre\n"
             "BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline\n"
             "CANARY_PROJECT=hyhome-dre-20260719-12345-canary\n"
-            "VERDICT_IMAGE_CONFIG_DIGEST[baseline]=sha256:" + "1" * 64 + "\n"
+            "VERDICT_LOCAL_IMAGE_REF[baseline]=hyhome.local/sample-web-service:baseline-" + "1" * 64 + "\n"
+            "validate_local_image_object() { :; }\n"
             "dre_compose() { return 99; }\n"
             "start_baseline"
         )
@@ -1081,14 +1252,24 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 BUILD_CONTEXT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 POLICY_ID=sample-service-local-v1
                 POLICY_SHA256=sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                VERDICT_OCI_MANIFEST_DIGEST[baseline]=sha256:3333333333333333333333333333333333333333333333333333333333333333
+                VERDICT_OCI_MANIFEST_DIGEST[candidate]=sha256:4444444444444444444444444444444444444444444444444444444444444444
                 VERDICT_IMAGE_CONFIG_DIGEST[baseline]=sha256:1111111111111111111111111111111111111111111111111111111111111111
                 VERDICT_IMAGE_CONFIG_DIGEST[candidate]=sha256:2222222222222222222222222222222222222222222222222222222222222222
                 VERDICT_OCI_ARCHIVE_SHA256[baseline]=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
                 VERDICT_OCI_ARCHIVE_SHA256[candidate]=sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                VERDICT_DOCKER_ARCHIVE_SHA256[baseline]=sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                VERDICT_DOCKER_ARCHIVE_SHA256[candidate]=sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+                VERDICT_LOCAL_IMAGE_REF[baseline]=hyhome.local/sample-web-service:baseline-1111111111111111111111111111111111111111111111111111111111111111
+                VERDICT_LOCAL_IMAGE_REF[candidate]=hyhome.local/sample-web-service:candidate-2222222222222222222222222222222222222222222222222222222222222222
+                VERDICT_RUNTIME_IMAGE_ID[baseline]=sha256:1111111111111111111111111111111111111111111111111111111111111111
+                VERDICT_RUNTIME_IMAGE_ID[candidate]=sha256:5555555555555555555555555555555555555555555555555555555555555555
+                VERDICT_RUNTIME_IDENTITY_KIND[baseline]=config-digest
+                VERDICT_RUNTIME_IDENTITY_KIND[candidate]=docker-target-digest
                 BASELINE_VERDICT_SHA256=sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
                 CANDIDATE_VERDICT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
                 PAIR_MANIFEST_SHA256=sha256:9999999999999999999999999999999999999999999999999999999999999999
-                PAIR_MANIFEST_GENERATION=hyhome-verification-verdict-pair-v2
+                PAIR_MANIFEST_GENERATION=hyhome-verification-verdict-pair-v3
                 READINESS_VERDICT_SHA256=sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
                 RECOVERY_BOUNDARY_SHA256=sha256:0000000000000000000000000000000000000000000000000000000000000000
                 DRE_APPROVAL_REF=task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19
@@ -1104,7 +1285,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(RECORD_KEYS, set(payload))
-        self.assertEqual(3, payload["schema_version"])
+        self.assertEqual(4, payload["schema_version"])
         self.assertEqual(
             "spec:127-deployment-release-engineering-remediation",
             payload["producer_spec"],
@@ -1129,8 +1310,26 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertEqual("recovery-verdict.json", payload["recovery_boundary_ref"])
         self.assertEqual("sha256:" + "1" * 64, payload["baseline_image_config_digest"])
         self.assertEqual("sha256:" + "2" * 64, payload["candidate_image_config_digest"])
+        self.assertEqual("sha256:" + "3" * 64, payload["baseline_oci_manifest_digest"])
+        self.assertEqual("sha256:" + "4" * 64, payload["candidate_oci_manifest_digest"])
         self.assertEqual("sha256:" + "a" * 64, payload["baseline_oci_archive_sha256"])
         self.assertEqual("sha256:" + "b" * 64, payload["candidate_oci_archive_sha256"])
+        self.assertEqual("sha256:" + "c" * 64, payload["baseline_docker_archive_sha256"])
+        self.assertEqual("sha256:" + "d" * 64, payload["candidate_docker_archive_sha256"])
+        self.assertEqual(
+            "hyhome.local/sample-web-service:baseline-" + "1" * 64,
+            payload["baseline_local_image_ref"],
+        )
+        self.assertEqual(
+            "hyhome.local/sample-web-service:candidate-" + "2" * 64,
+            payload["candidate_local_image_ref"],
+        )
+        self.assertEqual("sha256:" + "1" * 64, payload["baseline_runtime_image_id"])
+        self.assertEqual("sha256:" + "5" * 64, payload["candidate_runtime_image_id"])
+        self.assertEqual("config-digest", payload["baseline_runtime_identity_kind"])
+        self.assertEqual(
+            "docker-target-digest", payload["candidate_runtime_identity_kind"]
+        )
         self.assertEqual("sha256:" + "c" * 64, payload["policy_sha256"])
         self.assertEqual("sha256:" + "d" * 64, payload["baseline_verdict_sha256"])
         self.assertEqual("sha256:" + "e" * 64, payload["candidate_verdict_sha256"])
@@ -1139,7 +1338,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             payload["verification_pair_manifest_sha256"],
         )
         self.assertEqual(
-            "hyhome-verification-verdict-pair-v2",
+            "hyhome-verification-verdict-pair-v3",
             payload["verification_pair_generation"],
         )
         self.assertEqual("sha256:" + "f" * 64, payload["readiness_verdict_sha256"])
@@ -1409,6 +1608,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             "assert_distinct_subjects_and_same_revision",
             "validate_local_image_object",
             "validate_local_image_objects",
+            "validate_started_image_identity",
             "assert_ports_and_owned_project_names",
             "start_baseline",
             "wait_container_and_http_health",
@@ -1429,6 +1629,11 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         text = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("verify_baseline_previous_digest", text)
         self.assertIn("<h1>sample-web-service</h1>", text)
+        rollback = text.split("verify_baseline_previous_digest() {", 1)[1].split(
+            "\n}\n\nverify_post_rollback_health", 1
+        )[0]
+        self.assertIn("VERDICT_RUNTIME_IMAGE_ID[baseline]", rollback)
+        self.assertNotIn("VERDICT_IMAGE_CONFIG_DIGEST[baseline]", rollback)
 
     def test_record_contains_no_raw_body_log_or_secret_fields(self) -> None:
         result = self.run_sourced(

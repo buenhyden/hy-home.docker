@@ -27,8 +27,13 @@ DRE_RECORD_PATH_DEFAULT="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-deplo
 
 declare -Ag VERDICT_ROLE=()
 declare -Ag VERDICT_SOURCE_REVISION=()
+declare -Ag VERDICT_OCI_MANIFEST_DIGEST=()
 declare -Ag VERDICT_IMAGE_CONFIG_DIGEST=()
 declare -Ag VERDICT_OCI_ARCHIVE_SHA256=()
+declare -Ag VERDICT_DOCKER_ARCHIVE_SHA256=()
+declare -Ag VERDICT_LOCAL_IMAGE_REF=()
+declare -Ag VERDICT_RUNTIME_IMAGE_ID=()
+declare -Ag VERDICT_RUNTIME_IDENTITY_KIND=()
 declare -Ag VERDICT_BUILD_CONTEXT_SHA256=()
 declare -Ag VERDICT_POLICY_ID=()
 declare -Ag INPUT_SNAPSHOT_PATH=()
@@ -217,8 +222,9 @@ def unique_object(pairs):
     return result
 expected_keys = {
     "schema_version", "producer_spec", "role", "source_revision",
-    "build_context_sha256", "image_config_digest", "oci_archive_sha256",
-    "policy_id", "verdict",
+    "build_context_sha256", "oci_manifest_digest", "image_config_digest",
+    "oci_archive_sha256", "docker_archive_sha256", "local_image_ref",
+    "runtime_image_id", "runtime_identity_kind", "policy_id", "verdict",
     "exception_id", "verified_at", "redaction_status",
 }
 try:
@@ -228,7 +234,7 @@ except (OSError, UnicodeError, ValueError):
     raise SystemExit(1)
 if not isinstance(value, dict) or set(value) != expected_keys:
     raise SystemExit(1)
-if type(value["schema_version"]) is not int or value["schema_version"] != 1:
+if type(value["schema_version"]) is not int or value["schema_version"] != 2:
     raise SystemExit(1)
 if value["producer_spec"] != "spec:126-security-supply-chain-remediation":
     raise SystemExit(1)
@@ -239,9 +245,27 @@ if not isinstance(value["source_revision"], str) or not re.fullmatch(r"[0-9a-f]{
 digest = r"sha256:[0-9a-f]{64}"
 if not isinstance(value["build_context_sha256"], str) or not re.fullmatch(digest, value["build_context_sha256"]):
     raise SystemExit(1)
+if not isinstance(value["oci_manifest_digest"], str) or not re.fullmatch(digest, value["oci_manifest_digest"]):
+    raise SystemExit(1)
 if not isinstance(value["image_config_digest"], str) or not re.fullmatch(digest, value["image_config_digest"]):
     raise SystemExit(1)
 if not isinstance(value["oci_archive_sha256"], str) or not re.fullmatch(digest, value["oci_archive_sha256"]):
+    raise SystemExit(1)
+if not isinstance(value["docker_archive_sha256"], str) or not re.fullmatch(digest, value["docker_archive_sha256"]):
+    raise SystemExit(1)
+local_ref = re.fullmatch(
+    rf"hyhome\.local/sample-web-service:{expected_role}-([0-9a-f]{{64}})",
+    str(value["local_image_ref"]),
+)
+if local_ref is None or local_ref.group(1) != value["image_config_digest"].removeprefix("sha256:"):
+    raise SystemExit(1)
+if not isinstance(value["runtime_image_id"], str) or not re.fullmatch(digest, value["runtime_image_id"]):
+    raise SystemExit(1)
+if value["runtime_identity_kind"] not in {"config-digest", "docker-target-digest"}:
+    raise SystemExit(1)
+if value["runtime_identity_kind"] == "config-digest" and value["runtime_image_id"] != value["image_config_digest"]:
+    raise SystemExit(1)
+if value["runtime_identity_kind"] == "docker-target-digest" and value["runtime_image_id"] == value["image_config_digest"]:
     raise SystemExit(1)
 if value["policy_id"] != "sample-service-local-v1":
     raise SystemExit(1)
@@ -251,7 +275,13 @@ if value["redaction_status"] != "passed":
     raise SystemExit(1)
 if not isinstance(value["verified_at"], str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", value["verified_at"]):
     raise SystemExit(1)
-print("\t".join((value["role"], value["source_revision"], value["image_config_digest"], value["oci_archive_sha256"], value["build_context_sha256"], value["policy_id"])))
+print("\t".join((
+    value["role"], value["source_revision"], value["oci_manifest_digest"],
+    value["image_config_digest"], value["oci_archive_sha256"],
+    value["docker_archive_sha256"], value["local_image_ref"],
+    value["runtime_image_id"], value["runtime_identity_kind"],
+    value["build_context_sha256"], value["policy_id"],
+)))
 PY
 )"; then
     dre_fail 10 verdict-invalid
@@ -260,8 +290,13 @@ PY
 
   IFS=$'\t' read -r VERDICT_ROLE["$expected_role"] \
     VERDICT_SOURCE_REVISION["$expected_role"] \
+    VERDICT_OCI_MANIFEST_DIGEST["$expected_role"] \
     VERDICT_IMAGE_CONFIG_DIGEST["$expected_role"] \
     VERDICT_OCI_ARCHIVE_SHA256["$expected_role"] \
+    VERDICT_DOCKER_ARCHIVE_SHA256["$expected_role"] \
+    VERDICT_LOCAL_IMAGE_REF["$expected_role"] \
+    VERDICT_RUNTIME_IMAGE_ID["$expected_role"] \
+    VERDICT_RUNTIME_IDENTITY_KIND["$expected_role"] \
     VERDICT_BUILD_CONTEXT_SHA256["$expected_role"] \
     VERDICT_POLICY_ID["$expected_role"] <<<"$parsed"
 }
@@ -351,12 +386,13 @@ if not isinstance(value, dict) or set(value) != {
     "generation",
     "schema_version",
     "source_revision",
+    "subjects",
     "verdict_sha256",
 }:
     reject("pair-manifest-invalid")
-if type(value["schema_version"]) is not int or value["schema_version"] != 2:
+if type(value["schema_version"]) is not int or value["schema_version"] != 3:
     reject("pair-manifest-invalid")
-if value["generation"] != "hyhome-verification-verdict-pair-v2":
+if value["generation"] != "hyhome-verification-verdict-pair-v3":
     reject("pair-manifest-generation-invalid")
 if value["source_revision"] != expected_revision:
     reject("pair-manifest-source-revision-mismatch")
@@ -375,13 +411,38 @@ expected_hashes = {
 }
 if verdict_sha256 != expected_hashes:
     reject("pair-manifest-verdict-digest-mismatch")
+try:
+    verdicts = {
+        "baseline": json.loads(baseline_body, object_pairs_hook=unique_object),
+        "candidate": json.loads(candidate_body, object_pairs_hook=unique_object),
+    }
+except (UnicodeError, ValueError):
+    reject("pair-manifest-verdict-invalid")
+identity_keys = {
+    "oci_manifest_digest", "image_config_digest", "oci_archive_sha256",
+    "docker_archive_sha256", "local_image_ref", "runtime_image_id",
+    "runtime_identity_kind",
+}
+subjects = value["subjects"]
+if not isinstance(subjects, dict) or set(subjects) != {"baseline", "candidate"}:
+    reject("pair-manifest-subjects-invalid")
+for role in ("baseline", "candidate"):
+    verdict = verdicts[role]
+    subject = subjects[role]
+    if (
+        not isinstance(verdict, dict)
+        or not isinstance(subject, dict)
+        or set(subject) != identity_keys
+        or subject != {key: verdict.get(key) for key in identity_keys}
+    ):
+        reject("pair-manifest-subject-mismatch")
 print(value["generation"])
 PY
   )"; then
     dre_fail 10 "${parsed:-pair-manifest-invalid}"
     return
   fi
-  [[ "$parsed" == hyhome-verification-verdict-pair-v2 ]] || {
+  [[ "$parsed" == hyhome-verification-verdict-pair-v3 ]] || {
     dre_fail 10 pair-manifest-generation-invalid
     return
   }
@@ -401,12 +462,28 @@ assert_distinct_subjects_and_same_revision() {
     dre_fail 10 source-revision-mismatch
     return
   }
+  [[ "${VERDICT_OCI_MANIFEST_DIGEST[baseline]:-}" != "${VERDICT_OCI_MANIFEST_DIGEST[candidate]:-}" ]] || {
+    dre_fail 10 oci-manifest-digest-not-distinct
+    return
+  }
   [[ "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" != "${VERDICT_IMAGE_CONFIG_DIGEST[candidate]:-}" ]] || {
     dre_fail 10 image-config-digest-not-distinct
     return
   }
   [[ "${VERDICT_OCI_ARCHIVE_SHA256[baseline]:-}" != "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" ]] || {
     dre_fail 10 oci-archive-digest-not-distinct
+    return
+  }
+  [[ "${VERDICT_DOCKER_ARCHIVE_SHA256[baseline]:-}" != "${VERDICT_DOCKER_ARCHIVE_SHA256[candidate]:-}" ]] || {
+    dre_fail 10 docker-archive-digest-not-distinct
+    return
+  }
+  [[ "${VERDICT_LOCAL_IMAGE_REF[baseline]:-}" != "${VERDICT_LOCAL_IMAGE_REF[candidate]:-}" ]] || {
+    dre_fail 10 local-image-reference-not-distinct
+    return
+  }
+  [[ "${VERDICT_RUNTIME_IMAGE_ID[baseline]:-}" != "${VERDICT_RUNTIME_IMAGE_ID[candidate]:-}" ]] || {
+    dre_fail 10 runtime-image-id-not-distinct
     return
   }
   [[ "${VERDICT_BUILD_CONTEXT_SHA256[baseline]:-}" == "${VERDICT_BUILD_CONTEXT_SHA256[candidate]:-}" ]] || {
@@ -425,29 +502,60 @@ assert_distinct_subjects_and_same_revision() {
 
 validate_local_image_object() {
   local role="${1:-}"
-  local digest="${2:-}"
-  local observed
+  local failure_class="${2:-10}"
+  local boundary="${3:-operation}"
+  local bounded=dre_operation_bounded
+  local reference expected_runtime inspection observed label
   [[ "$role" == baseline || "$role" == candidate ]] || {
-    dre_fail 10 local-image-role-invalid
+    dre_fail "$failure_class" local-image-role-invalid
     return
   }
-  [[ "$digest" == "${VERDICT_IMAGE_CONFIG_DIGEST[$role]:-}" ]] || {
-    dre_fail 10 local-image-input-mismatch
+  [[ "$boundary" == operation || "$boundary" == cleanup ]] || {
+    dre_fail "$failure_class" local-image-boundary-invalid
     return
   }
-  if ! observed="$(dre_operation_bounded 8 docker image inspect --format '{{.Id}}' "$digest")"; then
-    dre_fail 10 local-image-object-missing
+  [[ "$boundary" == cleanup ]] && bounded=dre_cleanup_bounded
+  reference="${VERDICT_LOCAL_IMAGE_REF[$role]:-}"
+  expected_runtime="${VERDICT_RUNTIME_IMAGE_ID[$role]:-}"
+  if ! inspection="$("$bounded" 8 docker image inspect --format '{{.Id}}|{{index .Config.Labels "org.hyhome.delivery.rehearsal.role"}}' "$reference")"; then
+    dre_fail "$failure_class" local-image-object-missing
     return
   fi
-  [[ -n "$observed" && "$observed" != *$'\n'* && "$observed" == "$digest" ]] || {
-    dre_fail 10 local-image-object-ambiguous
+  [[ -n "$inspection" && "$inspection" != *$'\n'* && "$inspection" == *'|'* ]] || {
+    dre_fail "$failure_class" local-image-object-ambiguous
+    return
+  }
+  observed="${inspection%%|*}"
+  label="${inspection#*|}"
+  [[ "$observed" == "$expected_runtime" && "$label" == "$role" ]] || {
+    dre_fail "$failure_class" local-image-object-ambiguous
     return
   }
 }
 
 validate_local_image_objects() {
-  validate_local_image_object baseline "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" || return
-  validate_local_image_object candidate "${VERDICT_IMAGE_CONFIG_DIGEST[candidate]:-}"
+  validate_local_image_object baseline || return
+  validate_local_image_object candidate
+}
+
+validate_started_image_identity() {
+  local role="${1:-}" project="${2:-}" failure_class="${3:-30}"
+  local container_id observed
+  validate_local_image_object "$role" "$failure_class" || return
+  container_id="$(dre_query_owned_container_id "$project" dre_operation_bounded "$failure_class")" || return
+  [[ -n "$container_id" ]] || {
+    dre_fail "$failure_class" running-image-container-missing
+    return
+  }
+  observed="$(dre_operation_bounded 8 docker inspect --format '{{.Image}}' "$container_id")" || {
+    dre_fail "$failure_class" running-image-identity-query-failed
+    return
+  }
+  [[ -n "$observed" && "$observed" != *$'\n'* && "$observed" == "${VERDICT_RUNTIME_IMAGE_ID[$role]:-}" ]] || {
+    dre_fail "$failure_class" running-image-identity-mismatch
+    return
+  }
+  validate_local_image_object "$role" "$failure_class"
 }
 
 assert_ports_and_owned_project_names() {
@@ -464,13 +572,15 @@ assert_ports_and_owned_project_names() {
 
 start_baseline() {
   BASELINE_START_ATTEMPTED=true
+  validate_local_image_object baseline 20 || return
   if ! DRE_ROLE=baseline DRE_TASK_ID="$TASK_ID" DRE_HOST_PORT="$DRE_BASELINE_PORT" \
-    DRE_IMAGE_CONFIG_DIGEST="${VERDICT_IMAGE_CONFIG_DIGEST[baseline]}" \
+    DRE_IMAGE_REF="${VERDICT_LOCAL_IMAGE_REF[baseline]}" \
     dre_compose "$BASELINE_PROJECT" up -d --pull never --no-build --remove-orphans; then
     dre_fail 20 baseline-start-failed
     return
   fi
   BASELINE_STARTED=true
+  validate_started_image_identity baseline "$BASELINE_PROJECT" 20
 }
 
 wait_container_and_http_health() {
@@ -509,13 +619,17 @@ wait_container_and_http_health() {
 
 start_canary() {
   CANARY_START_ATTEMPTED=true
+  validate_started_image_identity baseline "$BASELINE_PROJECT" 30 || return
+  validate_local_image_object candidate 30 || return
   if ! DRE_ROLE=canary DRE_TASK_ID="$TASK_ID" DRE_HOST_PORT="$DRE_CANARY_PORT" \
-    DRE_IMAGE_CONFIG_DIGEST="${VERDICT_IMAGE_CONFIG_DIGEST[candidate]}" \
+    DRE_IMAGE_REF="${VERDICT_LOCAL_IMAGE_REF[candidate]}" \
     dre_compose "$CANARY_PROJECT" up -d --pull never --no-build --remove-orphans; then
     dre_fail 30 canary-start-failed
     return
   fi
   CANARY_STARTED=true
+  validate_started_image_identity candidate "$CANARY_PROJECT" 30 || return
+  validate_started_image_identity baseline "$BASELINE_PROJECT" 30
 }
 
 record_promotion_decision() {
@@ -523,6 +637,8 @@ record_promotion_decision() {
     dre_fail 40 promotion-gates-incomplete
     return
   }
+  validate_started_image_identity baseline "$BASELINE_PROJECT" 40 || return
+  validate_started_image_identity candidate "$CANARY_PROJECT" 40 || return
   PROMOTION_DECISION=promoted
   ROLLBACK_DECISION=not_required
   POST_ROLLBACK_HEALTH=not_applicable
@@ -548,6 +664,7 @@ rollback_to_baseline_digest() {
 
 verify_baseline_previous_digest() {
   local container_id observed_digest
+  validate_local_image_object baseline 50 cleanup || return
   container_id="$(dre_owned_container_id_cleanup "$BASELINE_PROJECT")" || return 50
   [[ -n "$container_id" ]] || {
     dre_fail 50 baseline-container-missing
@@ -557,7 +674,7 @@ verify_baseline_previous_digest() {
     dre_fail 50 baseline-digest-query-failed
     return
   }
-  [[ "$observed_digest" == "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" ]] || {
+  [[ "$observed_digest" == "${VERDICT_RUNTIME_IMAGE_ID[baseline]:-}" ]] || {
     dre_fail 50 baseline-digest-mismatch
     return
   }
@@ -637,7 +754,7 @@ required = (
     "org.hyhome.delivery.owner: task:2026-07-19-deployment-release-engineering-remediation",
     "org.hyhome.delivery.task-id: ${DRE_TASK_ID:?delivery task id required}",
     "org.hyhome.delivery.role: ${DRE_ROLE:?delivery role required}",
-    "image: ${DRE_IMAGE_CONFIG_DIGEST:?immutable local image config digest required}",
+    "image: ${DRE_IMAGE_REF:?verified local image reference required}",
     "pull_policy: never",
 )
 if any(item not in override for item in required):
@@ -794,10 +911,20 @@ build_rehearsal_record_json() {
     "${BUILD_CONTEXT_SHA256:-}" \
     "${POLICY_ID:-}" \
     "${POLICY_SHA256:-}" \
+    "${VERDICT_OCI_MANIFEST_DIGEST[baseline]:-}" \
+    "${VERDICT_OCI_MANIFEST_DIGEST[candidate]:-}" \
     "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" \
     "${VERDICT_IMAGE_CONFIG_DIGEST[candidate]:-}" \
     "${VERDICT_OCI_ARCHIVE_SHA256[baseline]:-}" \
     "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" \
+    "${VERDICT_DOCKER_ARCHIVE_SHA256[baseline]:-}" \
+    "${VERDICT_DOCKER_ARCHIVE_SHA256[candidate]:-}" \
+    "${VERDICT_LOCAL_IMAGE_REF[baseline]:-}" \
+    "${VERDICT_LOCAL_IMAGE_REF[candidate]:-}" \
+    "${VERDICT_RUNTIME_IMAGE_ID[baseline]:-}" \
+    "${VERDICT_RUNTIME_IMAGE_ID[candidate]:-}" \
+    "${VERDICT_RUNTIME_IDENTITY_KIND[baseline]:-}" \
+    "${VERDICT_RUNTIME_IDENTITY_KIND[candidate]:-}" \
     "${BASELINE_VERDICT_SHA256:-}" \
     "${CANDIDATE_VERDICT_SHA256:-}" \
     "${PAIR_MANIFEST_SHA256:-}" \
@@ -816,14 +943,17 @@ import sys
 (revision, baseline_ref, candidate_ref, pair_manifest_ref, readiness_ref,
  baseline_project, canary_project, promotion, rollback, post_health,
  recovery_ref, cleanup, build_context, policy_id, policy_sha,
- baseline_image, candidate_image, baseline_oci, candidate_oci,
+ baseline_manifest, candidate_manifest, baseline_image, candidate_image,
+ baseline_oci, candidate_oci, baseline_docker, candidate_docker,
+ baseline_local_ref, candidate_local_ref, baseline_runtime_id,
+ candidate_runtime_id, baseline_runtime_kind, candidate_runtime_kind,
  baseline_verdict_sha, candidate_verdict_sha, pair_manifest_sha,
  pair_manifest_generation, readiness_sha, recovery_sha,
  approval_ref, started_at, completed_at, baseline_result, canary_result,
  rehearsal_result) = sys.argv[1:]
 rehearsal_id = f"local-rehearsal-20260719-{revision[:12]}"
 value = {
-    "schema_version": 3,
+    "schema_version": 4,
     "producer_spec": "spec:127-deployment-release-engineering-remediation",
     "release_rehearsal_id": rehearsal_id,
     "source_revision": revision,
@@ -843,10 +973,20 @@ value = {
     "build_context_sha256": build_context,
     "policy_id": policy_id,
     "policy_sha256": policy_sha,
+    "baseline_oci_manifest_digest": baseline_manifest,
+    "candidate_oci_manifest_digest": candidate_manifest,
     "baseline_image_config_digest": baseline_image,
     "candidate_image_config_digest": candidate_image,
     "baseline_oci_archive_sha256": baseline_oci,
     "candidate_oci_archive_sha256": candidate_oci,
+    "baseline_docker_archive_sha256": baseline_docker,
+    "candidate_docker_archive_sha256": candidate_docker,
+    "baseline_local_image_ref": baseline_local_ref,
+    "candidate_local_image_ref": candidate_local_ref,
+    "baseline_runtime_image_id": baseline_runtime_id,
+    "candidate_runtime_image_id": candidate_runtime_id,
+    "baseline_runtime_identity_kind": baseline_runtime_kind,
+    "candidate_runtime_identity_kind": candidate_runtime_kind,
     "baseline_verdict_sha256": baseline_verdict_sha,
     "candidate_verdict_sha256": candidate_verdict_sha,
     "verification_pair_manifest_sha256": pair_manifest_sha,
@@ -952,10 +1092,20 @@ publish_rehearsal_record() {
     "${BUILD_CONTEXT_SHA256:-}" \
     "${POLICY_ID:-}" \
     "${INPUT_SNAPSHOT_SHA256[policy]:-}" \
+    "${VERDICT_OCI_MANIFEST_DIGEST[baseline]:-}" \
+    "${VERDICT_OCI_MANIFEST_DIGEST[candidate]:-}" \
     "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" \
     "${VERDICT_IMAGE_CONFIG_DIGEST[candidate]:-}" \
     "${VERDICT_OCI_ARCHIVE_SHA256[baseline]:-}" \
     "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" \
+    "${VERDICT_DOCKER_ARCHIVE_SHA256[baseline]:-}" \
+    "${VERDICT_DOCKER_ARCHIVE_SHA256[candidate]:-}" \
+    "${VERDICT_LOCAL_IMAGE_REF[baseline]:-}" \
+    "${VERDICT_LOCAL_IMAGE_REF[candidate]:-}" \
+    "${VERDICT_RUNTIME_IMAGE_ID[baseline]:-}" \
+    "${VERDICT_RUNTIME_IMAGE_ID[candidate]:-}" \
+    "${VERDICT_RUNTIME_IDENTITY_KIND[baseline]:-}" \
+    "${VERDICT_RUNTIME_IDENTITY_KIND[candidate]:-}" \
     "${INPUT_SNAPSHOT_SHA256[baseline_verdict]:-}" \
     "${INPUT_SNAPSHOT_SHA256[candidate_verdict]:-}" \
     "${INPUT_SNAPSHOT_SHA256[pair_manifest]:-}" \
@@ -978,8 +1128,13 @@ import re
 import sys
 
 (raw_payload, expected_revision, expected_build_context, expected_policy_id,
- expected_policy_sha, expected_baseline_image, expected_candidate_image,
- expected_baseline_oci, expected_candidate_oci, expected_baseline_verdict_sha,
+ expected_policy_sha, expected_baseline_manifest, expected_candidate_manifest,
+ expected_baseline_image, expected_candidate_image, expected_baseline_oci,
+ expected_candidate_oci, expected_baseline_docker, expected_candidate_docker,
+ expected_baseline_local_ref, expected_candidate_local_ref,
+ expected_baseline_runtime_id, expected_candidate_runtime_id,
+ expected_baseline_runtime_kind, expected_candidate_runtime_kind,
+ expected_baseline_verdict_sha,
  expected_candidate_verdict_sha, expected_pair_manifest_sha,
  expected_pair_manifest_generation, expected_readiness_sha,
  expected_recovery_sha, expected_approval_ref, expected_baseline_project,
@@ -996,9 +1151,14 @@ keys = {
     "promotion_decision", "rollback_decision", "post_rollback_health",
     "data_impact", "recovery_boundary_ref", "cleanup_status",
     "remote_non_goals_confirmed", "build_context_sha256", "policy_id",
-    "policy_sha256", "baseline_image_config_digest",
+    "policy_sha256", "baseline_oci_manifest_digest",
+    "candidate_oci_manifest_digest", "baseline_image_config_digest",
     "candidate_image_config_digest", "baseline_oci_archive_sha256",
-    "candidate_oci_archive_sha256", "baseline_verdict_sha256",
+    "candidate_oci_archive_sha256", "baseline_docker_archive_sha256",
+    "candidate_docker_archive_sha256", "baseline_local_image_ref",
+    "candidate_local_image_ref", "baseline_runtime_image_id",
+    "candidate_runtime_image_id", "baseline_runtime_identity_kind",
+    "candidate_runtime_identity_kind", "baseline_verdict_sha256",
     "candidate_verdict_sha256", "verification_pair_manifest_sha256",
     "verification_pair_generation", "readiness_verdict_sha256",
     "recovery_boundary_sha256", "approval_ref", "started_at",
@@ -1017,7 +1177,7 @@ except (UnicodeError, ValueError):
     raise SystemExit(1)
 if not isinstance(value, dict) or set(value) != keys:
     raise SystemExit(1)
-if type(value["schema_version"]) is not int or value["schema_version"] != 3:
+if type(value["schema_version"]) is not int or value["schema_version"] != 4:
     raise SystemExit(1)
 if value["producer_spec"] != "spec:127-deployment-release-engineering-remediation":
     raise SystemExit(1)
@@ -1026,10 +1186,20 @@ expected_values = {
     "build_context_sha256": expected_build_context,
     "policy_id": expected_policy_id,
     "policy_sha256": expected_policy_sha,
+    "baseline_oci_manifest_digest": expected_baseline_manifest,
+    "candidate_oci_manifest_digest": expected_candidate_manifest,
     "baseline_image_config_digest": expected_baseline_image,
     "candidate_image_config_digest": expected_candidate_image,
     "baseline_oci_archive_sha256": expected_baseline_oci,
     "candidate_oci_archive_sha256": expected_candidate_oci,
+    "baseline_docker_archive_sha256": expected_baseline_docker,
+    "candidate_docker_archive_sha256": expected_candidate_docker,
+    "baseline_local_image_ref": expected_baseline_local_ref,
+    "candidate_local_image_ref": expected_candidate_local_ref,
+    "baseline_runtime_image_id": expected_baseline_runtime_id,
+    "candidate_runtime_image_id": expected_candidate_runtime_id,
+    "baseline_runtime_identity_kind": expected_baseline_runtime_kind,
+    "candidate_runtime_identity_kind": expected_candidate_runtime_kind,
     "baseline_verdict_sha256": expected_baseline_verdict_sha,
     "candidate_verdict_sha256": expected_candidate_verdict_sha,
     "verification_pair_manifest_sha256": expected_pair_manifest_sha,
@@ -1067,8 +1237,11 @@ if value["recovery_boundary_ref"] != "recovery-verdict.json":
 digest = r"sha256:[0-9a-f]{64}"
 digest_fields = {
     "build_context_sha256", "policy_sha256",
+    "baseline_oci_manifest_digest", "candidate_oci_manifest_digest",
     "baseline_image_config_digest", "candidate_image_config_digest",
     "baseline_oci_archive_sha256", "candidate_oci_archive_sha256",
+    "baseline_docker_archive_sha256", "candidate_docker_archive_sha256",
+    "baseline_runtime_image_id", "candidate_runtime_image_id",
     "baseline_verdict_sha256", "candidate_verdict_sha256",
     "verification_pair_manifest_sha256", "readiness_verdict_sha256",
     "recovery_boundary_sha256",
@@ -1079,12 +1252,36 @@ if value["policy_id"] != "sample-service-local-v1":
     raise SystemExit(1)
 if value["policy_sha256"] != "sha256:18817282cfd8cbf9bc0202446493a5cdf0ae14fbc960dbfd6cb0932f3b752cae":
     raise SystemExit(1)
-if value["verification_pair_generation"] != "hyhome-verification-verdict-pair-v2":
+if value["verification_pair_generation"] != "hyhome-verification-verdict-pair-v3":
     raise SystemExit(1)
 if value["baseline_image_config_digest"] == value["candidate_image_config_digest"]:
     raise SystemExit(1)
 if value["baseline_oci_archive_sha256"] == value["candidate_oci_archive_sha256"]:
     raise SystemExit(1)
+if value["baseline_oci_manifest_digest"] == value["candidate_oci_manifest_digest"]:
+    raise SystemExit(1)
+if value["baseline_docker_archive_sha256"] == value["candidate_docker_archive_sha256"]:
+    raise SystemExit(1)
+if value["baseline_local_image_ref"] == value["candidate_local_image_ref"]:
+    raise SystemExit(1)
+if value["baseline_runtime_image_id"] == value["candidate_runtime_image_id"]:
+    raise SystemExit(1)
+for role in ("baseline", "candidate"):
+    config = value[f"{role}_image_config_digest"]
+    local_ref = value[f"{role}_local_image_ref"]
+    runtime_id = value[f"{role}_runtime_image_id"]
+    runtime_kind = value[f"{role}_runtime_identity_kind"]
+    match = re.fullmatch(
+        rf"hyhome\.local/sample-web-service:{role}-([0-9a-f]{{64}})", local_ref
+    )
+    if match is None or match.group(1) != config.removeprefix("sha256:"):
+        raise SystemExit(1)
+    if runtime_kind not in {"config-digest", "docker-target-digest"}:
+        raise SystemExit(1)
+    if runtime_kind == "config-digest" and runtime_id != config:
+        raise SystemExit(1)
+    if runtime_kind == "docker-target-digest" and runtime_id == config:
+        raise SystemExit(1)
 if value["approval_ref"] != "task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19":
     raise SystemExit(1)
 timestamp = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z"

@@ -1,7 +1,7 @@
 services:
   web:
     build: !reset null
-    image: ${DRE_IMAGE_CONFIG_DIGEST:?immutable local image config digest required}
+    image: ${DRE_IMAGE_REF:?verified local image reference required}
     pull_policy: never
     env_file: !override []
     ports: !override
