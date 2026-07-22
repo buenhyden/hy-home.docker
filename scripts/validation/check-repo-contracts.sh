@@ -4016,6 +4016,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/validation/rehearse-postgres-logical-upgrade.sh"),
     pathlib.Path("scripts/security/generate-supply-chain-sample-service-summary.sh"),
+    pathlib.Path("scripts/security/seed-grype-db-cache.sh"),
     pathlib.Path("scripts/security/verify-sample-service-supply-chain.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
