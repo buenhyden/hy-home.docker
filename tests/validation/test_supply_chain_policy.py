@@ -459,6 +459,49 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         self.assertIn('"$BUILD_MATERIAL_REF"', cleanup)
         self.assertNotIn('rm -rf -- "$OUTPUT_DIR', cleanup)
 
+    def test_nonroot_tools_receive_a_private_writable_tmp_mount(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        nonroot_runs = [
+            line.strip()
+            for line in text.splitlines()
+            if "docker run " in line
+            and '--user "$(id -u):$(id -g)"' in line
+        ]
+        self.assertGreaterEqual(len(nonroot_runs), 8)
+        for command in nonroot_runs:
+            self.assertIn(
+                '--mount "type=bind,source=$tool_tmp_dir,target=/tmp"',
+                command,
+            )
+            self.assertIn("--env HOME=/tmp", command)
+
+    def test_missing_db_seed_fails_before_any_runtime_container(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = pathlib.Path(temporary) / "supply-chain"
+            output.mkdir(mode=0o700)
+            docker_marker = pathlib.Path(temporary) / "docker-called"
+            result = self.run_wrapper_library(
+                f"source {shlex.quote(str(WRAPPER))}\n"
+                f"OUTPUT_DIR={shlex.quote(str(output))}\n"
+                f"docker() {{ touch {shlex.quote(str(docker_marker))}; }}\n"
+                "assert_grype_db_seed_available\n"
+            )
+            self.assertEqual(10, result.returncode, result.stderr)
+            self.assertFalse(docker_marker.exists())
+
+        text = WRAPPER.read_text(encoding="utf-8")
+        advisory = text.split("run_advisory() {", maxsplit=1)[1].split(
+            "\n}\n\nrun_scorecard_advisory", maxsplit=1
+        )[0]
+        self.assertLess(
+            advisory.index("assert_grype_db_seed_available"),
+            advisory.index("seed_private_grype_db_cache"),
+        )
+        self.assertLess(
+            advisory.index("assert_grype_db_seed_available"),
+            advisory.index("build_role_image baseline"),
+        )
+
     def test_git_context_rejection_maps_to_class_10_and_tamper_to_50(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo = pathlib.Path(temporary) / "repo"
