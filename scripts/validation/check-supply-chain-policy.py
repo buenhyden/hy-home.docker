@@ -1245,11 +1245,190 @@ def _verify_oci_gzip_layer_diff_id(
     return uncompressed_bytes
 
 
+def _parse_bounded_pax_decimal(
+    content: bytes,
+    start: int,
+    end: int,
+    *,
+    maximum: int,
+    invalid_reason: str,
+    limit_reason: str,
+) -> int:
+    """Parse a bounded unsigned PAX decimal without a large temporary int."""
+
+    if start >= end:
+        raise ValueError(invalid_reason)
+    value = 0
+    for index in range(start, end):
+        byte = content[index]
+        if byte < ord("0") or byte > ord("9"):
+            raise ValueError(invalid_reason)
+        digit = byte - ord("0")
+        if value > (maximum - digit) // 10:
+            raise ValueError(limit_reason)
+        value = value * 10 + digit
+    return value
+
+
+def _preflight_pax_payload(
+    content: bytes, payload_start: int, payload_size: int
+) -> None:
+    """Validate bounded PAX framing and allocation-relevant keys."""
+
+    invalid_reason = "oci-archive-pax-header-invalid"
+    payload_end = payload_start + payload_size
+    record_start = payload_start
+    sparse_prefix = b"GNU.sparse"
+    size_key = b"size"
+    length_digits_max = len(str(payload_size))
+
+    while record_start < payload_end:
+        length_end = content.find(b" ", record_start, payload_end)
+        if length_end <= record_start:
+            raise ValueError(invalid_reason)
+        remaining = payload_end - record_start
+        if length_end - record_start > length_digits_max:
+            raise ValueError(invalid_reason)
+        record_size = _parse_bounded_pax_decimal(
+            content,
+            record_start,
+            length_end,
+            maximum=remaining,
+            invalid_reason=invalid_reason,
+            limit_reason=invalid_reason,
+        )
+        if record_size < 5:
+            raise ValueError(invalid_reason)
+        record_end = record_start + record_size
+        if record_end > payload_end or content[record_end - 1] != ord("\n"):
+            raise ValueError(invalid_reason)
+
+        key_start = length_end + 1
+        value_end = record_end - 1
+        equals = content.find(b"=", key_start, value_end)
+        if equals <= key_start:
+            raise ValueError(invalid_reason)
+
+        key_size = equals - key_start
+        if (
+            key_size == len(sparse_prefix)
+            and content.startswith(sparse_prefix, key_start, equals)
+        ) or (
+            key_size > len(sparse_prefix)
+            and content.startswith(sparse_prefix, key_start, equals)
+            and content[key_start + len(sparse_prefix)] == ord(".")
+        ):
+            raise ValueError("oci-archive-sparse-type-invalid")
+
+        if key_size == len(size_key) and content.startswith(
+            size_key, key_start, equals
+        ):
+            _parse_bounded_pax_decimal(
+                content,
+                equals + 1,
+                value_end,
+                maximum=OCI_ARCHIVE_MAX_BYTES,
+                invalid_reason=invalid_reason,
+                limit_reason="oci-archive-member-size-limit-exceeded",
+            )
+
+        record_start = record_end
+
+
+def _preflight_uncompressed_oci_tar(content: bytes) -> None:
+    """Bound raw tar records before tarfile can consume hidden metadata."""
+
+    block_size = tarfile.BLOCKSIZE
+    zero_block = b"\0" * block_size
+    if len(content) < block_size * 2 or len(content) % block_size != 0:
+        raise ValueError("oci-archive-truncated-or-misaligned")
+
+    allowed_member_types = {
+        tarfile.REGTYPE,
+        tarfile.AREGTYPE,
+        tarfile.DIRTYPE,
+    }
+    pax_types = {
+        tarfile.XHDTYPE,
+        tarfile.XGLTYPE,
+        tarfile.SOLARIS_XHDTYPE,
+    }
+    longname_types = {tarfile.GNUTYPE_LONGNAME, tarfile.GNUTYPE_LONGLINK}
+    hidden_metadata_bytes = 0
+    offset = 0
+
+    while offset < len(content):
+        header = content[offset : offset + block_size]
+        if header == zero_block:
+            second_end = offset + 2 * block_size
+            if (
+                second_end > len(content)
+                or content[offset + block_size : second_end] != zero_block
+            ):
+                raise ValueError("oci-archive-termination-invalid")
+            if content.count(b"\0", second_end) != len(content) - second_end:
+                raise ValueError("oci-archive-trailing-data-invalid")
+            return
+
+        try:
+            member = tarfile.TarInfo.frombuf(
+                header, encoding="utf-8", errors="surrogateescape"
+            )
+        except tarfile.HeaderError as exc:
+            raise ValueError("oci-archive-header-invalid") from exc
+
+        if (
+            isinstance(member.size, bool)
+            or not isinstance(member.size, int)
+            or member.size < 0
+        ):
+            raise ValueError("oci-archive-member-size-invalid")
+        if member.size > OCI_ARCHIVE_MAX_BYTES:
+            raise ValueError("oci-archive-member-size-limit-exceeded")
+
+        payload_start = offset + block_size
+        payload_end = payload_start + member.size
+        padded_size = ((member.size + block_size - 1) // block_size) * block_size
+        next_offset = payload_start + padded_size
+
+        if member.type in pax_types:
+            if (
+                member.size > OCI_METADATA_MAX_BYTES
+                or hidden_metadata_bytes + member.size
+                > OCI_METADATA_MAX_BYTES
+            ):
+                raise ValueError(
+                    "oci-archive-pax-metadata-size-limit-exceeded"
+                )
+            if next_offset > len(content):
+                raise ValueError("oci-archive-truncated")
+            _preflight_pax_payload(content, payload_start, member.size)
+            hidden_metadata_bytes += member.size
+        elif member.type in longname_types:
+            raise ValueError("oci-archive-longname-type-invalid")
+        elif member.type == tarfile.GNUTYPE_SPARSE:
+            raise ValueError("oci-archive-sparse-type-invalid")
+        elif member.type not in allowed_member_types:
+            raise ValueError("oci-archive-member-type-invalid")
+
+        if next_offset > len(content):
+            raise ValueError("oci-archive-truncated")
+        if (
+            content.count(b"\0", payload_end, next_offset)
+            != next_offset - payload_end
+        ):
+            raise ValueError("oci-archive-padding-invalid")
+        offset = next_offset
+
+    raise ValueError("oci-archive-termination-invalid")
+
+
 def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
     if len(content) > OCI_ARCHIVE_MAX_BYTES:
         raise ValueError("oci-archive-size-limit-exceeded")
     if any(content.startswith(magic) for magic in OCI_OUTER_COMPRESSION_MAGICS):
         raise ValueError("oci-archive-outer-compression-invalid")
+    _preflight_uncompressed_oci_tar(content)
     try:
         archive = tarfile.open(fileobj=io.BytesIO(content), mode="r:")
     except (OSError, tarfile.TarError) as exc:

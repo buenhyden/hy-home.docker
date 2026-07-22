@@ -364,7 +364,22 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     entry,
                     fileobj=None if content is None else io.BytesIO(content),
                 )
-        if mutation == "oversized-logical-member":
+        raw_tar_mutations = {
+            "gnu-longlink",
+            "gnu-longname",
+            "gnu-sparse",
+            "invalid-padding",
+            "malformed-header",
+            "malformed-pax-record",
+            "missing-termination",
+            "oversized-base256-member",
+            "oversized-logical-member",
+            "pax-size-override",
+            "pax-sparse-key",
+            "trailing-data",
+            "truncated-member",
+        }
+        if mutation in raw_tar_mutations:
             logical_end = sum(
                 512
                 + (
@@ -374,13 +389,87 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 )
                 for entry, _ in entries
             )
-            oversized = tarfile.TarInfo("oversized-logical-member.bin")
-            oversized.mode = 0o600
-            oversized.size = self.checker.OCI_ARCHIVE_MAX_BYTES + 1
             body = bytearray(path.read_bytes())
-            body[logical_end : logical_end + 512] = oversized.tobuf(
-                format=tarfile.USTAR_FORMAT
-            )
+            if mutation in {
+                "oversized-base256-member",
+                "oversized-logical-member",
+            }:
+                oversized = tarfile.TarInfo(f"{mutation}.bin")
+                oversized.mode = 0o600
+                oversized.size = (
+                    1 << 40
+                    if mutation == "oversized-base256-member"
+                    else self.checker.OCI_ARCHIVE_MAX_BYTES + 1
+                )
+                header_format = (
+                    tarfile.GNU_FORMAT
+                    if mutation == "oversized-base256-member"
+                    else tarfile.USTAR_FORMAT
+                )
+                header = oversized.tobuf(format=header_format)
+                if mutation == "oversized-base256-member":
+                    self.assertTrue(header[124] & 0x80)
+                body[logical_end : logical_end + 512] = header
+            elif mutation == "malformed-header":
+                body[0] ^= 1
+            elif mutation == "invalid-padding":
+                first_entry = entries[0][0]
+                self.assertNotEqual(0, first_entry.size % 512)
+                body[512 + first_entry.size] = 1
+            elif mutation == "truncated-member":
+                truncated = tarfile.TarInfo("truncated-member.bin")
+                truncated.mode = 0o600
+                truncated.size = 1024
+                body[logical_end : logical_end + 512] = truncated.tobuf(
+                    format=tarfile.USTAR_FORMAT
+                )
+                body = body[: logical_end + 1024]
+            elif mutation == "missing-termination":
+                body = body[:logical_end]
+            elif mutation == "trailing-data":
+                body[logical_end + 1024] = 1
+            elif mutation in {"gnu-longlink", "gnu-longname"}:
+                long_metadata = tarfile.TarInfo("././@LongLink")
+                long_metadata.type = (
+                    tarfile.GNUTYPE_LONGLINK
+                    if mutation == "gnu-longlink"
+                    else tarfile.GNUTYPE_LONGNAME
+                )
+                long_metadata.size = 4
+                body[logical_end : logical_end + 512] = long_metadata.tobuf(
+                    format=tarfile.GNU_FORMAT
+                )
+            elif mutation == "gnu-sparse":
+                sparse = tarfile.TarInfo("gnu-sparse.bin")
+                sparse.type = tarfile.GNUTYPE_SPARSE
+                sparse.size = 0
+                body[logical_end : logical_end + 512] = sparse.tobuf(
+                    format=tarfile.GNU_FORMAT
+                )
+            elif mutation in {
+                "malformed-pax-record",
+                "pax-size-override",
+                "pax-sparse-key",
+            }:
+                pax_member = tarfile.TarInfo(f"{mutation}.bin")
+                pax_member.mode = 0o600
+                pax_member.size = 0
+                if mutation == "pax-size-override":
+                    pax_member.pax_headers = {
+                        "size": str(self.checker.OCI_ARCHIVE_MAX_BYTES + 1)
+                    }
+                elif mutation == "pax-sparse-key":
+                    pax_member.pax_headers = {"GNU.sparse.realsize": "0"}
+                else:
+                    pax_member.pax_headers = {"comment": "malformed"}
+                pax_sequence = bytearray(
+                    pax_member.tobuf(format=tarfile.PAX_FORMAT)
+                )
+                if mutation == "malformed-pax-record":
+                    pax_sequence[512] = ord("x")
+                body[logical_end : logical_end + len(pax_sequence)] = (
+                    pax_sequence
+                )
             path.write_bytes(body)
         path.chmod(0o600)
         return {
@@ -478,7 +567,18 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "diff-id-mismatch": "oci-layer-diff-id-mismatch",
             "corrupt-gzip": "oci-layer-gzip-invalid",
             "gzip-trailing-data": "oci-layer-gzip-trailing-data",
+            "gnu-longlink": "oci-archive-longname-type-invalid",
+            "gnu-longname": "oci-archive-longname-type-invalid",
+            "gnu-sparse": "oci-archive-sparse-type-invalid",
+            "invalid-padding": "oci-archive-padding-invalid",
+            "malformed-header": "oci-archive-header-invalid",
+            "malformed-pax-record": "oci-archive-pax-header-invalid",
+            "missing-termination": "oci-archive-termination-invalid",
+            "oversized-base256-member": "oci-archive-member-size-limit-exceeded",
             "oversized-logical-member": "oci-archive-member-size-limit-exceeded",
+            "pax-sparse-key": "oci-archive-sparse-type-invalid",
+            "trailing-data": "oci-archive-trailing-data-invalid",
+            "truncated-member": "oci-archive-truncated",
         }
         for mutation, reason in cases.items():
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
@@ -549,17 +649,25 @@ class SupplyChainPolicyTests(unittest.TestCase):
             root.chmod(0o700)
             ustar_source = root / "image.ustar.oci.tar"
             pax_source = root / "image.pax.oci.tar"
-            target = root / "image.docker.tar"
+            first_target = root / "image.first.docker.tar"
+            second_target = root / "image.second.docker.tar"
             expected = self._write_portable_oci_archive(ustar_source)
             with tarfile.open(ustar_source, "r:") as source_archive:
                 with tarfile.open(
-                    pax_source, "w", format=tarfile.PAX_FORMAT
+                    pax_source,
+                    "w",
+                    format=tarfile.PAX_FORMAT,
+                    pax_headers={"comment": "global-build-metadata"},
                 ) as pax_archive:
                     for member in source_archive:
                         copied = copy.copy(member)
                         if copied.name == "index.json":
                             copied.pax_headers = {
-                                "comment": "buildx-compatible-oci-layout"
+                                "comment": (
+                                    "buildx-compatible-oci-layout without "
+                                    "GNU.sparse extensions"
+                                ),
+                                "size": str(copied.size),
                             }
                         handle = (
                             source_archive.extractfile(member)
@@ -568,13 +676,35 @@ class SupplyChainPolicyTests(unittest.TestCase):
                         )
                         pax_archive.addfile(copied, handle)
             pax_source.chmod(0o600)
-            result = self.checker.convert_oci_archive_to_docker_load_archive(
-                pax_source, target, "baseline"
+            first_result = self.checker.convert_oci_archive_to_docker_load_archive(
+                pax_source, first_target, "baseline"
+            )
+            second_result = self.checker.convert_oci_archive_to_docker_load_archive(
+                pax_source, second_target, "baseline"
             )
             self.assertEqual(
-                expected["image_config_digest"], result["image_config_digest"]
+                expected["image_config_digest"],
+                first_result["image_config_digest"],
             )
-            self.assertTrue(target.is_file())
+            self.assertEqual(first_result, second_result)
+            self.assertEqual(first_target.read_bytes(), second_target.read_bytes())
+
+    def test_oci_tar_preflight_rejects_oversized_pax_size_override(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            source = root / "image.pax-size-override.oci.tar"
+            self._write_portable_oci_archive(
+                source, mutation="pax-size-override"
+            )
+            with self.assertRaisesRegex(
+                ValueError, "oci-archive-member-size-limit-exceeded"
+            ):
+                self.checker._preflight_uncompressed_oci_tar(
+                    source.read_bytes()
+                )
 
     def test_portable_converter_rejects_oversized_hidden_pax_metadata(
         self,
