@@ -9,11 +9,13 @@ umask 077
 BASE_DIR="$(git rev-parse --show-toplevel)"
 SERVICE_DIR="$BASE_DIR/examples/sample-web-service"
 CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
+GRYPE_DB_SEED_HELPER="$BASE_DIR/scripts/validation/grype_db_seed.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
 POLICY="$BASE_DIR/infra/supply-chain.sample-service-policy.json"
 TASK_DOC="$BASE_DIR/docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md"
 OUTPUT_RELATIVE="_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
 OUTPUT_DIR="$BASE_DIR/$OUTPUT_RELATIVE"
+GRYPE_DB_SEED_RELATIVE="_workspace/repo-support/task-2026-07-23-security-supply-chain-runtime-closure/grype-db-seed"
 SOURCE_REVISION="$(git -C "$BASE_DIR" rev-parse HEAD)"
 MODE="${1:-}"
 
@@ -32,6 +34,7 @@ artifact_root=""
 grype_db_dir=""
 grype_db_status=""
 grype_db_identity=""
+grype_db_seed_source=""
 private_key_dir=""
 tool_tmp_dir=""
 run_verdict_dir=""
@@ -133,6 +136,7 @@ cleanup_transient_state() {
   runtime_dir=""
   artifact_root=""
   grype_db_dir=""
+  grype_db_seed_source=""
   private_key_dir=""
   tool_tmp_dir=""
   run_verdict_dir=""
@@ -228,15 +232,22 @@ ensure_advisory_prerequisites() {
 }
 
 assert_grype_db_seed_available() {
-  local seed_dir="${HYHOME_GRYPE_DB_CACHE_SOURCE:-$OUTPUT_DIR/grype-db-cache}"
-  [[ -d "$seed_dir" && ! -L "$seed_dir" ]] || fail "$EXIT_POLICY" "grype-db-seed-unavailable-advisory-blocked"
-  [[ -d "$seed_dir/6" && ! -L "$seed_dir/6" ]] || fail "$EXIT_POLICY" "grype-db-seed-schema-invalid-advisory-blocked"
+  local resolved prefix
+  [[ -x "$GRYPE_DB_SEED_HELPER" ]] || fail "$EXIT_POLICY" "grype-db-seed-helper-unavailable-advisory-blocked"
+  resolved="$("$GRYPE_DB_SEED_HELPER" --resolve-current "$BASE_DIR" "$GRYPE_DB_SEED_RELATIVE" 2>/dev/null)" || fail "$EXIT_POLICY" "grype-db-seed-unavailable-advisory-blocked"
+  prefix="$BASE_DIR/$GRYPE_DB_SEED_RELATIVE/generations/"
+  [[ "$resolved" == "$prefix"*"/cache" ]] || fail "$EXIT_POLICY" "grype-db-seed-path-invalid-advisory-blocked"
+  [[ -d "$resolved" && ! -L "$resolved" ]] || fail "$EXIT_POLICY" "grype-db-seed-unavailable-advisory-blocked"
+  [[ -d "$resolved/6" && ! -L "$resolved/6" ]] || fail "$EXIT_POLICY" "grype-db-seed-schema-invalid-advisory-blocked"
+  grype_db_seed_source="$resolved"
 }
 
 seed_private_grype_db_cache() {
-  local seed_dir="${HYHOME_GRYPE_DB_CACHE_SOURCE:-$OUTPUT_DIR/grype-db-cache}"
-  assert_grype_db_seed_available
-  docker run --pull=never --rm --network none --user 0:0 --env "TARGET_UID=$(id -u)" --env "TARGET_GID=$(id -g)" --mount "type=bind,source=$seed_dir,target=/seed,readonly" --mount "type=bind,source=$grype_db_dir,target=/cache" "$BUILD_MATERIAL_REF" sh -ceu 'cp -a /seed/. /cache/; chown -R "$TARGET_UID:$TARGET_GID" /cache; find /cache -type d -exec chmod 700 {} +; find /cache -type f -exec chmod 600 {} +' || fail "$EXIT_POLICY" "grype-db-private-seed-failed"
+  local resolved
+  [[ -n "$grype_db_seed_source" ]] || assert_grype_db_seed_available
+  resolved="$("$GRYPE_DB_SEED_HELPER" --resolve-current "$BASE_DIR" "$GRYPE_DB_SEED_RELATIVE" 2>/dev/null)" || fail "$EXIT_POLICY" "grype-db-seed-revalidation-failed"
+  [[ "$resolved" == "$grype_db_seed_source" ]] || fail "$EXIT_POLICY" "grype-db-seed-generation-changed"
+  docker run --pull=never --rm --network none --user 0:0 --env "TARGET_UID=$(id -u)" --env "TARGET_GID=$(id -g)" --mount "type=bind,source=$grype_db_seed_source,target=/seed,readonly" --mount "type=bind,source=$grype_db_dir,target=/cache" "$BUILD_MATERIAL_REF" sh -ceu 'cp -a /seed/. /cache/; chown -R "$TARGET_UID:$TARGET_GID" /cache; find /cache -type d -exec chmod 700 {} +; find /cache -type f -exec chmod 600 {} +' || fail "$EXIT_POLICY" "grype-db-private-seed-failed"
 }
 
 remove_legacy_runtime_artifacts() {

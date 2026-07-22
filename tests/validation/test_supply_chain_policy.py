@@ -38,9 +38,7 @@ CANDIDATE_SUBJECT = {
     "oci_archive_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     "build_context_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
 }
-BASELINE_SUBJECT["build_context_sha256"] = CANDIDATE_SUBJECT[
-    "build_context_sha256"
-]
+BASELINE_SUBJECT["build_context_sha256"] = CANDIDATE_SUBJECT["build_context_sha256"]
 
 HANDOFF_RELATIVE = pathlib.Path(
     "_workspace/repo-support/"
@@ -138,8 +136,12 @@ class SupplyChainPolicyTests(unittest.TestCase):
             ),
         )
 
-    def _write_oci_archive(self, path: pathlib.Path, *, tamper_config: bool = False) -> str:
-        config = json.dumps({"architecture": "amd64", "os": "linux"}, sort_keys=True).encode()
+    def _write_oci_archive(
+        self, path: pathlib.Path, *, tamper_config: bool = False
+    ) -> str:
+        config = json.dumps(
+            {"architecture": "amd64", "os": "linux"}, sort_keys=True
+        ).encode()
         config_digest = hashlib.sha256(config).hexdigest()
         manifest = json.dumps(
             {
@@ -172,7 +174,10 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 ("oci-layout", b'{"imageLayoutVersion":"1.0.0"}'),
                 ("index.json", index),
                 (f"blobs/sha256/{manifest_digest}", manifest),
-                (f"blobs/sha256/{config_digest}", b"tampered-config" if tamper_config else config),
+                (
+                    f"blobs/sha256/{config_digest}",
+                    b"tampered-config" if tamper_config else config,
+                ),
             ):
                 entry = tarfile.TarInfo(name)
                 entry.size = len(content)
@@ -183,7 +188,9 @@ class SupplyChainPolicyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             archive = pathlib.Path(temporary) / "image.oci.tar"
             expected = self._write_oci_archive(archive)
-            self.assertEqual(expected, self.checker.inspect_oci_archive_config_digest(archive))
+            self.assertEqual(
+                expected, self.checker.inspect_oci_archive_config_digest(archive)
+            )
 
     def test_oci_archive_config_digest_rejects_tampered_blob(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -426,7 +433,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([reference]))}\n"
             f"TEST_CONFIG_ID={config_id}\n"
             "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
-            "\"$TEST_CONFIG_ID\"; }\n"
+            '"$TEST_CONFIG_ID"; }\n'
             f"assert_local_image_identity {reference} {reference} {config_id}\n"
         )
         self.assertEqual(0, valid.returncode, valid.stderr)
@@ -441,7 +448,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([wrong_reference]))}\n"
             f"TEST_CONFIG_ID={config_id}\n"
             "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
-            "\"$TEST_CONFIG_ID\"; }\n"
+            '"$TEST_CONFIG_ID"; }\n'
             f"assert_local_image_identity {reference} {reference} {config_id}\n"
         )
         self.assertEqual(10, result.returncode)
@@ -456,7 +463,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([reference]))}\n"
             f"TEST_CONFIG_ID=sha256:{'d' * 64}\n"
             "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
-            "\"$TEST_CONFIG_ID\"; }\n"
+            '"$TEST_CONFIG_ID"; }\n'
             f"assert_local_image_identity {reference} {reference} {config_id}\n"
         )
         self.assertEqual(10, result.returncode)
@@ -485,22 +492,22 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"OUTPUT_DIR={shlex.quote(str(output))}\n"
                 "prepare_transient_directory\n"
                 "case $runtime_dir in /tmp/hyhome-supply-chain.*) ;; *) exit 91 ;; esac\n"
-                "test \"$(stat -c %a \"$runtime_dir\")\" = 700\n"
-                "test \"$(stat -c %a \"$grype_db_dir\")\" = 700\n"
-                "test \"$(stat -c %a \"$private_key_dir\")\" = 700\n"
-                "touch \"$runtime_dir/raw-artifact\"\n"
+                'test "$(stat -c %a "$runtime_dir")" = 700\n'
+                'test "$(stat -c %a "$grype_db_dir")" = 700\n'
+                'test "$(stat -c %a "$private_key_dir")" = 700\n'
+                'touch "$runtime_dir/raw-artifact"\n'
                 "saved_runtime_dir=$runtime_dir\n"
                 "cleanup_transient_state\n"
-                "test ! -e \"$saved_runtime_dir\"\n"
+                'test ! -e "$saved_runtime_dir"\n'
             )
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual([], list(output.iterdir()))
 
     def test_legacy_runtime_cleanup_uses_the_gated_offline_root_container(self) -> None:
         text = WRAPPER.read_text(encoding="utf-8")
-        cleanup = text.split(
-            "remove_legacy_runtime_artifacts() {", maxsplit=1
-        )[1].split("\n}\n\nbuild_role_image", maxsplit=1)[0]
+        cleanup = text.split("remove_legacy_runtime_artifacts() {", maxsplit=1)[
+            1
+        ].split("\n}\n\nbuild_role_image", maxsplit=1)[0]
         self.assertIn(
             "docker run --pull=never --rm --network none --user 0:0",
             cleanup,
@@ -513,8 +520,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         nonroot_runs = [
             line.strip()
             for line in text.splitlines()
-            if "docker run " in line
-            and '--user "$(id -u):$(id -g)"' in line
+            if "docker run " in line and '--user "$(id -u):$(id -g)"' in line
         ]
         self.assertGreaterEqual(len(nonroot_runs), 8)
         for command in nonroot_runs:
@@ -564,7 +570,8 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
     def test_advisory_resolves_and_revalidates_only_the_task7_seed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "repo"
-            cache = base / "private-generation/cache"
+            seed_relative = pathlib.Path("_workspace/repo-support/task/grype-db-seed")
+            cache = base / seed_relative / "generations" / ("a" * 64) / "cache"
             (cache / "6").mkdir(parents=True, mode=0o700)
             helper_log = pathlib.Path(temporary) / "helper.log"
             helper = pathlib.Path(temporary) / "resolve-seed"
@@ -583,13 +590,13 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"source {shlex.quote(str(WRAPPER))}\n"
                 f"BASE_DIR={shlex.quote(str(base))}\n"
                 f"GRYPE_DB_SEED_HELPER={shlex.quote(str(helper))}\n"
-                "GRYPE_DB_SEED_RELATIVE=_workspace/repo-support/task/grype-db-seed\n"
+                f"GRYPE_DB_SEED_RELATIVE={seed_relative}\n"
                 f"grype_db_dir={shlex.quote(str(private_copy))}\n"
                 "docker() {\n"
                 f"  printf '%s\\n' \"$*\" >> {shlex.quote(str(docker_log))}\n"
                 "}\n"
                 "assert_grype_db_seed_available\n"
-                f"test \"$grype_db_seed_source\" = {shlex.quote(str(cache))}\n"
+                f'test "$grype_db_seed_source" = {shlex.quote(str(cache))}\n'
                 "seed_private_grype_db_cache\n"
             )
             self.assertEqual(0, result.returncode, result.stderr)
@@ -597,9 +604,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             self.assertEqual(2, len(helper_calls))
             self.assertTrue(
                 all(
-                    call
-                    == "--resolve-current "
-                    f"{base} _workspace/repo-support/task/grype-db-seed"
+                    call == f"--resolve-current {base} {seed_relative}"
                     for call in helper_calls
                 )
             )
@@ -608,7 +613,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             self.assertIn(f"source={cache},target=/seed,readonly", docker_call)
 
         text = WRAPPER.read_text(encoding="utf-8")
-        self.assertIn(f'GRYPE_DB_SEED_HELPER="$BASE_DIR/{SEED_HELPER.relative_to(ROOT)}"', text)
+        self.assertIn(
+            f'GRYPE_DB_SEED_HELPER="$BASE_DIR/{SEED_HELPER.relative_to(ROOT)}"', text
+        )
         self.assertIn("task-2026-07-23-security-supply-chain-runtime-closure", text)
         self.assertGreaterEqual(text.count("--resolve-current"), 2)
 
@@ -662,7 +669,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             )
 
             (service / "site/untracked.html").write_text("new\n", encoding="utf-8")
-            dirty = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
+            dirty = self.run_wrapper_library(
+                common + "capture_build_context_snapshot\n"
+            )
             self.assertEqual(10, dirty.returncode, dirty.stderr)
             (service / "site/untracked.html").unlink()
 
@@ -677,13 +686,21 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             self.assertEqual(10, ignored.returncode, ignored.stderr)
             (service / "site/ignored.html").unlink()
 
-            clean = self.run_wrapper_library(common + "capture_build_context_snapshot\n")
+            clean = self.run_wrapper_library(
+                common + "capture_build_context_snapshot\n"
+            )
             self.assertEqual(0, clean.returncode, clean.stderr)
             self.assertEqual(0o600, stat.S_IMODE(archive.stat().st_mode))
             with tarfile.open(archive, "r:") as bundle:
                 names = {member.name.rstrip("/") for member in bundle.getmembers()}
             self.assertEqual(
-                {".dockerignore", "Dockerfile", "nginx.conf", "site", "site/index.html"},
+                {
+                    ".dockerignore",
+                    "Dockerfile",
+                    "nginx.conf",
+                    "site",
+                    "site/index.html",
+                },
                 names,
             )
             snapshot_payload = json.loads(snapshot.read_text(encoding="utf-8"))
@@ -702,7 +719,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                     }.issubset(material)
                 )
             (service / "site/index.html").write_text("tampered\n", encoding="utf-8")
-            tampered = self.run_wrapper_library(common + "assert_build_context_unchanged\n")
+            tampered = self.run_wrapper_library(
+                common + "assert_build_context_unchanged\n"
+            )
             self.assertEqual(50, tampered.returncode, tampered.stderr)
 
     def test_mutate_and_restore_during_build_fails_class_50_without_pair(self) -> None:
@@ -779,7 +798,10 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
     def test_invalidate_consumer_verdicts_removes_only_exact_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "base"
-            output = base / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+            output = (
+                base
+                / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+            )
             output.mkdir(parents=True)
             for role in ("baseline", "candidate"):
                 (output / f"verification-verdict.{role}.json").write_text("stale\n")
@@ -799,7 +821,10 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
     def test_failed_advisory_leaves_no_stale_consumer_verdicts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "base"
-            output = base / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+            output = (
+                base
+                / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+            )
             output.mkdir(parents=True)
             for role in ("baseline", "candidate"):
                 (output / f"verification-verdict.{role}.json").write_text("stale\n")
@@ -814,10 +839,15 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             self.assertFalse((output / "verification-verdict.baseline.json").exists())
             self.assertFalse((output / "verification-verdict.candidate.json").exists())
 
-    def test_accepted_grype_exception_cannot_publish_consumer_verdict_pair(self) -> None:
+    def test_accepted_grype_exception_cannot_publish_consumer_verdict_pair(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "base"
-            output = base / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+            output = (
+                base
+                / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
+            )
             output.mkdir(parents=True)
             for role in ("baseline", "candidate"):
                 (output / f"verification-verdict.{role}.json").write_text("stale\n")
@@ -828,9 +858,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "SOURCE_REVISION=0123456789abcdef0123456789abcdef01234567\n"
                 "run_preflight() { :; }\n"
                 "prepare_transient_directory() {\n"
-                "  mkdir -p \"$OUTPUT_DIR/grype-db-cache\"\n"
-                "  grype_db_dir=\"$OUTPUT_DIR/grype-db-cache\"\n"
-                "  run_verdict_dir=$(mktemp -d \"$OUTPUT_DIR/.verification-verdicts.XXXXXX\")\n"
+                '  mkdir -p "$OUTPUT_DIR/grype-db-cache"\n'
+                '  grype_db_dir="$OUTPUT_DIR/grype-db-cache"\n'
+                '  run_verdict_dir=$(mktemp -d "$OUTPUT_DIR/.verification-verdicts.XXXXXX")\n'
                 "}\n"
                 "capture_build_context_snapshot() { BUILD_CONTEXT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee; }\n"
                 "assert_build_context_unchanged() { :; }\n"
@@ -840,7 +870,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "seed_private_grype_db_cache() { :; }\n"
                 "remove_legacy_runtime_artifacts() { :; }\n"
                 "record_grype_db_identity() { :; }\n"
-                "build_role_image() { mkdir -p \"$OUTPUT_DIR/$1\"; }\n"
+                'build_role_image() { mkdir -p "$OUTPUT_DIR/$1"; }\n'
                 "export_oci_archive() { :; }\n"
                 "derive_subject_tuple() {\n"
                 "  if [[ $1 == baseline ]]; then\n"
@@ -852,11 +882,11 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "  fi\n"
                 "}\n"
                 "generate_cyclonedx_and_grype_verdict() {\n"
-                "  mkdir -p \"$OUTPUT_DIR/$1\"\n"
+                '  mkdir -p "$OUTPUT_DIR/$1"\n'
                 "  if [[ $1 == baseline ]]; then\n"
-                "    printf '%s\\n' '{\"exception_id\":\"EXC-SSC-0001\",\"verdict\":\"accepted\"}' >\"$OUTPUT_DIR/$1/vulnerability-verdict.json\"\n"
+                '    printf \'%s\\n\' \'{"exception_id":"EXC-SSC-0001","verdict":"accepted"}\' >"$OUTPUT_DIR/$1/vulnerability-verdict.json"\n'
                 "  else\n"
-                "    printf '%s\\n' '{\"exception_id\":null,\"verdict\":\"accepted\"}' >\"$OUTPUT_DIR/$1/vulnerability-verdict.json\"\n"
+                '    printf \'%s\\n\' \'{"exception_id":null,"verdict":"accepted"}\' >"$OUTPUT_DIR/$1/vulnerability-verdict.json"\n'
                 "  fi\n"
                 "}\n"
                 "publish_role_advisory_summary() { :; }\n"
@@ -885,11 +915,11 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"source {shlex.quote(str(WRAPPER))}\n"
                 f"OUTPUT_DIR={shlex.quote(str(output))}\n"
                 f"private_key_dir={shlex.quote(str(pathlib.Path(temporary) / 'keys'))}\n"
-                "mkdir -p \"$private_key_dir\"\n"
+                'mkdir -p "$private_key_dir"\n'
                 "docker() {\n"
                 f"  printf '%s\\n' \"$*\" >> {shlex.quote(str(command_log))}\n"
-                "  case \" $* \" in\n"
-                "    *\" /workspace/tampered.oci.tar\"*|*\" /other/image.oci.tar\"*) return 1 ;;\n"
+                '  case " $* " in\n'
+                '    *" /workspace/tampered.oci.tar"*|*" /other/image.oci.tar"*) return 1 ;;\n'
                 "  esac\n"
                 "  return 0\n"
                 "}\n"
@@ -909,10 +939,10 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"source {shlex.quote(str(WRAPPER))}\n"
                 f"OUTPUT_DIR={shlex.quote(str(output))}\n"
                 f"private_key_dir={shlex.quote(str(pathlib.Path(temporary) / 'keys'))}\n"
-                "mkdir -p \"$private_key_dir\"\n"
+                'mkdir -p "$private_key_dir"\n'
                 "docker() {\n"
-                "  case \" $* \" in\n"
-                "    *\" /workspace/tampered.oci.tar\"*) return 1 ;;\n"
+                '  case " $* " in\n'
+                '    *" /workspace/tampered.oci.tar"*) return 1 ;;\n'
                 "  esac\n"
                 "  return 0\n"
                 "}\n"
@@ -931,8 +961,10 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
     def write_verdict(path: pathlib.Path, role: str) -> None:
         payload = {
             "exception_id": None,
-            "image_config_digest": "sha256:" + (("a" if role == "baseline" else "c") * 64),
-            "oci_archive_sha256": "sha256:" + (("b" if role == "baseline" else "d") * 64),
+            "image_config_digest": "sha256:"
+            + (("a" if role == "baseline" else "c") * 64),
+            "oci_archive_sha256": "sha256:"
+            + (("b" if role == "baseline" else "d") * 64),
             "policy_id": "sample-service-local-v1",
             "producer_spec": "spec:126-security-supply-chain-remediation",
             "redaction_status": "passed",
@@ -974,9 +1006,7 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
             self.assertEqual(
                 "hyhome-verification-verdict-pair-v2", manifest["generation"]
             )
-            self.assertEqual(
-                {"baseline", "candidate"}, set(manifest["verdict_sha256"])
-            )
+            self.assertEqual({"baseline", "candidate"}, set(manifest["verdict_sha256"]))
             for name in (
                 "verification-verdict.baseline.json",
                 "verification-verdict.candidate.json",
@@ -986,7 +1016,9 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
                     0o600, stat.S_IMODE((output / name).stat().st_mode), name
                 )
 
-    def test_secure_output_rejects_ancestor_and_final_symlinks_or_bad_mode(self) -> None:
+    def test_secure_output_rejects_ancestor_and_final_symlinks_or_bad_mode(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "base"
             outside = pathlib.Path(temporary) / "outside"
