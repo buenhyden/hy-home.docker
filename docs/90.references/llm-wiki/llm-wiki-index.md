@@ -658,6 +658,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md](../../04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -1349,6 +1350,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
 | [scripts/security/generate-supply-chain-sample-service-summary.sh](../../../scripts/security/generate-supply-chain-sample-service-summary.sh) | script |
+| [scripts/security/seed-grype-db-cache.sh](../../../scripts/security/seed-grype-db-cache.sh) | script |
 | [scripts/security/verify-sample-service-supply-chain.sh](../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
 | [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
