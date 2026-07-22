@@ -74,6 +74,10 @@ their requirements or evidence ownership. The approved order is:
 5. Sample-service local promotion and rollback.
 6. Whole-branch review, controlled QA, and lifecycle closure.
 
+Observed domain evidence belongs in the linked domain Tasks. Program-level
+execution evidence and current status belong only in the
+[Program Task](../tasks/2026-07-19-operational-readiness-closure-program.md).
+
 ## Context and Inputs
 
 Canonical inputs:
@@ -87,22 +91,25 @@ Canonical inputs:
 - [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
 - the four domain Plans linked under Related Documents.
 
-The safe documentation comparison base for this program is commit `758aa0d2`,
-the design-chain activation commit. Implementation Tasks must record their own
-commit identities after each logical unit lands.
+The safe documentation comparison base must be an explicit reviewed Git ref
+selected for the execution range and recorded in the
+[Program Task](../tasks/2026-07-19-operational-readiness-closure-program.md).
+Commands below parameterize that Task-owned identity as
+`$COMPARISON_BASE_REF`; this Plan does not own a concrete base identity.
 
 ### Cross-domain coordination contracts
 
 | Producer | Exact transient artifact | Required consumer fields | Consumer rule |
 | --- | --- | --- | --- |
 | Spec 124 / Task 2 | Ready handoff `_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json`; scenario evidence `readiness-verdict.<scenario>.json` in the same directory | Schema v2: producer Spec/Task, approval, scenario, target class, project, start/end, exact five-service states, endpoint verdicts, observed state, recovery/teardown, overall, elapsed, cleanup, redaction | Task 5 accepts only a ready canonical record with exact services, `scenario=vault-restart-recovery`, `recovery_status=passed`, and cleanup/redaction passed. Negative evidence remains scenario-specific and is never promoted as readiness. |
-| Spec 126 / Task 3 | `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json` and `verification-verdict.candidate.json` | `schema_version`, `producer_spec`, `role`, `source_revision`, image config digest, OCI archive SHA-256, policy ID, `verdict`, exception ID, verification time, redaction status | Task 5 requires two distinct subjects, matching source revision, `verdict=accepted`, no exception, and successful redaction. |
+| Spec 126 / Task 3 | `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json`, `verification-verdict.candidate.json`, and `verification-verdict.pair.json` | Verdict schema v1 fields plus pair-manifest schema v2 generation, source revision, build-context digest, and exact baseline/candidate verdict-byte hashes | Task 5 requires two distinct accepted/no-exception/redaction-passed subjects plus one matching `hyhome-verification-verdict-pair-v2` manifest; missing, stale, or mixed generations fail before Docker. |
 | Spec 125 / Task 4 | `_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json` | `schema_version`, `producer_spec`, source/target pins, fixture/dump checksums, integrity verdict, observed timings, cleanup status, `scope=synthetic-local` | Task 5 records this as a data-recovery boundary only; the stateless sample service must declare `data_impact=none` and must not claim database recovery. |
-| Spec 127 / Task 5 | `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json` | both upstream artifact references, readiness reference, baseline/canary projects, promotion decision, rollback decision, post-rollback health, data impact, cleanup status | Task 6 copies only concise typed fields and checksums into Stage 04 Task evidence. |
+| Spec 127 / Task 5 | `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json` | Schema v3: upstream references and exact hashes including pair manifest/generation, baseline/canary projects, promotion/rollback/post-health results, approval/timestamps, data impact, and cleanup | Task 6 copies only concise typed fields and checksums into Stage 04 Task evidence. |
 
 All JSON artifacts use UTF-8, sorted-key serialization, RFC 3339 UTC
-timestamps, and lowercase enum values. Task 2 uses its reviewed schema v2;
-Tasks 3–5 use their declared schema v1 until a reviewed successor is approved.
+timestamps, and lowercase enum values. Task 2 uses readiness schema v2; Task 3
+uses verdict schema v1 plus pair-manifest schema v2; Task 4 uses recovery
+schema v1; Task 5 uses rehearsal-record schema v3.
 Where checksums apply, SHA-256 strings are prefixed with `sha256:`. Missing or
 unknown fields fail closed; producers and consumers share no raw evidence files.
 
@@ -141,108 +148,81 @@ Non-goals:
 - Create: `docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md`
 - Modify: `docs/04.execution/tasks/README.md`
 
-- [x] Copy the canonical Task template structure into all five files.
-- [x] Set each domain Task parent to its Spec and domain Plan; set the program
+- [ ] Copy the canonical Task template structure into all five files.
+- [ ] Set each domain Task parent to its Spec and domain Plan; set the program
       Task parent to this Plan.
-- [x] Record exact allowed paths, prohibited remote/secret surfaces, runtime
+- [ ] Record exact allowed paths, prohibited remote/secret surfaces, runtime
       command classes, rollback/cleanup, redaction, review roles, and deferred
       destinations.
-- [x] Run
-      `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2`.
-- [x] Run `bash scripts/validation/check-doc-traceability.sh` and
+- [ ] Run
+      `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$COMPARISON_BASE_REF"`.
+- [ ] Run `bash scripts/validation/check-doc-traceability.sh` and
       `bash scripts/validation/check-doc-implementation-alignment.sh`.
-- [x] Commit as `docs(sdlc): activate operational readiness tasks`.
+- [ ] Commit as `docs(sdlc): activate operational readiness tasks`.
 
 ### Task 2: Implement Compose runtime readiness
 
 **Plan:** [Compose runtime readiness Plan](./2026-07-11-compose-runtime-readiness-remediation.md)
 
-- [x] Execute that Plan using a fresh implementation agent.
-- [x] Require the exact `readiness-verdict.json` contract above with
+- [ ] Execute that Plan using a fresh implementation agent.
+- [ ] Require the exact `readiness-verdict.json` contract above with
       `overall_status=ready` and verified owned cleanup before Task 5 may use it.
-- [x] Close the fresh specification and separate quality/security reviews after
-      remediation and re-review of all critical, important, and minor findings.
-      Terminal re-reviews returned specification and quality/security
-      `APPROVED C0/I0/M0` after the Program Plan/Task inconsistency was fixed.
-- [x] Amend and record the verified implementation as
-      `feat(harness): add compose runtime acceptance`; the logical commit
-      containing this checklist is the branch-history identity.
+- [ ] Close fresh specification and separate quality/security reviews of the
+      independent image-identity controls after remediation and re-review of
+      all findings; record observed review evidence only in the domain Task.
+- [ ] Keep the implementation as one independently reviewable logical unit.
 
 ### Task 3: Implement local supply-chain verification
 
 **Plan:** [Security supply-chain Plan](./2026-07-11-security-supply-chain-remediation.md)
 
-- [x] Execute deterministic policy, preflight, fixture-only, CI/local/repository,
+- [ ] Execute deterministic policy, preflight, fixture-only, CI/local/repository,
       and generated-summary portions of that Plan using a fresh implementation
-      agent after Task 2. The optional live advisory rehearsal was attempted
-      with an authorized pinned Grype DB retrieval and truthfully rejected the
-      baseline at the critical-vulnerability policy gate.
+      agent after Task 2. Attempt the optional live advisory only when its
+      network, database, and protected-surface prerequisites are approved.
 - [ ] Require distinct accepted baseline/candidate verdicts with the exact
       fields and paths above before Task 5 starts.
-- [x] Require a fresh specification reviewer and a separate security/quality
-      reviewer; the initial/combined `C3/I1/M1` findings and first re-review C1
-      were remediated, and terminal specification and quality/security reviews
-      both returned APPROVED C0/I0/M0.
-- [x] Record the deterministic implementation as
-      `72e584f51badfd194c0a1b6d32510a3bf3ab395c`
-      (`feat(security): add local supply-chain verification`).
+- [ ] Require a fresh specification reviewer and a separate security/quality
+      reviewer for the immutable-input controls; remediate and re-review all
+      findings before acceptance.
+- [ ] Keep the deterministic implementation as one independently reviewable
+      logical unit; record exact identities only in the domain Task.
 
 ### Task 4: Implement PostgreSQL logical recovery rehearsal
 
 **Plan:** [Infrastructure operations Plan](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 
-- [x] Execute that Plan using a fresh implementation agent after Task 3.
-- [x] Require the exact synthetic-local `recovery-verdict.json` contract above;
+- [ ] Execute that Plan using a fresh implementation agent after Task 3.
+- [ ] Require the exact synthetic-local `recovery-verdict.json` contract above;
       keep it a rollback-boundary input rather than a deployment gate.
-- [x] Require a fresh specification reviewer and a separate operations/quality
-      reviewer. Initial reviews returned specification C1/I3/M1 and
-      operations/quality C0/I5/M2; the second review wave returned
-      specification C0/I3/M1 and operations/quality C0/I2/M0. Both historical
-      waves are remediated, including stable authenticated TCP postmaster
-      identity plus running/healthy state, direct-control isolation, exact
-      per-project rendering, and bounded sleeps. Terminal specification and
-      operations/quality reviews both returned APPROVED C0/I0/M0 after the
-      specification evidence-sync finding was remediated.
-      The reviewer's direct-control regression invalidated the canonical as
-      designed; exactly one approved normal rehearsal then regenerated the
-      final-state handoff for project
-      `hyhome-ior-20260719-229164-source/target`, fixture SHA-256
-      `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`,
-      dump SHA-256
-      `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
-      4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical
-      SHA-256
-      `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`.
-      Schema 1, scope, integrity, cleanup, and redaction passed; owned resources
-      were empty, and no test, negative, direct-control, or `--check` command
-      followed regeneration.
-- [x] Keep the verified implementation in the logical unit
-      `feat(ops): add postgres recovery rehearsal`; the initial reviewed
-      identity was `db2418c2`, and the final amended identity is resolved from
-      branch history after amendment rather than self-recorded in that commit.
+- [ ] Require a fresh specification reviewer and a separate operations/quality
+      reviewer for the independent image-identity controls; remediate and
+      re-review all findings before acceptance. The domain Task alone records
+      observed execution, review, and lifecycle evidence.
+- [ ] Keep the verified implementation as one independently reviewable logical
+      unit; record exact identities only in the domain Task.
 
 ### Task 5: Implement local promotion and rollback
 
 **Plan:** [Deployment/release Plan](./2026-07-11-deployment-release-engineering-remediation.md)
 
-- [x] Implement that Plan with a fresh implementation agent after Tasks 2-4;
-      keep positive promotion/rollback runtime blocked while the accepted
-      Spec 126 pair is absent.
-- [x] Fail closed unless both supply-chain verdicts and the readiness verdict
-      satisfy the coordination table; record `data_impact=none` or stop and hand
-      off to Spec 125.
-- [x] Require a fresh specification reviewer and a separate release/security
-      reviewer; remediate and re-review all findings. Both terminal reviews
-      returned APPROVED C0/I0/M0 for historical implementation commit
-      `b5441c53`.
-- [x] Commit the verified implementation as
-      `feat(release): add local promotion and rollback`.
+- [ ] Implement that Plan with a fresh implementation agent after Tasks 2-4;
+      do not start positive promotion/rollback runtime unless the accepted
+      Spec 126 verdicts and pair manifest are available and validated.
+- [ ] Fail closed unless both supply-chain verdicts, their pair manifest, and
+      the readiness verdict satisfy the coordination table; record
+      `data_impact=none` or stop and hand off to Spec 125.
+- [ ] Require a fresh specification reviewer and a separate release/security
+      reviewer for the pair-manifest controls; remediate and re-review all
+      findings. Observed review evidence belongs only in the domain Task.
+- [ ] Keep the verified implementation as independently reviewable logical
+      units.
 
-Task 5's fail-closed implementation and review boundary is complete. Positive
-promotion and injected rollback runtime remain `blocked/not_run` because the
-accepted Spec 126 baseline/candidate pair is absent; this evidence does not
-close Spec 127, `T-ORC-005`, or the Program and makes no release or deployment
-claim.
+Task 5's implementation/static gate is distinct from positive promotion and
+injected rollback runtime. The runtime gate may run only after the accepted
+Spec 126 baseline/candidate verdicts and pair manifest are validated. No
+Plan-level statement closes Spec 127, `T-ORC-005`, or the Program or makes a
+release/deployment claim.
 
 ### Task 6: Reconcile evidence and close the local program
 
@@ -258,19 +238,21 @@ claim.
 - [ ] Run all four focused test suites and each domain's approved local
       rehearsal; record concise evidence and cleanup outcomes.
 - [ ] Run
-      `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2`,
+      `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$COMPARISON_BASE_REF"`,
       traceability, alignment, repository contracts, LLM Wiki freshness, and
       audit-inventory freshness.
-- [ ] When the bare Python aggregate reports `AGC-DEPENDENCY-MISSING
+- [ ] If the bare Python aggregate reports `AGC-DEPENDENCY-MISSING
       path=html5lib`, rerun through
       `UV_CACHE_DIR=/tmp/uv-cache uv run --with-requirements scripts/requirements.txt bash scripts/validation/check-repo-contracts.sh`;
       record a blocked result rather than PASS if the locked rerun is unavailable.
-- [ ] Obtain a whole-branch specification review and a separate
+- [ ] Obtain a passing whole-branch specification review and a separate
       quality/security review; remediate and re-review all findings.
 - [ ] Record all pre-wrapper evidence in the five Task documents, update
       generated outputs only through their owners, and commit the clean
       pre-wrapper state as `docs(evidence): prepare operational readiness closure`.
-- [ ] Confirm `git status --short` is empty before invoking the wrapper.
+- [ ] Confirm all four domains pass, or obtain a separately approved gate
+      change; then create the clean pre-wrapper evidence commit and confirm
+      `git status --short` is empty before invoking the wrapper.
 - [ ] From a clean linked worktree, run
       `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md --allow-prefix .github/workflows/ci-quality.yml --allow-prefix docs/00.agent-governance/memory/progress.md --allow-prefix docs/03.specs --allow-prefix docs/04.execution --allow-prefix docs/05.operations --allow-prefix docs/90.references/data --allow-prefix examples/sample-web-service --allow-prefix infra --allow-prefix scripts --allow-prefix tests`.
 - [ ] Record wrapper exit status, before/after snapshots, observed path sets,
@@ -283,14 +265,14 @@ claim.
 
 | Gate | Exact command | Pass condition |
 | --- | --- | --- |
-| Metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` | Zero changed-document violations. |
+| Metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$COMPARISON_BASE_REF"` | Zero changed-document violations. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` | Zero failures for the active chain. |
 | Alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | Zero implementation-alignment failures. |
 | Repository contracts | dependency-locked command in Task 6 | Zero failures, or an explicitly recorded pre-existing environment blocker that is not mislabeled PASS. |
 | Focused domain tests | exact commands in the four domain Plans | All positive and negative cases pass. |
 | Runtime evidence | exact task-owned local wrappers | Owned resources only; expected verdicts; cleanup verified. |
-| Review | per-domain and whole-branch independent reviews | C0/I0/M0 after remediation. |
-| All-files QA | controlled wrapper command in Task 6 | Clean-before state, allowed path set, exit 0, and Task evidence recorded. |
+| Review | per-domain and whole-branch independent reviews | Every finding is resolved and independently re-reviewed. |
+| All-files QA | controlled wrapper command in Task 6 | May run only after all four domains pass (or an independently approved gate change exists), whole-branch reviews pass, and a clean pre-wrapper commit exists; then require clean-before state, allowed path set, exit 0, and Task evidence. |
 
 ## Risks and Rollback
 
@@ -305,7 +287,8 @@ claim.
 
 ## Approval Gates
 
-- The user approved this local-isolated program and protected-surface changes.
+- Program execution requires recorded user approval for the local-isolated
+  scope and protected-surface changes.
 - Each active Task must still bind its exact runtime command envelope before the
   command is executed.
 - Any remote mutation, publication, production/shared runtime action,
@@ -330,5 +313,10 @@ claim.
 - **Supply-chain Plan**: [2026-07-11-security-supply-chain-remediation.md](./2026-07-11-security-supply-chain-remediation.md)
 - **PostgreSQL Plan**: [2026-07-11-infrastructure-operations-readiness-remediation.md](./2026-07-11-infrastructure-operations-readiness-remediation.md)
 - **Delivery Plan**: [2026-07-11-deployment-release-engineering-remediation.md](./2026-07-11-deployment-release-engineering-remediation.md)
+- **Compose Task**: [2026-07-19-compose-runtime-readiness-remediation.md](../tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+- **Supply-chain Task**: [2026-07-19-security-supply-chain-remediation.md](../tasks/2026-07-19-security-supply-chain-remediation.md)
+- **PostgreSQL Task**: [2026-07-19-infrastructure-operations-readiness-remediation.md](../tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+- **Delivery Task**: [2026-07-19-deployment-release-engineering-remediation.md](../tasks/2026-07-19-deployment-release-engineering-remediation.md)
+- **Program Task**: [2026-07-19-operational-readiness-closure-program.md](../tasks/2026-07-19-operational-readiness-closure-program.md)
 - **Task contract**: [../tasks/README.md](../tasks/README.md)
 - **Operations**: [../../05.operations/README.md](../../05.operations/README.md)

@@ -1266,7 +1266,10 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Validation | Targeted docs gates | Pass | `git diff --check` passed. `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` selected 6 files with 0 violations. `bash scripts/validation/check-doc-traceability.sh` passed with failures=0. `bash scripts/validation/check-doc-implementation-alignment.sh` passed with failures=0. |
 | Validation | Full repository contract | Known unrelated failures | `bash scripts/validation/check-repo-contracts.sh` exited with failures=3. Observed failures were the existing validation-runtime `html5lib` dependency/provider renderer error and stale advisory frontmatter semantic inventory; the script did not print a third detailed finding before the final summary. No Plan-specific metadata, traceability, or implementation-alignment failure was observed. |
 
-## Local Supply-chain Verification Implementation (2026-07-22)
+## Historical Local Supply-chain Verification Implementation (2026-07-22)
+
+This snapshot predates the current whole-review hardening and seed gate recorded
+below; its class-40 result and 27/27 count remain historical only.
 
 | Item | Area | Status | Notes |
 | --- | --- | --- | --- |
@@ -1276,7 +1279,10 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Protected boundaries | Registry, remote GitHub, OIDC, secrets, deployment | Preserved | No registry push, publication, workflow dispatch, remote GitHub mutation, OIDC, secret persistence, or SLSA-level claim occurred. Private-key cleanup is limited to a task-owned `/tmp` directory and the advisory path did not reach key generation. |
 | Remaining gate | Task 5 accepted-pair prerequisite | Pending | Task 3 terminal reviews are closed; Task 5 stays fail-closed until advisory execution yields two distinct accepted verdicts. |
 
-## PostgreSQL Logical Recovery Rehearsal Implementation (2026-07-22)
+## Historical PostgreSQL Logical Recovery Rehearsal Implementation (2026-07-22)
+
+This snapshot predates the current offline image-identity remediation and
+frozen final-normal canonical recorded below.
 
 | Item | Area | Status | Notes |
 | --- | --- | --- | --- |
@@ -1286,7 +1292,11 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Negative and cleanup evidence | Task-owned projects and `/tmp` | Pass | Checksum mismatch and partial state returned 50, bad target major returned 10, and timeout returned 20. Each historical negative cleanup passed and left canonical absent; the single final-state normal regeneration after reviewer invalidation left the exact 12-key handoff and no task container, network, labeled client/volume, dump, or PID evidence directory. No test, negative, direct-control, or `--check` command was rerun after regeneration. |
 | Protected boundaries | Live/shared data, Supabase/Spilo, `${DEFAULT_DATA_DIR}`, remote storage, registry, deployment, secrets | Preserved | Synthetic SQL only; no host port, bind mount, external network, named/shared volume, restart policy, remote mutation, password/raw row/raw dump/raw log evidence, or all-files pre-commit action. Terminal specification and operations/quality are APPROVED C0/I0/M0; the broader Program, Spec 125 lifecycle, Task 5, and Task 6 remain open. |
 
-## Local Delivery Rehearsal Implementation (2026-07-22)
+## Historical Local Delivery Rehearsal Implementation (2026-07-22)
+
+This snapshot predates the immutable-input/strict-record remediation recorded
+below; its 38/38 count and historical terminal reviews do not cover the current
+GREEN commit.
 
 | Item | Area | Status | Notes |
 | --- | --- | --- | --- |
@@ -1296,9 +1306,27 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | Local QA and review closure | Task 5 owned surface | Pass; terminal reviews APPROVED C0/I0/M0 | Python compilation, 38/38 focused tests, Bash syntax, ShellCheck, fixture preflight, exact two-role non-starting render, real class-10 unchanged-canonical proof, targeted docs gates, and diff hygiene pass. Initial specification C0/I2/M0 and release/security C1/I2/M0 findings are remediated. Terminal specification and release/security reviews both returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. Generated owners are fresh at 1,311 Wiki / 1,310 safe paths / 13 security controls with Task 5-only count changes. Aggregate is `failures=4`, limited to baseline-owned lifecycle and missing-`html5lib` diagnostics; Task 5 inventory passes. |
 | Protected boundaries | Remote release/deployment, registry, workflow, credentials, production/data state | Preserved | No remote action, workflow/release/environment mutation, registry publication, credential/OIDC use, actual project start, stateful recovery, all-files pre-commit, or release claim occurred. Terminal specification and release/security reviews are APPROVED C0/I0/M0; positive/negative runtime remains `blocked/not_run`, and Spec 127, `T-ORC-005`, and the Program remain active. |
 
+## Operational Readiness Whole-review Remediation (2026-07-22)
+
+| Item | Area | Status | Notes |
+| --- | --- | --- | --- |
+| Task 2 current evidence | Compose readiness | Active; terminal current reviews approved | RED `9838034c` and GREEN `14e1dd5d` independently validate manifest/config identities. The focused suite passes 42/42; startup/recovery/timeout pass at the expected 0/0/30 classes, the current canonical SHA-256 is `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, and owner-scoped resources are empty. Exact projects and history remain in the [Compose Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md). |
+| Task 3 current evidence | Supply chain | Active and blocked; terminal current reviews approved | RED `abc1dd21` and GREEN `c8342c09` bind deterministic immutable build inputs. The focused/static/preflight gates pass 44/44 with 13 fixtures, but the sole hardened advisory exits class 10 before Docker because no approved/current scanner database seed or reusable local database exists. There is no current policy pass, accepted verdicts, or committed pair manifest. Exact history remains in the [supply-chain Task](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md). |
+| Task 4 current evidence | PostgreSQL recovery | Active; frozen after final normal; terminal current reviews approved | RED `da06a080` and GREEN `adbbdce2` independently validate source/target/client manifest/config identities. The suite passes 48/48 and strict runtime is 0/50/50/10/20/0. Current canonical SHA-256 is `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`; resources are empty and no later Task 4 invocation occurred. Exact project/dump evidence remains in the [infrastructure Task](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md). |
+| Task 5 current evidence | Delivery rehearsal | Active; runtime blocked; terminal current reviews approved | Pair-manifest RED `f0c3e032` and GREEN `20022458` add schema-v2 generation binding, schema-v3 record evidence, and fd-relative canonical invalidation. Focused/static/preflight gates pass 45/45 and Task 3 compatibility passes 44/44. The sole current real attempt returns class 10 `pair-manifest-missing` before Docker; no evidence or resource remains, and positive promotion/injected rollback are blocked. Exact evidence remains in the [delivery Task](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md). |
+| Terminal whole-branch reviews | Full branch range through `20022458` plus 26-document reconciliation diff | APPROVED C0/I0/M0 | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. The approvals do not create Task 3 accepted evidence or Task 5 runtime, change any active lifecycle, or authorize the controlled wrapper. |
+| Lifecycle and owner reconciliation | Specs, Plans, Tasks, indexes, audits, generated owners | Complete for current tree; terminal reviews approved | Specs 124-127, all four Plans, Tasks 2-5, `T-ORC-006`, and the Program remain active pending their respective Program/domain outcomes. Exact-base metadata passed at 41/0 and 35/0; impacted lifecycle at 290/0 and 289/0; traceability at 46/0; alignment at 666 documents/5,507 links/141 operations documents/0. Lifecycle and all affected generated-owner freshness checks passed, semantic inventory is fresh at 927 records/2,145 advisory findings, the dependency-locked aggregate returned `failures=0`, and diff hygiene passed. No remote/live, publication, credential, release, deployment, production, Docker, Task 4, runtime, or controlled-wrapper command ran in this phase. Exact evidence remains in the [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md). |
+| Controlled all-files QA | Program Task | **BLOCKED / not run** | A clean pre-wrapper evidence commit is necessary but not sufficient; its exact identity is recorded only in the ignored Task 6 report. The wrapper still cannot run because Task 3 lacks the approved/current database seed, current policy pass, and accepted pair, and Task 5 lacks positive promotion plus injected rollback runtime. It was not invoked directly or indirectly. |
+
 ## Open Issues
 
-None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
+- Approved/current offline Grype database seed and reusable local database are
+  absent; Task 3 cannot produce a current policy pass or accepted pair.
+- Task 5 positive promotion and injected rollback runtime remain blocked on the
+  accepted verdicts and pair manifest.
+- The controlled all-files wrapper is **BLOCKED** until all four domains pass
+  or a separate explicit gate change is approved. The clean pre-wrapper commit
+  is necessary but not sufficient.
 
 ## Related Documents
 

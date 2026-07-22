@@ -51,11 +51,12 @@ SQL; Python `unittest`; SHA-256 evidence.
 
 ## Overview
 
-This active plan turns Spec 125 into an executable local sequence for a
+This active transition plan defines the approved synthetic-local implementation
+order, risks, and acceptance gates for Spec 125. The sequence uses a
 representative PostgreSQL logical backup, restore, major-version upgrade, and
-integrity rehearsal on synthetic state. It is prospective; actual database
-runtime evidence belongs in
-`docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md`.
+integrity rehearsal on synthetic state. Observed execution and lifecycle
+evidence belongs only in the
+[domain Task](../tasks/2026-07-19-infrastructure-operations-readiness-remediation.md).
 
 The implementation proves local mechanics and evidence discipline. It does not
 claim production backup readiness, physical backup coverage, HA recovery,
@@ -106,7 +107,7 @@ Non-goals:
 | `T-IOR-001` | Define the fixture, integrity oracle, wrapper contract, and tests. | `scripts/validation/rehearse-postgres-logical-upgrade.sh`; `tests/fixtures/postgres-logical-upgrade/docker-compose.yml`; `tests/fixtures/postgres-logical-upgrade/sql/001_schema_and_seed.sql`; `tests/fixtures/postgres-logical-upgrade/sql/010_integrity_oracle.sql`; `tests/fixtures/postgres-logical-upgrade/sql/020_negative_partial_state.sql`; `tests/validation/test_postgres_logical_upgrade_rehearsal.py`; `docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md`. | `IOR-001`–`IOR-004` | RED: missing version/digest, unsafe path, absent oracle, raw payload evidence, or unscoped cleanup. GREEN: `--check` emits the exact versions, fixture checksum, timeout, evidence class, and cleanup plan. | `feat(ops): add postgres recovery rehearsal` |
 | `T-IOR-002` | Implement logical backup and isolated restore. | The wrapper, Compose fixture, SQL, and focused tests. | `IOR-003`, `IOR-004` | RED: capture success counted without restore/integrity. GREEN: custom-format dump, restore, schema/row/digest/constraint/query checks, timing, and cleanup pass. | Same IOR commit. |
 | `T-IOR-003` | Add 17-to-18 upgrade and corrupted/partial-state negative paths. | The same wrapper/fixtures/tests and Task evidence. | `IOR-001`, `IOR-002` | RED: invalid target major, corruption, partial state, collision, or timeout is recorded as success. GREEN: each fails with a stable class and owned cleanup/preservation disposition. | Same IOR commit. |
-| `T-IOR-004` | Add the bounded rehearsal runbook and complete reviews. | `docs/05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md`; relational runbook index; domain Task; lifecycle/index updates only when supported. | `VAL-IOR-001`–`004` | Specification and operations/security reviews finish C0/I0/M0. | Program closure evidence commit. |
+| `T-IOR-004` | Add the bounded rehearsal runbook and complete reviews. | `docs/05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md`; relational runbook index; domain Task; lifecycle/index updates only when supported. | `VAL-IOR-001`–`004` | Every finding is resolved and independently re-reviewed before closure. | Evidence-only closure unit after approval. |
 
 ### Implementation contract
 
@@ -213,70 +214,56 @@ Tests expose `test_fixture_uses_only_pinned_source_and_target`,
 
 ## Sequence
 
-- [x] Create the active Task with the exact image pins above, synthetic-data
+- [ ] Create the active Task with the exact image pins above, synthetic-data
       approval, runtime boundary, redaction, cleanup, and rollback.
-- [x] Write failing tests in
+- [ ] Write failing tests in
       `tests/validation/test_postgres_logical_upgrade_rehearsal.py` for version
       order, image pins, unsafe evidence path, project collision, missing
       cleanup, timeout, corrupt dump, partial state, checksum mismatch, and raw
       payload leakage.
-- [x] Run
+- [ ] Run
       `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v`
       and confirm failure before the wrapper/fixtures exist.
-- [x] Implement the Compose/SQL fixtures and wrapper `--check` mode; rerun the
+- [ ] Implement the Compose/SQL fixtures and wrapper `--check` mode; rerun the
       focused tests until all static positive/negative cases pass.
-- [x] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check`.
-- [x] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh` and
+- [ ] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --check`.
+- [ ] Run `bash scripts/validation/rehearse-postgres-logical-upgrade.sh` and
       require independent backup capture, restore, oracle comparison, timing,
       and cleanup verdicts.
-- [x] Run
+- [ ] Run
       `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case checksum-mismatch`
       and require a stable non-zero integrity failure with cleanup.
-- [x] Run
+- [ ] Run
       `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case partial-state`
       and require a stable non-zero partial-state failure with the documented
       evidence-preservation/cleanup disposition.
-- [x] Run
+- [ ] Run
       `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case bad-target-major`
       through the rendered-topology validator and require class 10 with cleanup.
-- [x] Run
+- [ ] Run
       `bash scripts/validation/rehearse-postgres-logical-upgrade.sh --negative-case timeout`
       through the real bounded readiness loop and require class 20 with cleanup.
-- [x] Write the narrow local rehearsal runbook; do not broaden the existing
+- [ ] Write the narrow local rehearsal runbook; do not broaden the existing
       live cluster/Supabase destructive-recovery authority.
-- [x] Record concise Task evidence and complete re-reviews. Initial
-      specification review returned C1/I3/M1 and initial operations/quality
-      review returned C0/I5/M2. The second review wave returned specification
-      C0/I3/M1 and operations/quality C0/I2/M0. Both waves remain historical;
-      their deduplicated ownership, canonical, publication, cleanup, deadline,
-      topology, negative-path, runbook, evidence, authenticated-TCP readiness,
-      direct-control isolation, exact-render, and bounded-sleep findings are
-      remediated. Terminal specification and operations/quality reviews both
-      returned APPROVED C0/I0/M0 after the specification evidence-sync finding
-      was remediated. After the reviewer's
-      direct-control regression invalidated the canonical as designed, exactly
-      one approved normal rehearsal regenerated the final-state handoff for
-      project `hyhome-ior-20260719-229164-source/target`: fixture SHA-256
-      `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`,
-      dump SHA-256
-      `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
-      4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical
-      SHA-256
-      `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`.
-      Schema 1, scope, integrity, cleanup, and redaction passed; owned resources
-      were empty, and no test, negative, direct-control, or `--check` command
-      followed regeneration.
+- [ ] Record concise Task evidence and obtain fresh independent specification
+      plus operations/quality reviews for the independent image-identity
+      controls. The domain Task alone owns observed execution, review, and
+      lifecycle evidence.
 
 ## Verification Plan
 
+`$COMPARISON_BASE_REF` denotes the explicit reviewed comparison ref recorded by
+the [Program Task](../tasks/2026-07-19-operational-readiness-closure-program.md);
+this Plan does not own a concrete base identity.
+
 | Gate | Command / method | Expected pass evidence |
 | --- | --- | --- |
-| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` | Changed Stage 04 docs remain valid. |
+| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$COMPARISON_BASE_REF"` | Changed Stage 04 docs remain valid. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `IOR-001`–`IOR-004` map to implemented files and Task evidence. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
 | Fixture/unit tests | `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v` | Positive and negative recovery fixtures pass. |
 | Runtime rehearsal | the four exact wrapper commands in Sequence | Backup, restore, integrity, upgrade, negative-path, elapsed-time, and cleanup evidence pass. |
-| Review | Independent spec and quality/security review | C0/I0/M0 or all findings resolved and re-reviewed. |
+| Review | Independent spec and quality/security review | All findings are resolved and independently re-reviewed. |
 
 ## Risks and Rollback
 
@@ -294,7 +281,7 @@ database state is ambiguous, stop and escalate rather than deleting evidence.
 
 ## Approval Gates
 
-- Human approval exists for this active Plan conversion.
+- Plan activation requires recorded human approval.
 - The future Task must approve exact source/target images, fixture, command
   envelope, cleanup, and evidence boundary before runtime.
 - Live data, production volumes, remote backup destinations, secret values, and
@@ -302,14 +289,15 @@ database state is ambiguous, stop and escalate rather than deleting evidence.
 
 ## Completion Criteria
 
-- [x] Active Task maps `IOR-001`–`IOR-004` to exact files, commands, rollback,
+- [ ] Active Task maps `IOR-001`–`IOR-004` to exact files, commands, rollback,
       redaction, and reviews.
-- [x] Synthetic fixture and integrity oracle are deterministic and implementation-reviewed.
-- [x] Backup capture and restore integrity pass as separate gates.
-- [x] Representative major-version logical upgrade rehearsal passes or fails
+- [ ] Synthetic fixture and integrity oracle are deterministic and implementation-reviewed.
+- [ ] Backup capture and restore integrity pass as separate gates.
+- [ ] Representative major-version logical upgrade rehearsal passes or fails
       closed with complete evidence.
-- [x] Cleanup is owned and verified.
-- [x] Independent specification and quality/security reviews pass C0/I0/M0.
+- [ ] Cleanup is owned and verified.
+- [ ] Independent specification and quality/security findings are resolved and
+      independently re-reviewed.
 - [ ] Spec 125 lifecycle reflects only local representative evidence; remote,
       production, HA, physical backup, and RTO/RPO exclusions remain explicit.
 

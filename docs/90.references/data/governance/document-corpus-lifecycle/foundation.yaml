@@ -79,6 +79,7 @@ entries:
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-13-template-contract-system-canonicalization.md
   - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
+  - docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md
   - docs/04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
   - docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md
   - docs/04.execution/tasks/2026-05-17-requirements-standardization.md
@@ -121,6 +122,7 @@ entries:
   - docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md
   - docs/04.execution/tasks/2026-07-04-infra-tech-stack-version-refresh.md
   - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md
   - docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
   - docs/99.templates/support/document-metadata-profiles.yaml
@@ -452,6 +454,7 @@ entries:
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
+  - docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md
   - docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md
   - docs/04.execution/tasks/2026-03-26-08-ai-tasks.md
   - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
@@ -559,6 +562,7 @@ entries:
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
+  - docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md
   - docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md
   - docs/04.execution/tasks/2026-03-26-08-ai-tasks.md
   - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
@@ -616,6 +620,7 @@ entries:
   - docs/04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md
   - docs/04.execution/plans/2026-07-13-document-contract-canonicalization.md
   - docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md
+  - docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md
   - docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md
   - docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md
   - docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md
@@ -626,6 +631,7 @@ entries:
   - docs/04.execution/tasks/2026-07-04-frontmatter-routing-evidence-refresh.md
   - docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md
   - docs/04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md
+  - docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md
   - docs/99.templates/support/document-corpus-migration-contract.yaml
   - scripts/validation/agent_output_eval.py
   - scripts/validation/check-doc-traceability.sh

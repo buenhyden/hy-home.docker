@@ -113,13 +113,10 @@ private endpoint payload, or unrestricted artifact URL.
 
 ## Current Evidence
 
-At the 2026-07-11 canonical audit baseline, six workflows defined 21 jobs and
-`ci-quality.yml` defined 15 quality jobs. Builds, a tag-triggered changelog
-string check, a manual release-readiness runbook, and rollback language existed.
-No tracked job declared a deployment environment, promoted or deployed a
-target, created a Release asset/record, or performed automated rollback.
-`CHANGELOG.md` contained only `Unreleased`. Remote runs, required checks,
-rulesets, environments, and branch protection were not queried.
+This Spec defines the delivery contract; it does not own observed execution
+evidence or lifecycle conclusions. Observed evidence and current status are
+owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
@@ -278,6 +275,7 @@ injection, cleanup, and rollback. Remote delivery commands remain out of scope.
 - **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Deployment/release draft plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
+- **Task**: [Delivery rehearsal Task](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Quality audit**: [SDLC quality and formatting](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
 - **Automation audit**: [Automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

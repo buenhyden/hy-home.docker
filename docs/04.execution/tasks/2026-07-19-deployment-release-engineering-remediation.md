@@ -20,7 +20,8 @@ remote environment exists.
 The Task owns the concise
 `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json`
 output. It consumes typed verdicts from Specs 124-126 without copying their raw
-evidence.
+evidence, and requires the Spec 126 pair manifest to bind both verdict byte
+identities to one source revision, build context, and producer generation.
 
 ## Inputs
 
@@ -129,10 +130,10 @@ untracked.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; 38/38 focused tests and fixture-only preflight pass |
+| `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; current focused suite 45/45 and fixture-only preflight pass |
 | `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Implementation complete; positive runtime blocked/not_run |
 | `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Implementation complete; promotion/rollback runtime blocked/not_run |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Complete; terminal specification and release/security reviews APPROVED C0/I0/M0 |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Current terminal reviews approved C0/I0/M0; Task remains active on runtime prerequisites |
 
 ## Work Log
 
@@ -144,6 +145,12 @@ untracked.
 | 2026-07-22 | `T-DRE-002`–`T-DRE-004` implementation boundary | Removed only fixed Compose `name`/`container_name`; added exact digest, gate, project, port, label, health-marker, promotion, rollback, cleanup, record, timeout, and runbook contracts. Fixture-only preflight passed without Docker. The real command stopped at class 10 because the accepted Spec 126 pair is absent; no project or record was created. Reviews were then pending. |
 | 2026-07-22 | Independent-review remediation | Specification returned C0/I2/M0 and release/security returned C1/I2/M0, deduplicated to four findings. The isolated canonical-mutation scan was RED 1/1; expanded RED was 38 tests with 13 failures and 0 errors. GREEN is 38/38 after exact local image-object validation and pull/build denial, interpolation-free ID cleanup, fail-closed missing-pair cleanup, immutable real-canonical snapshots, and stable no-follow directory-FD publication. No project or accepted canonical was created; terminal re-reviews were then pending. |
 | 2026-07-22 | Terminal independent review closure | Terminal specification and release/security reviews both returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. Fail-closed implementation/static/fixture proof is complete; positive/negative runtime remains `blocked/not_run`, with no project, accepted canonical, release, or deployment. |
+| 2026-07-22 | Program closure fail-closed rerun (historical implementation state) | The 38/38 suite, fixture preflight, and real class-10 missing-pair result remain valid historical evidence. The later immutable-input and strict-record remediation below supersedes its implementation identity and focused-suite count. |
+| 2026-07-22 | Delivery evidence tamper and TOCTOU RED | RED `37b023ec` captured delivery-record tamper gaps; supporting schema-value RED `94858299` specified bound record values; micro-RED `8701ade6` proved a valid-format substituted verdict hash could otherwise be published. |
+| 2026-07-22 | Immutable-input and record-binding GREEN (historical, superseded) | GREEN `692ae759` bound schema-v2 records and seven snapshotted inputs for that committed state. Its 42/42 result and class-10 `verdict-file-missing` observation remain historical evidence; the pair-manifest contract below supersedes both the schema and blocker code. |
+| 2026-07-22 | Verdict pair-manifest RED/GREEN | RED `f0c3e032` required a source/context/generation-bound manifest with exact baseline/candidate verdict hashes and fd-relative canonical invalidation. GREEN `20022458` requires, snapshots, and revalidates that manifest; rejects missing, stale, mixed, or substituted generations at class 10 before Docker; and records its SHA-256 and generation in strict schema-v3 output. Canonical invalidation uses validated parent directory FDs with relative `stat`/`unlink`/`fsync`, while an absent evidence directory remains absent. Focused tests pass 45/45 and the shared Task 3 compatibility suite passes 44/44; Bash syntax, ShellCheck, Python compilation, diff hygiene, and fixture-only preflight pass. |
+| 2026-07-22 | Current real canonical blocker proof | Exactly one real canonical command exited class `10` with `code=pair-manifest-missing` before Docker because no accepted committed pair exists. No positive or rollback runtime ran. The rehearsal evidence directory, record, temporary record, and `/tmp/hyhome-dre-*` paths are absent; owner/task-scoped containers, networks, and volumes are zero. The Task stays active pending accepted inputs and positive plus rollback runtime evidence. |
+| 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These approvals do not create the missing accepted pair or Task 5 positive/rollback runtime; the Task and Program remain active and the controlled wrapper remains blocked/not_run. |
 
 ## Verification Evidence
 
@@ -172,16 +179,20 @@ Actual evidence:
   to final 28/28 GREEN after the label-cardinality guard;
 - review remediation first proved the test mutation with an isolated 1/1 RED,
   then produced 13 intended failures and 0 errors across 38 tests. Final GREEN
-  is 38/38, including exact two-role non-starting render, local image identity,
+  reached 38/38, including exact two-role non-starting render, local image identity,
   direct partial/error cleanup, stable rollback/cleanup classes, invalid-pair
   rejection, unchanged real-canonical snapshots, and directory-FD publication;
-- Bash syntax and ShellCheck pass with zero diagnostics;
+- immutable-input and strict-record RED commits then closed raw hash
+  substitution and TOCTOU publication gaps; pair-manifest RED/GREEN closes
+  mixed-generation and path-relative invalidation gaps, and the current GREEN
+  suite is 45/45;
+- Bash syntax, ShellCheck, Python compilation, and diff hygiene pass with zero diagnostics;
 - fixture-only preflight exits 0 and reports exact revision, passing readiness
   and recovery boundaries, valid project-scopable Compose, and loopback ports
   `18080,18081`, with no Docker call;
-- the exact real positive command exits `10` with
-  `code=verdict-file-missing`; the mock call log remains absent and the Task 5
-  canonical directory/record remains absent;
+- the exact sole current real command exits `10` with
+  `code=pair-manifest-missing`; Docker is not reached and the Task 5 canonical
+  directory/record remains absent;
 - the Spec 124 readiness v2 and Spec 125 recovery v1 canonical inputs pass the
   exact consumer schemas. Spec 126's accepted baseline/candidate canonical
   files remain absent after its truthful 14-critical/no-exception policy result.
@@ -195,12 +206,19 @@ Actual evidence:
   1,311 LLM Wiki paths, 1,310 safe coverage paths, and 13 security automation
   controls; their diffs contain only the newly tracked Task 5 wrapper counts.
 
-Verification results: implementation, static validation, focused tests, and
-fail-closed proof pass. Positive promotion, injected rollback, and standalone
-runtime cleanup are `blocked/not_run`; no Docker/Compose project or canonical
-rehearsal record was created. Exit classes are `0=pass`, `2=usage`,
-`10=verdict/preflight`, `20=baseline`, `30=canary/health`,
+Verification results: implementation, static validation, 45/45 focused tests,
+44/44 Task 3 producer compatibility tests, fixture-only preflight,
+immutable-input and pair-manifest revalidation, and fail-closed proof
+pass. Exactly one current real command returned class `10` before Docker. No
+positive promotion or injected rollback runtime ran; no Docker/Compose project
+or canonical rehearsal record was created. Exit classes are `0=pass`, `2=usage`,
+`10=verdict/pair-manifest/preflight`, `20=baseline`, `30=canary/health`,
 `40=promotion record`, `50=rollback`, and `60=cleanup`.
+
+Task 6 documentation, owner regeneration, safe gates, and whole-branch
+re-review are recorded by the Program Task. They cannot create the accepted
+pair or positive/rollback runtime evidence. The delivery record remains absent,
+and the controlled all-files wrapper remains blocked and `not_run`.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -224,17 +242,25 @@ Disposition: defer to the
 
 Implementation review verdict: implementation and author self-check complete.
 The self-check found and remediated direct evidence-path redirection and an
-immediate-return failure injection; the final implementation rejects the
-direct control and overrides only the canary health probe.
+immediate-return failure injection; subsequent whole-review remediation binds
+the strict record to immutable snapshots and revalidates all inputs immediately
+before publication.
 
 Specification review verdict: initial review returned CHANGES REQUIRED
 C0/I2/M0. Both findings are included in the four-item remediation below;
 terminal re-review returned APPROVED C0/I0/M0 for historical implementation
-commit `b5441c53`.
+commit `b5441c53`. Terminal specification review v5 returned
+`APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final
+26-document reconciliation diff, covering the current immutable-input and
+pair-manifest hardening.
 
 Quality/security review verdict: initial review returned CHANGES REQUIRED
 C1/I2/M0. All findings are remediated; the separate terminal release/security
 re-review returned APPROVED C0/I0/M0 for `b5441c53`.
+Terminal quality/security review v3 returned `APPROVED C0/I0/M0` for the full
+branch range through `20022458` plus the then-current 26-document
+reconciliation diff, covering the current immutable-input and pair-manifest
+hardening.
 
 Findings and disposition: the four unique findings are closed in implementation
 and 38/38 tests: exact accepted digests must resolve to existing local image
@@ -245,20 +271,27 @@ canonical record/directory. Publication additionally uses a stable
 `O_NOFOLLOW` parent directory FD for atomic mode-0600 replacement. Both
 terminal reviews returned C0/I0/M0. This review closure does not replace the
 missing accepted Spec 126 pair or supply promotion/rollback runtime evidence.
+Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence;
+the separate v3/v5 whole-branch approvals cover the later immutable-input and
+pair-manifest commits.
 
 ## Commit Ledger
 
-Historical implementation identity: `b5441c53` for the single logical
-implementation unit reviewed by both terminal reviewers. The separate
-evidence-only closure commit intentionally does not self-record its final SHA.
+Historical implementation identity: `b5441c53`, reviewed by both terminal
+domain reviewers. Current remediation ledger: RED `37b023ec`, supporting
+schema-value RED `94858299`, micro-RED `8701ade6`, GREEN `692ae759`,
+pair-manifest RED `f0c3e032`, and pair-manifest GREEN `20022458`.
+The separate evidence update intentionally does not self-record its final SHA.
 
 Logical unit: `feat(release): add local promotion and rollback`.
 
-Commit validation: 38/38 focused tests, fixture-only preflight, exact real
-class-10 unchanged-canonical proof, two-role non-starting render, Python
-compilation, Bash syntax, and ShellCheck pass. Terminal specification and
-release/security reviews are APPROVED C0/I0/M0. Positive/negative runtime
-remains `blocked/not_run`.
+Commit validation: 45/45 focused tests, 44/44 Task 3 producer compatibility
+tests, fixture-only preflight, exact real class-10 no-record proof,
+immutable-input/hash/pair-generation binding, two-role non-starting render,
+Python compilation, Bash syntax, ShellCheck, and diff hygiene pass.
+Historical terminal domain reviews are APPROVED C0/I0/M0; whole-branch
+specification v5 and quality/security v3 reviews are also APPROVED C0/I0/M0.
+Positive/rollback runtime remains `blocked/not_run`.
 
 ## Deferred and Blocked Items
 
@@ -267,9 +300,13 @@ remote deployment, production targets, OIDC/credentials, real Release records,
 and stateful data rollback.
 
 Blocked items: runtime is blocked until both Spec 126 verdicts are
-accepted/distinct/same-revision. The current baseline verification correctly
-stopped at 14 critical findings with no approved exception, so neither accepted
-canonical exists. Spec 124 readiness is ready/cleaned and Spec 125's synthetic
+accepted/distinct/same-revision and their schema-v2 pair manifest binds the
+exact verdict bytes, source revision, build context, and generation. The
+current committed-tree verification stops even earlier at the absent approved
+Grype database seed, so neither accepted canonical nor pair manifest exists.
+The historical baseline rejection found 14 critical findings with no approved
+exception and remains non-acceptance evidence. Spec 124 readiness is
+ready/cleaned and Spec 125's synthetic
 recovery boundary is present; these passing dependencies do not override the
 missing security pair. Any stateful impact also blocks promotion.
 

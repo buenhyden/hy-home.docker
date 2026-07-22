@@ -107,12 +107,10 @@ OIDC tokens, secret values, or unrestricted artifact contents.
 
 ## Current Evidence
 
-At the 2026-07-11 canonical audit baseline, disclosure, protected-surface
-approval rules, SHA-pinned/permission-scoped workflows, gitleaks, Dependabot,
-and one Storybook Next.js `npm audit --audit-level=high` CI gate existed. No
-broad OSV/SCA or container scanning gate, SBOM generation, build
-provenance/attestation producer, signing/verification flow, or Scorecard run was
-tracked. The version-provenance snapshot covers declarations only.
+This Spec defines the supply-chain contract; it does not own observed execution
+evidence or lifecycle conclusions. Observed evidence and current status are
+owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
+and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
@@ -270,6 +268,7 @@ scope.
 - **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Security supply-chain draft plan](../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md)
+- **Task**: [Supply-chain Task](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Security audit**: [Security framework maturity](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
 - **Quality audit**: [SDLC quality and formatting](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)

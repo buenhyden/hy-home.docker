@@ -17,8 +17,8 @@ This active specification defines the contract for proving that the exact
 `core` five-service Compose set can start, become ready, recover from approved
 failure scenarios, and tear down without unapproved data or secret exposure.
 It owns three canonical audit gaps. PRD 025, ARD 0028, and ADR 0028 approve the
-local-isolated architecture; service commands remain blocked until the updated
-Plan and a separately approved active Task name the exact command envelope.
+local-isolated architecture; the linked Plan and Task own command authorization
+and observed evidence. Broader or remote execution requires a new Task.
 
 ## Strategic Boundaries & Non-goals
 
@@ -102,12 +102,10 @@ log, auth token, credential, or private endpoint payload.
 
 ## Current Evidence
 
-At the 2026-07-11 canonical audit baseline, the tracked Compose inventory
-contained 49 files, 169 service entries, and 25 profiles. Static core rendering
-passed with five services and all eleven hardening tiers passed. Healthcheck,
-dependency, initialization, observability, and recovery documentation exists,
-but no service startup, observed live health, or recovery drill was authorized
-or recorded. These static results are prerequisites only.
+This Spec defines the readiness contract; it does not own observed execution
+evidence or lifecycle conclusions. Observed evidence and current status are
+owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
@@ -128,10 +126,10 @@ or recorded. These static results are prerequisites only.
   record per approved scenario and service acceptance set. Keep raw runtime
   diagnostics outside tracked documentation and handle them under the future
   task's approved evidence boundary.
-- **Migration / Transition Plan**: Active specification -> approved Stage 04
-  Plan/Task -> isolated rehearsal -> independent review -> evidence and honest
-  lifecycle reconciliation. Existing Compose defaults remain unchanged unless
-  the task explicitly approves a test-only overlay.
+- **Migration / Transition Plan**: Approved Stage 04 Plan/Task -> isolated
+  rehearsal -> independent review -> evidence and honest lifecycle
+  reconciliation. Existing Compose defaults remain unchanged unless the Task
+  explicitly approves a test-only overlay.
 
 ## Interfaces and Data
 
@@ -246,16 +244,16 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
 ```
 
-Runtime commands are intentionally absent from the Spec. The approved Plan and
-active Task must define them and include timeout, unhealthy dependency,
+Runtime commands are intentionally absent from the Spec. The active Plan and
+Task define them and include timeout, unhealthy dependency,
 recovery, and cleanup negative paths.
 
 ## Success Criteria & Verification Plan
 
 - **VAL-CRR-001**: The three owned audit gaps appear exactly once across Specs
   124-127 and map to `CRR-001` through `CRR-003`.
-- **VAL-CRR-002**: Static evidence remains labeled static; no runtime result is
-  claimed.
+- **VAL-CRR-002**: Static evidence remains labeled static and distinct from
+  Task-owned observed runtime evidence.
 - **VAL-CRR-003**: Every future scenario has approved scope, readiness criteria,
   teardown, redaction, recovery, and independent review evidence.
 - **VAL-CRR-004**: Architecture, human, runtime, secret, and remote gates are
@@ -266,7 +264,8 @@ recovery, and cleanup negative paths.
 - **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
 - **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- **Plan**: [Compose runtime-readiness draft plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
+- **Plan**: [Compose runtime-readiness plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
+- **Task**: [Compose runtime-readiness Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Compose audit**: [Compose, infrastructure, and operations readiness](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
 - **Research**: [Compose and infrastructure research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)

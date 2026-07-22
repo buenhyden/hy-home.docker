@@ -22,7 +22,8 @@ remote deployment.
 
 **Architecture:** The sample Compose file becomes project-scopable by removing
 its fixed top-level/project container identity. A task-owned wrapper consumes
-the concise accepted verdict from Spec 126, runs independent baseline and
+the two concise accepted verdicts and their generation-bound pair manifest from
+Spec 126, runs independent baseline and
 canary Compose projects, checks container plus HTTP health, records a local
 promotion decision, injects bounded failure, restores the previous digest, and
 cleans only labelled task resources.
@@ -51,8 +52,8 @@ typed JSON handoff/record fixtures; local HTTP and container-health probes.
 This active plan turns Spec 127 into an executable local sequence for
 `examples/sample-web-service` baseline/canary environments, verified-digest
 promotion, health gates, release/deployment evidence records, and previous
-digest rollback. It is prospective; actual local runtime evidence belongs in
-`docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md`.
+digest rollback. Observed execution and lifecycle evidence belongs only in the
+[domain Task](../tasks/2026-07-19-deployment-release-engineering-remediation.md).
 
 The implementation rehearses delivery mechanics only. It does not create a
 GitHub Environment, GitHub Release, registry publication, remote deployment,
@@ -103,7 +104,7 @@ Non-goals:
 | `T-DRE-001` | Define typed handoff/record fixtures, gate contract, wrapper CLI, and tests. | `scripts/operations/rehearse-sample-service-delivery.sh`; `tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json`; `tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json`; `tests/fixtures/sample-service-delivery/spec126-verdict.candidate.rejected.json`; `tests/fixtures/sample-service-delivery/spec126-verdict.candidate.digest-mismatch.json`; `tests/fixtures/sample-service-delivery/compose.delivery.override.yml`; `tests/validation/test_sample_service_delivery_rehearsal.py`; `docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md`. | `DRE-001`–`DRE-004` | RED: mutable tag, missing/rejected/mismatched verifier verdict, equal baseline/candidate digests, remote target, or unscoped cleanup. GREEN: preflight resolves revision, two accepted distinct digests, projects, gates, ports, cleanup, and rollback. | `feat(release): add local promotion and rollback` |
 | `T-DRE-002` | Make the sample Compose service project-scopable and implement baseline/canary health. | `examples/sample-web-service/docker-compose.yml`; `README.md`; `service.md`; delivery override/wrapper/tests. | `DRE-001`, `DRE-003` | RED: fixed `name`/`container_name` prevents parallel projects or canary starts without an accepted Spec 126 verdict. GREEN: separate projects use the verified digest and pass container plus HTTP marker health before promotion. | Same DRE commit. |
 | `T-DRE-003` | Implement promotion record, failure injection, previous-digest rollback, and cleanup. | The wrapper, typed fixtures/tests, and ignored runtime evidence. | `DRE-002`, `DRE-004` | RED: promotion succeeds without complete gates/record or rollback cannot restore the previous digest. GREEN: local record is complete; injected failure rolls back and post-rollback health passes. | Same DRE commit. |
-| `T-DRE-004` | Update the narrow release-management handoff and complete reviews. | `docs/05.operations/runbooks/00-workspace/release-management.md`; domain Task; lifecycle/index updates only when supported. | `VAL-DRE-001`–`004` | Specification and release/security reviews finish C0/I0/M0. | Program closure evidence commit. |
+| `T-DRE-004` | Update the narrow release-management handoff and complete reviews. | `docs/05.operations/runbooks/00-workspace/release-management.md`; domain Task; lifecycle/index updates only when supported. | `VAL-DRE-001`–`004` | Every finding is resolved and independently re-reviewed before closure. | Evidence-only closure unit after approval. |
 
 ### Implementation contract
 
@@ -186,12 +187,13 @@ cleanup remains `passed`.
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "producer_spec": "spec:127-deployment-release-engineering-remediation",
   "release_rehearsal_id": "local-rehearsal-20260719-0123456789ab",
   "source_revision": "0123456789abcdef0123456789abcdef01234567",
   "baseline_verdict_ref": "verification-verdict.baseline.json",
   "candidate_verdict_ref": "verification-verdict.candidate.json",
+  "verification_pair_manifest_ref": "verification-verdict.pair.json",
   "readiness_verdict_ref": "readiness-verdict.json",
   "baseline_project": "hyhome-dre-20260719-12345-baseline",
   "canary_project": "hyhome-dre-20260719-12345-canary",
@@ -201,9 +203,33 @@ cleanup remains `passed`.
   "data_impact": "none",
   "recovery_boundary_ref": "recovery-verdict.json",
   "cleanup_status": "passed",
-  "remote_non_goals_confirmed": true
+  "remote_non_goals_confirmed": true,
+  "build_context_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "policy_id": "sample-service-local-v1",
+  "policy_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "baseline_image_config_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "candidate_image_config_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "baseline_oci_archive_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "candidate_oci_archive_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "baseline_verdict_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "candidate_verdict_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "verification_pair_manifest_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "verification_pair_generation": "hyhome-verification-verdict-pair-v2",
+  "readiness_verdict_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "recovery_boundary_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+  "approval_ref": "task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19",
+  "started_at": "2026-07-19T00:00:00Z",
+  "completed_at": "2026-07-19T00:01:00Z",
+  "baseline_result": "passed",
+  "canary_result": "passed",
+  "rehearsal_result": "promoted"
 }
 ```
+
+Before Docker, the consumer requires and snapshots both verdicts and their
+schema-v2 pair manifest, validates exact verdict byte hashes plus matching
+source revision, build context, and generation, and fails class 10 on a
+missing, stale, mixed, or substituted generation.
 
 Tests expose `test_rejects_fixed_compose_identity`,
 `test_rejects_missing_rejected_or_mismatched_verdict`,
@@ -217,21 +243,21 @@ Tests expose `test_rejects_fixed_compose_identity`,
 
 ## Sequence
 
-- [x] Create the active Task with the Spec 126 verdict dependency, Spec 124
+- [ ] Create the active Task with the Spec 126 verdict dependency, Spec 124
       readiness boundary, Spec 125 data handoff, exact project identities,
       ports, health criteria, rollback, cleanup, and redaction.
-- [x] Write failing tests in
+- [ ] Write failing tests in
       `tests/validation/test_sample_service_delivery_rehearsal.py` for fixed
       container identity, missing/rejected/mismatched verdict, mutable digest,
       port collision, failed health, partial promotion, incomplete record,
       rollback failure, and cleanup ambiguity.
-- [x] Run
+- [ ] Run
       `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal -v`
       and confirm failure before the wrapper/fixtures exist.
-- [x] Remove fixed project/container identity from the sample Compose file,
+- [ ] Remove fixed project/container identity from the sample Compose file,
       update its contract docs, implement fixtures and wrapper `preflight`, and
       rerun focused tests until static positive/negative cases pass.
-- [x] Run
+- [ ] Run
       `bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json`.
 - [ ] Run
       `bash scripts/operations/rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none`.
@@ -242,32 +268,32 @@ Tests expose `test_rejects_fixed_compose_identity`,
       `bash scripts/operations/rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre`
       and the matching `2026-07-19-dre-negative` cleanup; reject unowned
       resources rather than deleting them.
-- [x] Record only concise digest, revision, gate, project, health,
+- [ ] Record only concise digest, revision, gate, project, health,
       promotion/rollback, cleanup, and data-impact fields in the Task.
-- [x] Run independent specification review, then release/security review; fix
-      and re-review all findings before lifecycle closure. Both terminal
-      reviews returned APPROVED C0/I0/M0 for historical implementation commit
-      `b5441c53`.
+- [ ] Run fresh independent specification review, then release/security review
+      for the pair-manifest controls; fix and re-review all findings before
+      lifecycle closure. The domain Task alone owns observed execution, review,
+      and lifecycle evidence.
 
-Implementation, focused/static validation, and fixture-only preflight are
-complete. The positive and injected-failure runtime commands remain unchecked:
-Spec 126 truthfully rejected the baseline at 14 critical vulnerabilities with
-no approved exception, so the required accepted canonical pair is absent. The
-runtime path therefore stops at class `10` before Docker/Compose and publishes
-no rehearsal record. Fail-closed implementation and terminal review evidence
-are complete, while positive/negative runtime evidence remains Task-owned and
-`blocked/not_run`; Spec 127 and this Plan remain active.
+Implementation/static acceptance and positive promotion/injected rollback
+runtime acceptance are separate gates. The runtime gates require Spec 126's
+accepted verdict pair and pair manifest; the domain Task records whether those
+prerequisites and gates are satisfied.
 
 ## Verification Plan
 
+`$COMPARISON_BASE_REF` denotes the explicit reviewed comparison ref recorded by
+the [Program Task](../tasks/2026-07-19-operational-readiness-closure-program.md);
+this Plan does not own a concrete base identity.
+
 | Gate | Command / method | Expected pass evidence |
 | --- | --- | --- |
-| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` | Changed Stage 04 docs remain valid. |
+| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$COMPARISON_BASE_REF"` | Changed Stage 04 docs remain valid. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | `DRE-001`–`DRE-004` map to implemented files and Task evidence. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage. |
 | Fixture/unit tests | `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal -v` | Gate, promotion, record, and rollback fixtures pass. |
 | Local runtime rehearsal | the four exact wrapper commands in Sequence | Canary, promotion, health, local rehearsal record, rollback, and cleanup pass. |
-| Review | Independent spec and quality/security review | C0/I0/M0 or all findings resolved and re-reviewed. |
+| Review | Independent spec and quality/security review | All findings are resolved and independently re-reviewed. |
 
 ## Risks and Rollback
 
@@ -285,7 +311,7 @@ Cleanup may remove only task-owned local projects, networks, and containers.
 
 ## Approval Gates
 
-- Human approval exists for this active Plan conversion.
+- Plan activation requires recorded human approval.
 - The future Task must approve exact local runtime commands, artifact digest,
   health gates, ports, project names, cleanup, and rollback before execution.
 - GitHub Environments/Releases, workflow mutation, registry push, remote
@@ -293,16 +319,16 @@ Cleanup may remove only task-owned local projects, networks, and containers.
 
 ## Completion Criteria
 
-- [x] Active Task maps `DRE-001`–`DRE-004` to exact files, commands, rollback,
+- [ ] Active Task maps `DRE-001`–`DRE-004` to exact files, commands, rollback,
       redaction, and reviews.
-- [x] Dry-run/preflight and fixtures reject mutable artifact, missing verifier,
+- [ ] Dry-run/preflight and fixtures reject mutable artifact, missing verifier,
       failed health, missing record, and rollback failure.
 - [ ] Local canary starts only with a verified digest and health gate.
 - [ ] Promotion produces a local release/deployment evidence record.
 - [ ] Injected failure rolls back to previous digest and post-rollback health
       passes.
-- [x] Independent specification and quality/security reviews pass at
-      C0/I0/M0 for historical implementation commit `b5441c53`.
+- [ ] Independent specification and quality/security findings are remediated
+      and re-reviewed; exact verdicts remain Task evidence.
 - [ ] Spec 127 lifecycle reflects only local delivery mechanics; remote,
       production, registry, GitHub Release, and environment exclusions remain
       explicit.

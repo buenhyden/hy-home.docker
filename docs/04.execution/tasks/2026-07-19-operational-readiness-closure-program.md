@@ -133,13 +133,17 @@ Redaction boundary:
 | Work unit | Responsibility | Evidence owner | State |
 | --- | --- | --- | --- |
 | `T-ORC-001` | Activate five Task contracts and the Task index. | This Task | Complete; documentation gates pass, runtime not run |
-| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete; terminal reviews C0/I0/M0 |
-| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Deterministic implementation and terminal reviews complete; advisory runtime correctly rejected the baseline at the critical-vulnerability policy gate, so Task 5 remains blocked without an accepted pair |
-| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Complete; terminal specification and operations/quality APPROVED C0/I0/M0 |
-| `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Fail-closed implementation and reviews complete; operational runtime blocked/not_run |
-| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Not run |
+| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Active; current 42/42, runtime evidence, and terminal v3/v5 reviews approved |
+| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Active; terminal v3/v5 reviews approved, but blocked before Docker on the absent approved offline database seed with no current policy pass or accepted pair |
+| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Active; current 48/48, strict frozen runtime, and terminal v3/v5 reviews approved |
+| `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Active; terminal v3/v5 reviews approved and implementation/static proof complete, but positive promotion and rollback runtime remain blocked/not_run |
+| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; documentation/owner reconciliation and terminal reviews complete, clean checkpoint necessary but insufficient, controlled wrapper BLOCKED/not_run |
 
 ## Work Log
+
+Rows before `T-ORC-006` earlier domain verification are chronological evidence
+for superseded committed states unless a row explicitly says otherwise. The
+four `current remediation` rows that follow it own the current domain facts.
 
 | Date | Work unit | Agent role | Result |
 | --- | --- | --- | --- |
@@ -154,11 +158,19 @@ Redaction boundary:
 | 2026-07-22 | `T-ORC-004` initial-review remediation | Fresh infrastructure implementation agent | Review-remediation RED was 7/31. A final-normal run then exposed a `pg_isready` initialization-server race; cleanup passed and canonical remained absent. The focused race regression was RED 1/1, and source/target readiness then required two equal authenticated postmaster identities plus running/healthy state. Exclusive evidence identity, canonical safety, post-cleanup publication, accumulated/idempotent cleanup, one reserved deadline, full rendered topology, real negative detectors, signal/window coverage, and runbook/evidence precision were implemented before the second review wave. |
 | 2026-07-22 | `T-ORC-004` second-review remediation (historical) | Fresh infrastructure implementation agent | The second review wave returned specification C0/I3/M1 and operations/quality C0/I2/M0. Its RED phase produced 13 expected assertion/subtest failures across 7 focused methods. Direct runs rejected all test controls before Docker and used PID-only identity; normal readiness used authenticated TCP `127.0.0.1:5432`; both exact project renders bound the generated password, mandatory healthchecks, isolated default network, and bounded sleeps. Historical second-review-wave GREEN was 40/40, `--check` and stable negative classes 50/50/10/20 passed, and consecutive normal projects `4088641` and `4092001` passed. That wave's exact 12-key canonical SHA-256 was `0d54b7ad5b88b30e369318997d8338f51d08d7d69778260d6d7325bd77ed4edf`; zero owned containers, networks, volumes, clients, dumps, or PID evidence remained. |
 | 2026-07-22 | `T-ORC-004` terminal-review remediation (historical) | Fresh infrastructure implementation agent | Terminal re-reviews remained CHANGES REQUIRED with exactly two Important items: a direct test-control failure could preserve a stale canonical success verdict, and the ignored Task 4 report was stale. The isolated state-machine regression was RED in all 8 control subcases. Main now installs safe traps, prepares/validates the fixed canonical parent, and invalidates stale regular canonical evidence before returning class 10, while Docker calls remain zero and unsafe paths fail closed. GREEN is 41/41. At that wave, project `hyhome-ior-20260719-140710-source/target` passed with dump SHA-256 `a391d9790dcc5c73c4f06a5f56f37bd889f38dc0f49ec2f41184966855121c80`, 4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical SHA-256 `3c8f23653665ddcef224e2c9060a038f33585b53da0f9be1fcd7ae9adfc5a824`; scope was `synthetic-local`, integrity/cleanup/redaction passed, and owned resources were empty. Both findings were remediated. Operations/quality then returned APPROVED C0/I0/M0, while specification left one evidence-synchronization Important finding (C0/I1/M0). |
-| 2026-07-22 | `T-ORC-004` final-state canonical reconciliation | Fresh infrastructure implementation agent | The specification reviewer's direct-control regression invalidated the canonical as designed. Exactly one approved normal rehearsal then passed for project `hyhome-ior-20260719-229164-source/target` with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`, dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes, backup 1s, and restore 0s. Direct verification found an exact 12-key mode-0600 canonical SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`, schema 1, `scope=synthetic-local`, passed integrity/cleanup/redaction, and empty owned containers, labeled clients, networks, volumes, dumps, and PID evidence. No test, negative, direct-control, or `--check` command followed regeneration. |
+| 2026-07-22 | `T-ORC-004` final-state canonical reconciliation (historical, superseded) | Fresh infrastructure implementation agent | The specification reviewer's direct-control regression invalidated the canonical as designed. Exactly one approved normal rehearsal then passed for project `hyhome-ior-20260719-229164-source/target` with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`, dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes, backup 1s, and restore 0s. Direct verification found an exact 12-key mode-0600 canonical SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`, schema 1, `scope=synthetic-local`, passed integrity/cleanup/redaction, and empty owned containers, labeled clients, networks, volumes, dumps, and PID evidence. No test, negative, direct-control, or `--check` command followed regeneration. |
 | 2026-07-22 | `T-ORC-004` terminal review closure | Terminal specification and operations/quality reviewers | After evidence synchronization and final-state canonical reconciliation, terminal specification and operations/quality reviews both returned APPROVED C0/I0/M0 for branch-history implementation commit `db150a19` (`feat(ops): add postgres recovery rehearsal`). This closure changes evidence only and leaves the Program, Spec 125 lifecycle, Task 5, and Task 6 open. |
 | 2026-07-22 | `T-ORC-005` implementation | Fresh delivery implementation agent | Project-scopable sample Compose, exact typed upstream consumers, strict local-only wrapper, fixture contracts, two-part health, bounded promotion/rollback/cleanup, atomic mode-0600 record publication, and narrow runbook handoff are implemented. Final focused tests pass 28/28; fixture-only preflight passes without Docker. The real canonical command returns class 10 before Docker because Task 3 produced no accepted pair after its 14-critical/no-exception policy result. Positive promotion/rollback runtime is blocked/not_run; independent reviews were then pending. |
 | 2026-07-22 | `T-ORC-005` independent-review remediation | Same delivery implementation agent | Specification C0/I2/M0 and release/security C1/I2/M0 produced four unique findings. Isolated canonical-mutation RED was 1/1 and expanded RED was 38 tests / 13 failures / 0 errors. GREEN is 38/38 after no-build/no-pull rendering, exact bounded local image-object checks before start, interpolation-free exact-ID cleanup with absent/invalid pair class 60, immutable real-canonical snapshots, and no-follow directory-FD publication. No project or accepted canonical was created; terminal re-reviews were then pending. |
 | 2026-07-22 | `T-ORC-005` terminal review closure | Terminal specification and release/security reviewers | Both terminal reviews returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. Fail-closed implementation/static/fixture proof is complete. Positive promotion and injected rollback runtime remain `blocked/not_run` because the accepted Spec 126 pair is absent; no project, canonical, release, deployment, Spec 127 closure, or Program closure is claimed. |
+| 2026-07-22 | `T-ORC-006` earlier domain verification (historical, superseded) | Documentation Specialist and Operations/SRE agent | The prior 35/27/41/38 focused counts and `e78d1a0b…` / `712f289d…` handoffs were valid for their committed state. Tasks 2-5 whole-review remediation and the current evidence rows below supersede those counts and identities. No remote, publication, credential, live-data, release, deployment, or all-files action occurred. |
+| 2026-07-22 | `T-ORC-002` current remediation and runtime | Compose implementation agent | Current RED `9838034c` and GREEN `14e1dd5d` independently validate manifest membership and configuration identity after historical `ba1ba382`/`7c6c4ea1`. Focused tests pass 42/42. Startup `hyhome-crr-20260719-2642602-fxq2siqi` and recovery `hyhome-crr-20260719-2648660-ov2uzbas` passed; timeout `hyhome-crr-20260719-2661806-zqukerpv` returned class 30. Current mode-0600/1,197-byte canonical SHA-256 is `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`; resources are zero. Historical reviews do not cover the current commits. |
+| 2026-07-22 | `T-ORC-003` current remediation and blocker | Security implementation agent | Current immutable-context RED `abc1dd21` and GREEN `c8342c09` follow the earlier hardening chain. Focused/static/preflight gates pass at 44/44 with 13 fixtures. The hardened advisory exits class 10 `grype-db-seed-unavailable-advisory-blocked` before Docker; no accepted verdicts or committed pair manifest exists. The historical pre-hardening class-40 result found 14 Critical/73 High with no exception. Historical reviews do not cover the current commits. |
+| 2026-07-22 | `T-ORC-004` current remediation and frozen runtime | Infrastructure implementation agent | Current RED `da06a080` and GREEN `adbbdce2` independently validate source/target/client manifest and configuration identities after historical `00a65be1`/`571b2ab1`. Focused/static gates pass at 48/48. The strict runtime order is 0/50/50/10/20/final-normal 0. Project `hyhome-ior-20260719-2866314-source/target`, dump SHA-256 `e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`, and mode-0600/642-byte canonical SHA-256 `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a` are current. Resources are zero; no Task 4 command or test ran after the final normal. Historical reviews do not cover the current commits. |
+| 2026-07-22 | `T-ORC-005` pair-manifest remediation and blocker | Delivery implementation agent | Pair-manifest RED `f0c3e032` and GREEN `20022458` follow historical immutable-record GREEN `692ae759`. Strict schema-v3 records bind a schema-v2 pair manifest, generation, exact verdict hashes, and all immutable inputs; canonical invalidation is parent-dir-FD-relative. Focused/static/preflight gates pass at 45/45, with Task 3 compatibility 44/44. Exactly one real command returned class 10 `pair-manifest-missing` before Docker; no positive/rollback runtime, evidence directory, record, temporary record, `/tmp` path, or owner-scoped resource exists. Historical reviews do not cover the current commits. |
+| 2026-07-22 | `T-ORC-006` documentation and owner reconciliation | Documentation implementation agent | Reconciled current evidence, lifecycle state, indexes, Program ledgers, and bounded audit addenda. Specs 124-125, all four Plans, Specs 126-127, Tasks 2-5, `T-ORC-006`, and the Program remain active pending their respective Program/domain outcomes. The audit matrix and Foundation summary regenerated byte-identically; semantic inventory is fresh at 927 records/2,145 advisory findings and byte-identical after restoring the correct active rows. Exact-base metadata passed at 41/0 and 35/0, impacted lifecycle at 290/0 and 289/0, traceability at 46/0, alignment at 666 documents/5,507 links/141 operations documents/0, lifecycle and generated-owner checks passed, the dependency-locked aggregate returned `failures=0`, and diff hygiene passed. No Docker/runtime, Task 4, remote, or controlled all-files wrapper command ran in this phase. |
+| 2026-07-23 | `T-ORC-006` terminal quality/security review v3 | Independent quality/security reviewer | `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. |
+| 2026-07-23 | `T-ORC-006` terminal specification review v5 | Independent specification reviewer | `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These approvals do not create the Task 3 seed/policy pass/accepted pair, do not provide Task 5 positive plus rollback runtime, do not close any active Task/Spec/Program lifecycle, and do not authorize the controlled wrapper. |
 
 ## Verification Evidence
 
@@ -182,62 +194,61 @@ alignment checked 665 stage documents and 5,429 repository-local Markdown
 links with 0 failures; all 38 template body-contract tests passed; targeted
 Markdown lint passed; and `git diff --check` passed.
 
-Verification results: Task activation gates passed. Task 2 final live Docker
-runs passed: startup project `hyhome-crr-20260719-2111142-y1noqxim` was ready in
-71 seconds; recovery project `hyhome-crr-20260719-2188421-vietv7qq` was ready
-with recovery passed in 104 seconds; and negative project
-`hyhome-crr-20260719-2281412-ho7cotsq` timed out with exit class `30` in 74
-seconds. The canonical handoff SHA-256
-`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
-preserved, and task-owned resources were empty after the runs. Fresh Task 2
-re-reviews remain pending. Task 3 deterministic implementation and terminal
-reviews are complete, while Task 3 accepted consumer verdicts remain absent.
-Task 4 implementation/runtime pass with 41/41 focused tests, stable negative
-classes 50/50/10/20, fixture SHA-256
-`b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`,
-retained dump SHA-256
-`090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`,
-and exact 12-key, mode-0600 canonical SHA-256
-`c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`.
-Final-state project `hyhome-ior-20260719-229164-source/target` observed backup
-and restore at 1s/0s. Schema 1, scope `synthetic-local`, and
-integrity/cleanup/redaction passed; owned runtime resources are empty. Initial
-reviews returned specification C1/I3/M1 and operations/quality
-C0/I5/M2; the second wave returned C0/I3/M1 and C0/I2/M0. Both waves are
-historical and remediated. The next terminal re-reviews left exactly two
-Important items, which are remediated. The subsequent terminal operations/quality
-review returned APPROVED C0/I0/M0. The terminal specification review left one
-evidence-synchronization Important finding (C0/I1/M0); after remediation,
-terminal specification re-review returned APPROVED C0/I0/M0.
-Task 5 implementation/static verification is complete: the inherited 21-test
-RED had 22 failures and 3 errors with one passing fixture-schema method; the
-initial focused GREEN was 28/28. Review remediation RED was 38 tests / 13
-failures / 0 errors after an isolated canonical-mutation 1/1 RED; final GREEN
-is 38/38. Bash syntax, ShellCheck, and fixture-only preflight pass.
-The exact real command exits class 10 before Docker/Compose; no call-log,
-project, Task 5 canonical directory, or rehearsal record exists. Positive
-promotion and rollback runtime remain `blocked/not_run` because the accepted
-Spec 126 pair is absent. Task 5 initial reviews returned specification
-C0/I2/M0 and release/security C1/I2/M0; all four unique findings are remediated
-and terminal specification plus release/security reviews are APPROVED
-C0/I0/M0 for historical implementation commit `b5441c53`. Whole-branch
-verification remains `not_run`.
+Current domain evidence is bounded as follows:
 
-Task 5 final local gates pass: metadata is 23/0 with one unchanged legacy
-exception, traceability is 46/0, alignment is 666 documents / 5,446 links / 141
-operations docs / 0 failures, template contracts are 38/38, targeted Markdown
-lint and diff hygiene pass, and the non-starting merged Compose render passes.
-The latest aggregate is `failures=4`, limited to the pre-existing lifecycle
-consumer and missing-`html5lib` gates; the Task 5 script inventory passes.
-Declared owners are fresh at 1,311 LLM Wiki paths, 1,310 safe coverage paths,
-and 13 security automation controls, with only Task 5 wrapper-count fallout.
+- Task 2 passes 42/42. Startup project
+  `hyhome-crr-20260719-2642602-fxq2siqi` and recovery project
+  `hyhome-crr-20260719-2648660-ov2uzbas` passed; timeout project
+  `hyhome-crr-20260719-2661806-zqukerpv` returned expected class 30 and
+  preserved the recovery handoff. The mode-0600, 1,197-byte canonical SHA-256
+  is `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`.
+  Every owner-scoped resource inventory is zero. Earlier `7b95d095…` and
+  `e78d1a0b…` identities are historical/superseded.
+- Task 3 passes 44/44 plus static and preflight gates. Current committed-tree
+  advisory exits class 10 `grype-db-seed-unavailable-advisory-blocked` before
+  Docker because the approved offline seed and reusable local database are
+  absent. The historical pre-hardening class-40 result found 14 Critical and
+  73 High findings with no exception. No current policy pass, accepted
+  verdicts, or committed pair manifest exists.
+- Task 4 passes 48/48 plus static gates. The strict sequence returned
+  `0/50/50/10/20/0`, with exactly one final normal after the negatives. Project
+  `hyhome-ior-20260719-2866314-source/target` used fixture SHA-256
+  `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`;
+  the 4,484-byte dump SHA-256 is
+  `e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`.
+  The exact 12-key, mode-0600, 642-byte canonical SHA-256 is
+  `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`.
+  Integrity, cleanup, and redaction passed; resources are zero; no later Task 4
+  invocation occurred. Earlier `c5f9e3a1…` and `712f289d…` identities are
+  historical/superseded.
+- Task 5 passes 45/45 plus static and fixture-only preflight gates, and the
+  shared Task 3 compatibility suite passes 44/44. Its strict schema-v3 record
+  binds the schema-v2 pair manifest/generation, immutable input hashes,
+  approval, timestamps, and results and revalidates snapshots immediately
+  before publication. Exactly one real canonical command returned class 10
+  `pair-manifest-missing` before
+  Docker. No positive/rollback runtime, project, record, temporary record, or
+  owner-scoped resource exists.
 
-Task 3's repository-contract supply-chain section and generated-owner checks
-pass. Its aggregate repository contract remains at `failures=5` for four
-pre-existing lifecycle manifest-consumer mismatches and the missing `html5lib`
-provider renderer; the full local QA runner stops at that same renderer. The
-root implementation owner separately recorded an exact targeted
-`hadolint-docker` pass for the sample-service Dockerfile.
+Task 6 documentation and generated-owner reconciliation is complete for this
+working tree. Exact-base metadata checks selected 41 documents against
+`758aa0d2^` and 35 against `758aa0d2`, each with zero violations, one unchanged
+legacy exception, and zero transition overrides. Impacted lifecycle checks
+selected 290 and 289 surfaces respectively with zero violations and only the
+configured Task-directory budget warning. Traceability passed 46/0; alignment
+passed at 666 stage documents, 5,507 repository-local Markdown links, and 141
+operations documents with zero failures. Lifecycle contract, Foundation
+manifest/summary, and promoted checks passed. The audit matrix, semantic
+inventory (927 records/2,145 advisory findings), audit-semantic contract (11/0),
+LLM Wiki index/coverage, and security-readiness owners are fresh. The
+dependency-locked repository aggregate returned `failures=0` after an approved
+rerun resolved the sandbox-only PyPI DNS boundary, and `git diff --check`
+passed. Terminal quality/security review v3 is `APPROVED C0/I0/M0` for the full
+branch range through `20022458` plus the then-current 26-document reconciliation
+diff. Terminal specification review v5 is `APPROVED C0/I0/M0` for the full
+branch range through `20022458` plus the final 26-document reconciliation diff.
+Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence.
+The controlled all-files wrapper is BLOCKED and has not run.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -260,27 +271,30 @@ wrapper does not claim visibility into ignored or out-of-repository writes.
 
 Before, after, changed, and unexpected path sets: `not_run`.
 
-Disposition: blocked until all four domain Tasks and whole-branch reviews pass,
-the pre-wrapper evidence commit exists, and `git status --short` is empty.
+Disposition: **BLOCKED**. A clean committed pre-wrapper checkpoint is necessary
+but not sufficient; its exact identity is intentionally recorded only in the
+ignored Task 6 report after creation. The wrapper still cannot run because the
+approved/current Grype database seed, current policy pass, and accepted pair are
+missing, and Task 5 has no positive promotion plus injected rollback runtime.
+It remains `not_run` unless all four domains pass or a separate explicit gate
+change is approved.
 
 ## Review Evidence
 
-Implementation review verdict: Task-activation scaffolding and Task 2 are
-complete. Task 2 has final runtime evidence, routing remediation, and terminal
-specification and quality/security reviews at C0/I0/M0. Task 3 deterministic
-implementation is complete with the critical-vulnerability advisory rejection.
-Its initial/combined `C3/I1/M1` findings and first re-review C1 are remediated;
-terminal specification and quality/security reviews are both APPROVED C0/I0/M0.
-Task 4 implementation/runtime and initial-review remediation are complete;
-terminal specification and operations/quality reviews both returned APPROVED
-C0/I0/M0. The direct-control review exercise invalidated the canonical as
-designed; one approved normal reconciliation regenerated the current handoff,
-which was directly verified before documentation-only gates. Task 5
-implementation/static proof is complete, positive runtime is blocked/not_run,
-and its initial C0/I2/M0 plus C1/I2/M0 findings are remediated at 38/38.
-Terminal specification and release/security reviews both returned APPROVED
-C0/I0/M0 for historical implementation commit `b5441c53`; this does not close
-the operational runtime, Spec 127, `T-ORC-005`, or the Program.
+Implementation review verdict: Tasks 2 and 4 have current passing local
+evidence at 42/42 and 48/48 respectively, and their current hardening is covered
+by the terminal v3/v5 whole-branch approvals. Task 3's hardened deterministic
+implementation passes 44/44 but
+current runtime is blocked before Docker by the
+missing approved database seed, so it has no current policy pass or accepted
+pair manifest. Task 5's strict immutable-input/pair-manifest
+implementation/static proof passes 45/45,
+while positive promotion and injected rollback remain blocked/not_run. Earlier
+domain terminal reviews remain historical evidence for their reviewed commits;
+the subsequent whole-review remediation and this documentation reconciliation
+are covered by the terminal v3/v5 approvals below. No
+claim closes Spec 126/127, `T-ORC-003`, `T-ORC-005`, `T-ORC-006`, or the
+Program.
 
 Task-activation specification review: the initial review returned C0/I1/M0.
 The Important finding was remediated by making the delivery baseline/canary
@@ -309,11 +323,12 @@ The terminal specification review returned CHANGES REQUIRED C0/I1/M0 solely
 for evidence synchronization; after remediation and final-state canonical
 reconciliation, terminal specification re-review returned APPROVED C0/I0/M0.
 
-Whole-branch specification review: `not_run`; a fresh reviewer must return
-C0/I0/M0 after all domain implementations and reviews complete.
+Whole-branch specification review: v5 `APPROVED C0/I0/M0` for the full branch
+range through `20022458` plus the final 26-document reconciliation diff.
 
-Whole-branch quality/security review: `not_run`; an independent reviewer must
-return C0/I0/M0 after all domain implementations and remediation complete.
+Whole-branch quality/security review: v3 `APPROVED C0/I0/M0` for the full
+branch range through `20022458` plus the then-current 26-document reconciliation
+diff.
 
 Findings and disposition: all Task-activation review findings are resolved.
 Task 2's historical pre-routing reviews remain `C0/I0/M0`. Its first routing
@@ -327,39 +342,37 @@ are preserved above. Its terminal CHANGES REQUIRED result with two Important
 items is also preserved with remediation. Terminal operations/quality is
 APPROVED C0/I0/M0; the remediated specification evidence-sync I1 received
 terminal APPROVED C0/I0/M0 re-review.
-Future domain or whole-branch findings must retain severity, owner, remediation
-commit, and re-review verdict without copying raw logs.
+The current whole-branch pair returned C0/I0/M0. All earlier
+`CHANGES REQUIRED` iterations remain historical remediation evidence. Future
+domain or whole-branch findings must retain severity, owner, remediation commit,
+and re-review verdict without copying raw logs.
 
 ## Commit Ledger
 
-Commit identity: `ff988ece` for Task activation. Task 2's logical commit is
-`feat(harness): add compose runtime acceptance`; its initial
-pre-reconciliation identity was `83298464`, and its final amended identity is
-resolved from branch history after the bounded handoff re-review.
+Commit identity: `ff988ece` for Task activation.
 
 Logical unit: `docs(sdlc): activate operational readiness tasks`.
 
-Commit validation: activation passed before its logical commit. Task 2 final
-live Docker evidence passed: startup
-`hyhome-crr-20260719-2111142-y1noqxim` was ready in 71 seconds; recovery
-`hyhome-crr-20260719-2188421-vietv7qq` was ready with recovery passed in 104
-seconds; and negative `hyhome-crr-20260719-2281412-ho7cotsq` timed out with
-exit class `30` in 74 seconds. The canonical SHA-256
-`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` was
-preserved and task-owned resources were empty. Terminal Task 2 reviews pass at
-C0/I0/M0. Task 3's implementation commit is
-`72e584f51badfd194c0a1b6d32510a3bf3ab395c`
-(`feat(security): add local supply-chain verification`); terminal Task 3
-specification and quality/security reviews are both APPROVED C0/I0/M0. Task 4's
-branch-history implementation identity is `db150a19`
-(`feat(ops): add postgres recovery rehearsal`). This evidence-only closure
-commit intentionally omits its own SHA.
-Task 5's single logical implementation commit is
-`b5441c53` (`feat(release): add local promotion and rollback`), the historical
-identity reviewed by both terminal reviewers. The separate evidence-only
-closure commit intentionally omits its own final SHA. The Task 6 pre-wrapper
-and closure commits remain `not_run` and must be recorded after creation,
-never predicted as completed evidence.
+Current implementation/remediation ledger:
+
+- Task 2: original `e41f8f04d285fc1962f723d7ec8d80d314f9e422`,
+  historical RED `ba1ba382` / GREEN `7c6c4ea1`, current RED `9838034c` /
+  GREEN `14e1dd5d`; `83298464` is historical only.
+- Task 3: historical original
+  `72e584f51badfd194c0a1b6d32510a3bf3ab395c`, then `c8aa52b9`,
+  `df1dd8c1`, `4de5c04d`, `ae354a00`, `552e3867`, historical interim
+  `f966266e129b11da198904b7076ca3c224f3e468`, `e5a4d739`, current RED
+  `abc1dd21`, and current GREEN `c8342c09`.
+- Task 4: historical original `db150a19`, historical RED `00a65be1` / GREEN
+  `571b2ab1`, current RED `da06a080` / GREEN `adbbdce2`.
+- Task 5: historical original `b5441c53`, RED `37b023ec`, supporting schema
+  RED `94858299`, micro-RED `8701ade6`, GREEN `692ae759`, current
+  pair-manifest RED `f0c3e032`, and GREEN `20022458`.
+
+The reviewed tracked state is the pre-wrapper checkpoint content. Its exact
+commit identity is intentionally omitted from tracked content and recorded only
+in the ignored Task 6 report after creation. The closure commit remains
+`not_run`.
 
 ## Deferred and Blocked Items
 
@@ -370,16 +383,17 @@ Deferred items:
   enforcement, GitHub Environment/Release, and production deployment;
 - production RTO/RPO, SLSA conformance, and production-readiness claims.
 
-Blocked items: `T-ORC-003` has exact pinned images cached but cannot supply
-Task 5 because the baseline remains rejected by the critical-vulnerability
-policy (14 critical matches, no exception) and no accepted distinct verdict
-pair exists; its terminal review closure is complete. `T-ORC-004` runtime is
-complete with terminal specification and operations/quality reviews APPROVED
-C0/I0/M0. `T-ORC-005` implementation/static proof is complete, but its positive
-runtime remains blocked on the accepted Spec 126 pair. Its terminal
-specification and release/security reviews are APPROVED C0/I0/M0, but
-`T-ORC-005` is not operationally complete. `T-ORC-006` remains blocked on the
-documented closure sequence, exact local evidence, and independent review.
+Blocked items: terminal current-hardening reviews are approved for Tasks 2-5.
+`T-ORC-003` still lacks the approved current Grype database seed and a
+reusable local database, so its hardened advisory stops before Docker and
+cannot produce a current policy pass or accepted pair. The historical policy
+rejection had 14 Critical and 73 High findings with no exception and remains
+non-acceptance evidence. `T-ORC-005` implementation/static proof is complete,
+but positive promotion and injected rollback runtime remain blocked on the
+accepted Spec 126 pair. `T-ORC-006` remains blocked on those two domain
+outcomes. A clean committed pre-wrapper checkpoint is necessary but not
+sufficient. The controlled wrapper cannot run until all four domains pass or a
+separate explicit gate change is approved.
 
 Deferral destination: each remote, credential, production, publication, or
 live-data expansion requires a new Stage 01-04 design chain and explicit human

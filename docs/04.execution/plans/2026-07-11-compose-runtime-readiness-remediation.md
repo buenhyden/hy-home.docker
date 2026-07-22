@@ -50,12 +50,11 @@ and 1,664 MiB. A changed limit or host class requires a new Task approval.
 
 ## Overview
 
-This active plan turns Spec 124 into an executable local implementation sequence
-for the exact `core` five-service Compose set: `keycloak`, `oauth2-proxy`,
-`traefik`, `vault`, and `vault-agent`. The approved implementation and runtime
-sequence has been executed; actual startup, readiness, recovery, teardown, review,
-and commit evidence belongs in
-`docs/04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md`.
+This active transition plan defines the approved local implementation order,
+risks, and acceptance gates for Spec 124. The sequence covers the exact `core`
+five-service Compose set: `keycloak`, `oauth2-proxy`, `traefik`, `vault`, and
+`vault-agent`. Observed execution and lifecycle evidence belongs only in the
+[domain Task](../tasks/2026-07-19-compose-runtime-readiness-remediation.md).
 
 The implementation goal is local-isolated evidence only. The plan does not
 authorize production startup, default-profile expansion, host-global cleanup,
@@ -112,7 +111,7 @@ Non-goals:
 | `T-CRR-001` | Define the wrapper, override, synthetic environment, and evidence contract. | `scripts/validation/run-compose-core-readiness.sh`; `scripts/validation/compose-core-readiness.lib.sh`; `tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml`; `tests/fixtures/compose-core-readiness/env.runtime.example`; `tests/validation/test_compose_core_readiness.py`; `docs/04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md`. | `CRR-001`–`CRR-003` | RED: missing/ambiguous service set, shared path/port/network, missing teardown, or redaction failure. GREEN: preflight emits the exact project, services, timeouts, and cleanup plan. | `feat(harness): add compose runtime acceptance` |
 | `T-CRR-002` | Add isolated five-service startup and readiness checks. | The same wrapper, library, override, and focused tests. | `CRR-001`, `CRR-002` | RED: omitted service, default project, endpoint unchecked, or timeout mishandled. GREEN: only the approved project starts, service and endpoint criteria are classified, and owned teardown completes. | Same CRR commit. |
 | `T-CRR-003` | Add Vault restart recovery, negative timeout, and cleanup ambiguity handling. | The same wrapper/library/tests and Task evidence. | `CRR-003` | RED: unowned cleanup is allowed or a failure is recorded as success. GREEN: restart recovery passes; timeout fails with a stable non-zero class and still cleans owned resources. | Same CRR commit. |
-| `T-CRR-004` | Complete independent reviews and local lifecycle evidence. | Domain Task, Specs/Plans indexes only when supported. | `VAL-CRR-001`–`004` | Specification and quality/security reviews finish C0/I0/M0. | Program closure evidence commit. |
+| `T-CRR-004` | Complete independent reviews and local lifecycle evidence. | Domain Task, Specs/Plans indexes only when supported. | `VAL-CRR-001`–`004` | Every finding is resolved and independently re-reviewed before closure. | Evidence-only closure unit after approval. |
 
 ### Implementation contract
 
@@ -168,7 +167,7 @@ The override must produce this isolated model:
 | --- | --- | --- | --- |
 | `keycloak` | direct `kc.sh start-dev`, `KC_DB=dev-file`, health enabled, task-owned data, no external PostgreSQL | 1.00 CPU / 768 MiB | container healthy plus HTTP ready endpoint |
 | `oauth2-proxy` | cookie session store, synthetic client/cookie values, skip discovery with explicit local Keycloak URLs, no Valkey | 0.50 CPU / 256 MiB | container healthy plus `/ping` success |
-| `traefik` | localhost high ports, isolated network only, no `k3d-hyhome`; Docker socket stays read-only | 0.50 CPU / 256 MiB | container health plus ping success |
+| `traefik` | localhost high ports, isolated network only, file provider, no raw Docker socket, no `k3d-hyhome` | 0.50 CPU / 256 MiB | container health plus ping success |
 | `vault` | task-owned file/raft data and synthetic init/unseal only | 0.50 CPU / 256 MiB | initialized, unsealed, active, HTTP health success |
 | `vault-agent` | task-owned AppRole files and output, configured only after synthetic Vault initialization | 0.25 CPU / 128 MiB | process healthy and rendered non-secret sentinel exists |
 
@@ -227,49 +226,54 @@ Tests must expose methods named
 
 ## Sequence
 
-- [x] Create the active Task from
+- [ ] Create the active Task from
    [task.template.md](../../99.templates/templates/sdlc/task.template.md) with
    explicit protected-surface approval, runtime boundary, redaction boundary,
    rollback/cleanup, and skipped remote scope.
-- [x] Write failing tests in
+- [ ] Write failing tests in
    `tests/validation/test_compose_core_readiness.py` for exact service set,
    forbidden shared paths, external `k3d-hyhome`, ports 80/443, synthetic
    secret handling, scoped cleanup, timeout classification, and redaction.
-- [x] Run
+- [ ] Run
    `python3 -m unittest tests.validation.test_compose_core_readiness -v` and
    confirm the new tests fail because the wrapper and fixture do not exist.
-- [x] Implement dry-run/preflight first. It must resolve the exact worktree,
+- [ ] Implement dry-run/preflight first. It must resolve the exact worktree,
    Compose files, profile, five service names, project name, labels, timeouts,
    ports, transient directory, and teardown commands before any startup.
-- [x] Run the focused tests until all positive and negative preflight cases pass.
-- [x] Run static Compose validation before runtime rehearsal:
+- [ ] Run the focused tests until all positive and negative preflight cases pass.
+- [ ] Run static Compose validation before runtime rehearsal:
    `bash scripts/validation/validate-docker-compose.sh`.
-- [x] Execute `bash scripts/validation/run-compose-core-readiness.sh --preflight`.
-- [x] Execute
+- [ ] Execute `bash scripts/validation/run-compose-core-readiness.sh --preflight`.
+- [ ] Execute
    `bash scripts/validation/run-compose-core-readiness.sh --scenario startup-readiness`.
-- [x] Execute
+- [ ] Execute
    `bash scripts/validation/run-compose-core-readiness.sh --scenario vault-restart-recovery`.
-- [x] Execute
+- [ ] Execute
    `bash scripts/validation/run-compose-core-readiness.sh --scenario negative-timeout`;
     require the documented stable non-zero result and successful cleanup.
-- [x] If recovery crosses into
+- [ ] If recovery crosses into
    data restore, stop and hand off to Spec 125 instead of extending this lane.
-- [x] Record only concise Task evidence: command class, exit status, service
+- [ ] Record only concise Task evidence: command class, exit status, service
    states, endpoint summaries, timing, cleanup result, and stable failure class.
-- [x] Run independent specification review, then quality/security review. Fix
-   findings in the same logical lane and re-run the same reviewers.
+- [ ] Run fresh independent specification review, then quality/security review
+   for the independent image-identity controls. Fix findings in the
+   same logical lane and re-run the same reviewers.
 
 ## Verification Plan
 
+`$COMPARISON_BASE_REF` denotes the explicit reviewed comparison ref recorded by
+the [Program Task](../tasks/2026-07-19-operational-readiness-closure-program.md);
+this Plan does not own a concrete base identity.
+
 | Gate | Command / method | Expected pass evidence |
 | --- | --- | --- |
-| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 758aa0d2` | Changed Stage 04 docs have valid metadata and no lifecycle regression. |
+| Metadata and lifecycle | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref "$COMPARISON_BASE_REF"` | Changed Stage 04 docs have valid metadata and no lifecycle regression. |
 | Traceability | `bash scripts/validation/check-doc-traceability.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` | Spec 124 requirements map to Plan/Task and implemented files. |
 | Repository contract | `bash scripts/validation/check-repo-contracts.sh` | No new contract breakage; pre-existing unrelated failures are recorded in the Task if present. |
 | Static Compose | `bash scripts/validation/validate-docker-compose.sh` | Approved `core` render still resolves; static result remains labeled non-runtime. |
 | Harness unit/fixture | `python3 -m unittest tests.validation.test_compose_core_readiness -v` | Negative and positive fixture cases pass. |
 | Runtime rehearsal | the four exact wrapper commands in Sequence | Only the five approved services start, reach readiness or bounded failure, and owned teardown completes. |
-| Review | Independent spec and quality/security review | C0/I0/M0 or all findings resolved and re-reviewed. |
+| Review | Independent spec and quality/security review | All findings are resolved and independently re-reviewed. |
 
 The final all-files QA gate, if used for the overall closure chain, must use
 `scripts/validation/run-agent-precommit-all-files.sh`; direct `pre-commit run`
@@ -291,24 +295,24 @@ plan and routes to Spec 125.
 
 ## Approval Gates
 
-- Human approval already exists for converting the draft Plan to an active
-  implementation plan.
-- The active Task authorized each runtime command envelope before execution.
+- Plan activation requires recorded human approval.
+- The active Task must authorize each runtime command envelope before execution.
 - Secret values, remote targets, registry access, production services, and
   shared-host cleanup remain unapproved.
 
 ## Completion Criteria
 
-- [x] Active Task exists and maps `CRR-001`–`CRR-003` to exact files, commands,
+- [ ] Active Task exists and maps `CRR-001`–`CRR-003` to exact files, commands,
       rollback, redaction, and reviews.
-- [x] Dry-run/preflight and fixture tests reject scope, teardown, timeout, and
+- [ ] Dry-run/preflight and fixture tests reject scope, teardown, timeout, and
       redaction violations.
-- [x] Static Compose validation passes and remains labeled static.
-- [x] Isolated five-service startup/readiness evidence is recorded.
-- [x] Bounded recovery/stop-path evidence is recorded.
-- [ ] Historical pre-routing specification and quality/security reviews passed;
-      fresh routing re-reviews must close the current Important findings.
-- [x] Spec 124 lifecycle is updated only according to actual local evidence;
+- [ ] Static Compose validation passes and remains labeled static.
+- [ ] Isolated five-service startup/readiness evidence is recorded.
+- [ ] Bounded recovery/stop-path evidence is recorded.
+- [ ] Independent specification and quality/security review acceptance for the
+      independent image-identity controls is recorded in the Task after all
+      findings are remediated and re-reviewed.
+- [ ] Spec 124 lifecycle is updated only according to actual local evidence;
       remote/live exclusions remain explicit.
 
 ## Related Documents

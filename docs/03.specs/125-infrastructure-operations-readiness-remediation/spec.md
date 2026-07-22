@@ -18,8 +18,8 @@ This active specification defines the contract for rehearsing a representative
 PostgreSQL logical major-version upgrade, backup, restore, and integrity check
 on synthetic state. It owns four canonical audit gaps. The approved architecture
 does not authorize production data, shared storage, secret access, or remote
-backup targets; exact state commands remain blocked until an approved Plan and
-active Task exist.
+backup targets; the linked Plan and Task own command authorization and observed
+evidence. Broader recovery work requires a new approved chain.
 
 ## Strategic Boundaries & Non-goals
 
@@ -100,12 +100,10 @@ credential, raw dump, or unrestricted storage URL enters tracked docs.
 
 ## Current Evidence
 
-At the 2026-07-11 canonical audit baseline, version policy plus selected
-service upgrade, backup, restore, and recovery guidance existed. No current
-cross-service upgrade rehearsal, governed representative-state migration,
-comprehensive backup execution inventory, or cross-service restore drill with
-integrity/RTO/RPO evidence was recorded. Document presence is partial evidence,
-not proof of operational effectiveness.
+This Spec defines the recovery contract; it does not own observed execution
+evidence or lifecycle conclusions. Observed evidence and current status are
+owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
@@ -237,15 +235,15 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
 ```
 
-No upgrade, migration, backup, or restore command is authorized until the Plan
-and active Task name the exact synthetic fixture, versions, projects, commands,
-capacity, integrity oracle, cleanup, and recovery path.
+The linked Plan and Task name the exact synthetic fixture, versions, projects,
+commands, capacity, integrity oracle, cleanup, and recovery path. They do not
+authorize broader or live commands.
 
 ## Success Criteria & Verification Plan
 
 - **VAL-IOR-001**: The four owned audit gaps map exactly once to `IOR-001`
   through `IOR-004`.
-- **VAL-IOR-002**: Each future service/data scope has approved objectives,
+- **VAL-IOR-002**: Each future broader service/data scope has approved objectives,
   representative state, integrity checks, recovery, and evidence protection.
 - **VAL-IOR-003**: Backup and restore remain distinct gates and config rollback
   is not conflated with data recovery.
@@ -257,7 +255,8 @@ capacity, integrity oracle, cleanup, and recovery path.
 - **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
 - **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- **Plan**: [Infrastructure operations draft plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
+- **Plan**: [Infrastructure operations plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
+- **Task**: [PostgreSQL recovery Task](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Compose/operations audit**: [Canonical readiness audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
 - **Research**: [Compose and infrastructure research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)

@@ -11,7 +11,7 @@ parent_ids:
 
 ## Overview
 
-This active Task will record implementation and execution evidence for the
+This active Task records implementation and execution evidence for the
 exact local-isolated `core` service set: `keycloak`, `oauth2-proxy`, `traefik`,
 `vault`, and `vault-agent`. At activation, no service has been started and no
 readiness, recovery, timeout, or cleanup result is claimed.
@@ -85,8 +85,9 @@ approved ceiling is 2.75 CPUs and 1,664 MiB. The startup timeout is 180 seconds,
 the recovery timeout is 120 seconds, and teardown uses `docker compose down
 --volumes --remove-orphans --timeout 15` only after exact ownership checks.
 
-Security impact: synthetic local credentials, read-only Docker socket exposure
-for Traefik, no secret-body evidence, and fail-closed project ownership checks.
+Security impact: synthetic local credentials, a file-provider-only Traefik
+configuration with no raw Docker socket mount, no secret-body evidence, and
+fail-closed project ownership checks.
 
 Operations impact: local startup/readiness/recovery observation only. Stateful
 restore or ambiguous teardown stops and escalates.
@@ -132,10 +133,10 @@ private endpoint payloads.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done (static) |
+| `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done; current focused suite 42/42 |
 | `T-CRR-002` | Exact five-service startup and endpoint readiness | `CRR-001`, `CRR-002` | Startup/readiness scenario and typed verdict | Fresh implementation agent | Done (runtime) |
 | `T-CRR-003` | Vault restart, timeout, and cleanup ambiguity | `CRR-003` | Recovery and expected non-zero timeout scenarios | Fresh implementation agent | Done (runtime) |
-| `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Done |
+| `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Current terminal reviews approved C0/I0/M0; Task lifecycle remains active under Program closure |
 
 ## Work Log
 
@@ -181,13 +182,19 @@ private endpoint payloads.
 | 2026-07-19 | Historical routed negative-timeout acceptance | Project `hyhome-crr-20260719-1985444-ecjzmczd` returned the expected class `30` after 62 seconds and wrote only `readiness-verdict.negative-timeout.json` with `overall_status=timed_out`. The canonical recovery-ready handoff retained SHA-256 `25cc72aa5c64f08517535adbdd2365684fc01c9b2a6d7bdfea719e241b053c12` before and after the negative run. Task-owned containers, networks, volumes, and `/tmp` directories were empty after all three runs. These observations predate the current early-failure finalization remediation. |
 | 2026-07-19 | First routing re-review findings | The first specification routing re-review was `CHANGES REQUIRED C0/I3/M0`: positive invalidation was too late, early failures bypassed scenario verdict finalization, and the Compose Plan's Task 5 consumer rule was weaker than the Program Plan. The first quality routing re-review was `CHANGES REQUIRED C0/I2/M0`: routing coverage relied on source strings and did not exercise isolated early-failure/finalization behavior. There were no Critical or Minor findings. The earlier `C0/I0/M0` reviews remain historical pre-routing verdicts. |
 | 2026-07-19 | Routing remediation RED/GREEN | Six behavior tests using isolated temporary evidence and wrapper command stubs failed before implementation: stale positive invalidation, ready publication, negative canonical preservation, dual-path stdout, all-mode early-failure evidence, and startup/recovery exit-class preservation. After captured scenario execution plus unconditional typed finalization, those tests passed and the then-current focused suite passed `34/34`. |
-| 2026-07-19 | Final routed startup acceptance | Project `hyhome-crr-20260719-2111142-y1noqxim` produced the exact 18-key startup scenario record and matching canonical `ready` handoff in 71 seconds. Cleanup and redaction passed. |
-| 2026-07-19 | Final routed recovery acceptance | Project `hyhome-crr-20260719-2188421-vietv7qq` passed restart, unseal, and fresh-sentinel recovery in 104 seconds. Its exact 18-key scenario and canonical records report `scenario=vault-restart-recovery`, `overall_status=ready`, `recovery_status=passed`, and passed cleanup/redaction. |
-| 2026-07-19 | Final routed negative-timeout acceptance | Project `hyhome-crr-20260719-2281412-ho7cotsq` returned expected class `30` in 74 seconds and wrote the exact 18-key negative scenario record. The canonical recovery-ready handoff retained SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` before and after the run. Task-owned containers, networks, volumes, and `/tmp` directories were empty after all final runs. |
+| 2026-07-19 | Historical final routed startup acceptance | Project `hyhome-crr-20260719-2111142-y1noqxim` produced the exact 18-key startup scenario record and matching canonical `ready` handoff in 71 seconds. Cleanup and redaction passed. |
+| 2026-07-19 | Historical final routed recovery acceptance | Project `hyhome-crr-20260719-2188421-vietv7qq` passed restart, unseal, and fresh-sentinel recovery in 104 seconds. Its exact 18-key scenario and canonical records report `scenario=vault-restart-recovery`, `overall_status=ready`, `recovery_status=passed`, and passed cleanup/redaction. |
+| 2026-07-19 | Historical final routed negative-timeout acceptance | Project `hyhome-crr-20260719-2281412-ho7cotsq` returned expected class `30` in 74 seconds and wrote the exact 18-key negative scenario record. The canonical recovery-ready handoff retained SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf` before and after the run. Task-owned containers, networks, volumes, and `/tmp` directories were empty after all final runs. |
 | 2026-07-22 | Second routing re-review findings | Specification re-review returned `CHANGES REQUIRED C0/I2/M0`: a signal between Docker mutation and parent-flag synchronization could bypass cleanup, and the Program Task still claimed no live rerun. Quality re-review returned `CHANGES REQUIRED C0/I1/M0` for the same stale Program Task statement; it accepted the routing code and behavior coverage. No Critical or Minor findings remained. |
 | 2026-07-22 | Signal cleanup RED/GREEN | The marker-aware EXIT/signal regression first failed two subcases: cleanup was skipped with a valid mutation marker, and cleanup failure preserved class `37` instead of class `50`. The trap now accepts only an exact `/tmp/<owned-project>` marker whose derived identity equals `CRR_PROJECT_NAME`, rejects absent, non-owned, symlinked, non-canonical, or identity-mismatched paths, and preserves the original status unless cleanup is ambiguous. The focused marker test passes `1/1`; the full suite passes `35/35`; Bash syntax, ShellCheck, and diff hygiene pass. |
 | 2026-07-22 | Terminal routing re-reviews | After the final Program Plan/Task state correction, independent specification and quality/security reviewers each returned `APPROVED C0/I0/M0`. All prior Critical, Important, and Minor findings are closed. |
 | 2026-07-19 | Governance validation | Metadata check selected 16 changed Stage documents with 0 violations; traceability and implementation alignment passed. Repository contracts no longer report either Task 2 script as unregistered after the canonical script inventory and executable set were updated. The remaining five failure categories are owned by later program work: Task 3–5 prospective scripts, final lifecycle-manifest reconciliation, and the existing local `html5lib` validation-runtime dependency. |
+| 2026-07-22 | Program closure rerun (historical, superseded) | The 35/35 rerun and its retained handoff were valid for that committed state, but the later local-only readiness hardening and current rerun below supersede its projects and handoff identity. |
+| 2026-07-22 | Local-only readiness hardening RED/GREEN (historical, superseded) | RED commit `ba1ba382` captured local-only readiness regressions. GREEN commit `7c6c4ea1` enforced the offline pinned runtime boundary for that committed state. Its 39/39 result is historical. The original implementation identity is `e41f8f04d285fc1962f723d7ec8d80d314f9e422`; `83298464` is historical only. |
+| 2026-07-22 | Startup/recovery/timeout acceptance before identity hardening (historical, superseded) | Startup project `hyhome-crr-20260719-1892220-xneqdqor`, recovery project `hyhome-crr-20260719-1897762-rf7ihid9`, timeout project `hyhome-crr-20260719-1905549-soywy1gk`, and canonical SHA-256 `f6195165e46b6c2a6bc8e45eb0fa2f39beac65af60610292d4251420ea19b263` were valid for `7c6c4ea1`; the current evidence below supersedes them. |
+| 2026-07-22 | Independent image-identity RED/GREEN | RED `9838034c` proved that a matching configuration ID alone did not establish the required manifest identity. GREEN `14e1dd5d` independently validates membership of every expected manifest digest in `.RepoDigests` and equality of the expected configuration digest with `.Id`, before runtime. The focused suite passes 42/42; static, preflight, and exact render gates pass. Historical terminal reviews predate these commits; the terminal whole-branch reviews below cover them. |
+| 2026-07-22 | Current startup/recovery/timeout acceptance | Startup project `hyhome-crr-20260719-2642602-fxq2siqi` passed in 62 seconds. Recovery project `hyhome-crr-20260719-2648660-ov2uzbas` passed Vault restart/unseal/fresh-sentinel recovery in 81 seconds and produced the current canonical. Timeout project `hyhome-crr-20260719-2661806-zqukerpv` returned expected class 30 in 61 seconds while preserving that canonical byte-for-byte. The mode-0600, 1,197-byte canonical SHA-256 is `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`; every owner-scoped container, network, volume, and `/tmp` inventory is zero. |
+| 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These approvals do not change the active Task or Program lifecycle and do not authorize the controlled wrapper. |
 
 ## Verification Evidence
 
@@ -233,7 +240,7 @@ Actual static evidence:
   path also invalidated the canonical handoff only after render/daemon/capacity
   and had no unconditional early-failure scenario finalizer;
 - `python3 -m pytest` was unavailable in the repository runtime (`No module named pytest`), so no pytest verdict is claimed;
-- `python3 -m unittest tests.validation.test_compose_core_readiness` passed the canonical focused suite `35/35` after the routing and signal-cleanup RED cycles;
+- `python3 -m unittest tests.validation.test_compose_core_readiness` passes the current focused suite `42/42` after the routing, signal-cleanup, local-only readiness, and independent manifest/config identity RED cycles;
 - `timeout 120s bash scripts/validation/validate-docker-compose.sh` exited `0` with `services_total=5`;
 - `timeout 60s bash scripts/validation/run-compose-core-readiness.sh --preflight` exited `0`, emitted `keycloak,oauth2-proxy,traefik,vault,vault-agent` and ports `18000,18443,18082,18083,18200`, and left no owned temporary path;
 - the focused daemon-separation regression proves `assert_docker_compose` passes with a Compose-capable CLI even when the Docker API fails, while `assert_docker_daemon` returns class `10`.
@@ -241,22 +248,28 @@ Actual static evidence:
   the repository-contract gate reports five deferred categories owned by later
   program Tasks and no Task 2 script-inventory or script-usage failure.
 
-Runtime verification results: the prior PID-only/nine-key runs and all earlier
-routing observations are explicitly superseded. Under the final early-failure
-finalization structure, startup project
-`hyhome-crr-20260719-2111142-y1noqxim` passed in 71 seconds; recovery project
-`hyhome-crr-20260719-2188421-vietv7qq` passed
-restart/unseal/fresh-sentinel recovery in 104 seconds; and negative project
-`hyhome-crr-20260719-2281412-ho7cotsq` wrote only its scenario record and
-returned class `30` in 74 seconds. The negative run preserved the canonical
-recovery-ready handoff byte-for-byte at SHA-256
-`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`.
-Every final run recorded the exact 18-key contract with passed redaction and
-teardown; the task `/tmp` path and task-owner container/network/volume sets
-were empty after each execution.
+Runtime verification results: all prior PID-only/nine-key and pre-identity-
+hardening runs, including handoffs at SHA-256
+`7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`,
+`e78d1a0bf3470b14a545f4d99971c7b2b88a67e422937896632533ce1ebe9d64`,
+and `f6195165e46b6c2a6bc8e45eb0fa2f39beac65af60610292d4251420ea19b263`,
+are explicitly historical and superseded. The current identity-hardened rerun
+used startup project `hyhome-crr-20260719-2642602-fxq2siqi`, recovery project
+`hyhome-crr-20260719-2648660-ov2uzbas`, and timeout project
+`hyhome-crr-20260719-2661806-zqukerpv`. Startup and recovery passed; timeout
+returned class `30` and preserved the recovery-ready canonical byte-for-byte.
+The current canonical is mode 0600, 1,197 bytes, schema 2, and SHA-256
+`12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`.
+It records five healthy containers, five passed endpoints, and passed recovery,
+teardown, cleanup, and redaction. All current owner-scoped container, network,
+volume, and `/tmp` inventories are empty.
 Exit classes remain
 `0=pass`, `2=usage`, `10=preflight/scope`, `20=startup`, `30=readiness`,
 `40=recovery`, and `50=cleanup ambiguity`.
+
+Task 6 documentation, owner regeneration, safe gates, and whole-branch
+re-review are recorded by the Program Task. The controlled all-files wrapper
+remains blocked and `not_run`.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -278,17 +291,22 @@ Disposition: defer to the
 
 ## Review Evidence
 
-Implementation review verdict: static implementation and the three final
-schema-v2 runtime scenario gates completed under the early-failure finalization
-structure. The routing findings have a test-first implementation and live
-runtime response, and both terminal independent reviews pass.
+Implementation review verdict: static implementation and the three current
+schema-v2 runtime scenario gates pass under the independent manifest/config
+identity boundary. The routing findings have a test-first implementation and
+live runtime response. Historical terminal reviews pass only for their exact
+reviewed commits; the current hardening is covered by the terminal whole-branch
+reviews below.
 
 Specification review verdict: the earlier remediation review returned
 `APPROVED C0/I0/M0`; it is retained as historical pre-routing evidence. The
 first routing re-review was `CHANGES REQUIRED C0/I3/M0`. After remediation,
 the second re-review was `CHANGES REQUIRED C0/I2/M0` for signal cleanup and a
 stale Program Task statement. Both findings were remediated; the terminal
-specification review returned `APPROVED C0/I0/M0`.
+specification review returned `APPROVED C0/I0/M0` for the then-reviewed
+commits. Terminal specification review v5 returned `APPROVED C0/I0/M0` for the
+full branch range through `20022458` plus the final 26-document reconciliation
+diff, including `9838034c` and `14e1dd5d`.
 
 Quality/security review verdict: the earlier remediation review returned
 `APPROVED C0/I0/M0`; it is retained as historical pre-routing evidence. The
@@ -296,31 +314,43 @@ first routing quality review was `CHANGES REQUIRED C0/I2/M0`. After
 remediation, the second review was `CHANGES REQUIRED C0/I1/M0` only for the
 stale Program Task statement and accepted the code/test response. That finding
 was remediated; the terminal quality/security review returned
-`APPROVED C0/I0/M0`.
+`APPROVED C0/I0/M0` for the then-reviewed commits. Terminal quality/security
+review v3 returned `APPROVED C0/I0/M0` for the full branch range through
+`20022458` plus the then-current 26-document reconciliation diff.
 
-Findings and disposition: terminal routing review severities are specification
-`C0/I0/M0` and quality/security `C0/I0/M0`. The implementation response passes
-`35/35` focused tests and the document gates; all Task 2 findings are closed.
+Findings and disposition: terminal routing review severities were specification
+`C0/I0/M0` and quality/security `C0/I0/M0` for their historical exact range.
+The current implementation response passes `42/42` focused tests and the
+document gates. The current whole-branch review severities are specification
+v5 `C0/I0/M0` and quality/security v3 `C0/I0/M0`; earlier
+`CHANGES REQUIRED` iterations remain historical remediation evidence.
 
 ## Commit Ledger
 
-Commit identity: the branch commit carrying logical unit
-`feat(harness): add compose runtime acceptance`; its initial pre-reconciliation
-identity was `83298464` and the final identity is resolved from branch history.
+Original implementation identity:
+`e41f8f04d285fc1962f723d7ec8d80d314f9e422`
+(`feat(harness): add compose runtime acceptance`). The short identity
+`83298464` is historical only. The local-only boundary used RED `ba1ba382` and
+GREEN `7c6c4ea1`; current identity hardening is RED `9838034c` followed by
+GREEN `14e1dd5d`.
 
 Logical unit: `feat(harness): add compose runtime acceptance`.
 
-Commit validation: the three final routed runtime scenarios pass as recorded
-above, including scoped cleanup, redaction, and byte-identical ready handoff
-preservation. The latest early-failure routing remediation also passes the
-focused behavior suite and both terminal independent reviews.
+Commit validation: the three current routed runtime scenarios pass as recorded
+above, including independent manifest/config identity checks, scoped cleanup,
+redaction, and byte-identical ready handoff preservation. Focused/static gates
+pass; terminal whole-branch specification v5 and quality/security v3 reviews
+are APPROVED C0/I0/M0.
 
 ## Deferred and Blocked Items
 
 Deferred items: production/shared-host startup, broader profiles, data restore,
 remote observability, registry access, deployment, and live secret integration.
 
-Blocked items: none within the approved Task 2 local-isolated scope.
+Blocked items: implementation/runtime and current review have no remaining
+local blocker. The Task remains active under the Program lifecycle; the
+controlled wrapper is still blocked by the separate Task 3 and Task 5 domain
+outcomes.
 
 Deferral destination: data restore routes to [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
 remote or broader runtime requires a new approved design chain and Task.
