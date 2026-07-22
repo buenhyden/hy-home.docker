@@ -215,15 +215,42 @@ class SupplyChainPolicyTests(unittest.TestCase):
         path: pathlib.Path,
         *,
         mutation: str | None = None,
-    ) -> dict[str, str]:
-        layer_diff = b"deterministic-layer\n"
-        layer = gzip.compress(layer_diff, mtime=0)
+    ) -> dict[str, str | int]:
+        layer_payload = (
+            b"x" * 16384
+            if mutation == "oversized-layer"
+            else b"deterministic-layer\n"
+        )
+        layer_buffer = io.BytesIO()
+        with tarfile.open(
+            fileobj=layer_buffer, mode="w", format=tarfile.USTAR_FORMAT
+        ) as layer_archive:
+            layer_entry = tarfile.TarInfo("layer.txt")
+            layer_entry.mode = 0o644
+            layer_entry.uid = 0
+            layer_entry.gid = 0
+            layer_entry.uname = ""
+            layer_entry.gname = ""
+            layer_entry.mtime = 0
+            layer_entry.size = len(layer_payload)
+            layer_archive.addfile(layer_entry, io.BytesIO(layer_payload))
+        layer_diff = layer_buffer.getvalue()
+        if mutation == "corrupt-gzip":
+            layer = b"not-a-gzip-stream"
+        else:
+            layer = gzip.compress(layer_diff, mtime=0)
+            if mutation == "gzip-trailing-data":
+                layer += b"trailing-data"
         layer_digest = hashlib.sha256(layer).hexdigest()
         layer_diff_id = hashlib.sha256(layer_diff).hexdigest()
         diff_ids = (
             []
             if mutation == "rootfs-cardinality"
-            else [f"sha256:{layer_diff_id}"]
+            else [
+                "sha256:" + "0" * 64
+                if mutation == "diff-id-mismatch"
+                else f"sha256:{layer_diff_id}"
+            ]
         )
         config = json.dumps(
             {
@@ -342,6 +369,8 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "image_config_digest": f"sha256:{config_digest}",
             "oci_manifest_digest": f"sha256:{manifest_digest}",
             "layer_digest": f"sha256:{layer_digest}",
+            "layer_diff_id": f"sha256:{layer_diff_id}",
+            "layer_uncompressed_size": len(layer_diff),
         }
 
     def test_oci_archive_config_digest_is_bound_to_manifest(self) -> None:
@@ -428,6 +457,9 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "layer-media": "oci-layer-media-type-not-portable",
             "rootfs-cardinality": "oci-rootfs-layer-cardinality-mismatch",
             "rootfs-schema": "oci-config-rootfs-invalid",
+            "diff-id-mismatch": "oci-layer-diff-id-mismatch",
+            "corrupt-gzip": "oci-layer-gzip-invalid",
+            "gzip-trailing-data": "oci-layer-gzip-trailing-data",
         }
         for mutation, reason in cases.items():
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
@@ -441,6 +473,39 @@ class SupplyChainPolicyTests(unittest.TestCase):
                         source, target, "baseline"
                     )
                 self.assertFalse(target.exists())
+
+    def test_portable_converter_bounds_uncompressed_layer_size(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            source = root / "image.oci.tar"
+            target = root / "image.docker.tar"
+            expected = self._write_portable_oci_archive(
+                source, mutation="oversized-layer"
+            )
+            original = getattr(
+                self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES", None
+            )
+            setattr(
+                self.checker,
+                "OCI_LAYER_MAX_UNCOMPRESSED_BYTES",
+                int(expected["layer_uncompressed_size"]) - 1,
+            )
+            try:
+                with self.assertRaisesRegex(
+                    ValueError, "oci-layer-uncompressed-size-limit-exceeded"
+                ):
+                    self.checker.convert_oci_archive_to_docker_load_archive(
+                        source, target, "baseline"
+                    )
+            finally:
+                if original is None:
+                    delattr(
+                        self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES"
+                    )
+                else:
+                    self.checker.OCI_LAYER_MAX_UNCOMPRESSED_BYTES = original
+            self.assertFalse(target.exists())
 
     def test_portable_converter_rejects_non_role_local_reference_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

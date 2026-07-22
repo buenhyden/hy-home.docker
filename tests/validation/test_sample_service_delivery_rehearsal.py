@@ -1353,6 +1353,10 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir="/tmp") as raw:
             root = Path(raw)
             record = root / "rehearsal-record.json"
+            historical = b'{"historical":true,"schema_version":3}\n'
+            record.write_bytes(historical)
+            record.chmod(0o600)
+            historical_stat = record.stat()
             baseline_input = root / "verification-verdict.baseline.json"
             candidate_input = root / "verification-verdict.candidate.json"
             pair_input = root / "verification-verdict.pair.json"
@@ -1377,7 +1381,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             )
             failed = self.run_sourced(invalid_body)
             self.assertEqual(40, failed.returncode, failed.stdout + failed.stderr)
-            self.assertFalse(record.exists())
+            self.assertEqual(historical, record.read_bytes())
+            self.assertEqual(historical_stat.st_ino, record.stat().st_ino)
+            self.assertEqual(0o600, stat.S_IMODE(record.stat().st_mode))
             body = snapshot_body + textwrap.dedent(
                 f"""\
                 REHEARSAL_RECORD_PATH={record!s}
@@ -1398,6 +1404,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             )
             passed = self.run_sourced(body)
             self.assertEqual(0, passed.returncode, passed.stdout + passed.stderr)
+            self.assertNotEqual(historical, record.read_bytes())
+            self.assertNotEqual(historical_stat.st_ino, record.stat().st_ino)
             self.assertEqual(0o600, stat.S_IMODE(record.stat().st_mode))
             self.assertFalse(any(root.glob(".rehearsal-record.*")))
 
@@ -1413,20 +1421,96 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         self.assertIn("os.O_NOFOLLOW", publication)
         self.assertNotIn("os.replace(temporary, target)", publication)
 
-    def test_canonical_invalidation_uses_validated_parent_fd_relative_unlink(
+    def test_canonical_preparation_preserves_existing_evidence(
         self,
     ) -> None:
         script = SCRIPT.read_text(encoding="utf-8")
-        invalidation = script.split("prepare_canonical_record_path() {", 1)[1].split(
+        preparation = script.split("prepare_canonical_record_path() {", 1)[1].split(
             "\n}\n\npublish_rehearsal_record", 1
         )[0]
         self.assertIn(
-            "os.stat(target.name, dir_fd=fd, follow_symlinks=False)", invalidation
+            "os.stat(target.name, dir_fd=fd, follow_symlinks=False)", preparation
         )
-        self.assertIn("os.unlink(target.name, dir_fd=fd)", invalidation)
-        self.assertIn("os.fsync(fd)", invalidation)
-        self.assertNotIn("target.lstat()", invalidation)
-        self.assertNotIn("target.unlink()", invalidation)
+        self.assertNotIn("os.unlink(target.name, dir_fd=fd)", preparation)
+        self.assertNotIn("target.unlink()", preparation)
+
+        with tempfile.TemporaryDirectory(dir="/tmp") as raw:
+            root = Path(raw)
+            record = (
+                root
+                / "_workspace/repo-support"
+                / "task-2026-07-19-deployment-release-engineering-remediation"
+                / "delivery/rehearsal-record.json"
+            )
+            record.parent.mkdir(parents=True)
+            historical = b'{"historical":true,"schema_version":3}\n'
+            record.write_bytes(historical)
+            record.chmod(0o600)
+            before = record.stat()
+            result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    DRE_ROOT={root!s}
+                    DRE_RECORD_PATH_DEFAULT={record!s}
+                    prepare_canonical_record_path true
+                    """
+                )
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(historical, record.read_bytes())
+            self.assertEqual(before.st_ino, record.stat().st_ino)
+            self.assertEqual(0o600, stat.S_IMODE(record.stat().st_mode))
+
+    def test_canary_health_failure_records_failed_result_before_publication(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(dir="/tmp") as raw:
+            marker = Path(raw) / "published-result"
+            result = self.run_sourced(
+                textwrap.dedent(
+                    f"""\
+                    prepare_canonical_record_path() {{ :; }}
+                    validate_and_snapshot_delivery_inputs() {{ :; }}
+                    dre_prepare_identity() {{
+                      TASK_ID=2026-07-19-dre
+                      BASELINE_PROJECT=hyhome-dre-20260719-12345-baseline
+                      CANARY_PROJECT=hyhome-dre-20260719-12345-canary
+                    }}
+                    assert_loopback_ports_available() {{ :; }}
+                    validate_local_image_objects() {{ :; }}
+                    start_baseline() {{ :; }}
+                    start_canary() {{ :; }}
+                    HEALTH_OBSERVATIONS=0
+                    wait_container_and_http_health() {{
+                      ((HEALTH_OBSERVATIONS += 1))
+                      (( HEALTH_OBSERVATIONS == 1 )) && return 0
+                      return 30
+                    }}
+                    inject_canary_timeout_when_requested() {{ :; }}
+                    rollback_to_baseline_digest() {{
+                      PROMOTION_DECISION=not_promoted
+                      ROLLBACK_DECISION=rolled_back_to_baseline
+                    }}
+                    verify_post_rollback_health() {{
+                      POST_ROLLBACK_HEALTH=passed
+                    }}
+                    cleanup_owned_projects() {{ CLEANUP_COMPLETE=true; }}
+                    write_rehearsal_record() {{
+                      [[ "$CANARY_RESULT" == failed ]] || return 99
+                      [[ "$REHEARSAL_RESULT" == rolled_back ]] || return 99
+                      printf '%s|%s|%s|%s\n' \
+                        "$BASELINE_RESULT" "$CANARY_RESULT" \
+                        "$ROLLBACK_DECISION" "$REHEARSAL_RESULT" >{marker!s}
+                    }}
+                    dre_rehearse
+                    """
+                )
+            )
+            self.assertEqual(30, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(
+                "passed|failed|rolled_back_to_baseline|rolled_back\n",
+                marker.read_text(encoding="utf-8"),
+            )
 
     def test_readiness_requires_exact_passing_schema_and_cleanup(self) -> None:
         canonical = ROOT / "_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
