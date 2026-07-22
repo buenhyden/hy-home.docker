@@ -22,6 +22,7 @@ TOOL_REGISTRY = ROOT / "infra/supply-chain.tool-images.json"
 POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
 EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
+SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
 
 SOURCE_REVISION = "0123456789abcdef0123456789abcdef01234567"
 BASELINE_SUBJECT = {
@@ -525,16 +526,22 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
 
     def test_missing_db_seed_fails_before_any_runtime_container(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            output = pathlib.Path(temporary) / "supply-chain"
-            output.mkdir(mode=0o700)
+            base = pathlib.Path(temporary) / "repo"
+            base.mkdir(mode=0o700)
+            helper = pathlib.Path(temporary) / "resolve-seed"
+            helper.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
+            helper.chmod(0o755)
             docker_marker = pathlib.Path(temporary) / "docker-called"
             result = self.run_wrapper_library(
                 f"source {shlex.quote(str(WRAPPER))}\n"
-                f"OUTPUT_DIR={shlex.quote(str(output))}\n"
+                f"BASE_DIR={shlex.quote(str(base))}\n"
+                f"GRYPE_DB_SEED_HELPER={shlex.quote(str(helper))}\n"
+                "GRYPE_DB_SEED_RELATIVE=_workspace/repo-support/task/grype-db-seed\n"
                 f"docker() {{ touch {shlex.quote(str(docker_marker))}; }}\n"
                 "assert_grype_db_seed_available\n"
             )
             self.assertEqual(10, result.returncode, result.stderr)
+            self.assertIn("grype-db-seed-unavailable-advisory-blocked", result.stderr)
             self.assertFalse(docker_marker.exists())
 
         text = WRAPPER.read_text(encoding="utf-8")
@@ -553,6 +560,57 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             advisory.index("assert_grype_db_seed_available"),
             advisory.index("build_role_image baseline"),
         )
+
+    def test_advisory_resolves_and_revalidates_only_the_task7_seed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "repo"
+            cache = base / "private-generation/cache"
+            (cache / "6").mkdir(parents=True, mode=0o700)
+            helper_log = pathlib.Path(temporary) / "helper.log"
+            helper = pathlib.Path(temporary) / "resolve-seed"
+            helper.write_text(
+                "#!/usr/bin/env bash\n"
+                f"printf '%s\\n' \"$*\" >> {shlex.quote(str(helper_log))}\n"
+                '[[ "$1" == --resolve-current ]] || exit 91\n'
+                f"printf '%s\\n' {shlex.quote(str(cache))}\n",
+                encoding="utf-8",
+            )
+            helper.chmod(0o755)
+            private_copy = pathlib.Path(temporary) / "private-copy"
+            private_copy.mkdir(mode=0o700)
+            docker_log = pathlib.Path(temporary) / "docker.log"
+            result = self.run_wrapper_library(
+                f"source {shlex.quote(str(WRAPPER))}\n"
+                f"BASE_DIR={shlex.quote(str(base))}\n"
+                f"GRYPE_DB_SEED_HELPER={shlex.quote(str(helper))}\n"
+                "GRYPE_DB_SEED_RELATIVE=_workspace/repo-support/task/grype-db-seed\n"
+                f"grype_db_dir={shlex.quote(str(private_copy))}\n"
+                "docker() {\n"
+                f"  printf '%s\\n' \"$*\" >> {shlex.quote(str(docker_log))}\n"
+                "}\n"
+                "assert_grype_db_seed_available\n"
+                f"test \"$grype_db_seed_source\" = {shlex.quote(str(cache))}\n"
+                "seed_private_grype_db_cache\n"
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            helper_calls = helper_log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(2, len(helper_calls))
+            self.assertTrue(
+                all(
+                    call
+                    == "--resolve-current "
+                    f"{base} _workspace/repo-support/task/grype-db-seed"
+                    for call in helper_calls
+                )
+            )
+            docker_call = docker_log.read_text(encoding="utf-8")
+            self.assertIn("--network none", docker_call)
+            self.assertIn(f"source={cache},target=/seed,readonly", docker_call)
+
+        text = WRAPPER.read_text(encoding="utf-8")
+        self.assertIn(f'GRYPE_DB_SEED_HELPER="$BASE_DIR/{SEED_HELPER.relative_to(ROOT)}"', text)
+        self.assertIn("task-2026-07-23-security-supply-chain-runtime-closure", text)
+        self.assertGreaterEqual(text.count("--resolve-current"), 2)
 
     def test_git_context_rejection_maps_to_class_10_and_tamper_to_50(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
