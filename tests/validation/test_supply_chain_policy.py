@@ -23,6 +23,20 @@ POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
 EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
 SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
+SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
+
+RUNTIME_MATERIAL_REF = (
+    "nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@"
+    "sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
+)
+RUNTIME_MATERIAL_REPO_DIGEST = (
+    "nginxinc/nginx-unprivileged@"
+    "sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
+)
+RUNTIME_MATERIAL_CONFIG_ID = (
+    "sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
+)
+STALE_RUNTIME_MATERIAL = "nginxinc/nginx-unprivileged:1.27.3-alpine"
 
 SOURCE_REVISION = "0123456789abcdef0123456789abcdef01234567"
 BASELINE_SUBJECT = {
@@ -413,6 +427,26 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             ],
             dockerignore.read_text(encoding="utf-8").splitlines(),
         )
+
+    def test_runtime_material_is_exact_current_official_pin(self) -> None:
+        wrapper = WRAPPER.read_text(encoding="utf-8")
+        dockerfile = SAMPLE_DOCKERFILE.read_text(encoding="utf-8")
+
+        self.assertIn(
+            f'readonly RUNTIME_MATERIAL_REF="{RUNTIME_MATERIAL_REF}"',
+            wrapper,
+        )
+        self.assertIn(
+            f'readonly RUNTIME_MATERIAL_REPO_DIGEST="{RUNTIME_MATERIAL_REPO_DIGEST}"',
+            wrapper,
+        )
+        self.assertIn(
+            f'readonly RUNTIME_MATERIAL_CONFIG_ID="{RUNTIME_MATERIAL_CONFIG_ID}"',
+            wrapper,
+        )
+        self.assertIn(f"FROM {RUNTIME_MATERIAL_REF} AS runtime", dockerfile)
+        self.assertNotIn(STALE_RUNTIME_MATERIAL, wrapper)
+        self.assertNotIn(STALE_RUNTIME_MATERIAL, dockerfile)
 
     def test_exact_local_image_gate_precedes_build_or_tool_start(self) -> None:
         text = WRAPPER.read_text(encoding="utf-8")
