@@ -211,13 +211,16 @@ absent; it therefore never converts an exception-approved scan into a Task 5
 consumer verdict.
 
 Current verification results: deterministic implementation, focused/static
-checks, and preflight pass at 44/44. The hardened committed-tree advisory exits
-class `10` with `grype-db-seed-unavailable-advisory-blocked` before Docker;
-the approved one-time seed and a reusable local database are absent. The prior
-class-40 14-Critical/73-High/no-exception policy rejection is preserved only as
-historical pre-hardening evidence. No accepted baseline/candidate consumer
-verdicts exist, no exception is invented, and Task 5 remains fail-closed. Exit
-classes are `0=pass/accepted`,
+checks, and preflight pass. Task 7 later supplied the approved reusable
+database seed, official runtime material remediation, and Cosign v3 offline
+signing correction. The current committed-head advisory at
+`6803949d92b5daeb522b328b098c5b357abbf4d6` exits `0` with accepted baseline
+and candidate verdicts, no exception, and `redaction_status=passed`; the
+schema-v2 pair SHA-256 is
+`729ca2e33482d08939a68446761cf0964c6f91b07e2c1b5c5b263cf52e1bedab`.
+The prior class-40 14-Critical/73-High/no-exception policy rejection and class
+10 missing-seed result remain historical evidence only. Task 5 runtime remains
+separately not run. Exit classes are `0=pass/accepted`,
 `2=usage`, `10=policy/preflight`, `20=build/export`, `30=SBOM`,
 `40=vulnerability verdict`, `50=provenance`, `60=signature verification`, and
 `70=Scorecard observation`.

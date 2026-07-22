@@ -1323,14 +1323,12 @@ GREEN commit.
 | Item | Area | Status | Notes |
 | --- | --- | --- | --- |
 | Grype seed and material remediation | Spec 126 / Task 7 | Active; implementation evidence in progress | Task 7 added a reproducible pinned-Grype seed harness, recorded the approved current database identity, updated the sample runtime material to the official `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim` digest, and refreshed directly affected generated owners. The first post-material advisory reached Cosign signing and failed class 60 before accepted-pair publication. |
-| Cosign v3 offline signing | Spec 126 / Task 7 | Corrected; full advisory not rerun | Pinned Cosign v3.0.6 help and local smoke showed the old `--tlog-upload=false` path is invalid and `--use-signing-config=false` alone still attempts tlog upload. The corrected local-key path uses a no-Rekor signing config, `sign-blob --signing-config ... --new-bundle-format=false --bundle ...`, extracts `messageSignature.signature`, and verifies with `verify-blob --insecure-ignore-tlog=true --signature ...`. Focused Cosign regressions pass 3/3, full supply-chain tests pass 49/49, the policy checker passes 13 fixtures, and Bash syntax/Python compile/diff hygiene pass. A one-blob pinned Cosign smoke verified the original and rejected tamper. No full advisory rerun, Task 5 runtime, controlled all-files wrapper, publication, push, PR, merge, release, deployment, or credential mutation occurred. |
+| Cosign v3 offline signing and accepted pair | Spec 126 / Task 7 | Corrected; current full advisory passed | Pinned Cosign v3.0.6 help and local smoke showed the old `--tlog-upload=false` path is invalid and `--use-signing-config=false` alone still attempts tlog upload. The corrected local-key path uses a no-Rekor signing config, `sign-blob --signing-config ... --new-bundle-format=false --bundle ...`, extracts `messageSignature.signature`, and verifies with `verify-blob --insecure-ignore-tlog=true --signature ...`. Focused Cosign regressions pass 3/3, full supply-chain tests pass 49/49, the policy checker passes 13 fixtures, and Bash syntax/Python compile/diff hygiene pass. A one-blob pinned Cosign smoke verified the original and rejected tamper; the subsequent current full advisory at commit `6803949d92b5daeb522b328b098c5b357abbf4d6` passed for baseline and candidate, published a mode-0600 schema-v2 pair with SHA-256 `729ca2e33482d08939a68446761cf0964c6f91b07e2c1b5c5b263cf52e1bedab`, and left task-owned containers and `/tmp/hyhome-supply-chain.*` inventory empty. Task 5 runtime, controlled all-files wrapper, push, PR, merge, release, deployment, and credential mutation did not occur. |
 
 ## Open Issues
 
-- Approved/current offline Grype database seed and reusable local database are
-  absent; Task 3 cannot produce a current policy pass or accepted pair.
-- Task 5 positive promotion and injected rollback runtime remain blocked on the
-  accepted verdicts and pair manifest.
+- Task 3 now has a current accepted verdict pair, but Task 5 positive promotion
+  and injected rollback runtime have not yet run against it.
 - The controlled all-files wrapper is **BLOCKED** until all four domains pass
   or a separate explicit gate change is approved. The clean pre-wrapper commit
   is necessary but not sufficient.
