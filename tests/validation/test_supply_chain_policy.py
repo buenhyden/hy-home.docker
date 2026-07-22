@@ -24,6 +24,7 @@ EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 COSIGN_OFFLINE_SIGNING_CONFIG = (
     ROOT / "infra/supply-chain.cosign-offline-signing-config.json"
 )
+COSIGN_OFFLINE_TRUSTED_ROOT = ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
 SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
@@ -982,12 +983,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         loader = text.split("load_role_image_object() {", maxsplit=1)[1].split(
             "\n}\n\nvalidate_live_sbom", maxsplit=1
         )[0]
-        self.assertIn("docker buildx build --builder default --network=none --pull=false --load", loader)
-        self.assertIn("--tag \"$tag\"", loader)
-        self.assertIn("docker image inspect --format", loader)
-        self.assertIn('org.hyhome.delivery.rehearsal.role', loader)
-        self.assertIn('"$tag"', loader)
-        self.assertIn("sha256:[0-9a-f]*\" $role\"", loader)
+        self.assertIn("docker image load --input", loader)
+        self.assertIn("docker image inspect --format '{{.Id}}'", loader)
+        self.assertIn('"${IMAGE_CONFIG_DIGEST[$role]}"', loader)
         self.assertIn("role-image-load-identity-mismatch", loader)
 
     def test_cosign_v3_offline_signing_uses_explicit_empty_service_config(self) -> None:
@@ -1022,9 +1020,17 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             sign_commands[0],
         )
 
-    def test_cosign_v3_offline_signing_extracts_signature_and_ignores_tlog_on_verify(
+    def test_cosign_v3_offline_signing_uses_bundle_and_explicit_trusted_root(
         self,
     ) -> None:
+        trusted_root = json.loads(
+            COSIGN_OFFLINE_TRUSTED_ROOT.read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            {"mediaType": "application/vnd.dev.sigstore.trustedroot+json;version=0.1"},
+            trusted_root,
+        )
+
         text = WRAPPER.read_text(encoding="utf-8")
         signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
             "\n}\n\nwrite_verification_verdict", maxsplit=1
@@ -1042,14 +1048,28 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         ]
         self.assertEqual(1, len(sign_commands))
         self.assertEqual(3, len(verify_commands))
-        self.assertIn("--new-bundle-format=false", sign_commands[0])
-        self.assertIn('bundle.get("messageSignature", {}).get("signature")', signing)
-        self.assertIn("base64.b64decode(signature, validate=True)", signing)
+        self.assertNotIn("--new-bundle-format=false", sign_commands[0])
+        self.assertIn(
+            "--trusted-root /policy/cosign-offline-trusted-root.json",
+            sign_commands[0],
+        )
+        self.assertIn(
+            "target=/policy/cosign-offline-trusted-root.json,readonly",
+            sign_commands[0],
+        )
+        self.assertNotIn('bundle.get("messageSignature", {}).get("signature")', signing)
+        self.assertNotIn("cosign.signature", signing)
         for command in verify_commands:
             self.assertIn("--network none", command)
             self.assertIn("--insecure-ignore-tlog=true", command)
-            self.assertIn("--signature /workspace/cosign.signature", command)
-            self.assertNotIn("--bundle", command)
+            self.assertIn(
+                "--trusted-root /policy/cosign-offline-trusted-root.json", command
+            )
+            self.assertIn(
+                "target=/policy/cosign-offline-trusted-root.json,readonly", command
+            )
+            self.assertIn("--bundle /workspace/cosign.bundle.json", command)
+            self.assertNotIn("--signature", command)
 
     def test_cross_role_signature_acceptance_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
