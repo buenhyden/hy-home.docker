@@ -629,6 +629,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "}\n"
                 "capture_build_context_snapshot() { BUILD_CONTEXT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee; }\n"
                 "ensure_advisory_prerequisites() { :; }\n"
+                "assert_grype_db_seed_available() { :; }\n"
                 "assert_local_image_identities() { :; }\n"
                 "seed_private_grype_db_cache() { :; }\n"
                 "remove_legacy_runtime_artifacts() { :; }\n"

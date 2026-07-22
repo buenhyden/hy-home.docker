@@ -31,6 +31,7 @@ grype_db_dir=""
 grype_db_status=""
 grype_db_identity=""
 private_key_dir=""
+tool_tmp_dir=""
 run_verdict_dir=""
 build_context_snapshot=""
 BUILD_CONTEXT_SHA256=""
@@ -101,9 +102,11 @@ prepare_transient_directory() {
   grype_db_status="$runtime_dir/grype-db-status.txt"
   grype_db_identity="$runtime_dir/grype-db-identity.json"
   private_key_dir="$runtime_dir/keys"
+  tool_tmp_dir="$runtime_dir/tool-tmp"
   run_verdict_dir="$runtime_dir/verdicts"
   build_context_snapshot="$runtime_dir/build-context.json"
-  mkdir -m 700 "$artifact_root" "$grype_db_dir" "$private_key_dir" "$run_verdict_dir"
+  mkdir -m 700 "$artifact_root" "$grype_db_dir" "$private_key_dir" "$tool_tmp_dir" "$run_verdict_dir"
+  mkdir -m 700 "$tool_tmp_dir/.cache"
   mkdir -m 700 "$artifact_root/baseline" "$artifact_root/candidate"
 }
 
@@ -115,6 +118,7 @@ cleanup_transient_state() {
   artifact_root=""
   grype_db_dir=""
   private_key_dir=""
+  tool_tmp_dir=""
   run_verdict_dir=""
   build_context_snapshot=""
 }
@@ -193,10 +197,15 @@ ensure_advisory_prerequisites() {
   assert_default_buildx_offline_capable
 }
 
-seed_private_grype_db_cache() {
+assert_grype_db_seed_available() {
   local seed_dir="${HYHOME_GRYPE_DB_CACHE_SOURCE:-$OUTPUT_DIR/grype-db-cache}"
   [[ -d "$seed_dir" && ! -L "$seed_dir" ]] || fail "$EXIT_POLICY" "grype-db-seed-unavailable-advisory-blocked"
-  [[ -n "$(find "$seed_dir" -mindepth 1 -print -quit 2>/dev/null)" ]] || fail "$EXIT_POLICY" "grype-db-seed-empty-advisory-blocked"
+  [[ -d "$seed_dir/6" && ! -L "$seed_dir/6" ]] || fail "$EXIT_POLICY" "grype-db-seed-schema-invalid-advisory-blocked"
+}
+
+seed_private_grype_db_cache() {
+  local seed_dir="${HYHOME_GRYPE_DB_CACHE_SOURCE:-$OUTPUT_DIR/grype-db-cache}"
+  assert_grype_db_seed_available
   docker run --pull=never --rm --network none --user 0:0 --env "TARGET_UID=$(id -u)" --env "TARGET_GID=$(id -g)" --mount "type=bind,source=$seed_dir,target=/seed,readonly" --mount "type=bind,source=$grype_db_dir,target=/cache" "$BUILD_MATERIAL_REF" sh -ceu 'cp -a /seed/. /cache/; chown -R "$TARGET_UID:$TARGET_GID" /cache; find /cache -type d -exec chmod 700 {} +; find /cache -type f -exec chmod 600 {} +' || fail "$EXIT_POLICY" "grype-db-private-seed-failed"
 }
 
@@ -337,11 +346,11 @@ PY
 generate_cyclonedx_and_grype_verdict() {
   local role="$1" role_dir
   role_dir="$(role_artifact_dir "$role")"
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env SYFT_CHECK_FOR_APP_UPDATE=false --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref syft)" "oci-archive:/workspace/image.oci.tar" -o cyclonedx-json >"$role_dir/sbom.cdx.json" || fail "$EXIT_SBOM" "sbom-generation-failed"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env SYFT_CHECK_FOR_APP_UPDATE=false --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref syft)" "oci-archive:/workspace/image.oci.tar" -o cyclonedx-json >"$role_dir/sbom.cdx.json" || fail "$EXIT_SBOM" "sbom-generation-failed"
   chmod 600 "$role_dir/sbom.cdx.json"
   bind_sbom_subject "$role" || fail "$EXIT_SBOM" "sbom-subject-binding-failed"
   validate_live_sbom "$role" || fail "$EXIT_SBOM" "sbom-subject-mismatch"
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref grype)" "sbom:/workspace/sbom.cdx.json" -o json >"$role_dir/grype.raw.json" || fail "$EXIT_VULNERABILITY" "grype-advisory-db-or-scan-unavailable"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$(tool_ref grype)" "sbom:/workspace/sbom.cdx.json" -o json >"$role_dir/grype.raw.json" || fail "$EXIT_VULNERABILITY" "grype-advisory-db-or-scan-unavailable"
   chmod 600 "$role_dir/grype.raw.json"
   write_redacted_grype_input "$role" || fail "$EXIT_VULNERABILITY" "grype-redaction-failed"
   evaluate_live_grype "$role"
@@ -365,7 +374,7 @@ PY
 }
 
 record_grype_db_identity() {
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" "$(tool_ref grype)" db status >"$grype_db_status" || fail "$EXIT_POLICY" "grype-db-identity-unavailable"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env GRYPE_CHECK_FOR_APP_UPDATE=false --env GRYPE_DB_CACHE_DIR=/grype-db-cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$grype_db_dir,target=/grype-db-cache,readonly" "$(tool_ref grype)" db status >"$grype_db_status" || fail "$EXIT_POLICY" "grype-db-identity-unavailable"
   chmod 600 "$grype_db_status"
   python3 - "$grype_db_status" "$grype_db_identity" <<'PY'
 import json
@@ -466,17 +475,17 @@ sign_and_verify_archive() {
   other_dir="$(role_artifact_dir "$other_role")"
   cosign="$(tool_ref cosign)"
   if [[ ! -f "$private_key_dir/cosign.key" ]]; then
-    docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env COSIGN_PASSWORD= --mount "type=bind,source=$private_key_dir,target=/keys" "$cosign" generate-key-pair --output-key-prefix /keys/cosign || fail "$EXIT_SIGNATURE" "ephemeral-key-generation-failed"
+    docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env COSIGN_PASSWORD= --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys" "$cosign" generate-key-pair --output-key-prefix /keys/cosign || fail "$EXIT_SIGNATURE" "ephemeral-key-generation-failed"
   fi
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env COSIGN_PASSWORD= --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace" "$cosign" sign-blob --tlog-upload=false --key /keys/cosign.key --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signing-failed"
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signature-verification-failed"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env COSIGN_PASSWORD= --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace" "$cosign" sign-blob --tlog-upload=false --key /keys/cosign.key --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signing-failed"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signature-verification-failed"
   cp "$role_dir/image.oci.tar" "$role_dir/tampered.oci.tar"
   chmod 600 "$role_dir/tampered.oci.tar"
   printf 'tamper' >>"$role_dir/tampered.oci.tar"
-  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/tampered.oci.tar; then
+  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/tampered.oci.tar; then
     fail "$EXIT_SIGNATURE" "tampered-archive-accepted"
   fi
-  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" --mount "type=bind,source=$other_dir,target=/other,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /other/image.oci.tar; then
+  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" --mount "type=bind,source=$other_dir,target=/other,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /other/image.oci.tar; then
     fail "$EXIT_SIGNATURE" "wrong-subject-archive-accepted"
   fi
 }
@@ -517,6 +526,7 @@ run_advisory() {
   prepare_transient_directory
   capture_build_context_snapshot
   ensure_advisory_prerequisites
+  assert_grype_db_seed_available
   assert_local_image_identities
   seed_private_grype_db_cache
   remove_legacy_runtime_artifacts
