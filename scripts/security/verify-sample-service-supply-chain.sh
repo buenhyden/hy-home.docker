@@ -108,7 +108,7 @@ load_tool_registry() {
 }
 
 validate_policy_and_exceptions() {
-  [[ -f "$POLICY" && -f "$TASK_DOC" ]] || fail "$EXIT_POLICY" "policy-or-task-boundary-missing"
+  [[ -f "$POLICY" && -f "$COSIGN_OFFLINE_SIGNING_CONFIG" && -f "$COSIGN_OFFLINE_TRUSTED_ROOT" && -f "$TASK_DOC" ]] || fail "$EXIT_POLICY" "policy-task-or-cosign-config-boundary-missing"
   python3 "$CHECKER" --check >/dev/null || fail "$EXIT_POLICY" "policy-or-exception-invalid"
 }
 
@@ -296,11 +296,13 @@ derive_subject_tuple() {
 }
 
 load_role_image_object() {
-  local role="$1" role_dir observed
+  local role="$1" role_dir observed tag label
   role_dir="$(role_artifact_dir "$role")"
   [[ -s "$role_dir/image.oci.tar" && ! -L "$role_dir/image.oci.tar" ]] || fail "$EXIT_BUILD" "oci-archive-missing"
-  docker image load --input "$role_dir/image.oci.tar" >/dev/null || fail "$EXIT_BUILD" "role-image-load-failed"
-  observed="$(docker image inspect --format '{{.Id}}' "${IMAGE_CONFIG_DIGEST[$role]}")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
+  label="org.hyhome.delivery.rehearsal.role=${role}"
+  tag="hyhome-local/sample-web-service:${SOURCE_REVISION}-${role}"
+  docker buildx build --builder default --network=none --pull=false --load --tag "$tag" --label "$label" --file Dockerfile - <"$build_context_archive" >/dev/null || fail "$EXIT_BUILD" "role-image-load-failed"
+  observed="$(docker image inspect --format '{{.Id}}' "$tag")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
   [[ -n "$observed" && "$observed" != *$'\n'* && "$observed" == "${IMAGE_CONFIG_DIGEST[$role]}" ]] || fail "$EXIT_BUILD" "role-image-load-identity-mismatch"
 }
 

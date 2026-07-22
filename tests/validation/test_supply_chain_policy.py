@@ -968,7 +968,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             )
             self.assertEqual(0, result.returncode, result.stderr)
 
-    def test_cosign_v3_offline_signing_drops_removed_tlog_upload_flag(self) -> None:
+    def test_cosign_v3_offline_signing_drops_deprecated_tlog_upload_flag(self) -> None:
         text = WRAPPER.read_text(encoding="utf-8")
         signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
             "\n}\n\nwrite_verification_verdict", maxsplit=1
@@ -982,8 +982,10 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         loader = text.split("load_role_image_object() {", maxsplit=1)[1].split(
             "\n}\n\nvalidate_live_sbom", maxsplit=1
         )[0]
-        self.assertIn("docker image load --input", loader)
+        self.assertIn("docker buildx build --builder default --network=none --pull=false --load", loader)
+        self.assertIn("--tag \"$tag\"", loader)
         self.assertIn("docker image inspect --format '{{.Id}}'", loader)
+        self.assertIn('"$tag"', loader)
         self.assertIn('"${IMAGE_CONFIG_DIGEST[$role]}"', loader)
         self.assertIn("role-image-load-identity-mismatch", loader)
 
@@ -1043,6 +1045,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         self.assertIn('bundle.get("messageSignature", {}).get("signature")', signing)
         self.assertIn("base64.b64decode(signature, validate=True)", signing)
         for command in verify_commands:
+            self.assertIn("--network none", command)
             self.assertIn("--insecure-ignore-tlog=true", command)
             self.assertIn("--signature /workspace/cosign.signature", command)
             self.assertNotIn("--bundle", command)
