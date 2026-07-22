@@ -12,6 +12,7 @@ CHECKER="$BASE_DIR/scripts/validation/check-supply-chain-policy.py"
 GRYPE_DB_SEED_HELPER="$BASE_DIR/scripts/validation/grype_db_seed.py"
 TOOL_REGISTRY="$BASE_DIR/infra/supply-chain.tool-images.json"
 POLICY="$BASE_DIR/infra/supply-chain.sample-service-policy.json"
+COSIGN_OFFLINE_SIGNING_CONFIG="$BASE_DIR/infra/supply-chain.cosign-offline-signing-config.json"
 TASK_DOC="$BASE_DIR/docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md"
 OUTPUT_RELATIVE="_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
 OUTPUT_DIR="$BASE_DIR/$OUTPUT_RELATIVE"
@@ -520,15 +521,34 @@ sign_and_verify_archive() {
   if [[ ! -f "$private_key_dir/cosign.key" ]]; then
     docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env COSIGN_PASSWORD= --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys" "$cosign" generate-key-pair --output-key-prefix /keys/cosign || fail "$EXIT_SIGNATURE" "ephemeral-key-generation-failed"
   fi
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env COSIGN_PASSWORD= --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace" "$cosign" sign-blob --tlog-upload=false --key /keys/cosign.key --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signing-failed"
-  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signature-verification-failed"
+  [[ -f "$COSIGN_OFFLINE_SIGNING_CONFIG" ]] || fail "$EXIT_SIGNATURE" "cosign-offline-signing-config-missing"
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --env COSIGN_PASSWORD= --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace" --mount "type=bind,source=$COSIGN_OFFLINE_SIGNING_CONFIG,target=/policy/cosign-offline-signing-config.json,readonly" "$cosign" sign-blob --signing-config /policy/cosign-offline-signing-config.json --new-bundle-format=false --key /keys/cosign.key --bundle /workspace/cosign.bundle.json /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signing-failed"
+  python3 - "$role_dir/cosign.bundle.json" "$role_dir/cosign.signature" <<'PY' || fail "$EXIT_SIGNATURE" "archive-signature-extraction-failed"
+import base64
+import json
+import pathlib
+import sys
+
+bundle = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+signature = bundle.get("messageSignature", {}).get("signature")
+if not isinstance(signature, str) or not signature:
+    raise SystemExit("bundle messageSignature.signature missing")
+try:
+    base64.b64decode(signature, validate=True)
+except Exception as exc:
+    raise SystemExit(f"bundle signature is not base64: {exc}") from exc
+path = pathlib.Path(sys.argv[2])
+path.write_text(signature + "\n", encoding="utf-8")
+path.chmod(0o600)
+PY
+  docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --insecure-ignore-tlog=true --key /keys/cosign.pub --signature /workspace/cosign.signature /workspace/image.oci.tar || fail "$EXIT_SIGNATURE" "archive-signature-verification-failed"
   cp "$role_dir/image.oci.tar" "$role_dir/tampered.oci.tar"
   chmod 600 "$role_dir/tampered.oci.tar"
   printf 'tamper' >>"$role_dir/tampered.oci.tar"
-  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /workspace/tampered.oci.tar; then
+  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" "$cosign" verify-blob --insecure-ignore-tlog=true --key /keys/cosign.pub --signature /workspace/cosign.signature /workspace/tampered.oci.tar; then
     fail "$EXIT_SIGNATURE" "tampered-archive-accepted"
   fi
-  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" --mount "type=bind,source=$other_dir,target=/other,readonly" "$cosign" verify-blob --key /keys/cosign.pub --bundle /workspace/cosign.bundle.json /other/image.oci.tar; then
+  if docker run --pull=never --rm --network none --user "$(id -u):$(id -g)" --env HOME=/tmp --env XDG_CACHE_HOME=/tmp/.cache --mount "type=bind,source=$tool_tmp_dir,target=/tmp" --mount "type=bind,source=$private_key_dir,target=/keys,readonly" --mount "type=bind,source=$role_dir,target=/workspace,readonly" --mount "type=bind,source=$other_dir,target=/other,readonly" "$cosign" verify-blob --insecure-ignore-tlog=true --key /keys/cosign.pub --signature /workspace/cosign.signature /other/image.oci.tar; then
     fail "$EXIT_SIGNATURE" "wrong-subject-archive-accepted"
   fi
 }

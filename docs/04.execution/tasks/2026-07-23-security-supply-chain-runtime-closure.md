@@ -165,6 +165,7 @@ keys, tokens, credentials, response bodies, and shell history are prohibited.
 | 2026-07-23 | `T-SSC-008` seed and first advisory | The one approved pinned-Grype update published schema `v6.1.9`, database build `2026-07-22T07:06:24Z`, package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`, and cache-tree SHA-256 `d4ddbc75da746cff08eb90e6ed998dd82a888dd242055114770bf2ed197aeb52`. The first hardened offline advisory then rejected the baseline at class 40 with 14 Critical, 73 High, 69 Medium, and 11 Low findings, no exception, and no candidate or pair publication. |
 | 2026-07-23 | `T-SSC-009` official runtime remediation | Read-only official registry inspection selected the versioned slim multi-architecture index `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5`; linux/amd64 child is `sha256:bc38ccd3a649cce1062519734e1ad088bf0cc20d6cb5f2f3645f64466ab27c57`. One exact-digest pull resolved local RepoDigest and config ID to the approved index digest. A no-pull, network-none isolated build plus pinned Syft/Grype scan against the validated seed returned 0 Critical, 0 High, 3 Medium, 0 Low, and policy accepted. It did not publish advisory summaries or an accepted pair. The optional Alpine candidate was inspected but neither pulled nor changed. |
 | 2026-07-23 | Material source gates | Combined focused tests pass 54/54 and policy fixtures pass 13/13. Python compilation, Ruff, Bash syntax, ShellCheck, generated supply-chain summary freshness, seed preflight, exact-image preflight, fixture-only policy, Markdownlint, Hadolint, metadata 5/0, traceability 46/0, alignment 667 documents and 5,519 links with zero failures, Foundation manifest/summary/promoted checks, and impacted lifecycle pass. A mistakenly attempted nonexistent `check-task-template-compliance.py` command exited 2 without changing repository state; the canonical metadata contract checker passed instead. Advisory `shfmt -d` reported existing whole-wrapper formatting outside the three changed identity constants, so no unrelated reformat was applied; Bash syntax and ShellCheck remain clean. Task7's direct README-consumer drift was corrected separately through the canonical Foundation scan in commit `c7ebb9b2`; generated owners were refreshed in `8481df02`; the seed script inventory was reconciled in `96464337`. The final dependency-locked aggregate used `scripts/requirements.txt`, passed every section with `failures=0`, and reported only the configured task-directory budget warning. |
+| 2026-07-23 | Cosign v3 offline signing correction | The first post-material advisory reached signature verification and failed class `60` because Cosign v3.0.6 no longer supports the historical `--tlog-upload=false` flow. Pinned local `sign-blob`, `verify-blob`, and `signing-config create` help plus a one-blob smoke established the current offline path: a tracked signing config with no Rekor service, `sign-blob --signing-config ... --new-bundle-format=false --bundle ...`, extraction of `messageSignature.signature`, and `verify-blob --insecure-ignore-tlog=true --signature ...`. The focused Cosign regressions pass 3/3, the full supply-chain suite passes 49/49, the checker passes 13 fixtures, Bash syntax/Python compile/diff hygiene pass, and the independent one-blob smoke verifies the original blob while rejecting tamper. The full advisory, accepted-pair publication, Task 5 runtime, and controlled all-files wrapper were not rerun in this correction. |
 
 ## Verification Evidence
 
@@ -187,12 +188,14 @@ The approved networked commands are invoked only after the seed harness tests
 and preflight pass. Actual commands, exits, public identities, minimized
 checksums, verdicts, and cleanup results will be appended without raw logs.
 
-Current result: seed implementation and publication are complete; combined
-focused tests pass 54/54. The first current advisory truthfully rejected the
-stale runtime baseline. The exact official runtime remediation passes its
-isolated no-pull policy gate at 0 Critical and 0 High, while accepted-pair
-publication remains `not_run` until the material change is committed and all
-source/static gates pass. Independent reviews remain `pending`.
+Current result: seed implementation and publication are complete. The first
+current advisory truthfully rejected the stale runtime baseline. The exact
+official runtime remediation passes its isolated no-pull policy gate at 0
+Critical and 0 High. A later post-material advisory exposed a Cosign v3.0.6
+offline signing incompatibility before any accepted pair was published; that
+signing path is corrected and verified by focused/static tests plus a one-blob
+smoke, but the full advisory remains `not_run` after the correction. Accepted
+pair publication remains `not_run`, and independent reviews remain `pending`.
 
 ## Controlled Agent Pre-commit Evidence
 

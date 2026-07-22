@@ -24,7 +24,6 @@ EXCEPTIONS = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 COSIGN_OFFLINE_SIGNING_CONFIG = (
     ROOT / "infra/supply-chain.cosign-offline-signing-config.json"
 )
-COSIGN_OFFLINE_TRUSTED_ROOT = ROOT / "infra/supply-chain.cosign-offline-trusted-root.json"
 WRAPPER = ROOT / "scripts/security/verify-sample-service-supply-chain.sh"
 SEED_HELPER = ROOT / "scripts/validation/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
@@ -957,6 +956,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "docker() {\n"
                 f"  printf '%s\\n' \"$*\" >> {shlex.quote(str(command_log))}\n"
                 '  case " $* " in\n'
+                '    *" sign-blob "*) printf \'%s\\n\' \'{"messageSignature":{"signature":"MEUCIQCanG6y2JAiaAAEk4eI3d9LcCJgmDNKU2ZnRzhJJSySXgIgZh4ClriJ/vjNcMAq3ylRHMlHMHg4tGCO9Cf5EfHR4kw="}}\' >"$OUTPUT_DIR/baseline/cosign.bundle.json" ;;\n'
+                "  esac\n"
+                '  case " $* " in\n'
                 '    *" /workspace/tampered.oci.tar"*|*" /other/image.oci.tar"*) return 1 ;;\n'
                 "  esac\n"
                 "  return 0\n"
@@ -977,11 +979,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         config = json.loads(COSIGN_OFFLINE_SIGNING_CONFIG.read_text(encoding="utf-8"))
         self.assertEqual(
             {
-                "caUrls": [],
                 "mediaType": "application/vnd.dev.sigstore.signingconfig.v0.2+json",
-                "oidcUrls": [],
-                "rekorTlogUrls": [],
-                "tsaUrls": [],
+                "rekorTlogConfig": {},
+                "tsaConfig": {},
             },
             config,
         )
@@ -1007,17 +1007,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             sign_commands[0],
         )
 
-    def test_cosign_v3_offline_signing_uses_explicit_minimal_trusted_root(
+    def test_cosign_v3_offline_signing_extracts_signature_and_ignores_tlog_on_verify(
         self,
     ) -> None:
-        trusted_root = json.loads(
-            COSIGN_OFFLINE_TRUSTED_ROOT.read_text(encoding="utf-8")
-        )
-        self.assertEqual(
-            {"mediaType": "application/vnd.dev.sigstore.trustedroot+json;version=0.1"},
-            trusted_root,
-        )
-
         text = WRAPPER.read_text(encoding="utf-8")
         signing = text.split("sign_and_verify_archive() {", maxsplit=1)[1].split(
             "\n}\n\nwrite_verification_verdict", maxsplit=1
@@ -1035,13 +1027,13 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         ]
         self.assertEqual(1, len(sign_commands))
         self.assertEqual(3, len(verify_commands))
-        for command in sign_commands + verify_commands:
-            self.assertIn(
-                "--trusted-root /policy/cosign-offline-trusted-root.json", command
-            )
-            self.assertIn(
-                "target=/policy/cosign-offline-trusted-root.json,readonly", command
-            )
+        self.assertIn("--new-bundle-format=false", sign_commands[0])
+        self.assertIn('bundle.get("messageSignature", {}).get("signature")', signing)
+        self.assertIn("base64.b64decode(signature, validate=True)", signing)
+        for command in verify_commands:
+            self.assertIn("--insecure-ignore-tlog=true", command)
+            self.assertIn("--signature /workspace/cosign.signature", command)
+            self.assertNotIn("--bundle", command)
 
     def test_cross_role_signature_acceptance_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1056,6 +1048,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 f"private_key_dir={shlex.quote(str(pathlib.Path(temporary) / 'keys'))}\n"
                 'mkdir -p "$private_key_dir"\n'
                 "docker() {\n"
+                '  case " $* " in\n'
+                '    *" sign-blob "*) printf \'%s\\n\' \'{"messageSignature":{"signature":"MEUCIQCanG6y2JAiaAAEk4eI3d9LcCJgmDNKU2ZnRzhJJSySXgIgZh4ClriJ/vjNcMAq3ylRHMlHMHg4tGCO9Cf5EfHR4kw="}}\' >"$OUTPUT_DIR/baseline/cosign.bundle.json" ;;\n'
+                "  esac\n"
                 '  case " $* " in\n'
                 '    *" /workspace/tampered.oci.tar"*) return 1 ;;\n'
                 "  esac\n"
