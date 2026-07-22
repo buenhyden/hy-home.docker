@@ -496,7 +496,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         )[0]
         self.assertIn("revalidate_delivery_input_snapshots", publication)
         revalidate = publication.index("revalidate_delivery_input_snapshots")
-        validate_schema = publication.index('dre_python_json "${CANDIDATE_JSON:-}"')
+        validate_schema = publication.index('"${CANDIDATE_JSON:-}"')
         write_record = publication.index('record_dir="$(dirname -- "$record_path")"')
         self.assertLess(revalidate, validate_schema)
         self.assertLess(revalidate, write_record)

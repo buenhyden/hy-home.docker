@@ -18,12 +18,20 @@ DRE_REAL_BASELINE_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-securi
 DRE_REAL_CANDIDATE_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
 DRE_READINESS_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
 DRE_RECOVERY_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json"
+DRE_POLICY_PATH="$DRE_ROOT/infra/supply-chain.sample-service-policy.json"
+DRE_APPROVED_POLICY_SHA256='sha256:18817282cfd8cbf9bc0202446493a5cdf0ae14fbc960dbfd6cb0932f3b752cae'
+DRE_APPROVAL_REF='task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19'
 DRE_RECORD_PATH_DEFAULT="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json"
 
 declare -Ag VERDICT_ROLE=()
 declare -Ag VERDICT_SOURCE_REVISION=()
 declare -Ag VERDICT_IMAGE_CONFIG_DIGEST=()
 declare -Ag VERDICT_OCI_ARCHIVE_SHA256=()
+declare -Ag VERDICT_BUILD_CONTEXT_SHA256=()
+declare -Ag VERDICT_POLICY_ID=()
+declare -Ag INPUT_SNAPSHOT_PATH=()
+declare -Ag INPUT_SNAPSHOT_SHA256=()
+declare -Ag INPUT_SNAPSHOT_IDENTITY=()
 
 dre_fail() {
   local class="$1"
@@ -42,6 +50,137 @@ parse_subcommand() {
     preflight|rehearse|cleanup) ;;
     *) return 2 ;;
   esac
+}
+
+read_delivery_input_snapshot() {
+  local path="${1:-}"
+
+  dre_python_json "$path" <<'PY'
+import hashlib
+import os
+import stat
+import sys
+
+path = sys.argv[1]
+if not path or not hasattr(os, "O_NOFOLLOW"):
+    raise SystemExit(1)
+flags = os.O_RDONLY | os.O_NOFOLLOW
+if hasattr(os, "O_CLOEXEC"):
+    flags |= os.O_CLOEXEC
+try:
+    descriptor = os.open(path, flags)
+except OSError:
+    raise SystemExit(1)
+try:
+    before = os.fstat(descriptor)
+    if not stat.S_ISREG(before.st_mode) or before.st_uid != os.getuid():
+        raise SystemExit(1)
+    if stat.S_IMODE(before.st_mode) & 0o022:
+        raise SystemExit(1)
+    digest = hashlib.sha256()
+    while True:
+        chunk = os.read(descriptor, 1024 * 1024)
+        if not chunk:
+            break
+        digest.update(chunk)
+    after = os.fstat(descriptor)
+    fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns", "st_mode", "st_uid")
+    if any(getattr(before, field) != getattr(after, field) for field in fields):
+        raise SystemExit(1)
+    identity = ":".join(str(getattr(after, field)) for field in fields)
+    print(f"sha256:{digest.hexdigest()}\t{identity}")
+finally:
+    os.close(descriptor)
+PY
+}
+
+delivery_input_path() {
+  case "${1:-}" in
+    policy) printf '%s' "$DRE_POLICY_PATH" ;;
+    baseline_verdict) printf '%s' "${BASELINE_VERDICT_PATH:-}" ;;
+    candidate_verdict) printf '%s' "${CANDIDATE_VERDICT_PATH:-}" ;;
+    readiness_verdict) printf '%s' "$DRE_READINESS_PATH" ;;
+    recovery_boundary) printf '%s' "$DRE_RECOVERY_PATH" ;;
+    compose) printf '%s' "$DRE_COMPOSE_PATH" ;;
+    override) printf '%s' "$DRE_OVERRIDE_PATH" ;;
+    *) return 1 ;;
+  esac
+}
+
+capture_delivery_input_snapshots() {
+  local name path snapshot digest identity
+
+  INPUT_SNAPSHOT_PATH=()
+  INPUT_SNAPSHOT_SHA256=()
+  INPUT_SNAPSHOT_IDENTITY=()
+  for name in \
+    policy baseline_verdict candidate_verdict readiness_verdict \
+    recovery_boundary compose override; do
+    path="$(delivery_input_path "$name")" || {
+      dre_fail 10 input-snapshot-path-invalid
+      return
+    }
+    snapshot="$(read_delivery_input_snapshot "$path")" || {
+      dre_fail 10 input-snapshot-unavailable
+      return
+    }
+    IFS=$'\t' read -r digest identity <<<"$snapshot"
+    [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ && -n "$identity" ]] || {
+      dre_fail 10 input-snapshot-invalid
+      return
+    }
+    INPUT_SNAPSHOT_PATH["$name"]="$path"
+    INPUT_SNAPSHOT_SHA256["$name"]="$digest"
+    INPUT_SNAPSHOT_IDENTITY["$name"]="$identity"
+  done
+
+  POLICY_SHA256="${INPUT_SNAPSHOT_SHA256[policy]}"
+  BASELINE_VERDICT_SHA256="${INPUT_SNAPSHOT_SHA256[baseline_verdict]}"
+  CANDIDATE_VERDICT_SHA256="${INPUT_SNAPSHOT_SHA256[candidate_verdict]}"
+  READINESS_VERDICT_SHA256="${INPUT_SNAPSHOT_SHA256[readiness_verdict]}"
+  RECOVERY_BOUNDARY_SHA256="${INPUT_SNAPSHOT_SHA256[recovery_boundary]}"
+  [[ "$POLICY_SHA256" == "$DRE_APPROVED_POLICY_SHA256" ]] || {
+    dre_fail 10 policy-digest-unapproved
+    return
+  }
+}
+
+revalidate_delivery_input_snapshots() {
+  local failure_class="${1:-40}"
+  local name path snapshot digest identity
+
+  [[ "$failure_class" == 10 || "$failure_class" == 40 ]] || return 2
+  for name in \
+    policy baseline_verdict candidate_verdict readiness_verdict \
+    recovery_boundary compose override; do
+    [[ -n "${INPUT_SNAPSHOT_PATH[$name]:-}" && \
+       -n "${INPUT_SNAPSHOT_SHA256[$name]:-}" && \
+       -n "${INPUT_SNAPSHOT_IDENTITY[$name]:-}" ]] || {
+      dre_fail "$failure_class" input-snapshot-missing
+      return
+    }
+    path="$(delivery_input_path "$name")" || {
+      dre_fail "$failure_class" input-snapshot-path-invalid
+      return
+    }
+    [[ "$path" == "${INPUT_SNAPSHOT_PATH[$name]}" ]] || {
+      dre_fail "$failure_class" input-snapshot-path-drift
+      return
+    }
+    snapshot="$(read_delivery_input_snapshot "$path")" || {
+      dre_fail "$failure_class" input-snapshot-unavailable
+      return
+    }
+    IFS=$'\t' read -r digest identity <<<"$snapshot"
+    [[ "$digest" == "${INPUT_SNAPSHOT_SHA256[$name]}" ]] || {
+      dre_fail "$failure_class" input-snapshot-drift
+      return
+    }
+    [[ "$identity" == "${INPUT_SNAPSHOT_IDENTITY[$name]}" ]] || {
+      dre_fail "$failure_class" input-snapshot-identity-drift
+      return
+    }
+  done
 }
 
 load_and_validate_verdict() {
@@ -74,7 +213,8 @@ def unique_object(pairs):
     return result
 expected_keys = {
     "schema_version", "producer_spec", "role", "source_revision",
-    "image_config_digest", "oci_archive_sha256", "policy_id", "verdict",
+    "build_context_sha256", "image_config_digest", "oci_archive_sha256",
+    "policy_id", "verdict",
     "exception_id", "verified_at", "redaction_status",
 }
 try:
@@ -93,6 +233,8 @@ if value["role"] != expected_role:
 if not isinstance(value["source_revision"], str) or not re.fullmatch(r"[0-9a-f]{40}", value["source_revision"]):
     raise SystemExit(1)
 digest = r"sha256:[0-9a-f]{64}"
+if not isinstance(value["build_context_sha256"], str) or not re.fullmatch(digest, value["build_context_sha256"]):
+    raise SystemExit(1)
 if not isinstance(value["image_config_digest"], str) or not re.fullmatch(digest, value["image_config_digest"]):
     raise SystemExit(1)
 if not isinstance(value["oci_archive_sha256"], str) or not re.fullmatch(digest, value["oci_archive_sha256"]):
@@ -105,7 +247,7 @@ if value["redaction_status"] != "passed":
     raise SystemExit(1)
 if not isinstance(value["verified_at"], str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", value["verified_at"]):
     raise SystemExit(1)
-print("\t".join((value["role"], value["source_revision"], value["image_config_digest"], value["oci_archive_sha256"])))
+print("\t".join((value["role"], value["source_revision"], value["image_config_digest"], value["oci_archive_sha256"], value["build_context_sha256"], value["policy_id"])))
 PY
 )"; then
     dre_fail 10 verdict-invalid
@@ -115,7 +257,9 @@ PY
   IFS=$'\t' read -r VERDICT_ROLE["$expected_role"] \
     VERDICT_SOURCE_REVISION["$expected_role"] \
     VERDICT_IMAGE_CONFIG_DIGEST["$expected_role"] \
-    VERDICT_OCI_ARCHIVE_SHA256["$expected_role"] <<<"$parsed"
+    VERDICT_OCI_ARCHIVE_SHA256["$expected_role"] \
+    VERDICT_BUILD_CONTEXT_SHA256["$expected_role"] \
+    VERDICT_POLICY_ID["$expected_role"] <<<"$parsed"
 }
 
 assert_distinct_subjects_and_same_revision() {
@@ -139,7 +283,18 @@ assert_distinct_subjects_and_same_revision() {
     dre_fail 10 oci-archive-digest-not-distinct
     return
   }
+  [[ "${VERDICT_BUILD_CONTEXT_SHA256[baseline]:-}" == "${VERDICT_BUILD_CONTEXT_SHA256[candidate]:-}" ]] || {
+    dre_fail 10 build-context-mismatch
+    return
+  }
+  [[ "${VERDICT_POLICY_ID[baseline]:-}" == sample-service-local-v1 && \
+     "${VERDICT_POLICY_ID[candidate]:-}" == sample-service-local-v1 ]] || {
+    dre_fail 10 policy-id-mismatch
+    return
+  }
   SOURCE_REVISION="${VERDICT_SOURCE_REVISION[baseline]:-}"
+  BUILD_CONTEXT_SHA256="${VERDICT_BUILD_CONTEXT_SHA256[baseline]:-}"
+  POLICY_ID="${VERDICT_POLICY_ID[baseline]:-}"
 }
 
 validate_local_image_object() {
@@ -289,6 +444,10 @@ verify_post_rollback_health() {
 }
 
 write_rehearsal_record() {
+  REHEARSAL_COMPLETED_AT="$(command date -u +%Y-%m-%dT%H:%M:%SZ)" || {
+    dre_fail 40 completion-timestamp-unavailable
+    return
+  }
   CANDIDATE_JSON="$(build_rehearsal_record_json)" || return
   publish_rehearsal_record
 }
@@ -504,16 +663,37 @@ build_rehearsal_record_json() {
     "${ROLLBACK_DECISION:-not_run}" \
     "${POST_ROLLBACK_HEALTH:-not_run}" \
     "${RECOVERY_VERDICT_PATH:-$DRE_RECOVERY_PATH}" \
-    "${CLEANUP_COMPLETE:-false}" <<'PY'
+    "${CLEANUP_COMPLETE:-false}" \
+    "${BUILD_CONTEXT_SHA256:-}" \
+    "${POLICY_ID:-}" \
+    "${POLICY_SHA256:-}" \
+    "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" \
+    "${VERDICT_IMAGE_CONFIG_DIGEST[candidate]:-}" \
+    "${VERDICT_OCI_ARCHIVE_SHA256[baseline]:-}" \
+    "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" \
+    "${BASELINE_VERDICT_SHA256:-}" \
+    "${CANDIDATE_VERDICT_SHA256:-}" \
+    "${READINESS_VERDICT_SHA256:-}" \
+    "${RECOVERY_BOUNDARY_SHA256:-}" \
+    "${DRE_APPROVAL_REF:-}" \
+    "${REHEARSAL_STARTED_AT:-}" \
+    "${REHEARSAL_COMPLETED_AT:-}" \
+    "${BASELINE_RESULT:-not_run}" \
+    "${CANARY_RESULT:-not_run}" \
+    "${REHEARSAL_RESULT:-not_run}" <<'PY'
 import json
 import sys
 
 (revision, baseline_ref, candidate_ref, readiness_ref,
  baseline_project, canary_project, promotion, rollback, post_health,
- recovery_ref, cleanup) = sys.argv[1:]
+ recovery_ref, cleanup, build_context, policy_id, policy_sha,
+ baseline_image, candidate_image, baseline_oci, candidate_oci,
+ baseline_verdict_sha, candidate_verdict_sha, readiness_sha, recovery_sha,
+ approval_ref, started_at, completed_at, baseline_result, canary_result,
+ rehearsal_result) = sys.argv[1:]
 rehearsal_id = f"local-rehearsal-20260719-{revision[:12]}"
 value = {
-    "schema_version": 1,
+    "schema_version": 2,
     "producer_spec": "spec:127-deployment-release-engineering-remediation",
     "release_rehearsal_id": rehearsal_id,
     "source_revision": revision,
@@ -529,6 +709,23 @@ value = {
     "recovery_boundary_ref": recovery_ref.rsplit("/", 1)[-1],
     "cleanup_status": "passed" if cleanup == "true" else "failed",
     "remote_non_goals_confirmed": True,
+    "build_context_sha256": build_context,
+    "policy_id": policy_id,
+    "policy_sha256": policy_sha,
+    "baseline_image_config_digest": baseline_image,
+    "candidate_image_config_digest": candidate_image,
+    "baseline_oci_archive_sha256": baseline_oci,
+    "candidate_oci_archive_sha256": candidate_oci,
+    "baseline_verdict_sha256": baseline_verdict_sha,
+    "candidate_verdict_sha256": candidate_verdict_sha,
+    "readiness_verdict_sha256": readiness_sha,
+    "recovery_boundary_sha256": recovery_sha,
+    "approval_ref": approval_ref,
+    "started_at": started_at,
+    "completed_at": completed_at,
+    "baseline_result": baseline_result,
+    "canary_result": canary_result,
+    "rehearsal_result": rehearsal_result,
 }
 print(json.dumps(value, sort_keys=True, separators=(",", ":")))
 PY
@@ -603,12 +800,46 @@ publish_rehearsal_record() {
     dre_fail 40 cleanup-incomplete
     return
   }
+  revalidate_delivery_input_snapshots 40 || return
   local record_path="${REHEARSAL_RECORD_PATH:-$DRE_RECORD_PATH_DEFAULT}"
   local record_dir
-  if ! dre_python_json "${CANDIDATE_JSON:-}" <<'PY'
+  if ! dre_python_json \
+    "${CANDIDATE_JSON:-}" \
+    "${SOURCE_REVISION:-}" \
+    "${BUILD_CONTEXT_SHA256:-}" \
+    "${POLICY_ID:-}" \
+    "${INPUT_SNAPSHOT_SHA256[policy]:-}" \
+    "${VERDICT_IMAGE_CONFIG_DIGEST[baseline]:-}" \
+    "${VERDICT_IMAGE_CONFIG_DIGEST[candidate]:-}" \
+    "${VERDICT_OCI_ARCHIVE_SHA256[baseline]:-}" \
+    "${VERDICT_OCI_ARCHIVE_SHA256[candidate]:-}" \
+    "${INPUT_SNAPSHOT_SHA256[baseline_verdict]:-}" \
+    "${INPUT_SNAPSHOT_SHA256[candidate_verdict]:-}" \
+    "${INPUT_SNAPSHOT_SHA256[readiness_verdict]:-}" \
+    "${INPUT_SNAPSHOT_SHA256[recovery_boundary]:-}" \
+    "${DRE_APPROVAL_REF:-}" \
+    "${BASELINE_PROJECT:-}" \
+    "${CANARY_PROJECT:-}" \
+    "${PROMOTION_DECISION:-}" \
+    "${ROLLBACK_DECISION:-}" \
+    "${POST_ROLLBACK_HEALTH:-}" \
+    "${REHEARSAL_STARTED_AT:-}" \
+    "${REHEARSAL_COMPLETED_AT:-}" \
+    "${BASELINE_RESULT:-}" \
+    "${CANARY_RESULT:-}" \
+    "${REHEARSAL_RESULT:-}" <<'PY'
 import json
 import re
 import sys
+
+(raw_payload, expected_revision, expected_build_context, expected_policy_id,
+ expected_policy_sha, expected_baseline_image, expected_candidate_image,
+ expected_baseline_oci, expected_candidate_oci, expected_baseline_verdict_sha,
+ expected_candidate_verdict_sha, expected_readiness_sha, expected_recovery_sha,
+ expected_approval_ref, expected_baseline_project, expected_canary_project,
+ expected_promotion, expected_rollback, expected_post_health,
+ expected_started_at, expected_completed_at, expected_baseline_result,
+ expected_canary_result, expected_rehearsal_result) = sys.argv[1:]
 
 keys = {
     "schema_version", "producer_spec", "release_rehearsal_id",
@@ -616,7 +847,14 @@ keys = {
     "readiness_verdict_ref", "baseline_project", "canary_project",
     "promotion_decision", "rollback_decision", "post_rollback_health",
     "data_impact", "recovery_boundary_ref", "cleanup_status",
-    "remote_non_goals_confirmed",
+    "remote_non_goals_confirmed", "build_context_sha256", "policy_id",
+    "policy_sha256", "baseline_image_config_digest",
+    "candidate_image_config_digest", "baseline_oci_archive_sha256",
+    "candidate_oci_archive_sha256", "baseline_verdict_sha256",
+    "candidate_verdict_sha256", "readiness_verdict_sha256",
+    "recovery_boundary_sha256", "approval_ref", "started_at",
+    "completed_at", "baseline_result", "canary_result",
+    "rehearsal_result",
 }
 def unique_object(pairs):
     result = {}
@@ -626,14 +864,41 @@ def unique_object(pairs):
         result[key] = item
     return result
 try:
-    value = json.loads(sys.argv[1], object_pairs_hook=unique_object)
+    value = json.loads(raw_payload, object_pairs_hook=unique_object)
 except (UnicodeError, ValueError):
     raise SystemExit(1)
 if not isinstance(value, dict) or set(value) != keys:
     raise SystemExit(1)
-if type(value["schema_version"]) is not int or value["schema_version"] != 1:
+if type(value["schema_version"]) is not int or value["schema_version"] != 2:
     raise SystemExit(1)
 if value["producer_spec"] != "spec:127-deployment-release-engineering-remediation":
+    raise SystemExit(1)
+expected_values = {
+    "source_revision": expected_revision,
+    "build_context_sha256": expected_build_context,
+    "policy_id": expected_policy_id,
+    "policy_sha256": expected_policy_sha,
+    "baseline_image_config_digest": expected_baseline_image,
+    "candidate_image_config_digest": expected_candidate_image,
+    "baseline_oci_archive_sha256": expected_baseline_oci,
+    "candidate_oci_archive_sha256": expected_candidate_oci,
+    "baseline_verdict_sha256": expected_baseline_verdict_sha,
+    "candidate_verdict_sha256": expected_candidate_verdict_sha,
+    "readiness_verdict_sha256": expected_readiness_sha,
+    "recovery_boundary_sha256": expected_recovery_sha,
+    "approval_ref": expected_approval_ref,
+    "baseline_project": expected_baseline_project,
+    "canary_project": expected_canary_project,
+    "promotion_decision": expected_promotion,
+    "rollback_decision": expected_rollback,
+    "post_rollback_health": expected_post_health,
+    "started_at": expected_started_at,
+    "completed_at": expected_completed_at,
+    "baseline_result": expected_baseline_result,
+    "canary_result": expected_canary_result,
+    "rehearsal_result": expected_rehearsal_result,
+}
+if any(value.get(key) != expected for key, expected in expected_values.items()):
     raise SystemExit(1)
 if not isinstance(value["source_revision"], str) or not re.fullmatch(r"[0-9a-f]{40}", value["source_revision"]):
     raise SystemExit(1)
@@ -647,6 +912,31 @@ if value["readiness_verdict_ref"] != "readiness-verdict.json":
     raise SystemExit(1)
 if value["recovery_boundary_ref"] != "recovery-verdict.json":
     raise SystemExit(1)
+digest = r"sha256:[0-9a-f]{64}"
+digest_fields = {
+    "build_context_sha256", "policy_sha256",
+    "baseline_image_config_digest", "candidate_image_config_digest",
+    "baseline_oci_archive_sha256", "candidate_oci_archive_sha256",
+    "baseline_verdict_sha256", "candidate_verdict_sha256",
+    "readiness_verdict_sha256", "recovery_boundary_sha256",
+}
+if any(not isinstance(value[key], str) or not re.fullmatch(digest, value[key]) for key in digest_fields):
+    raise SystemExit(1)
+if value["policy_id"] != "sample-service-local-v1":
+    raise SystemExit(1)
+if value["policy_sha256"] != "sha256:18817282cfd8cbf9bc0202446493a5cdf0ae14fbc960dbfd6cb0932f3b752cae":
+    raise SystemExit(1)
+if value["baseline_image_config_digest"] == value["candidate_image_config_digest"]:
+    raise SystemExit(1)
+if value["baseline_oci_archive_sha256"] == value["candidate_oci_archive_sha256"]:
+    raise SystemExit(1)
+if value["approval_ref"] != "task:2026-07-19-deployment-release-engineering-remediation#approval-2026-07-19":
+    raise SystemExit(1)
+timestamp = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z"
+if any(not isinstance(value[key], str) or not re.fullmatch(timestamp, value[key]) for key in ("started_at", "completed_at")):
+    raise SystemExit(1)
+if value["completed_at"] < value["started_at"]:
+    raise SystemExit(1)
 project = r"hyhome-dre-20260719-[0-9]+"
 if not re.fullmatch(project + r"-baseline", value["baseline_project"]):
     raise SystemExit(1)
@@ -655,10 +945,15 @@ if not re.fullmatch(project + r"-canary", value["canary_project"]):
 if value["baseline_project"][:-9] != value["canary_project"][:-7]:
     raise SystemExit(1)
 allowed_decisions = {
-    ("promoted", "not_required", "not_applicable"),
-    ("not_promoted", "rolled_back_to_baseline", "passed"),
+    ("promoted", "not_required", "not_applicable", "passed", "passed", "promoted"),
+    ("not_promoted", "rolled_back_to_baseline", "passed", "passed", "failed", "rolled_back"),
 }
-if (value["promotion_decision"], value["rollback_decision"], value["post_rollback_health"]) not in allowed_decisions:
+result_tuple = (
+    value["promotion_decision"], value["rollback_decision"],
+    value["post_rollback_health"], value["baseline_result"],
+    value["canary_result"], value["rehearsal_result"],
+)
+if result_tuple not in allowed_decisions:
     raise SystemExit(1)
 if value["data_impact"] != "none" or value["cleanup_status"] != "passed":
     raise SystemExit(1)
@@ -1059,13 +1354,24 @@ PY
   }
 }
 
-dre_preflight() {
+validate_delivery_input_contracts() {
   load_and_validate_verdict baseline "$BASELINE_VERDICT_PATH" || return
   load_and_validate_verdict candidate "$CANDIDATE_VERDICT_PATH" || return
   assert_distinct_subjects_and_same_revision || return
   validate_readiness_verdict "$DRE_READINESS_PATH" || return
   validate_recovery_boundary "$DRE_RECOVERY_PATH" || return
-  validate_compose_contract "$DRE_COMPOSE_PATH" "$DRE_OVERRIDE_PATH" || return
+  validate_compose_contract "$DRE_COMPOSE_PATH" "$DRE_OVERRIDE_PATH"
+}
+
+validate_and_snapshot_delivery_inputs() {
+  validate_delivery_input_contracts || return
+  capture_delivery_input_snapshots || return
+  validate_delivery_input_contracts || return
+  revalidate_delivery_input_snapshots 10
+}
+
+dre_preflight() {
+  validate_and_snapshot_delivery_inputs || return
   dre_prepare_identity || return
   assert_loopback_ports_available || return
   printf 'status=passed evidence=fixture-contract-only source_revision=%s readiness=passed recovery_boundary=passed compose=passed ports=18080,18081\n' "$SOURCE_REVISION"
@@ -1096,12 +1402,7 @@ dre_on_exit() {
 
 dre_rehearse() {
   local status
-  load_and_validate_verdict baseline "$BASELINE_VERDICT_PATH" || return
-  load_and_validate_verdict candidate "$CANDIDATE_VERDICT_PATH" || return
-  assert_distinct_subjects_and_same_revision || return
-  validate_readiness_verdict "$DRE_READINESS_PATH" || return
-  validate_recovery_boundary "$DRE_RECOVERY_PATH" || return
-  validate_compose_contract "$DRE_COMPOSE_PATH" "$DRE_OVERRIDE_PATH" || return
+  validate_and_snapshot_delivery_inputs || return
   dre_prepare_identity || return
   assert_loopback_ports_available || return
   prepare_canonical_record_path || return
@@ -1109,6 +1410,10 @@ dre_rehearse() {
   DRE_RUN_DEADLINE=$(( SECONDS + DRE_TOTAL_TIMEOUT_SECONDS ))
   DRE_OPERATION_DEADLINE=$(( DRE_RUN_DEADLINE - DRE_CLEANUP_RESERVE_SECONDS ))
   validate_local_image_objects || return
+  REHEARSAL_STARTED_AT="$(command date -u +%Y-%m-%dT%H:%M:%SZ)" || {
+    dre_fail 10 start-timestamp-unavailable
+    return
+  }
   CLEANUP_COMPLETE=false
   DRE_RUNTIME_ACTIVE=true
   BASELINE_START_ATTEMPTED=false
@@ -1119,6 +1424,9 @@ dre_rehearse() {
   PROMOTION_DECISION=not_run
   ROLLBACK_DECISION=not_run
   POST_ROLLBACK_HEALTH=not_run
+  BASELINE_RESULT=not_run
+  CANARY_RESULT=not_run
+  REHEARSAL_RESULT=not_run
   trap dre_on_exit EXIT
   trap dre_on_signal INT TERM HUP
 
@@ -1134,9 +1442,11 @@ dre_rehearse() {
     dre_cleanup_preserving_status "$status"
     return
   fi
+  BASELINE_RESULT=passed
   start_canary
   status=$?
   if (( status != 0 )); then
+    CANARY_RESULT=failed
     if ! rollback_to_baseline_digest || ! verify_post_rollback_health; then
       dre_cleanup_preserving_status 50
       return
@@ -1155,14 +1465,17 @@ dre_rehearse() {
       dre_cleanup_preserving_status 50
       return
     fi
+    REHEARSAL_RESULT=rolled_back
     if ! cleanup_owned_projects; then
       return 60
     fi
     write_rehearsal_record || return 40
     return 30
   fi
+  CANARY_RESULT=passed
   PROMOTION_GATES_COMPLETE=true
   record_promotion_decision || return
+  REHEARSAL_RESULT=promoted
   cleanup_owned_projects || return 60
   write_rehearsal_record || return 40
   DRE_RUNTIME_ACTIVE=false
