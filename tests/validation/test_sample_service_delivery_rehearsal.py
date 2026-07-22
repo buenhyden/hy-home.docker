@@ -1604,38 +1604,85 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             self.assertFalse(call_log.exists())
 
     def test_canonical_absence_fails_class10_before_docker_or_evidence(self) -> None:
-        self.assertFalse(REAL_BASELINE.exists())
-        self.assertFalse(REAL_CANDIDATE.exists())
-        self.assertFalse(REAL_PAIR_MANIFEST.exists())
-        directory_before = self.snapshot_path(REAL_RECORD.parent)
-        record_before = self.snapshot_path(REAL_RECORD)
-        with tempfile.TemporaryDirectory() as raw:
-            mock = Path(raw)
-            call_log = mock / "calls.log"
+        protected_paths = (
+            REAL_BASELINE.parent,
+            REAL_BASELINE,
+            REAL_CANDIDATE,
+            REAL_PAIR_MANIFEST,
+            REAL_RECORD.parent,
+            REAL_RECORD,
+        )
+        protected_before = {
+            path: self.snapshot_path(path) for path in protected_paths
+        }
+        with tempfile.TemporaryDirectory(
+            prefix="dre-canonical-absence-", dir="/tmp"
+        ) as raw:
+            isolated_root = Path(raw) / "repo"
+            isolated_script = isolated_root / SCRIPT.relative_to(ROOT)
+            isolated_script.parent.mkdir(parents=True)
+            shutil.copy2(SCRIPT, isolated_script)
+            (isolated_root / "_workspace/repo-support").mkdir(
+                parents=True, mode=0o700
+            )
+            isolated_baseline = isolated_root / REAL_BASELINE.relative_to(ROOT)
+            isolated_candidate = isolated_root / REAL_CANDIDATE.relative_to(ROOT)
+            isolated_pair = isolated_root / REAL_PAIR_MANIFEST.relative_to(ROOT)
+            isolated_record = isolated_root / REAL_RECORD.relative_to(ROOT)
+            self.assertFalse(isolated_baseline.exists())
+            self.assertFalse(isolated_candidate.exists())
+            self.assertFalse(isolated_pair.exists())
+            directory_before = self.snapshot_path(isolated_record.parent)
+            record_before = self.snapshot_path(isolated_record)
+
+            mock = Path(raw) / "bin"
+            mock.mkdir()
+            call_log = Path(raw) / "calls.log"
             docker = mock / "docker"
             docker.write_text(
                 "#!/usr/bin/env bash\nprintf '%s\\n' \"$*\" >>\"$DRE_CALL_LOG\"\nexit 99\n",
                 encoding="utf-8",
             )
             docker.chmod(0o755)
-            result = self.run_cli(
-                "rehearse",
-                "--task-id",
-                "2026-07-19-dre",
-                "--baseline-verdict",
-                str(REAL_BASELINE.relative_to(ROOT)),
-                "--candidate-verdict",
-                str(REAL_CANDIDATE.relative_to(ROOT)),
-                "--failure-mode",
-                "none",
-                env={"PATH": f"{mock}:{os.environ['PATH']}", "DRE_CALL_LOG": str(call_log)},
+            env = os.environ.copy()
+            env.update(
+                {
+                    "PATH": f"{mock}:{os.environ['PATH']}",
+                    "DRE_CALL_LOG": str(call_log),
+                }
+            )
+            result = subprocess.run(
+                [
+                    "bash",
+                    str(isolated_script),
+                    "rehearse",
+                    "--task-id",
+                    "2026-07-19-dre",
+                    "--baseline-verdict",
+                    str(REAL_BASELINE.relative_to(ROOT)),
+                    "--candidate-verdict",
+                    str(REAL_CANDIDATE.relative_to(ROOT)),
+                    "--failure-mode",
+                    "none",
+                ],
+                cwd=isolated_root,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
             )
             self.assertEqual(10, result.returncode, result.stdout + result.stderr)
             self.assertIn("class=10", result.stderr)
             self.assertIn("code=pair-manifest-missing", result.stderr)
             self.assertFalse(call_log.exists())
-        self.assertEqual(record_before, self.snapshot_path(REAL_RECORD))
-        self.assertEqual(directory_before, self.snapshot_path(REAL_RECORD.parent))
+            self.assertEqual(record_before, self.snapshot_path(isolated_record))
+            self.assertEqual(
+                directory_before, self.snapshot_path(isolated_record.parent)
+            )
+        self.assertEqual(
+            protected_before,
+            {path: self.snapshot_path(path) for path in protected_paths},
+        )
 
     def test_test_suite_has_no_real_canonical_mutator(self) -> None:
         source = Path(__file__).read_text(encoding="utf-8")
