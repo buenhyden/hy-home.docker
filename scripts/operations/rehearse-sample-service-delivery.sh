@@ -1031,8 +1031,9 @@ if stat.S_IMODE(anchor_info.st_mode) & 0o022:
     raise SystemExit(1)
 
 flags = os.O_RDONLY | os.O_DIRECTORY
-if hasattr(os, "O_NOFOLLOW"):
-    flags |= os.O_NOFOLLOW
+if not hasattr(os, "O_NOFOLLOW"):
+    raise SystemExit(1)
+flags |= os.O_NOFOLLOW
 fd = os.open(anchor, flags)
 try:
     for component in (
@@ -1060,15 +1061,11 @@ try:
     except FileNotFoundError:
         pass
     else:
-        if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
-            raise SystemExit(1)
-        os.unlink(target.name, dir_fd=fd)
-        os.fsync(fd)
-        try:
-            os.stat(target.name, dir_fd=fd, follow_symlinks=False)
-        except FileNotFoundError:
-            pass
-        else:
+        if (
+            not stat.S_ISREG(info.st_mode)
+            or info.st_uid != os.getuid()
+            or stat.S_IMODE(info.st_mode) != 0o600
+        ):
             raise SystemExit(1)
 finally:
     os.close(fd)
@@ -1319,8 +1316,10 @@ PY
   record_dir="$(dirname -- "$record_path")"
   dre_python_json "$record_dir" "$record_path" "${CANDIDATE_JSON:-}" <<'PY' || {
 import json
+import fcntl
 import os
 from pathlib import Path
+import secrets
 import stat
 import sys
 
@@ -1343,7 +1342,9 @@ if not hasattr(os, "O_NOFOLLOW"):
     raise SystemExit(1)
 flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
 parent_fd = os.open(parent, flags)
+existing_fd = None
 try:
+    fcntl.flock(parent_fd, fcntl.LOCK_EX)
     opened_parent = os.fstat(parent_fd)
     if (opened_parent.st_dev, opened_parent.st_ino) != (parent_info.st_dev, parent_info.st_ino):
         raise OSError("record parent identity changed")
@@ -1353,13 +1354,41 @@ try:
         raise OSError("record parent mode changed")
 
     target_name = target.name
-    temporary_name = f".rehearsal-record.{os.getpid()}.tmp"
+    temporary_name = f".rehearsal-record.{secrets.token_hex(8)}.tmp"
+
+    def stable_identity(info):
+        return (
+            info.st_dev,
+            info.st_ino,
+            info.st_size,
+            info.st_mtime_ns,
+            info.st_ctime_ns,
+            info.st_mode,
+            info.st_uid,
+        )
+
     try:
-        os.stat(target_name, dir_fd=parent_fd, follow_symlinks=False)
+        existing_fd = os.open(
+            target_name,
+            os.O_RDONLY | os.O_NOFOLLOW,
+            dir_fd=parent_fd,
+        )
     except FileNotFoundError:
-        pass
+        existing_identity = None
     else:
-        raise OSError("record target exists")
+        existing_info = os.fstat(existing_fd)
+        existing_path_info = os.stat(
+            target_name, dir_fd=parent_fd, follow_symlinks=False
+        )
+        if (
+            not stat.S_ISREG(existing_info.st_mode)
+            or existing_info.st_uid != os.getuid()
+            or stat.S_IMODE(existing_info.st_mode) != 0o600
+            or stable_identity(existing_info)
+            != stable_identity(existing_path_info)
+        ):
+            raise OSError("record target invalid")
+        existing_identity = stable_identity(existing_info)
 
     write_flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
     fd = os.open(temporary_name, write_flags, 0o600, dir_fd=parent_fd)
@@ -1376,12 +1405,23 @@ try:
             raise OSError("temporary record identity drift")
         if stat.S_IMODE(temporary_info.st_mode) != 0o600:
             raise OSError("temporary record mode drift")
-        try:
-            os.stat(target_name, dir_fd=parent_fd, follow_symlinks=False)
-        except FileNotFoundError:
-            pass
+        if existing_identity is None:
+            try:
+                os.stat(target_name, dir_fd=parent_fd, follow_symlinks=False)
+            except FileNotFoundError:
+                pass
+            else:
+                raise OSError("record target appeared")
         else:
-            raise OSError("record target appeared")
+            held_info = os.fstat(existing_fd)
+            current_target = os.stat(
+                target_name, dir_fd=parent_fd, follow_symlinks=False
+            )
+            if (
+                stable_identity(held_info) != existing_identity
+                or stable_identity(current_target) != existing_identity
+            ):
+                raise OSError("record target changed")
         current_parent = os.stat(parent, follow_symlinks=False)
         if (current_parent.st_dev, current_parent.st_ino) != (
             opened_parent.st_dev,
@@ -1404,11 +1444,18 @@ try:
             pass
         raise
     target_info = os.stat(target_name, dir_fd=parent_fd, follow_symlinks=False)
-    if not stat.S_ISREG(target_info.st_mode) or target_info.st_uid != os.getuid():
+    if (
+        not stat.S_ISREG(target_info.st_mode)
+        or target_info.st_uid != os.getuid()
+        or (target_info.st_dev, target_info.st_ino)
+        != (temporary_info.st_dev, temporary_info.st_ino)
+    ):
         raise OSError("record target identity drift")
     if stat.S_IMODE(target_info.st_mode) != 0o600:
         raise OSError("record target mode drift")
 finally:
+    if existing_fd is not None:
+        os.close(existing_fd)
     os.close(parent_fd)
 PY
     dre_fail 40 record-publication-failed
@@ -1819,6 +1866,7 @@ dre_rehearse() {
     status=$?
   fi
   if (( status != 0 )); then
+    CANARY_RESULT=failed
     if ! rollback_to_baseline_digest || ! verify_post_rollback_health; then
       dre_cleanup_preserving_status 50
       return
