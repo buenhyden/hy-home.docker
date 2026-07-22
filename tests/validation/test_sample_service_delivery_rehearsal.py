@@ -21,6 +21,9 @@ REJECTED = FIXTURES / "spec126-verdict.candidate.rejected.json"
 DIGEST_MISMATCH = FIXTURES / "spec126-verdict.candidate.digest-mismatch.json"
 COMPOSE = ROOT / "examples/sample-web-service/docker-compose.yml"
 OVERRIDE = FIXTURES / "compose.delivery.override.yml"
+POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
+READINESS = ROOT / "_workspace/repo-support/task-2026-07-19-compose-runtime-readiness-remediation/compose/readiness-verdict.json"
+RECOVERY = ROOT / "_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres/recovery-verdict.json"
 REAL_BASELINE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
 REAL_CANDIDATE = ROOT / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
 REAL_RECORD = ROOT / "_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json"
@@ -55,6 +58,23 @@ RECORD_KEYS = {
     "recovery_boundary_ref",
     "cleanup_status",
     "remote_non_goals_confirmed",
+    "build_context_sha256",
+    "policy_id",
+    "policy_sha256",
+    "baseline_image_config_digest",
+    "candidate_image_config_digest",
+    "baseline_oci_archive_sha256",
+    "candidate_oci_archive_sha256",
+    "baseline_verdict_sha256",
+    "candidate_verdict_sha256",
+    "readiness_verdict_sha256",
+    "recovery_boundary_sha256",
+    "approval_ref",
+    "started_at",
+    "completed_at",
+    "baseline_result",
+    "canary_result",
+    "rehearsal_result",
 }
 
 
@@ -398,6 +418,87 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                     f"load_and_validate_verdict baseline {path!s}"
                 )
                 self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+
+    def test_accepts_current_spec126_verdict_schema_and_binds_pair_context(self) -> None:
+        build_context = "sha256:" + "e" * 64
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            paths: dict[str, Path] = {}
+            for role, source in (("baseline", BASELINE), ("candidate", CANDIDATE)):
+                payload = json.loads(source.read_text(encoding="utf-8"))
+                payload["build_context_sha256"] = build_context
+                paths[role] = root / f"{role}.json"
+                paths[role].write_text(
+                    json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8"
+                )
+            result = self.run_sourced(
+                f"load_and_validate_verdict baseline {paths['baseline']!s} || exit $?\n"
+                f"load_and_validate_verdict candidate {paths['candidate']!s} || exit $?\n"
+                "assert_distinct_subjects_and_same_revision || exit $?\n"
+                "printf '%s|%s\\n' \"$BUILD_CONTEXT_SHA256\" \"$POLICY_ID\""
+            )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(
+            f"{build_context}|sample-service-local-v1\n", result.stdout
+        )
+
+    def test_snapshot_revalidation_rejects_content_and_identity_drift(self) -> None:
+        for mutation, command, expected_code in (
+            (
+                "content",
+                'printf "\\n" >>"$CANDIDATE_VERDICT_PATH"',
+                "input-snapshot-drift",
+            ),
+            (
+                "identity",
+                'cp -- "$DRE_READINESS_PATH" "$DRE_READINESS_PATH.replacement"\n'
+                'mv -- "$DRE_READINESS_PATH.replacement" "$DRE_READINESS_PATH"',
+                "input-snapshot-identity-drift",
+            ),
+        ):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as raw:
+                root = Path(raw)
+                inputs = {
+                    "baseline.json": BASELINE,
+                    "candidate.json": CANDIDATE,
+                    "readiness.json": READINESS,
+                    "recovery.json": RECOVERY,
+                    "policy.json": POLICY,
+                    "compose.yml": COMPOSE,
+                    "override.yml": OVERRIDE,
+                }
+                for name, source in inputs.items():
+                    shutil.copy2(source, root / name)
+                result = self.run_sourced(
+                    textwrap.dedent(
+                        f"""\
+                        BASELINE_VERDICT_PATH={root / 'baseline.json'!s}
+                        CANDIDATE_VERDICT_PATH={root / 'candidate.json'!s}
+                        DRE_READINESS_PATH={root / 'readiness.json'!s}
+                        DRE_RECOVERY_PATH={root / 'recovery.json'!s}
+                        DRE_POLICY_PATH={root / 'policy.json'!s}
+                        DRE_COMPOSE_PATH={root / 'compose.yml'!s}
+                        DRE_OVERRIDE_PATH={root / 'override.yml'!s}
+                        capture_delivery_input_snapshots || exit $?
+                        {command}
+                        revalidate_delivery_input_snapshots 40
+                        """
+                    )
+                )
+            self.assertEqual(40, result.returncode, result.stdout + result.stderr)
+            self.assertIn(expected_code, result.stderr)
+
+    def test_publication_revalidates_inputs_immediately_before_schema_and_write(self) -> None:
+        text = SCRIPT.read_text(encoding="utf-8")
+        publication = text.split("publish_rehearsal_record() {", 1)[1].split(
+            "\ndre_operation_bounded()", 1
+        )[0]
+        self.assertIn("revalidate_delivery_input_snapshots", publication)
+        revalidate = publication.index("revalidate_delivery_input_snapshots")
+        validate_schema = publication.index('dre_python_json "${CANDIDATE_JSON:-}"')
+        write_record = publication.index('record_dir="$(dirname -- "$record_path")"')
+        self.assertLess(revalidate, validate_schema)
+        self.assertLess(revalidate, write_record)
 
     def test_rejects_remote_image_reference(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
