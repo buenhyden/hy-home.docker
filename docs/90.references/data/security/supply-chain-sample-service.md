@@ -60,12 +60,12 @@ document does not replace security policy, CI configuration, or Task evidence.
 
 ## Pinned Tool Images
 
-| Tool | Image manifest | Command contract | Network mode |
-| --- | --- | --- | --- |
-| `syft` | `anchore/syft:v1.48.0@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `oci-archive-to-cyclonedx-json` | `none` |
-| `grype` | `anchore/grype:v0.116.0@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sbom-to-redacted-json-verdict` | `advisory-network-optional` |
-| `cosign` | `gcr.io/projectsigstore/cosign:v3.0.6@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `local-sign-blob-and-verify-blob` | `none` |
-| `scorecard` | `ghcr.io/ossf/scorecard:v5.5.0@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `read-only-advisory-repository-observation` | `read-only-advisory` |
+| Tool | Repository manifest | Config ID | Command contract | Network mode |
+| --- | --- | --- | --- | --- |
+| `syft` | `anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `oci-archive-to-cyclonedx-json` | `none` |
+| `grype` | `anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sbom-to-redacted-json-verdict` | `advisory-network-optional` |
+| `cosign` | `gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `local-sign-blob-and-verify-blob` | `none` |
+| `scorecard` | `ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `read-only-advisory-repository-observation` | `read-only-advisory` |
 
 ## Evidence Boundary
 

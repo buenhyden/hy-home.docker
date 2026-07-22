@@ -7,6 +7,7 @@ import argparse
 import datetime as dt
 import fnmatch
 import hashlib
+import io
 import json
 import os
 import pathlib
@@ -39,20 +40,28 @@ TOOL_PINS = {
     "syft": (
         "anchore/syft:v1.48.0",
         "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
+        "anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
+        "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
         "v1.48.0",
     ),
     "grype": (
         "anchore/grype:v0.116.0",
+        "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
+        "anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
         "v0.116.0",
     ),
     "cosign": (
         "gcr.io/projectsigstore/cosign:v3.0.6",
         "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
+        "gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
+        "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
         "v3.0.6",
     ),
     "scorecard": (
         "ghcr.io/ossf/scorecard:v5.5.0",
+        "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
+        "ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
         "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
         "v5.5.0",
     ),
@@ -150,9 +159,101 @@ def _git_paths(repo_root: pathlib.Path, arguments: list[str]) -> list[str]:
         raise BuildContextError("git-context-path-encoding-invalid") from exc
 
 
-def capture_build_context_snapshot(
+def _stable_material_stat(path_stat: os.stat_result) -> tuple[int, ...]:
+    return (
+        path_stat.st_dev,
+        path_stat.st_ino,
+        path_stat.st_size,
+        path_stat.st_mtime_ns,
+        path_stat.st_ctime_ns,
+        stat.S_IMODE(path_stat.st_mode),
+        path_stat.st_uid,
+    )
+
+
+def _read_regular_material(path: pathlib.Path) -> tuple[bytes, os.stat_result]:
+    try:
+        path_stat = path.lstat()
+    except OSError as exc:
+        raise BuildContextError("effective-context-material-missing") from exc
+    if stat.S_ISLNK(path_stat.st_mode):
+        raise BuildContextError("effective-context-symlink-forbidden")
+    if not stat.S_ISREG(path_stat.st_mode):
+        raise BuildContextError("effective-context-special-file-forbidden")
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    except OSError as exc:
+        raise BuildContextError("effective-context-material-open-failed") from exc
+    try:
+        opened_stat = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened_stat.st_mode)
+            or _stable_material_stat(opened_stat) != _stable_material_stat(path_stat)
+        ):
+            raise BuildContextError("effective-context-material-raced")
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(descriptor, 65536)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        final_stat = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    try:
+        current_stat = path.lstat()
+    except OSError as exc:
+        raise BuildContextError("effective-context-material-raced") from exc
+    if (
+        _stable_material_stat(opened_stat) != _stable_material_stat(final_stat)
+        or _stable_material_stat(opened_stat) != _stable_material_stat(current_stat)
+    ):
+        raise BuildContextError("effective-context-material-raced")
+    body = b"".join(chunks)
+    if len(body) != opened_stat.st_size:
+        raise BuildContextError("effective-context-material-raced")
+    return body, opened_stat
+
+
+def _deterministic_context_archive(
+    materials: list[dict[str, Any]], bodies: dict[str, bytes]
+) -> bytes:
+    directory_names: set[str] = set()
+    for material in materials:
+        parent = pathlib.PurePosixPath(material["path"]).parent
+        while parent != pathlib.PurePosixPath("."):
+            directory_names.add(parent.as_posix())
+            parent = parent.parent
+    material_by_path = {material["path"]: material for material in materials}
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w", format=tarfile.USTAR_FORMAT) as bundle:
+        entries = [
+            *((name, True) for name in directory_names),
+            *((material["path"], False) for material in materials),
+        ]
+        for name, is_directory in sorted(entries, key=lambda row: row[0].encode("utf-8")):
+            info = tarfile.TarInfo(name=name)
+            info.uid = 0
+            info.gid = 0
+            info.uname = ""
+            info.gname = ""
+            info.mtime = 0
+            if is_directory:
+                info.type = tarfile.DIRTYPE
+                info.mode = 0o755
+                bundle.addfile(info)
+                continue
+            material = material_by_path[name]
+            body = bodies[name]
+            info.mode = material["mode"]
+            info.size = len(body)
+            bundle.addfile(info, io.BytesIO(body))
+    return buffer.getvalue()
+
+
+def _capture_build_context_bundle(
     repo_root: pathlib.Path | str, context_relative: pathlib.Path | str
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], bytes]:
     root = pathlib.Path(repo_root)
     relative_root = pathlib.PurePosixPath(str(context_relative).replace("\\", "/"))
     if relative_root.is_absolute() or ".." in relative_root.parts:
@@ -167,6 +268,7 @@ def capture_build_context_snapshot(
     rules = _dockerignore_rules(context_dir)
 
     materials: list[dict[str, Any]] = []
+    bodies: dict[str, bytes] = {}
     for current, directories, files in os.walk(context_dir, followlinks=False):
         current_path = pathlib.Path(current)
         for name in sorted([*directories, *files]):
@@ -184,13 +286,19 @@ def capture_build_context_snapshot(
                 continue
             if not stat.S_ISREG(path_stat.st_mode):
                 raise BuildContextError("effective-context-special-file-forbidden")
-            body = path.read_bytes()
+            body, opened_stat = _read_regular_material(path)
+            bodies[relative] = body
             materials.append(
                 {
-                    "mode": stat.S_IMODE(path_stat.st_mode),
+                    "ctime_ns": opened_stat.st_ctime_ns,
+                    "device": opened_stat.st_dev,
+                    "inode": opened_stat.st_ino,
+                    "mode": stat.S_IMODE(opened_stat.st_mode),
+                    "mtime_ns": opened_stat.st_mtime_ns,
                     "path": relative,
                     "sha256": hashlib.sha256(body).hexdigest(),
-                    "size": len(body),
+                    "size": opened_stat.st_size,
+                    "uid": opened_stat.st_uid,
                 }
             )
     materials.sort(key=lambda row: row["path"].encode("utf-8"))
@@ -257,42 +365,51 @@ def capture_build_context_snapshot(
         ):
             raise BuildContextError("untracked-effective-material")
 
-    digest = hashlib.sha256()
-    digest.update(b"hyhome-docker-build-context-v1\0")
-    for material in materials:
-        digest.update(material["path"].encode("utf-8"))
-        digest.update(b"\0")
-        digest.update(str(material["mode"]).encode("ascii"))
-        digest.update(b"\0")
-        digest.update(str(material["size"]).encode("ascii"))
-        digest.update(b"\0")
-        digest.update(material["sha256"].encode("ascii"))
-        digest.update(b"\n")
+    archive = _deterministic_context_archive(materials, bodies)
+    archive_sha256 = f"sha256:{hashlib.sha256(archive).hexdigest()}"
     return {
-        "build_context_sha256": f"sha256:{digest.hexdigest()}",
+        "archive_sha256": archive_sha256,
+        "build_context_sha256": archive_sha256,
         "context": relative_root.as_posix(),
+        "generation": "hyhome-docker-build-context-v2",
         "materials": materials,
-        "schema_version": 1,
+        "schema_version": 2,
         "source_revision": source_revision,
-    }
+    }, archive
+
+
+def capture_build_context_snapshot(
+    repo_root: pathlib.Path | str, context_relative: pathlib.Path | str
+) -> dict[str, Any]:
+    snapshot, _ = _capture_build_context_bundle(repo_root, context_relative)
+    return snapshot
 
 
 def verify_build_context_snapshot(
     repo_root: pathlib.Path | str,
     context_relative: pathlib.Path | str,
     snapshot_path: pathlib.Path | str,
+    archive_path: pathlib.Path | str | None = None,
 ) -> dict[str, Any]:
     try:
         expected = load_json(snapshot_path)
     except (OSError, json.JSONDecodeError) as exc:
         raise BuildContextError("build-context-snapshot-invalid") from exc
-    actual = capture_build_context_snapshot(repo_root, context_relative)
+    actual, actual_archive = _capture_build_context_bundle(repo_root, context_relative)
     if actual != expected:
         raise BuildContextError("build-context-snapshot-mismatch")
+    if archive_path is not None:
+        archive = read_private_bytes(archive_path)
+        if (
+            archive != actual_archive
+            or f"sha256:{hashlib.sha256(archive).hexdigest()}"
+            != expected.get("archive_sha256")
+        ):
+            raise BuildContextError("build-context-archive-mismatch")
     return actual
 
 
-def write_private_json(path: pathlib.Path | str, payload: Any) -> None:
+def write_private_bytes(path: pathlib.Path | str, body: bytes) -> None:
     target = pathlib.Path(path)
     parent_stat = target.parent.lstat()
     if (
@@ -302,7 +419,6 @@ def write_private_json(path: pathlib.Path | str, payload: Any) -> None:
         or stat.S_IMODE(parent_stat.st_mode) != 0o700
     ):
         raise SecureOutputError("private-parent-invalid")
-    body = (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8")
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
     parent_fd = os.open(
         target.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
@@ -318,6 +434,64 @@ def write_private_json(path: pathlib.Path | str, payload: Any) -> None:
             os.close(descriptor)
     finally:
         os.close(parent_fd)
+
+
+def read_private_bytes(path: pathlib.Path | str) -> bytes:
+    source = pathlib.Path(path)
+    try:
+        parent_stat = source.parent.lstat()
+    except OSError as exc:
+        raise SecureOutputError("private-parent-invalid") from exc
+    if (
+        not stat.S_ISDIR(parent_stat.st_mode)
+        or source.parent.is_symlink()
+        or parent_stat.st_uid != os.getuid()
+        or stat.S_IMODE(parent_stat.st_mode) != 0o700
+    ):
+        raise SecureOutputError("private-parent-invalid")
+    parent_fd = os.open(
+        source.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    )
+    try:
+        descriptor = os.open(source.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd)
+        try:
+            source_stat = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(source_stat.st_mode)
+                or source_stat.st_uid != os.getuid()
+                or stat.S_IMODE(source_stat.st_mode) != 0o600
+            ):
+                raise SecureOutputError("private-source-invalid")
+            chunks: list[bytes] = []
+            while True:
+                chunk = os.read(descriptor, 65536)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+        finally:
+            os.close(descriptor)
+    except OSError as exc:
+        raise SecureOutputError("private-source-invalid") from exc
+    finally:
+        os.close(parent_fd)
+    return b"".join(chunks)
+
+
+def write_private_json(path: pathlib.Path | str, payload: Any) -> None:
+    body = (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8")
+    write_private_bytes(path, body)
+
+
+def write_build_context_bundle(
+    repo_root: pathlib.Path | str,
+    context_relative: pathlib.Path | str,
+    snapshot_path: pathlib.Path | str,
+    archive_path: pathlib.Path | str,
+) -> dict[str, Any]:
+    snapshot, archive = _capture_build_context_bundle(repo_root, context_relative)
+    write_private_bytes(archive_path, archive)
+    write_private_json(snapshot_path, snapshot)
+    return snapshot
 
 
 def _validate_directory_stat(
@@ -741,7 +915,7 @@ def validate_tool_registry(registry: Any) -> list[str]:
     if not isinstance(registry, dict):
         return ["tool-registry-invalid"]
     errors: list[str] = []
-    if registry.get("schema_version") != 1:
+    if registry.get("schema_version") != 2:
         errors.append("tool-schema-version-invalid")
     for field in ("policy_id", "effective_date", "owner_role"):
         if not _is_text(registry.get(field)):
@@ -758,11 +932,17 @@ def validate_tool_registry(registry: Any) -> list[str]:
         row = by_name.get(name)
         if not isinstance(row, dict):
             continue
-        image, digest, version = expected
+        image, digest, repo_digest, config_id, version = expected
         if row.get("image") != image:
             errors.append("tool-image-pin-invalid")
         if row.get("digest") != digest or not SHA256_RE.fullmatch(str(row.get("digest", ""))):
             errors.append("tool-digest-invalid")
+        if row.get("repo_digest") != repo_digest:
+            errors.append("tool-repo-digest-invalid")
+        if row.get("config_id") != config_id or not SHA256_RE.fullmatch(
+            str(row.get("config_id", ""))
+        ):
+            errors.append("tool-config-id-invalid")
         if row.get("expected_version") != version:
             errors.append("tool-version-invalid")
         for field in ("command_contract", "network_mode"):
@@ -1202,15 +1382,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--capture-build-context",
-        nargs=3,
-        metavar=("REPO_ROOT", "CONTEXT", "OUTPUT"),
-        help="capture a clean, deterministic effective Docker context snapshot",
+        nargs=4,
+        metavar=("REPO_ROOT", "CONTEXT", "SNAPSHOT", "ARCHIVE"),
+        help="capture a clean, deterministic effective Docker context snapshot and tar",
     )
     parser.add_argument(
         "--verify-build-context",
-        nargs=3,
-        metavar=("REPO_ROOT", "CONTEXT", "SNAPSHOT"),
-        help="fail unless the effective Docker context still matches a snapshot",
+        nargs=4,
+        metavar=("REPO_ROOT", "CONTEXT", "SNAPSHOT", "ARCHIVE"),
+        help="fail unless the effective Docker context and tar still match a snapshot",
     )
     parser.add_argument(
         "--prepare-secure-output",
@@ -1270,14 +1450,15 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     try:
         if args.capture_build_context:
-            root, context, output = args.capture_build_context
-            snapshot = capture_build_context_snapshot(root, context)
-            write_private_json(output, snapshot)
+            root, context, snapshot_path, archive_path = args.capture_build_context
+            snapshot = write_build_context_bundle(
+                root, context, snapshot_path, archive_path
+            )
             print(snapshot["build_context_sha256"])
             return 0
         if args.verify_build_context:
-            root, context, snapshot = args.verify_build_context
-            verified = verify_build_context_snapshot(root, context, snapshot)
+            root, context, snapshot, archive = args.verify_build_context
+            verified = verify_build_context_snapshot(root, context, snapshot, archive)
             print(verified["build_context_sha256"])
             return 0
         if args.prepare_secure_output:

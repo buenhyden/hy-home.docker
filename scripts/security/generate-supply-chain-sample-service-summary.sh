@@ -31,7 +31,7 @@ registry = json.loads(pathlib.Path("infra/supply-chain.tool-images.json").read_t
 policy = json.loads(pathlib.Path("infra/supply-chain.sample-service-policy.json").read_text())
 tool_rows = []
 for tool in registry["tools"]:
-    tool_rows.append(f"| `{tool['name']}` | `{tool['image']}@{tool['digest']}` | `{tool['command_contract']}` | `{tool['network_mode']}` |")
+    tool_rows.append(f"| `{tool['name']}` | `{tool['repo_digest']}` | `{tool['config_id']}` | `{tool['command_contract']}` | `{tool['network_mode']}` |")
 
 lines = [
     "---",
@@ -96,8 +96,8 @@ lines = [
     "",
     "## Pinned Tool Images",
     "",
-    "| Tool | Image manifest | Command contract | Network mode |",
-    "| --- | --- | --- | --- |",
+    "| Tool | Repository manifest | Config ID | Command contract | Network mode |",
+    "| --- | --- | --- | --- | --- |",
     *tool_rows,
     "",
     "## Evidence Boundary",

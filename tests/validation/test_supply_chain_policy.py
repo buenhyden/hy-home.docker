@@ -543,6 +543,10 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         )[0]
         self.assertLess(
             advisory.index("assert_grype_db_seed_available"),
+            advisory.index("ensure_advisory_prerequisites"),
+        )
+        self.assertLess(
+            advisory.index("assert_grype_db_seed_available"),
             advisory.index("seed_private_grype_db_cache"),
         )
         self.assertLess(
@@ -771,6 +775,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "  run_verdict_dir=$(mktemp -d \"$OUTPUT_DIR/.verification-verdicts.XXXXXX\")\n"
                 "}\n"
                 "capture_build_context_snapshot() { BUILD_CONTEXT_SHA256=sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee; }\n"
+                "assert_build_context_unchanged() { :; }\n"
                 "ensure_advisory_prerequisites() { :; }\n"
                 "assert_grype_db_seed_available() { :; }\n"
                 "assert_local_image_identities() { :; }\n"

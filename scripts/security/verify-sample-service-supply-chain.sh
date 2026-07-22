@@ -20,9 +20,11 @@ MODE="${1:-}"
 readonly EXIT_USAGE=2 EXIT_POLICY=10 EXIT_BUILD=20 EXIT_SBOM=30
 readonly EXIT_VULNERABILITY=40 EXIT_PROVENANCE=50 EXIT_SIGNATURE=60 EXIT_SCORECARD=70
 readonly BUILD_MATERIAL_REF="alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
-readonly BUILD_MATERIAL_ID="sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+readonly BUILD_MATERIAL_REPO_DIGEST="alpine@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+readonly BUILD_MATERIAL_CONFIG_ID="sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
 readonly RUNTIME_MATERIAL_REF="nginxinc/nginx-unprivileged:1.27.3-alpine@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b"
-readonly RUNTIME_MATERIAL_ID="sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b"
+readonly RUNTIME_MATERIAL_REPO_DIGEST="nginxinc/nginx-unprivileged@sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b"
+readonly RUNTIME_MATERIAL_CONFIG_ID="sha256:9e7238f579a54582263a960d1b0094b4a3ecce641342eda3f8e2ff82b1703d2b"
 
 declare -A IMAGE_CONFIG_DIGEST=() OCI_ARCHIVE_SHA256=()
 runtime_dir=""
@@ -34,6 +36,7 @@ private_key_dir=""
 tool_tmp_dir=""
 run_verdict_dir=""
 build_context_snapshot=""
+build_context_archive=""
 BUILD_CONTEXT_SHA256=""
 output_identity=""
 
@@ -65,6 +68,10 @@ for tool in registry["tools"]:
             print(f'{tool["image"]}@{tool["digest"]}')
         elif sys.argv[3] == "digest":
             print(tool["digest"])
+        elif sys.argv[3] == "repo_digest":
+            print(tool["repo_digest"])
+        elif sys.argv[3] == "config_id":
+            print(tool["config_id"])
         else:
             raise SystemExit(2)
         raise SystemExit(0)
@@ -78,6 +85,14 @@ tool_ref() {
 
 tool_digest() {
   tool_field "$1" digest
+}
+
+tool_repo_digest() {
+  tool_field "$1" repo_digest
+}
+
+tool_config_id() {
+  tool_field "$1" config_id
 }
 
 load_tool_registry() {
@@ -105,6 +120,7 @@ prepare_transient_directory() {
   tool_tmp_dir="$runtime_dir/tool-tmp"
   run_verdict_dir="$runtime_dir/verdicts"
   build_context_snapshot="$runtime_dir/build-context.json"
+  build_context_archive="$runtime_dir/build-context.tar"
   mkdir -m 700 "$artifact_root" "$grype_db_dir" "$private_key_dir" "$tool_tmp_dir" "$run_verdict_dir"
   mkdir -m 700 "$tool_tmp_dir/.cache"
   mkdir -m 700 "$artifact_root/baseline" "$artifact_root/candidate"
@@ -121,6 +137,7 @@ cleanup_transient_state() {
   tool_tmp_dir=""
   run_verdict_dir=""
   build_context_snapshot=""
+  build_context_archive=""
 }
 
 prepare_secure_output() {
@@ -137,8 +154,8 @@ invalidate_consumer_verdicts() {
 
 capture_build_context_snapshot() {
   local snapshot_revision
-  [[ -n "$build_context_snapshot" ]] || fail "$EXIT_POLICY" "build-context-snapshot-path-missing"
-  BUILD_CONTEXT_SHA256="$(python3 "$CHECKER" --capture-build-context "$BASE_DIR" "examples/sample-web-service" "$build_context_snapshot")" || fail "$EXIT_POLICY" "build-context-not-clean"
+  [[ -n "$build_context_snapshot" && -n "$build_context_archive" ]] || fail "$EXIT_POLICY" "build-context-snapshot-path-missing"
+  BUILD_CONTEXT_SHA256="$(python3 "$CHECKER" --capture-build-context "$BASE_DIR" "examples/sample-web-service" "$build_context_snapshot" "$build_context_archive")" || fail "$EXIT_POLICY" "build-context-not-clean"
   [[ "$BUILD_CONTEXT_SHA256" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_POLICY" "build-context-digest-invalid"
   snapshot_revision="$(python3 - "$build_context_snapshot" <<'PY'
 import json
@@ -152,8 +169,8 @@ PY
 }
 
 assert_build_context_unchanged() {
-  [[ -n "$build_context_snapshot" && -f "$build_context_snapshot" ]] || fail "$EXIT_PROVENANCE" "build-context-snapshot-missing"
-  python3 "$CHECKER" --verify-build-context "$BASE_DIR" "examples/sample-web-service" "$build_context_snapshot" >/dev/null || fail "$EXIT_PROVENANCE" "build-context-changed"
+  [[ -n "$build_context_snapshot" && -f "$build_context_snapshot" && -n "$build_context_archive" && -f "$build_context_archive" ]] || fail "$EXIT_PROVENANCE" "build-context-snapshot-missing"
+  python3 "$CHECKER" --verify-build-context "$BASE_DIR" "examples/sample-web-service" "$build_context_snapshot" "$build_context_archive" >/dev/null || fail "$EXIT_PROVENANCE" "build-context-changed"
 }
 
 role_artifact_dir() {
@@ -166,20 +183,33 @@ role_artifact_dir() {
 }
 
 assert_local_image_identity() {
-  local reference="$1" expected_id="$2" actual_id
-  actual_id="$(docker image inspect --format '{{.Id}}' "$reference" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-image-missing"
-  [[ "$actual_id" == "$expected_id" ]] || fail "$EXIT_POLICY" "pinned-image-id-mismatch"
+  local reference="$1" expected_repo_digest="$2" expected_config_id="$3" inspection repo_digests actual_config_id
+  inspection="$(docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' "$reference" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-image-missing"
+  repo_digests="${inspection%%|*}"
+  actual_config_id="${inspection#*|}"
+  python3 - "$repo_digests" "$expected_repo_digest" <<'PY' || fail "$EXIT_POLICY" "pinned-image-manifest-mismatch"
+import json
+import sys
+
+try:
+    repo_digests = json.loads(sys.argv[1])
+except json.JSONDecodeError:
+    raise SystemExit(1)
+raise SystemExit(0 if isinstance(repo_digests, list) and sys.argv[2] in repo_digests else 1)
+PY
+  [[ "$actual_config_id" == "$expected_config_id" ]] || fail "$EXIT_POLICY" "pinned-image-config-id-mismatch"
 }
 
 assert_local_image_identities() {
-  local tool reference digest
+  local tool reference repo_digest config_id
   for tool in syft grype cosign scorecard; do
     reference="$(tool_ref "$tool")" || fail "$EXIT_POLICY" "tool-reference-missing"
-    digest="$(tool_digest "$tool")" || fail "$EXIT_POLICY" "tool-digest-missing"
-    assert_local_image_identity "$reference" "$digest"
+    repo_digest="$(tool_repo_digest "$tool")" || fail "$EXIT_POLICY" "tool-repo-digest-missing"
+    config_id="$(tool_config_id "$tool")" || fail "$EXIT_POLICY" "tool-config-id-missing"
+    assert_local_image_identity "$reference" "$repo_digest" "$config_id"
   done
-  assert_local_image_identity "$BUILD_MATERIAL_REF" "$BUILD_MATERIAL_ID"
-  assert_local_image_identity "$RUNTIME_MATERIAL_REF" "$RUNTIME_MATERIAL_ID"
+  assert_local_image_identity "$BUILD_MATERIAL_REF" "$BUILD_MATERIAL_REPO_DIGEST" "$BUILD_MATERIAL_CONFIG_ID"
+  assert_local_image_identity "$RUNTIME_MATERIAL_REF" "$RUNTIME_MATERIAL_REPO_DIGEST" "$RUNTIME_MATERIAL_CONFIG_ID"
 }
 
 assert_default_buildx_offline_capable() {
@@ -230,9 +260,11 @@ build_role_image() {
   local role="$1" role_dir label
   role_dir="$(role_artifact_dir "$role")"
   label="org.hyhome.delivery.rehearsal.role=${role}"
+  [[ -f "$build_context_archive" && ! -L "$build_context_archive" ]] || fail "$EXIT_BUILD" "build-context-archive-missing"
+  [[ "$(stat -c '%a:%u' "$build_context_archive")" == "600:$(id -u)" ]] || fail "$EXIT_BUILD" "build-context-archive-private-mode-invalid"
   mkdir -p "$role_dir"
   chmod 700 "$role_dir"
-  docker buildx build --builder default --network=none --pull=false --output "type=oci,dest=$role_dir/image.oci.tar" --label "$label" --file "$SERVICE_DIR/Dockerfile" "$SERVICE_DIR" || fail "$EXIT_BUILD" "role-image-build-failed"
+  docker buildx build --builder default --network=none --pull=false --output "type=oci,dest=$role_dir/image.oci.tar" --label "$label" --file Dockerfile - <"$build_context_archive" || fail "$EXIT_BUILD" "role-image-build-failed"
   chmod 600 "$role_dir/image.oci.tar"
 }
 
@@ -525,14 +557,16 @@ run_advisory() {
   run_preflight
   prepare_transient_directory
   capture_build_context_snapshot
-  ensure_advisory_prerequisites
   assert_grype_db_seed_available
+  ensure_advisory_prerequisites
   assert_local_image_identities
   seed_private_grype_db_cache
   remove_legacy_runtime_artifacts
   record_grype_db_identity
   build_role_image baseline
+  assert_build_context_unchanged
   build_role_image candidate
+  assert_build_context_unchanged
   export_oci_archive baseline
   export_oci_archive candidate
   derive_subject_tuple baseline
@@ -572,7 +606,7 @@ run_scorecard_advisory() {
   fi
   command -v docker >/dev/null || fail "$EXIT_SCORECARD" "docker-unavailable"
   docker info >/dev/null 2>&1 || fail "$EXIT_SCORECARD" "docker-daemon-unavailable"
-  assert_local_image_identity "$(tool_ref scorecard)" "$(tool_digest scorecard)"
+  assert_local_image_identity "$(tool_ref scorecard)" "$(tool_repo_digest scorecard)" "$(tool_config_id scorecard)"
   docker run --pull=never --rm "$(tool_ref scorecard)" --repo "github.com/buenhyden/hy-home.docker" >/dev/null || fail "$EXIT_SCORECARD" "scorecard-observation-failed"
   printf 'scorecard_advisory=observed mode=read-only-advisory\n'
 }
