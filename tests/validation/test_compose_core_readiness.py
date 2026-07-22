@@ -116,6 +116,9 @@ render_core_model() {{
 assert_docker_daemon() {{
   [ {fail_at!r} != daemon ] || fail_positive_precheck
 }}
+assert_local_image_identities() {{
+  [ {fail_at!r} != images ] || fail_positive_precheck
+}}
 assert_target_capacity() {{
   [ {fail_at!r} != capacity ] || fail_positive_precheck
 }}
@@ -170,7 +173,9 @@ main --scenario {scenario}
             "services": {
                 name: {
                     "container_name": None,
-                    "image": EXPECTED_IMAGES[name],
+                    "image": EXPECTED_IMAGES.get(
+                        name, "example.invalid/extra@sha256:" + ("0" * 64)
+                    ),
                     "cpus": limits.get(name, (0, 0))[0],
                     "mem_limit": limits.get(name, (0, 0))[1],
                     "networks": {"crr_net": None},
@@ -383,7 +388,7 @@ main --scenario {scenario}
                 self.assertNotIn("true", result.stdout)
 
     def test_positive_invalidates_old_canonical_before_early_failure(self) -> None:
-        for failure in ("dependency", "render", "daemon", "capacity"):
+        for failure in ("dependency", "render", "daemon", "images", "capacity"):
             with self.subTest(failure=failure), tempfile.TemporaryDirectory() as raw:
                 evidence = Path(raw) / "evidence"
                 evidence.mkdir()
@@ -654,6 +659,18 @@ on_exit
                 self.assertIn(f"    image: {image}\n", section)
 
     def test_local_image_identity_gate_rejects_missing_or_replaced_images(self) -> None:
+        runner = RUNNER.read_text(encoding="utf-8")
+        runtime_body = runner.split("execute_runtime_scenario() {", maxsplit=1)[1].split(
+            "\n}\n\nmain()", maxsplit=1
+        )[0]
+        self.assertLess(
+            runtime_body.index("assert_local_image_identities"),
+            runtime_body.index('>"${CRR_RUNTIME_DIR}/cleanup-required"'),
+        )
+        self.assertLess(
+            runtime_body.index("assert_local_image_identities"),
+            runtime_body.index("start_vault"),
+        )
         expected_id = EXPECTED_IMAGES["traefik"].split("@", maxsplit=1)[1]
         valid = self.run_library(
             "docker() { printf '%s\\n' \"$CRR_TEST_IMAGE_ID\"; }; "
@@ -820,7 +837,11 @@ on_exit
                 )
             )
             self.assertEqual(
-                {"vault-readiness.hcl", "vault-agent-readiness.hcl"},
+                {
+                    "vault-readiness.hcl",
+                    "vault-agent-readiness.hcl",
+                    "traefik-readiness.yml",
+                },
                 {path.name for path in config_dir.iterdir()},
             )
             self.assertTrue(
@@ -1073,7 +1094,7 @@ on_exit
             )
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(
-                "run --rm --no-deps --user 0:0 --cap-add CHOWN "
+                "run --rm --no-deps --pull never --user 0:0 --cap-add CHOWN "
                 "--entrypoint sh vault-agent -ec "
                 "chmod 0750 /vault/out && chown vault:vault /vault/out",
                 capture.read_text(encoding="utf-8").strip(),

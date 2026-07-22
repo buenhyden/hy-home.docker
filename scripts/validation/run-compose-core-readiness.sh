@@ -84,6 +84,7 @@ execute_runtime_scenario() {
   prepare_synthetic_secrets
   render_core_model
   assert_docker_daemon
+  assert_local_image_identities
   assert_target_capacity
 
   : >"${CRR_RUNTIME_DIR}/cleanup-required"
@@ -157,6 +158,8 @@ main() {
     assert_docker_compose
     prepare_synthetic_secrets
     render_core_model
+    assert_docker_daemon
+    assert_local_image_identities
     printf '%s\n' \
       "preflight_status=passed" \
       "project_name=${CRR_PROJECT_NAME}" \

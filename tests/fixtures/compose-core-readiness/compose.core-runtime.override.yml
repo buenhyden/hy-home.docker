@@ -35,7 +35,7 @@ secrets: !override
 services:
   keycloak:
     profiles: !override [core]
-    image: quay.io/keycloak/keycloak:26.6.4-1
+    image: quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4
     container_name: !reset null
     hostname: !reset null
     restart: "no"
@@ -85,7 +85,7 @@ services:
   oauth2-proxy:
     profiles: !override [core]
     build: !reset null
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+    image: quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561
     container_name: !reset null
     restart: "no"
     cpus: "0.50"
@@ -122,12 +122,7 @@ services:
         condition: service_healthy
     labels: !override
       org.hyhome.readiness-owner: task-2026-07-19-compose-runtime-readiness-remediation
-      traefik.enable: "true"
-      traefik.docker.network: ${CRR_NETWORK_NAME:?CRR_NETWORK_NAME is required}
-      traefik.http.routers.crr-oauth2.entrypoints: web
-      traefik.http.routers.crr-oauth2.rule: Path(`/ping`)
-      traefik.http.routers.crr-oauth2.service: crr-oauth2
-      traefik.http.services.crr-oauth2.loadbalancer.server.port: "4180"
+      traefik.enable: "false"
     healthcheck: !override
       test: [CMD, /bin/oauth2-proxy, --version]
       interval: 5s
@@ -137,7 +132,7 @@ services:
 
   traefik:
     profiles: !override [core]
-    image: traefik:v3.7.6
+    image: traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2
     container_name: !reset null
     hostname: !reset null
     restart: "no"
@@ -150,15 +145,14 @@ services:
       - --entryPoints.ping.address=:8080
       - --ping=true
       - --ping.entryPoint=ping
-      - --providers.docker=true
-      - --providers.docker.exposedByDefault=false
-      - --providers.docker.network=${CRR_NETWORK_NAME:?CRR_NETWORK_NAME is required}
+      - --providers.file.filename=/etc/traefik/dynamic/traefik-readiness.yml
+      - --providers.file.watch=false
     ports: !override
       - "127.0.0.1:18000:8000"
       - "127.0.0.1:18443:8443"
       - "127.0.0.1:18082:8080"
     volumes: !override
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${CRR_CONFIG_DIR:?CRR_CONFIG_DIR is required}/traefik-readiness.yml:/etc/traefik/dynamic/traefik-readiness.yml:ro
     secrets: !reset []
     networks: !override
       - crr_net
@@ -174,7 +168,7 @@ services:
 
   vault:
     profiles: !override [core]
-    image: hashicorp/vault:2.0.3
+    image: hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54
     container_name: !reset null
     restart: "no"
     cpus: "0.50"
@@ -216,7 +210,7 @@ services:
 
   vault-agent:
     profiles: !override [core]
-    image: hashicorp/vault:2.0.3
+    image: hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54
     container_name: !reset null
     restart: "no"
     cpus: "0.25"

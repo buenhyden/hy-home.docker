@@ -20,6 +20,12 @@ CRR_APPROVAL_REF="task:2026-07-19-compose-runtime-readiness-remediation#approval
 CRR_TARGET_CLASS="local-linked-worktree-docker-engine"
 CRR_EXPECTED_SERVICES=(keycloak oauth2-proxy traefik vault vault-agent)
 CRR_EXPECTED_PORTS=(18000 18443 18082 18083 18200)
+CRR_EXPECTED_IMAGE_IDENTITIES=(
+  "quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4"
+  "quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561"
+  "traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2"
+  "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+)
 
 crr_error() {
   printf 'compose-core-readiness: %s\n' "$*" >&2
@@ -142,6 +148,28 @@ assert_docker_daemon() {
     crr_fail "$CRR_EXIT_PREFLIGHT" "Docker daemon is unavailable"
 }
 
+assert_local_image_identity() {
+  local image_ref="$1" expected_id="$2" actual_id
+  if ! actual_id="$(docker image inspect --format '{{.Id}}' "$image_ref" 2>/dev/null)"; then
+    crr_fail "$CRR_EXIT_PREFLIGHT" \
+      "local image identity is unavailable for ${image_ref}"
+    return
+  fi
+  if [ "$actual_id" != "$expected_id" ]; then
+    crr_fail "$CRR_EXIT_PREFLIGHT" \
+      "local image identity mismatch for ${image_ref}"
+    return
+  fi
+}
+
+assert_local_image_identities() {
+  local identity image_ref expected_id
+  for identity in "${CRR_EXPECTED_IMAGE_IDENTITIES[@]}"; do
+    IFS='|' read -r image_ref expected_id <<<"$identity"
+    assert_local_image_identity "$image_ref" "$expected_id" || return
+  done
+}
+
 assert_target_capacity() {
   local capacity cpu_count memory_bytes docker_root available_kib
   if ! capacity="$(docker info --format '{{.NCPU}} {{.MemTotal}} {{.DockerRootDir}}' 2>/dev/null)"; then
@@ -259,7 +287,8 @@ prepare_synthetic_secrets() {
     "${CRR_SECRET_DIR}/vault_root_token"
   rm -f -- \
     "${CRR_CONFIG_DIR}/vault-readiness.hcl" \
-    "${CRR_CONFIG_DIR}/vault-agent-readiness.hcl"
+    "${CRR_CONFIG_DIR}/vault-agent-readiness.hcl" \
+    "${CRR_CONFIG_DIR}/traefik-readiness.yml"
   openssl rand -hex 24 >"${CRR_SECRET_DIR}/keycloak_admin_password"
   openssl rand -hex 24 >"${CRR_SECRET_DIR}/oauth2_proxy_client_secret"
   openssl rand -hex 16 | tr -d '\n' >"${CRR_SECRET_DIR}/oauth2_proxy_cookie_secret"
@@ -277,6 +306,21 @@ listener "tcp" {
   address = "0.0.0.0:8200"
   tls_disable = true
 }
+EOF
+
+  cat >"${CRR_CONFIG_DIR}/traefik-readiness.yml" <<'EOF'
+http:
+  routers:
+    crr-oauth2:
+      entryPoints:
+        - web
+      rule: "Path(`/ping`)"
+      service: crr-oauth2
+  services:
+    crr-oauth2:
+      loadBalancer:
+        servers:
+          - url: http://oauth2-proxy:4180
 EOF
 
   cat >"${CRR_CONFIG_DIR}/vault-agent-readiness.hcl" <<'EOF'
@@ -322,7 +366,8 @@ set_container_material_permissions() {
     "${CRR_SECRET_DIR}/vault_root_token"
   chmod 0644 \
     "${CRR_CONFIG_DIR}/vault-readiness.hcl" \
-    "${CRR_CONFIG_DIR}/vault-agent-readiness.hcl"
+    "${CRR_CONFIG_DIR}/vault-agent-readiness.hcl" \
+    "${CRR_CONFIG_DIR}/traefik-readiness.yml"
 }
 
 unseal_vault_from_mounted_secret() {
@@ -395,6 +440,13 @@ expected_limits = {
     "vault": (0.5, 268435456),
     "vault-agent": (0.25, 134217728),
 }
+expected_images = {
+    "keycloak": "quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4",
+    "oauth2-proxy": "quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561",
+    "traefik": "traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2",
+    "vault": "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54",
+    "vault-agent": "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54",
+}
 root = sys.argv[2]
 runtime_dir = sys.argv[3]
 try:
@@ -410,6 +462,10 @@ if set(services) != expected_services:
 
 ports = set()
 for name, service in services.items():
+    if service.get("image") != expected_images.get(name):
+        errors.append(f"image identity:{name}")
+    if service.get("build") is not None:
+        errors.append(f"runtime build:{name}")
     if service.get("container_name") not in (None, ""):
         errors.append(f"fixed container name:{name}")
     if set((service.get("networks") or {}).keys()) != {"crr_net"}:
@@ -433,9 +489,9 @@ for name, service in services.items():
         if volume.get("type") == "bind":
             if root and source.startswith(root + "/"):
                 errors.append(f"repository bind:{name}")
-            if source == "/var/run/docker.sock":
-                if name != "traefik" or volume.get("read_only") is not True:
-                    errors.append(f"docker socket scope:{name}")
+            target = str(volume.get("target", ""))
+            if source.endswith("/docker.sock") or target.endswith("/docker.sock"):
+                errors.append(f"raw docker socket:{name}")
                 continue
             if not runtime_dir:
                 errors.append(f"runtime bind without identity:{name}")
@@ -684,7 +740,7 @@ cleanup_owned_project() {
 }
 
 start_vault() {
-  crr_compose up -d vault >/dev/null ||
+  crr_compose up -d --pull never --no-build vault >/dev/null ||
     crr_fail "$CRR_EXIT_STARTUP" "Vault startup failed"
   wait_container_health vault "${CRR_STARTUP_TIMEOUT_SECONDS:-180}" ||
     crr_fail "$CRR_EXIT_STARTUP" "Vault initialization health timed out"
@@ -745,7 +801,7 @@ initialize_unseal_and_configure_synthetic_vault() {
 }
 
 prepare_vault_agent_output_volume() {
-  crr_compose run --rm --no-deps --user 0:0 --cap-add CHOWN \
+  crr_compose run --rm --no-deps --pull never --user 0:0 --cap-add CHOWN \
     --entrypoint sh vault-agent -ec \
     'chmod 0750 /vault/out && chown vault:vault /vault/out' \
     >/dev/null 2>&1 ||
@@ -754,7 +810,7 @@ prepare_vault_agent_output_volume() {
 }
 
 start_remaining_services() {
-  crr_compose up -d --wait \
+  crr_compose up -d --pull never --no-build --wait \
     --wait-timeout "${CRR_STARTUP_TIMEOUT_SECONDS:-180}" \
     keycloak oauth2-proxy traefik vault-agent >/dev/null ||
     crr_fail "$CRR_EXIT_STARTUP" "remaining service startup failed"
