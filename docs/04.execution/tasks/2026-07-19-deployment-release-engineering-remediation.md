@@ -11,11 +11,12 @@ parent_ids:
 
 ## Overview
 
-This active Task will record a local pair-bound baseline/canary promotion and
-previous-runtime-image-ID rollback rehearsal for
-`examples/sample-web-service`. No baseline or canary project has started, no
-promotion or rollback decision has been made, and no GitHub Release, registry
-object, deployment, or remote environment exists.
+This active Task records the completed local pair-bound baseline/canary
+promotion and previous-runtime-image-ID rollback rehearsal for
+`examples/sample-web-service`. The approved sequence ran exactly once in each
+mode: a positive promotion followed by an injected canary-health failure and
+verified rollback. No GitHub Release, registry publication, remote deployment,
+or remote environment was created.
 
 The Task owns the concise
 `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json`
@@ -131,9 +132,9 @@ untracked.
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
 | `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; current focused suite 54/54 and fixture-only preflight pass |
-| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Implementation complete; accepted portable pair exists, positive runtime `not_run` |
-| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Implementation complete; positive/rollback runtime `not_run` |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Portable consumer review C0/I0/M0; runtime-evidence review awaits execution |
+| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Complete; one positive and one injected-negative runtime executed with exact owned cleanup |
+| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Complete; positive promoted and negative rolled back to the healthy baseline with canonical replacement proof |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Runbook and runtime evidence reconciled; fresh runtime-evidence reviews pending |
 
 ## Work Log
 
@@ -142,17 +143,18 @@ untracked.
 | 2026-07-19 | Task activation | Contract recorded; no build, project, promotion, rollback, release, or remote action executed. |
 | 2026-07-19 | `T-DRE-001`–`T-DRE-004` | Initially `not_run`; append actual evidence only after upstream verdicts and exact execution. |
 | 2026-07-22 | `T-DRE-001` focused implementation | Existing 21-test RED was 22 failures and 3 errors with only the fixture-schema method passing. The first wrapper reduced this to 1 failure, then passed 21/21. Expanded contract RED was 8 failures in 26 tests and GREEN was 26/26. Four state-machine guarantees were RED across 3 unittest failures, then GREEN reached 27/27; the final service/network label cardinality guard brought the suite to 28/28. |
-| 2026-07-22 | `T-DRE-002`–`T-DRE-004` implementation boundary | Removed only fixed Compose `name`/`container_name`; added exact digest, gate, project, port, label, health-marker, promotion, rollback, cleanup, record, timeout, and runbook contracts. Fixture-only preflight passed without Docker. The real command stopped at class 10 because the accepted Spec 126 pair is absent; no project or record was created. Reviews were then pending. |
-| 2026-07-22 | Independent-review remediation | Specification returned C0/I2/M0 and release/security returned C1/I2/M0, deduplicated to four findings. The isolated canonical-mutation scan was RED 1/1; expanded RED was 38 tests with 13 failures and 0 errors. GREEN is 38/38 after exact local image-object validation and pull/build denial, interpolation-free ID cleanup, fail-closed missing-pair cleanup, immutable real-canonical snapshots, and stable no-follow directory-FD publication. No project or accepted canonical was created; terminal re-reviews were then pending. |
-| 2026-07-22 | Terminal independent review closure | Terminal specification and release/security reviews both returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. Fail-closed implementation/static/fixture proof is complete; positive/negative runtime remains `blocked/not_run`, with no project, accepted canonical, release, or deployment. |
+| 2026-07-22 | Historical `T-DRE-002`–`T-DRE-004` implementation boundary | Removed only fixed Compose `name`/`container_name`; added exact digest, gate, project, port, label, health-marker, promotion, rollback, cleanup, record, timeout, and runbook contracts. Fixture-only preflight passed without Docker. At that revision the real command stopped at class 10 because the accepted Spec 126 pair was absent; no project or record was created. Later accepted-pair and runtime rows supersede that prerequisite state. |
+| 2026-07-22 | Historical independent-review remediation | Specification returned C0/I2/M0 and release/security returned C1/I2/M0, deduplicated to four findings. The isolated canonical-mutation scan was RED 1/1; expanded RED was 38 tests with 13 failures and 0 errors. GREEN reached 38/38 after exact local image-object validation and pull/build denial, interpolation-free ID cleanup, fail-closed missing-pair cleanup, immutable real-canonical snapshots, and stable no-follow directory-FD publication. No project or accepted canonical was created at that checkpoint; terminal re-reviews were then pending. |
+| 2026-07-22 | Historical terminal independent review closure | Terminal specification and release/security reviews both returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. At that checkpoint fail-closed implementation/static/fixture proof was complete while positive/negative runtime remained `blocked/not_run`, with no project, accepted canonical, release, or deployment. The later runtime row supersedes that execution state. |
 | 2026-07-22 | Program closure fail-closed rerun (historical implementation state) | The 38/38 suite, fixture preflight, and real class-10 missing-pair result remain valid historical evidence. The later immutable-input and strict-record remediation below supersedes its implementation identity and focused-suite count. |
 | 2026-07-22 | Delivery evidence tamper and TOCTOU RED | RED `37b023ec` captured delivery-record tamper gaps; supporting schema-value RED `94858299` specified bound record values; micro-RED `8701ade6` proved a valid-format substituted verdict hash could otherwise be published. |
 | 2026-07-22 | Immutable-input and record-binding GREEN (historical, superseded) | GREEN `692ae759` bound schema-v2 records and seven snapshotted inputs for that committed state. Its 42/42 result and class-10 `verdict-file-missing` observation remain historical evidence; the pair-manifest contract below supersedes both the schema and blocker code. |
-| 2026-07-22 | Verdict pair-manifest RED/GREEN | RED `f0c3e032` required a source/context/generation-bound manifest with exact baseline/candidate verdict hashes and fd-relative canonical invalidation. GREEN `20022458` requires, snapshots, and revalidates that manifest; rejects missing, stale, mixed, or substituted generations at class 10 before Docker; and records its SHA-256 and generation in strict schema-v3 output. Canonical invalidation uses validated parent directory FDs with relative `stat`/`unlink`/`fsync`, while an absent evidence directory remains absent. Focused tests pass 45/45 and the shared Task 3 compatibility suite passes 44/44; Bash syntax, ShellCheck, Python compilation, diff hygiene, and fixture-only preflight pass. |
+| 2026-07-22 | Historical verdict pair-manifest RED/GREEN (superseded record schema) | RED `f0c3e032` required a source/context/generation-bound manifest with exact baseline/candidate verdict hashes and fd-relative canonical invalidation. GREEN `20022458` requires, snapshots, and revalidates that manifest; rejects missing, stale, mixed, or substituted generations at class 10 before Docker; and records its SHA-256 and generation in then-current strict schema-v3 output. Canonical invalidation uses validated parent directory FDs with relative `stat`/`unlink`/`fsync`, while an absent evidence directory remains absent. Focused tests passed 45/45 and the shared Task 3 compatibility suite passed 44/44; Bash syntax, ShellCheck, Python compilation, diff hygiene, and fixture-only preflight passed. The portable v2/v3/v4 row supersedes only the output schema and counts. |
 | 2026-07-22 | Historical real canonical blocker proof (superseded) | Exactly one real canonical command exited class `10` with `code=pair-manifest-missing` before Docker because no accepted committed pair existed at that revision. No positive or rollback runtime ran. The rehearsal evidence directory, record, temporary record, and `/tmp/hyhome-dre-*` paths were absent; owner/task-scoped containers, networks, and volumes were zero. The later accepted portable pair supersedes only this prerequisite state. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These historical approvals did not create the then-missing accepted pair or Task 5 runtime. |
 | 2026-07-23 | Portable consumer migration and review | Producer `1937ec75` and consumer `a6c12e18` migrated the handoff to verdict schema v2, pair schema/generation v3, and rehearsal-record schema v4 with the full OCI/Docker/runtime tuple. Review remediation `b192c0db` preserves a valid canonical record when a later invalid attempt fails. The current focused delivery suite passes 54/54 after test-isolation fix `4f7284a9`; portable-handoff specification and quality/security reviews are `C0/I0/M0`. |
-| 2026-07-23 | Accepted input readiness | Task 7 published a mode-0600 schema-v3 pair for source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, generation `hyhome-verification-verdict-pair-v3`, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`. Its baseline/candidate verdict hashes are `057f301edbb1475a398c41d16272986580f754d149473263be6ca29b5728497b` and `89db847616e1533240edeb060f008c21406de5703cf49d09a7590839c3df27ce`; the full pair-bound local refs and runtime IDs satisfy the static Task 5 consumer contract. No current real Task 5 rehearsal, project start, record publication, positive promotion, or injected rollback ran. |
+| 2026-07-23 | Accepted input readiness | Task 7 published a mode-0600 schema-v3 pair for source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, generation `hyhome-verification-verdict-pair-v3`, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`. Its baseline/candidate verdict hashes are `057f301edbb1475a398c41d16272986580f754d149473263be6ca29b5728497b` and `89db847616e1533240edeb060f008c21406de5703cf49d09a7590839c3df27ce`; the full pair-bound local refs and runtime IDs satisfy the static Task 5 consumer contract. At this checkpoint no real Task 5 rehearsal had run; the later runtime row supersedes that prerequisite-only state. |
+| 2026-07-23 | Approved Task 5 runtime sequence | The focused unit suite passed 54/54 at exit 0, followed by fixture-only preflight at exit 0. Exactly one positive real rehearsal then exited 0 for projects `hyhome-dre-20260719-1709404-baseline` and `hyhome-dre-20260719-1709404-canary`. It ran from `2026-07-22T20:54:30Z` through `2026-07-22T20:54:46Z`; baseline/candidate both passed, promotion was `promoted`, rollback was `not_required`, post-rollback health was `not_applicable`, result was `promoted`, cleanup passed, and `data_impact=none`. Its mode-0600, 3,295-byte canonical record had inode `1290126` and SHA-256 `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`. Exactly one injected `canary-health-timeout` rehearsal then exited expected class 30 with `health-deadline-exceeded` for projects `hyhome-dre-20260719-1731921-baseline` and `hyhome-dre-20260719-1731921-canary`. It ran from `2026-07-22T20:56:27Z` through `2026-07-22T20:58:59Z`; baseline passed, candidate failed, promotion was `not_promoted`, rollback was `rolled_back_to_baseline`, post-rollback health passed, result was `rolled_back`, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record has inode `538673` and SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`; changed inode and hash prove replacement rather than stale-record reuse. Both records bind source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, pair hash `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, readiness hash `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, and recovery hash `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`. After both runs, all owner/task/name-scoped containers, networks, volumes, and `/tmp` publication paths were empty. Tracked HEAD remained `f3e4701115734e71f8848e706e9d37d499f0c2ac` and clean. No standalone cleanup, rerun, remote action, release, registry operation, controlled wrapper, or pre-commit command ran. |
 
 ## Verification Evidence
 
@@ -201,9 +203,21 @@ Actual evidence:
   `code=pair-manifest-missing`; Docker was not reached and the Task 5 canonical
   directory/record remained absent;
 - the Spec 124 readiness v2 and Spec 125 recovery v1 canonical inputs pass the
-  exact consumer schemas. Spec 126 now supplies the accepted baseline/candidate
-  schema-v2 verdicts and schema-v3 pair; static tuple/hash/generation checks
-  pass, but Task 5 runtime has not consumed them;
+  exact consumer schemas. Spec 126 supplies accepted baseline/candidate
+  schema-v2 verdicts and a schema-v3 pair; the positive and injected-negative
+  runs consumed the same source-bound portable tuple;
+- the positive run exited 0 and published a mode-0600, 3,295-byte record with
+  inode `1290126` and SHA-256
+  `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`;
+  the injected-negative run exited expected class 30 with
+  `health-deadline-exceeded`, rolled back to the healthy baseline, and replaced
+  it with the current mode-0600, 3,305-byte record at inode `538673` and
+  SHA-256
+  `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`;
+- direct read-only reconciliation of the current canonical record confirmed
+  schema 4, pair generation v3/hash, readiness and recovery hashes, full
+  portable role tuples, negative decisions, cleanup, and `data_impact=none`;
+  all scoped Docker resources and `/tmp` publication paths were empty;
 - At the historical Task 5 implementation checkpoint, Python compilation,
   non-starting merged Compose render, metadata 23/0, traceability 46/0,
   alignment 666 documents / 5,446 links / 141 operations documents / 0,
@@ -214,22 +228,31 @@ Actual evidence:
   checkpoint. For this portable evidence reconciliation, changed metadata
   passes 12/0 with one unchanged legacy exception, traceability passes 46/0,
   alignment passes at 667 documents / 5,521 links / 141 operations documents /
-  0, and diff hygiene passes. Full Task 7 runtime-evidence reviews remain
-  pending.
+  0, and diff hygiene passes. Full Task 7 runtime-evidence specification and
+  quality/security reviews are both `APPROVED C0/I0/M0` for exact range
+  `b070a06c..086744f8`. Fresh Task 5 runtime-evidence specification and
+  quality/security reviews remain pending. This six-file runtime-evidence
+  reconciliation selects 6 changed documents with 0 metadata violations, 1
+  unchanged legacy exception, and 0 transition overrides; traceability passes
+  46/0; alignment passes at 667 documents / 5,524 links / 141 operations
+  documents / 0; canonical-record read-only reconciliation and diff hygiene
+  pass.
 
-Verification results: implementation, static validation, 54/54 focused tests,
-61/61 Task 3 producer compatibility tests, fixture-only preflight,
-immutable-input and portable pair-manifest revalidation, and fail-closed proof
-pass. The current accepted pair satisfies the static prerequisite; no Task 5
-real command, positive promotion, or injected rollback runtime ran, and no
-Docker/Compose project or canonical rehearsal record was created. Exit classes
-are `0=pass`, `2=usage`,
+Verification results: implementation, static validation, 54/54 focused tests at
+exit 0, fixture-only preflight at exit 0, 61/61 Task 3 producer compatibility
+tests, immutable-input and portable pair-manifest revalidation, and fail-closed
+proof pass. The approved runtime order also completed exactly once: positive
+exit 0 followed by injected-negative exit 30. The current canonical ignored
+record is the negative replacement; it was read and hash/mode/size/inode checked
+without modification. Exit classes are `0=pass`, `2=usage`,
 `10=verdict/pair-manifest/preflight`, `20=baseline`, `30=canary/health`,
 `40=promotion record`, `50=rollback`, and `60=cleanup`.
 
-Task 7 created the accepted portable pair but did not create Task 5
-positive/rollback runtime evidence. The delivery record remains absent, and
-the controlled all-files wrapper remains blocked and `not_run`.
+Task 7 created the accepted portable pair but did not itself execute Task 5.
+The later approved delivery sequence created both positive and rollback
+evidence, with the negative replacement retained as the canonical record. The
+controlled all-files wrapper remains blocked and `not_run` pending fresh Task 5
+independent reviews and review/document closure.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -251,7 +274,9 @@ Disposition: defer to the
 
 ## Review Evidence
 
-Implementation review verdict: implementation and author self-check complete.
+Implementation review verdict: implementation, runtime execution, evidence
+reconciliation, and author self-check complete. Fresh independent review of the
+runtime evidence remains pending.
 The self-check found and remediated direct evidence-path redirection and an
 immediate-return failure injection; subsequent whole-review remediation binds
 the strict record to immutable snapshots and revalidates all inputs immediately
@@ -263,7 +288,8 @@ terminal re-review returned APPROVED C0/I0/M0 for historical implementation
 commit `b5441c53`. Terminal specification review v5 returned
 `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final
 26-document reconciliation diff, covering the current immutable-input and
-pair-manifest hardening.
+pair-manifest hardening. A fresh specification review of the later runtime
+evidence is pending.
 
 Quality/security review verdict: initial review returned CHANGES REQUIRED
 C1/I2/M0. All findings are remediated; the separate terminal release/security
@@ -271,7 +297,8 @@ re-review returned APPROVED C0/I0/M0 for `b5441c53`.
 Terminal quality/security review v3 returned `APPROVED C0/I0/M0` for the full
 branch range through `20022458` plus the then-current 26-document
 reconciliation diff, covering the current immutable-input and pair-manifest
-hardening.
+hardening. A fresh quality/security review of the later runtime evidence is
+pending.
 
 Findings and disposition: the four unique findings are closed in implementation
 and 38/38 tests: exact accepted digests must resolve to existing local image
@@ -281,9 +308,10 @@ pairs return class `60`; and tests snapshot rather than mutate the real
 canonical record/directory. Publication additionally uses a stable
 `O_NOFOLLOW` parent directory FD for atomic mode-0600 replacement. Both
 terminal reviews returned C0/I0/M0. Portable-handoff reviews also returned
-C0/I0/M0. The accepted Spec 126 pair now exists, but review closure does not
-supply positive-promotion or injected-rollback runtime evidence. Earlier
-`CHANGES REQUIRED` iterations remain historical remediation evidence.
+C0/I0/M0. The later exact positive and injected-rollback runs supply the runtime
+evidence, but their fresh independent specification and quality/security
+reviews remain open. Earlier `CHANGES REQUIRED` iterations remain historical
+remediation evidence.
 
 ## Commit Ledger
 
@@ -304,7 +332,8 @@ immutable-input/hash/pair-generation binding, two-role non-starting render,
 Python compilation, Bash syntax, ShellCheck, and diff hygiene pass.
 Historical terminal domain reviews are APPROVED C0/I0/M0; whole-branch
 specification v5 and quality/security v3 reviews are also APPROVED C0/I0/M0.
-Positive/rollback runtime remains `not_run`.
+The later positive/rollback runtime evidence is complete and awaits its own
+independent reviews.
 
 ## Deferred and Blocked Items
 
@@ -312,13 +341,13 @@ Deferred items: GitHub workflows/environments/releases, registry publication,
 remote deployment, production targets, OIDC/credentials, real Release records,
 and stateful data rollback.
 
-Blocked items: none of the Spec 126 seed/policy/pair prerequisites remain
-blocked. Task 5 remains `not_run` until the approved positive rehearsal runs
-first, its schema-v4 record hash and concise fields are captured, and the
-injected rollback rehearsal then proves restoration of the previous runtime
-image ID plus post-rollback health. Any stateful impact blocks promotion and
-routes to Spec 125. The controlled all-files wrapper remains blocked until
-these runtime gates and later review/document closure complete.
+Blocked items: none of the Spec 126 seed/policy/pair or Task 5 runtime gates
+remain blocked. The approved positive-first/injected-negative-second sequence
+is complete, with healthy baseline restoration and canonical replacement
+proved. Any future stateful impact still blocks promotion and routes to Spec
+125. The controlled all-files wrapper remains blocked until fresh Task 5
+independent reviews and review/document closure complete; this Task does not
+authorize a rehearsal rerun.
 
 Deferral destination: data recovery routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);

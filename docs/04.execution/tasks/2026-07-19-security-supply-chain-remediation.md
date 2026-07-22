@@ -18,8 +18,9 @@ accepted verdicts and their schema-v3 pair manifest now exist for source
 revision `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`. Fresh specification and
 quality/security reviews of the exact Task 7 range
 `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b..086744f8bd20370262ce297dd5b6dc101a5b54dc`
-both returned `APPROVED C0/I0/M0`. No publication, remote dispatch, release,
-deployment, or Task 5 runtime is claimed.
+both returned `APPROVED C0/I0/M0`. This Task does not claim ownership of the
+later Task 5 runtime; the delivery Task records that separately completed local
+sequence. No publication, remote dispatch, release, or deployment is claimed.
 
 The Task owns two concise consumer verdicts plus their atomic pair manifest under
 `_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/`.
@@ -156,8 +157,8 @@ credentials, and Scorecard response bodies remain transient.
 | 2026-07-22 | Historical committed-tree advisory boundary (superseded) | At that revision, exactly one hardened advisory exited class `10` with `grype-db-seed-unavailable-advisory-blocked` before Docker because the one-time approved seed was absent and no reusable local database existed. No accepted baseline/candidate verdict, committed pair manifest, transient run verdict, signing key, private runtime tree, or tool container remained. The later Task 7 source-bound advisory below supersedes this prerequisite state. |
 | 2026-07-23 | Historical terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. At that reviewed revision the database seed/policy pass/pair were still absent; later Task 7 evidence below supersedes only that runtime prerequisite state. |
 | 2026-07-23 | Portable handoff RED/GREEN and review | RED `2ae6e883` required a cross-store local image handoff. GREEN `1937ec75` and consumer `a6c12e18` bind verdict schema v2, pair schema/generation v3, and rehearsal-record schema v4 to the full OCI/Docker/runtime tuple. Review remediation `d156aca8..b070a06c` added canonical-record preservation, gzip DiffID verification, bounded uncompressed OCI/USTAR/PAX parsing, and hidden-metadata rejection. Current supply-chain tests pass 61/61, checker fixtures pass 13/13, and independent portable-handoff reviews are C0/I0/M0. |
-| 2026-07-23 | Current Task 7 source-bound offline advisory | At source revision `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, preflight exited 0 with `supply_chain_preflight=pass` and advisory exited 0 with `supply_chain_verification=pass roles=baseline,candidate redaction=passed`. Grype seed `v6.1.9` was built `2026-07-22T07:06:24Z` from package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`; both roles had 0 Critical, 0 High, and 3 Medium, no exception, and `reason=outside-policy`. The mode-0600 pair is schema 3/generation `hyhome-verification-verdict-pair-v3`, size 1,806, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, and binds build context `sha256:1e2ff714895bb6352d101a6f0a7b5beb45dd9f414ade788d77a7d6e9df650034`. Docker inspection matched each pair-bound runtime ID and role label. Task-owned container inventory and `/tmp/hyhome-supply-chain.*` were empty and tracked worktree state was clean after the run. The former pair at `6803949d` with hash `729ca2e3…` is historical/superseded. Task 5 runtime and the controlled wrapper were not run. |
-| 2026-07-23 | Task 7 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each approved exact range `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b..086744f8bd20370262ce297dd5b6dc101a5b54dc` at `C0/I0/M0`. Their safe, non-runtime evidence confirmed delivery 54/54, seed 8/8, checker 13/13, generated-summary freshness, ignored handoff mode/hash/full-tuple equality, Task 5 record absence, and clean diff hygiene. No Docker, advisory, Task 5, wrapper, or remote action ran during review. |
+| 2026-07-23 | Current Task 7 source-bound offline advisory | At source revision `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, preflight exited 0 with `supply_chain_preflight=pass` and advisory exited 0 with `supply_chain_verification=pass roles=baseline,candidate redaction=passed`. Grype seed `v6.1.9` was built `2026-07-22T07:06:24Z` from package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`; both roles had 0 Critical, 0 High, and 3 Medium, no exception, and `reason=outside-policy`. The mode-0600 pair is schema 3/generation `hyhome-verification-verdict-pair-v3`, size 1,806, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, and binds build context `sha256:1e2ff714895bb6352d101a6f0a7b5beb45dd9f414ade788d77a7d6e9df650034`. Docker inspection matched each pair-bound runtime ID and role label. Task-owned container inventory and `/tmp/hyhome-supply-chain.*` were empty and tracked worktree state was clean after the run. The former pair at `6803949d` with hash `729ca2e3…` is historical/superseded. Task 5 and the controlled wrapper were not run within this Task; the delivery Task later consumed the pair in its separately approved runtime sequence. |
+| 2026-07-23 | Task 7 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each approved exact range `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b..086744f8bd20370262ce297dd5b6dc101a5b54dc` at `C0/I0/M0`. At that review checkpoint, their safe, non-runtime evidence confirmed delivery 54/54, seed 8/8, checker 13/13, generated-summary freshness, ignored handoff mode/hash/full-tuple equality, Task 5 record absence, and clean diff hygiene. No Docker, advisory, Task 5, wrapper, or remote action ran during the review. The later Task 5 runtime is owned by the delivery Task and is outside this review range. |
 
 ## Verification Evidence
 
@@ -267,8 +268,10 @@ historical detached-signature compatibility path. The former accepted pair at
 `6803949d92b5daeb522b328b098c5b357abbf4d6` with hash
 `729ca2e33482d08939a68446761cf0964c6f91b07e2c1b5c5b263cf52e1bedab`,
 the class-40 14-Critical/73-High/no-exception policy rejection, and the class-10
-missing-seed result remain historical/superseded evidence only. Task 5 runtime
-remains separately `not_run`. Exit classes are `0=pass/accepted`,
+missing-seed result remain historical/superseded evidence only. Task 5 later
+consumed the current pair in its separately approved positive-then-injected-
+rollback sequence; this supply-chain Task did not execute or review that
+runtime. Exit classes are `0=pass/accepted`,
 `2=usage`, `10=policy/preflight`, `20=build/export`, `30=SBOM`,
 `40=vulnerability verdict`, `50=provenance`, `60=signature verification`, and
 `70=Scorecard observation`.
@@ -284,9 +287,9 @@ hooks, and the root implementation owner separately recorded an exact
 Task 6 documentation, owner regeneration, safe gates, and whole-branch
 re-review are recorded by the Program Task. The database-seed, policy-pass,
 and accepted-pair prerequisites are now satisfied by the Task 7 evidence
-above. The controlled all-files wrapper remains blocked and `not_run` until
-Task 5 records both the positive promotion and injected rollback rehearsals,
-receives its own independent reviews, and closes its runtime documentation.
+above. Task 5 has recorded both the positive promotion and injected rollback
+rehearsals. The controlled all-files wrapper remains blocked and `not_run` until
+fresh Task 5 independent reviews and review/document closure complete.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -340,8 +343,9 @@ fresh Task 7 runtime-evidence review `APPROVED C0/I0/M0` for the same exact
 Findings and disposition: the initial/combined `C3/I1/M1` findings and the
 first re-review C1 are remediated and closed. Later portable-handoff review is
 also `C0/I0/M0`. The full Task 7 runtime-evidence reviews are now closed at
-`C0/I0/M0` with no open finding. This does not close the active Task or prove
-Task 5's positive promotion, injected rollback, reviews, or documentation.
+`C0/I0/M0` with no open finding. Those reviews do not cover the later Task 5
+positive promotion and injected rollback; their execution evidence is recorded
+by the delivery Task and awaits fresh Task 5 reviews.
 Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence.
 
 ## Commit Ledger
@@ -374,13 +378,12 @@ log, publication, live Scorecard blocking, GitHub Release, deployment, and SLSA
 level claims.
 
 Blocked items: the approved offline Grype seed, policy pass, and accepted
-distinct same-revision verdict pair are satisfied, and Task 7 runtime-evidence
-reviews are closed. Delivery execution remains separately `not_run` until Task
-5 performs positive promotion followed by injected rollback, receives fresh
-independent reviews, and closes its runtime documentation.
+distinct same-revision verdict pair are satisfied, and later Task 5 delivery
+execution is complete. Fresh Task 5 independent reviews and review/document
+closure remain open.
 `--scorecard-advisory` remains skipped until read-only network scope is
 confirmed. The controlled all-files wrapper remains blocked only on those Task
-5 runtime, review, and document-closure gates.
+5 review and document-closure gates.
 
 Deferral destination: remote identity, publication, or enforcement needs a new
 approved Stage 01-04 chain; local accepted verdicts are consumed only by

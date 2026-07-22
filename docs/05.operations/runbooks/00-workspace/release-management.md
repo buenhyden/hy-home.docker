@@ -115,13 +115,16 @@ status: active
    포함한다. Pair v3 (`hyhome-verification-verdict-pair-v3`)는 두 verdict의
    exact byte hash와 role별 전체 tuple을 고정한다. 하나라도 없거나 legacy,
    stale, mixed, substituted이면 class `10`에서 중단하며 Docker/Compose 호출,
-   project, record를 만들지 않는다. 현재 Spec 126 accepted pair는 존재하지만
-   Task 5 positive promotion 및 injected rollback runtime은 별도 승인 순서에서
-   아직 `not_run`이다. 과거 14-Critical 결과와 missing-seed 결과는 superseded
+   project, record를 만들지 않는다. 현재 Spec 126 accepted pair는 존재하며,
+   승인된 Task 5 positive promotion 및 injected rollback 순서는 완료되었다.
+   현재 실행 상태와 정확한 project, timestamp, record hash/inode, cleanup
+   증거는
+   [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)가
+   소유한다. 과거 14-Critical 결과와 missing-seed 결과는 superseded
    history이며 현재 blocker가 아니다.
 
-10. 별도 승인 범위의 Task 5 runtime은 positive `rehearse` 후 injected-rollback
-    `rehearse` 순서로만 실행한다. Baseline/canary는
+10. 승인된 Task 5 runtime은 positive `rehearse` 후 injected-rollback
+    `rehearse` 순서로 정확히 한 번씩 완료되었다. Baseline/canary는
     `hyhome-dre-20260719-<decimal-pid>-baseline|canary`, loopback
     `18080`/`18081`, exact ownership labels로 제한된다. Canary 실패 시 previous
     runtime image ID와 baseline health를 확인한 뒤 in-process cleanup한다.
@@ -130,10 +133,12 @@ status: active
     topology에는 build path가 없고 `pull_policy: never`, `--pull never`,
     `--no-build`가 필수다. 각 run은 cleanup 후 schema-v4 record를 publish한다.
     Canonical record가 하나이므로 positive record hash/요약 필드를 먼저 Task에
-    기록한 다음 negative run이 이를 교체한다. Standalone `cleanup --task-id`는
+    기록한 다음 negative run이 이를 교체했다. Standalone `cleanup --task-id`는
     interrupted/partial exact owned pair를 위한 rescue-only 명령이며 성공 run
     후에는 실행하지 않는다. 이미 cleanup된 상태에서는 의도대로 class `60`을
-    반환한다. Stateful impact는 즉시 Spec 125로 handoff한다.
+    반환한다. Stateful impact는 즉시 Spec 125로 handoff한다. 이 런북은 완료된
+    sequence의 재실행을 승인하지 않는다. 재실행이 필요하면 새 Stage 04 승인과
+    실행 evidence 계약을 먼저 작성한다.
 
 ### Steps
 
@@ -177,6 +182,10 @@ status: active
   full portable identity tuple의 concise fields, marker presence, decision,
   `data_impact=none`, cleanup, schema-v4 record hash만 기록한다. HTTP body,
   runtime log, secret, credential, token은 기록하지 않는다.
+- 현재 canonical local-delivery record는 injected-negative 결과이며, positive
+  record의 교체 전 hash/inode와 negative record의 교체 후 hash/inode는
+  [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)에서
+  확인한다. 이 상태 확인은 rehearsal 재실행 지시가 아니다.
 
 ## Rollback or Recovery
 
