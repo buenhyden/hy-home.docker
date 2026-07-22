@@ -231,10 +231,18 @@ Non-goals:
 - [x] Fail closed unless both supply-chain verdicts and the readiness verdict
       satisfy the coordination table; record `data_impact=none` or stop and hand
       off to Spec 125.
-- [ ] Require a fresh specification reviewer and a separate release/security
-      reviewer; remediate and re-review all findings.
+- [x] Require a fresh specification reviewer and a separate release/security
+      reviewer; remediate and re-review all findings. Both terminal reviews
+      returned APPROVED C0/I0/M0 for historical implementation commit
+      `b5441c53`.
 - [x] Commit the verified implementation as
       `feat(release): add local promotion and rollback`.
+
+Task 5's fail-closed implementation and review boundary is complete. Positive
+promotion and injected rollback runtime remain `blocked/not_run` because the
+accepted Spec 126 baseline/candidate pair is absent; this evidence does not
+close Spec 127, `T-ORC-005`, or the Program and makes no release or deployment
+claim.
 
 ### Task 6: Reconcile evidence and close the local program
 

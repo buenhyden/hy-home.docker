@@ -136,7 +136,7 @@ Redaction boundary:
 | `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete; terminal reviews C0/I0/M0 |
 | `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Deterministic implementation and terminal reviews complete; advisory runtime correctly rejected the baseline at the critical-vulnerability policy gate, so Task 5 remains blocked without an accepted pair |
 | `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Complete; terminal specification and operations/quality APPROVED C0/I0/M0 |
-| `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Review remediation complete at 38/38; runtime blocked/not_run, re-reviews pending |
+| `T-ORC-005` | Verified-digest promotion and previous-digest rollback. | Delivery domain Task | Fail-closed implementation and reviews complete; operational runtime blocked/not_run |
 | `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Not run |
 
 ## Work Log
@@ -156,8 +156,9 @@ Redaction boundary:
 | 2026-07-22 | `T-ORC-004` terminal-review remediation (historical) | Fresh infrastructure implementation agent | Terminal re-reviews remained CHANGES REQUIRED with exactly two Important items: a direct test-control failure could preserve a stale canonical success verdict, and the ignored Task 4 report was stale. The isolated state-machine regression was RED in all 8 control subcases. Main now installs safe traps, prepares/validates the fixed canonical parent, and invalidates stale regular canonical evidence before returning class 10, while Docker calls remain zero and unsafe paths fail closed. GREEN is 41/41. At that wave, project `hyhome-ior-20260719-140710-source/target` passed with dump SHA-256 `a391d9790dcc5c73c4f06a5f56f37bd889f38dc0f49ec2f41184966855121c80`, 4,484 bytes, backup 1s, restore 0s, and exact 12-key mode-0600 canonical SHA-256 `3c8f23653665ddcef224e2c9060a038f33585b53da0f9be1fcd7ae9adfc5a824`; scope was `synthetic-local`, integrity/cleanup/redaction passed, and owned resources were empty. Both findings were remediated. Operations/quality then returned APPROVED C0/I0/M0, while specification left one evidence-synchronization Important finding (C0/I1/M0). |
 | 2026-07-22 | `T-ORC-004` final-state canonical reconciliation | Fresh infrastructure implementation agent | The specification reviewer's direct-control regression invalidated the canonical as designed. Exactly one approved normal rehearsal then passed for project `hyhome-ior-20260719-229164-source/target` with fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`, dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes, backup 1s, and restore 0s. Direct verification found an exact 12-key mode-0600 canonical SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`, schema 1, `scope=synthetic-local`, passed integrity/cleanup/redaction, and empty owned containers, labeled clients, networks, volumes, dumps, and PID evidence. No test, negative, direct-control, or `--check` command followed regeneration. |
 | 2026-07-22 | `T-ORC-004` terminal review closure | Terminal specification and operations/quality reviewers | After evidence synchronization and final-state canonical reconciliation, terminal specification and operations/quality reviews both returned APPROVED C0/I0/M0 for branch-history implementation commit `db150a19` (`feat(ops): add postgres recovery rehearsal`). This closure changes evidence only and leaves the Program, Spec 125 lifecycle, Task 5, and Task 6 open. |
-| 2026-07-22 | `T-ORC-005` implementation | Fresh delivery implementation agent | Project-scopable sample Compose, exact typed upstream consumers, strict local-only wrapper, fixture contracts, two-part health, bounded promotion/rollback/cleanup, atomic mode-0600 record publication, and narrow runbook handoff are implemented. Final focused tests pass 28/28; fixture-only preflight passes without Docker. The real canonical command returns class 10 before Docker because Task 3 produced no accepted pair after its 14-critical/no-exception policy result. Positive promotion/rollback runtime is blocked/not_run; independent reviews are pending. |
-| 2026-07-22 | `T-ORC-005` independent-review remediation | Same delivery implementation agent | Specification C0/I2/M0 and release/security C1/I2/M0 produced four unique findings. Isolated canonical-mutation RED was 1/1 and expanded RED was 38 tests / 13 failures / 0 errors. GREEN is 38/38 after no-build/no-pull rendering, exact bounded local image-object checks before start, interpolation-free exact-ID cleanup with absent/invalid pair class 60, immutable real-canonical snapshots, and no-follow directory-FD publication. No project or accepted canonical was created; independent re-reviews are pending. |
+| 2026-07-22 | `T-ORC-005` implementation | Fresh delivery implementation agent | Project-scopable sample Compose, exact typed upstream consumers, strict local-only wrapper, fixture contracts, two-part health, bounded promotion/rollback/cleanup, atomic mode-0600 record publication, and narrow runbook handoff are implemented. Final focused tests pass 28/28; fixture-only preflight passes without Docker. The real canonical command returns class 10 before Docker because Task 3 produced no accepted pair after its 14-critical/no-exception policy result. Positive promotion/rollback runtime is blocked/not_run; independent reviews were then pending. |
+| 2026-07-22 | `T-ORC-005` independent-review remediation | Same delivery implementation agent | Specification C0/I2/M0 and release/security C1/I2/M0 produced four unique findings. Isolated canonical-mutation RED was 1/1 and expanded RED was 38 tests / 13 failures / 0 errors. GREEN is 38/38 after no-build/no-pull rendering, exact bounded local image-object checks before start, interpolation-free exact-ID cleanup with absent/invalid pair class 60, immutable real-canonical snapshots, and no-follow directory-FD publication. No project or accepted canonical was created; terminal re-reviews were then pending. |
+| 2026-07-22 | `T-ORC-005` terminal review closure | Terminal specification and release/security reviewers | Both terminal reviews returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. Fail-closed implementation/static/fixture proof is complete. Positive promotion and injected rollback runtime remain `blocked/not_run` because the accepted Spec 126 pair is absent; no project, canonical, release, deployment, Spec 127 closure, or Program closure is claimed. |
 
 ## Verification Evidence
 
@@ -218,8 +219,9 @@ project, Task 5 canonical directory, or rehearsal record exists. Positive
 promotion and rollback runtime remain `blocked/not_run` because the accepted
 Spec 126 pair is absent. Task 5 initial reviews returned specification
 C0/I2/M0 and release/security C1/I2/M0; all four unique findings are remediated
-and independent re-reviews remain `not_run`. Whole-branch verification remains
-`not_run`.
+and terminal specification plus release/security reviews are APPROVED
+C0/I0/M0 for historical implementation commit `b5441c53`. Whole-branch
+verification remains `not_run`.
 
 Task 5 final local gates pass: metadata is 23/0 with one unchanged legacy
 exception, traceability is 46/0, alignment is 666 documents / 5,446 links / 141
@@ -275,8 +277,10 @@ C0/I0/M0. The direct-control review exercise invalidated the canonical as
 designed; one approved normal reconciliation regenerated the current handoff,
 which was directly verified before documentation-only gates. Task 5
 implementation/static proof is complete, positive runtime is blocked/not_run,
-and its initial C0/I2/M0 plus C1/I2/M0 findings are remediated at 38/38;
-independent re-reviews remain pending.
+and its initial C0/I2/M0 plus C1/I2/M0 findings are remediated at 38/38.
+Terminal specification and release/security reviews both returned APPROVED
+C0/I0/M0 for historical implementation commit `b5441c53`; this does not close
+the operational runtime, Spec 127, `T-ORC-005`, or the Program.
 
 Task-activation specification review: the initial review returned C0/I1/M0.
 The Important finding was remediated by making the delivery baseline/canary
@@ -351,10 +355,11 @@ branch-history implementation identity is `db150a19`
 (`feat(ops): add postgres recovery rehearsal`). This evidence-only closure
 commit intentionally omits its own SHA.
 Task 5's single logical implementation commit is
-`feat(release): add local promotion and rollback`; its final amended identity
-is resolved from branch history rather than self-recorded in that commit. The
-Task 6 pre-wrapper and closure commits remain `not_run` and must be recorded
-after creation, never predicted as completed evidence.
+`b5441c53` (`feat(release): add local promotion and rollback`), the historical
+identity reviewed by both terminal reviewers. The separate evidence-only
+closure commit intentionally omits its own final SHA. The Task 6 pre-wrapper
+and closure commits remain `not_run` and must be recorded after creation,
+never predicted as completed evidence.
 
 ## Deferred and Blocked Items
 
@@ -371,9 +376,10 @@ policy (14 critical matches, no exception) and no accepted distinct verdict
 pair exists; its terminal review closure is complete. `T-ORC-004` runtime is
 complete with terminal specification and operations/quality reviews APPROVED
 C0/I0/M0. `T-ORC-005` implementation/static proof is complete, but its positive
-runtime remains blocked on the accepted Spec 126 pair and its independent
-reviews are pending. `T-ORC-006` remains blocked on the documented closure
-sequence, exact local evidence, and independent review.
+runtime remains blocked on the accepted Spec 126 pair. Its terminal
+specification and release/security reviews are APPROVED C0/I0/M0, but
+`T-ORC-005` is not operationally complete. `T-ORC-006` remains blocked on the
+documented closure sequence, exact local evidence, and independent review.
 
 Deferral destination: each remote, credential, production, publication, or
 live-data expansion requires a new Stage 01-04 design chain and explicit human

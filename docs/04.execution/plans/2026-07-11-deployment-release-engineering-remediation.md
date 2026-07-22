@@ -244,15 +244,19 @@ Tests expose `test_rejects_fixed_compose_identity`,
       resources rather than deleting them.
 - [x] Record only concise digest, revision, gate, project, health,
       promotion/rollback, cleanup, and data-impact fields in the Task.
-- [ ] Run independent specification review, then release/security review; fix
-      and re-review all findings before lifecycle closure.
+- [x] Run independent specification review, then release/security review; fix
+      and re-review all findings before lifecycle closure. Both terminal
+      reviews returned APPROVED C0/I0/M0 for historical implementation commit
+      `b5441c53`.
 
 Implementation, focused/static validation, and fixture-only preflight are
 complete. The positive and injected-failure runtime commands remain unchecked:
 Spec 126 truthfully rejected the baseline at 14 critical vulnerabilities with
 no approved exception, so the required accepted canonical pair is absent. The
 runtime path therefore stops at class `10` before Docker/Compose and publishes
-no rehearsal record; runtime evidence and review results remain Task-owned.
+no rehearsal record. Fail-closed implementation and terminal review evidence
+are complete, while positive/negative runtime evidence remains Task-owned and
+`blocked/not_run`; Spec 127 and this Plan remain active.
 
 ## Verification Plan
 
@@ -297,7 +301,8 @@ Cleanup may remove only task-owned local projects, networks, and containers.
 - [ ] Promotion produces a local release/deployment evidence record.
 - [ ] Injected failure rolls back to previous digest and post-rollback health
       passes.
-- [ ] Independent specification and quality/security reviews pass.
+- [x] Independent specification and quality/security reviews pass at
+      C0/I0/M0 for historical implementation commit `b5441c53`.
 - [ ] Spec 127 lifecycle reflects only local delivery mechanics; remote,
       production, registry, GitHub Release, and environment exclusions remain
       explicit.

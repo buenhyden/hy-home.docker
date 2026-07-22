@@ -132,7 +132,7 @@ untracked.
 | `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; 38/38 focused tests and fixture-only preflight pass |
 | `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Implementation complete; positive runtime blocked/not_run |
 | `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Implementation complete; promotion/rollback runtime blocked/not_run |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Review findings remediated; independent re-reviews pending |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Complete; terminal specification and release/security reviews APPROVED C0/I0/M0 |
 
 ## Work Log
 
@@ -141,8 +141,9 @@ untracked.
 | 2026-07-19 | Task activation | Contract recorded; no build, project, promotion, rollback, release, or remote action executed. |
 | 2026-07-19 | `T-DRE-001`–`T-DRE-004` | Initially `not_run`; append actual evidence only after upstream verdicts and exact execution. |
 | 2026-07-22 | `T-DRE-001` focused implementation | Existing 21-test RED was 22 failures and 3 errors with only the fixture-schema method passing. The first wrapper reduced this to 1 failure, then passed 21/21. Expanded contract RED was 8 failures in 26 tests and GREEN was 26/26. Four state-machine guarantees were RED across 3 unittest failures, then GREEN reached 27/27; the final service/network label cardinality guard brought the suite to 28/28. |
-| 2026-07-22 | `T-DRE-002`–`T-DRE-004` implementation boundary | Removed only fixed Compose `name`/`container_name`; added exact digest, gate, project, port, label, health-marker, promotion, rollback, cleanup, record, timeout, and runbook contracts. Fixture-only preflight passed without Docker. The real command stopped at class 10 because the accepted Spec 126 pair is absent; no project or record was created. Reviews remain pending. |
-| 2026-07-22 | Independent-review remediation | Specification returned C0/I2/M0 and release/security returned C1/I2/M0, deduplicated to four findings. The isolated canonical-mutation scan was RED 1/1; expanded RED was 38 tests with 13 failures and 0 errors. GREEN is 38/38 after exact local image-object validation and pull/build denial, interpolation-free ID cleanup, fail-closed missing-pair cleanup, immutable real-canonical snapshots, and stable no-follow directory-FD publication. No project or accepted canonical was created; re-reviews remain pending. |
+| 2026-07-22 | `T-DRE-002`–`T-DRE-004` implementation boundary | Removed only fixed Compose `name`/`container_name`; added exact digest, gate, project, port, label, health-marker, promotion, rollback, cleanup, record, timeout, and runbook contracts. Fixture-only preflight passed without Docker. The real command stopped at class 10 because the accepted Spec 126 pair is absent; no project or record was created. Reviews were then pending. |
+| 2026-07-22 | Independent-review remediation | Specification returned C0/I2/M0 and release/security returned C1/I2/M0, deduplicated to four findings. The isolated canonical-mutation scan was RED 1/1; expanded RED was 38 tests with 13 failures and 0 errors. GREEN is 38/38 after exact local image-object validation and pull/build denial, interpolation-free ID cleanup, fail-closed missing-pair cleanup, immutable real-canonical snapshots, and stable no-follow directory-FD publication. No project or accepted canonical was created; terminal re-reviews were then pending. |
+| 2026-07-22 | Terminal independent review closure | Terminal specification and release/security reviews both returned APPROVED C0/I0/M0 for historical implementation commit `b5441c53`. Fail-closed implementation/static/fixture proof is complete; positive/negative runtime remains `blocked/not_run`, with no project, accepted canonical, release, or deployment. |
 
 ## Verification Evidence
 
@@ -227,11 +228,13 @@ immediate-return failure injection; the final implementation rejects the
 direct control and overrides only the canary health probe.
 
 Specification review verdict: initial review returned CHANGES REQUIRED
-C0/I2/M0. Both findings are included in the four-item remediation below; a
-fresh re-review is pending.
+C0/I2/M0. Both findings are included in the four-item remediation below;
+terminal re-review returned APPROVED C0/I0/M0 for historical implementation
+commit `b5441c53`.
 
 Quality/security review verdict: initial review returned CHANGES REQUIRED
-C1/I2/M0. All findings are remediated; a separate re-review is pending.
+C1/I2/M0. All findings are remediated; the separate terminal release/security
+re-review returned APPROVED C0/I0/M0 for `b5441c53`.
 
 Findings and disposition: the four unique findings are closed in implementation
 and 38/38 tests: exact accepted digests must resolve to existing local image
@@ -239,21 +242,23 @@ objects with build/pull disabled; cleanup no longer depends on Compose
 interpolation and removes only proven owned IDs; standalone missing or invalid
 pairs return class `60`; and tests snapshot rather than mutate the real
 canonical record/directory. Publication additionally uses a stable
-`O_NOFOLLOW` parent directory FD for atomic mode-0600 replacement. Independent
-re-reviews must still return C0/I0/M0.
+`O_NOFOLLOW` parent directory FD for atomic mode-0600 replacement. Both
+terminal reviews returned C0/I0/M0. This review closure does not replace the
+missing accepted Spec 126 pair or supply promotion/rollback runtime evidence.
 
 ## Commit Ledger
 
-Commit identity: the single logical implementation unit was created; its final
-amended identity is resolved from branch history rather than self-recorded in
-that commit.
+Historical implementation identity: `b5441c53` for the single logical
+implementation unit reviewed by both terminal reviewers. The separate
+evidence-only closure commit intentionally does not self-record its final SHA.
 
 Logical unit: `feat(release): add local promotion and rollback`.
 
 Commit validation: 38/38 focused tests, fixture-only preflight, exact real
 class-10 unchanged-canonical proof, two-role non-starting render, Python
-compilation, Bash syntax, and ShellCheck pass. Positive/negative runtime remains
-blocked and independent re-reviews remain pending.
+compilation, Bash syntax, and ShellCheck pass. Terminal specification and
+release/security reviews are APPROVED C0/I0/M0. Positive/negative runtime
+remains `blocked/not_run`.
 
 ## Deferred and Blocked Items
 
