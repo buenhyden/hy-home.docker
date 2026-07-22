@@ -1,0 +1,13 @@
+{
+  "exception_id": null,
+  "image_config_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "oci_archive_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "policy_id": "sample-service-local-v1",
+  "producer_spec": "spec:126-security-supply-chain-remediation",
+  "redaction_status": "passed",
+  "role": "candidate",
+  "schema_version": 1,
+  "source_revision": "0123456789abcdef0123456789abcdef01234567",
+  "verified_at": "2026-07-19T00:00:01Z",
+  "verdict": "rejected"
+}

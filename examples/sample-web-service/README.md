@@ -15,7 +15,9 @@ status: active
 A minimal static web service that demonstrates the repository's container
 hardening and Compose conventions: pinned images, non-root runtime, read-only
 root filesystem, dropped capabilities, healthcheck, resource limits, and
-secret-free configuration.
+secret-free configuration. The Compose definition deliberately omits a fixed
+top-level project name and `container_name`, so callers can isolate copies with
+`docker compose --project-name`.
 
 ## Audience
 
@@ -62,7 +64,8 @@ sample-web-service/
    keys for the new service.
 3. Keep `service.md` aligned with the registered Service metadata and section
    contract.
-4. Validate Compose before using the service.
+4. Select an explicit project name when parallel local instances are required.
+5. Validate Compose before using the service.
 
 ## Files
 
@@ -87,6 +90,7 @@ sample-web-service/
 | Resource limits      | Ready  | `deploy.resources.limits` (cpu/memory)                     |
 | Secret handling      | Ready  | `env_file` only; no plaintext secrets in compose           |
 | Log rotation         | Ready  | `json-file` with `max-size`/`max-file`                     |
+| Project isolation    | Ready  | no fixed project or container identity                    |
 
 ## Operations
 
@@ -98,10 +102,21 @@ docker compose ps            # health status
 docker compose down          # stop
 ```
 
+The Spec 127 delivery rehearsal uses separate task-owned project names, the
+loopback ports `18080` and `18081`, and immutable local image config digests.
+Its merged runtime topology resets the build path and uses
+`pull_policy: never`; the wrapper also requires an exact local image-object ID
+for each accepted digest and starts with `--pull never --no-build`.
+Its accepted verdict fixtures are contract tests only. They never authorize an
+actual project start; the runtime command fails closed until the canonical
+Spec 126 baseline/candidate pair exists and passes every upstream gate.
+
 ## Validation
 
 - `docker compose config` parses without error.
 - `docker compose ps` reports `healthy` after `start_period`.
+- `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal`
+  verifies the local delivery contract without starting Docker resources.
 
 ## Troubleshooting
 
@@ -114,3 +129,4 @@ docker compose down          # stop
 - [README template](../../docs/99.templates/templates/common/readme.template.md)
 - [Service scaffold template](../../docs/99.templates/templates/spec-contracts/service.template.md)
 - [New-service onboarding guide](../../docs/05.operations/guides/00-workspace/new-service-onboarding.md)
+- [Release management runbook](../../docs/05.operations/runbooks/00-workspace/release-management.md)

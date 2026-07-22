@@ -134,7 +134,10 @@ The sample Compose change deletes only top-level `name` and service
 `container_name`; build, hardening, healthcheck, resource, logging, and network
 semantics remain unchanged. The delivery override sets `image` from the
 verified local image config digest, disables `build`, adds task/role labels,
-and maps baseline/canary to loopback ports `18080`/`18081`.
+sets `pull_policy: never`, and maps baseline/canary to loopback ports
+`18080`/`18081`. Before either start, the wrapper performs bounded local-only
+image inspection for both digests and requires exactly one object whose `.Id`
+equals the accepted config digest; starts also use `--pull never --no-build`.
 
 Both input verdicts use the exact Spec 126 schema. Preflight requires:
 
@@ -152,6 +155,8 @@ parse_subcommand
 load_and_validate_verdict baseline
 load_and_validate_verdict candidate
 assert_distinct_subjects_and_same_revision
+validate_local_image_object
+validate_local_image_objects
 assert_ports_and_owned_project_names
 start_baseline
 wait_container_and_http_health baseline
@@ -164,6 +169,11 @@ verify_post_rollback_health
 write_rehearsal_record
 cleanup_owned_projects
 ```
+
+In-process cleanup first proves exact all-versus-owned container/network IDs,
+single-resource cardinality, and zero volumes, then removes only those exact
+IDs. Standalone cleanup rejects absent, incomplete, additional, or nonmatching
+project pairs with class `60`; it never treats missing resources as success.
 
 HTTP acceptance requires status 200 and the literal marker
 `<h1>sample-web-service</h1>`; tracked evidence records only marker presence,
@@ -207,21 +217,21 @@ Tests expose `test_rejects_fixed_compose_identity`,
 
 ## Sequence
 
-- [ ] Create the active Task with the Spec 126 verdict dependency, Spec 124
+- [x] Create the active Task with the Spec 126 verdict dependency, Spec 124
       readiness boundary, Spec 125 data handoff, exact project identities,
       ports, health criteria, rollback, cleanup, and redaction.
-- [ ] Write failing tests in
+- [x] Write failing tests in
       `tests/validation/test_sample_service_delivery_rehearsal.py` for fixed
       container identity, missing/rejected/mismatched verdict, mutable digest,
       port collision, failed health, partial promotion, incomplete record,
       rollback failure, and cleanup ambiguity.
-- [ ] Run
+- [x] Run
       `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal -v`
       and confirm failure before the wrapper/fixtures exist.
-- [ ] Remove fixed project/container identity from the sample Compose file,
+- [x] Remove fixed project/container identity from the sample Compose file,
       update its contract docs, implement fixtures and wrapper `preflight`, and
       rerun focused tests until static positive/negative cases pass.
-- [ ] Run
+- [x] Run
       `bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json`.
 - [ ] Run
       `bash scripts/operations/rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-19-dre --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none`.
@@ -232,10 +242,17 @@ Tests expose `test_rejects_fixed_compose_identity`,
       `bash scripts/operations/rehearse-sample-service-delivery.sh cleanup --task-id 2026-07-19-dre`
       and the matching `2026-07-19-dre-negative` cleanup; reject unowned
       resources rather than deleting them.
-- [ ] Record only concise digest, revision, gate, project, health,
+- [x] Record only concise digest, revision, gate, project, health,
       promotion/rollback, cleanup, and data-impact fields in the Task.
 - [ ] Run independent specification review, then release/security review; fix
       and re-review all findings before lifecycle closure.
+
+Implementation, focused/static validation, and fixture-only preflight are
+complete. The positive and injected-failure runtime commands remain unchecked:
+Spec 126 truthfully rejected the baseline at 14 critical vulnerabilities with
+no approved exception, so the required accepted canonical pair is absent. The
+runtime path therefore stops at class `10` before Docker/Compose and publishes
+no rehearsal record; runtime evidence and review results remain Task-owned.
 
 ## Verification Plan
 
@@ -272,9 +289,9 @@ Cleanup may remove only task-owned local projects, networks, and containers.
 
 ## Completion Criteria
 
-- [ ] Active Task maps `DRE-001`–`DRE-004` to exact files, commands, rollback,
+- [x] Active Task maps `DRE-001`–`DRE-004` to exact files, commands, rollback,
       redaction, and reviews.
-- [ ] Dry-run/preflight and fixtures reject mutable artifact, missing verifier,
+- [x] Dry-run/preflight and fixtures reject mutable artifact, missing verifier,
       failed health, missing record, and rollback failure.
 - [ ] Local canary starts only with a verified digest and health gate.
 - [ ] Promotion produces a local release/deployment evidence record.

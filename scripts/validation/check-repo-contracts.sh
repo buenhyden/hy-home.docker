@@ -4025,6 +4025,7 @@ expected_implementations = {
     pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
+    pathlib.Path("scripts/operations/rehearse-sample-service-delivery.sh"),
     pathlib.Path("scripts/operations/generate-compose-profile-service-coverage.sh"),
     pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"),
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),

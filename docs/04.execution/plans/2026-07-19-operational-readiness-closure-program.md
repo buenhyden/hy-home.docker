@@ -225,13 +225,15 @@ Non-goals:
 
 **Plan:** [Deployment/release Plan](./2026-07-11-deployment-release-engineering-remediation.md)
 
-- [ ] Execute that Plan using a fresh implementation agent after Tasks 2-4.
-- [ ] Fail closed unless both supply-chain verdicts and the readiness verdict
+- [x] Implement that Plan with a fresh implementation agent after Tasks 2-4;
+      keep positive promotion/rollback runtime blocked while the accepted
+      Spec 126 pair is absent.
+- [x] Fail closed unless both supply-chain verdicts and the readiness verdict
       satisfy the coordination table; record `data_impact=none` or stop and hand
       off to Spec 125.
 - [ ] Require a fresh specification reviewer and a separate release/security
       reviewer; remediate and re-review all findings.
-- [ ] Commit the verified implementation as
+- [x] Commit the verified implementation as
       `feat(release): add local promotion and rollback`.
 
 ### Task 6: Reconcile evidence and close the local program

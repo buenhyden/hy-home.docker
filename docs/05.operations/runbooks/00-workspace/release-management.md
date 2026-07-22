@@ -90,6 +90,39 @@ status: active
 
 7. Capture release readiness evidence in the relevant execution task or PR description. Do not paste secret values, `.env` values, raw logs containing credentials, shell history, or deployment tokens.
 
+8. `sample-web-service`의 local promotion/rollback 계약을 확인할 때는 먼저
+   Docker를 시작하지 않는 fixture-only preflight를 실행한다.
+
+   ```bash
+   bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
+   ```
+
+   `evidence=fixture-contract-only`, `readiness=passed`,
+   `recovery_boundary=passed`, `compose=passed`, `ports=18080,18081`이 모두
+   있어야 한다. Fixture verdict는 실제 실행 승인이 아니다.
+
+9. 실제 local rehearsal은 다음 canonical Spec 126 파일 두 개가 모두 존재하고,
+   accepted/distinct/same-revision/no-exception/redaction-passed일 때만 실행한다.
+
+   ```text
+   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json
+   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json
+   ```
+
+   둘 중 하나라도 없으면 class `10`에서 중단하며 Docker/Compose 호출, project,
+   record를 만들지 않는다. 현재 Spec 126 결과는 critical vulnerability 14건과
+   승인된 exception 부재로 accepted pair를 만들지 않았으므로 positive promotion과
+   injected rollback runtime은 `blocked/not_run`이다.
+
+10. 향후 canonical pair가 생긴 뒤 별도 승인 범위에서 실행할 때도 wrapper의
+    `rehearse`/`cleanup` 형식만 사용한다. Baseline/canary는
+    `hyhome-dre-20260719-<decimal-pid>-baseline|canary`, loopback
+    `18080`/`18081`, exact ownership labels로 제한된다. Canary 실패 시 previous
+    digest와 baseline health를 확인한 뒤 cleanup한다. 시작 전 두 accepted
+    digest는 bounded local image inspect에서 exact `.Id`로 확인되어야 하며,
+    merged topology에는 build path가 없고 pull/build가 모두 금지된다. Stateful
+    impact는 즉시 Spec 125로 handoff한다.
+
 ### Steps
 
 1. 이 runbook의 trigger와 checklist를 확인한다.
@@ -128,12 +161,21 @@ status: active
 - Changelog tag-string evidence and commit-range evidence used for the release/tag decision.
 - Backup or N/A rationale, affected rollback/recovery links, incident path, and remote gate verification evidence when a release/deploy claim depends on those controls.
 - Explicit statement that no runtime deployment, secret value mutation, `.env` sync, port, permission, or remote branch-protection change was performed unless separately approved.
+- Local delivery evidence에는 revision, digest/verdict reference, project,
+  marker presence, decision, `data_impact=none`, cleanup만 기록한다. HTTP body,
+  runtime log, secret, credential, token은 기록하지 않는다.
 
 ## Rollback or Recovery
 
 - Use only rollback or recovery steps that are already documented for the affected service, workflow, or deployment surface.
 - N/A for a generic release rollback command: this runbook does not validate a universal rollback procedure for every Compose service.
 - If a release/tag decision is blocked or rollback evidence is incomplete, stop the release decision and escalate with the evidence listed above.
+- Local delivery cleanup의 project/resource ownership query가 누락되거나
+  ambiguous하면 broad cleanup을 시도하지 말고 class `60`으로 중단한다.
+- In-process cleanup은 exact all-versus-owned container/network ID, 단일
+  cardinality, zero volume을 확인한 뒤 그 ID만 직접 제거한다. Standalone
+  cleanup은 pair가 absent/incomplete/additional/nonmatching이면 destructive
+  call 없이 class `60`으로 중단한다.
 
 ## Escalation
 
@@ -147,3 +189,5 @@ status: active
 - [LLM Wiki maintenance runbook](./llm-wiki-maintenance.md)
 - [Execution plans](../../../04.execution/plans/README.md)
 - [Execution tasks](../../../04.execution/tasks/README.md)
+- [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+- [Spec 127](../../../03.specs/127-deployment-release-engineering-remediation/spec.md)

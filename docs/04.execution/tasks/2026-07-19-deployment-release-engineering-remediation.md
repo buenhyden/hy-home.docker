@@ -129,17 +129,20 @@ untracked.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Not run |
-| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Not run |
-| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Not run |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Not run |
+| `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; 38/38 focused tests and fixture-only preflight pass |
+| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Implementation complete; positive runtime blocked/not_run |
+| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Implementation complete; promotion/rollback runtime blocked/not_run |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Review findings remediated; independent re-reviews pending |
 
 ## Work Log
 
 | Date | Work unit | Result |
 | --- | --- | --- |
 | 2026-07-19 | Task activation | Contract recorded; no build, project, promotion, rollback, release, or remote action executed. |
-| 2026-07-19 | `T-DRE-001`–`T-DRE-004` | `not_run`; append actual evidence only after upstream verdicts and exact execution. |
+| 2026-07-19 | `T-DRE-001`–`T-DRE-004` | Initially `not_run`; append actual evidence only after upstream verdicts and exact execution. |
+| 2026-07-22 | `T-DRE-001` focused implementation | Existing 21-test RED was 22 failures and 3 errors with only the fixture-schema method passing. The first wrapper reduced this to 1 failure, then passed 21/21. Expanded contract RED was 8 failures in 26 tests and GREEN was 26/26. Four state-machine guarantees were RED across 3 unittest failures, then GREEN reached 27/27; the final service/network label cardinality guard brought the suite to 28/28. |
+| 2026-07-22 | `T-DRE-002`–`T-DRE-004` implementation boundary | Removed only fixed Compose `name`/`container_name`; added exact digest, gate, project, port, label, health-marker, promotion, rollback, cleanup, record, timeout, and runbook contracts. Fixture-only preflight passed without Docker. The real command stopped at class 10 because the accepted Spec 126 pair is absent; no project or record was created. Reviews remain pending. |
+| 2026-07-22 | Independent-review remediation | Specification returned C0/I2/M0 and release/security returned C1/I2/M0, deduplicated to four findings. The isolated canonical-mutation scan was RED 1/1; expanded RED was 38 tests with 13 failures and 0 errors. GREEN is 38/38 after exact local image-object validation and pull/build denial, interpolation-free ID cleanup, fail-closed missing-pair cleanup, immutable real-canonical snapshots, and stable no-follow directory-FD publication. No project or accepted canonical was created; re-reviews remain pending. |
 
 ## Verification Evidence
 
@@ -161,9 +164,40 @@ then records `promotion_decision=promoted`, `data_impact=none`, and cleanup. The
 negative rehearsal returns class `30`, prohibits promotion, verifies the prior
 digest and post-rollback health, and records cleanup.
 
-Actual evidence: `not_run`.
+Actual evidence:
 
-Verification results: `not_run`. Exit classes are `0=pass`, `2=usage`,
+- focused RED/GREEN progressed from the inherited 21-test RED
+  (`failures=22`, `errors=3`, one fixture-schema pass), through 21/21 and 26/26,
+  to final 28/28 GREEN after the label-cardinality guard;
+- review remediation first proved the test mutation with an isolated 1/1 RED,
+  then produced 13 intended failures and 0 errors across 38 tests. Final GREEN
+  is 38/38, including exact two-role non-starting render, local image identity,
+  direct partial/error cleanup, stable rollback/cleanup classes, invalid-pair
+  rejection, unchanged real-canonical snapshots, and directory-FD publication;
+- Bash syntax and ShellCheck pass with zero diagnostics;
+- fixture-only preflight exits 0 and reports exact revision, passing readiness
+  and recovery boundaries, valid project-scopable Compose, and loopback ports
+  `18080,18081`, with no Docker call;
+- the exact real positive command exits `10` with
+  `code=verdict-file-missing`; the mock call log remains absent and the Task 5
+  canonical directory/record remains absent;
+- the Spec 124 readiness v2 and Spec 125 recovery v1 canonical inputs pass the
+  exact consumer schemas. Spec 126's accepted baseline/candidate canonical
+  files remain absent after its truthful 14-critical/no-exception policy result.
+- Python compilation and a non-starting merged Compose render pass. Changed-doc
+  metadata is 23 selected / 0 violations with one unchanged legacy exception;
+  traceability is 46/0, alignment is 666 documents / 5,446 links / 141
+  operations docs / 0 failures, template contracts are 38/38, targeted
+  Markdown lint and diff hygiene pass. The aggregate is `failures=4`, limited
+  to the pre-existing lifecycle-consumer and missing-`html5lib` gates; Task 5
+  script inventory has no remaining diagnostic. Declared owners are fresh at
+  1,311 LLM Wiki paths, 1,310 safe coverage paths, and 13 security automation
+  controls; their diffs contain only the newly tracked Task 5 wrapper counts.
+
+Verification results: implementation, static validation, focused tests, and
+fail-closed proof pass. Positive promotion, injected rollback, and standalone
+runtime cleanup are `blocked/not_run`; no Docker/Compose project or canonical
+rehearsal record was created. Exit classes are `0=pass`, `2=usage`,
 `10=verdict/preflight`, `20=baseline`, `30=canary/health`,
 `40=promotion record`, `50=rollback`, and `60=cleanup`.
 
@@ -187,28 +221,39 @@ Disposition: defer to the
 
 ## Review Evidence
 
-Implementation review verdict: `not_run`.
+Implementation review verdict: implementation and author self-check complete.
+The self-check found and remediated direct evidence-path redirection and an
+immediate-return failure injection; the final implementation rejects the
+direct control and overrides only the canary health probe.
 
-Specification review verdict: `not_run`; a fresh reviewer must verify Spec 127,
-upstream typed handoffs, project/health/promotion/rollback contracts, record
-schema, and remote/data exclusions.
+Specification review verdict: initial review returned CHANGES REQUIRED
+C0/I2/M0. Both findings are included in the four-item remediation below; a
+fresh re-review is pending.
 
-Quality/security review verdict: `not_run`; a separate reviewer must inspect
-input parsing, digest checks, shell/Compose safety, health/failure semantics,
-cleanup ownership, redaction, tests, and runbook scope.
+Quality/security review verdict: initial review returned CHANGES REQUIRED
+C1/I2/M0. All findings are remediated; a separate re-review is pending.
 
-Findings and disposition: none because review has not run. All findings must be
-remediated and re-reviewed to C0/I0/M0.
+Findings and disposition: the four unique findings are closed in implementation
+and 38/38 tests: exact accepted digests must resolve to existing local image
+objects with build/pull disabled; cleanup no longer depends on Compose
+interpolation and removes only proven owned IDs; standalone missing or invalid
+pairs return class `60`; and tests snapshot rather than mutate the real
+canonical record/directory. Publication additionally uses a stable
+`O_NOFOLLOW` parent directory FD for atomic mode-0600 replacement. Independent
+re-reviews must still return C0/I0/M0.
 
 ## Commit Ledger
 
-Commit identity: `not_committed`.
+Commit identity: the single logical implementation unit was created; its final
+amended identity is resolved from branch history rather than self-recorded in
+that commit.
 
 Logical unit: `feat(release): add local promotion and rollback`.
 
-Commit validation: `not_run`; record focused tests, preflight, positive and
-negative rehearsals, rollback/cleanup, runbook validation, and review after the
-commit exists.
+Commit validation: 38/38 focused tests, fixture-only preflight, exact real
+class-10 unchanged-canonical proof, two-role non-starting render, Python
+compilation, Bash syntax, and ShellCheck pass. Positive/negative runtime remains
+blocked and independent re-reviews remain pending.
 
 ## Deferred and Blocked Items
 
@@ -216,10 +261,12 @@ Deferred items: GitHub workflows/environments/releases, registry publication,
 remote deployment, production targets, OIDC/credentials, real Release records,
 and stateful data rollback.
 
-Blocked items: preflight and runtime are blocked until both Spec 126 verdicts
-are accepted/distinct/same-revision, Spec 124 readiness is ready and cleaned,
-and Spec 125's synthetic recovery boundary is present. Any stateful impact
-blocks promotion.
+Blocked items: runtime is blocked until both Spec 126 verdicts are
+accepted/distinct/same-revision. The current baseline verification correctly
+stopped at 14 critical findings with no approved exception, so neither accepted
+canonical exists. Spec 124 readiness is ready/cleaned and Spec 125's synthetic
+recovery boundary is present; these passing dependencies do not override the
+missing security pair. Any stateful impact also blocks promotion.
 
 Deferral destination: data recovery routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);

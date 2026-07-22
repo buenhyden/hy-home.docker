@@ -1343,6 +1343,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-compose-profile-service-coverage.sh](../../../scripts/operations/generate-compose-profile-service-coverage.sh) | script |
 | [scripts/operations/generate-tech-stack-version-provenance.sh](../../../scripts/operations/generate-tech-stack-version-provenance.sh) | script |
+| [scripts/operations/rehearse-sample-service-delivery.sh](../../../scripts/operations/rehearse-sample-service-delivery.sh) | script |
 | [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |

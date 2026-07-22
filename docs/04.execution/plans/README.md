@@ -105,7 +105,7 @@ docs/04.execution/plans/
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Active local Compose runtime evidence plan; future Task owns execution evidence
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Active local PostgreSQL recovery plan; future Task owns execution evidence
 ├── 2026-07-11-security-supply-chain-remediation.md # Active local supply-chain verification plan; future Task owns execution evidence
-├── 2026-07-11-deployment-release-engineering-remediation.md # Active local promotion/rollback plan; future Task owns execution evidence
+├── 2026-07-11-deployment-release-engineering-remediation.md # Active local promotion/rollback plan; implementation complete, runtime blocked, reviews pending
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot plan
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot plan
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization plan
