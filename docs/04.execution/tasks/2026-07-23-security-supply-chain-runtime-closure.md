@@ -48,7 +48,8 @@ Goals:
 - preserve the last valid generation and pointer when retrieval, validation, or
   publication fails;
 - run the unchanged offline `--advisory` consumer and obtain two distinct,
-  same-revision, no-exception accepted verdicts plus the schema-v2 pair manifest;
+  same-revision, no-exception schema-v2 accepted verdicts plus their schema-v3
+  portable pair manifest;
 - remediate only sample-service image materials if the current policy rejects.
 
 Non-goals:
@@ -152,8 +153,8 @@ keys, tokens, credentials, response bodies, and shell history are prohibited.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `T-SSC-006` | Activate the exact network, identity, output, rollback, and redaction contract | Governance | Spec 126 approval gates | Plan approval gates | Metadata, lifecycle, Markdown, and diff gates | Fresh implementation agent | Complete |
 | `T-SSC-007` | TDD the dedicated database seed and atomic private handoff | Implementation | `SSC-001` | `T-SSC-002` | Focused RED/GREEN tests, static checks, failed-seed preservation | Fresh implementation agent | Complete |
-| `T-SSC-008` | Seed the current database and execute the hardened offline advisory | Runtime | `SSC-001`–`SSC-004` | `T-SSC-002`–`T-SSC-003` | Exact DB identity, policy verdicts, pair manifest, cleanup inventory | Fresh implementation agent | In progress; current seed and first rejected advisory recorded, committed-head rerun pending |
-| `T-SSC-009` | Remediate only rejected sample-service materials when necessary | Implementation | `SSC-001`–`SSC-004` | `T-SSC-002` | Digest/source TDD and repeated offline advisory | Fresh implementation agent | In progress; exact runtime pin and isolated policy pass implemented, committed-head rerun pending |
+| `T-SSC-008` | Seed the current database and execute the hardened offline advisory | Runtime | `SSC-001`–`SSC-004` | `T-SSC-002`–`T-SSC-003` | Exact DB identity, policy verdicts, pair manifest, cleanup inventory | Fresh implementation agent | Complete; current source-bound preflight/advisory pass published verdict v2/pair v3 and left owned inventory empty |
+| `T-SSC-009` | Remediate only rejected sample-service materials when necessary | Implementation | `SSC-001`–`SSC-004` | `T-SSC-002` | Digest/source TDD and repeated offline advisory | Fresh implementation agent | Complete; exact runtime pin, portable local-image handoff, and policy pass implemented |
 | `T-SSC-010` | Independent specification and quality/security review | Review | `VAL-SSC-001`–`VAL-SSC-004` | `T-SSC-005` | Separate C0/I0/M0 reviews and remediation ledger | Separate reviewers | Pending |
 
 ## Work Log
@@ -165,8 +166,10 @@ keys, tokens, credentials, response bodies, and shell history are prohibited.
 | 2026-07-23 | `T-SSC-008` seed and first advisory | The one approved pinned-Grype update published schema `v6.1.9`, database build `2026-07-22T07:06:24Z`, package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`, and cache-tree SHA-256 `d4ddbc75da746cff08eb90e6ed998dd82a888dd242055114770bf2ed197aeb52`. The first hardened offline advisory then rejected the baseline at class 40 with 14 Critical, 73 High, 69 Medium, and 11 Low findings, no exception, and no candidate or pair publication. |
 | 2026-07-23 | `T-SSC-009` official runtime remediation | Read-only official registry inspection selected the versioned slim multi-architecture index `nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5`; linux/amd64 child is `sha256:bc38ccd3a649cce1062519734e1ad088bf0cc20d6cb5f2f3645f64466ab27c57`. One exact-digest pull resolved local RepoDigest and config ID to the approved index digest. A no-pull, network-none isolated build plus pinned Syft/Grype scan against the validated seed returned 0 Critical, 0 High, 3 Medium, 0 Low, and policy accepted. It did not publish advisory summaries or an accepted pair. The optional Alpine candidate was inspected but neither pulled nor changed. |
 | 2026-07-23 | Material source gates | Combined focused tests pass 54/54 and policy fixtures pass 13/13. Python compilation, Ruff, Bash syntax, ShellCheck, generated supply-chain summary freshness, seed preflight, exact-image preflight, fixture-only policy, Markdownlint, Hadolint, metadata 5/0, traceability 46/0, alignment 667 documents and 5,519 links with zero failures, Foundation manifest/summary/promoted checks, and impacted lifecycle pass. A mistakenly attempted nonexistent `check-task-template-compliance.py` command exited 2 without changing repository state; the canonical metadata contract checker passed instead. Advisory `shfmt -d` reported existing whole-wrapper formatting outside the three changed identity constants, so no unrelated reformat was applied; Bash syntax and ShellCheck remain clean. Task7's direct README-consumer drift was corrected separately through the canonical Foundation scan in commit `c7ebb9b2`; generated owners were refreshed in `8481df02`; the seed script inventory was reconciled in `96464337`. The final dependency-locked aggregate used `scripts/requirements.txt`, passed every section with `failures=0`, and reported only the configured task-directory budget warning. |
-| 2026-07-23 | Cosign v3 offline signing correction | The first post-material advisory reached signature verification and failed class `60` because Cosign v3.0.6 no longer supports the historical `--tlog-upload=false` flow. Pinned local `sign-blob`, `verify-blob`, and `signing-config create` help plus a one-blob smoke established the current offline path: a tracked signing config with no Rekor service, `sign-blob --signing-config ... --new-bundle-format=false --bundle ...`, extraction of `messageSignature.signature`, and `verify-blob --insecure-ignore-tlog=true --signature ...`. The focused Cosign regressions pass 3/3, the full supply-chain suite passes 49/49, the checker passes 13 fixtures, Bash syntax/Python compile/diff hygiene pass, and the independent one-blob smoke verifies the original blob while rejecting tamper. The full advisory, accepted-pair publication, Task 5 runtime, and controlled all-files wrapper were not rerun in this correction. |
-| 2026-07-23 | Current full offline advisory pass | After commit `6803949d92b5daeb522b328b098c5b357abbf4d6`, preflight passed and the full offline advisory completed with `supply_chain_verification=pass roles=baseline,candidate redaction=passed`. The current Grype seed is schema `v6.1.9`, built `2026-07-22T07:06:24Z`, package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`. Baseline and candidate each report 0 Critical, 0 High, 3 Medium, no exception, and `reason=outside-policy`. The accepted pair manifest is mode `0600`, size 432, SHA-256 `729ca2e33482d08939a68446761cf0964c6f91b07e2c1b5c5b263cf52e1bedab`, and references baseline verdict SHA-256 `2a87a841696451418e53af76d16a33f3fa64412ea0317a419a6a492ac2ff7f06` plus candidate verdict SHA-256 `e6847fb4ea501cb8e3ea44ed7a5497bdcbead5744ed990a506448b6abdc15a89`. Baseline config/archive are `sha256:c2717b5d74b5ee64bf6f8f44903976751134ad3d4b02fcbe53cdbf630cc100fc` and `sha256:a6aaead1f2ca2d42cb6bf9b7eacb23dc0d510b9357e7e1cced50c2cee1985feb`; candidate config/archive are `sha256:18a325c1cf27cdbacef105ee3ff64386bab17d9418a5a7fe16fdc9ac6fe5311b` and `sha256:33e6b2e24ad87791fa4961a0070e32624c253381dffd9cfc591afa395a6b6e00`. Build context SHA-256 is `sha256:1e2ff714895bb6352d101a6f0a7b5beb45dd9f414ade788d77a7d6e9df650034`. Direct container inventory and `/tmp/hyhome-supply-chain.*` inventory were empty afterward. Task 5 runtime and the controlled all-files wrapper were not run. |
+| 2026-07-23 | Cosign v3 offline signing correction | The first post-material advisory reached signature verification and failed class `60` because the historical compatibility command used flags that are not the current accepted path. Pinned local `sign-blob`, `verify-blob`, and `signing-config create` help plus one-blob smoke established the current design: tracked no-service signing configuration, tracked minimal offline trusted root, `sign-blob --signing-config ... --trusted-root ... --bundle ...`, and `verify-blob --trusted-root ... --insecure-ignore-tlog=true --key ... --bundle ...`. The later new-format bundle implementation and regressions verify originals and reject tampered/wrong subjects. The earlier detached-signature/`--new-bundle-format=false` approach is historical and superseded; this Task does not claim that `--tlog-upload` was removed. |
+| 2026-07-23 | Historical initial accepted pair (superseded) | After commit `6803949d92b5daeb522b328b098c5b357abbf4d6`, preflight and the full offline advisory passed for both roles. Its mode-0600 schema-v2 pair, size 432 and SHA-256 `729ca2e33482d08939a68446761cf0964c6f91b07e2c1b5c5b263cf52e1bedab`, predates the portable local-image tuple and is not the current Task 5 input. The policy counts and seed identity remain valid historical observations only. |
+| 2026-07-23 | Portable handoff RED/GREEN and review | RED `2ae6e883` required a local image handoff portable across Docker stores. Producer GREEN `1937ec75` and consumer GREEN `a6c12e18` bind verdict schema v2, pair schema/generation v3, and rehearsal-record schema v4 to the OCI manifest/config/archive, deterministic Docker-load archive, local reference, runtime ID, and identity kind. Remediation `d156aca8..b070a06c` preserves canonical evidence, verifies gzip DiffIDs, bounds uncompressed OCI/USTAR/PAX parsing, and rejects hidden metadata expansion. The current supply-chain suite passes 61/61, the checker passes 13/13, and the portable-handoff reviews are `C0/I0/M0`. |
+| 2026-07-23 | Current Task 7 source-bound advisory pass | At source revision `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, preflight exited 0 with `supply_chain_preflight=pass` and the full offline advisory exited 0 with `supply_chain_verification=pass roles=baseline,candidate redaction=passed`. The current Grype seed is schema `v6.1.9`, built `2026-07-22T07:06:24Z`, package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`; each role reports 0 Critical, 0 High, 3 Medium, no exception, and `reason=outside-policy`. Baseline verdict mode/size/hash are `0600`/1,086/`057f301edbb1475a398c41d16272986580f754d149473263be6ca29b5728497b`; its OCI manifest/config/archive, Docker archive, local ref, and runtime ID are `sha256:bc16f11ed3205aa454e5a2c4c10edfbc8160b350deb3e5f84363bae8a1e8f693`, `sha256:c2717b5d74b5ee64bf6f8f44903976751134ad3d4b02fcbe53cdbf630cc100fc`, `sha256:c2059fab70b0d3257c9735ecdb90673514360be6990b03451e8b7957ca5a76ed`, `sha256:bc35eff9b998ec454c737cd33123d5d1dff116bf042b2678d5a040e6e534bcaa`, `hyhome.local/sample-web-service:baseline-c2717b5d74b5ee64bf6f8f44903976751134ad3d4b02fcbe53cdbf630cc100fc`, and `sha256:8aa958c5ac49f9ce32be435005f95415b88256b101ba90390ef281d045254d98`. Candidate verdict mode/size/hash are `0600`/1,088/`89db847616e1533240edeb060f008c21406de5703cf49d09a7590839c3df27ce`; its tuple is `sha256:77e785a1e1e89692b24d4b7f718899c426c7badbe0a53078ec63f1af09f99ab3`, `sha256:18a325c1cf27cdbacef105ee3ff64386bab17d9418a5a7fe16fdc9ac6fe5311b`, `sha256:f1c9bb534c8bfa9f7538de2f87e99310c827ace4bea17ea6ebd275e522091fdf`, `sha256:b4461cdd5637319990ee2bcc7d08c242ef17ef0965a3b4e4f757119e347f84eb`, `hyhome.local/sample-web-service:candidate-18a325c1cf27cdbacef105ee3ff64386bab17d9418a5a7fe16fdc9ac6fe5311b`, and `sha256:043375a625567b772bd805a1a3138b69d8ddf2b3a8e1354767d8ad2430ef4355`. Both identity kinds are `docker-target-digest`. The mode-0600, 1,806-byte pair is schema 3/generation `hyhome-verification-verdict-pair-v3`, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, and binds build context `sha256:1e2ff714895bb6352d101a6f0a7b5beb45dd9f414ade788d77a7d6e9df650034`. Docker inspection matched both runtime IDs and role labels; task-owned container inventory and `/tmp/hyhome-supply-chain.*` were empty and the tracked tree was clean afterward. Task 5 and the controlled wrapper were not run. |
 
 ## Verification Evidence
 
@@ -192,11 +195,14 @@ checksums, verdicts, and cleanup results will be appended without raw logs.
 Current result: seed implementation and publication are complete. The first
 current advisory truthfully rejected the stale runtime baseline. The exact
 official runtime remediation passes its isolated no-pull policy gate at 0
-Critical and 0 High. The Cosign v3.0.6 offline signing incompatibility is
-corrected, and the current committed-head full advisory now publishes an
-accepted schema-v2 pair for baseline and candidate with no exception and
-redaction passed. Independent reviews remain `pending`; Task 5 runtime and the
-controlled all-files wrapper remain `not_run` in this Task.
+Critical and 0 High. The current Cosign v3.0.6 path uses a tracked no-service
+signing configuration, tracked minimal offline trusted root, and new-format
+bundle. Source-bound execution at `b070a06c` publishes two accepted schema-v2
+verdicts and their schema-v3 portable pair with no exception and redaction
+passed; 61/61 supply-chain tests and 13/13 checker fixtures pass. Portable
+handoff reviews are `C0/I0/M0`; full Task 7 runtime-evidence reviews remain
+`pending`. Task 5 runtime and the controlled all-files wrapper remain
+`not_run` in this Task.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -206,33 +212,43 @@ the wrapper is explicitly forbidden in this Task.
 
 ## Review Evidence
 
-Implementation review verdict: `pending`.
+Implementation review verdict: portable-handoff implementation review
+`C0/I0/M0`; full Task 7 runtime-evidence review `pending`.
 
 Specification review verdict: `pending`.
 
 Quality/security review verdict: `pending`.
 
-Findings and disposition: none yet. Historical Task 3 reviews do not approve
-this new network seed implementation or runtime evidence.
+Findings and disposition: portable-handoff findings are closed at `C0/I0/M0`.
+Historical Task 3 reviews and the portable review do not approve the complete
+Task 7 network-seed/runtime evidence; the two full Task 7 reviews remain
+pending.
 
 ## Commit Ledger
 
-Commit identity: `pending`.
+Commit identities: Task activation `2ec108b7`; seed RED/GREEN `8bc5e151` and
+`98277b69`; validated-seed RED/GREEN `ce659741` and `06fa2c22`; runtime-material
+RED/GREEN `4e11a616` and `45cea949`; Cosign regression/correction
+`bbb9acdc`, `04c5c10b`, `4bd24c10`, and `6803949d`; historical first-pair
+evidence `0aca4ec1`; local-image remediation `5ae72efc`, `def1bf10`,
+`7c4d6c3e`, `592275f2`, and `641189d0`; portable handoff RED/GREEN
+`2ae6e883`, `1937ec75`, and `a6c12e18`; review remediation `d156aca8`,
+`b192c0db`, `8bb94ded`, `e70008f3`, `df0fd186`, `664babbc`, and `b070a06c`.
 
-Logical units: Task contract; TDD RED; seed GREEN; conditional sample-material
-remediation; runtime/review evidence.
-
-Validation: recorded per logical unit after exact execution.
+Validation: current supply-chain suite 61/61, checker 13/13, preflight/advisory
+0/0, exact Docker identity/label inspection, empty owned inventory, and clean
+tracked tree are recorded above. The separate evidence-only commit does not
+embed its own SHA.
 
 ## Deferred and Blocked Items
 
 Deferred items: Task 5 positive/rollback runtime and the controlled all-files
 wrapper remain owned by later separately bounded work.
 
-Blocked items: no current Task-local blocker before the approved seed attempt.
-If the official database or approved official image set cannot produce a
-no-exception policy pass, stop with the exact irreducible public identity and
-redacted counts; do not relax policy or create an exception.
+Blocked items: seed retrieval, no-exception policy acceptance, and portable
+pair publication have no remaining runtime blocker. Task lifecycle closure is
+blocked only on independent full Task 7 specification and quality/security
+reviews. Do not relax policy or create an exception during any repeat.
 
 Deferral destination: the existing Program Task owns Task 5 and final wrapper
 sequencing after this Task reaches independent C0/I0/M0 review.
