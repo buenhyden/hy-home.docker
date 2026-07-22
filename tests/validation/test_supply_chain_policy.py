@@ -364,6 +364,24 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     entry,
                     fileobj=None if content is None else io.BytesIO(content),
                 )
+        if mutation == "oversized-logical-member":
+            logical_end = sum(
+                512
+                + (
+                    ((entry.size + 511) // 512) * 512
+                    if entry.isfile()
+                    else 0
+                )
+                for entry, _ in entries
+            )
+            oversized = tarfile.TarInfo("oversized-logical-member.bin")
+            oversized.mode = 0o600
+            oversized.size = self.checker.OCI_ARCHIVE_MAX_BYTES + 1
+            body = bytearray(path.read_bytes())
+            body[logical_end : logical_end + 512] = oversized.tobuf(
+                format=tarfile.USTAR_FORMAT
+            )
+            path.write_bytes(body)
         path.chmod(0o600)
         return {
             "image_config_digest": f"sha256:{config_digest}",
@@ -460,6 +478,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "diff-id-mismatch": "oci-layer-diff-id-mismatch",
             "corrupt-gzip": "oci-layer-gzip-invalid",
             "gzip-trailing-data": "oci-layer-gzip-trailing-data",
+            "oversized-logical-member": "oci-archive-member-size-limit-exceeded",
         }
         for mutation, reason in cases.items():
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
@@ -505,6 +524,23 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     )
                 else:
                     self.checker.OCI_LAYER_MAX_UNCOMPRESSED_BYTES = original
+            self.assertFalse(target.exists())
+
+    def test_portable_converter_rejects_outer_compressed_oci_archive(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            source = root / "image.oci.tar.gz"
+            target = root / "image.docker.tar"
+            self._write_portable_oci_archive(source)
+            source.write_bytes(gzip.compress(source.read_bytes(), mtime=0))
+            source.chmod(0o600)
+            with self.assertRaisesRegex(
+                ValueError, "oci-archive-outer-compression-invalid"
+            ):
+                self.checker.convert_oci_archive_to_docker_load_archive(
+                    source, target, "baseline"
+                )
             self.assertFalse(target.exists())
 
     def test_portable_converter_rejects_non_role_local_reference_identity(self) -> None:
