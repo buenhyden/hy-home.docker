@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import gzip
 import hashlib
 import importlib.util
 import io
@@ -158,7 +159,12 @@ class SupplyChainPolicyTests(unittest.TestCase):
         self, path: pathlib.Path, *, tamper_config: bool = False
     ) -> str:
         config = json.dumps(
-            {"architecture": "amd64", "os": "linux"}, sort_keys=True
+            {
+                "architecture": "amd64",
+                "os": "linux",
+                "rootfs": {"diff_ids": [], "type": "layers"},
+            },
+            sort_keys=True,
         ).encode()
         config_digest = hashlib.sha256(config).hexdigest()
         manifest = json.dumps(
@@ -169,6 +175,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     "size": len(config),
                 },
                 "layers": [],
+                "mediaType": "application/vnd.oci.image.manifest.v1+json",
                 "schemaVersion": 2,
             },
             sort_keys=True,
@@ -183,6 +190,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                         "size": len(manifest),
                     }
                 ],
+                "mediaType": "application/vnd.oci.image.index.v1+json",
                 "schemaVersion": 2,
             },
             sort_keys=True,
@@ -194,7 +202,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 (f"blobs/sha256/{manifest_digest}", manifest),
                 (
                     f"blobs/sha256/{config_digest}",
-                    b"tampered-config" if tamper_config else config,
+                    b"x" * len(config) if tamper_config else config,
                 ),
             ):
                 entry = tarfile.TarInfo(name)
@@ -208,6 +216,15 @@ class SupplyChainPolicyTests(unittest.TestCase):
         *,
         mutation: str | None = None,
     ) -> dict[str, str]:
+        layer_diff = b"deterministic-layer\n"
+        layer = gzip.compress(layer_diff, mtime=0)
+        layer_digest = hashlib.sha256(layer).hexdigest()
+        layer_diff_id = hashlib.sha256(layer_diff).hexdigest()
+        diff_ids = (
+            []
+            if mutation == "rootfs-cardinality"
+            else [f"sha256:{layer_diff_id}"]
+        )
         config = json.dumps(
             {
                 "architecture": "amd64",
@@ -217,27 +234,42 @@ class SupplyChainPolicyTests(unittest.TestCase):
                     }
                 },
                 "os": "linux",
+                "rootfs": {
+                    "diff_ids": diff_ids,
+                    "type": "invalid" if mutation == "rootfs-schema" else "layers",
+                },
             },
             sort_keys=True,
             separators=(",", ":"),
         ).encode()
-        layer = b"deterministic-layer\n"
         config_digest = hashlib.sha256(config).hexdigest()
-        layer_digest = hashlib.sha256(layer).hexdigest()
         manifest = json.dumps(
             {
                 "config": {
                     "digest": f"sha256:{config_digest}",
-                    "mediaType": "application/vnd.oci.image.config.v1+json",
+                    "mediaType": (
+                        "application/octet-stream"
+                        if mutation == "config-media"
+                        else "application/vnd.oci.image.config.v1+json"
+                    ),
                     "size": len(config) + (1 if mutation == "config-size" else 0),
                 },
                 "layers": [
                     {
                         "digest": f"sha256:{layer_digest}",
-                        "mediaType": "application/vnd.oci.image.layer.v1.tar",
+                        "mediaType": (
+                            "application/vnd.oci.image.layer.v1.tar"
+                            if mutation == "layer-media"
+                            else "application/vnd.oci.image.layer.v1.tar+gzip"
+                        ),
                         "size": len(layer) + (1 if mutation == "layer-size" else 0),
                     }
                 ],
+                "mediaType": (
+                    "application/octet-stream"
+                    if mutation == "manifest-media"
+                    else "application/vnd.oci.image.manifest.v1+json"
+                ),
                 "schemaVersion": 2,
             },
             sort_keys=True,
@@ -249,11 +281,20 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 "manifests": [
                     {
                         "digest": f"sha256:{manifest_digest}",
-                        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+                        "mediaType": (
+                            "application/octet-stream"
+                            if mutation == "index-manifest-media"
+                            else "application/vnd.oci.image.manifest.v1+json"
+                        ),
                         "size": len(manifest)
                         + (1 if mutation == "manifest-size" else 0),
                     }
                 ],
+                "mediaType": (
+                    "application/octet-stream"
+                    if mutation == "index-media"
+                    else "application/vnd.oci.image.index.v1+json"
+                ),
                 "schemaVersion": 2,
             },
             sort_keys=True,
@@ -267,7 +308,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
             (f"blobs/sha256/{config_digest}", config),
             (
                 f"blobs/sha256/{layer_digest}",
-                b"tampered-layer\n" if mutation == "layer-digest" else layer,
+                b"x" * len(layer) if mutation == "layer-digest" else layer,
             ),
         ):
             entry = tarfile.TarInfo(name)
@@ -380,6 +421,13 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "config-size": "oci-config-blob-size-mismatch",
             "layer-size": "oci-layer-blob-size-mismatch",
             "layer-digest": "oci-layer-blob-digest-mismatch",
+            "index-media": "oci-index-schema-or-media-type-invalid",
+            "index-manifest-media": "oci-index-manifest-media-type-invalid",
+            "manifest-media": "oci-manifest-schema-or-media-type-invalid",
+            "config-media": "oci-config-media-type-invalid",
+            "layer-media": "oci-layer-media-type-not-portable",
+            "rootfs-cardinality": "oci-rootfs-layer-cardinality-mismatch",
+            "rootfs-schema": "oci-config-rootfs-invalid",
         }
         for mutation, reason in cases.items():
             with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
@@ -1100,11 +1148,17 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
                 "export_oci_archive() { :; }\n"
                 "derive_subject_tuple() {\n"
                 "  if [[ $1 == baseline ]]; then\n"
+                "    OCI_MANIFEST_DIGEST[$1]=sha256:1111111111111111111111111111111111111111111111111111111111111111\n"
                 "    IMAGE_CONFIG_DIGEST[$1]=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
                 "    OCI_ARCHIVE_SHA256[$1]=sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n"
+                "    DOCKER_ARCHIVE_SHA256[$1]=sha256:3333333333333333333333333333333333333333333333333333333333333333\n"
+                "    LOCAL_IMAGE_REF[$1]=hyhome.local/sample-web-service:baseline-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
                 "  else\n"
+                "    OCI_MANIFEST_DIGEST[$1]=sha256:2222222222222222222222222222222222222222222222222222222222222222\n"
                 "    IMAGE_CONFIG_DIGEST[$1]=sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
                 "    OCI_ARCHIVE_SHA256[$1]=sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\n"
+                "    DOCKER_ARCHIVE_SHA256[$1]=sha256:4444444444444444444444444444444444444444444444444444444444444444\n"
+                "    LOCAL_IMAGE_REF[$1]=hyhome.local/sample-web-service:candidate-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
                 "  fi\n"
                 "}\n"
                 "generate_cyclonedx_and_grype_verdict() {\n"
@@ -1172,8 +1226,9 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             "\n}\n\nvalidate_live_sbom", maxsplit=1
         )[0]
         self.assertIn("docker image load --input", loader)
-        self.assertIn("docker image inspect --format '{{.Id}}'", loader)
-        self.assertIn('"${IMAGE_CONFIG_DIGEST[$role]}"', loader)
+        self.assertIn("docker image inspect --format", loader)
+        self.assertIn("{{.Id}}|{{index .Config.Labels", loader)
+        self.assertIn('"${LOCAL_IMAGE_REF[$role]}"', loader)
         self.assertIn("role-image-load-identity-mismatch", loader)
 
     def test_advisory_converts_once_and_loads_only_portable_docker_archives(
@@ -1334,19 +1389,30 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
 
     @staticmethod
     def write_verdict(path: pathlib.Path, role: str) -> None:
+        config = "sha256:" + (("a" if role == "baseline" else "c") * 64)
         payload = {
+            "build_context_sha256": CANDIDATE_SUBJECT["build_context_sha256"],
+            "docker_archive_sha256": "sha256:"
+            + (("3" if role == "baseline" else "4") * 64),
             "exception_id": None,
-            "image_config_digest": "sha256:"
-            + (("a" if role == "baseline" else "c") * 64),
+            "image_config_digest": config,
+            "local_image_ref": (
+                f"hyhome.local/sample-web-service:{role}-"
+                f"{config.removeprefix('sha256:')}"
+            ),
             "oci_archive_sha256": "sha256:"
             + (("b" if role == "baseline" else "d") * 64),
+            "oci_manifest_digest": "sha256:"
+            + (("1" if role == "baseline" else "2") * 64),
             "policy_id": "sample-service-local-v1",
             "producer_spec": "spec:126-security-supply-chain-remediation",
             "redaction_status": "passed",
             "role": role,
-            "schema_version": 1,
+            "runtime_identity_kind": "config-digest",
+            "runtime_image_id": config,
+            "schema_version": 2,
             "source_revision": SOURCE_REVISION,
-            "build_context_sha256": CANDIDATE_SUBJECT["build_context_sha256"],
+            "verified_at": "2026-07-23T00:00:00Z",
             "verdict": "accepted",
         }
         path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
@@ -1377,10 +1443,11 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
                 SOURCE_REVISION,
                 CANDIDATE_SUBJECT["build_context_sha256"],
             )
-            self.assertEqual(2, manifest["schema_version"])
+            self.assertEqual(3, manifest["schema_version"])
             self.assertEqual(
-                "hyhome-verification-verdict-pair-v2", manifest["generation"]
+                "hyhome-verification-verdict-pair-v3", manifest["generation"]
             )
+            self.assertEqual({"baseline", "candidate"}, set(manifest["subjects"]))
             self.assertEqual({"baseline", "candidate"}, set(manifest["verdict_sha256"]))
             for name in (
                 "verification-verdict.baseline.json",
@@ -1423,7 +1490,11 @@ class SupplyChainSecureOutputTests(unittest.TestCase):
                     "runtime_identity_kind": (
                         "config-digest" if role == "baseline" else "docker-target-digest"
                     ),
-                    "runtime_image_id": "sha256:" + ("9" if role == "baseline" else "a") * 64,
+                    "runtime_image_id": (
+                        config
+                        if role == "baseline"
+                        else "sha256:" + "a" * 64
+                    ),
                     "schema_version": 2,
                     "source_revision": SOURCE_REVISION,
                     "verified_at": "2026-07-23T00:00:00Z",

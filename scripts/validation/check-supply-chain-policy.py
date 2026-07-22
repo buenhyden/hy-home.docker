@@ -27,6 +27,44 @@ POLICY_PATH = ROOT / "infra/supply-chain.sample-service-policy.json"
 EXCEPTIONS_PATH = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
 SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
+LOCAL_IMAGE_REF_RE = re.compile(
+    r"^hyhome\.local/sample-web-service:(baseline|candidate)-([0-9a-f]{64})$"
+)
+OCI_INDEX_MEDIA_TYPE = "application/vnd.oci.image.index.v1+json"
+OCI_MANIFEST_MEDIA_TYPE = "application/vnd.oci.image.manifest.v1+json"
+OCI_CONFIG_MEDIA_TYPE = "application/vnd.oci.image.config.v1+json"
+OCI_PORTABLE_LAYER_MEDIA_TYPES = {
+    "application/vnd.oci.image.layer.v1.tar+gzip",
+    "application/vnd.oci.image.layer.nondistributable.v1.tar+gzip",
+}
+VERDICT_IDENTITY_KEYS = (
+    "oci_manifest_digest",
+    "image_config_digest",
+    "oci_archive_sha256",
+    "docker_archive_sha256",
+    "local_image_ref",
+    "runtime_image_id",
+    "runtime_identity_kind",
+)
+VERIFICATION_VERDICT_KEYS = {
+    "build_context_sha256",
+    "docker_archive_sha256",
+    "exception_id",
+    "image_config_digest",
+    "local_image_ref",
+    "oci_archive_sha256",
+    "oci_manifest_digest",
+    "policy_id",
+    "producer_spec",
+    "redaction_status",
+    "role",
+    "runtime_identity_kind",
+    "runtime_image_id",
+    "schema_version",
+    "source_revision",
+    "verified_at",
+    "verdict",
+}
 SCORECARD_REPOSITORY = "github.com/buenhyden/hy-home.docker"
 SAMPLE_SERVICE_DOCKERIGNORE = (
     "**",
@@ -726,9 +764,25 @@ def publish_verdict_pair(
         "candidate": _read_private_handoff(candidate_path),
     }
     for role, (_, payload) in sources.items():
+        local_ref = payload.get("local_image_ref") if isinstance(payload, dict) else None
+        local_match = (
+            LOCAL_IMAGE_REF_RE.fullmatch(local_ref)
+            if isinstance(local_ref, str)
+            else None
+        )
+        runtime_kind = (
+            payload.get("runtime_identity_kind")
+            if isinstance(payload, dict)
+            else None
+        )
+        runtime_id = payload.get("runtime_image_id") if isinstance(payload, dict) else None
+        config_digest = (
+            payload.get("image_config_digest") if isinstance(payload, dict) else None
+        )
         if (
             not isinstance(payload, dict)
-            or payload.get("schema_version") != 1
+            or set(payload) != VERIFICATION_VERDICT_KEYS
+            or payload.get("schema_version") != 2
             or payload.get("role") != role
             or payload.get("verdict") != "accepted"
             or payload.get("exception_id") is not None
@@ -738,22 +792,45 @@ def publish_verdict_pair(
             or payload.get("producer_spec")
             != "spec:126-security-supply-chain-remediation"
             or payload.get("redaction_status") != "passed"
+            or not re.fullmatch(
+                r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z",
+                str(payload.get("verified_at", "")),
+            )
+            or not SHA256_RE.fullmatch(
+                str(payload.get("oci_manifest_digest", ""))
+            )
             or not SHA256_RE.fullmatch(str(payload.get("image_config_digest", "")))
             or not SHA256_RE.fullmatch(str(payload.get("oci_archive_sha256", "")))
+            or not SHA256_RE.fullmatch(
+                str(payload.get("docker_archive_sha256", ""))
+            )
+            or not SHA256_RE.fullmatch(str(runtime_id))
+            or local_match is None
+            or local_match.group(1) != role
+            or local_match.group(2)
+            != str(config_digest).removeprefix("sha256:")
+            or runtime_kind not in {"config-digest", "docker-target-digest"}
+            or (runtime_kind == "config-digest" and runtime_id != config_digest)
+            or (runtime_kind == "docker-target-digest" and runtime_id == config_digest)
         ):
             raise SecureOutputError("pair-verdict-invalid")
-    if (
-        sources["baseline"][1]["image_config_digest"]
-        == sources["candidate"][1]["image_config_digest"]
-        or sources["baseline"][1]["oci_archive_sha256"]
-        == sources["candidate"][1]["oci_archive_sha256"]
-    ):
-        raise SecureOutputError("pair-subjects-not-distinct")
+    for field in VERDICT_IDENTITY_KEYS:
+        if field == "runtime_identity_kind":
+            continue
+        if sources["baseline"][1][field] == sources["candidate"][1][field]:
+            raise SecureOutputError("pair-subjects-not-distinct")
     manifest = {
         "build_context_sha256": build_context_sha256,
-        "generation": "hyhome-verification-verdict-pair-v2",
-        "schema_version": 2,
+        "generation": "hyhome-verification-verdict-pair-v3",
+        "schema_version": 3,
         "source_revision": source_revision,
+        "subjects": {
+            role: {
+                field: sources[role][1][field]
+                for field in VERDICT_IDENTITY_KEYS
+            }
+            for role in ("baseline", "candidate")
+        },
         "verdict_sha256": {
             role: f"sha256:{hashlib.sha256(body).hexdigest()}"
             for role, (body, _) in sources.items()
@@ -1063,63 +1140,418 @@ def _properties(component: Any) -> dict[str, Any]:
     }
 
 
-def inspect_oci_archive_config_digest(archive_path: pathlib.Path | str) -> str:
-    """Return the config digest cryptographically bound by an OCI archive index."""
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("json-key-duplicate")
+        result[key] = value
+    return result
 
-    def read_member(archive: tarfile.TarFile, name: str, reason: str) -> bytes:
-        try:
-            member = archive.getmember(name)
-        except KeyError as exc:
-            raise ValueError(reason) from exc
-        handle = archive.extractfile(member)
-        if handle is None:
-            raise ValueError(reason)
-        return handle.read()
 
-    def require_digest(value: Any, reason: str) -> str:
-        if not isinstance(value, str) or not SHA256_RE.fullmatch(value):
-            raise ValueError(reason)
-        return value
-
-    def parse_json(content: bytes, reason: str) -> dict[str, Any]:
-        try:
-            value = json.loads(content)
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ValueError(reason) from exc
-        if not isinstance(value, dict):
-            raise ValueError(reason)
-        return value
-
+def _parse_json_object(content: bytes, reason: str) -> dict[str, Any]:
     try:
-        archive = tarfile.open(archive_path, "r:*")
+        value = json.loads(content, object_pairs_hook=_unique_json_object)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ValueError(reason) from exc
+    if not isinstance(value, dict):
+        raise ValueError(reason)
+    return value
+
+
+def _require_oci_descriptor(
+    value: Any, *, prefix: str
+) -> tuple[str, int, str]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{prefix}-descriptor-invalid")
+    digest = value.get("digest")
+    size = value.get("size")
+    media_type = value.get("mediaType")
+    if not isinstance(digest, str) or not SHA256_RE.fullmatch(digest):
+        raise ValueError(f"{prefix}-digest-invalid")
+    if isinstance(size, bool) or not isinstance(size, int) or size < 0:
+        raise ValueError(f"{prefix}-size-invalid")
+    if not isinstance(media_type, str) or not media_type:
+        raise ValueError(f"{prefix}-media-type-invalid")
+    return digest, size, media_type
+
+
+def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
+    try:
+        archive = tarfile.open(fileobj=io.BytesIO(content), mode="r:*")
     except (OSError, tarfile.TarError) as exc:
         raise ValueError("oci-archive-invalid") from exc
     with archive:
-        index = parse_json(read_member(archive, "index.json", "oci-index-missing"), "oci-index-invalid")
+        members: dict[str, tarfile.TarInfo] = {}
+        for member in archive.getmembers():
+            name = member.name
+            path = pathlib.PurePosixPath(name)
+            if (
+                not name
+                or name.startswith("/")
+                or "\\" in name
+                or path.is_absolute()
+                or path.as_posix() != name.rstrip("/")
+                or any(part in {"", ".", ".."} for part in path.parts)
+            ):
+                raise ValueError("oci-archive-member-path-invalid")
+            if name in members:
+                raise ValueError("oci-archive-member-duplicate")
+            if not member.isfile() and not member.isdir():
+                raise ValueError("oci-archive-member-type-invalid")
+            members[name] = member
+
+        def read_member(name: str, reason: str) -> bytes:
+            member = members.get(name)
+            if member is None or not member.isfile():
+                raise ValueError(reason)
+            handle = archive.extractfile(member)
+            if handle is None:
+                raise ValueError(reason)
+            return handle.read()
+
+        index = _parse_json_object(
+            read_member("index.json", "oci-index-missing"), "oci-index-invalid"
+        )
+        if (
+            index.get("schemaVersion") != 2
+            or index.get("mediaType") != OCI_INDEX_MEDIA_TYPE
+        ):
+            raise ValueError("oci-index-schema-or-media-type-invalid")
         manifests = index.get("manifests")
-        if not isinstance(manifests, list) or len(manifests) != 1 or not isinstance(manifests[0], dict):
+        if (
+            not isinstance(manifests, list)
+            or len(manifests) != 1
+            or not isinstance(manifests[0], dict)
+        ):
             raise ValueError("oci-index-manifest-cardinality-invalid")
-        manifest_digest = require_digest(manifests[0].get("digest"), "oci-index-manifest-digest-invalid")
+        manifest_digest, manifest_size, manifest_media_type = _require_oci_descriptor(
+            manifests[0], prefix="oci-index-manifest"
+        )
+        if manifest_media_type != OCI_MANIFEST_MEDIA_TYPE:
+            raise ValueError("oci-index-manifest-media-type-invalid")
         manifest_blob = read_member(
-            archive,
             f"blobs/sha256/{manifest_digest.removeprefix('sha256:')}",
             "oci-manifest-blob-missing",
         )
-        if hashlib.sha256(manifest_blob).hexdigest() != manifest_digest.removeprefix("sha256:"):
+        if len(manifest_blob) != manifest_size:
+            raise ValueError("oci-manifest-blob-size-mismatch")
+        if (
+            hashlib.sha256(manifest_blob).hexdigest()
+            != manifest_digest.removeprefix("sha256:")
+        ):
             raise ValueError("oci-manifest-blob-digest-mismatch")
-        manifest = parse_json(manifest_blob, "oci-manifest-invalid")
-        config = manifest.get("config")
-        if not isinstance(config, dict):
-            raise ValueError("oci-manifest-config-invalid")
-        config_digest = require_digest(config.get("digest"), "oci-config-digest-invalid")
+        manifest = _parse_json_object(manifest_blob, "oci-manifest-invalid")
+        if (
+            manifest.get("schemaVersion") != 2
+            or manifest.get("mediaType") != OCI_MANIFEST_MEDIA_TYPE
+        ):
+            raise ValueError("oci-manifest-schema-or-media-type-invalid")
+
+        config_digest, config_size, config_media_type = _require_oci_descriptor(
+            manifest.get("config"), prefix="oci-config"
+        )
+        if config_media_type != OCI_CONFIG_MEDIA_TYPE:
+            raise ValueError("oci-config-media-type-invalid")
         config_blob = read_member(
-            archive,
             f"blobs/sha256/{config_digest.removeprefix('sha256:')}",
             "oci-config-blob-missing",
         )
-        if hashlib.sha256(config_blob).hexdigest() != config_digest.removeprefix("sha256:"):
+        if len(config_blob) != config_size:
+            raise ValueError("oci-config-blob-size-mismatch")
+        if (
+            hashlib.sha256(config_blob).hexdigest()
+            != config_digest.removeprefix("sha256:")
+        ):
             raise ValueError("oci-config-blob-digest-mismatch")
-    return config_digest
+        config = _parse_json_object(config_blob, "oci-config-blob-invalid")
+        rootfs = config.get("rootfs")
+        diff_ids = rootfs.get("diff_ids") if isinstance(rootfs, dict) else None
+        if (
+            not isinstance(config.get("architecture"), str)
+            or not config["architecture"]
+            or not isinstance(config.get("os"), str)
+            or not config["os"]
+            or not isinstance(rootfs, dict)
+            or rootfs.get("type") != "layers"
+            or not isinstance(diff_ids, list)
+            or any(
+                not isinstance(diff_id, str) or not SHA256_RE.fullmatch(diff_id)
+                for diff_id in diff_ids
+            )
+        ):
+            raise ValueError("oci-config-rootfs-invalid")
+
+        raw_layers = manifest.get("layers")
+        if not isinstance(raw_layers, list):
+            raise ValueError("oci-layers-invalid")
+        if len(raw_layers) != len(diff_ids):
+            raise ValueError("oci-rootfs-layer-cardinality-mismatch")
+        layers: list[dict[str, Any]] = []
+        for raw_layer in raw_layers:
+            layer_digest, layer_size, media_type = _require_oci_descriptor(
+                raw_layer, prefix="oci-layer"
+            )
+            if media_type not in OCI_PORTABLE_LAYER_MEDIA_TYPES:
+                raise ValueError("oci-layer-media-type-not-portable")
+            layer_blob = read_member(
+                f"blobs/sha256/{layer_digest.removeprefix('sha256:')}",
+                "oci-layer-blob-missing",
+            )
+            if len(layer_blob) != layer_size:
+                raise ValueError("oci-layer-blob-size-mismatch")
+            if (
+                hashlib.sha256(layer_blob).hexdigest()
+                != layer_digest.removeprefix("sha256:")
+            ):
+                raise ValueError("oci-layer-blob-digest-mismatch")
+            layers.append(
+                {
+                    "blob": layer_blob,
+                    "digest": layer_digest,
+                    "media_type": media_type,
+                }
+            )
+    return {
+        "config_blob": config_blob,
+        "image_config_digest": config_digest,
+        "layers": layers,
+        "oci_manifest_digest": manifest_digest,
+    }
+
+
+def inspect_oci_archive_config_digest(archive_path: pathlib.Path | str) -> str:
+    """Return the config digest cryptographically bound by an OCI archive index."""
+
+    try:
+        content = pathlib.Path(archive_path).read_bytes()
+    except OSError as exc:
+        raise ValueError("oci-archive-invalid") from exc
+    return str(_inspect_oci_archive_bytes(content)["image_config_digest"])
+
+
+def _read_stable_private_bytes(path: pathlib.Path) -> bytes:
+    try:
+        parent_stat = path.parent.lstat()
+    except OSError as exc:
+        raise SecureOutputError("private-parent-invalid") from exc
+    if (
+        not stat.S_ISDIR(parent_stat.st_mode)
+        or path.parent.is_symlink()
+        or parent_stat.st_uid != os.getuid()
+        or stat.S_IMODE(parent_stat.st_mode) != 0o700
+    ):
+        raise SecureOutputError("private-parent-invalid")
+    parent_fd = os.open(
+        path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    )
+    try:
+        opened_parent = os.fstat(parent_fd)
+        if (opened_parent.st_dev, opened_parent.st_ino) != (
+            parent_stat.st_dev,
+            parent_stat.st_ino,
+        ):
+            raise SecureOutputError("private-parent-raced")
+        descriptor = os.open(
+            path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=parent_fd
+        )
+        try:
+            before = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(before.st_mode)
+                or before.st_uid != os.getuid()
+                or stat.S_IMODE(before.st_mode) != 0o600
+            ):
+                raise SecureOutputError("private-source-invalid")
+            chunks: list[bytes] = []
+            while True:
+                chunk = os.read(descriptor, 1024 * 1024)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+            after = os.fstat(descriptor)
+            current = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+            fields = (
+                "st_dev",
+                "st_ino",
+                "st_size",
+                "st_mtime_ns",
+                "st_ctime_ns",
+                "st_mode",
+                "st_uid",
+            )
+            if any(
+                getattr(before, field) != getattr(after, field)
+                or getattr(before, field) != getattr(current, field)
+                for field in fields
+            ):
+                raise SecureOutputError("private-source-raced")
+        finally:
+            os.close(descriptor)
+    except OSError as exc:
+        raise SecureOutputError("private-source-invalid") from exc
+    finally:
+        os.close(parent_fd)
+    body = b"".join(chunks)
+    if len(body) != before.st_size:
+        raise SecureOutputError("private-source-raced")
+    return body
+
+
+def _atomic_replace_private_bytes(path: pathlib.Path, body: bytes) -> None:
+    try:
+        parent_stat = path.parent.lstat()
+    except OSError as exc:
+        raise SecureOutputError("private-parent-invalid") from exc
+    if (
+        not stat.S_ISDIR(parent_stat.st_mode)
+        or path.parent.is_symlink()
+        or parent_stat.st_uid != os.getuid()
+        or stat.S_IMODE(parent_stat.st_mode) != 0o700
+    ):
+        raise SecureOutputError("private-parent-invalid")
+    parent_fd = os.open(
+        path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    )
+    temporary = f".{path.name}.{secrets.token_hex(8)}.tmp"
+    try:
+        try:
+            existing = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            if (
+                not stat.S_ISREG(existing.st_mode)
+                or existing.st_uid != os.getuid()
+                or stat.S_IMODE(existing.st_mode) != 0o600
+            ):
+                raise SecureOutputError("private-target-invalid")
+        opened_parent = os.fstat(parent_fd)
+        if (opened_parent.st_dev, opened_parent.st_ino) != (
+            parent_stat.st_dev,
+            parent_stat.st_ino,
+        ):
+            raise SecureOutputError("private-parent-raced")
+        descriptor = os.open(
+            temporary,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o600,
+            dir_fd=parent_fd,
+        )
+        try:
+            os.fchmod(descriptor, 0o600)
+            view = memoryview(body)
+            while view:
+                view = view[os.write(descriptor, view) :]
+            os.fsync(descriptor)
+        except BaseException:
+            try:
+                os.unlink(temporary, dir_fd=parent_fd)
+            except FileNotFoundError:
+                pass
+            raise
+        finally:
+            os.close(descriptor)
+        current_parent = path.parent.lstat()
+        if (current_parent.st_dev, current_parent.st_ino) != (
+            opened_parent.st_dev,
+            opened_parent.st_ino,
+        ):
+            raise SecureOutputError("private-parent-raced")
+        os.replace(
+            temporary,
+            path.name,
+            src_dir_fd=parent_fd,
+            dst_dir_fd=parent_fd,
+        )
+        os.fsync(parent_fd)
+        result = os.stat(path.name, dir_fd=parent_fd, follow_symlinks=False)
+        final_parent = path.parent.lstat()
+        if (
+            not stat.S_ISREG(result.st_mode)
+            or result.st_uid != os.getuid()
+            or stat.S_IMODE(result.st_mode) != 0o600
+            or (final_parent.st_dev, final_parent.st_ino)
+            != (opened_parent.st_dev, opened_parent.st_ino)
+        ):
+            raise SecureOutputError("private-target-invalid")
+    finally:
+        try:
+            os.unlink(temporary, dir_fd=parent_fd)
+        except FileNotFoundError:
+            pass
+        os.close(parent_fd)
+
+
+def convert_oci_archive_to_docker_load_archive(
+    source_path: pathlib.Path | str,
+    destination_path: pathlib.Path | str,
+    role: str,
+) -> dict[str, str]:
+    """Validate one OCI layout and emit a deterministic Docker load archive."""
+
+    if role not in {"baseline", "candidate"}:
+        raise ValueError("local-image-role-invalid")
+    source = pathlib.Path(source_path)
+    destination = pathlib.Path(destination_path)
+    if source == destination or source.parent != destination.parent:
+        raise ValueError("docker-archive-target-invalid")
+    try:
+        content = _read_stable_private_bytes(source)
+    except SecureOutputError as exc:
+        raise ValueError("oci-archive-private-input-invalid") from exc
+    inspected = _inspect_oci_archive_bytes(content)
+    config_digest = str(inspected["image_config_digest"])
+    config_hex = config_digest.removeprefix("sha256:")
+    local_ref = f"hyhome.local/sample-web-service:{role}-{config_hex}"
+    if not re.fullmatch(
+        rf"hyhome\.local/sample-web-service:{role}-[0-9a-f]{{64}}", local_ref
+    ):
+        raise ValueError("local-image-ref-invalid")
+
+    layer_names: list[str] = []
+    payloads: dict[str, bytes] = {f"{config_hex}.json": inspected["config_blob"]}
+    for layer in inspected["layers"]:
+        layer_hex = str(layer["digest"]).removeprefix("sha256:")
+        layer_name = f"{layer_hex}.tar"
+        layer_names.append(layer_name)
+        payloads[layer_name] = layer["blob"]
+    payloads["manifest.json"] = json.dumps(
+        [
+            {
+                "Config": f"{config_hex}.json",
+                "Layers": layer_names,
+                "RepoTags": [local_ref],
+            }
+        ],
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    output = io.BytesIO()
+    with tarfile.open(
+        fileobj=output, mode="w", format=tarfile.USTAR_FORMAT
+    ) as archive:
+        for name in sorted(payloads):
+            body = payloads[name]
+            member = tarfile.TarInfo(name)
+            member.type = tarfile.REGTYPE
+            member.mode = 0o600
+            member.uid = 0
+            member.gid = 0
+            member.uname = ""
+            member.gname = ""
+            member.mtime = 0
+            member.size = len(body)
+            archive.addfile(member, io.BytesIO(body))
+    docker_archive = output.getvalue()
+    _atomic_replace_private_bytes(destination, docker_archive)
+    return {
+        "docker_archive_sha256": f"sha256:{hashlib.sha256(docker_archive).hexdigest()}",
+        "image_config_digest": config_digest,
+        "local_image_ref": local_ref,
+        "oci_archive_sha256": f"sha256:{hashlib.sha256(content).hexdigest()}",
+        "oci_manifest_digest": str(inspected["oci_manifest_digest"]),
+    }
 
 
 def validate_sbom_subject(sbom: Any, subject: Any) -> list[str]:
@@ -1382,6 +1814,12 @@ def main(argv: list[str] | None = None) -> int:
         help="print the SHA-256 config digest cryptographically bound by an OCI archive",
     )
     parser.add_argument(
+        "--convert-oci-to-docker-load",
+        nargs=3,
+        metavar=("OCI_ARCHIVE", "DOCKER_ARCHIVE", "ROLE"),
+        help="validate one private OCI archive and atomically emit a deterministic Docker load archive",
+    )
+    parser.add_argument(
         "--capture-build-context",
         nargs=4,
         metavar=("REPO_ROOT", "CONTEXT", "SNAPSHOT", "ARCHIVE"),
@@ -1431,6 +1869,7 @@ def main(argv: list[str] | None = None) -> int:
         for value in (
             args.check,
             args.oci_archive_config_digest,
+            args.convert_oci_to_docker_load,
             args.capture_build_context,
             args.verify_build_context,
             args.prepare_secure_output,
@@ -1450,6 +1889,12 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         return 0
     try:
+        if args.convert_oci_to_docker_load:
+            result = convert_oci_archive_to_docker_load_archive(
+                *args.convert_oci_to_docker_load
+            )
+            print(json.dumps(result, sort_keys=True, separators=(",", ":")))
+            return 0
         if args.capture_build_context:
             root, context, snapshot_path, archive_path = args.capture_build_context
             snapshot = write_build_context_bundle(
@@ -1474,7 +1919,13 @@ def main(argv: list[str] | None = None) -> int:
         if args.publish_minimized_handoff:
             publish_minimized_handoff(*args.publish_minimized_handoff)
             return 0
-    except (BuildContextError, SecureOutputError, OSError, json.JSONDecodeError) as exc:
+    except (
+        BuildContextError,
+        SecureOutputError,
+        OSError,
+        ValueError,
+        json.JSONDecodeError,
+    ) as exc:
         print(f"supply_chain_operation=fail reason={exc}", file=sys.stderr)
         return 1
     try:

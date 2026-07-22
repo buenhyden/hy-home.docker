@@ -30,7 +30,9 @@ readonly RUNTIME_MATERIAL_REF="nginxinc/nginx-unprivileged:1.31.3-alpine3.24-sli
 readonly RUNTIME_MATERIAL_REPO_DIGEST="nginxinc/nginx-unprivileged@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
 readonly RUNTIME_MATERIAL_CONFIG_ID="sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
 
-declare -A IMAGE_CONFIG_DIGEST=() OCI_ARCHIVE_SHA256=()
+declare -A OCI_MANIFEST_DIGEST=() IMAGE_CONFIG_DIGEST=() OCI_ARCHIVE_SHA256=()
+declare -A DOCKER_ARCHIVE_SHA256=() LOCAL_IMAGE_REF=() RUNTIME_IMAGE_ID=()
+declare -A RUNTIME_IDENTITY_KIND=()
 runtime_dir=""
 artifact_root=""
 grype_db_dir=""
@@ -288,21 +290,75 @@ export_oci_archive() {
 }
 
 derive_subject_tuple() {
-  local role="$1" role_dir
+  local role="$1" role_dir conversion parsed
   role_dir="$(role_artifact_dir "$role")"
-  IMAGE_CONFIG_DIGEST["$role"]="$(python3 "$CHECKER" --oci-archive-config-digest "$role_dir/image.oci.tar")" || fail "$EXIT_BUILD" "oci-archive-config-binding-invalid"
-  [[ "${IMAGE_CONFIG_DIGEST[$role]}" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_BUILD" "image-config-digest-invalid"
-  OCI_ARCHIVE_SHA256["$role"]="sha256:$(sha256sum "$role_dir/image.oci.tar" | awk '{print $1}')"
-  [[ "${OCI_ARCHIVE_SHA256[$role]}" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "$EXIT_POLICY" "oci-archive-digest-invalid"
+  conversion="$(python3 "$CHECKER" --convert-oci-to-docker-load "$role_dir/image.oci.tar" "$role_dir/image.docker.tar" "$role")" || fail "$EXIT_BUILD" "oci-to-docker-archive-conversion-failed"
+  parsed="$(python3 - "$conversion" <<'PY'
+import json
+import re
+import sys
+
+try:
+    value = json.loads(sys.argv[1])
+except (UnicodeError, json.JSONDecodeError):
+    raise SystemExit(1)
+keys = {
+    "docker_archive_sha256", "image_config_digest", "local_image_ref",
+    "oci_archive_sha256", "oci_manifest_digest",
+}
+if not isinstance(value, dict) or set(value) != keys:
+    raise SystemExit(1)
+digest = r"sha256:[0-9a-f]{64}"
+if any(not isinstance(value[key], str) or not re.fullmatch(digest, value[key]) for key in (
+    "docker_archive_sha256", "image_config_digest", "oci_archive_sha256",
+    "oci_manifest_digest",
+)):
+    raise SystemExit(1)
+if not isinstance(value["local_image_ref"], str):
+    raise SystemExit(1)
+print("\t".join((
+    value["oci_manifest_digest"], value["image_config_digest"],
+    value["oci_archive_sha256"], value["docker_archive_sha256"],
+    value["local_image_ref"],
+)))
+PY
+)" || fail "$EXIT_BUILD" "portable-image-tuple-invalid"
+  IFS=$'\t' read -r OCI_MANIFEST_DIGEST["$role"] \
+    IMAGE_CONFIG_DIGEST["$role"] OCI_ARCHIVE_SHA256["$role"] \
+    DOCKER_ARCHIVE_SHA256["$role"] LOCAL_IMAGE_REF["$role"] <<<"$parsed"
+  [[ "${LOCAL_IMAGE_REF[$role]}" == "hyhome.local/sample-web-service:${role}-${IMAGE_CONFIG_DIGEST[$role]#sha256:}" ]] || fail "$EXIT_BUILD" "local-image-reference-invalid"
+  [[ -s "$role_dir/image.docker.tar" && ! -L "$role_dir/image.docker.tar" && "$(stat -c '%a:%u' "$role_dir/image.docker.tar")" == "600:$(id -u)" ]] || fail "$EXIT_BUILD" "docker-load-archive-private-mode-invalid"
 }
 
 load_role_image_object() {
-  local role="$1" role_dir observed
+  local role="$1" role_dir inspection observed label
   role_dir="$(role_artifact_dir "$role")"
-  [[ -s "$role_dir/image.oci.tar" && ! -L "$role_dir/image.oci.tar" ]] || fail "$EXIT_BUILD" "oci-archive-missing"
-  docker image load --input "$role_dir/image.oci.tar" >/dev/null || fail "$EXIT_BUILD" "role-image-load-failed"
-  observed="$(docker image inspect --format '{{.Id}}' "${IMAGE_CONFIG_DIGEST[$role]}")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
-  [[ -n "$observed" && "$observed" != *$'\n'* && "$observed" == "${IMAGE_CONFIG_DIGEST[$role]}" ]] || fail "$EXIT_BUILD" "role-image-load-identity-mismatch"
+  [[ -s "$role_dir/image.docker.tar" && ! -L "$role_dir/image.docker.tar" ]] || fail "$EXIT_BUILD" "docker-load-archive-missing"
+  docker image load --input "$role_dir/image.docker.tar" >/dev/null || fail "$EXIT_BUILD" "role-image-load-failed"
+  inspection="$(docker image inspect --format '{{.Id}}|{{index .Config.Labels "org.hyhome.delivery.rehearsal.role"}}' "${LOCAL_IMAGE_REF[$role]}")" || fail "$EXIT_BUILD" "role-image-load-identity-missing"
+  [[ -n "$inspection" && "$inspection" != *$'\n'* && "$inspection" == *'|'* ]] || fail "$EXIT_BUILD" "role-image-load-identity-ambiguous"
+  observed="${inspection%%|*}"
+  label="${inspection#*|}"
+  [[ "$observed" =~ ^sha256:[0-9a-f]{64}$ && "$label" == "$role" ]] || fail "$EXIT_BUILD" "role-image-load-identity-mismatch"
+  RUNTIME_IMAGE_ID["$role"]="$observed"
+  if [[ "$observed" == "${IMAGE_CONFIG_DIGEST[$role]}" ]]; then
+    RUNTIME_IDENTITY_KIND["$role"]="config-digest"
+  else
+    RUNTIME_IDENTITY_KIND["$role"]="docker-target-digest"
+  fi
+}
+
+assert_portable_subjects_distinct() {
+  local field
+  for field in OCI_MANIFEST_DIGEST IMAGE_CONFIG_DIGEST OCI_ARCHIVE_SHA256 DOCKER_ARCHIVE_SHA256 LOCAL_IMAGE_REF; do
+    declare -n values="$field"
+    [[ -n "${values[baseline]:-}" && -n "${values[candidate]:-}" && "${values[baseline]}" != "${values[candidate]}" ]] || fail "$EXIT_BUILD" "baseline-candidate-subjects-not-distinct"
+  done
+}
+
+assert_runtime_subjects_distinct() {
+  [[ -n "${RUNTIME_IMAGE_ID[baseline]:-}" && -n "${RUNTIME_IMAGE_ID[candidate]:-}" && "${RUNTIME_IMAGE_ID[baseline]}" != "${RUNTIME_IMAGE_ID[candidate]}" ]] || fail "$EXIT_BUILD" "baseline-candidate-runtime-identities-not-distinct"
+  [[ "${RUNTIME_IDENTITY_KIND[baseline]:-}" =~ ^(config-digest|docker-target-digest)$ && "${RUNTIME_IDENTITY_KIND[candidate]:-}" =~ ^(config-digest|docker-target-digest)$ ]] || fail "$EXIT_BUILD" "runtime-identity-kind-invalid"
 }
 
 validate_live_sbom() {
@@ -548,13 +604,31 @@ sign_and_verify_archive() {
 write_verification_verdict() {
   local role="$1"
   [[ -n "$run_verdict_dir" && -d "$run_verdict_dir" ]] || fail "$EXIT_POLICY" "run-verdict-directory-invalid"
-  python3 - "$run_verdict_dir/verification-verdict.$role.json" "$role" "$SOURCE_REVISION" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" "$BUILD_CONTEXT_SHA256" <<'PY'
+  python3 - "$run_verdict_dir/verification-verdict.$role.json" "$role" "$SOURCE_REVISION" "${OCI_MANIFEST_DIGEST[$role]}" "${IMAGE_CONFIG_DIGEST[$role]}" "${OCI_ARCHIVE_SHA256[$role]}" "${DOCKER_ARCHIVE_SHA256[$role]}" "${LOCAL_IMAGE_REF[$role]}" "${RUNTIME_IMAGE_ID[$role]}" "${RUNTIME_IDENTITY_KIND[$role]}" "$BUILD_CONTEXT_SHA256" <<'PY'
 import datetime as dt
 import json
 import pathlib
 import sys
 
-payload = {"build_context_sha256": sys.argv[6], "exception_id": None, "image_config_digest": sys.argv[4], "oci_archive_sha256": sys.argv[5], "policy_id": "sample-service-local-v1", "producer_spec": "spec:126-security-supply-chain-remediation", "redaction_status": "passed", "role": sys.argv[2], "schema_version": 1, "source_revision": sys.argv[3], "verified_at": dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"), "verdict": "accepted"}
+payload = {
+    "build_context_sha256": sys.argv[11],
+    "docker_archive_sha256": sys.argv[7],
+    "exception_id": None,
+    "image_config_digest": sys.argv[5],
+    "local_image_ref": sys.argv[8],
+    "oci_archive_sha256": sys.argv[6],
+    "oci_manifest_digest": sys.argv[4],
+    "policy_id": "sample-service-local-v1",
+    "producer_spec": "spec:126-security-supply-chain-remediation",
+    "redaction_status": "passed",
+    "role": sys.argv[2],
+    "runtime_identity_kind": sys.argv[10],
+    "runtime_image_id": sys.argv[9],
+    "schema_version": 2,
+    "source_revision": sys.argv[3],
+    "verified_at": dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+    "verdict": "accepted",
+}
 path = pathlib.Path(sys.argv[1])
 path.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
 path.chmod(0o600)
@@ -594,9 +668,7 @@ run_advisory() {
   export_oci_archive candidate
   derive_subject_tuple baseline
   derive_subject_tuple candidate
-  if [[ "${IMAGE_CONFIG_DIGEST[baseline]}" == "${IMAGE_CONFIG_DIGEST[candidate]}" || "${OCI_ARCHIVE_SHA256[baseline]}" == "${OCI_ARCHIVE_SHA256[candidate]}" ]]; then
-    fail "$EXIT_BUILD" "baseline-candidate-subjects-not-distinct"
-  fi
+  assert_portable_subjects_distinct
   if ! generate_cyclonedx_and_grype_verdict baseline; then
     publish_role_advisory_summary baseline
     fail "$EXIT_VULNERABILITY" "grype-policy-rejected"
@@ -611,6 +683,7 @@ run_advisory() {
   require_consumer_safe_vulnerability_verdict candidate || fail "$EXIT_VULNERABILITY" "grype-exception-requires-manual-review"
   load_role_image_object baseline
   load_role_image_object candidate
+  assert_runtime_subjects_distinct
   assert_build_context_unchanged
   generate_slsa_provenance baseline
   generate_slsa_provenance candidate
