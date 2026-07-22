@@ -576,6 +576,63 @@ class SupplyChainPolicyTests(unittest.TestCase):
             )
             self.assertTrue(target.is_file())
 
+    def test_portable_converter_rejects_oversized_hidden_pax_metadata(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            ustar_source = root / "image.ustar.oci.tar"
+            self._write_portable_oci_archive(ustar_source)
+            original_limit = self.checker.OCI_METADATA_MAX_BYTES
+            self.checker.OCI_METADATA_MAX_BYTES = 512
+            try:
+                for scope in ("extended", "global", "cumulative"):
+                    with self.subTest(scope=scope):
+                        pax_source = root / f"image.{scope}.pax.oci.tar"
+                        target = root / f"image.{scope}.docker.tar"
+                        global_headers = (
+                            {"comment": "g" * 2048}
+                            if scope == "global"
+                            else None
+                        )
+                        with tarfile.open(ustar_source, "r:") as source_archive:
+                            with tarfile.open(
+                                pax_source,
+                                "w",
+                                format=tarfile.PAX_FORMAT,
+                                pax_headers=global_headers,
+                            ) as pax_archive:
+                                cumulative_headers = 0
+                                for member in source_archive:
+                                    copied = copy.copy(member)
+                                    if scope == "extended" and copied.name == "index.json":
+                                        copied.pax_headers = {"comment": "x" * 2048}
+                                    elif (
+                                        scope == "cumulative"
+                                        and copied.isfile()
+                                        and cumulative_headers < 2
+                                    ):
+                                        copied.pax_headers = {"comment": "c" * 300}
+                                        cumulative_headers += 1
+                                    handle = (
+                                        source_archive.extractfile(member)
+                                        if member.isfile()
+                                        else None
+                                    )
+                                    pax_archive.addfile(copied, handle)
+                        pax_source.chmod(0o600)
+                        with self.assertRaisesRegex(
+                            ValueError,
+                            "oci-archive-pax-metadata-size-limit-exceeded",
+                        ):
+                            self.checker.convert_oci_archive_to_docker_load_archive(
+                                pax_source, target, "baseline"
+                            )
+                        self.assertFalse(target.exists())
+            finally:
+                self.checker.OCI_METADATA_MAX_BYTES = original_limit
+
     def test_portable_converter_rejects_non_role_local_reference_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = pathlib.Path(temporary)
