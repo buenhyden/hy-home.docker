@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import os
 import pathlib
 import stat
 import subprocess
@@ -106,9 +105,7 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
         schema = cache / "6"
         schema.mkdir(parents=True, mode=0o700)
         (schema / "vulnerability.db").write_bytes(b"current database\n")
-        (schema / "metadata.json").write_text(
-            '{"schema":"v6.1.9"}\n', encoding="utf-8"
-        )
+        (schema / "metadata.json").write_text('{"schema":"v6.1.9"}\n', encoding="utf-8")
         status_path = stage / "db-status.txt"
         write_status(status_path)
         return output_identity, stage_identity, stage, status_path
@@ -132,7 +129,9 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             SEEDED_AT,
         )
 
-    def test_publish_creates_private_generation_and_atomic_minimized_pointer(self) -> None:
+    def test_publish_creates_private_generation_and_atomic_minimized_pointer(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "repo"
             output_identity, stage_identity, stage, status_path = self.prepare(base)
@@ -205,9 +204,7 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             status_path = stage / "db-status.txt"
             write_status(status_path, checksum="not-a-checksum")
             with self.assertRaises(self.helper.SeedContractError):
-                self.finalize(
-                    base, output_identity, stage_identity, stage, status_path
-                )
+                self.finalize(base, output_identity, stage_identity, stage, status_path)
 
             self.assertEqual(before, pointer.read_bytes())
             self.assertTrue(old_generation.is_dir())
@@ -237,9 +234,7 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             status_path = stage / "db-status.txt"
             write_status(status_path)
             with self.assertRaises(self.helper.SeedContractError):
-                self.finalize(
-                    base, output_identity, stage_identity, stage, status_path
-                )
+                self.finalize(base, output_identity, stage_identity, stage, status_path)
 
             self.assertEqual(b"preserve\n", outside.read_bytes())
             self.assertEqual(before, (output / "current.json").read_bytes())
@@ -266,7 +261,9 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             )
             pointer = base / OUTPUT_RELATIVE / "current.json"
             payload["generation_path"] = "../../outside"
-            pointer.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+            pointer.write_text(
+                json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8"
+            )
             pointer.chmod(0o600)
             with self.assertRaises(self.helper.SeedContractError):
                 self.helper.resolve_seed_generation(base, OUTPUT_RELATIVE)
@@ -279,9 +276,7 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             stage.rename(displaced)
             stage.mkdir(mode=0o700)
             with self.assertRaises(self.helper.SeedContractError):
-                self.finalize(
-                    base, output_identity, stage_identity, stage, status_path
-                )
+                self.finalize(base, output_identity, stage_identity, stage, status_path)
 
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "repo"
@@ -291,9 +286,7 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             output.rename(displaced)
             output.mkdir(mode=0o700)
             with self.assertRaises(self.helper.SeedContractError):
-                self.finalize(
-                    base, output_identity, stage_identity, stage, status_path
-                )
+                self.finalize(base, output_identity, stage_identity, stage, status_path)
 
     def test_cli_check_current_emits_only_minimized_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
