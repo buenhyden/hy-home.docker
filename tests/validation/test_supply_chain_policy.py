@@ -447,6 +447,18 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual([], list(output.iterdir()))
 
+    def test_legacy_runtime_cleanup_uses_the_gated_offline_root_container(self) -> None:
+        text = WRAPPER.read_text(encoding="utf-8")
+        cleanup = text.split(
+            "remove_legacy_runtime_artifacts() {", maxsplit=1
+        )[1].split("\n}\n\nbuild_role_image", maxsplit=1)[0]
+        self.assertIn(
+            "docker run --pull=never --rm --network none --user 0:0",
+            cleanup,
+        )
+        self.assertIn('"$BUILD_MATERIAL_REF"', cleanup)
+        self.assertNotIn('rm -rf -- "$OUTPUT_DIR', cleanup)
+
     def test_git_context_rejection_maps_to_class_10_and_tamper_to_50(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo = pathlib.Path(temporary) / "repo"
