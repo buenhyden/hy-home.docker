@@ -1,5 +1,5 @@
 ---
-status: completed
+status: active
 artifact_id: task:2026-07-19-deployment-release-engineering-remediation
 artifact_type: task
 parent_ids:
@@ -11,18 +11,24 @@ parent_ids:
 
 ## Overview
 
-This completed Task records the local pair-bound baseline/canary
+This active Task retains the historical local pair-bound baseline/canary
 promotion and previous-runtime-image-ID rollback rehearsal for
-`examples/sample-web-service`. The approved sequence ran exactly once in each
-mode: a positive promotion followed by an injected canary-health failure and
-verified rollback. No GitHub Release, registry publication, remote deployment,
-or remote environment was created.
+`examples/sample-web-service`, while recording that its fixed current evidence
+path is reopened. The earlier approved sequence ran exactly once in each mode:
+a positive promotion followed by an injected canary-health failure and verified
+rollback. Final-review corrections produced new Compose readiness and
+PostgreSQL recovery handoff hashes, so that historical record is no longer a
+current consumer handoff. No GitHub Release, registry publication, remote
+deployment, or remote environment was created.
 
-Fresh independent specification and quality/security reviews of the Task 5
-runtime evidence are both `APPROVED C0/I0/M0` with no findings. The Task is
-completed at the local-isolated boundary; the Program's post-remediation final
-re-review remains pending. The Program-owned controlled wrapper passed on
-2026-07-26 only for its exact pre-remediation checkpoint.
+Independent specification and quality/security reviews of the historical Task
+5 runtime range were both `APPROVED C0/I0/M0` with no findings. Those verdicts
+do not cover a new rehearsal against the corrected upstream handoffs. The
+fixed `rehearsal-record.json` path is absent; its prior bytes are preserved
+under an explicitly stale ignored filename. Task 5 remains active pending
+fresh authorization, local rehearsal, evidence reconciliation, and re-review.
+The Program-owned controlled wrapper passed on 2026-07-26 only for its exact
+pre-remediation checkpoint.
 
 The Task owns the concise
 `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json`
@@ -138,9 +144,9 @@ untracked.
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
 | `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; current focused suite 54/54 and fixture-only preflight pass |
-| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Complete; one positive and one injected-negative runtime executed with exact owned cleanup |
-| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Complete; positive promoted and negative rolled back to the healthy baseline with canonical replacement proof |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Complete; runbook/runtime evidence reconciled and both exact-range reviews are `APPROVED C0/I0/M0` with no findings |
+| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Reopened; historical runtime passed, but a new run against corrected readiness/recovery handoffs is not authorized or run |
+| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Reopened; fixed current record is absent and the stale-input record is preserved only as historical evidence |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Reopened; historical exact-range reviews remain valid only for their range, and fresh runtime/evidence re-review is pending |
 
 ## Work Log
 
@@ -163,6 +169,7 @@ untracked.
 | 2026-07-23 | Approved Task 5 runtime sequence | The focused unit suite passed 54/54 at exit 0, followed by fixture-only preflight at exit 0. Exactly one positive real rehearsal then exited 0 for projects `hyhome-dre-20260719-1709404-baseline` and `hyhome-dre-20260719-1709404-canary`. It ran from `2026-07-22T20:54:30Z` through `2026-07-22T20:54:46Z`; baseline/candidate both passed, promotion was `promoted`, rollback was `not_required`, post-rollback health was `not_applicable`, result was `promoted`, cleanup passed, and `data_impact=none`. Its mode-0600, 3,295-byte canonical record had inode `1290126` and SHA-256 `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`. Exactly one injected `canary-health-timeout` rehearsal then exited expected class 30 with `health-deadline-exceeded` for projects `hyhome-dre-20260719-1731921-baseline` and `hyhome-dre-20260719-1731921-canary`. It ran from `2026-07-22T20:56:27Z` through `2026-07-22T20:58:59Z`; baseline passed, candidate failed, promotion was `not_promoted`, rollback was `rolled_back_to_baseline`, post-rollback health passed, result was `rolled_back`, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record has inode `538673` and SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`; changed inode and hash prove replacement rather than stale-record reuse. Both records bind source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, pair hash `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, readiness hash `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, and recovery hash `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`. After both runs, all owner/task/name-scoped containers, networks, volumes, and `/tmp` publication paths were empty. Tracked HEAD remained `f3e4701115734e71f8848e706e9d37d499f0c2ac` and clean. No standalone cleanup, rerun, remote action, release, registry operation, controlled wrapper, or pre-commit command ran. |
 | 2026-07-23 | `T-DRE-004` Task 5 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. The specification review passed delivery 54/54, metadata 6/0 with one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. The quality/security review passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. Neither review ran Docker, Compose, rehearsal, cleanup, advisory, Task 4, the controlled wrapper, pre-commit, or any remote action. |
 | 2026-07-26 | Final lifecycle review remediation | The local promotion/rollback boundary is complete and this Task transitions to `completed`; Release, registry, remote deployment, live environments, credentials, and production targets remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
+| 2026-07-26 | Final-review upstream reconciliation and lifecycle reopen | Delivery implementation remains GREEN at 54/54 against the new Compose/PostgreSQL canonical schemas. The corrected readiness handoff is mode 0600, 1,198 bytes, SHA-256 `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; corrected recovery is mode 0600, 642 bytes, SHA-256 `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`. The historical mode-0600 Task 5 record SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823` binds the superseded hashes `12fbe9fa…` and `bf7109f5…`, so it was not reused. Its bytes were preserved as ignored `rehearsal-record.stale-inputs-2026-07-26.json`, and the fixed current `rehearsal-record.json` path is absent. No Task 5 rehearsal, cleanup, release, deployment, build, pull, network, or remote action ran. This Task returns to `active` pending fresh authorization, runtime evidence, and independent re-review; no current approval or completion is claimed. |
 
 ## Verification Evidence
 
@@ -210,10 +217,11 @@ Actual evidence:
 - the historical sole real command exited `10` with
   `code=pair-manifest-missing`; Docker was not reached and the Task 5 canonical
   directory/record remained absent;
-- the Spec 124 readiness v2 and Spec 125 recovery v1 canonical inputs pass the
-  exact consumer schemas. Spec 126 supplies accepted baseline/candidate
-  schema-v2 verdicts and a schema-v3 pair; the positive and injected-negative
-  runs consumed the same source-bound portable tuple;
+- the corrected Spec 124 readiness v2 and Spec 125 recovery v1 canonical
+  inputs pass the exact consumer schemas. Spec 126 supplies accepted
+  baseline/candidate schema-v2 verdicts and a schema-v3 pair. The historical
+  positive and injected-negative runs consumed the same source-bound portable
+  tuple but bind superseded readiness/recovery hashes;
 - the positive run exited 0 and published a mode-0600, 3,295-byte record with
   inode `1290126` and SHA-256
   `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`;
@@ -222,10 +230,12 @@ Actual evidence:
   it with the current mode-0600, 3,305-byte record at inode `538673` and
   SHA-256
   `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`;
-- direct read-only reconciliation of the current canonical record confirmed
-  schema 4, pair generation v3/hash, readiness and recovery hashes, full
-  portable role tuples, negative decisions, cleanup, and `data_impact=none`;
-  all scoped Docker resources and `/tmp` publication paths were empty;
+- direct read-only reconciliation proved the historical record's schema 4,
+  pair generation/hash, and full portable role tuples remain internally exact,
+  but its readiness and recovery hashes are superseded. The bytes are preserved
+  under `rehearsal-record.stale-inputs-2026-07-26.json`; the fixed current
+  record path is absent. All scoped Docker resources and `/tmp` publication
+  paths were empty;
 - At the historical Task 5 implementation checkpoint, Python compilation,
   non-starting merged Compose render, metadata 23/0, traceability 46/0,
   alignment 666 documents / 5,446 links / 141 operations documents / 0,
@@ -251,20 +261,21 @@ Actual evidence:
   Bash syntax, Python compilation, diff hygiene, and
   stat/hash/ignore/`jq`/tuple reconciliation passed.
 
-Verification results: implementation, static validation, 54/54 focused tests at
-exit 0, fixture-only preflight at exit 0, 61/61 Task 3 producer compatibility
-tests, immutable-input and portable pair-manifest revalidation, and fail-closed
-proof pass. The approved runtime order also completed exactly once: positive
-exit 0 followed by injected-negative exit 30. The current canonical ignored
-record is the negative replacement; it was read and hash/mode/size/inode checked
-without modification. Exit classes are `0=pass`, `2=usage`,
+Verification results: implementation, static validation, and 54/54 focused
+tests at exit 0 pass against the corrected upstream schemas. Historical
+fixture-only preflight, producer compatibility, immutable-input,
+pair-manifest, and positive-then-injected-negative runtime evidence remain
+valid for their exact inputs and reviewed range only. There is no current
+canonical ignored record and no new runtime claim. Exit classes are `0=pass`,
+`2=usage`,
 `10=verdict/pair-manifest/preflight`, `20=baseline`, `30=canary/health`,
 `40=promotion record`, `50=rollback`, and `60=cleanup`.
 
 Task 7 created the accepted portable pair but did not itself execute Task 5.
-The later approved delivery sequence created both positive and rollback
-evidence, with the negative replacement retained as the canonical record. The
-Task 5 runtime, independent reviews, and tracked document closure are complete.
+The historical approved delivery sequence created both positive and rollback
+evidence. That negative replacement is retained only under an explicitly stale
+filename because corrected upstream handoffs changed its bound hashes. Current
+Task 5 runtime, evidence reconciliation, and independent reviews are pending.
 The Program-owned controlled all-files wrapper passed on 2026-07-26 from clean
 checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0,
 snapshot pass, zero observed path counts, and all four path sets empty.
@@ -297,9 +308,11 @@ The wrapper is not rerun under its exact-once contract, and direct
 
 ## Review Evidence
 
-Implementation review verdict: implementation, runtime execution, evidence
-reconciliation, author self-check, and both fresh independent runtime-evidence
-reviews are complete with no finding.
+Implementation review verdict: implementation and the corrected-schema
+contract suite pass 54/54. Historical runtime execution, evidence
+reconciliation, author self-check, and both independent runtime-evidence
+reviews remain exact-range evidence; they do not approve a new run against the
+corrected upstream hashes.
 The self-check found and remediated direct evidence-path redirection and an
 immediate-return failure injection; subsequent whole-review remediation binds
 the strict record to immutable snapshots and revalidates all inputs immediately
@@ -377,8 +390,9 @@ immutable-input/hash/pair-generation binding, two-role non-starting render,
 Python compilation, Bash syntax, ShellCheck, and diff hygiene pass.
 Historical terminal domain reviews are APPROVED C0/I0/M0; whole-branch
 specification v5 and quality/security v3 reviews are also APPROVED C0/I0/M0.
-The later positive/rollback runtime evidence has fresh exact-range specification
-and quality/security approvals at C0/I0/M0 with no findings.
+The historical positive/rollback runtime evidence has exact-range specification
+and quality/security approvals at C0/I0/M0 with no findings. Current Task 5
+runtime and re-review remain pending.
 
 ## Deferred and Blocked Items
 
@@ -386,15 +400,14 @@ Deferred items: GitHub workflows/environments/releases, registry publication,
 remote deployment, production targets, OIDC/credentials, real Release records,
 and stateful data rollback.
 
-Blocked items: none of the Spec 126 seed/policy/pair or Task 5 runtime, review,
-or tracked document-closure gates remain blocked. The approved
-positive-first/injected-negative-second sequence is complete, with healthy
-baseline restoration and canonical replacement proved. Any future stateful
-impact still blocks promotion and routes to Spec 125. The Program-owned
-controlled all-files wrapper passed on 2026-07-26 only for checkpoint
-`263e046f`; this Task is completed at the approved local-isolated boundary and
-does not authorize a rehearsal rerun. Fresh final Program re-review of the
-post-wrapper remediation range remains pending and is not reported as approval.
+Blocked items: Spec 126 seed/policy/pair inputs are current, but Task 5 has no
+current record because its historical record binds superseded readiness and
+recovery hashes. A new local positive/injected-negative sequence requires
+fresh explicit authorization; after execution, its evidence requires fresh
+independent review. Any stateful impact still blocks promotion and routes to
+Spec 125. The Program-owned controlled all-files wrapper passed on 2026-07-26
+only for checkpoint `263e046f`; it neither authorizes nor validates a rehearsal
+rerun. This Task is active, and no current completion or approval is reported.
 
 Deferral destination: data recovery routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);

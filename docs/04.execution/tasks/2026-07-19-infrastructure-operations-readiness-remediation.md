@@ -128,7 +128,7 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; current boundary RED `da06a080`, GREEN `adbbdce2`, focused suite 48/48, and static checks pass |
+| `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; current focused suite 49/49 and static checks pass |
 | `T-IOR-002` | Logical backup and isolated restore | `IOR-003`, `IOR-004` | Dump, restore, oracle, timing, cleanup | Fresh implementation agent | Complete; final normal pass |
 | `T-IOR-003` | 17-to-18 and corrupted/partial negative paths | `IOR-001`, `IOR-002` | Stable failures and cleanup disposition | Fresh implementation agent | Complete; classes 50/50/10/20 |
 | `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Complete for the representative-local Task boundary; the Program's post-remediation final re-review remains pending |
@@ -151,10 +151,11 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | 2026-07-22 | Program closure ordered rerun (historical, superseded) | The ordered 0/50/50/10/20/final-normal sequence and its `712f289d…` handoff were valid for that committed state. The later offline image-identity boundary remediation and current frozen final-normal evidence below supersede its fixture, dump, project, and canonical identities. |
 | 2026-07-22 | Offline PostgreSQL image-boundary RED/GREEN (historical, superseded) | RED `00a65be1` captured missing exact local image-object and no-pull boundaries. GREEN `571b2ab1` enforced source/target/client checks for that committed state. Its 45/45 result remains historical evidence. |
 | 2026-07-22 | Strict ordered acceptance before independent identity hardening (historical, superseded) | The 0/50/50/10/20/0 sequence, project `hyhome-ior-20260719-2205794-source/target`, dump SHA-256 `12725faae1e0152c7b2ac2f6336547ec23f9c73dd96d1f5a4b1e817b1454f7f5`, and canonical SHA-256 `f0c07c294ade39417ed9c61b6c614b4bf86a59c14a8b4a26a84082ab39fbab76` were valid for `571b2ab1`; the current evidence below supersedes them. |
-| 2026-07-22 | Independent PostgreSQL image-identity RED/GREEN | RED `da06a080` proved source, target, and helper-client manifest identities were not independently established from configuration IDs. GREEN `adbbdce2` separately requires every expected manifest digest in `.RepoDigests` and every expected configuration digest in `.Id` before runtime. The focused suite passes 48/48; Bash syntax, ShellCheck, Python compilation, and diff hygiene pass. Historical terminal reviews predate these commits; the terminal whole-branch reviews below cover them. |
-| 2026-07-22 | Current strict ordered acceptance and frozen canonical | The exact sequence was check `0`, checksum mismatch `50`, partial state `50`, bad target major `10`, timeout `20`, then exactly one final normal `0`. Project `hyhome-ior-20260719-2866314-source/target` used fixture SHA-256 `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`; the 4,484-byte dump SHA-256 is `e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`, with backup 1s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical SHA-256 is `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`; integrity, cleanup, and redaction passed. Every post-step owner-scoped container, helper client, network, volume, dump, and `/tmp` inventory was zero. No Task 4 wrapper, test, check, negative, or normal command ran after the final normal. |
+| 2026-07-22 | Independent PostgreSQL image-identity RED/GREEN (historical, superseded) | RED `da06a080` proved source, target, and helper-client manifest identities were not independently established from configuration IDs. GREEN `adbbdce2` compared the manifest and engine `.Id` observations available at that checkpoint. Docker Engine 29/containerd later established that `.Id` is the target descriptor rather than the image configuration digest, so the final-review correction below supersedes this observation model. |
+| 2026-07-22 | Strict ordered acceptance before descriptor/config correction (historical, superseded) | The check/negative/final-normal sequence, project `hyhome-ior-20260719-2866314-source/target`, dump SHA-256 `e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`, and canonical SHA-256 `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a` were valid for the earlier observation model. The corrected final-review acceptance below supersedes them. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. No Task 4 command or test ran for this evidence-only closure, and the approvals do not change the active Task or Program lifecycle or authorize the controlled wrapper. |
 | 2026-07-26 | Final lifecycle review remediation | The representative synthetic PostgreSQL boundary is complete and this Task transitions to `completed`; live/shared/production recovery remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
+| 2026-07-26 | Final-review identity correction and strict acceptance | RED `163f434b` proves that engine `.Id` cannot establish the config digest. GREEN `e8934783` binds repo digest, target descriptor, and independently hashed Docker-save config body for source, target, and helper client. The focused suite passes 49/49 and the local read-only preflight passed before runtime. The exact ordered sequence returned check `0`, checksum mismatch `50`, partial state `50`, bad target major `10`, timeout `20`, and one final normal `0`; every negative reported cleanup passed. Final project `hyhome-ior-20260719-1128131-source/target` used fixture SHA-256 `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`; its 4,484-byte dump SHA-256 is `c3ebc52895bda22559f99efb72471f9928b9a097d64d0df6066be354d9a65581`, with backup 0s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical SHA-256 is `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`; integrity, cleanup, and redaction passed. Every owner-scoped container, helper client, network, volume, dump, and `/tmp` inventory is zero. No Task 4 wrapper, test, check, negative, or normal command ran after that final normal. Fresh final re-review remains pending; no approval is claimed. |
 
 ## Verification Evidence
 
@@ -179,7 +180,7 @@ match on all integrity fields except declared server version; the verdict has
 `scope=synthetic-local`, `integrity_status=passed`,
 `cleanup_status=passed`, and `redaction_status=passed`.
 
-Actual evidence: focused tests pass 48/48 after historical review-remediation
+Actual evidence: focused tests pass 49/49 after historical review-remediation
 RED 7/31, readiness-race RED 1/1, and second-review RED with 13 expected
 assertion/subtest failures across 7 focused methods. The terminal-review
 regression was RED in all 8 direct-control subcases before the ordering fix.
@@ -189,12 +190,12 @@ full rendered topology, exclusive retained evidence identity, 360-second
 operation budget, 60-second cleanup reserve, and current fixture SHA-256
 `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`.
 The strict runtime sequence returned `0/50/50/10/20/0`. The final normal project
-`hyhome-ior-20260719-2866314-source/target` passed authenticated readiness,
+`hyhome-ior-20260719-1128131-source/target` passed authenticated readiness,
 integrity, cleanup, and publication. The retained 4,484-byte dump SHA-256 is
-`e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`,
-with backup 1s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical
+`c3ebc52895bda22559f99efb72471f9928b9a097d64d0df6066be354d9a65581`,
+with backup 0s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical
 handoff SHA-256 is
-`bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`;
+`dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`;
 schema is 1, and scope, integrity, cleanup, and redaction are
 `synthetic-local`, `passed`, `passed`, and `passed`. No owned resource remains.
 Explicit-base metadata selected 22 changed documents with zero violations;
@@ -207,7 +208,8 @@ future Task 5 delivery-script absence; no Task 4 contract failure remains.
 
 The prior `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`,
 `712f289dacf3bb72cf7c3956b51ec258ae63ae3b2919d70218884cb9623dc3b0`,
-and `f0c07c294ade39417ed9c61b6c614b4bf86a59c14a8b4a26a84082ab39fbab76`
+`f0c07c294ade39417ed9c61b6c614b4bf86a59c14a8b4a26a84082ab39fbab76`,
+and `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`
 canonical identities are historical and superseded by the current frozen
 handoff above.
 
@@ -311,13 +313,14 @@ quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
 
 Historical implementation identity: branch-history commit `db150a19`
 (`feat(ops): add postgres recovery rehearsal`). The earlier offline boundary
-used RED `00a65be1` and GREEN `571b2ab1`; current independent-identity
-hardening is RED `da06a080` followed by GREEN `adbbdce2`. This evidence-only
-reconciliation intentionally omits its own SHA.
+used RED `00a65be1` and GREEN `571b2ab1`; historical engine-identity hardening
+used RED `da06a080` followed by GREEN `adbbdce2`. Current target/config
+hardening is RED `163f434b` followed by GREEN `e8934783`; focused CI routing is
+`324a5ea3`. This evidence-only reconciliation intentionally omits its own SHA.
 
 Logical unit: `feat(ops): add postgres recovery rehearsal`.
 
-Commit validation: 48/48 focused tests, static gates, and the strict frozen
+Commit validation: 49/49 focused tests, static gates, and the strict frozen
 runtime evidence pass as recorded above. Historical terminal specification and
 operations/quality reviews are APPROVED C0/I0/M0 only for their exact reviewed
 commits; terminal whole-branch specification v5 and quality/security v3

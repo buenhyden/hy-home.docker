@@ -133,7 +133,7 @@ private endpoint payloads.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done; current focused suite 42/42 |
+| `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done; current focused suite 44/44 |
 | `T-CRR-002` | Exact five-service startup and endpoint readiness | `CRR-001`, `CRR-002` | Startup/readiness scenario and typed verdict | Fresh implementation agent | Done (runtime) |
 | `T-CRR-003` | Vault restart, timeout, and cleanup ambiguity | `CRR-003` | Recovery and expected non-zero timeout scenarios | Fresh implementation agent | Done (runtime) |
 | `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local-isolated Task boundary; the Program's post-remediation final re-review remains pending |
@@ -192,10 +192,11 @@ private endpoint payloads.
 | 2026-07-22 | Program closure rerun (historical, superseded) | The 35/35 rerun and its retained handoff were valid for that committed state, but the later local-only readiness hardening and current rerun below supersede its projects and handoff identity. |
 | 2026-07-22 | Local-only readiness hardening RED/GREEN (historical, superseded) | RED commit `ba1ba382` captured local-only readiness regressions. GREEN commit `7c6c4ea1` enforced the offline pinned runtime boundary for that committed state. Its 39/39 result is historical. The original implementation identity is `e41f8f04d285fc1962f723d7ec8d80d314f9e422`; `83298464` is historical only. |
 | 2026-07-22 | Startup/recovery/timeout acceptance before identity hardening (historical, superseded) | Startup project `hyhome-crr-20260719-1892220-xneqdqor`, recovery project `hyhome-crr-20260719-1897762-rf7ihid9`, timeout project `hyhome-crr-20260719-1905549-soywy1gk`, and canonical SHA-256 `f6195165e46b6c2a6bc8e45eb0fa2f39beac65af60610292d4251420ea19b263` were valid for `7c6c4ea1`; the current evidence below supersedes them. |
-| 2026-07-22 | Independent image-identity RED/GREEN | RED `9838034c` proved that a matching configuration ID alone did not establish the required manifest identity. GREEN `14e1dd5d` independently validates membership of every expected manifest digest in `.RepoDigests` and equality of the expected configuration digest with `.Id`, before runtime. The focused suite passes 42/42; static, preflight, and exact render gates pass. Historical terminal reviews predate these commits; the terminal whole-branch reviews below cover them. |
-| 2026-07-22 | Current startup/recovery/timeout acceptance | Startup project `hyhome-crr-20260719-2642602-fxq2siqi` passed in 62 seconds. Recovery project `hyhome-crr-20260719-2648660-ov2uzbas` passed Vault restart/unseal/fresh-sentinel recovery in 81 seconds and produced the current canonical. Timeout project `hyhome-crr-20260719-2661806-zqukerpv` returned expected class 30 in 61 seconds while preserving that canonical byte-for-byte. The mode-0600, 1,197-byte canonical SHA-256 is `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`; every owner-scoped container, network, volume, and `/tmp` inventory is zero. |
+| 2026-07-22 | Independent image-identity RED/GREEN (historical, superseded) | RED `9838034c` proved that a matching configuration ID alone did not establish the required manifest identity. GREEN `14e1dd5d` compared the manifest and engine `.Id` observations available at that checkpoint. Docker Engine 29/containerd later established that `.Id` is the target descriptor rather than the image configuration digest, so the final-review correction below supersedes this observation model. |
+| 2026-07-22 | Startup/recovery/timeout acceptance before descriptor/config correction (historical, superseded) | Startup project `hyhome-crr-20260719-2642602-fxq2siqi`, recovery project `hyhome-crr-20260719-2648660-ov2uzbas`, timeout project `hyhome-crr-20260719-2661806-zqukerpv`, and canonical SHA-256 `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0` were valid for the earlier observation model. The corrected final-review acceptance below supersedes them. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These approvals do not change the active Task or Program lifecycle and do not authorize the controlled wrapper. |
 | 2026-07-26 | Final lifecycle review remediation | The local-isolated Compose boundary is complete and this Task transitions to `completed`; remote/live or broader runtime remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
+| 2026-07-26 | Final-review identity and health correction | RED `163f434b` proves that endpoint success could mask an unhealthy service and that engine `.Id` could not stand in for the image config digest. GREEN `e8934783` fails closed when any service is unhealthy and binds repo digest, target descriptor, and independently hashed Docker-save config body as distinct fields. CI routing `324a5ea3` runs the five focused readiness modules. The focused Compose suite passes 44/44. Corrected runtime acceptance is startup `hyhome-crr-20260719-1056090-w6eb8tzo` exit 0 in 83 seconds, recovery `hyhome-crr-20260719-1065568-wswf8ocg` exit 0 in 100 seconds, and timeout `hyhome-crr-20260719-1089075-gowjwtw6` expected exit 30 in 81 seconds. The timeout preserved the recovery canonical byte-for-byte. The exact mode-0600, 1,198-byte canonical SHA-256 is `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; every owner-scoped container, network, volume, and `/tmp` inventory is zero. Fresh final specification and quality re-review of this correction remain pending; no approval is claimed. |
 
 ## Verification Evidence
 
@@ -241,7 +242,7 @@ Actual static evidence:
   path also invalidated the canonical handoff only after render/daemon/capacity
   and had no unconditional early-failure scenario finalizer;
 - `python3 -m pytest` was unavailable in the repository runtime (`No module named pytest`), so no pytest verdict is claimed;
-- `python3 -m unittest tests.validation.test_compose_core_readiness` passes the current focused suite `42/42` after the routing, signal-cleanup, local-only readiness, and independent manifest/config identity RED cycles;
+- `python3 -m unittest tests.validation.test_compose_core_readiness` passes the current focused suite `44/44` after the routing, signal-cleanup, local-only readiness, unhealthy-service classification, and independent target/config identity RED cycles;
 - `timeout 120s bash scripts/validation/validate-docker-compose.sh` exited `0` with `services_total=5`;
 - `timeout 60s bash scripts/validation/run-compose-core-readiness.sh --preflight` exited `0`, emitted `keycloak,oauth2-proxy,traefik,vault,vault-agent` and ports `18000,18443,18082,18083,18200`, and left no owned temporary path;
 - the focused daemon-separation regression proves `assert_docker_compose` passes with a Compose-capable CLI even when the Docker API fails, while `assert_docker_daemon` returns class `10`.
@@ -249,18 +250,20 @@ Actual static evidence:
   the repository-contract gate reports five deferred categories owned by later
   program Tasks and no Task 2 script-inventory or script-usage failure.
 
-Runtime verification results: all prior PID-only/nine-key and pre-identity-
-hardening runs, including handoffs at SHA-256
+Runtime verification results: all prior PID-only/nine-key, pre-identity-
+hardening, and pre-descriptor/config-correction runs, including handoffs at SHA-256
 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`,
 `e78d1a0bf3470b14a545f4d99971c7b2b88a67e422937896632533ce1ebe9d64`,
-and `f6195165e46b6c2a6bc8e45eb0fa2f39beac65af60610292d4251420ea19b263`,
+`f6195165e46b6c2a6bc8e45eb0fa2f39beac65af60610292d4251420ea19b263`,
+and `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`,
 are explicitly historical and superseded. The current identity-hardened rerun
-used startup project `hyhome-crr-20260719-2642602-fxq2siqi`, recovery project
-`hyhome-crr-20260719-2648660-ov2uzbas`, and timeout project
-`hyhome-crr-20260719-2661806-zqukerpv`. Startup and recovery passed; timeout
-returned class `30` and preserved the recovery-ready canonical byte-for-byte.
-The current canonical is mode 0600, 1,197 bytes, schema 2, and SHA-256
-`12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`.
+used startup project `hyhome-crr-20260719-1056090-w6eb8tzo`, recovery project
+`hyhome-crr-20260719-1065568-wswf8ocg`, and timeout project
+`hyhome-crr-20260719-1089075-gowjwtw6`. Startup and recovery passed at exit
+`0`; timeout returned class `30` and preserved the recovery-ready canonical
+byte-for-byte. The current canonical is mode 0600, 1,198 bytes, schema 2, and
+SHA-256
+`20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`.
 It records five healthy containers, five passed endpoints, and passed recovery,
 teardown, cleanup, and redaction. All current owner-scoped container, network,
 volume, and `/tmp` inventories are empty.
@@ -331,7 +334,7 @@ review v3 returned `APPROVED C0/I0/M0` for the full branch range through
 
 Findings and disposition: terminal routing review severities were specification
 `C0/I0/M0` and quality/security `C0/I0/M0` for their historical exact range.
-The current implementation response passes `42/42` focused tests and the
+The current implementation response passes `44/44` focused tests and the
 document gates. The current whole-branch review severities are specification
 v5 `C0/I0/M0` and quality/security v3 `C0/I0/M0`; earlier
 `CHANGES REQUIRED` iterations remain historical remediation evidence.
@@ -353,8 +356,9 @@ Original implementation identity:
 `e41f8f04d285fc1962f723d7ec8d80d314f9e422`
 (`feat(harness): add compose runtime acceptance`). The short identity
 `83298464` is historical only. The local-only boundary used RED `ba1ba382` and
-GREEN `7c6c4ea1`; current identity hardening is RED `9838034c` followed by
-GREEN `14e1dd5d`.
+GREEN `7c6c4ea1`; historical engine-identity hardening used RED `9838034c`
+followed by GREEN `14e1dd5d`. Current health and descriptor/config hardening is
+RED `163f434b` followed by GREEN `e8934783`; focused CI routing is `324a5ea3`.
 
 Logical unit: `feat(harness): add compose runtime acceptance`.
 
