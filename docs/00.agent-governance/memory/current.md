@@ -31,8 +31,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `8da882ca9162de8391735206e0824f22f2816437`
-- Verified at: `2026-07-27T03:44:05+09:00`
+- Verified commit: `0a80a5d1daf4ec6174e90bafef22dbb6e73b103a`
+- Verified at: `2026-07-27T03:47:57+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -61,6 +61,6 @@ status: active
 
 ## Next handoff
 
-- Commit the T-AGCC-006 implementation candidate, record its exact SHA, and
-  dispatch fresh specification and quality/security reviewers before any
-  branch lifecycle transition.
+- Dispatch fresh Task 6 specification and quality/security reviewers for
+  `371ffc6d..0a80a5d1`, remediate any Critical or Important findings, and do
+  not transition branch lifecycle state before both authorize closure.
