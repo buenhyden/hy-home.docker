@@ -22,7 +22,7 @@ status: active
 ## Active boundary
 
 - T-AGCC-006 covers canonical research and audit refresh, registered generated
-  evidence, three bounded direct-impact drift consumers, aggregate QA,
+  evidence, six bounded direct-impact drift consumers, aggregate QA,
   independent Task review, and whole-branch review.
 - The controlled all-files wrapper, remote mutation, live provider calls,
   runtime changes, Compose, infrastructure, deployment, and release remain
@@ -45,7 +45,7 @@ status: active
 - `/root/task6_canonical_evidence_refresh` owns the active T-AGCC-006
   implementation.
 - The closure RED found exact active drift in the Codex provider overlay,
-  postflight semantic counts, and the canonical sibling workspace baseline;
+  postflight semantic counts, and four canonical sibling research summaries;
   the Plan now bounds their remediation and regression evidence.
 - The controlled repository-wide QA gate remains separately approval-bound.
 - Remote work remains read-only; remote mutation, live provider calls, and

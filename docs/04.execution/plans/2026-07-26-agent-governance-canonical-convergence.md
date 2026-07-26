@@ -875,9 +875,11 @@ git diff --check
   `agent-model-selection.md`, `provider-model-landscape.md`,
   `provider-implementation-comparison.md`, `ai-agent-catalogs.md`,
   `harness-engineering.md`, `loop-engineering.md`, and
-  `quality-ci-formatting.md`; also modify the directly affected sibling
-  `workspace-baseline.md` so the canonical pack does not retain the displaced
-  14-role/22-function/seven-intake summary.
+  `quality-ci-formatting.md`; also modify the directly affected siblings
+  `agent-instructions-vibe-coding.md`, `automation-pipeline-workflow.md`,
+  `security-governance.md`, and `workspace-baseline.md` so the canonical pack
+  does not retain displaced 14-role/22-function/seven-intake, 8/10 semantic
+  evaluation, or 15-job local-CI summaries.
 - Modify canonical audit:
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md`,
   `implementation-overview.md`,
