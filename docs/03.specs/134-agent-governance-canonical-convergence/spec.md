@@ -149,7 +149,7 @@ approval policy, path layout, or evidence vocabulary.
 
 | Primary source | Local design consequence |
 | --- | --- |
-| [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview), [model IDs and versioning](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions), and [effort](https://platform.claude.com/docs/en/build-with-claude/effort) | Treat dateless 4.6+ identifiers as pinned releases, represent Opus 5 and Sonnet 5 explicitly, and select supported effort by work profile rather than assuming an evergreen alias. |
+| [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview), [model IDs and versioning](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions), and [effort](https://platform.claude.com/docs/en/build-with-claude/effort) | Treat dateless 4.6+ identifiers as pinned releases; retain current Fable 5, Opus 5, Sonnet 5, and Haiku 4.5 plus explicitly limited-access Mythos records; and select supported effort by work profile rather than assuming an evergreen alias. |
 | [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) | Keep native `model`, `effort`, tools, permission, memory, isolation, and turn controls provider-specific; rely on the project entry hierarchy for common repository memory. |
 | [OpenAI models](https://developers.openai.com/api/docs/models) and [latest model guidance](https://developers.openai.com/api/docs/guides/latest-model) | Use Sol for frontier work and Terra for balanced work; keep Luna catalog-only until Codex runtime acceptance is observed; make reasoning effort measurable by profile. |
 | [Latest Gemini models](https://ai.google.dev/gemini-api/docs/latest-model) and [Gemini 3.6 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash) | Migrate defaults to Gemini 3.6 Flash and 3.5 Flash-Lite, remove deprecated sampling parameters, and use thinking levels appropriate to autonomous or high-volume work. |
@@ -177,7 +177,7 @@ approval policy, path layout, or evidence vocabulary.
 | AGCC-002 | Normalize metadata by consumer. | Stage 00 documents, README profiles, Claude/Gemini Markdown, Codex TOML, JSON, YAML, and shell files validate against distinct consumer contracts. |
 | AGCC-003 | Reject duplicate and legacy keys. | Duplicate YAML keys fail closed; the known duplicate `skill-creator.scope` is removed; active target metadata contains no unregistered legacy aliases. |
 | AGCC-004 | Remove deprecated active state. | Active contracts and projections contain no `deprecated`, `retired`, or expired fallback record; historical retirement evidence remains immutable and linked. |
-| AGCC-005 | Use current model facts. | Every default model maps to an official current ID and every non-default catalog entry has status, source, retrieval time, and runtime-acceptance state. |
+| AGCC-005 | Use current model facts. | Every default model maps to an official current ID and every non-default catalog entry separately records provider lifecycle, repository disposition, source, retrieval time, runtime acceptance, and entitlement. |
 | AGCC-006 | Optimize by work profile. | Every agent resolves to exactly one work profile with provider model and supported reasoning/effort settings; unsupported native fields are not emitted. |
 | AGCC-007 | Share project memory. | All three root providers and provider-neutral agents load the same bounded current project state; private/global memory is excluded. |
 | AGCC-008 | Keep the role catalog minimal. | The catalog remains 14 roles unless the admission rule proves a distinct output, permission boundary, and non-mergeable responsibility. |
@@ -241,23 +241,31 @@ Duplicate-key-safe parsing precedes semantic validation. A parser dependency
 failure is a closed validation failure with an environment code, not a fallback
 to permissive parsing.
 
-### Model Lifecycle Contract
+### Model Status and Acceptance Contract
 
-The active provider model contract permits:
+The active provider model contract keeps independent status axes. A value on
+one axis must never satisfy a gate on another axis:
 
-- `stable`: officially current and eligible for defaults after native
-  acceptance;
-- `preview`: officially preview and never an implicit production default;
-- `catalog_only`: official catalog evidence exists but the repository's
-  provider runtime has not accepted the model;
-- `needs_revalidation`: a previously observed acceptance, entitlement, or
-  runtime fact has expired or cannot be reproduced.
+- `provider_lifecycle`: `stable`, `preview`, or `limited_availability`, derived
+  only from the current official provider source;
+- `repository_disposition`: `default`, `candidate`, or `catalog_only`, derived
+  from task fit, local policy, and measured evaluation;
+- `runtime_acceptance`: `accepted`, `rejected`, `unavailable`, or
+  `needs_revalidation`, derived from the exact provider CLI or runtime;
+- `entitlement`: `available`, `unavailable`, `not_applicable`, or
+  `needs_revalidation`, derived from the observed account boundary;
+- `repository_default_eligible`: a boolean that may be true only for an
+  accepted, entitled, stable model selected by an approved work profile.
 
-The active contract does not permit `deprecated` or `retired`. Historical model
-records move to a Stage 90 retirement ledger with provider, exact ID, former
-status, deprecation or shutdown date, replacement, rationale, source,
-retrieval time, and immutable repository provenance. Negative fixtures may
-retain retired IDs solely to prove rejection.
+Official catalog presence therefore proves only `provider_lifecycle`. It does
+not prove runtime acceptance, entitlement, repository disposition, or default
+eligibility.
+
+The active contract does not permit a provider lifecycle of `deprecated` or
+`retired`. Historical model records move to a Stage 90 retirement ledger with
+provider, exact ID, former lifecycle and disposition, deprecation or shutdown
+date, replacement, rationale, source, retrieval time, and immutable repository
+provenance. Negative fixtures may retain retired IDs solely to prove rejection.
 
 Dateless IDs are not assumed to be evergreen. Fallback graphs may reference
 only active non-expired nodes and must not silently cross provider or work
@@ -279,6 +287,14 @@ mutation authority, risk, tool autonomy, expected horizon, and measured
 fixture behavior. `gpt-5.6-luna` remains `catalog_only` until Codex accepts it.
 The contract must not claim that API availability establishes CLI acceptance.
 
+`claude-fable-5` remains a current stable, exceptional-capability,
+non-default catalog candidate and receives a sourced evaluation disposition
+even though it is not assigned to a routine work profile. Current
+limited-access Claude Mythos entries remain explicit
+`limited_availability`/`catalog_only` records unless entitlement and runtime
+acceptance are separately observed. This prevents the default table from being
+misread as the complete Claude catalog.
+
 Claude effort is emitted only for a model and surface that support it. Gemini
 3.6 and 3.5 projections remove `temperature`, `top_p`, and `top_k`. Gemini
 reasoning is expressed through agent-scoped `modelConfigs.overrides` when the
@@ -291,19 +307,20 @@ native agent frontmatter does not expose the field. Codex uses the supported
 
 The repository provides one provider-neutral current-state route:
 
-- `memory/README.md` defines purpose, precedence, allowed content, compaction,
-  ownership, and failure handling.
-- `memory/current.md` contains only the active branch or task, approved
-  decisions, current blockers, last verified commit and checks, direct evidence
-  links, and next handoff.
-- the existing `memory/progress.md` is converted to historical navigation or
-  compacted only after durable Stage 04 evidence and Git provenance are
-  confirmed.
+- `docs/00.agent-governance/memory/README.md` defines purpose, precedence,
+  allowed content, compaction, ownership, and failure handling.
+- `docs/00.agent-governance/memory/current.md` contains only the active branch
+  or task, approved decisions, current blockers, last verified commit and
+  checks, direct evidence links, and next handoff.
+- the existing `docs/00.agent-governance/memory/progress.md` is converted to
+  historical navigation or compacted only after durable Stage 04 evidence and
+  Git provenance are confirmed.
 
-`current.md` is bounded to 32 KiB and 400 lines. Entries must be dated,
-source-linked, value-free, and replace stale current state rather than append
-forever. Policy text, full command logs, raw output, secrets, credentials,
-tokens, shell history, and private provider memory are forbidden.
+`docs/00.agent-governance/memory/current.md` is bounded to 32 KiB and 400 lines.
+Entries must be dated, source-linked, value-free, and replace stale current
+state rather than append forever. Policy text, full command logs, raw output,
+secrets, credentials, tokens, shell history, and private provider memory are
+forbidden.
 
 `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` import the same memory contract and
 current-state path. Provider-specific overlays may describe how their runtime
@@ -476,7 +493,8 @@ Each model record contains:
 
 - provider;
 - exact model ID;
-- lifecycle status;
+- official provider lifecycle;
+- repository disposition and default eligibility;
 - official source and retrieval time;
 - capability and task-fit summary;
 - supported reasoning or effort levels;
@@ -557,6 +575,8 @@ and read back.
 - zero duplicate keys in active YAML contracts;
 - exactly 14 active roles and 24 active functions;
 - exactly one work profile per role;
+- provider lifecycle, repository disposition, runtime acceptance, entitlement,
+  and default eligibility validate as independent axes;
 - zero active deprecated or retired model/role records;
 - all fallback edges resolve to eligible active nodes;
 - provider-native metadata uses supported fields;
