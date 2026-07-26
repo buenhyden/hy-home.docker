@@ -8,8 +8,8 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-- T-AGCC-001 through T-AGCC-004 are complete; preserve their bounded evidence
-  while the active convergence chain advances to T-AGCC-005.
+- T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
+  while the active convergence chain advances to T-AGCC-006.
 
 ## Approved decisions
 
@@ -21,27 +21,27 @@ status: active
 
 ## Active boundary
 
-- T-AGCC-005 covers the approved navigation-only `.github/INDEX.md`, local
-  workflow and QA consolidation, and remote read-only observation.
+- T-AGCC-006 covers canonical research and audit refresh, registered generated
+  evidence, aggregate QA, independent Task review, and whole-branch review.
 - The controlled all-files wrapper, remote mutation, live provider calls,
   runtime changes, Compose, infrastructure, deployment, and release remain
   separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `c45e292581a04bda7fc85ee4a5f74d8948314562`
-- Verified at: `2026-07-27T00:10:19+09:00`
-- T-AGCC-001 through T-AGCC-004 are recorded complete in the active Task
+- Verified commit: `b993beb2d7d94326944575f9306d2b85dfd20e59`
+- Verified at: `2026-07-27T02:28:15+09:00`
+- T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
-- T-AGCC-004 specification review is C0/I0/M1 APPROVED with its sole
+- T-AGCC-005 specification review is C0/I0/M1 APPROVED with its sole
   bookkeeping Minor closed.
-- T-AGCC-004 quality/security review of `b2e090bd..c45e2925` is C0/I0/M0 with
-  `QUALITY_SECURITY: APPROVED`; adversarial boundaries were reviewed.
+- T-AGCC-005 quality/security review of `9bdbd903..b993beb2` is C0/I0/M0 with
+  `QUALITY: APPROVED` and `READY_FOR_TASK5_CLOSURE: YES`.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- T-AGCC-005 requires a fresh CI/security implementation owner.
+- T-AGCC-006 requires a fresh canonical-evidence implementation owner.
 - The controlled repository-wide QA gate remains separately approval-bound.
 - Remote work remains read-only; remote mutation, live provider calls, and
   runtime changes are not authorized.
@@ -55,6 +55,6 @@ status: active
 
 ## Next handoff
 
-- Dispatch a fresh T-AGCC-005 CI/security implementer for the approved
-  `.github/INDEX.md`, workflow and QA consolidation, and remote read-only
-  observation.
+- Dispatch a fresh T-AGCC-006 implementer to refresh the canonical research,
+  audit rows, and registered generated owners without promoting unverified
+  provider, remote, runtime, or deployment state.
