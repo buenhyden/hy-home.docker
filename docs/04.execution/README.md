@@ -137,6 +137,8 @@ Plan/task 관계는 파일명 exact-stem 일치보다 parent/related-document li
 - **Operations**: [../05.operations/README.md](../05.operations/README.md)
 - **Templates**: [../99.templates/README.md](../99.templates/README.md)
 - **Documentation protocol**: [../00.agent-governance/rules/documentation-protocol.md](../00.agent-governance/rules/documentation-protocol.md)
+- **Active agent-governance convergence plan**: [plans/2026-07-26-agent-governance-canonical-convergence.md](plans/2026-07-26-agent-governance-canonical-convergence.md)
+- **Active agent-governance convergence task evidence**: [tasks/2026-07-26-agent-governance-canonical-convergence.md](tasks/2026-07-26-agent-governance-canonical-convergence.md)
 - **Infra team agent cross-validation plan**: [plans/2026-04-10-infra-team-agent-cross-validation.md](plans/2026-04-10-infra-team-agent-cross-validation.md)
 - **Infra team agent cross-validation task**: [tasks/2026-04-10-infra-team-agent-cross-validation.md](tasks/2026-04-10-infra-team-agent-cross-validation.md)
 - **Requirements standardization plan**: [plans/2026-05-17-requirements-standardization.md](plans/2026-05-17-requirements-standardization.md)

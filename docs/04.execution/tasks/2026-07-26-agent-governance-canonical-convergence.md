@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: task:2026-07-26-agent-governance-canonical-convergence
 artifact_type: task
 parent_ids:
@@ -53,8 +53,9 @@ configuration, credentials, and remote GitHub state remain out of scope.
 - User chose remote GitHub read-only observation and local tracked workflow
   changes only.
 - User allowed subagents and selected Subagent-Driven as the execution method.
-- This exact Plan remains draft; implementation dispatch, protected-surface
-  mutation, and destructive cleanup remain pending explicit Plan approval.
+- User approved this exact Plan on 2026-07-26. The six local implementation
+  tasks, protected local targets, and Plan-bounded destructive cleanup are
+  authorized.
 - No approval exists yet for the controlled all-files wrapper, push, remote
   merge, workflow dispatch, provider live call, or remote control-plane change.
 
@@ -78,6 +79,8 @@ surfaces. No rollback command may discard unrelated user changes.
 | --- | --- | --- | --- |
 | 2026-07-26 | Planning | Controller | Created isolated worktree, completed official-source and repository discovery, wrote and independently reviewed Spec 134, and drafted this Plan/Task. Dependency-locked validator/renderer baseline remains environment-blocked because `html5lib` is absent and restricted network resolution failed; hook parity passed. |
 | 2026-07-26 | Planning review | Independent plan reviewer | Initial review returned C0/I3/M1 for configured-default/runtime eligibility conflation, draft approval overstatement, unsafe deletion sequencing, and thin per-task interfaces. Remediation split repository eligibility from runtime activation, aligned draft authorization, moved every active/generated deletion consumer into T5, and added six exact interface blocks. Re-review returned C0/I0/M0 and APPROVED. |
+| 2026-07-26 | Execution approval | User / Controller | User approved the exact independently reviewed Plan. Plan and Task transitioned to `active`; remote mutation, provider live calls, and the controlled all-files wrapper remain separately gated. |
+| 2026-07-26 | Active-chain validation | Controller | Scoped metadata validation selected 9 files with 0 violations; traceability and implementation-alignment checks reported 0 failures; generated LLM Wiki owners were fresh; scoped pre-commit passed. The wider merge-base metadata check still reports 8 pre-existing lifecycle-transition findings outside this activation unit. |
 
 Implementation rows are appended only after the responsible agent finishes a
 logical unit. Review rows identify the exact reviewed commit range and finding

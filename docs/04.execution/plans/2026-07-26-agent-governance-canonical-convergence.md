@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: plan:2026-07-26-agent-governance-canonical-convergence
 artifact_type: plan
 parent_ids:
@@ -1023,10 +1023,9 @@ Every task must produce:
 ## Approval Gates
 
 - Spec 134 is approved and active.
-- This Plan and sibling Task remain draft until the user approves execution.
-- Prior scope/protected-surface approval does not start implementation.
-  Protected local targets and destructive cleanup become executable only after
-  the user approves this exact Plan.
+- The user approved this exact Plan on 2026-07-26. This Plan and its sibling
+  Task are active; the six local implementation tasks, protected local targets,
+  and deletion gates defined here are authorized.
 - Remote GitHub remains read-only; any mutation requires a new exact approval.
 - Provider live calls, paid jobs, entitlement probes, and provider-global
   configuration remain unapproved.

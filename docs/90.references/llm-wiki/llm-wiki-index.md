@@ -533,6 +533,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md](../../04.execution/plans/2026-07-15-agent-governance-harness-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md](../../04.execution/plans/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md](../../04.execution/plans/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md](../../04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -660,6 +661,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md](../../04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md](../../04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md](../../04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
