@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:134-agent-governance-canonical-convergence
 artifact_type: spec
 parent_ids:
@@ -11,7 +11,7 @@ parent_ids:
 
 **Date:** 2026-07-26 (Asia/Seoul)
 
-**Status:** Draft pending specification review
+**Status:** Active
 
 ## Overview
 
@@ -35,11 +35,14 @@ Read-only discovery at local baseline `e65bb18f` found a sound generated
 foundation: 14 role identities are present in Stage 00 and in every provider
 agent projection, and 22 function identities are present in Stage 00,
 `.agents/skills`, and `.claude/skills`. Root entry files are thin. Generated
-hook parity is fresh. The active model contract, however, was last checked on
-2026-07-15 and is already stale against current official model catalogs.
-`agent-catalog.yaml` also contains a duplicate `scope` key on `skill-creator`,
-and active contracts still carry retired role transfers and deprecated model
-records that belong in historical evidence instead.
+hook parity is fresh. The active model contract, however, has a
+2026-07-10 cutoff and a 2026-07-16 retrieval time and is already stale against
+current official model catalogs. Duplicate-safe parsing confirms that the
+current `agent-catalog.yaml` contains no duplicate key; the previously reported
+`skill-creator.scope` duplicate therefore becomes a negative regression case
+rather than a live cleanup claim. Active contracts still carry retired role
+transfers and deprecated model records that belong in historical evidence
+instead.
 
 The public remote GitHub observation is deliberately separate from local
 truth. On 2026-07-26 the remote default branch was at `a897978f`, while the
@@ -151,7 +154,7 @@ approval policy, path layout, or evidence vocabulary.
 | --- | --- |
 | [Anthropic model overview](https://platform.claude.com/docs/en/about-claude/models/overview), [model IDs and versioning](https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions), and [effort](https://platform.claude.com/docs/en/build-with-claude/effort) | Treat dateless 4.6+ identifiers as pinned releases; retain current Fable 5, Opus 5, Sonnet 5, and Haiku 4.5 plus explicitly limited-access Mythos records; and select supported effort by work profile rather than assuming an evergreen alias. |
 | [Claude Code subagents](https://code.claude.com/docs/en/sub-agents) | Keep native `model`, `effort`, tools, permission, memory, isolation, and turn controls provider-specific; rely on the project entry hierarchy for common repository memory. |
-| [OpenAI models](https://developers.openai.com/api/docs/models) and [latest model guidance](https://developers.openai.com/api/docs/guides/latest-model) | Use Sol for frontier work and Terra for balanced work; keep Luna catalog-only until Codex runtime acceptance is observed; make reasoning effort measurable by profile. |
+| [OpenAI models](https://developers.openai.com/api/docs/models), [latest model guidance](https://developers.openai.com/api/docs/guides/latest-model), and [GPT-5.3 Codex Spark research preview](https://openai.com/index/introducing-gpt-5-3-codex-spark/) | Use Sol for frontier work and Terra for balanced work; keep Luna catalog-only until Codex runtime acceptance is observed; retain Spark as preview/catalog-only while its official preview remains current; make reasoning effort measurable by profile. |
 | [Latest Gemini models](https://ai.google.dev/gemini-api/docs/latest-model) and [Gemini 3.6 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash) | Migrate defaults to Gemini 3.6 Flash and 3.5 Flash-Lite, remove deprecated sampling parameters, and use thinking levels appropriate to autonomous or high-volume work. |
 | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/), [model configuration](https://geminicli.com/docs/cli/generation-settings/), and [memory management](https://geminicli.com/docs/cli/tutorials/memory-management/) | Keep `.gemini/agents/*.md` native, express unsupported per-agent reasoning through scoped model configuration, and load common project context through the repository hierarchy. |
 | [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use) and [workflow monitoring](https://docs.github.com/en/actions/how-tos/monitor-workflows) | Preserve full-commit action pins, explicit least privilege and timeouts, and separate tracked workflow definitions from observed run logs and remote enforcement. |
@@ -175,7 +178,7 @@ approval policy, path layout, or evidence vocabulary.
 | --- | --- | --- |
 | AGCC-001 | Preserve one canonical authority. | Stage 00 owns policy and catalogs; every root/provider surface is classified as entry, native projection, runtime adapter, or compatibility projection, with no parallel policy body. |
 | AGCC-002 | Normalize metadata by consumer. | Stage 00 documents, README profiles, Claude/Gemini Markdown, Codex TOML, JSON, YAML, and shell files validate against distinct consumer contracts. |
-| AGCC-003 | Reject duplicate and legacy keys. | Duplicate YAML keys fail closed; the known duplicate `skill-creator.scope` is removed; active target metadata contains no unregistered legacy aliases. |
+| AGCC-003 | Reject duplicate and legacy keys. | Duplicate YAML keys fail closed; a nested `skill-creator.scope` duplicate is rejected by regression coverage; active target metadata contains no unregistered legacy aliases. |
 | AGCC-004 | Remove deprecated active state. | Active contracts and projections contain no `deprecated`, `retired`, or expired fallback record; historical retirement evidence remains immutable and linked. |
 | AGCC-005 | Use current model facts. | Every default model maps to an official current ID and every non-default catalog entry separately records provider lifecycle, repository disposition, source, retrieval time, runtime acceptance, and entitlement. |
 | AGCC-006 | Optimize by work profile. | Every agent resolves to exactly one work profile with provider model and supported reasoning/effort settings; unsupported native fields are not emitted. |
@@ -254,12 +257,19 @@ one axis must never satisfy a gate on another axis:
   `needs_revalidation`, derived from the exact provider CLI or runtime;
 - `entitlement`: `available`, `unavailable`, `not_applicable`, or
   `needs_revalidation`, derived from the observed account boundary;
-- `repository_default_eligible`: a boolean that may be true only for an
-  accepted, entitled, stable model selected by an approved work profile.
+- `repository_default_eligible`: a boolean that may be true only for a stable,
+  native-schema-compatible model with approved repository task fit; it means
+  the model may be written as a configured work-profile default and does not
+  prove that a runtime or account can execute it;
+- `runtime_activation_eligible`: a boolean that may be true only when
+  `runtime_acceptance` is `accepted`, `entitlement` is `available` or
+  `not_applicable`, and `repository_default_eligible` is true.
 
 Official catalog presence therefore proves only `provider_lifecycle`. It does
 not prove runtime acceptance, entitlement, repository disposition, or default
-eligibility.
+or activation eligibility. A renderer may write an approved configured default
+while activation remains unverified, but neither the contract nor Task evidence
+may report the model as runnable until `runtime_activation_eligible` is true.
 
 The active contract does not permit a provider lifecycle of `deprecated` or
 `retired`. Historical model records move to a Stage 90 retirement ledger with
@@ -281,11 +291,12 @@ profile boundaries.
 | `evidence-research` | `claude-haiku-4-5-20251001` or `claude-sonnet-5`, `low` | `gpt-5.6-terra`, `low` or `medium` | `gemini-3.5-flash-lite`, `minimal` or `medium` |
 | `routine-validation` | `claude-haiku-4-5-20251001` | `gpt-5.6-terra`, `low` | `gemini-3.5-flash-lite`, `minimal` |
 
-The implementation selects one exact value per agent rather than emitting the
-alternatives shown in this design table. The choice must follow the agent's
-mutation authority, risk, tool autonomy, expected horizon, and measured
-fixture behavior. `gpt-5.6-luna` remains `catalog_only` until Codex accepts it.
-The contract must not claim that API availability establishes CLI acceptance.
+The implementation selects one exact configured value per agent rather than
+emitting the alternatives shown in this design table. The choice must follow
+the agent's mutation authority, risk, tool autonomy, expected horizon, and
+measured fixture behavior. A configured value is not a live activation claim.
+`gpt-5.6-luna` remains `catalog_only` until Codex accepts it. The contract must
+not claim that API availability establishes CLI acceptance.
 
 `claude-fable-5` remains a current stable, exceptional-capability,
 non-default catalog candidate and receives a sourced evaluation disposition
@@ -494,7 +505,8 @@ Each model record contains:
 - provider;
 - exact model ID;
 - official provider lifecycle;
-- repository disposition and default eligibility;
+- repository disposition, configured-default eligibility, and runtime
+  activation eligibility;
 - official source and retrieval time;
 - capability and task-fit summary;
 - supported reasoning or effort levels;
@@ -576,7 +588,8 @@ and read back.
 - exactly 14 active roles and 24 active functions;
 - exactly one work profile per role;
 - provider lifecycle, repository disposition, runtime acceptance, entitlement,
-  and default eligibility validate as independent axes;
+  configured-default eligibility, and runtime activation eligibility validate
+  as independent axes;
 - zero active deprecated or retired model/role records;
 - all fallback edges resolve to eligible active nodes;
 - provider-native metadata uses supported fields;
