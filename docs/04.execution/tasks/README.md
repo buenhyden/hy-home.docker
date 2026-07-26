@@ -166,6 +166,7 @@ docs/04.execution/tasks/
 ├── 2026-07-19-infrastructure-operations-readiness-remediation.md # Completed representative PostgreSQL recovery evidence
 ├── 2026-07-19-deployment-release-engineering-remediation.md # Active; corrected-handoff rehearsal pending
 ├── 2026-07-23-security-supply-chain-runtime-closure.md # Completed approved-network Grype seed and local Spec 126 runtime evidence
+├── 2026-07-26-corrected-delivery-evidence-reconciliation.md # Active corrected-hash Task 5 successor; fresh review pending
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -269,6 +270,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Infrastructure Operations Readiness Remediation Task (completed representative-local evidence owner)**: [2026-07-19-infrastructure-operations-readiness-remediation.md](./2026-07-19-infrastructure-operations-readiness-remediation.md)
 - **Deployment and Release Engineering Remediation Task (active; corrected-handoff rehearsal pending)**: [2026-07-19-deployment-release-engineering-remediation.md](./2026-07-19-deployment-release-engineering-remediation.md)
 - **Security Supply-Chain Runtime Closure Task (completed approved-network evidence owner)**: [2026-07-23-security-supply-chain-runtime-closure.md](./2026-07-23-security-supply-chain-runtime-closure.md)
+- **Corrected Delivery Evidence Reconciliation Task (active; exact local sequence and fresh review pending)**: [2026-07-26-corrected-delivery-evidence-reconciliation.md](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)

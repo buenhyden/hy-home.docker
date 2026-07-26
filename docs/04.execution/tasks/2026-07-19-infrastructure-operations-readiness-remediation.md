@@ -214,9 +214,11 @@ canonical identities are historical and superseded by the current frozen
 handoff above.
 
 Verification results: implementation/runtime PASS. Historical findings were
-remediated and reviewed for their exact commits; fresh specification plus
-operations/quality review of the current identity hardening is approved by the
-terminal whole-branch review pair recorded below.
+remediated and reviewed for their exact commits. The terminal whole-branch
+review pair recorded below ends at `20022458` and predates current RED
+`163f434b`, GREEN `e8934783`, focused CI routing `324a5ea3`, and the corrected
+runtime handoff. Fresh independent specification and operations/quality review
+of that later range remains pending.
 Exit classes are `0=pass`, `2=usage`,
 `10=preflight`, `20=readiness`, `30=backup`, `40=restore`,
 `50=integrity/negative case`, and `60=cleanup`.
@@ -294,9 +296,10 @@ direct-control/canonical state-machine ordering and ignored report freshness.
 The specification evidence-synchronization finding was remediated and closed by
 terminal APPROVED C0/I0/M0 re-review for its exact historical range. No review
 verdict from those historical iterations is promoted to the current range;
-the separate v3/v5 whole-branch approvals above cover the current independent-
-identity hardening. Earlier `CHANGES REQUIRED` iterations remain historical
-remediation evidence.
+the separate v3/v5 whole-branch approvals above also stop at `20022458` and do
+not cover the current independent-identity hardening. Earlier
+`CHANGES REQUIRED` iterations remain historical remediation evidence, and the
+current range is review-pending.
 
 The initial final Program specification review after the controlled-wrapper
 checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
@@ -323,8 +326,9 @@ Logical unit: `feat(ops): add postgres recovery rehearsal`.
 Commit validation: 49/49 focused tests, static gates, and the strict frozen
 runtime evidence pass as recorded above. Historical terminal specification and
 operations/quality reviews are APPROVED C0/I0/M0 only for their exact reviewed
-commits; terminal whole-branch specification v5 and quality/security v3
-reviews are APPROVED C0/I0/M0 for the current range.
+commits; terminal whole-branch specification v5 and quality/security v3 are
+APPROVED C0/I0/M0 only through historical endpoint `20022458`. Fresh review
+of `163f434b`/`e8934783` and the corrected handoff remains pending.
 
 Post-wrapper remediation identities are generated-owner refresh `78265090`,
 OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.

@@ -309,8 +309,10 @@ Implementation review verdict: static implementation and the three current
 schema-v2 runtime scenario gates pass under the independent manifest/config
 identity boundary. The routing findings have a test-first implementation and
 live runtime response. Historical terminal reviews pass only for their exact
-reviewed commits; the current hardening is covered by the terminal whole-branch
-reviews below.
+reviewed commits. The terminal whole-branch reviews below end at `20022458`
+and therefore predate current RED `163f434b`, GREEN `e8934783`, focused CI
+routing `324a5ea3`, and the corrected runtime handoff. Fresh independent
+review of that later range remains pending.
 
 Specification review verdict: the earlier remediation review returned
 `APPROVED C0/I0/M0`; it is retained as historical pre-routing evidence. The
@@ -335,9 +337,10 @@ review v3 returned `APPROVED C0/I0/M0` for the full branch range through
 Findings and disposition: terminal routing review severities were specification
 `C0/I0/M0` and quality/security `C0/I0/M0` for their historical exact range.
 The current implementation response passes `44/44` focused tests and the
-document gates. The current whole-branch review severities are specification
-v5 `C0/I0/M0` and quality/security v3 `C0/I0/M0`; earlier
-`CHANGES REQUIRED` iterations remain historical remediation evidence.
+document gates. Specification v5 and quality/security v3 are historical
+`C0/I0/M0` evidence through `20022458`; they are not verdicts for the current
+hardening or corrected runtime. Earlier `CHANGES REQUIRED` iterations remain
+historical remediation evidence, and the current range is review-pending.
 
 The initial final Program specification review after the controlled-wrapper
 checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
@@ -365,8 +368,10 @@ Logical unit: `feat(harness): add compose runtime acceptance`.
 Commit validation: the three current routed runtime scenarios pass as recorded
 above, including independent manifest/config identity checks, scoped cleanup,
 redaction, and byte-identical ready handoff preservation. Focused/static gates
-pass; terminal whole-branch specification v5 and quality/security v3 reviews
-are APPROVED C0/I0/M0.
+pass. Terminal whole-branch specification v5 and quality/security v3 remain
+APPROVED C0/I0/M0 only through historical endpoint `20022458`; fresh
+independent review of `163f434b`/`e8934783` and the corrected handoff is
+pending.
 
 Post-wrapper remediation identities are generated-owner refresh `78265090`,
 OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.

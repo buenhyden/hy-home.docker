@@ -42,6 +42,7 @@ document metadata is `758aa0d2`.
   [126](../../03.specs/126-security-supply-chain-remediation/spec.md), and
   [127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
 - Domain Tasks linked under Related Documents
+- [Corrected delivery evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - Stage 00 task and controlled-QA contracts
 
 ## Goals and Non-goals
@@ -148,7 +149,7 @@ Redaction boundary:
 | `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Complete at the local boundary; current 65/65 plus 9/9 seed tests, corrected tool/material identity, migrated seed, and portable pair reconciliation pass |
 | `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Complete at the representative-local boundary; current 49/49 and corrected strict frozen runtime pass |
 | `T-ORC-005` | Pair-bound promotion and previous-runtime-image-ID rollback. | Delivery domain Task | Reopened; implementation passes 54/54, but the historical record binds superseded readiness/recovery hashes and no current record exists |
-| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; final-review corrections are implemented, Task 5 rerun authorization/evidence and fresh final re-review remain pending |
+| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; corrected Task 5 successor authorization is recorded, while runtime evidence and fresh final re-review remain pending |
 
 ## Work Log
 
@@ -190,8 +191,9 @@ facts they name.
 | 2026-07-23 | `T-ORC-005` Task 5 review/document closure | Independent specification and quality/security reviewers | Both fresh reviews returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. Specification checks passed delivery 54/54, metadata 6/0 plus one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. Quality/security checks passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. No Docker, Compose, rehearsal, cleanup, advisory, Task 4, controlled wrapper, pre-commit, or remote action ran. |
 | 2026-07-26 | `T-ORC-006` controlled all-files QA | Documentation/QA closure agent | The sole authorized wrapper ran from clean checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f` and passed: `hook_result=passed hook_exit=0`, `snapshot_result=passed`, and `observation=git-visible-non-ignored-repository-status`. Counts were `before_count=0 after_count=0 changed_count=0 unexpected_count=0`; before, after, changed, and unexpected path sets were all `(none)`. At that checkpoint, final whole-branch reviews and lifecycle reconciliation remained pending; the following rows supersede that historical state. |
 | 2026-07-26 | `T-ORC-006` initial final reviews and remediation | Independent specification and quality reviewers plus bounded remediation owners | Initial final specification review returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners were stale and the 15 local-isolated Specs/Plans/Tasks still had active lifecycle metadata. Commit `78265090` refreshed the generated owners; this lifecycle logical unit transitions exactly those 15 documents and synchronizes the requested indexes. Initial final quality review returned `CHANGES REQUIRED C0/I1/M0`: OCI config-digest inspection used an unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it through the bounded stable-private reader. The local-isolated lifecycle is completed, but fresh final specification and quality re-review remain pending; no final PASS or APPROVED verdict is claimed. |
-| 2026-07-26 | `T-ORC-006` targeted lifecycle validation | Documentation specialist | Against full base `73f4ea68ce51f59ed0ee7baef64a2ebf471501aa`, changed metadata selected 24 documents with 0 violations, 0 legacy exceptions, and 0 transition overrides; repository metadata contracts and lifecycle contract each returned 0 violations. Impacted lifecycle selected 221 surfaces with 0 violations and only the configured Task-directory budget warning; promoted lifecycle returned 0 violations. Semantic inventory is fresh at 928 records/2,145 advisory findings. Foundation manifest/summary, audit matrix, security-readiness/supply-chain owners, and LLM Wiki index/coverage are fresh. Traceability passed 46/0; alignment passed at 667 stage documents, 5,522 repository-local Markdown links, and 141 operations documents with 0 failures; the focused supply-chain suite passed 63/63; diff hygiene passed. The exact-once wrapper and direct all-files pre-commit were not rerun. |
+| 2026-07-26 | `T-ORC-006` historical targeted lifecycle checkpoint | Documentation specialist | Historical checkpoint only: against full base `73f4ea68ce51f59ed0ee7baef64a2ebf471501aa`, changed metadata selected 24 documents with 0 violations, 0 legacy exceptions, and 0 transition overrides; repository metadata contracts and lifecycle contract each returned 0 violations. Impacted lifecycle selected 221 surfaces with 0 violations and only the configured Task-directory budget warning; promoted lifecycle returned 0 violations. Semantic inventory was fresh at 928 records/2,145 advisory findings. Foundation manifest/summary, audit matrix, security-readiness/supply-chain owners, and LLM Wiki index/coverage were fresh. Traceability passed 46/0; alignment passed at 667 documents, 5,522 links, and 141 operations documents with 0 failures; the focused supply-chain suite passed 63/63; diff hygiene passed. The later final correction checkpoint superseded the 24/221/63 counts. The exact-once wrapper and direct all-files pre-commit were not rerun. |
 | 2026-07-26 | `T-ORC-006` final-review correction wave | Final-review remediation agent | RED `163f434b` covers unhealthy-service masking and collapsed target/config identity. GREEN `e8934783` fails closed on service health and binds repo, target descriptor, and independently hashed config body across Compose, PostgreSQL, supply-chain tools/materials, and Grype seed metadata. CI routing `324a5ea3` runs all five focused modules, and lifecycle wording correction is `b342a5ae`. Pre-runtime suites pass Compose 44/44, PostgreSQL 49/49, Grype seed 9/9, and supply chain 65/65; delivery passes 54/54 after corrected upstream canonicals exist. Corrected Compose runtime returned `0/0/30`, preserved mode-0600 canonical SHA-256 `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`, and left zero owned resources. PostgreSQL returned exact `0/50/50/10/20/0`, published mode-0600 canonical SHA-256 `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`, and left zero owned resources; no later Task 4 command or test ran. The existing supply pair remains exact after read-only typed tuple, runtime target, independent config-body, hash, and mode reconciliation; no advisory was rerun. The Grype seed was atomically republished with corrected tool tuple and unchanged cache/database identity. Because the historical Task 5 record binds the superseded handoff hashes, its bytes are preserved under an explicitly stale ignored filename and the fixed current record is absent. Task 5 and the Program return to `active`; fresh authorization/runtime evidence and independent re-review remain pending. No build, pull, network, remote, release, deployment, wrapper, or all-files pre-commit action ran. |
+| 2026-07-26 | `T-ORC-005` corrected evidence successor activation | Successor implementation agent | The user's immediately preceding instruction authorizes exactly one corrected-hash positive rehearsal followed by exactly one injected `canary-health-timeout` rehearsal, with task-owned resources and full cleanup only. The canonical successor Task records the no-network/no-pull/no-build and external-action boundary. Runtime remains pending until the clean activation commit and post-activation prerequisite gates pass; the Delivery Task, successor Task, and Program Task remain active and review-pending. |
 
 ## Verification Evidence
 
@@ -260,21 +262,19 @@ Current domain evidence is bounded as follows:
   runtime evidence, and independent re-review.
 
 The earlier Task 6 lifecycle/generated-owner reconciliation remains historical
-evidence. This correction wave reopens only the delivery Task and Program Task;
-the exact current metadata/lifecycle and generated-owner results are recorded
-after their final refresh. Against the historical full base
-`73f4ea68ce51f59ed0ee7baef64a2ebf471501aa`, changed metadata selected 24
-documents with 0 violations, 0 legacy exceptions, and 0 transition overrides.
-Repository metadata contracts and lifecycle contract each returned 0
-violations. Impacted lifecycle selected 221 surfaces with 0 violations and only
-the configured Task-directory budget warning; promoted lifecycle returned 0
-violations. Traceability passed 46/0; alignment passed at 667 stage documents,
-5,522 repository-local Markdown links, and 141 operations documents with 0
-failures. Foundation manifest/summary, audit matrix,
-security-readiness/supply-chain owners, and LLM Wiki index/coverage are fresh.
-Semantic inventory is fresh at 928 records/2,145 advisory findings. The focused
-supply-chain suite passed 63/63 and `git diff --check` passed. The exact-once
-wrapper and direct all-files pre-commit were not rerun.
+evidence. Its exact checkpoint results were 24 changed metadata documents,
+221 impacted lifecycle surfaces, and 63/63 focused supply-chain tests; those
+counts are historical-only. The final correction checkpoint at tracked commit
+`56890859` superseded them with 25 changed metadata documents, 222 impacted
+lifecycle surfaces, and 65/65 focused supply-chain tests, all passing with zero
+violations/failures and only the configured Task-directory budget warning.
+The successor Task introduces a new tracked document, so post-successor counts
+must be freshly measured and recorded after activation rather than inferred
+from either checkpoint. At `56890859`, traceability passed 46/0; alignment
+passed at 667 stage documents, 5,522 repository-local Markdown links, and 141
+operations documents with 0 failures; semantic inventory was fresh at 928
+records/2,145 advisory findings; and canonical generated owners were fresh.
+The exact-once wrapper and direct all-files pre-commit were not rerun.
 
 Terminal quality/security review v3 is `APPROVED C0/I0/M0` for the full
 branch range through `20022458` plus the then-current 26-document reconciliation
@@ -526,4 +526,5 @@ Spec 125-owned and remote delivery remains Spec 127 follow-up scope.
 - [Supply-chain runtime closure Task](./2026-07-23-security-supply-chain-runtime-closure.md)
 - [Infrastructure Task](./2026-07-19-infrastructure-operations-readiness-remediation.md)
 - [Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)
+- [Corrected delivery evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - [Task contract](./README.md)

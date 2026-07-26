@@ -26,7 +26,9 @@ Independent specification and quality/security reviews of the historical Task
 do not cover a new rehearsal against the corrected upstream handoffs. The
 fixed `rehearsal-record.json` path is absent; its prior bytes are preserved
 under an explicitly stale ignored filename. Task 5 remains active pending
-fresh authorization, local rehearsal, evidence reconciliation, and re-review.
+the clean activation of the
+[corrected evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md),
+its exact local rehearsal sequence, evidence reconciliation, and re-review.
 The Program-owned controlled wrapper passed on 2026-07-26 only for its exact
 pre-remediation checkpoint.
 
@@ -108,6 +110,14 @@ Approval source:
 
 - The user approved protected-surface changes and local promotion/rollback
   implementation within the operational-readiness program.
+- The user's immediately preceding 2026-07-26 instruction separately
+  authorizes the bounded corrected-hash sequence recorded by the
+  [successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md):
+  exactly one positive local rehearsal followed by exactly one injected
+  `canary-health-timeout` rehearsal, task-owned resources and full cleanup
+  only, with no network, pull, build, remote, registry, Release,
+  production/shared runtime, credential, secret-value, controlled-wrapper, or
+  direct all-files pre-commit action.
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
   [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md),
   and the active Plan define the exact local rehearsal contract.
@@ -170,6 +180,7 @@ untracked.
 | 2026-07-23 | `T-DRE-004` Task 5 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. The specification review passed delivery 54/54, metadata 6/0 with one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. The quality/security review passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. Neither review ran Docker, Compose, rehearsal, cleanup, advisory, Task 4, the controlled wrapper, pre-commit, or any remote action. |
 | 2026-07-26 | Final lifecycle review remediation | The local promotion/rollback boundary is complete and this Task transitions to `completed`; Release, registry, remote deployment, live environments, credentials, and production targets remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
 | 2026-07-26 | Final-review upstream reconciliation and lifecycle reopen | Delivery implementation remains GREEN at 54/54 against the new Compose/PostgreSQL canonical schemas. The corrected readiness handoff is mode 0600, 1,198 bytes, SHA-256 `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; corrected recovery is mode 0600, 642 bytes, SHA-256 `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`. The historical mode-0600 Task 5 record SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823` binds the superseded hashes `12fbe9fa…` and `bf7109f5…`, so it was not reused. Its bytes were preserved as ignored `rehearsal-record.stale-inputs-2026-07-26.json`, and the fixed current `rehearsal-record.json` path is absent. No Task 5 rehearsal, cleanup, release, deployment, build, pull, network, or remote action ran. This Task returns to `active` pending fresh authorization, runtime evidence, and independent re-review; no current approval or completion is claimed. |
+| 2026-07-26 | Corrected evidence successor activation | The user explicitly authorized one bounded corrected-hash positive rehearsal followed by one injected `canary-health-timeout` rehearsal under the successor Task. Runtime remains pending until that Task has a clean activation commit and its formal prerequisite, focused-suite, and fixture-only preflight gates pass. The Delivery Task, successor Task, and Program Task remain active and review-pending. |
 
 ## Verification Evidence
 
@@ -420,6 +431,7 @@ credential, live-environment, and production expansion.
 - [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [Deployment/release Plan](../plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Program Task](./2026-07-19-operational-readiness-closure-program.md)
+- [Corrected evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - [Compose Task](./2026-07-19-compose-runtime-readiness-remediation.md)
 - [Infrastructure Task](./2026-07-19-infrastructure-operations-readiness-remediation.md)
 - [Supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
