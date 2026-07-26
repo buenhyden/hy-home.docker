@@ -610,6 +610,113 @@ RETIREMENT_SOURCE_PATHS = MappingProxyType(
         "retired-role": CONTRACT_RELATIVE_PATHS["catalog"].as_posix(),
     }
 )
+RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
+    {
+        "model:claude:claude-opus-4-1-20250805": MappingProxyType(
+            {
+                "record_kind": "deprecated-model",
+                "former_id": "claude-opus-4-1-20250805",
+                "provider": "claude",
+                "former_provider_status": "deprecated",
+                "former_normalized_status": "deprecated",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("claude-opus-4-8",),
+                "deprecated_at": "2026-06-05",
+                "shutdown_at": "2026-08-05",
+                "rationale": (
+                    "The deprecated model is migration-only and cannot remain "
+                    "in the active provider contract."
+                ),
+                "source_url": (
+                    "https://platform.claude.com/docs/en/about-claude/"
+                    "model-deprecations"
+                ),
+                "source_retrieved_at": "2026-07-16T01:17:36+09:00",
+            }
+        ),
+        "model:codex:gpt-5.2-codex": MappingProxyType(
+            {
+                "record_kind": "deprecated-model",
+                "former_id": "gpt-5.2-codex",
+                "provider": "codex",
+                "former_provider_status": "deprecated",
+                "former_normalized_status": "deprecated",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("gpt-5.6-terra",),
+                "deprecated_at": "2026-04-22",
+                "shutdown_at": "2026-07-23",
+                "rationale": (
+                    "The deprecated coding model reached shutdown and cannot "
+                    "remain in the active provider contract."
+                ),
+                "source_url": (
+                    "https://developers.openai.com/api/docs/models/"
+                    "gpt-5.2-codex"
+                ),
+                "source_retrieved_at": "2026-07-16T01:17:36+09:00",
+            }
+        ),
+        "model:gemini:gemini-3.1-flash-lite-preview": MappingProxyType(
+            {
+                "record_kind": "deprecated-model",
+                "former_id": "gemini-3.1-flash-lite-preview",
+                "provider": "gemini",
+                "former_provider_status": "deprecated",
+                "former_normalized_status": "deprecated",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("gemini-3.1-flash-lite",),
+                "deprecated_at": None,
+                "shutdown_at": "2026-05-25",
+                "rationale": (
+                    "The shut-down preview is historical and its stable "
+                    "replacement owns active use."
+                ),
+                "source_url": (
+                    "https://ai.google.dev/gemini-api/docs/deprecations"
+                ),
+                "source_retrieved_at": "2026-07-16T01:17:36+09:00",
+            }
+        ),
+        "role:style-enforcer": MappingProxyType(
+            {
+                "record_kind": "retired-role",
+                "former_id": "style-enforcer",
+                "former_status": "retired",
+                "replacement_ids": ("qa-engineer", "rules-engineer"),
+                "replacement_function_ids": ("style-validation",),
+                "retired_at": "2026-07-15",
+                "rationale": (
+                    "QA owns deterministic style validation while rules "
+                    "governance owns policy review."
+                ),
+                "source_url": (
+                    "docs/03.specs/132-agent-governance-harness-convergence/"
+                    "spec.md"
+                ),
+                "source_retrieved_at": "2026-07-15T10:00:00+09:00",
+            }
+        ),
+        "role:wiki-curator": MappingProxyType(
+            {
+                "record_kind": "retired-role",
+                "former_id": "wiki-curator",
+                "former_status": "retired",
+                "replacement_ids": ("doc-writer",),
+                "replacement_function_ids": ("knowledge-map-agent",),
+                "retired_at": "2026-07-15",
+                "rationale": (
+                    "Documentation ownership and the knowledge-map function "
+                    "replace the standalone identity."
+                ),
+                "source_url": (
+                    "docs/03.specs/132-agent-governance-harness-convergence/"
+                    "spec.md"
+                ),
+                "source_retrieved_at": "2026-07-15T10:00:00+09:00",
+            }
+        ),
+    }
+)
 PROVIDER_OFFICIAL_EVIDENCE_HOSTS = MappingProxyType(
     {
         "claude": frozenset({"platform.claude.com"}),
@@ -4238,13 +4345,7 @@ def validate_retirement_ledger(
         and _is_nonempty_string(entry.get("provider"))
         and _is_nonempty_string(entry.get("model_id"))
     }
-    expected_record_ids = {
-        "model:claude:claude-opus-4-1-20250805",
-        "model:codex:gpt-5.2-codex",
-        "model:gemini:gemini-3.1-flash-lite-preview",
-        "role:style-enforcer",
-        "role:wiki-curator",
-    }
+    expected_record_ids = set(RETIREMENT_APPROVED_RECORD_FACTS)
 
     def check_date(value: object, location: str, *, allow_null: bool = False) -> bool:
         if allow_null and value is None:
@@ -4360,6 +4461,30 @@ def validate_retirement_ledger(
                     "record-provenance-mismatch",
                     source,
                 )
+
+            approved_facts = RETIREMENT_APPROVED_RECORD_FACTS.get(str(record_id))
+            if approved_facts is not None:
+                for field in sorted(approved_facts):
+                    approved_value = approved_facts[field]
+                    observed_value = entry.get(field)
+                    if (
+                        isinstance(approved_value, tuple)
+                        and isinstance(observed_value, Sequence)
+                        and not isinstance(
+                            observed_value, (str, bytes, bytearray)
+                        )
+                    ):
+                        observed_value = tuple(observed_value)
+                    if observed_value != approved_value:
+                        _add(
+                            findings,
+                            "AGC-RETIREMENT-LEDGER-FACT-MISMATCH",
+                            path,
+                            f"{location}.{field}",
+                            "exact-approved-record-fact",
+                            "approved-record-fact-mismatch",
+                            source,
+                        )
 
             if kind == "retired-role":
                 if record_id != f"role:{former_id}":

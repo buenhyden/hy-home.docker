@@ -490,6 +490,125 @@ class ProviderContractTests(unittest.TestCase):
 
 
 class RetirementLedgerTests(unittest.TestCase):
+    def test_retirement_ledger_rejects_exact_fact_mutations_without_values(
+        self,
+    ) -> None:
+        mutations = (
+            (
+                "record-kind",
+                "model:claude:claude-opus-4-1-20250805",
+                "record_kind",
+                "retired-role",
+            ),
+            (
+                "former-id",
+                "role:style-enforcer",
+                "former_id",
+                "wiki-curator",
+            ),
+            (
+                "role-replacement",
+                "role:style-enforcer",
+                "replacement_ids",
+                ["doc-writer"],
+            ),
+            (
+                "role-function",
+                "role:style-enforcer",
+                "replacement_function_ids",
+                ["knowledge-map-agent"],
+            ),
+            (
+                "role-retirement-date",
+                "role:wiki-curator",
+                "retired_at",
+                "2026-07-14",
+            ),
+            (
+                "model-provider",
+                "model:claude:claude-opus-4-1-20250805",
+                "provider",
+                "codex",
+            ),
+            (
+                "model-replacement",
+                "model:claude:claude-opus-4-1-20250805",
+                "replacement_ids",
+                ["claude-sonnet-5"],
+            ),
+            (
+                "model-deprecation-date",
+                "model:codex:gpt-5.2-codex",
+                "deprecated_at",
+                "2026-04-21",
+            ),
+            (
+                "model-shutdown-date",
+                "model:gemini:gemini-3.1-flash-lite-preview",
+                "shutdown_at",
+                "2026-05-24",
+            ),
+            (
+                "rationale",
+                "model:gemini:gemini-3.1-flash-lite-preview",
+                "rationale",
+                "A syntactically valid but unapproved rationale.",
+            ),
+            (
+                "official-but-wrong-source-url",
+                "model:codex:gpt-5.2-codex",
+                "source_url",
+                "https://developers.openai.com/api/docs/models/gpt-5.6",
+            ),
+            (
+                "source-retrieval-time",
+                "role:wiki-curator",
+                "source_retrieved_at",
+                "2026-07-15T10:00:01+09:00",
+            ),
+        )
+        for label, record_id, field, mutated_value in mutations:
+            with (
+                self.subTest(case=label),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                path = root / RETIREMENT_LEDGER.relative_to(ROOT)
+                values = yaml.safe_load(path.read_text(encoding="utf-8"))
+                record = next(
+                    entry
+                    for entry in values["records"]
+                    if entry["record_id"] == record_id
+                )
+                self.assertNotEqual(record[field], mutated_value)
+                record[field] = mutated_value
+                path.write_text(
+                    yaml.safe_dump(values, sort_keys=False),
+                    encoding="utf-8",
+                )
+
+                with mock.patch.object(contract, "_html5lib", object()):
+                    bundle = contract.load_contract_bundle(root)
+                    fact_findings = [
+                        finding
+                        for finding in contract.validate_retirement_ledger(
+                            root, bundle
+                        )
+                        if finding.code
+                        == "AGC-RETIREMENT-LEDGER-FACT-MISMATCH"
+                    ]
+
+                self.assertEqual(1, len(fact_findings))
+                self.assertEqual(
+                    "exact-approved-record-fact",
+                    fact_findings[0].expected,
+                )
+                self.assertEqual(
+                    "approved-record-fact-mismatch",
+                    fact_findings[0].actual,
+                )
+
     def test_retirement_ledger_has_exact_replacement_and_git_provenance(self) -> None:
         expected_path = pathlib.PurePosixPath(
             "docs/90.references/data/governance/"
