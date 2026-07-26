@@ -665,21 +665,6 @@ functions:
     provider_projections:
       - agents-md
       - claude
-role_transfers:
-  - retired_agent_id: style-enforcer
-    status: retired
-    successor_agent_ids:
-      - qa-engineer
-    successor_function_ids:
-      - style-validation
-    rationale: Deterministic style and lint routing belongs in QA rather than a standalone persona.
-  - retired_agent_id: wiki-curator
-    status: retired
-    successor_agent_ids:
-      - doc-writer
-    successor_function_ids:
-      - knowledge-map-agent
-    rationale: Index and knowledge freshness are documentation functions, not a separate runtime identity.
 capability_intake:
   - capability_id: code-review
     source: agency-agents

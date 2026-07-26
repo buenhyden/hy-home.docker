@@ -47,6 +47,14 @@ def copy_provider_contract_root(root: pathlib.Path) -> None:
         ROOT / "docs/00.agent-governance",
         root / "docs/00.agent-governance",
     )
+    ledger_source = (
+        ROOT
+        / "docs/90.references/data/governance/"
+        "agent-governance-retirement-ledger.yaml"
+    )
+    ledger_target = root / ledger_source.relative_to(ROOT)
+    ledger_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ledger_source, ledger_target)
     spec_source = (
         ROOT / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
     )
@@ -78,11 +86,15 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                 root / "docs/00.agent-governance",
             )
             path = root / "docs/00.agent-governance/contracts/provider-models.yaml"
-            text = path.read_text(encoding="utf-8").replace(
-                "    runtime_acceptance: rejected\n",
-                "    runtime_acceptance: rejected\n    runtime_acceptance: rejected\n",
+            text = path.read_text(encoding="utf-8")
+            active_model_key = "    model_id: claude-fable-5\n"
+            self.assertEqual(1, text.count(active_model_key))
+            text = text.replace(
+                active_model_key,
+                active_model_key * 2,
                 1,
             )
+            self.assertEqual(2, text.count(active_model_key))
             path.write_text(text, encoding="utf-8")
 
             with self.assertRaises(contract.ContractLoadError) as raised:
@@ -183,13 +195,34 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
 
         self.assertEqual(
             {
-                "deprecated",
                 "limited",
                 "preview",
                 "stable",
                 "unclassified-listed",
             },
             {item["normalized_status"] for item in values["models"]},
+        )
+        retired_model_ids = {
+            "claude-opus-4-1-20250805",
+            "gemini-3.1-flash-lite-preview",
+            "gpt-5.2-codex",
+        }
+        self.assertTrue(
+            retired_model_ids.isdisjoint(
+                {item["model_id"] for item in values["models"]}
+            )
+        )
+        self.assertTrue(
+            retired_model_ids.isdisjoint(
+                {
+                    model_id
+                    for approval in values["fallback_approvals"]
+                    for model_id in (
+                        approval["source_model_id"],
+                        approval["target_model_id"],
+                    )
+                }
+            )
         )
         for item in values["models"]:
             self.assertIn(

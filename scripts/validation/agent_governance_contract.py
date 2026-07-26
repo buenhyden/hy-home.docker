@@ -49,6 +49,9 @@ CONTRACT_RELATIVE_PATHS = MappingProxyType(
         ),
     }
 )
+RETIREMENT_LEDGER_PATH = pathlib.PurePosixPath(
+    "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+)
 
 EXPECTED_AGENT_COUNT = 14
 EXPECTED_FUNCTION_COUNT = 22
@@ -243,7 +246,6 @@ CATALOG_TOP_FIELDS = COMMON_TOP_FIELDS | {
     "permissions",
     "agents",
     "functions",
-    "role_transfers",
     "capability_intake",
     "evaluation",
 }
@@ -341,13 +343,6 @@ FUNCTION_FIELDS = {
     "gates",
     "provider_projections",
 }
-ROLE_TRANSFER_FIELDS = {
-    "retired_agent_id",
-    "status",
-    "successor_agent_ids",
-    "successor_function_ids",
-    "rationale",
-}
 CAPABILITY_INTAKE_FIELDS = {
     "capability_id",
     "source",
@@ -408,6 +403,37 @@ CUTOFF_EVIDENCE_FIELDS = {
     "source_url",
     "published_at",
     "observed_at",
+}
+RETIREMENT_LEDGER_TOP_FIELDS = {
+    "schema_version",
+    "authority",
+    "baseline_commit",
+    "records",
+}
+RETIREMENT_RECORD_COMMON_FIELDS = {
+    "record_id",
+    "record_kind",
+    "former_id",
+    "replacement_ids",
+    "rationale",
+    "source_url",
+    "source_retrieved_at",
+    "source_commit",
+    "source_path",
+    "source_blob",
+}
+RETIRED_ROLE_RECORD_FIELDS = RETIREMENT_RECORD_COMMON_FIELDS | {
+    "former_status",
+    "replacement_function_ids",
+    "retired_at",
+}
+RETIRED_MODEL_RECORD_FIELDS = RETIREMENT_RECORD_COMMON_FIELDS | {
+    "provider",
+    "former_provider_status",
+    "former_normalized_status",
+    "former_repository_default_eligible",
+    "deprecated_at",
+    "shutdown_at",
 }
 MODEL_COMMON_FIELDS = {
     "provider",
@@ -480,7 +506,6 @@ PROVIDER_ADOPTION_STATES = {
 MODEL_STATES = {
     "active",
     "current",
-    "deprecated",
     "generally-available",
     "limited-availability",
     "listed",
@@ -489,7 +514,6 @@ MODEL_STATES = {
 }
 NORMALIZED_MODEL_STATES = {
     "current",
-    "deprecated",
     "limited",
     "preview",
     "stable",
@@ -499,7 +523,7 @@ ENTITLEMENT_STATES = {"available", "needs_revalidation", "unavailable"}
 RUNTIME_ACCEPTANCE_STATES = {"accepted", "needs_revalidation", "rejected"}
 AGENT_CATEGORIES = {"implementation-operations", "review-evaluation", "supervisor"}
 AGENT_TIERS = {"supervisor", "worker"}
-AGENT_STATUSES = {"active", "retired"}
+AGENT_STATUSES = {"active"}
 CAPABILITY_DECISIONS = {"adopt", "defer", "merge", "reject"}
 TIMEOUT_UNITS = {"milliseconds", "seconds"}
 LOCAL_CLI_OBSERVATIONS = {"observed", "unavailable"}
@@ -572,6 +596,19 @@ PROHIBITED_EVIDENCE_FIELDS = (
 FALLBACK_APPROVAL_REFERENCE = (
     "docs/03.specs/132-agent-governance-harness-convergence/"
     "spec.md#approved-fallback-edges"
+)
+RETIREMENT_BASELINE_COMMIT = "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee"
+RETIREMENT_SOURCE_BLOBS = MappingProxyType(
+    {
+        "deprecated-model": "58ee9b29cb0e519a34ff919e1e29791171c458a4",
+        "retired-role": "9f6a0fba4df6d37ab5f1a3390dc57d0dd99e8034",
+    }
+)
+RETIREMENT_SOURCE_PATHS = MappingProxyType(
+    {
+        "deprecated-model": CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+        "retired-role": CONTRACT_RELATIVE_PATHS["catalog"].as_posix(),
+    }
 )
 PROVIDER_OFFICIAL_EVIDENCE_HOSTS = MappingProxyType(
     {
@@ -1992,6 +2029,16 @@ def _validate_catalog_contract(
 ) -> None:
     path = CONTRACT_RELATIVE_PATHS["catalog"].as_posix()
     source = path
+    if "role_transfers" in document:
+        _add(
+            findings,
+            "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+            path,
+            "role_transfers",
+            "historical-state-in-stage-90",
+            "historical-state-in-active-contract",
+            source,
+        )
     _check_common(document, CATALOG_TOP_FIELDS, path, findings)
     projections = (
         _check_string_list(
@@ -2105,8 +2152,19 @@ def _validate_catalog_contract(
                 findings,
                 source,
             )
+            status = entry.get("status")
+            if status == "retired":
+                _add(
+                    findings,
+                    "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+                    path,
+                    f"{location}.status",
+                    "active-status-only",
+                    "historical-status-in-active-contract",
+                    source,
+                )
             _check_enum(
-                entry.get("status"),
+                status,
                 AGENT_STATUSES,
                 path,
                 f"{location}.status",
@@ -2203,8 +2261,19 @@ def _validate_catalog_contract(
                 function_ids.append(str(function_id))
             if not _is_registered_string(entry.get("scope"), scopes):
                 _unknown_reference(findings, path, f"{location}.scope", source)
+            status = entry.get("status")
+            if status == "retired":
+                _add(
+                    findings,
+                    "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+                    path,
+                    f"{location}.status",
+                    "active-status-only",
+                    "historical-status-in-active-contract",
+                    source,
+                )
             _check_enum(
-                entry.get("status"),
+                status,
                 AGENT_STATUSES,
                 path,
                 f"{location}.status",
@@ -2466,78 +2535,6 @@ def _validate_catalog_contract(
                 "agent-function-mismatch",
                 source,
             )
-
-    transfers = _as_sequence(
-        document.get("role_transfers"), path, "role_transfers", findings, source
-    )
-    transfer_ids: list[str] = []
-    if transfers is not None:
-        for index, raw in enumerate(transfers):
-            location = f"role_transfers[{index}]"
-            entry = _check_fields(
-                raw, ROLE_TRANSFER_FIELDS, path, location, findings, source
-            )
-            if entry is None:
-                continue
-            retired = entry.get("retired_agent_id")
-            if _check_string(
-                retired, path, f"{location}.retired_agent_id", findings, source
-            ):
-                transfer_ids.append(str(retired))
-                if retired in agent_set:
-                    _add(
-                        findings,
-                        "AGC-CATALOG-RETIRED-ACTIVE",
-                        path,
-                        f"{location}.retired_agent_id",
-                        "retired-id-absent-from-active-catalog",
-                        "retired-id-active",
-                        source,
-                    )
-            _check_enum(
-                entry.get("status"),
-                {"retired"},
-                path,
-                f"{location}.status",
-                findings,
-                source,
-            )
-            successors = (
-                _check_string_list(
-                    entry.get("successor_agent_ids"),
-                    path,
-                    f"{location}.successor_agent_ids",
-                    findings,
-                    source,
-                    require_sorted=True,
-                )
-                or ()
-            )
-            successor_functions = (
-                _check_string_list(
-                    entry.get("successor_function_ids"),
-                    path,
-                    f"{location}.successor_function_ids",
-                    findings,
-                    source,
-                    require_sorted=True,
-                )
-                or ()
-            )
-            for successor in successors:
-                if successor not in agent_set:
-                    _unknown_reference(
-                        findings, path, f"{location}.successor_agent_ids", source
-                    )
-            for function_id in successor_functions:
-                if function_id not in function_set:
-                    _unknown_reference(
-                        findings, path, f"{location}.successor_function_ids", source
-                    )
-            _check_string(
-                entry.get("rationale"), path, f"{location}.rationale", findings, source
-            )
-    _check_sorted_unique_ids(transfer_ids, path, "role_transfers", findings, source)
 
     intake = _as_sequence(
         document.get("capability_intake"), path, "capability_intake", findings, source
@@ -3180,6 +3177,28 @@ def _validate_provider_contract(
                 continue
             provider = entry.get("provider")
             model_id = entry.get("model_id")
+            historical_field = next(
+                (
+                    field
+                    for field in (
+                        "provider_lifecycle",
+                        "provider_status",
+                        "normalized_status",
+                    )
+                    if entry.get(field) in {"deprecated", "retired"}
+                ),
+                None,
+            )
+            if historical_field is not None:
+                _add(
+                    findings,
+                    "AGC-MODEL-HISTORICAL-STATE-ACTIVE",
+                    path,
+                    f"{location}.{historical_field}",
+                    "active-model-lifecycle-only",
+                    "historical-lifecycle-in-active-contract",
+                    source,
+                )
             if not _is_registered_string(provider, provider_set):
                 _unknown_reference(findings, path, f"{location}.provider", source)
             if _check_string(model_id, path, f"{location}.model_id", findings, source):
@@ -3226,7 +3245,6 @@ def _validate_provider_contract(
             expected_normalized = {
                 "active": "stable",
                 "current": "stable",
-                "deprecated": "deprecated",
                 "generally-available": "stable",
                 "limited-availability": "limited",
                 "listed": "unclassified-listed",
@@ -4137,6 +4155,367 @@ def _validate_provider_contract(
     _check_sorted_unique_ids(event_ids, path, "semantic_events", findings, source)
 
 
+def validate_retirement_ledger(
+    root: pathlib.Path, bundle: ContractBundle
+) -> list[Finding]:
+    """Validate bounded Stage 90 history against the active contract bundle."""
+
+    path = RETIREMENT_LEDGER_PATH.as_posix()
+    source = path
+    findings: list[Finding] = []
+    try:
+        document = _load_yaml(root, RETIREMENT_LEDGER_PATH)
+    except ContractLoadError as error:
+        return [
+            Finding(
+                error.code,
+                error.path,
+                error.location,
+                "readable-retirement-ledger",
+                "retirement-ledger-load-failed",
+                source,
+            )
+        ]
+
+    _check_fields(
+        document,
+        RETIREMENT_LEDGER_TOP_FIELDS,
+        path,
+        "root",
+        findings,
+        source,
+    )
+    if document.get("schema_version") != 1:
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-SCHEMA",
+            path,
+            "schema_version",
+            "schema-version-1",
+            "unsupported-schema-version",
+            source,
+        )
+    if document.get("authority") != "historical-evidence":
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-AUTHORITY",
+            path,
+            "authority",
+            "historical-evidence",
+            "wrong-ledger-authority",
+            source,
+        )
+    if document.get("baseline_commit") != RETIREMENT_BASELINE_COMMIT:
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-PROVENANCE",
+            path,
+            "baseline_commit",
+            "exact-approved-baseline-commit",
+            "baseline-commit-mismatch",
+            source,
+        )
+
+    active_agents = {
+        str(entry.get("agent_id"))
+        for entry in _sequence_or_empty(bundle.catalog.get("agents"))
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("agent_id"))
+    }
+    active_functions = {
+        str(entry.get("function_id"))
+        for entry in _sequence_or_empty(bundle.catalog.get("functions"))
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("function_id"))
+    }
+    active_providers = {
+        str(entry.get("provider_id"))
+        for entry in _sequence_or_empty(bundle.providers.get("providers"))
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("provider_id"))
+    }
+    active_models = {
+        (str(entry.get("provider")), str(entry.get("model_id")))
+        for entry in _sequence_or_empty(bundle.providers.get("models"))
+        if isinstance(entry, Mapping)
+        and _is_nonempty_string(entry.get("provider"))
+        and _is_nonempty_string(entry.get("model_id"))
+    }
+    expected_record_ids = {
+        "model:claude:claude-opus-4-1-20250805",
+        "model:codex:gpt-5.2-codex",
+        "model:gemini:gemini-3.1-flash-lite-preview",
+        "role:style-enforcer",
+        "role:wiki-curator",
+    }
+
+    def check_date(value: object, location: str, *, allow_null: bool = False) -> bool:
+        if allow_null and value is None:
+            return True
+        try:
+            parsed = dt.date.fromisoformat(str(value))
+        except ValueError:
+            parsed = None
+        if parsed is not None and isinstance(value, str):
+            return True
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-DATE",
+            path,
+            location,
+            "iso-date" if not allow_null else "iso-date-or-null",
+            "invalid-retirement-date",
+            source,
+        )
+        return False
+
+    records = _as_sequence(
+        document.get("records"), path, "records", findings, source
+    )
+    record_ids: list[str] = []
+    if records is not None:
+        for index, raw in enumerate(records):
+            location = f"records[{index}]"
+            kind = raw.get("record_kind") if isinstance(raw, Mapping) else None
+            expected_fields = (
+                RETIRED_ROLE_RECORD_FIELDS
+                if kind == "retired-role"
+                else RETIRED_MODEL_RECORD_FIELDS
+                if kind == "deprecated-model"
+                else RETIREMENT_RECORD_COMMON_FIELDS
+            )
+            entry = _check_fields(
+                raw, expected_fields, path, location, findings, source
+            )
+            if entry is None:
+                continue
+            _check_enum(
+                kind,
+                {"deprecated-model", "retired-role"},
+                path,
+                f"{location}.record_kind",
+                findings,
+                source,
+                code="AGC-RETIREMENT-LEDGER-KIND",
+            )
+            record_id = entry.get("record_id")
+            former_id = entry.get("former_id")
+            if _check_string(
+                record_id, path, f"{location}.record_id", findings, source
+            ):
+                record_ids.append(str(record_id))
+            _check_string(
+                former_id, path, f"{location}.former_id", findings, source
+            )
+            replacements = (
+                _check_string_list(
+                    entry.get("replacement_ids"),
+                    path,
+                    f"{location}.replacement_ids",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
+            _check_string(
+                entry.get("rationale"),
+                path,
+                f"{location}.rationale",
+                findings,
+                source,
+            )
+            _check_string(
+                entry.get("source_url"),
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
+            _check_checked_at(
+                entry.get("source_retrieved_at"),
+                path,
+                f"{location}.source_retrieved_at",
+                findings,
+                source,
+            )
+            for field in ("source_commit", "source_path", "source_blob"):
+                _check_string(
+                    entry.get(field),
+                    path,
+                    f"{location}.{field}",
+                    findings,
+                    source,
+                )
+            expected_blob = RETIREMENT_SOURCE_BLOBS.get(str(kind))
+            expected_path = RETIREMENT_SOURCE_PATHS.get(str(kind))
+            if (
+                entry.get("source_commit") != RETIREMENT_BASELINE_COMMIT
+                or entry.get("source_blob") != expected_blob
+                or entry.get("source_path") != expected_path
+            ):
+                _add(
+                    findings,
+                    "AGC-RETIREMENT-LEDGER-PROVENANCE",
+                    path,
+                    location,
+                    "exact-baseline-commit-path-blob",
+                    "record-provenance-mismatch",
+                    source,
+                )
+
+            if kind == "retired-role":
+                if record_id != f"role:{former_id}":
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-IDENTITY",
+                        path,
+                        f"{location}.record_id",
+                        "role-record-id-matches-former-id",
+                        "role-record-id-mismatch",
+                        source,
+                    )
+                if entry.get("former_status") != "retired":
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-STATE",
+                        path,
+                        f"{location}.former_status",
+                        "retired",
+                        "wrong-former-role-state",
+                        source,
+                    )
+                check_date(entry.get("retired_at"), f"{location}.retired_at")
+                replacement_functions = (
+                    _check_string_list(
+                        entry.get("replacement_function_ids"),
+                        path,
+                        f"{location}.replacement_function_ids",
+                        findings,
+                        source,
+                        require_sorted=True,
+                    )
+                    or ()
+                )
+                if isinstance(former_id, str) and former_id in active_agents:
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-ACTIVE-CONFLICT",
+                        path,
+                        f"{location}.former_id",
+                        "retired-role-absent-from-active-catalog",
+                        "retired-role-still-active",
+                        source,
+                    )
+                for replacement in replacements:
+                    if replacement not in active_agents:
+                        _unknown_reference(
+                            findings, path, f"{location}.replacement_ids", source
+                        )
+                for function_id in replacement_functions:
+                    if function_id not in active_functions:
+                        _unknown_reference(
+                            findings,
+                            path,
+                            f"{location}.replacement_function_ids",
+                            source,
+                        )
+            elif kind == "deprecated-model":
+                provider = entry.get("provider")
+                if not _is_registered_string(provider, active_providers):
+                    _unknown_reference(
+                        findings, path, f"{location}.provider", source
+                    )
+                if record_id != f"model:{provider}:{former_id}":
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-IDENTITY",
+                        path,
+                        f"{location}.record_id",
+                        "model-record-id-matches-provider-and-former-id",
+                        "model-record-id-mismatch",
+                        source,
+                    )
+                for field in ("former_provider_status", "former_normalized_status"):
+                    if entry.get(field) != "deprecated":
+                        _add(
+                            findings,
+                            "AGC-RETIREMENT-LEDGER-STATE",
+                            path,
+                            f"{location}.{field}",
+                            "deprecated",
+                            "wrong-former-model-state",
+                            source,
+                        )
+                if entry.get("former_repository_default_eligible") is not False:
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-STATE",
+                        path,
+                        f"{location}.former_repository_default_eligible",
+                        "false",
+                        "retired-model-was-default-eligible",
+                        source,
+                    )
+                deprecated_valid = check_date(
+                    entry.get("deprecated_at"),
+                    f"{location}.deprecated_at",
+                    allow_null=True,
+                )
+                shutdown_valid = check_date(
+                    entry.get("shutdown_at"),
+                    f"{location}.shutdown_at",
+                    allow_null=True,
+                )
+                if (
+                    deprecated_valid
+                    and shutdown_valid
+                    and entry.get("deprecated_at") is None
+                    and entry.get("shutdown_at") is None
+                ):
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-DATE",
+                        path,
+                        location,
+                        "deprecation-or-shutdown-date",
+                        "missing-retirement-date",
+                        source,
+                    )
+                if (
+                    isinstance(provider, str)
+                    and isinstance(former_id, str)
+                    and (provider, former_id) in active_models
+                ):
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-ACTIVE-CONFLICT",
+                        path,
+                        f"{location}.former_id",
+                        "retired-model-absent-from-active-contract",
+                        "retired-model-still-active",
+                        source,
+                    )
+                for replacement in replacements:
+                    if not isinstance(provider, str) or (
+                        provider,
+                        replacement,
+                    ) not in active_models:
+                        _unknown_reference(
+                            findings, path, f"{location}.replacement_ids", source
+                        )
+
+    _check_sorted_unique_ids(record_ids, path, "records", findings, source)
+    if set(record_ids) != expected_record_ids:
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-CARDINALITY",
+            path,
+            "records",
+            "exact-approved-retirement-record-set",
+            "retirement-record-set-mismatch",
+            source,
+        )
+    return sorted(findings, key=finding_sort_key)
+
+
 def validate_contract_bundle(
     root: pathlib.Path, bundle: ContractBundle
 ) -> list[Finding]:
@@ -4148,6 +4527,7 @@ def validate_contract_bundle(
     _validate_catalog_contract(
         bundle.catalog, bundle.providers, bundle.artifacts, findings
     )
+    findings.extend(validate_retirement_ledger(root, bundle))
     return sorted(findings, key=finding_sort_key)
 
 

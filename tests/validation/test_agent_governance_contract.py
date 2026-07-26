@@ -11,6 +11,7 @@ import sys
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from collections.abc import Mapping
 from unittest import mock
 
 import yaml
@@ -20,6 +21,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts/validation/check-agent-governance-contract.py"
 MODULE = ROOT / "scripts/validation/agent_governance_contract.py"
 CONTRACT_DIR = ROOT / "docs/00.agent-governance/contracts"
+RETIREMENT_LEDGER = (
+    ROOT
+    / "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+)
 CONTRACT_FILES = (
     "agent-governance-artifacts.yaml",
     "agent-catalog.yaml",
@@ -39,6 +44,9 @@ def copy_contracts(root: pathlib.Path) -> None:
     target.mkdir(parents=True, exist_ok=True)
     for name in CONTRACT_FILES:
         shutil.copy2(CONTRACT_DIR / name, target / name)
+    ledger_target = root / RETIREMENT_LEDGER.relative_to(ROOT)
+    ledger_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(RETIREMENT_LEDGER, ledger_target)
 
 
 def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
@@ -208,6 +216,36 @@ class ContractLoadingTests(unittest.TestCase):
                 contract.load_contract_bundle(root)
             self.assertEqual("AGC-YAML-DUPLICATE-KEY", context.exception.code)
             self.assertNotIn("999", str(context.exception))
+
+    def test_duplicate_agent_entry_key_fails_closed_without_values(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            path = root / "docs/00.agent-governance/contracts/agent-catalog.yaml"
+            original = (
+                "  - agent_id: skill-creator\n"
+                "    category: implementation-operations\n"
+                "    scope: agentic\n"
+            )
+            duplicate = (
+                "  - agent_id: skill-creator\n"
+                "    category: implementation-operations\n"
+                "    scope: duplicate-scope-first\n"
+                "    scope: duplicate-scope-second\n"
+            )
+            text = path.read_text(encoding="utf-8")
+            self.assertEqual(1, text.count(original))
+            path.write_text(text.replace(original, duplicate, 1), encoding="utf-8")
+
+            with (
+                mock.patch.object(contract, "_html5lib", object()),
+                self.assertRaises(contract.ContractLoadError) as context,
+            ):
+                contract.load_contract_bundle(root)
+
+            self.assertEqual("AGC-YAML-DUPLICATE-KEY", context.exception.code)
+            self.assertNotIn("duplicate-scope-first", str(context.exception))
+            self.assertNotIn("duplicate-scope-second", str(context.exception))
 
     def test_non_string_yaml_key_collision_is_rejected_before_freeze(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -394,6 +432,118 @@ class ContractLoadingTests(unittest.TestCase):
                 self.assertNotIn(str(outside), str(outside_context.exception))
             finally:
                 outside.unlink(missing_ok=True)
+
+
+class CatalogContractTests(unittest.TestCase):
+    def test_active_catalog_forbids_role_transfers_and_retired_status(self) -> None:
+        mutations = (
+            lambda values: values.__setitem__(
+                "role_transfers",
+                [
+                    {
+                        "retired_agent_id": "historical-role",
+                        "status": "retired",
+                        "successor_agent_ids": ["qa-engineer"],
+                        "successor_function_ids": ["style-validation"],
+                        "rationale": "historical fixture",
+                    }
+                ],
+            ),
+            lambda values: values["agents"][0].__setitem__("status", "retired"),
+        )
+        for mutate in mutations:
+            with (
+                self.subTest(mutate=mutate),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(root, "agent-catalog.yaml", mutate)
+
+                with mock.patch.object(contract, "_html5lib", object()):
+                    self.assertIn(
+                        "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+                        codes(validate_fixture(root)),
+                    )
+
+
+class ProviderContractTests(unittest.TestCase):
+    def test_active_provider_contract_forbids_deprecated_models(self) -> None:
+        for lifecycle in ("deprecated", "retired"):
+            with (
+                self.subTest(lifecycle=lifecycle),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+
+                def mutate(values, lifecycle=lifecycle) -> None:
+                    values["models"][0]["provider_lifecycle"] = lifecycle
+
+                mutate_yaml(root, "provider-models.yaml", mutate)
+
+                with mock.patch.object(contract, "_html5lib", object()):
+                    self.assertIn(
+                        "AGC-MODEL-HISTORICAL-STATE-ACTIVE",
+                        codes(validate_fixture(root)),
+                    )
+
+
+class RetirementLedgerTests(unittest.TestCase):
+    def test_retirement_ledger_has_exact_replacement_and_git_provenance(self) -> None:
+        expected_path = pathlib.PurePosixPath(
+            "docs/90.references/data/governance/"
+            "agent-governance-retirement-ledger.yaml"
+        )
+        self.assertEqual(expected_path, contract.RETIREMENT_LEDGER_PATH)
+        values = contract._load_yaml(ROOT, contract.RETIREMENT_LEDGER_PATH)
+        records = {
+            entry["record_id"]: entry
+            for entry in values["records"]
+            if isinstance(entry, Mapping)
+        }
+        expected_replacements = {
+            "model:claude:claude-opus-4-1-20250805": ("claude-opus-4-8",),
+            "model:codex:gpt-5.2-codex": ("gpt-5.6-terra",),
+            "model:gemini:gemini-3.1-flash-lite-preview": (
+                "gemini-3.1-flash-lite",
+            ),
+            "role:style-enforcer": ("qa-engineer", "rules-engineer"),
+            "role:wiki-curator": ("doc-writer",),
+        }
+        expected_blobs = {
+            "deprecated-model": "58ee9b29cb0e519a34ff919e1e29791171c458a4",
+            "retired-role": "9f6a0fba4df6d37ab5f1a3390dc57d0dd99e8034",
+        }
+        baseline_commit = "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee"
+
+        self.assertEqual(set(expected_replacements), set(records))
+        self.assertEqual(baseline_commit, values["baseline_commit"])
+        for record_id, replacement_ids in expected_replacements.items():
+            with self.subTest(record_id=record_id):
+                record = records[record_id]
+                self.assertEqual(replacement_ids, record["replacement_ids"])
+                self.assertEqual(baseline_commit, record["source_commit"])
+                self.assertEqual(
+                    expected_blobs[record["record_kind"]],
+                    record["source_blob"],
+                )
+                observed_blob = subprocess.run(
+                    [
+                        "git",
+                        "rev-parse",
+                        f"{record['source_commit']}:{record['source_path']}",
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout.strip()
+                self.assertEqual(record["source_blob"], observed_blob)
+
+        with mock.patch.object(contract, "_html5lib", object()):
+            bundle = contract.load_contract_bundle(ROOT)
+            self.assertEqual([], contract.validate_retirement_ledger(ROOT, bundle))
 
 
 class ContractSchemaTests(unittest.TestCase):
@@ -970,7 +1120,6 @@ class ContractSchemaTests(unittest.TestCase):
             def mutate(values) -> None:
                 values["agents"][0]["function_ids"] = ["missing-function"]
                 values["functions"][0]["owner_agent"] = "missing-agent"
-                values["role_transfers"][0]["successor_agent_ids"] = ["missing-agent"]
 
             mutate_yaml(root, "agent-catalog.yaml", mutate)
             findings = validate_fixture(root)
@@ -984,7 +1133,6 @@ class ContractSchemaTests(unittest.TestCase):
                     "agents.ci-cd-engineer.function_ids",
                     "functions[0].owner_agent",
                     "path_authority[0].entry_reviewers[0].agent_field",
-                    "role_transfers[0].successor_agent_ids",
                 }
                 <= locations,
                 locations,
@@ -1235,10 +1383,7 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
         self.assertEqual(self.EXPECTED_CATEGORIES, category_members)
         self.assertEqual(14, sum(len(members) for members in category_members.values()))
         self.assertEqual(22, len(bundle.catalog["functions"]))
-        self.assertEqual(
-            {"style-enforcer", "wiki-curator"},
-            {entry["retired_agent_id"] for entry in bundle.catalog["role_transfers"]},
-        )
+        self.assertNotIn("role_transfers", bundle.catalog)
         agent_functions = {
             entry["agent_id"]: set(entry["function_ids"])
             for entry in bundle.catalog["agents"]

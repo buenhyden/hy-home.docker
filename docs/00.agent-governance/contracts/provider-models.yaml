@@ -109,12 +109,6 @@ fallback_approvals:
       - complex-implementation
       - supervision
     reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:claude:claude-opus-4-1-20250805-to-claude-opus-4-8
-    provider: claude
-    source_model_id: claude-opus-4-1-20250805
-    target_model_id: claude-opus-4-8
-    work_profiles: []
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
   - approval_id: fallback:claude:claude-opus-4-8-to-claude-sonnet-5
     provider: claude
     source_model_id: claude-opus-4-8
@@ -128,12 +122,6 @@ fallback_approvals:
     target_model_id: claude-opus-4-8
     work_profiles:
       - complex-implementation
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:codex:gpt-5.2-codex-to-gpt-5.6-terra
-    provider: codex
-    source_model_id: gpt-5.2-codex
-    target_model_id: gpt-5.6-terra
-    work_profiles: []
     reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
   - approval_id: fallback:codex:gpt-5.6-terra-to-gpt-5.6
     provider: codex
@@ -149,12 +137,6 @@ fallback_approvals:
     work_profiles:
       - complex-implementation
       - supervision
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:gemini:gemini-3.1-flash-lite-preview-to-gemini-3.1-flash-lite
-    provider: gemini
-    source_model_id: gemini-3.1-flash-lite-preview
-    target_model_id: gemini-3.1-flash-lite
-    work_profiles: []
     reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
   - approval_id: fallback:gemini:gemini-3.1-flash-lite-to-gemini-3.5-flash
     provider: gemini
@@ -270,30 +252,6 @@ models:
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
   - provider: claude
-    model_id: claude-opus-4-1-20250805
-    canonical_model_id: claude-opus-4-1-20250805
-    provider_status: deprecated
-    normalized_status: deprecated
-    repository_default_eligible: false
-    entitlement: unavailable
-    runtime_acceptance: rejected
-    thinking_control_kind: extended-thinking
-    supported_thinking_controls: []
-    repository_thinking_controls: []
-    supported_effort_controls: []
-    repository_effort_controls: []
-    work_profiles: []
-    agent_coding_fit: historical
-    task_characteristics:
-      - migration-only
-    fallback: claude-opus-4-8
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:claude:claude-opus-4-1-20250805-to-claude-opus-4-8
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/model-deprecations
-  - provider: claude
     model_id: claude-opus-4-8
     canonical_model_id: claude-opus-4-8
     provider_status: active
@@ -365,28 +323,6 @@ models:
     cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
-  - provider: codex
-    model_id: gpt-5.2-codex
-    canonical_model_id: gpt-5.2-codex
-    provider_status: deprecated
-    normalized_status: deprecated
-    repository_default_eligible: false
-    entitlement: unavailable
-    runtime_acceptance: rejected
-    reasoning_control_kind: reasoning-effort
-    supported_reasoning_controls: []
-    repository_reasoning_controls: []
-    work_profiles: []
-    agent_coding_fit: historical
-    task_characteristics:
-      - migration-only
-    fallback: gpt-5.6-terra
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:codex:gpt-5.2-codex-to-gpt-5.6-terra
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://developers.openai.com/api/docs/models/gpt-5.2-codex
   - provider: codex
     model_id: gpt-5.3-codex-spark
     canonical_model_id: gpt-5.3-codex-spark
@@ -510,28 +446,6 @@ models:
     cutoff_evidence_id: null
     checked_at: "2026-07-16T01:17:36+09:00"
     source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
-  - provider: gemini
-    model_id: gemini-3.1-flash-lite-preview
-    canonical_model_id: gemini-3.1-flash-lite-preview
-    provider_status: deprecated
-    normalized_status: deprecated
-    repository_default_eligible: false
-    entitlement: unavailable
-    runtime_acceptance: rejected
-    reasoning_control_kind: thinking-level
-    supported_reasoning_controls: []
-    repository_reasoning_controls: []
-    work_profiles: []
-    agent_coding_fit: historical
-    task_characteristics:
-      - migration-only
-    fallback: gemini-3.1-flash-lite
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:gemini:gemini-3.1-flash-lite-preview-to-gemini-3.1-flash-lite
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/deprecations
   - provider: gemini
     model_id: gemini-3.1-pro-preview
     canonical_model_id: gemini-3.1-pro-preview
