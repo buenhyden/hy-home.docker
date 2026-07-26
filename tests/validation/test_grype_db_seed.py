@@ -27,6 +27,9 @@ GRYPE_TOOL = {
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
     ),
     "config_id": (
+        "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0"
+    ),
+    "target_descriptor_digest": (
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
     ),
 }
@@ -89,6 +92,21 @@ class GrypeDbSeedHarnessContractTests(unittest.TestCase):
         self.assertNotIn("docker system prune", text)
         self.assertNotIn("docker volume prune", text)
         self.assertNotIn("docker network prune", text)
+
+    def test_harness_separates_target_descriptor_from_config_digest(self) -> None:
+        text = HARNESS_PATH.read_text(encoding="utf-8")
+        self.assertIn(
+            f'readonly GRYPE_TARGET_DESCRIPTOR_DIGEST="{GRYPE_TOOL["target_descriptor_digest"]}"',
+            text,
+        )
+        self.assertIn(
+            f'readonly GRYPE_CONFIG_ID="{GRYPE_TOOL["config_id"]}"',
+            text,
+        )
+        self.assertNotEqual(
+            GRYPE_TOOL["target_descriptor_digest"],
+            GRYPE_TOOL["config_id"],
+        )
 
 
 class GrypeDbSeedPublicationTests(unittest.TestCase):

@@ -50,6 +50,20 @@ EXPECTED_IMAGES = {
         "sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
     ),
 }
+EXPECTED_CONFIG_DIGESTS = {
+    "quay.io/keycloak/keycloak": (
+        "sha256:1361d6e492058a69d979ab735cfc19e73e5f1e0a707e8fa5cfb610c00bc3cff2"
+    ),
+    "quay.io/oauth2-proxy/oauth2-proxy": (
+        "sha256:cf3a5d50849b1799260d6aca62367c333b33472f208cbbdaab243a831b1a622f"
+    ),
+    "traefik": (
+        "sha256:7982c57cc89de38c6ca9e3f17caa0569890d2043f6f5271c78ad75a2cff50f32"
+    ),
+    "hashicorp/vault": (
+        "sha256:1747a4ab1e1bea8938269b23827165c5d80eecbdb5c115fd58e6380569537c84"
+    ),
+}
 
 
 class ComposeCoreReadinessContractTests(unittest.TestCase):
@@ -80,6 +94,7 @@ class ComposeCoreReadinessContractTests(unittest.TestCase):
         evidence_dir: Path,
         *,
         fail_at: str = "",
+        service_state: str = "healthy",
     ) -> subprocess.CompletedProcess[str]:
         runtime_dir = evidence_dir.parent / "runtime"
         shell = f"""
@@ -128,7 +143,7 @@ prepare_vault_agent_output_volume() {{ :; }}
 start_remaining_services() {{ :; }}
 collect_service_states() {{
   printf '%s\n' '{{
-    "keycloak": {{"container": "healthy"}},
+    "keycloak": {{"container": "{service_state}"}},
     "oauth2-proxy": {{"container": "healthy"}},
     "traefik": {{"container": "healthy"}},
     "vault": {{"container": "healthy"}},
@@ -152,6 +167,33 @@ main --scenario {scenario}
             capture_output=True,
             check=False,
         )
+
+    def test_successful_endpoints_cannot_publish_ready_with_unhealthy_service(
+        self,
+    ) -> None:
+        expected_exit = {
+            "startup-readiness": 30,
+            "vault-restart-recovery": 40,
+        }
+        for scenario, exit_code in expected_exit.items():
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as raw:
+                evidence = Path(raw) / "evidence"
+                result = self.run_stubbed_scenario(
+                    scenario,
+                    evidence,
+                    service_state="unhealthy",
+                )
+                self.assertEqual(
+                    exit_code,
+                    result.returncode,
+                    result.stdout + result.stderr,
+                )
+                verdict = json.loads(
+                    (evidence / "readiness-verdict.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                self.assertEqual("failed", verdict["overall_status"])
 
     @staticmethod
     def isolated_model(*, services: set[str] | None = None) -> dict[str, object]:
@@ -688,6 +730,21 @@ on_exit
             },
         )
         self.assertEqual(0, valid.returncode, valid.stderr)
+
+    def test_production_image_tuples_type_target_and_config_independently(
+        self,
+    ) -> None:
+        result = self.run_library(
+            "printf '%s\\n' \"${CRR_EXPECTED_IMAGE_IDENTITIES[@]}\""
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        rows = [row.split("|") for row in result.stdout.splitlines()]
+        self.assertEqual(4, len(rows))
+        for image_ref, repo_digest, target_digest, config_digest in rows:
+            image_name = image_ref.split("@", maxsplit=1)[0]
+            self.assertEqual(repo_digest.split("@", maxsplit=1)[1], target_digest)
+            self.assertEqual(EXPECTED_CONFIG_DIGESTS[image_name], config_digest)
+            self.assertNotEqual(target_digest, config_digest)
 
     def test_local_image_identity_gate_rejects_manifest_mismatch(self) -> None:
         manifest_digest = "sha256:" + "1" * 64

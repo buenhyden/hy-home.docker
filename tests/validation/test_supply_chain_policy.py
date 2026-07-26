@@ -40,8 +40,35 @@ RUNTIME_MATERIAL_REPO_DIGEST = (
     "sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
 )
 RUNTIME_MATERIAL_CONFIG_ID = (
+    "sha256:9c57576567614e37b77581f70984d5fbb8595b1409882bd08ae31a38a4f4b071"
+)
+RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST = (
     "sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
 )
+BUILD_MATERIAL_CONFIG_ID = (
+    "sha256:2607caa9805847fac4de202017bb1b830deb09f4c07dc9964a0157abbc604577"
+)
+BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST = (
+    "sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+)
+OBSERVED_TOOL_IDENTITIES = {
+    "syft": (
+        "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
+        "sha256:3567af297260e786440f30d149c2846302fd1df0823ee769d8b167d068f7d181",
+    ),
+    "grype": (
+        "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
+        "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0",
+    ),
+    "cosign": (
+        "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
+        "sha256:4221e0d9d429afa26a9f1b8bc8f0ba2c9af470f7b495d845c31ac982a5d1182b",
+    ),
+    "scorecard": (
+        "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
+        "sha256:6b05eb0cfef8a6df4f78dae40cbbe8b18da1ec881c4c70a14796201a122a3491",
+    ),
+}
 STALE_RUNTIME_MATERIAL = "nginxinc/nginx-unprivileged:1.27.3-alpine"
 
 SOURCE_REVISION = "0123456789abcdef0123456789abcdef01234567"
@@ -86,6 +113,18 @@ class SupplyChainPolicyTests(unittest.TestCase):
     def test_tool_manifest_pins_are_exact(self) -> None:
         registry = self.checker.load_json(TOOL_REGISTRY)
         self.assertEqual([], self.checker.validate_tool_registry(registry))
+        by_name = {row["name"]: row for row in registry["tools"]}
+        for name, (target_digest, config_digest) in OBSERVED_TOOL_IDENTITIES.items():
+            with self.subTest(name=name):
+                self.assertEqual(
+                    target_digest,
+                    by_name[name]["target_descriptor_digest"],
+                )
+                self.assertEqual(config_digest, by_name[name]["config_id"])
+                self.assertNotEqual(
+                    by_name[name]["target_descriptor_digest"],
+                    by_name[name]["config_id"],
+                )
 
         digestless = copy.deepcopy(registry)
         digestless["tools"][0]["digest"] = ""
@@ -100,6 +139,59 @@ class SupplyChainPolicyTests(unittest.TestCase):
             "tool-config-id-invalid",
             self.checker.validate_tool_registry(configless),
         )
+
+    def test_private_docker_save_config_body_is_hashed_independently(self) -> None:
+        config_body = b'{"architecture":"amd64","os":"linux","rootfs":{"type":"layers","diff_ids":[]}}'
+        config_digest = "sha256:" + hashlib.sha256(config_body).hexdigest()
+        with tempfile.TemporaryDirectory(prefix="docker-save-config-", dir="/tmp") as raw:
+            directory = pathlib.Path(raw)
+            directory.chmod(0o700)
+            archive_path = directory / "image.tar"
+            manifest_body = json.dumps(
+                [
+                    {
+                        "Config": f"{config_digest.removeprefix('sha256:')}.json",
+                        "Layers": [],
+                        "RepoTags": [],
+                    }
+                ],
+                separators=(",", ":"),
+            ).encode("utf-8")
+            with tarfile.open(archive_path, "w", format=tarfile.USTAR_FORMAT) as archive:
+                for name, body in (
+                    ("manifest.json", manifest_body),
+                    (f"{config_digest.removeprefix('sha256:')}.json", config_body),
+                ):
+                    member = tarfile.TarInfo(name)
+                    member.size = len(body)
+                    archive.addfile(member, io.BytesIO(body))
+            archive_path.chmod(0o600)
+            self.assertEqual(
+                config_digest,
+                self.checker.inspect_docker_save_archive_config_digest(archive_path),
+            )
+
+    def test_completed_specs_and_generated_reference_do_not_claim_active_status(
+        self,
+    ) -> None:
+        paths = [
+            ROOT / f"docs/03.specs/{number}-{slug}/spec.md"
+            for number, slug in (
+                ("124", "compose-runtime-readiness-remediation"),
+                ("125", "infrastructure-operations-readiness-remediation"),
+                ("126", "security-supply-chain-remediation"),
+                ("127", "deployment-release-engineering-remediation"),
+            )
+        ]
+        paths.append(
+            ROOT
+            / "docs/90.references/data/security/supply-chain-sample-service.md"
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                body = path.read_text(encoding="utf-8")
+                self.assertNotIn("This active specification", body)
+                self.assertNotIn("the active Spec 126", body)
 
     def test_policy_and_exception_registry_are_fail_closed(self) -> None:
         policy = self.checker.load_json(POLICY)
@@ -1039,6 +1131,28 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         self.assertIn(
             f'readonly RUNTIME_MATERIAL_CONFIG_ID="{RUNTIME_MATERIAL_CONFIG_ID}"',
             wrapper,
+        )
+        self.assertIn(
+            "readonly RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST="
+            f'"{RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST}"',
+            wrapper,
+        )
+        self.assertIn(
+            f'readonly BUILD_MATERIAL_CONFIG_ID="{BUILD_MATERIAL_CONFIG_ID}"',
+            wrapper,
+        )
+        self.assertIn(
+            "readonly BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST="
+            f'"{BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST}"',
+            wrapper,
+        )
+        self.assertNotEqual(
+            RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST,
+            RUNTIME_MATERIAL_CONFIG_ID,
+        )
+        self.assertNotEqual(
+            BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST,
+            BUILD_MATERIAL_CONFIG_ID,
         )
         self.assertIn(f"FROM {RUNTIME_MATERIAL_REF} AS runtime", dockerfile)
         self.assertNotIn(STALE_RUNTIME_MATERIAL, wrapper)

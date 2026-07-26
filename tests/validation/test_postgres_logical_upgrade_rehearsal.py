@@ -48,6 +48,11 @@ CLIENT_REPO_DIGEST = (
 SOURCE_CONFIG_ID = "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
 TARGET_CONFIG_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 CLIENT_CONFIG_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+OBSERVED_CONFIG_DIGESTS = {
+    "SOURCE": "sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8",
+    "TARGET": "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183",
+    "DUMP_CLIENT": "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183",
+}
 SOURCE_INSPECT_OUTPUT = '["postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"]|sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
 TARGET_INSPECT_OUTPUT = '["postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"]|sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 EXPECTED_VERDICT_KEYS = {
@@ -143,6 +148,27 @@ def valid_rendered_topology_json(
 
 class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     maxDiff = None
+
+    def test_production_image_constants_separate_target_and_config_digests(
+        self,
+    ) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+        for role, config_digest in OBSERVED_CONFIG_DIGESTS.items():
+            with self.subTest(role=role):
+                target_match = re.search(
+                    rf"^{role}_IMAGE_TARGET_DESCRIPTOR_DIGEST='(sha256:[0-9a-f]{{64}})'$",
+                    source,
+                    re.MULTILINE,
+                )
+                config_match = re.search(
+                    rf"^{role}_IMAGE_CONFIG_ID='(sha256:[0-9a-f]{{64}})'$",
+                    source,
+                    re.MULTILINE,
+                )
+                self.assertIsNotNone(target_match)
+                self.assertIsNotNone(config_match)
+                self.assertEqual(config_digest, config_match.group(1))
+                self.assertNotEqual(target_match.group(1), config_match.group(1))
 
     def run_script(
         self, *args: str, extra_env: dict[str, str] | None = None

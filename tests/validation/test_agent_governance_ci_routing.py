@@ -27,6 +27,14 @@ TARGET_CLI_COMMAND = "python3 scripts/validation/check-target-surface-contract.p
 TARGET_TEST_COMMAND = (
     "python3 -m unittest tests.validation.test_target_surface_contracts -v"
 )
+OPERATIONAL_READINESS_TEST_COMMAND = (
+    "python3 -m unittest "
+    "tests.validation.test_compose_core_readiness "
+    "tests.validation.test_postgres_logical_upgrade_rehearsal "
+    "tests.validation.test_grype_db_seed "
+    "tests.validation.test_supply_chain_policy "
+    "tests.validation.test_sample_service_delivery_rehearsal -v"
+)
 
 TARGET_SURFACE_PATHS = (
     ".prettierignore",
@@ -147,6 +155,30 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 for step in repo_steps
                 if isinstance(step, dict)
             ),
+        )
+
+    def test_existing_supply_chain_job_runs_focused_operational_suites(
+        self,
+    ) -> None:
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        job = workflow["jobs"]["supply-chain-fixture-policy"]
+        self.assertEqual({"contents": "read"}, job["permissions"])
+        matching = [
+            step
+            for step in job["steps"]
+            if isinstance(step, dict)
+            and step.get("run") == OPERATIONAL_READINESS_TEST_COMMAND
+        ]
+        self.assertEqual(1, len(matching))
+        self.assertEqual(
+            "Run focused operational readiness regressions",
+            matching[0].get("name"),
+        )
+        contract = REPO_CONTRACT.read_text(encoding="utf-8")
+        self.assertIn(OPERATIONAL_READINESS_TEST_COMMAND, contract)
+        self.assertIn(
+            "supply-chain focused regression step must match",
+            contract,
         )
 
     def test_ci_quality_policy_mutations_fail_closed(self) -> None:
