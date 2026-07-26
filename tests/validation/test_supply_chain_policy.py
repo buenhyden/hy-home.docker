@@ -14,6 +14,7 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -208,6 +209,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 entry = tarfile.TarInfo(name)
                 entry.size = len(content)
                 archive.addfile(entry, fileobj=io.BytesIO(content))
+        path.chmod(0o600)
         return f"sha256:{config_digest}"
 
     def _write_portable_oci_archive(
@@ -493,6 +495,39 @@ class SupplyChainPolicyTests(unittest.TestCase):
             archive = pathlib.Path(temporary) / "image.oci.tar"
             self._write_oci_archive(archive, tamper_config=True)
             with self.assertRaisesRegex(ValueError, "config-blob-digest-mismatch"):
+                self.checker.inspect_oci_archive_config_digest(archive)
+
+    def test_oci_archive_config_digest_rejects_oversized_input_before_read(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            archive = root / "oversized.oci.tar"
+            archive.touch(mode=0o600)
+            with archive.open("r+b") as handle:
+                handle.truncate(self.checker.OCI_ARCHIVE_MAX_BYTES + 1)
+            with mock.patch.object(
+                pathlib.Path,
+                "read_bytes",
+                side_effect=AssertionError("unbounded archive read attempted"),
+            ):
+                with self.assertRaisesRegex(
+                    ValueError, "oci-archive-size-limit-exceeded"
+                ):
+                    self.checker.inspect_oci_archive_config_digest(archive)
+
+    def test_oci_archive_config_digest_rejects_symlink_input(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            root.chmod(0o700)
+            target = root / "image.oci.tar"
+            self._write_oci_archive(target)
+            archive = root / "image.link.oci.tar"
+            archive.symlink_to(target.name)
+            with self.assertRaisesRegex(
+                ValueError, "oci-archive-private-input-invalid"
+            ):
                 self.checker.inspect_oci_archive_config_digest(archive)
 
     def test_portable_docker_load_archive_is_deterministic_and_minimal(self) -> None:
