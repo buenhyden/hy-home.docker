@@ -875,7 +875,9 @@ git diff --check
   `agent-model-selection.md`, `provider-model-landscape.md`,
   `provider-implementation-comparison.md`, `ai-agent-catalogs.md`,
   `harness-engineering.md`, `loop-engineering.md`, and
-  `quality-ci-formatting.md`.
+  `quality-ci-formatting.md`; also modify the directly affected sibling
+  `workspace-baseline.md` so the canonical pack does not retain the displaced
+  14-role/22-function/seven-intake summary.
 - Modify canonical audit:
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md`,
   `implementation-overview.md`,
@@ -895,6 +897,12 @@ git diff --check
 - Regenerate
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`
   only through its registered owner.
+- Modify the two active Stage 00 direct-impact consumers discovered by the
+  closure RED scan:
+  `docs/00.agent-governance/providers/codex.md` and
+  `docs/00.agent-governance/rules/postflight-checklist.md`; add only the narrow
+  regression assertions required in
+  `tests/validation/test_agent_governance_contract.py`.
 - Modify Stage 03/04 README indexes when Spec/Plan/Task lifecycle transitions
   require them.
 - Modify `docs/00.agent-governance/memory/current.md` and historical progress
@@ -915,6 +923,11 @@ not a new policy or runtime interface.
   the deleted GitHub CI memory memo. T-AGCC-005 owns the deletion and immediate
   consumer/generated cleanup; this step verifies that no later change
   reintroduced drift.
+- [ ] Bind the closure RED findings before editing their consumers: the Codex
+  overlay must select the five exact work-profile mappings with
+  `gpt-5.6-sol` or `gpt-5.6-terra`, provider lifecycle `stable`, and separate
+  unverified runtime acceptance/entitlement; the postflight checklist must
+  require exactly 11 fixtures and 16 regressions.
 - [ ] Update the canonical July 5 research with official 2026-07-26 sources and
   the implemented workspace comparison. Do not revive or rewrite the
   superseded July 7 pack.
