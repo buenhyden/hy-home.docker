@@ -164,7 +164,7 @@ docs/04.execution/tasks/
 ├── 2026-07-19-compose-runtime-readiness-remediation.md # Completed local Compose readiness evidence
 ├── 2026-07-19-security-supply-chain-remediation.md # Completed local supply-chain evidence
 ├── 2026-07-19-infrastructure-operations-readiness-remediation.md # Completed representative PostgreSQL recovery evidence
-├── 2026-07-19-deployment-release-engineering-remediation.md # Active; corrected-handoff rehearsal pending
+├── 2026-07-19-deployment-release-engineering-remediation.md # Active; corrected runtime/rehearsal complete, fresh independent review pending
 ├── 2026-07-23-security-supply-chain-runtime-closure.md # Completed approved-network Grype seed and local Spec 126 runtime evidence
 ├── 2026-07-26-corrected-delivery-evidence-reconciliation.md # Active Task 5 successor; corrected runtime complete, fresh review pending
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
@@ -268,7 +268,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Compose Runtime Readiness Remediation Task (completed local evidence owner)**: [2026-07-19-compose-runtime-readiness-remediation.md](./2026-07-19-compose-runtime-readiness-remediation.md)
 - **Security Supply-Chain Remediation Task (completed local evidence owner)**: [2026-07-19-security-supply-chain-remediation.md](./2026-07-19-security-supply-chain-remediation.md)
 - **Infrastructure Operations Readiness Remediation Task (completed representative-local evidence owner)**: [2026-07-19-infrastructure-operations-readiness-remediation.md](./2026-07-19-infrastructure-operations-readiness-remediation.md)
-- **Deployment and Release Engineering Remediation Task (active; corrected-handoff rehearsal pending)**: [2026-07-19-deployment-release-engineering-remediation.md](./2026-07-19-deployment-release-engineering-remediation.md)
+- **Deployment and Release Engineering Remediation Task (active; corrected runtime/rehearsal complete, fresh independent review pending)**: [2026-07-19-deployment-release-engineering-remediation.md](./2026-07-19-deployment-release-engineering-remediation.md)
 - **Security Supply-Chain Runtime Closure Task (completed approved-network evidence owner)**: [2026-07-23-security-supply-chain-runtime-closure.md](./2026-07-23-security-supply-chain-runtime-closure.md)
 - **Corrected Delivery Evidence Reconciliation Task (active; corrected runtime complete and fresh review pending)**: [2026-07-26-corrected-delivery-evidence-reconciliation.md](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)

@@ -299,8 +299,9 @@ quality `CHANGES REQUIRED C0/I1/M0`. Generated-owner remediation `78265090`,
 OCI-reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this exact 15-document
 lifecycle logical unit are post-wrapper changes. They were not covered by the
 wrapper. The correction-wave commits and evidence are also outside wrapper
-coverage and use targeted gates. Corrected lifecycle reconciliation, Task 5
-runtime evidence, and final re-review remain pending.
+coverage and use targeted gates. Corrected lifecycle reconciliation and Task 5
+runtime evidence are complete. Fresh independent review of the corrected Task 5
+successor evidence and final Program re-review remain pending.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -430,15 +431,20 @@ are preserved above. Its terminal CHANGES REQUIRED result with two Important
 items is also preserved with remediation. Terminal operations/quality is
 APPROVED C0/I0/M0; the remediated specification evidence-sync I1 received
 terminal APPROVED C0/I0/M0 re-review.
-The current whole-branch pair returned C0/I0/M0. All earlier
-`CHANGES REQUIRED` iterations remain historical remediation evidence. Future
-domain or whole-branch findings must retain severity, owner, remediation commit,
-and re-review verdict without copying raw logs.
+The earlier whole-branch pair described above returned C0/I0/M0 for its exact
+reviewed range. Its earlier `CHANGES REQUIRED` iterations remain historical
+remediation evidence. Future domain or whole-branch findings must retain
+severity, owner, remediation commit, and re-review verdict without copying raw
+logs.
 
-The fresh Task 5 review pair returned `APPROVED C0/I0/M0` in both dimensions
-with no findings. It closes the Task 5 runtime-review gate without changing any
-historical review boundary or claiming release, deployment, remote action, or
-controlled-wrapper execution.
+The Task 5 review pair for historical exact range
+`f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`
+returned `APPROVED C0/I0/M0` in both dimensions with no findings. It closes
+only that exact range's historical Task 5 runtime-review gate. It does not
+cover the current corrected `0/30` successor sequence or current mode-0600
+record and does not close the corrected-evidence review gate; fresh independent
+successor review remains pending. The historical approvals do not claim
+release, deployment, remote action, or controlled-wrapper execution.
 
 Initial final Program specification review: `CHANGES REQUIRED C0/I2/M0`.
 I-01 found stale generated navigation owners; commit `78265090` refreshed the
@@ -455,11 +461,13 @@ that OCI config-digest inspection used an unbounded, symlink-following
 `9a24b0cb` covers oversized and symlink inputs; GREEN `73f4ea68` enforces the
 bounded stable-private read and stable failure classes.
 
-Both initial final review verdicts remain controlling until fresh re-review of
-the complete remediation and correction range. The correction wave closes the
-new health-classification and typed-identity findings in implementation and
-tests, but Task 5 lacks a current rehearsal record. No final specification PASS
-or quality APPROVED verdict is claimed yet.
+Both initial final Program review verdicts remain controlling until fresh
+re-review of the complete remediation and correction range. The correction wave
+closes the new health-classification and typed-identity findings in
+implementation and tests, and the current corrected Task 5 `0/30` sequence and
+mode-0600 record exist. Fresh independent successor review and final Program
+re-review remain pending. No final Program specification PASS or quality
+APPROVED verdict is claimed yet.
 
 ## Commit Ledger
 
