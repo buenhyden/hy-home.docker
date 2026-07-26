@@ -8,8 +8,8 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-- Preserve the completed bounded-memory evidence while the active convergence
-  chain advances to the Task 5 interface amendment and Task 4 implementation.
+- T-AGCC-004 implementation is committed and specification-approved; preserve
+  its bounded evidence while quality/security review remains pending.
 
 ## Approved decisions
 
@@ -21,27 +21,27 @@ status: active
 
 ## Active boundary
 
-- T-AGCC-003 covers the memory profile, root shims, provider loading notes,
-  direct Stage 00 memory consumers, bounded validation, focused tests, and
-  sibling Task evidence.
+- T-AGCC-004 covers two registered functions, typed harness layers and workflow
+  states, state-bound loops, deterministic evaluation fixtures, projections,
+  validation, and sibling Task evidence.
 - Provider runtime calls, remote mutation, Compose, infrastructure,
   deployment, and repository-wide QA execution remain outside this task.
 
 ## Verified state
 
-- Verified commit: `a56234ee346d67ed3febb47864d0a60b8f77923f`
-- Verified at: `2026-07-26T22:51:27+09:00`
-- T-AGCC-001 and T-AGCC-002 are recorded complete in the active Task ledger.
-- T-AGCC-003 is complete: specification review is C0/I0/M1 APPROVED with its
-  sole bookkeeping Minor closed, and quality/security review is C0/I0/M0
-  APPROVED.
-- The approved Task 5 `.github/INDEX.md` navigation-only interface is recorded
-  in the active Plan and Task ledger.
+- Verified commit: `fe98190b2f7625adab7d0ee2be8735d0e5879a87`
+- Verified at: `2026-07-27T00:00:14+09:00`
+- T-AGCC-001 through T-AGCC-003 are recorded complete in the active Task
+  ledger.
+- T-AGCC-004 implementation is committed at the verified commit. Specification
+  review of `b2e090bd..fe98190b` is C0/I0/M1 APPROVED, and its sole
+  working-tree/not-committed bookkeeping Minor is closed.
+- T-AGCC-004 quality/security review remains pending.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- T-AGCC-004 has not started and requires a fresh implementation owner.
+- T-AGCC-004 remains `review_pending` until quality/security review completes.
 - The controlled repository-wide QA gate remains separately approval-bound.
 
 ## Evidence links
@@ -53,5 +53,6 @@ status: active
 
 ## Next handoff
 
-- Preserve the approved `.github/INDEX.md` Task 5 interface amendment and
-  dispatch a fresh T-AGCC-004 implementer.
+- Dispatch T-AGCC-004 quality/security review for exact range
+  `b2e090bd..fe98190b`, then record its bounded verdict in the active Task
+  ledger.
