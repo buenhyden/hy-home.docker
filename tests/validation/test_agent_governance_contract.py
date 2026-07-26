@@ -4367,6 +4367,49 @@ class Task4HarnessLoopTests(unittest.TestCase):
                 self.assertNotIn(sentinel, contract.render_findings(first))
 
 
+class Task6CanonicalEvidenceDirectImpactTests(unittest.TestCase):
+    def test_direct_impact_provider_and_postflight_guidance_matches_current_contract(
+        self,
+    ) -> None:
+        codex_provider = (
+            ROOT / "docs/00.agent-governance/providers/codex.md"
+        ).read_text(encoding="utf-8")
+        postflight = (
+            ROOT / "docs/00.agent-governance/rules/postflight-checklist.md"
+        ).read_text(encoding="utf-8")
+        normalized_codex = " ".join(codex_provider.split())
+        normalized_postflight = " ".join(postflight.split())
+
+        self.assertIn(
+            "`adversarial-review`, `complex-implementation`, and "
+            "`long-horizon-supervision` use `gpt-5.6-sol`",
+            normalized_codex,
+        )
+        self.assertIn(
+            "`evidence-research` and `routine-validation` use `gpt-5.6-terra`",
+            normalized_codex,
+        )
+        self.assertIn(
+            "official provider lifecycle is `stable`",
+            normalized_codex,
+        )
+        self.assertIn(
+            "runtime acceptance and entitlement remain `needs_revalidation`",
+            normalized_codex,
+        )
+        self.assertNotRegex(
+            codex_provider,
+            r"(?<![A-Za-z0-9.-])GPT-5\.6(?![A-Za-z0-9.-])",
+        )
+        self.assertNotIn("raw status is\n  `listed`", codex_provider)
+        self.assertIn(
+            "reports exactly 11 fixtures, 16 regressions", normalized_postflight
+        )
+        self.assertNotIn(
+            "reports exactly eight fixtures, ten regressions", normalized_postflight
+        )
+
+
 class Task5HarnessLoopContractTests(unittest.TestCase):
     EXPECTED_LOOPS = {
         "approved-all-files-gate": (1, "controlled-wrapper-pass", "record_and_stop"),
