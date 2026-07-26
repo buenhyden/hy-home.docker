@@ -13,12 +13,13 @@ parent_ids:
 
 ## Overview
 
-This active specification defines the contract for proving that the exact
-`core` five-service Compose set can start, become ready, recover from approved
-failure scenarios, and tear down without unapproved data or secret exposure.
-It owns three canonical audit gaps. PRD 025, ARD 0028, and ADR 0028 approve the
-local-isolated architecture; the linked Plan and Task own command authorization
-and observed evidence. Broader or remote execution requires a new Task.
+This completed specification records the local-isolated contract used to prove
+that the exact `core` five-service Compose set can start, become ready, recover
+from approved failure scenarios, and tear down without unapproved data or
+secret exposure. It owns three canonical audit gaps. PRD 025, ARD 0028, and
+ADR 0028 approve the architecture; the linked Plan and Task own command
+authorization and observed local evidence. Broader or remote execution
+requires a new Task.
 
 ## Strategic Boundaries & Non-goals
 

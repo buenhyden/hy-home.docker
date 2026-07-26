@@ -14,12 +14,13 @@ parent_ids:
 
 ## Overview
 
-This active specification defines the contract for rehearsing a representative
-PostgreSQL logical major-version upgrade, backup, restore, and integrity check
-on synthetic state. It owns four canonical audit gaps. The approved architecture
-does not authorize production data, shared storage, secret access, or remote
-backup targets; the linked Plan and Task own command authorization and observed
-evidence. Broader recovery work requires a new approved chain.
+This completed specification records the local-isolated contract used to
+rehearse a representative PostgreSQL logical major-version upgrade, backup,
+restore, and integrity check on synthetic state. It owns four canonical audit
+gaps. The approved architecture does not authorize production data, shared
+storage, secret access, or remote backup targets; the linked Plan and Task own
+command authorization and observed local evidence. Broader recovery work
+requires a new approved chain.
 
 ## Strategic Boundaries & Non-goals
 

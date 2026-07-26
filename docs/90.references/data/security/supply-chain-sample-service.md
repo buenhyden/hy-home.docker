@@ -14,16 +14,18 @@ conformance claim.
 
 ## Purpose
 
-The deterministic policy gate verifies pinned tool identities, distinct
+The deterministic policy gate verifies pinned repository manifests,
+observed target descriptors, independently hashed config bodies, distinct
 baseline/candidate subject fixtures, redacted Grype policy handling, SBOM and
 provenance binding, signature-negative fixtures, and Scorecard advisory-only
 semantics without network access.
 
 ## Repository Role
 
-This reference is a generated Stage 90 index to the active Spec 126 and
-Stage 04 Task. The checker and wrapper own executable policy behavior; this
-document does not replace security policy, CI configuration, or Task evidence.
+This reference is a generated Stage 90 index to completed Spec 126 and its
+completed local Stage 04 Task. The checker and wrapper own executable policy
+behavior; this document does not replace security policy, CI configuration,
+or Task evidence and does not extend the completed local boundary.
 
 ## Scope
 
@@ -60,12 +62,12 @@ document does not replace security policy, CI configuration, or Task evidence.
 
 ## Pinned Tool Images
 
-| Tool | Repository manifest | Config ID | Command contract | Network mode |
-| --- | --- | --- | --- | --- |
-| `syft` | `anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `oci-archive-to-cyclonedx-json` | `none` |
-| `grype` | `anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sbom-to-redacted-json-verdict` | `advisory-network-optional` |
-| `cosign` | `gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `local-sign-blob-and-verify-blob` | `none` |
-| `scorecard` | `ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `read-only-advisory-repository-observation` | `read-only-advisory` |
+| Tool | Repository manifest | Target descriptor | Config digest | Command contract | Network mode |
+| --- | --- | --- | --- | --- | --- |
+| `syft` | `anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c` | `sha256:3567af297260e786440f30d149c2846302fd1df0823ee769d8b167d068f7d181` | `oci-archive-to-cyclonedx-json` | `none` |
+| `grype` | `anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821` | `sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0` | `sbom-to-redacted-json-verdict` | `advisory-network-optional` |
+| `cosign` | `gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00` | `sha256:4221e0d9d429afa26a9f1b8bc8f0ba2c9af470f7b495d845c31ac982a5d1182b` | `local-sign-blob-and-verify-blob` | `none` |
+| `scorecard` | `ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795` | `sha256:6b05eb0cfef8a6df4f78dae40cbbe8b18da1ec881c4c70a14796201a122a3491` | `read-only-advisory-repository-observation` | `read-only-advisory` |
 
 ## Evidence Boundary
 

@@ -31,7 +31,11 @@ registry = json.loads(pathlib.Path("infra/supply-chain.tool-images.json").read_t
 policy = json.loads(pathlib.Path("infra/supply-chain.sample-service-policy.json").read_text())
 tool_rows = []
 for tool in registry["tools"]:
-    tool_rows.append(f"| `{tool['name']}` | `{tool['repo_digest']}` | `{tool['config_id']}` | `{tool['command_contract']}` | `{tool['network_mode']}` |")
+    tool_rows.append(
+        f"| `{tool['name']}` | `{tool['repo_digest']}` | "
+        f"`{tool['target_descriptor_digest']}` | `{tool['config_id']}` | "
+        f"`{tool['command_contract']}` | `{tool['network_mode']}` |"
+    )
 
 lines = [
     "---",
@@ -50,16 +54,18 @@ lines = [
     "",
     "## Purpose",
     "",
-    "The deterministic policy gate verifies pinned tool identities, distinct",
+    "The deterministic policy gate verifies pinned repository manifests,",
+    "observed target descriptors, independently hashed config bodies, distinct",
     "baseline/candidate subject fixtures, redacted Grype policy handling, SBOM and",
     "provenance binding, signature-negative fixtures, and Scorecard advisory-only",
     "semantics without network access.",
     "",
     "## Repository Role",
     "",
-    "This reference is a generated Stage 90 index to the active Spec 126 and",
-    "Stage 04 Task. The checker and wrapper own executable policy behavior; this",
-    "document does not replace security policy, CI configuration, or Task evidence.",
+    "This reference is a generated Stage 90 index to completed Spec 126 and its",
+    "completed local Stage 04 Task. The checker and wrapper own executable policy",
+    "behavior; this document does not replace security policy, CI configuration,",
+    "or Task evidence and does not extend the completed local boundary.",
     "",
     "## Scope",
     "",
@@ -96,8 +102,8 @@ lines = [
     "",
     "## Pinned Tool Images",
     "",
-    "| Tool | Repository manifest | Config ID | Command contract | Network mode |",
-    "| --- | --- | --- | --- | --- |",
+    "| Tool | Repository manifest | Target descriptor | Config digest | Command contract | Network mode |",
+    "| --- | --- | --- | --- | --- | --- |",
     *tool_rows,
     "",
     "## Evidence Boundary",

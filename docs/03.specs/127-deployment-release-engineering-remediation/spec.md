@@ -16,11 +16,12 @@ parent_ids:
 
 ## Overview
 
-This active specification defines the bounded local contract for sample-service
-baseline/canary environments, verified-digest promotion, health evidence, and
-rollback. It owns five canonical audit gaps. The local design does not authorize
-CI/CD workflow mutation, GitHub Environments/Releases, artifact publication,
-remote deployment, secret access, or a real Release event.
+This completed specification records the bounded local-isolated contract used
+for sample-service baseline/canary environments, verified-digest promotion,
+health evidence, and rollback. It owns five canonical audit gaps. The local
+design does not authorize CI/CD workflow mutation, GitHub
+Environments/Releases, artifact publication, remote deployment, secret access,
+or a real Release event.
 
 ## Strategic Boundaries & Non-goals
 

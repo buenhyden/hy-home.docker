@@ -13,12 +13,13 @@ parent_ids:
 
 ## Overview
 
-This active specification defines the contract for digest-bound container
-scanning, SBOM, provenance, local signing/verification, and reviewed OpenSSF
-Scorecard signals for `examples/sample-web-service`. It owns six canonical
-audit gaps. PRD 025, ARD 0028, and ADR 0028 approve the local-isolated design;
-the Plan and active Task must still approve exact tool image digests, policies,
-commands, generated-artifact boundaries, and read-only remote observation.
+This completed specification records the local-isolated contract used for
+digest-bound container scanning, SBOM, provenance, local signing/verification,
+and reviewed OpenSSF Scorecard signals for `examples/sample-web-service`. It
+owns six canonical audit gaps. PRD 025, ARD 0028, and ADR 0028 approve the
+design; the linked Plan and Task own the exact tool identities, policies,
+commands, generated-artifact boundaries, and observed local evidence. Broader
+or remote execution requires a new approved Task.
 
 ## Strategic Boundaries & Non-goals
 
