@@ -25,6 +25,9 @@ EXPECTED_FIXTURE_IDS = (
     "AOE-DOC-001",
     "AOE-HOOK-001",
     "AOE-INFRA-001",
+    "AOE-LOOP-001",
+    "AOE-MEMORY-001",
+    "AOE-MODEL-001",
     "AOE-PROVIDER-001",
     "AOE-ROLE-001",
     "AOE-ROUTING-001",
@@ -63,7 +66,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         shutil.copy2(CONTRACT, contract)
         return directory, root
 
-    def test_fixture_catalog_has_exact_eight_ids_and_calibration(self) -> None:
+    def test_fixture_catalog_has_exact_eleven_ids_and_calibration(self) -> None:
         evaluator = load_eval_module()
 
         self.assertEqual(EXPECTED_FIXTURE_IDS, tuple(sorted(evaluator.FIXTURES)))
@@ -74,12 +77,12 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
             self.assertTrue(fixture.required_context)
             self.assertTrue(fixture.criteria)
 
-    def test_regression_catalog_has_exact_ten_positive_negative_cases(self) -> None:
+    def test_regression_catalog_has_exact_sixteen_positive_negative_cases(self) -> None:
         evaluator = load_eval_module()
 
         regressions = evaluator.REGRESSION_CASES
-        self.assertEqual(10, len(regressions))
-        self.assertEqual(10, len({case.case_id for case in regressions}))
+        self.assertEqual(16, len(regressions))
+        self.assertEqual(16, len({case.case_id for case in regressions}))
         self.assertEqual(
             {"pass", "fail"}, {case.expected_result for case in regressions}
         )
@@ -92,10 +95,54 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                 "bounded-retry",
                 "completion-evidence",
                 "adapter-rendering",
-                "model-fallback",
+                "model-activation-boundary",
                 "calibration",
+                "model-evaluation",
+                "model-live-claim",
+                "memory-stewardship",
+                "memory-policy-duplication",
+                "workflow-loop",
+                "second-lifecycle",
             }.issubset({case.category for case in regressions})
         )
+
+    def test_task4_fixtures_have_exact_function_state_context_and_balanced_cases(
+        self,
+    ) -> None:
+        evaluator = load_eval_module()
+        expected = {
+            "AOE-MODEL-001": (
+                "docs/00.agent-governance/agents/functions/provider-model-evaluation.md",
+                "provider-model-evaluation",
+            ),
+            "AOE-MEMORY-001": (
+                "docs/00.agent-governance/agents/functions/project-memory-stewardship.md",
+                "project-memory-stewardship",
+            ),
+            "AOE-LOOP-001": (
+                "docs/00.agent-governance/contracts/provider-models.yaml",
+                "workflow_states",
+            ),
+        }
+        for fixture_id, (context_path, required_term) in expected.items():
+            with self.subTest(fixture_id=fixture_id):
+                fixture = evaluator.FIXTURES[fixture_id]
+                self.assertIn(context_path, fixture.required_context)
+                self.assertTrue(
+                    any(
+                        required_term in criterion.terms
+                        for criterion in fixture.criteria
+                    )
+                )
+                cases = [
+                    case
+                    for case in evaluator.REGRESSION_CASES
+                    if case.fixture_id == fixture_id
+                ]
+                self.assertEqual(2, len(cases))
+                self.assertEqual(
+                    {"pass", "fail"}, {case.expected_result for case in cases}
+                )
 
     def test_regressions_are_deterministic_and_failure_output_is_value_free(
         self,
@@ -108,7 +155,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         first = evaluator.run_regressions()
         second = evaluator.run_regressions()
         self.assertEqual(first, second)
-        self.assertEqual(10, len(first))
+        self.assertEqual(16, len(first))
         self.assertTrue(all(result.matched_expectation for result in first))
         rendered = evaluator.render_regression_results(first)
         self.assertNotRegex(rendered, r"sk-[A-Za-z0-9_-]+")
@@ -119,8 +166,8 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         result = self.run_runner("--check-fixtures", "--check-regressions")
 
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertIn("fixtures_expected=8", result.stdout)
-        self.assertIn("regressions_expected=10", result.stdout)
+        self.assertIn("fixtures_expected=11", result.stdout)
+        self.assertIn("regressions_expected=16", result.stdout)
         self.assertIn("fixtures_check=pass", result.stdout)
         self.assertIn("regressions_check=pass", result.stdout)
 
@@ -1491,9 +1538,9 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         self.assertEqual(64 * 1_024, evaluator.MAX_TYPED_CATALOG_BYTES)
         self.assertEqual(1_024, evaluator.MAX_CATALOG_LINES)
         self.assertEqual(8_192, evaluator.MAX_CATALOG_LINE_BYTES)
-        self.assertEqual(8, evaluator.MAX_CATALOG_SECTIONS)
+        self.assertEqual(11, evaluator.MAX_CATALOG_SECTIONS)
         self.assertEqual(10, evaluator.MAX_CATALOG_FIELDS_PER_SECTION)
-        self.assertEqual(8, evaluator.MAX_TYPED_THRESHOLDS)
+        self.assertEqual(11, evaluator.MAX_TYPED_THRESHOLDS)
 
         source = MODULE.read_text(encoding="utf-8")
         fixture_parser = source.split("def _typed_fixture_thresholds", 1)[1].split(

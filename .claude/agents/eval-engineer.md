@@ -9,6 +9,7 @@ model: claude-opus-5
 effort: high
 permissionMode: plan
 skills:
+- provider-model-evaluation
 - workspace-audit-revalidation
 ---
 

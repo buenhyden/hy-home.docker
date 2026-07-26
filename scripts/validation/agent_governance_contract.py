@@ -67,7 +67,7 @@ CURRENT_MEMORY_SECTIONS = (
 )
 
 EXPECTED_AGENT_COUNT = 14
-EXPECTED_FUNCTION_COUNT = 22
+EXPECTED_FUNCTION_COUNT = 24
 EXPECTED_PROVIDER_COUNT = 3
 MAX_BRACE_GROUPS = 64
 MAX_EXPANDED_PATHS = 1024
@@ -294,6 +294,8 @@ PROVIDER_TOP_FIELDS = {
     "compatibility_surfaces",
     "work_profiles",
     "models",
+    "harness_layers",
+    "workflow_states",
     "harness_loops",
     "semantic_events",
 }
@@ -382,9 +384,11 @@ CAPABILITY_INTAKE_FIELDS = {
     "capability_id",
     "source",
     "source_url",
+    "source_retrieved_at",
     "decision",
     "owner_agent",
     "evaluation_function",
+    "rationale",
 }
 EVALUATION_FIELDS = {
     "owner_agent",
@@ -494,6 +498,7 @@ HARNESS_LOOP_FIELDS = {
     "reviewer_agent",
     "permission_profile",
     "allowed_tools",
+    "workflow_states",
     "max_attempts",
     "stop_condition",
     "on_failure",
@@ -502,6 +507,28 @@ HARNESS_LOOP_FIELDS = {
     "capability_status",
     "adoption_status",
     "runtime_depth",
+}
+HARNESS_LAYER_FIELDS = {
+    "layer_id",
+    "owner_agent",
+    "required_inputs",
+    "mutation_authority",
+    "gates",
+    "failure_return",
+    "evidence_fields",
+    "handoff_target",
+}
+WORKFLOW_STATE_FIELDS = {
+    "state_id",
+    "owner_agent",
+    "required_inputs",
+    "mutation_authority",
+    "entry_condition",
+    "exit_gate",
+    "max_attempts",
+    "failure_return",
+    "evidence_fields",
+    "handoff_target",
 }
 EVENT_BINDING_FIELDS = {
     "provider",
@@ -540,7 +567,7 @@ RUNTIME_ACCEPTANCE_STATES = {
 AGENT_CATEGORIES = {"implementation-operations", "review-evaluation", "supervisor"}
 AGENT_TIERS = {"supervisor", "worker"}
 AGENT_STATUSES = {"active"}
-CAPABILITY_DECISIONS = {"adopt", "defer", "merge", "reject"}
+CAPABILITY_DECISIONS = {"defer", "merge", "reject"}
 TIMEOUT_UNITS = {"milliseconds", "seconds"}
 LOCAL_CLI_OBSERVATIONS = {"observed", "unavailable"}
 REASONING_CONTROL_KINDS = {
@@ -596,6 +623,14 @@ EXPECTED_HARNESS_LOOPS = MappingProxyType(
         "independent-review-loop": (2, "critical_and_important_zero", "escalate"),
     }
 )
+EXPECTED_HARNESS_LOOP_STATES = MappingProxyType(
+    {
+        "approved-all-files-gate": ("validate", "evidence"),
+        "bounded-implementation-loop": ("implement", "validate"),
+        "context-bootstrap": ("discover",),
+        "independent-review-loop": ("implement", "independent-review"),
+    }
+)
 SANITIZED_EVIDENCE_FIELDS = (
     "command",
     "result",
@@ -609,6 +644,196 @@ PROHIBITED_EVIDENCE_FIELDS = (
     "secret_values",
     "shell_history",
     "tokens",
+)
+MUTATION_AUTHORITIES = {"read-only", "workspace-write"}
+EXPECTED_HARNESS_LAYER_IDS = (
+    "canonical-contract",
+    "role-function-routing",
+    "permission-mutation-boundary",
+    "provider-model-reasoning-policy",
+    "semantic-event-hooks",
+    "controlled-qa-validation",
+    "tracked-ci",
+    "sanitized-evidence-handoff",
+)
+EXPECTED_HARNESS_LAYER_SEMANTICS = MappingProxyType(
+    {
+        "canonical-contract": (
+            "rules-engineer",
+            "workspace-write",
+            "design/plan",
+            "design/plan",
+        ),
+        "role-function-routing": (
+            "workflow-supervisor",
+            "read-only",
+            "discover",
+            "discover",
+        ),
+        "permission-mutation-boundary": (
+            "rules-engineer",
+            "read-only",
+            "approval",
+            "approval",
+        ),
+        "provider-model-reasoning-policy": (
+            "eval-engineer",
+            "read-only",
+            "design/plan",
+            "design/plan",
+        ),
+        "semantic-event-hooks": (
+            "hook-developer",
+            "workspace-write",
+            "implement",
+            "implement",
+        ),
+        "controlled-qa-validation": (
+            "qa-engineer",
+            "workspace-write",
+            "implement",
+            "validate",
+        ),
+        "tracked-ci": (
+            "ci-cd-engineer",
+            "workspace-write",
+            "implement",
+            "validate",
+        ),
+        "sanitized-evidence-handoff": (
+            "eval-engineer",
+            "workspace-write",
+            "evidence",
+            "handoff",
+        ),
+    }
+)
+EXPECTED_WORKFLOW_STATE_IDS = (
+    "discover",
+    "design/plan",
+    "approval",
+    "implement",
+    "validate",
+    "independent-review",
+    "evidence",
+    "handoff",
+)
+EXPECTED_WORKFLOW_STATE_SEMANTICS = MappingProxyType(
+    {
+        "discover": (
+            "workflow-supervisor",
+            "read-only",
+            "objective-and-boundary-known",
+            "scope-and-canonical-owners-identified",
+            1,
+            "stop",
+            "design/plan",
+        ),
+        "design/plan": (
+            "workflow-supervisor",
+            "workspace-write",
+            "discovery-evidence-complete",
+            "implementation-ready-plan",
+            2,
+            "design/plan",
+            "approval",
+        ),
+        "approval": (
+            "rules-engineer",
+            "read-only",
+            "plan-and-protected-boundaries-explicit",
+            "authority-confirmed",
+            1,
+            "approval",
+            "implement",
+        ),
+        "implement": (
+            "workflow-supervisor",
+            "workspace-write",
+            "required-approval-recorded",
+            "scoped-change-complete",
+            2,
+            "stop",
+            "validate",
+        ),
+        "validate": (
+            "qa-engineer",
+            "workspace-write",
+            "implementation-attempt-complete",
+            "focused-and-aggregate-gates-pass",
+            1,
+            "implement",
+            "independent-review",
+        ),
+        "independent-review": (
+            "code-reviewer",
+            "read-only",
+            "validation-gates-pass",
+            "critical-and-important-zero",
+            2,
+            "implement",
+            "evidence",
+        ),
+        "evidence": (
+            "eval-engineer",
+            "workspace-write",
+            "independent-review-approved",
+            "task-evidence-complete",
+            1,
+            "independent-review",
+            "handoff",
+        ),
+        "handoff": (
+            "workflow-supervisor",
+            "read-only",
+            "evidence-record-sanitized",
+            "next-owner-accepts-handoff",
+            1,
+            "evidence",
+            "complete",
+        ),
+    }
+)
+EXPECTED_CAPABILITY_INTAKE = MappingProxyType(
+    {
+        "code-review": ("merge", "code-reviewer", "code-review-dimensions"),
+        "devops-automation": ("merge", "ci-cd-engineer", "ci-cd-patterns"),
+        "incident-and-sre": (
+            "merge",
+            "incident-responder",
+            "incident-response",
+        ),
+        "knowledge-stewardship": (
+            "merge",
+            "doc-writer",
+            "project-memory-stewardship",
+        ),
+        "multi-agent-architecture": (
+            "merge",
+            "workflow-supervisor",
+            "task-breakdown-agent",
+        ),
+        "product-discovery": (
+            "defer",
+            "workflow-supervisor",
+            "workspace-audit-revalidation",
+        ),
+        "provider-model-qa": (
+            "merge",
+            "eval-engineer",
+            "provider-model-evaluation",
+        ),
+        "reality-checking": (
+            "merge",
+            "eval-engineer",
+            "workspace-audit-revalidation",
+        ),
+        "technical-writing": (
+            "merge",
+            "doc-writer",
+            "knowledge-map-agent",
+        ),
+    }
 )
 EXPECTED_WORK_PROFILE_DEFAULTS = MappingProxyType(
     {
@@ -2689,7 +2914,10 @@ def _validate_catalog_contract(
                     "evaluation-path-mismatch",
                     source,
                 )
-        for field, expected_count in (("fixture_count", 8), ("regression_count", 10)):
+        for field, expected_count in (
+            ("fixture_count", 11),
+            ("regression_count", 16),
+        ):
             actual = evaluation.get(field)
             if isinstance(actual, bool) or actual != expected_count:
                 _add(
@@ -2760,6 +2988,9 @@ def _validate_catalog_contract(
             "AOE-DOC-001",
             "AOE-HOOK-001",
             "AOE-INFRA-001",
+            "AOE-LOOP-001",
+            "AOE-MEMORY-001",
+            "AOE-MODEL-001",
             "AOE-PROVIDER-001",
             "AOE-ROLE-001",
             "AOE-ROUTING-001",
@@ -2837,6 +3068,7 @@ def _validate_catalog_contract(
         document.get("capability_intake"), path, "capability_intake", findings, source
     )
     intake_ids: list[str] = []
+    observed_intake: dict[str, tuple[object, object, object]] = {}
     if intake is not None:
         for index, raw in enumerate(intake):
             location = f"capability_intake[{index}]"
@@ -2860,6 +3092,20 @@ def _validate_catalog_contract(
                 findings,
                 source,
             )
+            _check_string(
+                entry.get("source_retrieved_at"),
+                path,
+                f"{location}.source_retrieved_at",
+                findings,
+                source,
+            )
+            _check_string(
+                entry.get("rationale"),
+                path,
+                f"{location}.rationale",
+                findings,
+                source,
+            )
             _check_enum(
                 entry.get("decision"),
                 CAPABILITY_DECISIONS,
@@ -2876,7 +3122,38 @@ def _validate_catalog_contract(
                 _unknown_reference(
                     findings, path, f"{location}.evaluation_function", source
                 )
+            if isinstance(capability_id, str):
+                observed_intake[capability_id] = (
+                    entry.get("decision"),
+                    entry.get("owner_agent"),
+                    entry.get("evaluation_function"),
+                )
+            if (
+                entry.get("source") != "agency-agents"
+                or entry.get("source_url")
+                != "https://github.com/msitarzewski/agency-agents"
+                or entry.get("source_retrieved_at") != "2026-07-26"
+            ):
+                _add(
+                    findings,
+                    "AGC-CAPABILITY-SOURCE-CONTRACT",
+                    path,
+                    location,
+                    "dated-primary-source-comparison",
+                    "capability-source-mismatch",
+                    source,
+                )
     _check_sorted_unique_ids(intake_ids, path, "capability_intake", findings, source)
+    if observed_intake != dict(EXPECTED_CAPABILITY_INTAKE):
+        _add(
+            findings,
+            "AGC-CAPABILITY-INTAKE-CONTRACT",
+            path,
+            "capability_intake",
+            "exact-approved-capability-decisions",
+            "capability-decision-set-mismatch",
+            source,
+        )
 
     work_profile_ids = {
         entry.get("profile_id")
@@ -2968,6 +3245,305 @@ def _unknown_reference(
         "unknown-reference",
         source,
     )
+
+
+def _validate_harness_layers(
+    layers: Sequence[Mapping[str, object]], agent_ids: frozenset[str]
+) -> list[Finding]:
+    """Validate the eight control-plane layers without exposing field values."""
+
+    path = CONTRACT_RELATIVE_PATHS["providers"].as_posix()
+    source = path
+    findings: list[Finding] = []
+    observed_ids: list[str] = []
+    state_references = frozenset(EXPECTED_WORKFLOW_STATE_IDS)
+    for index, raw in enumerate(layers):
+        location = f"harness_layers[{index}]"
+        if not isinstance(raw, Mapping):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-SCHEMA",
+                path,
+                location,
+                "exact-harness-layer-fields",
+                "non-mapping-layer",
+                source,
+            )
+            continue
+        keys = {str(key) for key in raw}
+        if keys != HARNESS_LAYER_FIELDS:
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-SCHEMA",
+                path,
+                location,
+                "exact-harness-layer-fields",
+                "harness-layer-field-mismatch",
+                source,
+            )
+        layer_id = raw.get("layer_id")
+        if _check_string(
+            layer_id, path, f"{location}.layer_id", findings, source
+        ):
+            observed_ids.append(str(layer_id))
+        owner = raw.get("owner_agent")
+        if not _is_registered_string(owner, agent_ids):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-OWNER",
+                path,
+                f"{location}.owner_agent",
+                "registered-agent-owner",
+                "unknown-layer-owner",
+                source,
+            )
+        for field in ("required_inputs", "gates"):
+            _check_string_list(
+                raw.get(field),
+                path,
+                f"{location}.{field}",
+                findings,
+                source,
+                require_sorted=True,
+            )
+        _check_enum(
+            raw.get("mutation_authority"),
+            MUTATION_AUTHORITIES,
+            path,
+            f"{location}.mutation_authority",
+            findings,
+            source,
+        )
+        failure_return = raw.get("failure_return")
+        handoff_target = raw.get("handoff_target")
+        if not _is_registered_string(
+            failure_return, state_references | {"stop"}
+        ):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-REFERENCE",
+                path,
+                f"{location}.failure_return",
+                "workflow-state-or-stop",
+                "unknown-layer-failure-return",
+                source,
+            )
+        if not _is_registered_string(
+            handoff_target, state_references | {"complete"}
+        ):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-REFERENCE",
+                path,
+                f"{location}.handoff_target",
+                "workflow-state-or-complete",
+                "unknown-layer-handoff",
+                source,
+            )
+        evidence_fields = _check_string_list(
+            raw.get("evidence_fields"),
+            path,
+            f"{location}.evidence_fields",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        if tuple(evidence_fields or ()) != SANITIZED_EVIDENCE_FIELDS:
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-EVIDENCE",
+                path,
+                f"{location}.evidence_fields",
+                "exact-sanitized-evidence-fields",
+                "layer-evidence-field-mismatch",
+                source,
+            )
+        expected = EXPECTED_HARNESS_LAYER_SEMANTICS.get(str(layer_id))
+        actual = (
+            owner,
+            raw.get("mutation_authority"),
+            failure_return,
+            handoff_target,
+        )
+        if expected is None or actual != expected:
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-SEMANTICS",
+                path,
+                location,
+                "registered-layer-semantics",
+                "layer-semantics-mismatch",
+                source,
+            )
+    if tuple(observed_ids) != EXPECTED_HARNESS_LAYER_IDS:
+        _add(
+            findings,
+            "AGC-HARNESS-LAYER-ORDER",
+            path,
+            "harness_layers",
+            "exact-eight-layer-order",
+            "layer-order-or-cardinality-mismatch",
+            source,
+        )
+    return sorted(findings, key=finding_sort_key)
+
+
+def _validate_workflow_states(
+    states: Sequence[Mapping[str, object]], agent_ids: frozenset[str]
+) -> list[Finding]:
+    """Validate the sole discover-to-handoff lifecycle value-free."""
+
+    path = CONTRACT_RELATIVE_PATHS["providers"].as_posix()
+    source = path
+    findings: list[Finding] = []
+    observed_ids: list[str] = []
+    state_references = frozenset(EXPECTED_WORKFLOW_STATE_IDS)
+    for index, raw in enumerate(states):
+        location = f"workflow_states[{index}]"
+        if not isinstance(raw, Mapping):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-SCHEMA",
+                path,
+                location,
+                "exact-workflow-state-fields",
+                "non-mapping-state",
+                source,
+            )
+            continue
+        keys = {str(key) for key in raw}
+        if keys != WORKFLOW_STATE_FIELDS:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-SCHEMA",
+                path,
+                location,
+                "exact-workflow-state-fields",
+                "workflow-state-field-mismatch",
+                source,
+            )
+        state_id = raw.get("state_id")
+        if _check_string(
+            state_id, path, f"{location}.state_id", findings, source
+        ):
+            observed_ids.append(str(state_id))
+        owner = raw.get("owner_agent")
+        if not _is_registered_string(owner, agent_ids):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-OWNER",
+                path,
+                f"{location}.owner_agent",
+                "registered-agent-owner",
+                "unknown-state-owner",
+                source,
+            )
+        _check_string_list(
+            raw.get("required_inputs"),
+            path,
+            f"{location}.required_inputs",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        _check_enum(
+            raw.get("mutation_authority"),
+            MUTATION_AUTHORITIES,
+            path,
+            f"{location}.mutation_authority",
+            findings,
+            source,
+        )
+        for field in ("entry_condition", "exit_gate"):
+            _check_string(
+                raw.get(field), path, f"{location}.{field}", findings, source
+            )
+        attempts = raw.get("max_attempts")
+        if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts <= 0:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-ATTEMPT-BOUND",
+                path,
+                f"{location}.max_attempts",
+                "positive-bounded-attempt-count",
+                "invalid-state-attempt-bound",
+                source,
+            )
+        failure_return = raw.get("failure_return")
+        handoff_target = raw.get("handoff_target")
+        if not _is_registered_string(
+            failure_return, state_references | {"stop"}
+        ):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-REFERENCE",
+                path,
+                f"{location}.failure_return",
+                "workflow-state-or-stop",
+                "unknown-state-failure-return",
+                source,
+            )
+        if not _is_registered_string(
+            handoff_target, state_references | {"complete"}
+        ):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-REFERENCE",
+                path,
+                f"{location}.handoff_target",
+                "workflow-state-or-complete",
+                "unknown-state-handoff",
+                source,
+            )
+        evidence_fields = _check_string_list(
+            raw.get("evidence_fields"),
+            path,
+            f"{location}.evidence_fields",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        if tuple(evidence_fields or ()) != SANITIZED_EVIDENCE_FIELDS:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-EVIDENCE",
+                path,
+                f"{location}.evidence_fields",
+                "exact-sanitized-evidence-fields",
+                "state-evidence-field-mismatch",
+                source,
+            )
+        expected = EXPECTED_WORKFLOW_STATE_SEMANTICS.get(str(state_id))
+        actual = (
+            owner,
+            raw.get("mutation_authority"),
+            raw.get("entry_condition"),
+            raw.get("exit_gate"),
+            attempts,
+            failure_return,
+            handoff_target,
+        )
+        if expected is None or actual != expected:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-SEMANTICS",
+                path,
+                location,
+                "registered-workflow-state-semantics",
+                "workflow-state-semantics-mismatch",
+                source,
+            )
+    if tuple(observed_ids) != EXPECTED_WORKFLOW_STATE_IDS:
+        _add(
+            findings,
+            "AGC-WORKFLOW-STATE-ORDER",
+            path,
+            "workflow_states",
+            "discover-to-handoff-order",
+            "state-order-or-cardinality-mismatch",
+            source,
+        )
+    return sorted(findings, key=finding_sort_key)
 
 
 def _validate_provider_contract(
@@ -3690,6 +4266,32 @@ def _validate_provider_contract(
                 )
                 or ()
             )
+            workflow_states = (
+                _check_string_list(
+                    entry.get("workflow_states"),
+                    path,
+                    f"{location}.workflow_states",
+                    findings,
+                    source,
+                )
+                or ()
+            )
+            expected_workflow_states = EXPECTED_HARNESS_LOOP_STATES.get(
+                str(event_id)
+            )
+            if (
+                expected_workflow_states is None
+                or workflow_states != expected_workflow_states
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-WORKFLOW-STATE",
+                    path,
+                    f"{location}.workflow_states",
+                    "registered-applicable-workflow-states",
+                    "loop-workflow-state-mismatch",
+                    source,
+                )
             if not set(allowed_tools).issubset(
                 LOOP_PERMISSION_TOOLS.get(str(permission), frozenset())
             ):
@@ -4506,6 +5108,23 @@ def validate_contract_bundle(
     _validate_provider_contract(root, bundle.providers, findings)
     _validate_catalog_contract(
         bundle.catalog, bundle.providers, bundle.artifacts, findings
+    )
+    agent_ids = frozenset(
+        str(entry.get("agent_id"))
+        for entry in _sequence_or_empty(bundle.catalog.get("agents"))
+        if isinstance(entry, Mapping) and isinstance(entry.get("agent_id"), str)
+    )
+    findings.extend(
+        _validate_harness_layers(
+            _sequence_or_empty(bundle.providers.get("harness_layers")),
+            agent_ids,
+        )
+    )
+    findings.extend(
+        _validate_workflow_states(
+            _sequence_or_empty(bundle.providers.get("workflow_states")),
+            agent_ids,
+        )
     )
     findings.extend(validate_retirement_ledger(root, bundle))
     return sorted(findings, key=finding_sort_key)

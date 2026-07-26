@@ -28,8 +28,8 @@ evaluation:
   scorer_path: scripts/validation/agent_output_eval.py
   runner_path: scripts/validation/run-agent-output-eval-fixtures.sh
   test_path: tests/validation/test_agent_output_eval_fixtures.py
-  fixture_count: 8
-  regression_count: 10
+  fixture_count: 11
+  regression_count: 16
   input_classification: synthetic-fixture
   input_roots:
     - docs/90.references/data/governance/agent-output-eval-synthetic
@@ -43,6 +43,9 @@ evaluation:
     AOE-DOC-001: 0.50
     AOE-HOOK-001: 0.50
     AOE-INFRA-001: 0.50
+    AOE-LOOP-001: 0.50
+    AOE-MEMORY-001: 0.50
+    AOE-MODEL-001: 0.50
     AOE-PROVIDER-001: 0.50
     AOE-ROLE-001: 0.50
     AOE-ROUTING-001: 0.50
@@ -91,6 +94,7 @@ agents:
       - adr-writing
       - knowledge-map-agent
       - ops-runbook-agent
+      - project-memory-stewardship
     provider_projections:
       - agents-md
       - claude
@@ -119,6 +123,7 @@ agents:
     permission_profile: read-only
     work_profile: adversarial-review
     function_ids:
+      - provider-model-evaluation
       - workspace-audit-revalidation
     provider_projections:
       - agents-md
@@ -557,6 +562,52 @@ functions:
     provider_projections:
       - agents-md
       - claude
+  - function_id: project-memory-stewardship
+    scope: docs
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/project-memory-stewardship.md
+    owner_agent: doc-writer
+    reviewer_agents:
+      - eval-engineer
+      - rules-engineer
+    inputs:
+      - current-memory-contract
+      - durable-stage-04-evidence
+      - verified-repository-state
+    outputs:
+      - bounded-current-state-update
+      - durable-evidence-links
+      - policy-duplication-check
+    gates:
+      - bounded-current-state
+      - no-policy-duplication
+      - value-free-evidence-links
+    provider_projections:
+      - agents-md
+      - claude
+  - function_id: provider-model-evaluation
+    scope: qa
+    status: active
+    catalog_path: docs/00.agent-governance/agents/functions/provider-model-evaluation.md
+    owner_agent: eval-engineer
+    reviewer_agents:
+      - code-reviewer
+      - rules-engineer
+    inputs:
+      - provider-model-contract
+      - provider-source-observations
+      - synthetic-regression-results
+    outputs:
+      - sourced-model-disposition
+      - native-acceptance-verdict
+      - regression-comparison
+    gates:
+      - no-live-model-claim
+      - source-and-status-axis-separation
+      - value-free-regression-evidence
+    provider_projections:
+      - agents-md
+      - claude
   - function_id: requirements-to-design-agent
     scope: architecture
     status: active
@@ -669,42 +720,72 @@ capability_intake:
   - capability_id: code-review
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: merge
     owner_agent: code-reviewer
     evaluation_function: code-review-dimensions
+    rationale: Merge deliverable-focused review into the existing independent review owner.
   - capability_id: devops-automation
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: merge
     owner_agent: ci-cd-engineer
     evaluation_function: ci-cd-patterns
+    rationale: Merge delivery automation into the existing CI and pipeline boundary.
   - capability_id: incident-and-sre
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: merge
     owner_agent: incident-responder
     evaluation_function: incident-response
+    rationale: Merge incident and reliability response into the existing operational owner.
+  - capability_id: knowledge-stewardship
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
+    decision: merge
+    owner_agent: doc-writer
+    evaluation_function: project-memory-stewardship
+    rationale: Merge bounded knowledge continuity as a function without adding a role.
   - capability_id: multi-agent-architecture
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: merge
     owner_agent: workflow-supervisor
     evaluation_function: task-breakdown-agent
+    rationale: Merge multi-agent coordination into the existing supervisor and task boundary.
   - capability_id: product-discovery
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: defer
     owner_agent: workflow-supervisor
     evaluation_function: workspace-audit-revalidation
+    rationale: Defer a broader product capability until a distinct approved output is required.
+  - capability_id: provider-model-qa
+    source: agency-agents
+    source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
+    decision: merge
+    owner_agent: eval-engineer
+    evaluation_function: provider-model-evaluation
+    rationale: Merge model and prompt evaluation as a sourced function without live-model claims.
   - capability_id: reality-checking
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: merge
     owner_agent: eval-engineer
     evaluation_function: workspace-audit-revalidation
+    rationale: Merge evidence-based reality checks into the existing evaluation owner.
   - capability_id: technical-writing
     source: agency-agents
     source_url: https://github.com/msitarzewski/agency-agents
+    source_retrieved_at: "2026-07-26"
     decision: merge
     owner_agent: doc-writer
     evaluation_function: knowledge-map-agent
+    rationale: Merge deliverable-focused technical writing into the existing documentation owner.

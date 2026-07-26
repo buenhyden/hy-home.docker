@@ -183,7 +183,7 @@ class ContractLoadingTests(unittest.TestCase):
         bundle = contract.load_contract_bundle(ROOT)
         self.assertEqual([], contract.validate_contract_bundle(ROOT, bundle))
         self.assertEqual(14, len(bundle.catalog["agents"]))
-        self.assertEqual(22, len(bundle.catalog["functions"]))
+        self.assertEqual(24, len(bundle.catalog["functions"]))
         self.assertEqual(3, len(bundle.providers["providers"]))
 
     def test_bundle_and_findings_are_immutable(self) -> None:
@@ -1736,7 +1736,7 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
             category_members.setdefault(entry["category"], set()).add(entry["agent_id"])
         self.assertEqual(self.EXPECTED_CATEGORIES, category_members)
         self.assertEqual(14, sum(len(members) for members in category_members.values()))
-        self.assertEqual(22, len(bundle.catalog["functions"]))
+        self.assertEqual(24, len(bundle.catalog["functions"]))
         self.assertNotIn("role_transfers", bundle.catalog)
         agent_functions = {
             entry["agent_id"]: set(entry["function_ids"])
@@ -1784,8 +1784,8 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
         self.assertFalse((ROOT / ".codex/skills").exists())
         self.assertEqual([], list((ROOT / ".claude/skills").glob("*/skill.md")))
         self.assertEqual([], list((ROOT / ".agents/skills").glob("*/skill.md")))
-        self.assertEqual(22, len(list((ROOT / ".claude/skills").glob("*/SKILL.md"))))
-        self.assertEqual(22, len(list((ROOT / ".agents/skills").glob("*/SKILL.md"))))
+        self.assertEqual(24, len(list((ROOT / ".claude/skills").glob("*/SKILL.md"))))
+        self.assertEqual(24, len(list((ROOT / ".agents/skills").glob("*/SKILL.md"))))
 
     def test_retired_role_references_are_removed_from_directly_affected_surfaces(
         self,
@@ -1889,7 +1889,7 @@ class CommandLineTests(unittest.TestCase):
         result = self.run_checker("--mode", "contract")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(
-            "agent_governance_contract: PASS contracts=3 agents=14 functions=22 providers=3 failures=0\n",
+            "agent_governance_contract: PASS contracts=3 agents=14 functions=24 providers=3 failures=0\n",
             result.stdout,
         )
         self.assertEqual("", result.stderr)
@@ -2345,12 +2345,22 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_112_uniquely_routed_artifacts(
+    def test_repository_harness_inventory_has_114_uniquely_routed_artifacts(
         self,
     ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(112, len(inventory))
+        self.assertEqual(114, len(inventory))
+        self.assertTrue(
+            {
+                ROOT
+                / "docs/00.agent-governance/agents/functions/"
+                "project-memory-stewardship.md",
+                ROOT
+                / "docs/00.agent-governance/agents/functions/"
+                "provider-model-evaluation.md",
+            }.issubset(inventory)
+        )
         findings = contract.validate_repository(ROOT, bundle, "harness")
         self.assertFalse(
             codes(findings)
@@ -4027,6 +4037,336 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
             self.assertNotIn("AGC-MEMORY-STALE-STATE", codes(findings))
 
 
+class Task4CapabilityFunctionTests(unittest.TestCase):
+    FUNCTION_CONTRACTS = {
+        "project-memory-stewardship": {
+            "scope": "docs",
+            "owner_agent": "doc-writer",
+            "reviewer_agents": ("eval-engineer", "rules-engineer"),
+            "outputs": (
+                "bounded-current-state-update",
+                "durable-evidence-links",
+                "policy-duplication-check",
+            ),
+        },
+        "provider-model-evaluation": {
+            "scope": "qa",
+            "owner_agent": "eval-engineer",
+            "reviewer_agents": ("code-reviewer", "rules-engineer"),
+            "outputs": (
+                "sourced-model-disposition",
+                "native-acceptance-verdict",
+                "regression-comparison",
+            ),
+        },
+    }
+    CAPABILITY_ROUTES = {
+        "knowledge-stewardship": (
+            "doc-writer",
+            "project-memory-stewardship",
+        ),
+        "provider-model-qa": (
+            "eval-engineer",
+            "provider-model-evaluation",
+        ),
+    }
+    SOURCE_URL = "https://github.com/msitarzewski/agency-agents"
+    SOURCE_RETRIEVED_AT = "2026-07-26"
+
+    def test_role_and_function_cardinality_ownership_and_projection_are_exact(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual(14, len(bundle.catalog["agents"]))
+        self.assertEqual(24, len(bundle.catalog["functions"]))
+
+        functions = {
+            entry["function_id"]: entry for entry in bundle.catalog["functions"]
+        }
+        agents = {entry["agent_id"]: entry for entry in bundle.catalog["agents"]}
+        for function_id, expected in self.FUNCTION_CONTRACTS.items():
+            with self.subTest(function_id=function_id):
+                entry = functions[function_id]
+                self.assertEqual(expected["scope"], entry["scope"])
+                self.assertEqual(expected["owner_agent"], entry["owner_agent"])
+                self.assertEqual(
+                    expected["reviewer_agents"], entry["reviewer_agents"]
+                )
+                self.assertEqual(expected["outputs"], entry["outputs"])
+                self.assertEqual(("agents-md", "claude"), entry["provider_projections"])
+                self.assertIn(
+                    function_id,
+                    agents[expected["owner_agent"]]["function_ids"],
+                )
+
+        self.assertEqual(
+            24, len(list((ROOT / ".agents/skills").glob("*/SKILL.md")))
+        )
+        self.assertEqual(
+            24, len(list((ROOT / ".claude/skills").glob("*/SKILL.md")))
+        )
+        for function_id in self.FUNCTION_CONTRACTS:
+            for root in (".agents/skills", ".claude/skills"):
+                with self.subTest(function_id=function_id, root=root):
+                    projection = ROOT / root / function_id / "SKILL.md"
+                    self.assertTrue(projection.is_file())
+                    text = projection.read_text(encoding="utf-8")
+                    self.assertIn(
+                        "Generated by scripts/operations/provider_surface_renderer.py",
+                        text,
+                    )
+                    self.assertIn(
+                        "docs/00.agent-governance/agents/functions/"
+                        f"{function_id}.md",
+                        text,
+                    )
+
+    def test_new_function_documents_have_registered_frontmatter_and_sections(
+        self,
+    ) -> None:
+        required_sections = (
+            "Preconditions",
+            "Inputs",
+            "Procedure",
+            "Outputs",
+            "Gates",
+            "Failure Handling",
+            "Related Documents",
+        )
+        for function_id, expected in self.FUNCTION_CONTRACTS.items():
+            with self.subTest(function_id=function_id):
+                path = (
+                    ROOT
+                    / "docs/00.agent-governance/agents/functions"
+                    / f"{function_id}.md"
+                )
+                text = path.read_text(encoding="utf-8")
+                self.assertTrue(
+                    text.startswith(
+                        "---\n"
+                        "layer: agentic\n"
+                        "artifact_type: agent-function\n"
+                        f"function_id: {function_id}\n"
+                        f"scope: {expected['scope']}\n"
+                        "status: active\n"
+                        "---\n"
+                    )
+                )
+                self.assertEqual(
+                    required_sections,
+                    tuple(
+                        match.group(1)
+                        for match in re.finditer(r"^## (.+)$", text, re.MULTILINE)
+                    ),
+                )
+                self.assertIn(expected["owner_agent"], text)
+                for output in expected["outputs"]:
+                    self.assertIn(output, text)
+
+    def test_capability_intake_maps_model_qa_and_knowledge_stewardship_without_roles(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual(14, len(bundle.catalog["agents"]))
+        intake = {
+            entry["capability_id"]: entry
+            for entry in bundle.catalog["capability_intake"]
+        }
+        for capability_id, (owner, function_id) in self.CAPABILITY_ROUTES.items():
+            with self.subTest(capability_id=capability_id):
+                entry = intake[capability_id]
+                self.assertEqual("agency-agents", entry["source"])
+                self.assertEqual(self.SOURCE_URL, entry["source_url"])
+                self.assertEqual(
+                    self.SOURCE_RETRIEVED_AT, entry["source_retrieved_at"]
+                )
+                self.assertEqual("merge", entry["decision"])
+                self.assertEqual(owner, entry["owner_agent"])
+                self.assertEqual(function_id, entry["evaluation_function"])
+                self.assertIsInstance(entry["rationale"], str)
+                self.assertTrue(entry["rationale"])
+
+        for entry in intake.values():
+            self.assertIn(entry["decision"], {"merge", "defer", "reject"})
+            if entry["source"] == "agency-agents":
+                self.assertEqual(self.SOURCE_URL, entry["source_url"])
+                self.assertEqual(
+                    self.SOURCE_RETRIEVED_AT, entry["source_retrieved_at"]
+                )
+                self.assertIsInstance(entry["rationale"], str)
+                self.assertTrue(entry["rationale"])
+
+
+class Task4HarnessLoopTests(unittest.TestCase):
+    EXPECTED_LAYER_IDS = (
+        "canonical-contract",
+        "role-function-routing",
+        "permission-mutation-boundary",
+        "provider-model-reasoning-policy",
+        "semantic-event-hooks",
+        "controlled-qa-validation",
+        "tracked-ci",
+        "sanitized-evidence-handoff",
+    )
+    EXPECTED_STATE_IDS = (
+        "discover",
+        "design/plan",
+        "approval",
+        "implement",
+        "validate",
+        "independent-review",
+        "evidence",
+        "handoff",
+    )
+    LAYER_FIELDS = {
+        "layer_id",
+        "owner_agent",
+        "required_inputs",
+        "mutation_authority",
+        "gates",
+        "failure_return",
+        "evidence_fields",
+        "handoff_target",
+    }
+    STATE_FIELDS = {
+        "state_id",
+        "owner_agent",
+        "required_inputs",
+        "mutation_authority",
+        "entry_condition",
+        "exit_gate",
+        "max_attempts",
+        "failure_return",
+        "evidence_fields",
+        "handoff_target",
+    }
+    STATE_SEMANTICS = {
+        "discover": ("read-only", 1, "stop", "design/plan"),
+        "design/plan": ("workspace-write", 2, "design/plan", "approval"),
+        "approval": ("read-only", 1, "approval", "implement"),
+        "implement": ("workspace-write", 2, "stop", "validate"),
+        "validate": ("workspace-write", 1, "implement", "independent-review"),
+        "independent-review": ("read-only", 2, "implement", "evidence"),
+        "evidence": ("workspace-write", 1, "independent-review", "handoff"),
+        "handoff": ("read-only", 1, "evidence", "complete"),
+    }
+    LOOP_STATES = {
+        "approved-all-files-gate": ("validate", "evidence"),
+        "bounded-implementation-loop": ("implement", "validate"),
+        "context-bootstrap": ("discover",),
+        "independent-review-loop": ("implement", "independent-review"),
+    }
+
+    def test_harness_declares_eight_typed_layers_and_discover_to_handoff_states(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        layers = bundle.providers["harness_layers"]
+        states = bundle.providers["workflow_states"]
+        self.assertEqual(
+            self.EXPECTED_LAYER_IDS,
+            tuple(layer["layer_id"] for layer in layers),
+        )
+        self.assertEqual(
+            self.EXPECTED_STATE_IDS,
+            tuple(state["state_id"] for state in states),
+        )
+        for layer in layers:
+            with self.subTest(layer=layer["layer_id"]):
+                self.assertEqual(self.LAYER_FIELDS, set(layer))
+                self.assertTrue(layer["required_inputs"])
+                self.assertTrue(layer["gates"])
+                self.assertEqual(
+                    ("command", "result", "rollback", "skipped_checks"),
+                    layer["evidence_fields"],
+                )
+        for state in states:
+            with self.subTest(state=state["state_id"]):
+                self.assertEqual(self.STATE_FIELDS, set(state))
+                self.assertTrue(state["required_inputs"])
+                self.assertEqual(
+                    self.STATE_SEMANTICS[state["state_id"]],
+                    (
+                        state["mutation_authority"],
+                        state["max_attempts"],
+                        state["failure_return"],
+                        state["handoff_target"],
+                    ),
+                )
+                self.assertEqual(
+                    ("command", "result", "rollback", "skipped_checks"),
+                    state["evidence_fields"],
+                )
+
+        loops = {
+            entry["event_id"]: entry for entry in bundle.providers["harness_loops"]
+        }
+        self.assertEqual(set(self.LOOP_STATES), set(loops))
+        for event_id, expected_states in self.LOOP_STATES.items():
+            with self.subTest(event_id=event_id):
+                self.assertEqual(expected_states, loops[event_id]["workflow_states"])
+
+    def test_layer_and_state_validators_are_deterministic_and_value_free(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        agent_ids = frozenset(
+            entry["agent_id"] for entry in bundle.catalog["agents"]
+        )
+        layers = bundle.providers["harness_layers"]
+        states = bundle.providers["workflow_states"]
+        self.assertEqual([], contract._validate_harness_layers(layers, agent_ids))
+        self.assertEqual([], contract._validate_workflow_states(states, agent_ids))
+
+        cases = []
+        changed_layers = [dict(layer) for layer in layers]
+        changed_layers[0]["unexpected"] = "sentinel-layer-value"
+        cases.append(
+            (
+                contract._validate_harness_layers,
+                changed_layers,
+                "AGC-HARNESS-LAYER-SCHEMA",
+                "sentinel-layer-value",
+            )
+        )
+        changed_layers = list(reversed([dict(layer) for layer in layers]))
+        cases.append(
+            (
+                contract._validate_harness_layers,
+                changed_layers,
+                "AGC-HARNESS-LAYER-ORDER",
+                self.EXPECTED_LAYER_IDS[-1],
+            )
+        )
+        changed_states = [dict(state) for state in states]
+        changed_states[4]["max_attempts"] = -7331
+        cases.append(
+            (
+                contract._validate_workflow_states,
+                changed_states,
+                "AGC-WORKFLOW-STATE-ATTEMPT-BOUND",
+                "-7331",
+            )
+        )
+        changed_states = [dict(state) for state in states]
+        changed_states[4]["failure_return"] = "sentinel-state-value"
+        cases.append(
+            (
+                contract._validate_workflow_states,
+                changed_states,
+                "AGC-WORKFLOW-STATE-REFERENCE",
+                "sentinel-state-value",
+            )
+        )
+        for validator, values, expected_code, sentinel in cases:
+            with self.subTest(expected_code=expected_code):
+                first = validator(values, agent_ids)
+                second = validator(values, agent_ids)
+                self.assertEqual(first, second)
+                self.assertIn(expected_code, codes(first))
+                self.assertNotIn(sentinel, contract.render_findings(first))
+
+
 class Task5HarnessLoopContractTests(unittest.TestCase):
     EXPECTED_LOOPS = {
         "approved-all-files-gate": (1, "controlled-wrapper-pass", "record_and_stop"),
@@ -4147,8 +4487,8 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertEqual("eval-engineer", evaluation["owner_agent"])
         self.assertEqual("code-reviewer", evaluation["reviewer_agent"])
         self.assertNotEqual(evaluation["owner_agent"], evaluation["reviewer_agent"])
-        self.assertEqual(8, evaluation["fixture_count"])
-        self.assertEqual(10, evaluation["regression_count"])
+        self.assertEqual(11, evaluation["fixture_count"])
+        self.assertEqual(16, evaluation["regression_count"])
         self.assertEqual("synthetic-fixture", evaluation["input_classification"])
         self.assertEqual(
             (
@@ -4164,6 +4504,9 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 "AOE-DOC-001",
                 "AOE-HOOK-001",
                 "AOE-INFRA-001",
+                "AOE-LOOP-001",
+                "AOE-MEMORY-001",
+                "AOE-MODEL-001",
                 "AOE-PROVIDER-001",
                 "AOE-ROLE-001",
                 "AOE-ROUTING-001",

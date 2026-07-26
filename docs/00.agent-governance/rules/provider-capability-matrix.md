@@ -22,7 +22,9 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Memory             | `memory/README.md` + `memory/current.md`                   | shared bounded handoff                         | shared bounded handoff                      | shared bounded handoff                  |
 | Models             | `contracts/provider-models.yaml` work profiles             | `claude-opus-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` | `gpt-5.6-sol` / `gpt-5.6-terra` + reasoning effort | `gemini-3.6-flash` / `gemini-3.5-flash-lite` |
 | Templates          | `docs/99.templates/` via `rules/documentation-protocol.md` | shared                                         | shared                                      | shared                                  |
-| Harness loops      | `contracts/provider-models.yaml` `harness_loops`           | shared bounded contract; native event where configured | shared bounded contract; `SessionEnd` unsupported | shared bounded contract; native event adapter where configured |
+| Harness layers     | `contracts/provider-models.yaml` `harness_layers`          | shared typed controls                          | shared typed controls                       | shared typed controls                    |
+| Workflow states    | `contracts/provider-models.yaml` `workflow_states`         | shared discover-to-handoff lifecycle           | shared discover-to-handoff lifecycle        | shared discover-to-handoff lifecycle     |
+| Harness loops      | `contracts/provider-models.yaml` `harness_loops`           | bounded controls referencing states; native event where configured | bounded controls referencing states; `SessionEnd` unsupported | bounded controls referencing states; native event adapter where configured |
 
 ## 2. Rules
 
@@ -43,6 +45,11 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 5. Capability, tracked adoption, and runtime depth are independent facts.
    `configured-not-executed` records a tracked native binding without claiming
    live execution; only authenticated runtime evidence can establish execution.
+6. The dated `agent-catalog.yaml` capability intake compares upstream
+   deliverable patterns as `merge`, `defer`, or `reject`. Provider model QA
+   routes to `provider-model-evaluation`, knowledge continuity routes to
+   `project-memory-stewardship`, and upstream personality prose never creates a
+   repository role.
 
 ## 3. Supported / Unsupported / Deferred
 
@@ -51,7 +58,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Custom subagents                  | Supported and adopted (`.claude/agents`)      | Supported and adopted (`.codex/agents/*.toml`) | Supported and adopted (`.gemini/agents/*.md`) |
 | Skills                            | Supported (`.claude/skills`)                  | Supported through `.agents/skills` | Supported through `.agents/skills`  |
 | Programmatic hooks                | Supported (`settings.json` + `.claude/hooks`) | Supported with explicit `SessionEnd` gap (`.codex/hooks.json`) | Supported (`.gemini/settings.json` + thin adapter) |
-| Per-agent model                   | Supported model ID and native `effort`; per-agent `thinking` is unsupported and inherited from the session | Supported (model ID + reasoning effort) | Supported (native model field; no invented reasoning field) |
+| Per-agent model                   | Supported model ID and native `effort`; Haiku omits unsupported effort | Supported (model ID + reasoning effort) | Supported model field plus scoped `modelConfigs.overrides` thinking level |
 | Native output style               | Supported (`.claude/output-styles`)           | Unsupported → behavioral contract | Unsupported → behavioral contract    |
 | Per-subagent tools/permissionMode | Supported (frontmatter)                       | Supported sandbox mode; parent runtime remains authoritative | Supported tool allowlist; sandbox remains runtime-level |
 
@@ -67,7 +74,10 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 ## 4. Shared Development-Harness Gates
 
 All provider adapters preserve the same lifecycle contract:
-`discovery -> applicability -> provider loading -> canonical artifact -> validation evidence`.
+`discover -> design/plan -> approval -> implement -> validate ->
+independent-review -> evidence -> handoff`. The eight typed harness layers
+apply canonical contract, routing, permission, model, event, QA, CI, and
+evidence controls to those states; they do not create another lifecycle.
 Provider-specific hook or reminder mechanics do not change these gates:
 
 - For changed or new target Markdown, run
@@ -79,10 +89,11 @@ Provider-specific hook or reminder mechanics do not change these gates:
   Git-visible, non-ignored repository paths in Stage 04 evidence.
 - A provider reminder, pointer, or hook reports the obligation; it does not
   create policy or prove that a provider-native interception occurred.
-- All providers use the same four typed bootstrap, bounded implementation,
-  independent review, and approved all-files loops. Provider event names and
-  native support may differ, but retry, stop, escalation, least-privilege tool,
-  and sanitized evidence rules do not.
+- All providers use the same four bounded bootstrap, implementation, review,
+  and approved all-files controls. Each loop references its applicable
+  `workflow_states`; provider event names and native support may differ, but
+  retry, stop, escalation, least-privilege tool, and sanitized evidence rules
+  do not.
 
 ## 5. Output-Style Placement
 

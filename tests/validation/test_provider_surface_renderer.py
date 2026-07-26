@@ -203,7 +203,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         renderer = load_renderer()
         catalog = renderer.load_catalog(ROOT)
         self.assertEqual(14, len(catalog.agents))
-        self.assertEqual(22, len(catalog.functions))
+        self.assertEqual(24, len(catalog.functions))
         self.assertEqual(
             sorted(record.agent_id for record in catalog.agents),
             [record.agent_id for record in catalog.agents],
@@ -281,10 +281,10 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             self.assertFalse((root / ".codex/skills").exists())
             self.assertFalse(managed_stale.exists())
             self.assertEqual(
-                22, len(list((root / ".claude/skills").glob("*/SKILL.md")))
+                24, len(list((root / ".claude/skills").glob("*/SKILL.md")))
             )
             self.assertEqual(
-                22, len(list((root / ".agents/skills").glob("*/SKILL.md")))
+                24, len(list((root / ".agents/skills").glob("*/SKILL.md")))
             )
 
             snapshot = {
@@ -506,7 +506,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         checked = 0
         for provider in ("claude", "agents-md"):
             projection = renderer.expected_projection(ROOT, provider)
-            self.assertEqual(22, len(projection))
+            self.assertEqual(24, len(projection))
             for output_path, content in projection.items():
                 checked += 1
                 for match in inline_link.finditer(content):
@@ -520,7 +520,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                         f"broken projection link: {output_path} -> {target}",
                     )
                     self.assertTrue(resolved.is_relative_to(ROOT.resolve()))
-        self.assertEqual(44, checked)
+        self.assertEqual(48, checked)
 
     def test_link_rebasing_preserves_external_absolute_and_anchor_targets(self) -> None:
         renderer = load_renderer()

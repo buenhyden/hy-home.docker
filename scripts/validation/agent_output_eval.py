@@ -74,10 +74,10 @@ MAX_FIXTURE_CATALOG_BYTES = 64 * 1_024
 MAX_TYPED_CATALOG_BYTES = 64 * 1_024
 MAX_CATALOG_LINES = 1_024
 MAX_CATALOG_LINE_BYTES = 8_192
-MAX_CATALOG_SECTIONS = 8
+MAX_CATALOG_SECTIONS = 11
 MAX_CATALOG_FIELDS_PER_SECTION = 10
 MAX_CATALOG_CONTAINER_PREFIXES = 16
-MAX_TYPED_THRESHOLDS = 8
+MAX_TYPED_THRESHOLDS = 11
 # Extraction is intentionally broader than the accepted shape. Bounds are
 # classified after a complete line-local candidate is found so an N+1 key or
 # value cannot disappear from the security decision.
@@ -553,14 +553,14 @@ FIXTURES: dict[str, Fixture] = {
     ),
     "AOE-ADAPTER-001": _fixture(
         "AOE-ADAPTER-001",
-        "Adapter Rendering and Model Fallback",
-        "generated provider adapters and approved model fallback",
+        "Adapter Rendering and Model Policy",
+        "generated provider adapters and configured model policy",
         FixtureNarrative(
             input_scenario="A canonical role/function or model policy change must render exactly to native provider surfaces.",
-            expected_output="Uses the canonical renderer, proves zero drift, and resolves fallback through an approved typed edge.",
-            scoring_criteria="Renderer ownership, native schema, drift result, fallback approval, and runtime honesty.",
-            block_conditions="Hand-edited generated policy or a model fallback without a registered approval edge.",
-            evidence="Renderer `--check`, contract validator, exact fallback approval, and `needs_revalidation` when runtime evidence is absent.",
+            expected_output="Uses the canonical renderer, proves zero drift, and keeps configured defaults separate from runtime activation.",
+            scoring_criteria="Renderer ownership, native schema, drift result, configured-default eligibility, and runtime honesty.",
+            block_conditions="Hand-edited generated policy, an automatic fallback, or a live activation claim without direct evidence.",
+            evidence="Renderer `--check`, contract validator, configured model/profile facts, and `needs_revalidation` when runtime evidence is absent.",
         ),
         (
             "docs/00.agent-governance/contracts/provider-models.yaml",
@@ -569,11 +569,127 @@ FIXTURES: dict[str, Fixture] = {
         ),
         (
             Criterion(
-                "adapter_fallback",
-                ("renderer", "--check", "fallback", "approval", "drift=0"),
+                "adapter_model_policy",
+                (
+                    "renderer",
+                    "--check",
+                    "configured default",
+                    "runtime activation",
+                    "drift=0",
+                ),
             ),
         ),
-        ((r"(?i)fallback .* without approval", "AOE-BLOCK-FALLBACK-BYPASS"),),
+        (
+            (
+                r"(?i)\bautomatic fallback\b|\blive activation\b.*\bwithout direct evidence\b",
+                "AOE-BLOCK-FALLBACK-BYPASS",
+            ),
+        ),
+    ),
+    "AOE-MODEL-001": _fixture(
+        "AOE-MODEL-001",
+        "Provider Model Evaluation",
+        "provider model disposition and deterministic regression comparison",
+        FixtureNarrative(
+            input_scenario="A current provider model or reasoning-profile candidate needs a repository disposition without a live provider call.",
+            expected_output="Uses `provider-model-evaluation` to separate sourced lifecycle, repository fit, native acceptance, runtime acceptance, entitlement, and synthetic regression evidence.",
+            scoring_criteria="Official source and retrieval date, independent status axes, native-schema evidence, deterministic regression comparison, and no live-model claim.",
+            block_conditions="Catalog presence or a configured default is claimed to prove runtime acceptance, entitlement, live quality, cost, or latency.",
+            evidence="Sourced model disposition, native acceptance boundary, regression comparison, and explicit `needs_revalidation` facts.",
+        ),
+        (
+            "docs/00.agent-governance/agents/functions/provider-model-evaluation.md",
+            "docs/00.agent-governance/contracts/provider-models.yaml",
+            "docs/03.specs/134-agent-governance-canonical-convergence/spec.md",
+        ),
+        (
+            Criterion(
+                "model_evaluation",
+                (
+                    "provider-model-evaluation",
+                    "source",
+                    "disposition",
+                    "runtime_acceptance",
+                    "regression",
+                ),
+            ),
+        ),
+        (
+            (
+                r"(?i)\b(?:catalog presence|configured default)\b.*\b(?:proves|establishes)\b.*\b(?:runtime acceptance|entitlement|live)\b",
+                "AOE-BLOCK-LIVE-MODEL-CLAIM",
+            ),
+        ),
+    ),
+    "AOE-MEMORY-001": _fixture(
+        "AOE-MEMORY-001",
+        "Project Memory Stewardship",
+        "bounded shared current-state update and durable evidence routing",
+        FixtureNarrative(
+            input_scenario="The verified task state changed and the bounded shared project handoff must be refreshed.",
+            expected_output="Uses `project-memory-stewardship` to replace stale current facts, link durable evidence, preserve bounds, and reject policy duplication.",
+            scoring_criteria="Task and Git-state corroboration, fixed memory envelope, durable evidence links, policy-duplication check, and value-free handoff.",
+            block_conditions="Policy bodies, raw command output, private provider state, or historical progress are copied into `memory/current.md`.",
+            evidence="Memory validator result, verified Task/commit labels, bounds, durable links, and next handoff.",
+        ),
+        (
+            "docs/00.agent-governance/agents/functions/project-memory-stewardship.md",
+            "docs/00.agent-governance/memory/README.md",
+            "docs/00.agent-governance/memory/current.md",
+        ),
+        (
+            Criterion(
+                "memory_stewardship",
+                (
+                    "project-memory-stewardship",
+                    "memory/current.md",
+                    "durable",
+                    "policy duplication",
+                    "bounded",
+                ),
+            ),
+        ),
+        (
+            (
+                r"(?i)\b(?:copy|duplicate)\b.*\bpolicy bod(?:y|ies)\b.*\bmemory/current\.md\b",
+                "AOE-BLOCK-MEMORY-POLICY-DUPLICATION",
+            ),
+        ),
+    ),
+    "AOE-LOOP-001": _fixture(
+        "AOE-LOOP-001",
+        "Typed Workflow and Bounded Loop",
+        "eight workflow states and bounded retry/event controls",
+        FixtureNarrative(
+            input_scenario="A task must traverse the canonical lifecycle while a validation or review control requests a bounded retry.",
+            expected_output="Uses the ordered `workflow_states` from discover through handoff and keeps `harness_loops` as state-referencing retry/event controls.",
+            scoring_criteria="Exact lifecycle order, approval boundary, bounded attempts, typed failure return, sanitized evidence, and handoff.",
+            block_conditions="A second lifecycle, unbounded retry, inferred approval, or scope-expanding failure route is introduced.",
+            evidence="State IDs, loop/state references, attempt count, failure return, evidence fields, and handoff target.",
+        ),
+        (
+            "docs/00.agent-governance/contracts/provider-models.yaml",
+            "docs/00.agent-governance/rules/agentic.md",
+            "docs/00.agent-governance/subagent-protocol.md",
+        ),
+        (
+            Criterion(
+                "workflow_loop",
+                (
+                    "workflow_states",
+                    "discover",
+                    "handoff",
+                    "failure_return",
+                    "max_attempts",
+                ),
+            ),
+        ),
+        (
+            (
+                r"(?i)\b(?:second|parallel)\s+lifecycle\b",
+                "AOE-BLOCK-SECOND-LIFECYCLE",
+            ),
+        ),
     ),
 }
 
@@ -649,10 +765,13 @@ REGRESSION_CASES: tuple[RegressionCase, ...] = (
     ),
     RegressionCase(
         "AOE-REG-009",
-        "model-fallback",
+        "model-activation-boundary",
         "AOE-ADAPTER-001",
         "pass",
-        _pass_text("Approved fallback uses the typed approval edge; renderer drift=0."),
+        _pass_text(
+            "Renderer --check reports drift=0; the configured default does not "
+            "claim runtime activation."
+        ),
     ),
     RegressionCase(
         "AOE-REG-010",
@@ -661,6 +780,68 @@ REGRESSION_CASES: tuple[RegressionCase, ...] = (
         "pass",
         _pass_text(
             "Sources, Related Documents, and index are updated under the reference contract."
+        ),
+    ),
+    RegressionCase(
+        "AOE-REG-011",
+        "model-evaluation",
+        "AOE-MODEL-001",
+        "pass",
+        _pass_text(
+            "provider-model-evaluation records the official source, sourced "
+            "disposition, native acceptance boundary, runtime_acceptance "
+            "needs_revalidation, and deterministic regression comparison."
+        ),
+    ),
+    RegressionCase(
+        "AOE-REG-012",
+        "model-live-claim",
+        "AOE-MODEL-001",
+        "fail",
+        _pass_text(
+            "provider-model-evaluation records source, disposition, "
+            "runtime_acceptance, and regression evidence. Catalog presence "
+            "proves live runtime acceptance and entitlement."
+        ),
+    ),
+    RegressionCase(
+        "AOE-REG-013",
+        "memory-stewardship",
+        "AOE-MEMORY-001",
+        "pass",
+        _pass_text(
+            "project-memory-stewardship keeps memory/current.md bounded, links "
+            "durable Task evidence, and records the policy duplication check."
+        ),
+    ),
+    RegressionCase(
+        "AOE-REG-014",
+        "memory-policy-duplication",
+        "AOE-MEMORY-001",
+        "fail",
+        _pass_text(
+            "project-memory-stewardship keeps memory/current.md bounded and "
+            "links durable evidence. Copy the policy body into memory/current.md."
+        ),
+    ),
+    RegressionCase(
+        "AOE-REG-015",
+        "workflow-loop",
+        "AOE-LOOP-001",
+        "pass",
+        _pass_text(
+            "workflow_states move from discover to handoff; max_attempts is "
+            "bounded, failure_return is typed, and the loop records handoff evidence."
+        ),
+    ),
+    RegressionCase(
+        "AOE-REG-016",
+        "second-lifecycle",
+        "AOE-LOOP-001",
+        "fail",
+        _pass_text(
+            "workflow_states move from discover to handoff with max_attempts "
+            "and failure_return evidence. Define a second lifecycle for retries."
         ),
     ),
 )

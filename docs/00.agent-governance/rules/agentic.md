@@ -65,6 +65,26 @@ Standard behavior contract for repo-local, auditable agent execution.
     bounded next handoff.
 13. Report changed files, checks run, and any residual risk or out-of-scope gap.
 
+### Typed Harness and Workflow
+
+- `contracts/provider-models.yaml` owns exactly eight control-plane layers:
+  canonical contract, role/function routing, permission/mutation boundary,
+  provider model/reasoning policy, semantic event hooks, controlled QA and
+  validation, tracked CI, and sanitized evidence/handoff.
+- The sole lifecycle is
+  `discover -> design/plan -> approval -> implement -> validate ->
+  independent-review -> evidence -> handoff`.
+- Harness layers apply controls to lifecycle states; they are not another
+  phase sequence. Existing `harness_loops` are bounded retry/event controls and
+  must name their applicable `workflow_states`.
+- Failed validation returns to `implement`, rejected design remains in
+  `design/plan`, missing authority remains in `approval`, and exhausted
+  attempts stop without expanding scope.
+- Approval is explicit user or governing evidence and cannot be inferred from
+  a provider handoff, hook event, model selection, or tool transition.
+- Layer, state, and loop evidence remains limited to `command`, `result`,
+  `rollback`, and `skipped_checks`.
+
 ## 4. Operational Procedures
 
 - Provide concise progress updates during long operations.
