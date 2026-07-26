@@ -8,8 +8,8 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-- T-AGCC-004 implementation is committed and specification-approved; preserve
-  its bounded evidence while quality/security review remains pending.
+- T-AGCC-001 through T-AGCC-004 are complete; preserve their bounded evidence
+  while the active convergence chain advances to T-AGCC-005.
 
 ## Approved decisions
 
@@ -21,28 +21,30 @@ status: active
 
 ## Active boundary
 
-- T-AGCC-004 covers two registered functions, typed harness layers and workflow
-  states, state-bound loops, deterministic evaluation fixtures, projections,
-  validation, and sibling Task evidence.
-- Provider runtime calls, remote mutation, Compose, infrastructure,
-  deployment, and repository-wide QA execution remain outside this task.
+- T-AGCC-005 covers the approved navigation-only `.github/INDEX.md`, local
+  workflow and QA consolidation, and remote read-only observation.
+- The controlled all-files wrapper, remote mutation, live provider calls,
+  runtime changes, Compose, infrastructure, deployment, and release remain
+  separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `fe98190b2f7625adab7d0ee2be8735d0e5879a87`
-- Verified at: `2026-07-27T00:00:14+09:00`
-- T-AGCC-001 through T-AGCC-003 are recorded complete in the active Task
+- Verified commit: `c45e292581a04bda7fc85ee4a5f74d8948314562`
+- Verified at: `2026-07-27T00:10:19+09:00`
+- T-AGCC-001 through T-AGCC-004 are recorded complete in the active Task
   ledger.
-- T-AGCC-004 implementation is committed at the verified commit. Specification
-  review of `b2e090bd..fe98190b` is C0/I0/M1 APPROVED, and its sole
-  working-tree/not-committed bookkeeping Minor is closed.
-- T-AGCC-004 quality/security review remains pending.
+- T-AGCC-004 specification review is C0/I0/M1 APPROVED with its sole
+  bookkeeping Minor closed.
+- T-AGCC-004 quality/security review of `b2e090bd..c45e2925` is C0/I0/M0 with
+  `QUALITY_SECURITY: APPROVED`; adversarial boundaries were reviewed.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- T-AGCC-004 remains `review_pending` until quality/security review completes.
+- T-AGCC-005 requires a fresh CI/security implementation owner.
 - The controlled repository-wide QA gate remains separately approval-bound.
+- Remote work remains read-only; remote mutation, live provider calls, and
+  runtime changes are not authorized.
 
 ## Evidence links
 
@@ -53,6 +55,6 @@ status: active
 
 ## Next handoff
 
-- Dispatch T-AGCC-004 quality/security review for exact range
-  `b2e090bd..fe98190b`, then record its bounded verdict in the active Task
-  ledger.
+- Dispatch a fresh T-AGCC-005 CI/security implementer for the approved
+  `.github/INDEX.md`, workflow and QA consolidation, and remote read-only
+  observation.
