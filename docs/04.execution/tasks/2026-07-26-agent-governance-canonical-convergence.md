@@ -56,6 +56,9 @@ configuration, credentials, and remote GitHub state remain out of scope.
 - User approved this exact Plan on 2026-07-26. The six local implementation
   tasks, protected local targets, and Plan-bounded destructive cleanup are
   authorized.
+- User subsequently required a README-purpose GitHub entry document with a
+  filename other than `README.md`; Task 5 now owns navigation-only
+  `.github/INDEX.md` and explicitly forbids `.github/README.md`.
 - No approval exists yet for the controlled all-files wrapper, push, remote
   merge, workflow dispatch, provider live call, or remote control-plane change.
 
@@ -70,7 +73,7 @@ surfaces. No rollback command may discard unrelated user changes.
 | T-AGCC-002 | Update model facts, profiles, renderer, and projections | provider/code | AGCC-005–006, 011 | Task 2 | model/profile tests, native schema, drift 0 | `/root/task2_provider_models` | completed |
 | T-AGCC-003 | Establish shared bounded project memory | governance/docs | AGCC-001–002, 007 | Task 3 | import parity, bounds, secret/stale checks | `/root/task3_shared_memory` | completed |
 | T-AGCC-004 | Add functions and type harness, loop, and evals | harness/code | AGCC-008–010 | Task 4 | 14/24, 8 layers/states, 11/16 evals | fresh harness implementer | not_started |
-| T-AGCC-005 | Reconcile local Actions/QA and remote observation | CI/security | AGCC-012–014 | Task 5 | 16 jobs, zizmor pin, remote inventory | fresh CI implementer | not_started |
+| T-AGCC-005 | Reconcile local Actions/QA, GitHub index, and remote observation | CI/security | AGCC-012–014 | Task 5 | navigation-only index, 16 jobs, zizmor pin, remote inventory | fresh CI implementer | not_started |
 | T-AGCC-006 | Refresh canonical evidence and close branch | docs/QA | AGCC-014–016 | Task 6 | audit 11/161, aggregate QA, branch reviews | fresh closure implementer | not_started |
 
 ## Work Log
@@ -96,6 +99,7 @@ surfaces. No rollback command may discard unrelated user changes.
 | 2026-07-26 | T-AGCC-003 pre-read bound remediation | Controller / Fresh memory implementer | Final review found that `_validate_current_memory()` applied the general 2 MiB repository text cap before checking the 32 KiB current-memory contract. The existing size/line/secret/stale test now observes the reader argument and requires an oversized fixture to return only value-free `AGC-MEMORY-BOUNDS` without its payload marker. Focused RED failed exactly once with `32768 != 2097152`; the reader now receives `CURRENT_MEMORY_MAX_BYTES`, focused GREEN passed 4/4, and the final dependency-locked contract module passed 151/151. |
 | 2026-07-26 | T-AGCC-003 specification review | `/root/task3_spec_review` | Reviewed exact range `cc7f515a..6a1a9fe3` and returned C0/I0/M1 APPROVED. The sole Minor was the Task ledger's stale `not_committed` implementation field. This bounded bookkeeping update records full implementation commit `6a1a9fe381194462598afdc7901587996e6d20fb`; quality/security review remains pending. |
 | 2026-07-26 | T-AGCC-003 quality/security review | `/root/task3_quality_security_review` | Reviewed exact range `cc7f515a..a56234ee`; returned C0/I0/M0 and `QUALITY_SECURITY: APPROVED`. The specification-review bookkeeping Minor is closed, both independent Task 3 reviews are complete, and T-AGCC-003 transitions to `completed`. |
+| 2026-07-26 | T-AGCC-005 interface amendment | User / Controller | Added the approved non-README GitHub entrypoint to the active Plan as `.github/INDEX.md`. Its authority is navigation-only, its frontmatter is forbidden, its exact five-section envelope and canonical links are validator-owned, and policy, job identity, secret/variable names, and remote enforcement claims remain in their canonical owners. |
 
 Implementation rows are appended only after the responsible agent finishes a
 logical unit. Review rows identify the exact reviewed commit range and finding

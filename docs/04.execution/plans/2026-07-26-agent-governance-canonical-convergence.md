@@ -716,6 +716,8 @@ git diff --check
 
 **Files:**
 
+- Create `.github/INDEX.md` as the navigation-only entrypoint for the tracked
+  GitHub control surface. Do not create `.github/README.md`.
 - Modify `.github/workflows/ci-quality.yml`.
 - Preserve `.github/workflows/greetings.yml`; its welcome purpose remains
   current and non-gating.
@@ -723,7 +725,8 @@ git diff --check
 - Modify `docs/00.agent-governance/rules/github-governance.md`.
 - Modify
   `docs/00.agent-governance/contracts/agent-governance-artifacts.yaml` to
-  remove the deleted memo's active artifact registration.
+  register the non-canonical GitHub navigation index and remove the deleted
+  memo's active artifact registration.
 - Delete
   `docs/00.agent-governance/memory/github-ci-contract-audit.md` after its
   current local contract routes and historical provenance are preserved.
@@ -769,6 +772,29 @@ control_plane_verification: unverified
 
 **Interfaces:**
 
+The GitHub entrypoint contract is:
+
+```yaml
+path: .github/INDEX.md
+authority: navigation-only
+canonical: false
+frontmatter: forbidden
+required_sections:
+  - Purpose
+  - Surface Map
+  - Authority and Change Routes
+  - Verification
+  - Related Documents
+```
+
+`INDEX.md` links to the tracked GitHub surfaces and to the canonical Stage 00
+GitHub governance, proposed ruleset, local QA runner, and dated Stage 90 remote
+observation. It may describe how to find those authorities, but it may not
+duplicate normative policy, the 16-job contract, secret or variable names, or
+remote enforcement claims. The artifact registry uses empty frontmatter keys
+for this non-SDLC navigation surface, and focused tests require
+`.github/README.md` to remain absent.
+
 The embedded duplicate-safe workflow checker in
 `scripts/validation/check-repo-contracts.sh` consumes the tracked workflow,
 ruleset proposal, Stage 00 GitHub policy, and Stage 90 observation as one
@@ -784,6 +810,10 @@ inferred branch protection.
 - [ ] Add RED
   `AgentGovernanceRoutingTests.test_zizmor_dynamic_tool_is_exactly_pinned`
   requiring package `zizmor==1.27.0`.
+- [ ] Add RED
+  `AgentGovernanceRoutingTests.test_github_index_is_navigation_only_and_not_readme`
+  requiring the exact path, section envelope, canonical links, absent
+  frontmatter, and no `.github/README.md`.
 - [ ] Add RED remote-inventory schema tests for management class, retrieval
   time, source visibility, run conclusion, job count, and explicit unverified
   control-plane/root-cause state.
@@ -793,6 +823,9 @@ inferred branch protection.
   and stale remote-state failures.
 - [ ] Pin zizmor 1.27.0 while retaining full-SHA action pins, least privilege,
   timeout, SARIF upload, and the existing 16 job IDs.
+- [ ] Create `.github/INDEX.md`, register it as a non-canonical
+  `github-navigation-index`, and keep policy, job identities, and observed
+  remote state in their existing canonical owners.
 - [ ] Extend `check-repo-contracts.sh` to fail on an unpinned `uvx` package,
   duplicate workflow keys, unsafe triggers/interpolation, job drift,
   permission/timeout drift, or ruleset/job mismatch.
@@ -810,14 +843,17 @@ python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
 bash scripts/validation/run-local-qa-gates.sh --list
 bash scripts/validation/run-local-qa-gates.sh --harness
 bash scripts/validation/check-repo-contracts.sh
+python3 scripts/validation/check-agent-governance-contract.py \
+  --mode repository --section harness
 pre-commit run actionlint --files \
   .github/workflows/ci-quality.yml \
   .github/workflows/document-corpus-lifecycle.yml
 git diff --check
 ```
 
-- [ ] Expect exact 16-job parity, pinned zizmor 1.27.0, static workflow policy
-  pass, and remote state still explicitly unverified.
+- [ ] Expect exact 16-job parity, pinned zizmor 1.27.0, one navigation-only
+  `.github/INDEX.md`, no `.github/README.md`, static workflow policy pass, and
+  remote state still explicitly unverified.
 - [ ] If local zizmor 1.27.0 cannot be fetched in the restricted environment,
   record `environment_blocked`; do not substitute local 1.25.2 as a pass.
 - [ ] Update Task evidence and commit

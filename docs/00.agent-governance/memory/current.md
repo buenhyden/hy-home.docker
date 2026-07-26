@@ -35,12 +35,12 @@ status: active
 - T-AGCC-003 is complete: specification review is C0/I0/M1 APPROVED with its
   sole bookkeeping Minor closed, and quality/security review is C0/I0/M0
   APPROVED.
+- The approved Task 5 `.github/INDEX.md` navigation-only interface is recorded
+  in the active Plan and Task ledger.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- The approved `.github/INDEX.md` Task 5 interface amendment still requires
-  separate Plan evidence before implementation.
 - T-AGCC-004 has not started and requires a fresh implementation owner.
 - The controlled repository-wide QA gate remains separately approval-bound.
 
@@ -53,5 +53,5 @@ status: active
 
 ## Next handoff
 
-- Record the approved `.github/INDEX.md` Task 5 interface amendment in separate
+- Commit the approved `.github/INDEX.md` Task 5 interface amendment as separate
   Plan evidence, then dispatch a fresh T-AGCC-004 implementer.
