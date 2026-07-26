@@ -17,7 +17,8 @@ MODE="${1:-}"
 readonly EXIT_USAGE=2 EXIT_POLICY=10 EXIT_NETWORK=20 EXIT_PUBLICATION=30
 readonly GRYPE_REF="anchore/grype:v0.116.0@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
 readonly GRYPE_REPO_DIGEST="anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
-readonly GRYPE_CONFIG_ID="sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+readonly GRYPE_TARGET_DESCRIPTOR_DIGEST="sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+readonly GRYPE_CONFIG_ID="sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0"
 
 runtime_dir=""
 tool_tmp_dir=""
@@ -51,7 +52,8 @@ cleanup() {
 trap cleanup EXIT
 
 assert_grype_registry_identity() {
-  python3 - "$TOOL_REGISTRY" "$GRYPE_REF" "$GRYPE_REPO_DIGEST" "$GRYPE_CONFIG_ID" <<'PY'
+  python3 - "$TOOL_REGISTRY" "$GRYPE_REF" "$GRYPE_REPO_DIGEST" \
+    "$GRYPE_TARGET_DESCRIPTOR_DIGEST" "$GRYPE_CONFIG_ID" <<'PY'
 import json
 import pathlib
 import sys
@@ -61,26 +63,78 @@ rows = [row for row in registry.get("tools", []) if row.get("name") == "grype"]
 if len(rows) != 1:
     raise SystemExit(1)
 row = rows[0]
-actual = (f'{row.get("image")}@{row.get("digest")}', row.get("repo_digest"), row.get("config_id"))
+actual = (
+    f'{row.get("image")}@{row.get("digest")}',
+    row.get("repo_digest"),
+    row.get("target_descriptor_digest"),
+    row.get("config_id"),
+)
 raise SystemExit(0 if actual == tuple(sys.argv[2:]) else 1)
 PY
 }
 
+observe_local_grype_config_digest() {
+  local private_dir archive config_digest status=0
+  private_dir="$(mktemp -d /tmp/hyhome-grype-image-identity.XXXXXX)" ||
+    return "$EXIT_POLICY"
+  chmod 700 "$private_dir" || status="$EXIT_POLICY"
+  archive="$private_dir/image.tar"
+  if [[ "$status" == 0 ]]; then
+    : >"$archive" || status="$EXIT_POLICY"
+    chmod 600 "$archive" || status="$EXIT_POLICY"
+  fi
+  if [[ "$status" == 0 ]]; then
+    timeout --signal=KILL 60s docker image save \
+      --output "$archive" "$GRYPE_REF" >/dev/null 2>&1 ||
+      status="$EXIT_POLICY"
+  fi
+  if [[ "$status" == 0 ]]; then
+    config_digest="$(
+      python3 "$CHECKER" --docker-save-config-digest "$archive"
+    )" || status="$EXIT_POLICY"
+  fi
+  rm -rf -- "$private_dir"
+  [[ "$status" == 0 ]] || return "$status"
+  printf '%s\n' "$config_digest"
+}
+
 assert_local_grype_identity() {
-  local inspection repo_digests actual_config_id
-  inspection="$(docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' "$GRYPE_REF" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-grype-image-missing"
-  repo_digests="${inspection%%|*}"
-  actual_config_id="${inspection#*|}"
-  python3 - "$repo_digests" "$GRYPE_REPO_DIGEST" <<'PY' || fail "$EXIT_POLICY" "pinned-grype-manifest-mismatch"
+  local inspection actual_config_id
+  inspection="$(docker image inspect --format '{{json .}}' "$GRYPE_REF" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-grype-image-missing"
+  python3 - "$inspection" "$GRYPE_REPO_DIGEST" \
+    "$GRYPE_TARGET_DESCRIPTOR_DIGEST" "$GRYPE_CONFIG_ID" <<'PY' || fail "$EXIT_POLICY" "pinned-grype-manifest-mismatch"
 import json
+import re
 import sys
 
 try:
-    values = json.loads(sys.argv[1])
-except json.JSONDecodeError:
+    document = json.loads(sys.argv[1])
+except (json.JSONDecodeError, TypeError):
     raise SystemExit(1)
-raise SystemExit(0 if isinstance(values, list) and sys.argv[2] in values else 1)
+repo_digests = document.get("RepoDigests") if isinstance(document, dict) else None
+target_id = document.get("Id") if isinstance(document, dict) else None
+descriptor = document.get("Descriptor") if isinstance(document, dict) else None
+expected_repo, expected_target, expected_config = sys.argv[2:]
+media_types = {
+    "application/vnd.docker.distribution.manifest.list.v2+json",
+    "application/vnd.docker.distribution.manifest.v2+json",
+    "application/vnd.oci.image.index.v1+json",
+    "application/vnd.oci.image.manifest.v1+json",
+}
+raise SystemExit(0 if (
+    isinstance(repo_digests, list)
+    and expected_repo in repo_digests
+    and re.fullmatch(r"sha256:[0-9a-f]{64}", expected_target)
+    and re.fullmatch(r"sha256:[0-9a-f]{64}", expected_config)
+    and expected_target != expected_config
+    and isinstance(descriptor, dict)
+    and descriptor.get("digest") == expected_target
+    and descriptor.get("mediaType") in media_types
+    and target_id == expected_target
+) else 1)
 PY
+  actual_config_id="$(observe_local_grype_config_digest)" ||
+    fail "$EXIT_POLICY" "pinned-grype-config-observation-failed"
   [[ "$actual_config_id" == "$GRYPE_CONFIG_ID" ]] || fail "$EXIT_POLICY" "pinned-grype-config-mismatch"
 }
 
@@ -90,6 +144,7 @@ run_preflight() {
   python3 "$CHECKER" --check >/dev/null || fail "$EXIT_POLICY" "supply-chain-policy-invalid"
   assert_grype_registry_identity || fail "$EXIT_POLICY" "pinned-grype-registry-identity-invalid"
   command -v docker >/dev/null || fail "$EXIT_POLICY" "docker-unavailable"
+  command -v timeout >/dev/null || fail "$EXIT_POLICY" "timeout-unavailable"
   docker info >/dev/null 2>&1 || fail "$EXIT_POLICY" "docker-daemon-unavailable"
   assert_local_grype_identity
 }

@@ -25,10 +25,12 @@ readonly EXIT_USAGE=2 EXIT_POLICY=10 EXIT_BUILD=20 EXIT_SBOM=30
 readonly EXIT_VULNERABILITY=40 EXIT_PROVENANCE=50 EXIT_SIGNATURE=60 EXIT_SCORECARD=70
 readonly BUILD_MATERIAL_REF="alpine:3.21@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
 readonly BUILD_MATERIAL_REPO_DIGEST="alpine@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
-readonly BUILD_MATERIAL_CONFIG_ID="sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+readonly BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST="sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d"
+readonly BUILD_MATERIAL_CONFIG_ID="sha256:2607caa9805847fac4de202017bb1b830deb09f4c07dc9964a0157abbc604577"
 readonly RUNTIME_MATERIAL_REF="nginxinc/nginx-unprivileged:1.31.3-alpine3.24-slim@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
 readonly RUNTIME_MATERIAL_REPO_DIGEST="nginxinc/nginx-unprivileged@sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
-readonly RUNTIME_MATERIAL_CONFIG_ID="sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
+readonly RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST="sha256:90d82b3358df5758b3c57d20f2565082ce6f744906e7dc09afd0096c1b8eb2b5"
+readonly RUNTIME_MATERIAL_CONFIG_ID="sha256:9c57576567614e37b77581f70984d5fbb8595b1409882bd08ae31a38a4f4b071"
 
 declare -A OCI_MANIFEST_DIGEST=() IMAGE_CONFIG_DIGEST=() OCI_ARCHIVE_SHA256=()
 declare -A DOCKER_ARCHIVE_SHA256=() LOCAL_IMAGE_REF=() RUNTIME_IMAGE_ID=()
@@ -79,6 +81,8 @@ for tool in registry["tools"]:
             print(tool["repo_digest"])
         elif sys.argv[3] == "config_id":
             print(tool["config_id"])
+        elif sys.argv[3] == "target_descriptor_digest":
+            print(tool["target_descriptor_digest"])
         else:
             raise SystemExit(2)
         raise SystemExit(0)
@@ -100,6 +104,10 @@ tool_repo_digest() {
 
 tool_config_id() {
   tool_field "$1" config_id
+}
+
+tool_target_descriptor_digest() {
+  tool_field "$1" target_descriptor_digest
 }
 
 load_tool_registry() {
@@ -190,34 +198,86 @@ role_artifact_dir() {
   fi
 }
 
+observe_local_image_config_digest() {
+  local reference="$1" archive config_digest status=0
+  [[ -n "$runtime_dir" && -d "$runtime_dir" ]] ||
+    fail "$EXIT_POLICY" "image-identity-runtime-missing"
+  archive="$(mktemp "${runtime_dir}/image-config.XXXXXX")" ||
+    fail "$EXIT_POLICY" "image-config-archive-create-failed"
+  chmod 600 "$archive" || status="$EXIT_POLICY"
+  if [[ "$status" == 0 ]]; then
+    timeout --signal=KILL 60s docker image save \
+      --output "$archive" "$reference" >/dev/null 2>&1 ||
+      status="$EXIT_POLICY"
+  fi
+  if [[ "$status" == 0 ]]; then
+    config_digest="$(
+      python3 "$CHECKER" --docker-save-config-digest "$archive"
+    )" || status="$EXIT_POLICY"
+  fi
+  rm -f -- "$archive" || status="$EXIT_POLICY"
+  [[ "$status" == 0 ]] ||
+    fail "$EXIT_POLICY" "pinned-image-config-observation-failed"
+  printf '%s\n' "$config_digest"
+}
+
 assert_local_image_identity() {
-  local reference="$1" expected_repo_digest="$2" expected_config_id="$3" inspection repo_digests actual_config_id
-  inspection="$(docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' "$reference" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-image-missing"
-  repo_digests="${inspection%%|*}"
-  actual_config_id="${inspection#*|}"
-  python3 - "$repo_digests" "$expected_repo_digest" <<'PY' || fail "$EXIT_POLICY" "pinned-image-manifest-mismatch"
+  local reference="$1" expected_repo_digest="$2"
+  local expected_target_digest="$3" expected_config_id="$4"
+  local inspection actual_config_id
+  inspection="$(docker image inspect --format '{{json .}}' "$reference" 2>/dev/null)" || fail "$EXIT_POLICY" "pinned-image-missing"
+  python3 - "$inspection" "$expected_repo_digest" \
+    "$expected_target_digest" "$expected_config_id" <<'PY' || fail "$EXIT_POLICY" "pinned-image-manifest-mismatch"
 import json
+import re
 import sys
 
 try:
-    repo_digests = json.loads(sys.argv[1])
-except json.JSONDecodeError:
+    document = json.loads(sys.argv[1])
+except (json.JSONDecodeError, TypeError):
     raise SystemExit(1)
-raise SystemExit(0 if isinstance(repo_digests, list) and sys.argv[2] in repo_digests else 1)
+repo_digests = document.get("RepoDigests") if isinstance(document, dict) else None
+target_id = document.get("Id") if isinstance(document, dict) else None
+descriptor = document.get("Descriptor") if isinstance(document, dict) else None
+expected_repo, expected_target, expected_config = sys.argv[2:]
+media_types = {
+    "application/vnd.docker.distribution.manifest.list.v2+json",
+    "application/vnd.docker.distribution.manifest.v2+json",
+    "application/vnd.oci.image.index.v1+json",
+    "application/vnd.oci.image.manifest.v1+json",
+}
+raise SystemExit(0 if (
+    isinstance(repo_digests, list)
+    and expected_repo in repo_digests
+    and re.fullmatch(r"sha256:[0-9a-f]{64}", expected_target)
+    and re.fullmatch(r"sha256:[0-9a-f]{64}", expected_config)
+    and expected_target != expected_config
+    and isinstance(descriptor, dict)
+    and descriptor.get("digest") == expected_target
+    and descriptor.get("mediaType") in media_types
+    and target_id == expected_target
+) else 1)
 PY
+  actual_config_id="$(observe_local_image_config_digest "$reference")"
   [[ "$actual_config_id" == "$expected_config_id" ]] || fail "$EXIT_POLICY" "pinned-image-config-id-mismatch"
 }
 
 assert_local_image_identities() {
-  local tool reference repo_digest config_id
+  local tool reference repo_digest target_digest config_id
   for tool in syft grype cosign scorecard; do
     reference="$(tool_ref "$tool")" || fail "$EXIT_POLICY" "tool-reference-missing"
     repo_digest="$(tool_repo_digest "$tool")" || fail "$EXIT_POLICY" "tool-repo-digest-missing"
+    target_digest="$(tool_target_descriptor_digest "$tool")" || fail "$EXIT_POLICY" "tool-target-descriptor-digest-missing"
     config_id="$(tool_config_id "$tool")" || fail "$EXIT_POLICY" "tool-config-id-missing"
-    assert_local_image_identity "$reference" "$repo_digest" "$config_id"
+    assert_local_image_identity \
+      "$reference" "$repo_digest" "$target_digest" "$config_id"
   done
-  assert_local_image_identity "$BUILD_MATERIAL_REF" "$BUILD_MATERIAL_REPO_DIGEST" "$BUILD_MATERIAL_CONFIG_ID"
-  assert_local_image_identity "$RUNTIME_MATERIAL_REF" "$RUNTIME_MATERIAL_REPO_DIGEST" "$RUNTIME_MATERIAL_CONFIG_ID"
+  assert_local_image_identity \
+    "$BUILD_MATERIAL_REF" "$BUILD_MATERIAL_REPO_DIGEST" \
+    "$BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST" "$BUILD_MATERIAL_CONFIG_ID"
+  assert_local_image_identity \
+    "$RUNTIME_MATERIAL_REF" "$RUNTIME_MATERIAL_REPO_DIGEST" \
+    "$RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST" "$RUNTIME_MATERIAL_CONFIG_ID"
 }
 
 assert_default_buildx_offline_capable() {
@@ -231,6 +291,7 @@ assert_default_buildx_offline_capable() {
 
 ensure_advisory_prerequisites() {
   command -v docker >/dev/null || fail "$EXIT_POLICY" "docker-unavailable-advisory-blocked"
+  command -v timeout >/dev/null || fail "$EXIT_POLICY" "timeout-unavailable-advisory-blocked"
   docker info >/dev/null 2>&1 || fail "$EXIT_POLICY" "docker-daemon-unavailable-advisory-blocked"
   assert_default_buildx_offline_capable
 }
@@ -703,8 +764,12 @@ run_scorecard_advisory() {
     return 0
   fi
   command -v docker >/dev/null || fail "$EXIT_SCORECARD" "docker-unavailable"
+  command -v timeout >/dev/null || fail "$EXIT_SCORECARD" "timeout-unavailable"
   docker info >/dev/null 2>&1 || fail "$EXIT_SCORECARD" "docker-daemon-unavailable"
-  assert_local_image_identity "$(tool_ref scorecard)" "$(tool_repo_digest scorecard)" "$(tool_config_id scorecard)"
+  prepare_transient_directory
+  assert_local_image_identity \
+    "$(tool_ref scorecard)" "$(tool_repo_digest scorecard)" \
+    "$(tool_target_descriptor_digest scorecard)" "$(tool_config_id scorecard)"
   docker run --pull=never --rm "$(tool_ref scorecard)" --repo "github.com/buenhyden/hy-home.docker" >/dev/null || fail "$EXIT_SCORECARD" "scorecard-observation-failed"
   printf 'scorecard_advisory=observed mode=read-only-advisory\n'
 }
@@ -722,6 +787,7 @@ case "$MODE" in
 --preflight)
   run_preflight
   ensure_advisory_prerequisites
+  prepare_transient_directory
   assert_local_image_identities
   printf 'supply_chain_preflight=pass\n'
   ;;

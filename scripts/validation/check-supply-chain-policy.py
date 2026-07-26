@@ -96,6 +96,7 @@ TOOL_PINS = {
         "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
         "anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
         "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
+        "sha256:3567af297260e786440f30d149c2846302fd1df0823ee769d8b167d068f7d181",
         "v1.48.0",
     ),
     "grype": (
@@ -103,6 +104,7 @@ TOOL_PINS = {
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
         "anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
+        "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0",
         "v0.116.0",
     ),
     "cosign": (
@@ -110,6 +112,7 @@ TOOL_PINS = {
         "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
         "gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
         "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
+        "sha256:4221e0d9d429afa26a9f1b8bc8f0ba2c9af470f7b495d845c31ac982a5d1182b",
         "v3.0.6",
     ),
     "scorecard": (
@@ -117,6 +120,7 @@ TOOL_PINS = {
         "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
         "ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
         "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
+        "sha256:6b05eb0cfef8a6df4f78dae40cbbe8b18da1ec881c4c70a14796201a122a3491",
         "v5.5.0",
     ),
 }
@@ -1009,7 +1013,7 @@ def validate_tool_registry(registry: Any) -> list[str]:
     if not isinstance(registry, dict):
         return ["tool-registry-invalid"]
     errors: list[str] = []
-    if registry.get("schema_version") != 2:
+    if registry.get("schema_version") != 3:
         errors.append("tool-schema-version-invalid")
     for field in ("policy_id", "effective_date", "owner_role"):
         if not _is_text(registry.get(field)):
@@ -1026,17 +1030,23 @@ def validate_tool_registry(registry: Any) -> list[str]:
         row = by_name.get(name)
         if not isinstance(row, dict):
             continue
-        image, digest, repo_digest, config_id, version = expected
+        image, digest, repo_digest, target_digest, config_id, version = expected
         if row.get("image") != image:
             errors.append("tool-image-pin-invalid")
         if row.get("digest") != digest or not SHA256_RE.fullmatch(str(row.get("digest", ""))):
             errors.append("tool-digest-invalid")
         if row.get("repo_digest") != repo_digest:
             errors.append("tool-repo-digest-invalid")
+        if row.get("target_descriptor_digest") != target_digest or not SHA256_RE.fullmatch(
+            str(row.get("target_descriptor_digest", ""))
+        ):
+            errors.append("tool-target-descriptor-digest-invalid")
         if row.get("config_id") != config_id or not SHA256_RE.fullmatch(
             str(row.get("config_id", ""))
         ):
             errors.append("tool-config-id-invalid")
+        if row.get("target_descriptor_digest") == row.get("config_id"):
+            errors.append("tool-target-config-identity-conflated")
         if row.get("expected_version") != version:
             errors.append("tool-version-invalid")
         for field in ("command_contract", "network_mode"):
@@ -1617,6 +1627,121 @@ def _inspect_oci_archive_bytes(content: bytes) -> dict[str, Any]:
     }
 
 
+def _inspect_docker_save_archive_bytes(content: bytes) -> str:
+    """Return the config digest proven by one bounded Docker-save archive."""
+
+    if len(content) > OCI_ARCHIVE_MAX_BYTES:
+        raise ValueError("docker-save-archive-size-limit-exceeded")
+    if any(content.startswith(magic) for magic in OCI_OUTER_COMPRESSION_MAGICS):
+        raise ValueError("docker-save-archive-outer-compression-invalid")
+    _preflight_uncompressed_oci_tar(content)
+    try:
+        archive = tarfile.open(fileobj=io.BytesIO(content), mode="r:")
+    except (OSError, tarfile.TarError) as exc:
+        raise ValueError("docker-save-archive-invalid") from exc
+    with archive:
+        members: dict[str, tarfile.TarInfo] = {}
+        try:
+            for member in archive:
+                if member.size < 0 or member.size > OCI_ARCHIVE_MAX_BYTES:
+                    raise ValueError(
+                        "docker-save-archive-member-size-limit-exceeded"
+                    )
+                name = member.name
+                path = pathlib.PurePosixPath(name)
+                if (
+                    not name
+                    or name.startswith("/")
+                    or "\\" in name
+                    or path.is_absolute()
+                    or path.as_posix() != name.rstrip("/")
+                    or any(part in {"", ".", ".."} for part in path.parts)
+                ):
+                    raise ValueError("docker-save-archive-member-path-invalid")
+                if name in members:
+                    raise ValueError("docker-save-archive-member-duplicate")
+                if not member.isfile() and not member.isdir():
+                    raise ValueError("docker-save-archive-member-type-invalid")
+                members[name] = member
+        except ValueError:
+            raise
+        except (OSError, tarfile.TarError) as exc:
+            raise ValueError("docker-save-archive-invalid") from exc
+
+        def read_member(name: str, reason: str) -> bytes:
+            member = members.get(name)
+            if (
+                member is None
+                or not member.isfile()
+                or member.size < 0
+                or member.size > OCI_METADATA_MAX_BYTES
+            ):
+                raise ValueError(reason)
+            try:
+                handle = archive.extractfile(member)
+            except (OSError, tarfile.TarError) as exc:
+                raise ValueError(reason) from exc
+            if handle is None:
+                raise ValueError(reason)
+            try:
+                body = handle.read(OCI_METADATA_MAX_BYTES + 1)
+            except (OSError, tarfile.TarError) as exc:
+                raise ValueError(reason) from exc
+            if len(body) != member.size or len(body) > OCI_METADATA_MAX_BYTES:
+                raise ValueError(reason)
+            return body
+
+        manifest_body = read_member(
+            "manifest.json", "docker-save-manifest-missing-or-invalid"
+        )
+        try:
+            manifest = json.loads(
+                manifest_body, object_pairs_hook=_unique_json_object
+            )
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            raise ValueError("docker-save-manifest-invalid") from exc
+        if (
+            not isinstance(manifest, list)
+            or len(manifest) != 1
+            or not isinstance(manifest[0], dict)
+        ):
+            raise ValueError("docker-save-manifest-cardinality-invalid")
+        config_path = manifest[0].get("Config")
+        if not isinstance(config_path, str):
+            raise ValueError("docker-save-config-descriptor-invalid")
+        legacy_match = re.fullmatch(r"([0-9a-f]{64})\.json", config_path)
+        content_store_match = re.fullmatch(
+            r"blobs/sha256/([0-9a-f]{64})", config_path
+        )
+        descriptor_match = legacy_match or content_store_match
+        if descriptor_match is None:
+            raise ValueError("docker-save-config-descriptor-invalid")
+        config_body = read_member(
+            config_path, "docker-save-config-body-missing-or-invalid"
+        )
+        _parse_json_object(config_body, "docker-save-config-body-invalid")
+        actual_hex = hashlib.sha256(config_body).hexdigest()
+        if actual_hex != descriptor_match.group(1):
+            raise ValueError("docker-save-config-body-digest-mismatch")
+        return f"sha256:{actual_hex}"
+
+
+def inspect_docker_save_archive_config_digest(
+    archive_path: pathlib.Path | str,
+) -> str:
+    """Return the independently hashed config body from a private Docker save."""
+
+    try:
+        content = _read_stable_private_bytes(
+            pathlib.Path(archive_path), max_bytes=OCI_ARCHIVE_MAX_BYTES
+        )
+    except SecureOutputError as exc:
+        if str(exc) == "private-source-size-limit-exceeded":
+            raise ValueError("docker-save-archive-size-limit-exceeded") from exc
+        raise ValueError("docker-save-archive-private-input-invalid") from exc
+    return _inspect_docker_save_archive_bytes(content)
+
+
 def inspect_oci_archive_config_digest(archive_path: pathlib.Path | str) -> str:
     """Return the config digest cryptographically bound by an OCI archive index."""
 
@@ -2129,6 +2254,11 @@ def main(argv: list[str] | None = None) -> int:
         help="print the SHA-256 config digest cryptographically bound by an OCI archive",
     )
     parser.add_argument(
+        "--docker-save-config-digest",
+        metavar="ARCHIVE",
+        help="print the independently hashed config body from a private Docker-save archive",
+    )
+    parser.add_argument(
         "--convert-oci-to-docker-load",
         nargs=3,
         metavar=("OCI_ARCHIVE", "DOCKER_ARCHIVE", "ROLE"),
@@ -2184,6 +2314,7 @@ def main(argv: list[str] | None = None) -> int:
         for value in (
             args.check,
             args.oci_archive_config_digest,
+            args.docker_save_config_digest,
             args.convert_oci_to_docker_load,
             args.capture_build_context,
             args.verify_build_context,
@@ -2201,6 +2332,20 @@ def main(argv: list[str] | None = None) -> int:
             print(inspect_oci_archive_config_digest(args.oci_archive_config_digest))
         except ValueError as exc:
             print(f"oci_archive_config_digest=fail reason={exc}", file=sys.stderr)
+            return 1
+        return 0
+    if args.docker_save_config_digest:
+        try:
+            print(
+                inspect_docker_save_archive_config_digest(
+                    args.docker_save_config_digest
+                )
+            )
+        except ValueError as exc:
+            print(
+                f"docker_save_config_digest=fail reason={exc}",
+                file=sys.stderr,
+            )
             return 1
         return 0
     try:

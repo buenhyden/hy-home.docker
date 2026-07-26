@@ -204,7 +204,18 @@ main() {
     if [ "$CRR_MODE" = "negative-timeout" ]; then
       overall_status="timed_out"
     else
-      overall_status="ready"
+      overall_status="$(
+        classify_readiness_status "$CRR_SERVICES_JSON" true
+      )" || {
+        crr_error "readiness status classification failed"
+        overall_status="failed"
+      }
+      if [ "$overall_status" != "ready" ]; then
+        case "$CRR_MODE" in
+        vault-restart-recovery) execution_status="$CRR_EXIT_RECOVERY" ;;
+        *) execution_status="$CRR_EXIT_READINESS" ;;
+        esac
+      fi
     fi
   fi
   elapsed="$(( $(date +%s) - started_at ))"

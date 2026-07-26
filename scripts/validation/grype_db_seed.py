@@ -33,8 +33,11 @@ EXACT_GRYPE_TOOL = {
         "anchore/grype@"
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
     ),
-    "config_id": (
+    "target_descriptor_digest": (
         "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+    ),
+    "config_id": (
+        "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0"
     ),
 }
 IDENTITY_KEYS = {
@@ -407,6 +410,9 @@ def _tool_from_registry(repo_root: pathlib.Path | str) -> dict[str, str]:
                 {
                     "image_ref": f"{row.get('image')}@{row.get('digest')}",
                     "repo_digest": row.get("repo_digest"),
+                    "target_descriptor_digest": row.get(
+                        "target_descriptor_digest"
+                    ),
                     "config_id": row.get("config_id"),
                 }
             )

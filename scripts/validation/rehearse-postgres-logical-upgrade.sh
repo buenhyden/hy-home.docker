@@ -8,9 +8,12 @@ DUMP_CLIENT_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a
 SOURCE_IMAGE_REPO_DIGEST='postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
 TARGET_IMAGE_REPO_DIGEST='postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 DUMP_CLIENT_IMAGE_REPO_DIGEST='postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-SOURCE_IMAGE_CONFIG_ID='sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
-TARGET_IMAGE_CONFIG_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-DUMP_CLIENT_IMAGE_CONFIG_ID='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+TARGET_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+DUMP_CLIENT_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+SOURCE_IMAGE_CONFIG_ID='sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8'
+TARGET_IMAGE_CONFIG_ID='sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183'
+DUMP_CLIENT_IMAGE_CONFIG_ID='sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183'
 PROJECT_PREFIX='hyhome-ior-20260719'
 TOTAL_TIMEOUT=420
 CLEANUP_RESERVE_SECONDS=60
@@ -25,6 +28,7 @@ COMPOSE_FILE="${FIXTURE_DIR}/docker-compose.yml"
 SEED_SQL="${FIXTURE_DIR}/sql/001_schema_and_seed.sql"
 ORACLE_SQL="${FIXTURE_DIR}/sql/010_integrity_oracle.sql"
 PARTIAL_SQL="${FIXTURE_DIR}/sql/020_negative_partial_state.sql"
+IMAGE_IDENTITY_CHECKER="${ROOT_DIR}/scripts/validation/check-supply-chain-policy.py"
 HANDOFF_DIR="${ROOT_DIR}/_workspace/repo-support/task-2026-07-19-infrastructure-operations-readiness-remediation/postgres"
 HANDOFF_PATH="${HANDOFF_DIR}/recovery-verdict.json"
 
@@ -705,38 +709,81 @@ assert_no_project_collisions() {
   esac
 }
 
+observe_local_image_config_digest() {
+  local image="$1"
+  local archive config_digest status=0
+
+  archive="$(mktemp "${EVIDENCE_DIR}/image-config.XXXXXX")" || return 10
+  chmod 600 "$archive" || status=10
+  if [ "$status" -eq 0 ]; then
+    run_bounded docker image save --output "$archive" "$image" \
+      >/dev/null 2>&1 || status=10
+  fi
+  if [ "$status" -eq 0 ]; then
+    config_digest="$(
+      run_bounded python3 "$IMAGE_IDENTITY_CHECKER" \
+        --docker-save-config-digest "$archive"
+    )" || status=10
+  fi
+  rm -f -- "$archive" || status=10
+  [ "$status" -eq 0 ] || return "$status"
+  printf '%s\n' "$config_digest"
+}
+
 assert_exact_local_image_identity() {
   local role="$1"
   local image="$2"
   local expected_repo_digest="$3"
-  local expected_config_id="$4"
+  local expected_target_digest="$4"
+  local expected_config_id="$5"
   local observed
-  local repo_digests_json
   local actual_config_id
 
-  observed="$(run_bounded docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' "$image" 2>/dev/null)" || {
+  observed="$(run_bounded docker image inspect --format '{{json .}}' "$image" 2>/dev/null)" || {
     print_failure preflight "${role}-image-not-local"
     return 10
   }
-  [ -n "$observed" ] && [[ "$observed" != *$'\n'* ]] && [[ "$observed" == *'|'* ]] || {
+  [ -n "$observed" ] && [[ "$observed" != *$'\n'* ]] || {
     print_failure preflight "${role}-image-manifest-drift"
     return 10
   }
-  repo_digests_json="${observed%%|*}"
-  actual_config_id="${observed#*|}"
-  python3 - "$repo_digests_json" "$expected_repo_digest" <<'PY' || {
+  python3 - "$observed" "$expected_repo_digest" \
+    "$expected_target_digest" "$expected_config_id" <<'PY' || {
 import json
+import re
 import sys
 
 try:
-    repo_digests = json.loads(sys.argv[1])
-except json.JSONDecodeError:
+    document = json.loads(sys.argv[1])
+except (json.JSONDecodeError, TypeError):
     raise SystemExit(1)
-raise SystemExit(
-    0 if isinstance(repo_digests, list) and sys.argv[2] in repo_digests else 1
-)
+repo_digests = document.get("RepoDigests") if isinstance(document, dict) else None
+target_id = document.get("Id") if isinstance(document, dict) else None
+descriptor = document.get("Descriptor") if isinstance(document, dict) else None
+expected_repo, expected_target, expected_config = sys.argv[2:]
+media_types = {
+    "application/vnd.docker.distribution.manifest.list.v2+json",
+    "application/vnd.docker.distribution.manifest.v2+json",
+    "application/vnd.oci.image.index.v1+json",
+    "application/vnd.oci.image.manifest.v1+json",
+}
+raise SystemExit(0 if (
+    isinstance(repo_digests, list)
+    and expected_repo in repo_digests
+    and re.fullmatch(r"sha256:[0-9a-f]{64}", expected_target)
+    and re.fullmatch(r"sha256:[0-9a-f]{64}", expected_config)
+    and expected_target != expected_config
+    and isinstance(descriptor, dict)
+    and descriptor.get("digest") == expected_target
+    and descriptor.get("mediaType") in media_types
+    and target_id == expected_target
+) else 1)
 PY
     print_failure preflight "${role}-image-manifest-drift"
+    return 10
+  }
+  actual_config_id="$(observe_local_image_config_digest "$image")" || {
+    print_failure preflight "${role}-image-config-observation-failed"
     return 10
   }
   [ "$actual_config_id" = "$expected_config_id" ] || {
@@ -747,12 +794,16 @@ PY
 
 assert_exact_local_image_identities() {
   assert_exact_local_image_identity \
-    source "$SOURCE_IMAGE" "$SOURCE_IMAGE_REPO_DIGEST" "$SOURCE_IMAGE_CONFIG_ID" || return $?
+    source "$SOURCE_IMAGE" "$SOURCE_IMAGE_REPO_DIGEST" \
+    "$SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST" "$SOURCE_IMAGE_CONFIG_ID" || return $?
   assert_exact_local_image_identity \
-    target "$TARGET_IMAGE" "$TARGET_IMAGE_REPO_DIGEST" "$TARGET_IMAGE_CONFIG_ID" || return $?
+    target "$TARGET_IMAGE" "$TARGET_IMAGE_REPO_DIGEST" \
+    "$TARGET_IMAGE_TARGET_DESCRIPTOR_DIGEST" "$TARGET_IMAGE_CONFIG_ID" || return $?
   assert_exact_local_image_identity \
     dump-client "$DUMP_CLIENT_IMAGE" \
-    "$DUMP_CLIENT_IMAGE_REPO_DIGEST" "$DUMP_CLIENT_IMAGE_CONFIG_ID" || return $?
+    "$DUMP_CLIENT_IMAGE_REPO_DIGEST" \
+    "$DUMP_CLIENT_IMAGE_TARGET_DESCRIPTOR_DIGEST" \
+    "$DUMP_CLIENT_IMAGE_CONFIG_ID" || return $?
 }
 
 assert_safe_images_paths_and_project() {
@@ -783,15 +834,27 @@ assert_safe_images_paths_and_project() {
     print_failure preflight dump-client-image-repo-digest-drift
     return 10
   }
-  [ "$SOURCE_IMAGE_CONFIG_ID" = 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+  [ "$SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST" = 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+    print_failure preflight source-image-target-descriptor-drift
+    return 10
+  }
+  [ "$TARGET_IMAGE_TARGET_DESCRIPTOR_DIGEST" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight target-image-target-descriptor-drift
+    return 10
+  }
+  [ "$DUMP_CLIENT_IMAGE_TARGET_DESCRIPTOR_DIGEST" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+    print_failure preflight dump-client-image-target-descriptor-drift
+    return 10
+  }
+  [ "$SOURCE_IMAGE_CONFIG_ID" = 'sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8' ] || {
     print_failure preflight source-image-config-id-drift
     return 10
   }
-  [ "$TARGET_IMAGE_CONFIG_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+  [ "$TARGET_IMAGE_CONFIG_ID" = 'sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183' ] || {
     print_failure preflight target-image-config-id-drift
     return 10
   }
-  [ "$DUMP_CLIENT_IMAGE_CONFIG_ID" = 'sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15' ] || {
+  [ "$DUMP_CLIENT_IMAGE_CONFIG_ID" = 'sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183' ] || {
     print_failure preflight dump-client-image-config-id-drift
     return 10
   }
@@ -811,7 +874,8 @@ assert_safe_images_paths_and_project() {
     print_failure preflight unsafe-fixture-path
     return 10
   }
-  for required in "$COMPOSE_FILE" "$SEED_SQL" "$ORACLE_SQL" "$PARTIAL_SQL"; do
+  for required in "$COMPOSE_FILE" "$SEED_SQL" "$ORACLE_SQL" "$PARTIAL_SQL" \
+    "$IMAGE_IDENTITY_CHECKER"; do
     [ -f "$required" ] || {
       print_failure preflight fixture-missing
       return 10

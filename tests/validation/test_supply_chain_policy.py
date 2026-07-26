@@ -1172,13 +1172,25 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         manifest_digest = "sha256:" + ("a" * 64)
         config_id = "sha256:" + ("b" * 64)
         reference = f"example.invalid/tool@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [reference],
+                "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
         valid = self.run_wrapper_library(
             f"source {shlex.quote(str(WRAPPER))}\n"
-            f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([reference]))}\n"
+            f"TEST_INSPECTION={shlex.quote(inspection)}\n"
             f"TEST_CONFIG_ID={config_id}\n"
-            "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
-            '"$TEST_CONFIG_ID"; }\n'
-            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_image_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} "
+            f"{manifest_digest} {config_id}\n"
         )
         self.assertEqual(0, valid.returncode, valid.stderr)
 
@@ -1187,13 +1199,25 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         config_id = "sha256:" + ("b" * 64)
         reference = f"example.invalid/tool@{manifest_digest}"
         wrong_reference = "example.invalid/tool@sha256:" + ("c" * 64)
+        inspection = json.dumps(
+            {
+                "RepoDigests": [wrong_reference],
+                "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
         result = self.run_wrapper_library(
             f"source {shlex.quote(str(WRAPPER))}\n"
-            f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([wrong_reference]))}\n"
+            f"TEST_INSPECTION={shlex.quote(inspection)}\n"
             f"TEST_CONFIG_ID={config_id}\n"
-            "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
-            '"$TEST_CONFIG_ID"; }\n'
-            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_image_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} "
+            f"{manifest_digest} {config_id}\n"
         )
         self.assertEqual(10, result.returncode)
         self.assertIn("pinned-image-manifest-mismatch", result.stderr)
@@ -1202,13 +1226,25 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         manifest_digest = "sha256:" + ("a" * 64)
         config_id = "sha256:" + ("b" * 64)
         reference = f"example.invalid/tool@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [reference],
+                "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
         result = self.run_wrapper_library(
             f"source {shlex.quote(str(WRAPPER))}\n"
-            f"TEST_REPO_DIGESTS={shlex.quote(json.dumps([reference]))}\n"
+            f"TEST_INSPECTION={shlex.quote(inspection)}\n"
             f"TEST_CONFIG_ID=sha256:{'d' * 64}\n"
-            "docker() { printf '%s|%s\\n' \"$TEST_REPO_DIGESTS\" "
-            '"$TEST_CONFIG_ID"; }\n'
-            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_image_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} "
+            f"{manifest_digest} {config_id}\n"
         )
         self.assertEqual(10, result.returncode)
         self.assertIn("pinned-image-config-id-mismatch", result.stderr)
@@ -1220,7 +1256,8 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         result = self.run_wrapper_library(
             f"source {shlex.quote(str(WRAPPER))}\n"
             "docker() { return 1; }\n"
-            f"assert_local_image_identity {reference} {reference} {config_id}\n"
+            f"assert_local_image_identity {reference} {reference} "
+            f"{manifest_digest} {config_id}\n"
         )
         self.assertEqual(10, result.returncode)
         self.assertIn("pinned-image-missing", result.stderr)

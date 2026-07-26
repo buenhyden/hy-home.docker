@@ -2,47 +2,51 @@
   "effective_date": "2026-07-19",
   "owner_role": "security-auditor",
   "policy_id": "supply-chain-tool-images-v1",
-  "schema_version": 2,
+  "schema_version": 3,
   "tools": [
     {
       "command_contract": "oci-archive-to-cyclonedx-json",
-      "config_id": "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
+      "config_id": "sha256:3567af297260e786440f30d149c2846302fd1df0823ee769d8b167d068f7d181",
       "digest": "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
       "expected_version": "v1.48.0",
       "image": "anchore/syft:v1.48.0",
       "name": "syft",
       "network_mode": "none",
-      "repo_digest": "anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c"
+      "repo_digest": "anchore/syft@sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
+      "target_descriptor_digest": "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c"
     },
     {
       "command_contract": "sbom-to-redacted-json-verdict",
-      "config_id": "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
+      "config_id": "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0",
       "digest": "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
       "expected_version": "v0.116.0",
       "image": "anchore/grype:v0.116.0",
       "name": "grype",
       "network_mode": "advisory-network-optional",
-      "repo_digest": "anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
+      "repo_digest": "anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
+      "target_descriptor_digest": "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
     },
     {
       "command_contract": "local-sign-blob-and-verify-blob",
-      "config_id": "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
+      "config_id": "sha256:4221e0d9d429afa26a9f1b8bc8f0ba2c9af470f7b495d845c31ac982a5d1182b",
       "digest": "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
       "expected_version": "v3.0.6",
       "image": "gcr.io/projectsigstore/cosign:v3.0.6",
       "name": "cosign",
       "network_mode": "none",
-      "repo_digest": "gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00"
+      "repo_digest": "gcr.io/projectsigstore/cosign@sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
+      "target_descriptor_digest": "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00"
     },
     {
       "command_contract": "read-only-advisory-repository-observation",
-      "config_id": "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
+      "config_id": "sha256:6b05eb0cfef8a6df4f78dae40cbbe8b18da1ec881c4c70a14796201a122a3491",
       "digest": "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
       "expected_version": "v5.5.0",
       "image": "ghcr.io/ossf/scorecard:v5.5.0",
       "name": "scorecard",
       "network_mode": "read-only-advisory",
-      "repo_digest": "ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795"
+      "repo_digest": "ghcr.io/ossf/scorecard@sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",
+      "target_descriptor_digest": "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795"
     }
   ]
 }

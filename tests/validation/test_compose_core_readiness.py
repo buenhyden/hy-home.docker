@@ -188,10 +188,11 @@ main --scenario {scenario}
                     result.returncode,
                     result.stdout + result.stderr,
                 )
+                self.assertFalse((evidence / "readiness-verdict.json").exists())
                 verdict = json.loads(
-                    (evidence / "readiness-verdict.json").read_text(
-                        encoding="utf-8"
-                    )
+                    (
+                        evidence / f"readiness-verdict.{scenario}.json"
+                    ).read_text(encoding="utf-8")
                 )
                 self.assertEqual("failed", verdict["overall_status"])
 
@@ -719,13 +720,24 @@ on_exit
         config_id = "sha256:" + "2" * 64
         image_ref = f"example.invalid/readiness@{manifest_digest}"
         expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [expected_repo_digest],
+                "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
         valid = self.run_library(
-            "docker() { printf '%s|%s\\n' \"$CRR_TEST_REPO_DIGESTS\" "
-            "\"$CRR_TEST_CONFIG_ID\"; }; "
+            "docker() { printf '%s\\n' \"$CRR_TEST_INSPECTION\"; }; "
+            "observe_docker_image_config_digest() { "
+            "printf '%s\\n' \"$CRR_TEST_CONFIG_ID\"; }; "
             "assert_local_image_identity "
-            f"{image_ref} {expected_repo_digest} {config_id}",
+            f"{image_ref} {expected_repo_digest} {manifest_digest} {config_id}",
             env={
-                "CRR_TEST_REPO_DIGESTS": json.dumps([expected_repo_digest]),
+                "CRR_TEST_INSPECTION": inspection,
                 "CRR_TEST_CONFIG_ID": config_id,
             },
         )
@@ -751,15 +763,26 @@ on_exit
         config_id = "sha256:" + "2" * 64
         image_ref = f"example.invalid/readiness@{manifest_digest}"
         expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [
+                    "example.invalid/readiness@sha256:" + "3" * 64
+                ],
+                "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
         rejected = self.run_library(
-            "docker() { printf '%s|%s\\n' \"$CRR_TEST_REPO_DIGESTS\" "
-            "\"$CRR_TEST_CONFIG_ID\"; }; "
+            "docker() { printf '%s\\n' \"$CRR_TEST_INSPECTION\"; }; "
+            "observe_docker_image_config_digest() { "
+            "printf '%s\\n' \"$CRR_TEST_CONFIG_ID\"; }; "
             "assert_local_image_identity "
-            f"{image_ref} {expected_repo_digest} {config_id}",
+            f"{image_ref} {expected_repo_digest} {manifest_digest} {config_id}",
             env={
-                "CRR_TEST_REPO_DIGESTS": json.dumps(
-                    ["example.invalid/readiness@sha256:" + "3" * 64]
-                ),
+                "CRR_TEST_INSPECTION": inspection,
                 "CRR_TEST_CONFIG_ID": config_id,
             },
         )
@@ -771,13 +794,24 @@ on_exit
         config_id = "sha256:" + "2" * 64
         image_ref = f"example.invalid/readiness@{manifest_digest}"
         expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [expected_repo_digest],
+                "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
         rejected = self.run_library(
-            "docker() { printf '%s|%s\\n' \"$CRR_TEST_REPO_DIGESTS\" "
-            "\"$CRR_TEST_CONFIG_ID\"; }; "
+            "docker() { printf '%s\\n' \"$CRR_TEST_INSPECTION\"; }; "
+            "observe_docker_image_config_digest() { "
+            "printf '%s\\n' \"$CRR_TEST_CONFIG_ID\"; }; "
             "assert_local_image_identity "
-            f"{image_ref} {expected_repo_digest} {config_id}",
+            f"{image_ref} {expected_repo_digest} {manifest_digest} {config_id}",
             env={
-                "CRR_TEST_REPO_DIGESTS": json.dumps([expected_repo_digest]),
+                "CRR_TEST_INSPECTION": inspection,
                 "CRR_TEST_CONFIG_ID": "sha256:" + "4" * 64,
             },
         )
@@ -791,7 +825,7 @@ on_exit
         expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
         rejected = self.run_library(
             "docker() { return 1; }; assert_local_image_identity "
-            f"{image_ref} {expected_repo_digest} {config_id}"
+            f"{image_ref} {expected_repo_digest} {manifest_digest} {config_id}"
         )
         self.assertEqual(10, rejected.returncode)
         self.assertIn("unavailable", rejected.stderr)

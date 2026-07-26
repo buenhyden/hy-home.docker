@@ -23,6 +23,9 @@ ORACLE_SQL = FIXTURE / "sql/010_integrity_oracle.sql"
 PARTIAL_SQL = FIXTURE / "sql/020_negative_partial_state.sql"
 ALIGNMENT_CHECK = ROOT / "scripts/validation/check-doc-implementation-alignment.sh"
 REPO_CONTRACTS = ROOT / "scripts/validation/check-repo-contracts.sh"
+IMAGE_IDENTITY_CHECKER = (
+    ROOT / "scripts/validation/check-supply-chain-policy.py"
+)
 
 SOURCE_IMAGE = (
     "postgres:17.6-alpine@sha256:"
@@ -45,16 +48,43 @@ CLIENT_REPO_DIGEST = (
     "postgres@sha256:"
     "9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
 )
-SOURCE_CONFIG_ID = "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
-TARGET_CONFIG_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
-CLIENT_CONFIG_ID = "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+SOURCE_TARGET_DESCRIPTOR_DIGEST = (
+    "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+)
+TARGET_TARGET_DESCRIPTOR_DIGEST = (
+    "sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"
+)
+CLIENT_TARGET_DESCRIPTOR_DIGEST = TARGET_TARGET_DESCRIPTOR_DIGEST
+SOURCE_CONFIG_ID = "sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8"
+TARGET_CONFIG_ID = "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183"
+CLIENT_CONFIG_ID = TARGET_CONFIG_ID
 OBSERVED_CONFIG_DIGESTS = {
     "SOURCE": "sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8",
     "TARGET": "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183",
     "DUMP_CLIENT": "sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183",
 }
-SOURCE_INSPECT_OUTPUT = '["postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"]|sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
-TARGET_INSPECT_OUTPUT = '["postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15"]|sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
+SOURCE_INSPECT_OUTPUT = json.dumps(
+    {
+        "RepoDigests": [SOURCE_REPO_DIGEST],
+        "Id": SOURCE_TARGET_DESCRIPTOR_DIGEST,
+        "Descriptor": {
+            "digest": SOURCE_TARGET_DESCRIPTOR_DIGEST,
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+        },
+    },
+    separators=(",", ":"),
+)
+TARGET_INSPECT_OUTPUT = json.dumps(
+    {
+        "RepoDigests": [TARGET_REPO_DIGEST],
+        "Id": TARGET_TARGET_DESCRIPTOR_DIGEST,
+        "Descriptor": {
+            "digest": TARGET_TARGET_DESCRIPTOR_DIGEST,
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+        },
+    },
+    separators=(",", ":"),
+)
 EXPECTED_VERDICT_KEYS = {
     "schema_version",
     "producer_spec",
@@ -171,13 +201,34 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 self.assertNotEqual(target_match.group(1), config_match.group(1))
 
     def run_script(
-        self, *args: str, extra_env: dict[str, str] | None = None
+        self,
+        *args: str,
+        extra_env: dict[str, str] | None = None,
+        stub_image_config_observer: bool = False,
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="ior-direct-run-", dir="/tmp") as tmp:
             root = Path(tmp) / "repo"
             script = root / "scripts/validation/rehearse-postgres-logical-upgrade.sh"
             script.parent.mkdir(parents=True)
             shutil.copy2(SCRIPT, script)
+            shutil.copy2(IMAGE_IDENTITY_CHECKER, script.parent / IMAGE_IDENTITY_CHECKER.name)
+            if stub_image_config_observer:
+                source = script.read_text(encoding="utf-8")
+                marker = 'if [ "$SCRIPT_IS_SOURCED" = false ]; then\n'
+                observer = (
+                    "observe_local_image_config_digest() {\n"
+                    '  case "$1" in\n'
+                    f"  \"$SOURCE_IMAGE\") printf '%s\\n' '{SOURCE_CONFIG_ID}' ;;\n"
+                    f"  \"$TARGET_IMAGE\"|\"$DUMP_CLIENT_IMAGE\") printf '%s\\n' '{TARGET_CONFIG_ID}' ;;\n"
+                    "  *) return 10 ;;\n"
+                    "  esac\n"
+                    "}\n\n"
+                )
+                self.assertIn(marker, source)
+                script.write_text(
+                    source.replace(marker, observer + marker, 1),
+                    encoding="utf-8",
+                )
             shutil.copytree(
                 FIXTURE,
                 root / "tests/fixtures/postgres-logical-upgrade",
@@ -636,10 +687,10 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {SOURCE_IMAGE}")
                         printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {TARGET_IMAGE}")
                         printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
@@ -664,6 +715,13 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     SOURCE_ORACLE_PATH="${{EVIDENCE_DIR}}/source-oracle.json"
                     TARGET_ORACLE_PATH="${{EVIDENCE_DIR}}/target-oracle.json"
                     RUNTIME_LOG="${{EVIDENCE_DIR}}/runtime.log"
+                    observe_local_image_config_digest() {{
+                      case "$1" in
+                        "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_CONFIG_ID" ;;
+                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' "$TARGET_IMAGE_CONFIG_ID" ;;
+                        *) return 10 ;;
+                      esac
+                    }}
                     initialize_runtime_state || exit $?
                     assert_safe_images_paths_and_project
                     status=$?
@@ -736,6 +794,12 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             f"SOURCE_IMAGE_REPO_DIGEST='{SOURCE_REPO_DIGEST}'",
             f"TARGET_IMAGE_REPO_DIGEST='{TARGET_REPO_DIGEST}'",
             f"DUMP_CLIENT_IMAGE_REPO_DIGEST='{CLIENT_REPO_DIGEST}'",
+            "SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST="
+            f"'{SOURCE_TARGET_DESCRIPTOR_DIGEST}'",
+            "TARGET_IMAGE_TARGET_DESCRIPTOR_DIGEST="
+            f"'{TARGET_TARGET_DESCRIPTOR_DIGEST}'",
+            "DUMP_CLIENT_IMAGE_TARGET_DESCRIPTOR_DIGEST="
+            f"'{CLIENT_TARGET_DESCRIPTOR_DIGEST}'",
             f"SOURCE_IMAGE_CONFIG_ID='{SOURCE_CONFIG_ID}'",
             f"TARGET_IMAGE_CONFIG_ID='{TARGET_CONFIG_ID}'",
             f"DUMP_CLIENT_IMAGE_CONFIG_ID='{CLIENT_CONFIG_ID}'",
@@ -760,6 +824,13 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         *) return 99 ;;
                       esac
                     }}
+                    observe_local_image_config_digest() {{
+                      case "$1" in
+                        "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_CONFIG_ID" ;;
+                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' "$TARGET_IMAGE_CONFIG_ID" ;;
+                        *) return 99 ;;
+                      esac
+                    }}
                     assert_exact_local_image_identities
                     """
                 )
@@ -768,9 +839,9 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(
             [
-                f"docker image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}",
-                f"docker image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}",
-                f"docker image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {CLIENT_IMAGE}",
+                f"docker image inspect --format {{{{json .}}}} {SOURCE_IMAGE}",
+                f"docker image inspect --format {{{{json .}}}} {TARGET_IMAGE}",
+                f"docker image inspect --format {{{{json .}}}} {CLIENT_IMAGE}",
             ],
             observed,
         )
@@ -787,13 +858,26 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     def test_local_image_identity_accepts_distinct_manifest_and_config(self) -> None:
         image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
         repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        target_digest = "sha256:" + "a" * 64
         config_id = "sha256:" + "b" * 64
+        inspection = json.dumps(
+            {
+                "RepoDigests": [repo_digest],
+                "Id": target_digest,
+                "Descriptor": {
+                    "digest": target_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            },
+            separators=(",", ":"),
+        )
         result = self.run_sourced(
             textwrap.dedent(
                 f"""\
                 OPERATION_DEADLINE=$((SECONDS + 30))
-                run_bounded() {{ printf '%s\n' '["example.invalid/postgres@sha256:{'a' * 64}"]|sha256:{'b' * 64}'; }}
-                assert_exact_local_image_identity source {image} {repo_digest} {config_id}
+                run_bounded() {{ printf '%s\n' {inspection!r}; }}
+                observe_local_image_config_digest() {{ printf '%s\n' {config_id!r}; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {target_digest} {config_id}
                 """
             )
         )
@@ -802,13 +886,28 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     def test_local_image_identity_rejects_manifest_mismatch(self) -> None:
         image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
         repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        target_digest = "sha256:" + "a" * 64
         config_id = "sha256:" + "b" * 64
+        inspection = json.dumps(
+            {
+                "RepoDigests": [
+                    "example.invalid/postgres@sha256:" + "c" * 64
+                ],
+                "Id": target_digest,
+                "Descriptor": {
+                    "digest": target_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            },
+            separators=(",", ":"),
+        )
         result = self.run_sourced(
             textwrap.dedent(
                 f"""\
                 OPERATION_DEADLINE=$((SECONDS + 30))
-                run_bounded() {{ printf '%s\n' '["example.invalid/postgres@sha256:{'c' * 64}"]|sha256:{'b' * 64}'; }}
-                assert_exact_local_image_identity source {image} {repo_digest} {config_id}
+                run_bounded() {{ printf '%s\n' {inspection!r}; }}
+                observe_local_image_config_digest() {{ printf '%s\n' {config_id!r}; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {target_digest} {config_id}
                 """
             )
         )
@@ -818,13 +917,26 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     def test_local_image_identity_rejects_config_id_mismatch(self) -> None:
         image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
         repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        target_digest = "sha256:" + "a" * 64
         config_id = "sha256:" + "b" * 64
+        inspection = json.dumps(
+            {
+                "RepoDigests": [repo_digest],
+                "Id": target_digest,
+                "Descriptor": {
+                    "digest": target_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            },
+            separators=(",", ":"),
+        )
         result = self.run_sourced(
             textwrap.dedent(
                 f"""\
                 OPERATION_DEADLINE=$((SECONDS + 30))
-                run_bounded() {{ printf '%s\n' '["example.invalid/postgres@sha256:{'a' * 64}"]|sha256:{'d' * 64}'; }}
-                assert_exact_local_image_identity source {image} {repo_digest} {config_id}
+                run_bounded() {{ printf '%s\n' {inspection!r}; }}
+                observe_local_image_config_digest() {{ printf '%s\n' 'sha256:{'d' * 64}'; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {target_digest} {config_id}
                 """
             )
         )
@@ -928,10 +1040,10 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {SOURCE_IMAGE}")
                         printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {TARGET_IMAGE}")
                         printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
@@ -959,6 +1071,13 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 textwrap.dedent(
                     """\
                     render_and_validate_topology() { return 0; }
+                    observe_local_image_config_digest() {
+                      case "$1" in
+                        "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_CONFIG_ID" ;;
+                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' "$TARGET_IMAGE_CONFIG_ID" ;;
+                        *) return 10 ;;
+                      esac
+                    }
                     initialize_runtime_state || exit $?
                     assert_safe_images_paths_and_project
                     status=$?
@@ -996,10 +1115,10 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     f"""\
                     #!/bin/sh
                     case "$*" in
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {SOURCE_IMAGE}")
                         printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {TARGET_IMAGE}")
                         printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
@@ -1019,6 +1138,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 "--negative-case",
                 "bad-target-major",
                 extra_env={"PATH": f"{fake_bin}:{os.environ['PATH']}"},
+                stub_image_config_observer=True,
             )
         self.assertEqual(result.returncode, 10, result.stdout + result.stderr)
         self.assertIn("failure_class=preflight", result.stdout)
@@ -1083,10 +1203,10 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     #!/bin/sh
                     printf '%s\\n' "$*" >> "$IOR_TEST_DOCKER_CALLS"
                     case "$*" in
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {SOURCE_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {SOURCE_IMAGE}")
                         printf '%s\\n' {SOURCE_INSPECT_OUTPUT!r}
                         ;;
-                      "image inspect --format {{{{json .RepoDigests}}}}|{{{{.Id}}}} {TARGET_IMAGE}")
+                      "image inspect --format {{{{json .}}}} {TARGET_IMAGE}")
                         printf '%s\\n' {TARGET_INSPECT_OUTPUT!r}
                         ;;
                       "compose version") exit 0 ;;
@@ -1123,6 +1243,13 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     prepare_default_handoff_dir() { return 0; }
                     invalidate_canonical_handoff() { return 0; }
                     render_and_validate_topology() { return 0; }
+                    observe_local_image_config_digest() {
+                      case "$1" in
+                        "$SOURCE_IMAGE") printf '%s\n' "$SOURCE_IMAGE_CONFIG_ID" ;;
+                        "$TARGET_IMAGE"|"$DUMP_CLIENT_IMAGE") printf '%s\n' "$TARGET_IMAGE_CONFIG_ID" ;;
+                        *) return 10 ;;
+                      esac
+                    }
                     main --negative-case timeout
                     """
                 ),

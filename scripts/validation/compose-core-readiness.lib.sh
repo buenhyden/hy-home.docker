@@ -21,10 +21,10 @@ CRR_TARGET_CLASS="local-linked-worktree-docker-engine"
 CRR_EXPECTED_SERVICES=(keycloak oauth2-proxy traefik vault vault-agent)
 CRR_EXPECTED_PORTS=(18000 18443 18082 18083 18200)
 CRR_EXPECTED_IMAGE_IDENTITIES=(
-  "quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4"
-  "quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561"
-  "traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2"
-  "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+  "quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4|sha256:1361d6e492058a69d979ab735cfc19e73e5f1e0a707e8fa5cfb610c00bc3cff2"
+  "quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|quay.io/oauth2-proxy/oauth2-proxy@sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|sha256:10a1165743a192e1940b4708fb9647027185ce11a681a1c5519b442ff7f1f561|sha256:cf3a5d50849b1799260d6aca62367c333b33472f208cbbdaab243a831b1a622f"
+  "traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2|sha256:7982c57cc89de38c6ca9e3f17caa0569890d2043f6f5271c78ad75a2cff50f32"
+  "hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54|sha256:1747a4ab1e1bea8938269b23827165c5d80eecbdb5c115fd58e6380569537c84"
 )
 
 crr_error() {
@@ -141,6 +141,8 @@ assert_docker_compose() {
     crr_fail "$CRR_EXIT_PREFLIGHT" "openssl is unavailable"
   command -v realpath >/dev/null 2>&1 ||
     crr_fail "$CRR_EXIT_PREFLIGHT" "realpath is unavailable"
+  command -v timeout >/dev/null 2>&1 ||
+    crr_fail "$CRR_EXIT_PREFLIGHT" "timeout is unavailable"
 }
 
 assert_docker_daemon() {
@@ -148,37 +150,85 @@ assert_docker_daemon() {
     crr_fail "$CRR_EXIT_PREFLIGHT" "Docker daemon is unavailable"
 }
 
+observe_docker_image_config_digest() {
+  local image_ref="$1"
+  local archive config_digest status=0
+  archive="$(mktemp "${CRR_RUNTIME_DIR}/image-config.XXXXXX.tar")" ||
+    return "$CRR_EXIT_PREFLIGHT"
+  chmod 600 "$archive" || status="$CRR_EXIT_PREFLIGHT"
+  if [ "$status" -eq 0 ]; then
+    timeout --signal=KILL 60s docker image save \
+      --output "$archive" "$image_ref" >/dev/null 2>&1 ||
+      status="$CRR_EXIT_PREFLIGHT"
+  fi
+  if [ "$status" -eq 0 ]; then
+    config_digest="$(
+      python3 "${CRR_ROOT}/scripts/validation/check-supply-chain-policy.py" \
+        --docker-save-config-digest "$archive"
+    )" || status="$CRR_EXIT_PREFLIGHT"
+  fi
+  rm -f -- "$archive" || status="$CRR_EXIT_PREFLIGHT"
+  [ "$status" -eq 0 ] || return "$status"
+  printf '%s\n' "$config_digest"
+}
+
 assert_local_image_identity() {
   local image_ref="$1"
   local expected_repo_digest="$2"
-  local expected_config_id="$3"
-  local observed repo_digests_json actual_config_id
+  local expected_target_digest="$3"
+  local expected_config_id="$4"
+  local observed actual_config_id
   if ! observed="$(
-    docker image inspect --format '{{json .RepoDigests}}|{{.Id}}' \
+    docker image inspect --format '{{json .}}' \
       "$image_ref" 2>/dev/null
   )"; then
     crr_fail "$CRR_EXIT_PREFLIGHT" \
       "local image identity is unavailable for ${image_ref}"
     return
   fi
-  repo_digests_json="${observed%|*}"
-  actual_config_id="${observed##*|}"
-  if ! python3 - "$repo_digests_json" "$expected_repo_digest" <<'PY'
+  if ! python3 - "$observed" "$expected_repo_digest" \
+    "$expected_target_digest" "$expected_config_id" <<'PY'
 import json
+import re
 import sys
 
 try:
-    repo_digests = json.loads(sys.argv[1])
+    document = json.loads(sys.argv[1])
 except (json.JSONDecodeError, TypeError):
     raise SystemExit(1)
-if not isinstance(repo_digests, list) or sys.argv[2] not in repo_digests:
+repo_digests = document.get("RepoDigests") if isinstance(document, dict) else None
+target_id = document.get("Id") if isinstance(document, dict) else None
+descriptor = document.get("Descriptor") if isinstance(document, dict) else None
+expected_repo, expected_target, expected_config = sys.argv[2:]
+media_types = {
+    "application/vnd.docker.distribution.manifest.list.v2+json",
+    "application/vnd.docker.distribution.manifest.v2+json",
+    "application/vnd.oci.image.index.v1+json",
+    "application/vnd.oci.image.manifest.v1+json",
+}
+if (
+    not isinstance(repo_digests, list)
+    or expected_repo not in repo_digests
+    or not re.fullmatch(r"sha256:[0-9a-f]{64}", expected_target)
+    or not re.fullmatch(r"sha256:[0-9a-f]{64}", expected_config)
+    or expected_target == expected_config
+    or not isinstance(descriptor, dict)
+    or descriptor.get("digest") != expected_target
+    or descriptor.get("mediaType") not in media_types
+    or target_id != expected_target
+):
     raise SystemExit(1)
 PY
   then
     crr_fail "$CRR_EXIT_PREFLIGHT" \
-      "local repository manifest mismatch for ${image_ref}"
+      "local repository manifest or target descriptor mismatch for ${image_ref}"
     return
   fi
+  actual_config_id="$(observe_docker_image_config_digest "$image_ref")" || {
+    crr_fail "$CRR_EXIT_PREFLIGHT" \
+      "local image configuration body is unavailable for ${image_ref}"
+    return
+  }
   if [ "$actual_config_id" != "$expected_config_id" ]; then
     crr_fail "$CRR_EXIT_PREFLIGHT" \
       "local image configuration ID mismatch for ${image_ref}"
@@ -187,11 +237,14 @@ PY
 }
 
 assert_local_image_identities() {
-  local identity image_ref expected_repo_digest expected_config_id
+  local identity image_ref expected_repo_digest expected_target_digest
+  local expected_config_id
   for identity in "${CRR_EXPECTED_IMAGE_IDENTITIES[@]}"; do
-    IFS='|' read -r image_ref expected_repo_digest expected_config_id <<<"$identity"
+    IFS='|' read -r image_ref expected_repo_digest expected_target_digest \
+      expected_config_id <<<"$identity"
     assert_local_image_identity \
-      "$image_ref" "$expected_repo_digest" "$expected_config_id" || return
+      "$image_ref" "$expected_repo_digest" "$expected_target_digest" \
+      "$expected_config_id" || return
   done
 }
 
