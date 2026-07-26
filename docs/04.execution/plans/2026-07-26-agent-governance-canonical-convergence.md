@@ -153,10 +153,13 @@ fast-moving claim:
   `8f083195e998ae6435d39d408bf35850c4b3ebf1`.
 - GitHub CI memory memo baseline blob:
   `7bf6427ad8f29ab8b0d7c001cf330e29b941cdfe`.
-- Current catalog is duplicate-key clean. A nested duplicate `scope` remains a
-  required negative regression fixture.
-- Current active counts are 14 roles and 22 functions.
-- Current semantic evaluator has 8 fixtures and 10 deterministic regressions.
+- At feature-base activation, the catalog was duplicate-key clean. A nested
+  duplicate `scope` remains a required negative regression fixture.
+- At feature-base activation, active counts were 14 roles and 22 functions,
+  and the semantic evaluator had 8 fixtures and 10 deterministic regressions.
+  The current post-T-AGCC-004 contract is separately 14 roles / 24 functions
+  and 11 fixtures / 16 regressions; Task 6 closure evidence must use the
+  current values without rewriting the activation baseline.
 - Local `ci-quality.yml` owns 16 jobs. The public remote observation exposed 15
   jobs in the last failed run and three GitHub-managed workflows; authenticated
   control-plane state remains unverified.
