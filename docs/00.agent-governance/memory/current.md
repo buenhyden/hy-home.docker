@@ -8,8 +8,8 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-- Establish the bounded provider-neutral current-state route defined by Spec
-  134 and keep its root imports identical across Claude, Codex, and Gemini.
+- Preserve the completed bounded-memory evidence while the active convergence
+  chain advances to the Task 5 interface amendment and Task 4 implementation.
 
 ## Approved decisions
 
@@ -29,19 +29,19 @@ status: active
 
 ## Verified state
 
-- Verified commit: `6a1a9fe381194462598afdc7901587996e6d20fb`
-- Verified at: `2026-07-26T22:38:59+09:00`
+- Verified commit: `a56234ee346d67ed3febb47864d0a60b8f77923f`
+- Verified at: `2026-07-26T22:51:27+09:00`
 - T-AGCC-001 and T-AGCC-002 are recorded complete in the active Task ledger.
-- T-AGCC-003 implementation commit and local verification evidence are recorded
-  in the active Task ledger.
-- Task 3 specification review is C0/I0/M1 APPROVED; its sole bookkeeping Minor
-  is corrected in the active Task ledger.
+- T-AGCC-003 is complete: specification review is C0/I0/M1 APPROVED with its
+  sole bookkeeping Minor closed, and quality/security review is C0/I0/M0
+  APPROVED.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- Task 3 quality/security review remains unverified until the controller
-  dispatches a fresh reviewer for the committed implementation range.
+- The approved `.github/INDEX.md` Task 5 interface amendment still requires
+  separate Plan evidence before implementation.
+- T-AGCC-004 has not started and requires a fresh implementation owner.
 - The controlled repository-wide QA gate remains separately approval-bound.
 
 ## Evidence links
@@ -53,6 +53,5 @@ status: active
 
 ## Next handoff
 
-- Preserve the approved specification verdict and dispatch a fresh
-  quality/security review for `cc7f515a..6a1a9fe3`, then record its verdict in
-  the active Task ledger.
+- Record the approved `.github/INDEX.md` Task 5 interface amendment in separate
+  Plan evidence, then dispatch a fresh T-AGCC-004 implementer.
