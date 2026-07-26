@@ -9,8 +9,8 @@ status: active
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
 - T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
-  while the T-AGCC-006 implementation candidate advances through independent
-  Task review.
+  while the independently approved T-AGCC-006 candidate advances through the
+  separately gated repository-wide wrapper and whole-branch review.
 
 ## Approved decisions
 
@@ -31,8 +31,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `0a80a5d1daf4ec6174e90bafef22dbb6e73b103a`
-- Verified at: `2026-07-27T03:47:57+09:00`
+- Verified commit: `39e2e254216365398d26b69a3c30df82537fa05b`
+- Verified at: `2026-07-27T04:04:32+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -40,15 +40,16 @@ status: active
 - The post-remediation dependency-locked aggregate is 312/312; repository,
   provider-drift, semantic-eval, traceability, alignment, and generated-owner
   gates pass.
+- Task 6 specification and quality/security reviews are both C0/I0/M0 and
+  authorize Task closure from their respective review boundaries.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- Fresh Task 6 specification and quality/security reviews have not yet
-  authorized Task closure.
 - Provider acceptance/entitlement, live comparative evaluation, and
   authenticated remote GitHub enforcement remain explicitly unverified.
-- The controlled repository-wide QA gate remains separately approval-bound.
+- The controlled repository-wide QA wrapper has not been approved for this
+  exact run and therefore remains `not_run`.
 - Remote work remains read-only; remote mutation, live provider calls, and
   runtime changes are not authorized.
 
@@ -61,6 +62,6 @@ status: active
 
 ## Next handoff
 
-- Dispatch fresh Task 6 specification and quality/security reviewers for
-  `371ffc6d..0a80a5d1`, remediate any Critical or Important findings, and do
-  not transition branch lifecycle state before both authorize closure.
+- Obtain explicit per-run approval for the exact controlled all-files wrapper
+  recorded in the Plan, then run whole-branch correctness and security reviews
+  before any lifecycle transition.
