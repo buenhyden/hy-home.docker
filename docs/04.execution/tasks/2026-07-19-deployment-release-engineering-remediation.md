@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-19-deployment-release-engineering-remediation
 artifact_type: task
 parent_ids:
@@ -11,10 +11,11 @@ parent_ids:
 
 ## Overview
 
-This active Task retains the historical local pair-bound baseline/canary
+This completed Task retains the historical local pair-bound baseline/canary
 promotion and previous-runtime-image-ID rollback rehearsal for
 `examples/sample-web-service`, while recording that its fixed current evidence
-path is reopened. The earlier approved sequence ran exactly once in each mode:
+path was corrected through its reviewed successor. The earlier approved sequence
+ran exactly once in each mode:
 a positive promotion followed by an injected canary-health failure and verified
 rollback. Final-review corrections produced new Compose readiness and
 PostgreSQL recovery handoff hashes, so that historical record is no longer a
@@ -25,12 +26,16 @@ Independent specification and quality/security reviews of the historical Task
 5 runtime range were both `APPROVED C0/I0/M0` with no findings. Those verdicts
 do not cover a new rehearsal against the corrected upstream handoffs. The
 prior record bytes are preserved under an explicitly stale ignored filename.
-Task 5 remains active pending fresh re-review of the
+The
 [corrected evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
-range. That Task activated cleanly and completed exactly one actual corrected
-positive at exit `0` followed by exactly one injected negative at expected exit
-`30`; the final current record proves rollback, post-health, cleanup, and
-zero-resource disposition.
+activated cleanly and completed exactly one actual corrected positive at exit
+`0` followed by exactly one injected negative at expected exit `30`; the final
+current record proves rollback, post-health, cleanup, and zero-resource
+disposition. Its corrected-successor specification re-review returned
+`APPROVED C0/I0/M0` and `SAFE_FOR_LIFECYCLE_CLOSURE`, and the independent
+quality/security review returned `APPROVED C0/I0/M0`. This Task is therefore
+completed at the reviewed local-isolated boundary. Final whole-branch
+post-closure confirmation remains a separate branch-level gate.
 The Program-owned controlled wrapper passed on 2026-07-26 only for its exact
 pre-remediation checkpoint.
 
@@ -158,7 +163,7 @@ untracked.
 | `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; current focused suite 54/54 and fixture-only preflight pass |
 | `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Corrected runtime complete; actual positive exited 0 |
 | `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Corrected runtime complete; expected negative 30, replacement/rollback/post-health/cleanup passed |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Reopened; historical reviews remain range-bound and fresh corrected-evidence re-review is pending |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Complete; historical reviews remain range-bound and corrected-successor reviews approve local lifecycle closure |
 
 ## Work Log
 
@@ -180,11 +185,13 @@ untracked.
 | 2026-07-23 | Accepted input readiness | Task 7 published a mode-0600 schema-v3 pair for source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, generation `hyhome-verification-verdict-pair-v3`, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`. Its baseline/candidate verdict hashes are `057f301edbb1475a398c41d16272986580f754d149473263be6ca29b5728497b` and `89db847616e1533240edeb060f008c21406de5703cf49d09a7590839c3df27ce`; the full pair-bound local refs and runtime IDs satisfy the static Task 5 consumer contract. At this checkpoint no real Task 5 rehearsal had run; the later runtime row supersedes that prerequisite-only state. |
 | 2026-07-23 | Approved Task 5 runtime sequence | The focused unit suite passed 54/54 at exit 0, followed by fixture-only preflight at exit 0. Exactly one positive real rehearsal then exited 0 for projects `hyhome-dre-20260719-1709404-baseline` and `hyhome-dre-20260719-1709404-canary`. It ran from `2026-07-22T20:54:30Z` through `2026-07-22T20:54:46Z`; baseline/candidate both passed, promotion was `promoted`, rollback was `not_required`, post-rollback health was `not_applicable`, result was `promoted`, cleanup passed, and `data_impact=none`. Its mode-0600, 3,295-byte canonical record had inode `1290126` and SHA-256 `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`. Exactly one injected `canary-health-timeout` rehearsal then exited expected class 30 with `health-deadline-exceeded` for projects `hyhome-dre-20260719-1731921-baseline` and `hyhome-dre-20260719-1731921-canary`. It ran from `2026-07-22T20:56:27Z` through `2026-07-22T20:58:59Z`; baseline passed, candidate failed, promotion was `not_promoted`, rollback was `rolled_back_to_baseline`, post-rollback health passed, result was `rolled_back`, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record has inode `538673` and SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`; changed inode and hash prove replacement rather than stale-record reuse. Both records bind source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, pair hash `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, readiness hash `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, and recovery hash `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`. After both runs, all owner/task/name-scoped containers, networks, volumes, and `/tmp` publication paths were empty. Tracked HEAD remained `f3e4701115734e71f8848e706e9d37d499f0c2ac` and clean. No standalone cleanup, rerun, remote action, release, registry operation, controlled wrapper, or pre-commit command ran. |
 | 2026-07-23 | `T-DRE-004` Task 5 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. The specification review passed delivery 54/54, metadata 6/0 with one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. The quality/security review passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. Neither review ran Docker, Compose, rehearsal, cleanup, advisory, Task 4, the controlled wrapper, pre-commit, or any remote action. |
-| 2026-07-26 | Final lifecycle review remediation | The local promotion/rollback boundary is complete and this Task transitions to `completed`; Release, registry, remote deployment, live environments, credentials, and production targets remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
+| 2026-07-26 | Final lifecycle review remediation | The local promotion/rollback boundary was complete and this Task transitioned to `completed`; Release, registry, remote deployment, live environments, credentials, and production targets remained deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation was `78265090`, and historical lifecycle commit `0f931be1` closed the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` closed that code boundary. The following reopen, successor, review, and closure rows supersede this historical lifecycle state. |
 | 2026-07-26 | Final-review upstream reconciliation and lifecycle reopen | Delivery implementation remains GREEN at 54/54 against the new Compose/PostgreSQL canonical schemas. The corrected readiness handoff is mode 0600, 1,198 bytes, SHA-256 `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; corrected recovery is mode 0600, 642 bytes, SHA-256 `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`. The historical mode-0600 Task 5 record SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823` binds the superseded hashes `12fbe9fa…` and `bf7109f5…`, so it was not reused. Its bytes were preserved as ignored `rehearsal-record.stale-inputs-2026-07-26.json`, and the fixed current `rehearsal-record.json` path is absent. No Task 5 rehearsal, cleanup, release, deployment, build, pull, network, or remote action ran. This Task returns to `active` pending fresh authorization, runtime evidence, and independent re-review; no current approval or completion is claimed. |
 | 2026-07-26 | Corrected evidence successor activation | The user explicitly authorized one bounded corrected-hash positive rehearsal followed by one injected `canary-health-timeout` rehearsal under the successor Task. Runtime remains pending until that Task has a clean activation commit and its formal prerequisite, focused-suite, and fixture-only preflight gates pass. The Delivery Task, successor Task, and Program Task remain active and review-pending. |
 | 2026-07-26 | Corrected evidence sandbox preflight | Activation `35a9365f`, exact handoff/pair reconciliation, 54/54 tests, and fixture preflight passed. A sandboxed positive process then returned class `10` plus `code=local-image-object-missing` because it could not access the Docker socket. It stopped before project startup, record construction, or rehearsal behavior and left current record/resources absent. Commit `736d316a` preserves that result as a historical sandbox preflight, not an actual positive rehearsal. |
 | 2026-07-26 | Corrected actual positive and injected-negative sequence | From clean tracked HEAD/current-record/resource state at `736d316a`, exactly one actual positive exited `0` for projects `hyhome-dre-20260719-1761285-baseline/canary`, from `2026-07-26T05:02:32Z` to `2026-07-26T05:02:50Z`; both roles passed, promotion/result were `promoted`, cleanup passed, and `data_impact=none`. Its captured record was mode `0600`, 3,295 bytes, inode `1531072`, SHA-256 `fa2580e0bc5f1b29c7ee27e3d31ed40fa4507ca6bb70b51053ca7412c81db996`. Exactly one injected `canary-health-timeout` rehearsal then exited expected `30` with `health-deadline-exceeded` for projects `hyhome-dre-20260719-1766093-baseline/canary`, from `2026-07-26T05:03:27Z` to `2026-07-26T05:05:59Z`; baseline passed, canary failed, promotion was denied, rollback restored the healthy baseline, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record is inode `2547597`, SHA-256 `f2625d260494e1eb6c16af75ebcf287f3deebc0fd034210df62f24d712d08082`. Owner/task/name-scoped containers, networks, volumes, and task `/tmp` paths were zero after each actual run. |
+| 2026-07-26 | Corrected-successor review and local lifecycle closure | Initial specification review of `568908598d6b01a19f9c275fccfe0750c08f44f6..883efcec16ea4ed8c46e3207142eecf3d61d6223` returned `CHANGES REQUIRED C0/I1/M1`. Remediation `ca76f85db2bde06ee3716795a17363f6f2db49a1` corrected review-boundary/current-state wording. Exact-delta re-review of `883efcec16ea4ed8c46e3207142eecf3d61d6223..ca76f85db2bde06ee3716795a17363f6f2db49a1` returned `APPROVED C0/I0/M0` and `SAFE_FOR_LIFECYCLE_CLOSURE`; independent quality/security review of `568908598d6b01a19f9c275fccfe0750c08f44f6..ca76f85db2bde06ee3716795a17363f6f2db49a1` returned `APPROVED C0/I0/M0`. This Task completes at the local-isolated boundary; external/live/registry/Release/deployment remains deferred and whole-branch post-closure confirmation remains pending. |
+| 2026-07-26 | Post-closure targeted validation | Against exact closure base `ca76f85db2bde06ee3716795a17363f6f2db49a1`, changed metadata passed 6/0 with zero legacy exceptions and zero transition overrides. Repository metadata and lifecycle contracts passed at zero; impacted lifecycle passed 173/0 with only the expected `docs/04.execution/tasks` directory-budget warning; promoted lifecycle passed at zero. Template body contracts passed 38/38; traceability passed 46/0; alignment passed 668 documents / 5,544 links / 141 operations documents / 0; execution status wording passed for 225 completed artifacts. Semantic inventory is fresh at 929/2,145, Wiki index/coverage are fresh at 1,316/1,315, exactly three frontmatters changed `active` to `completed`, and diff hygiene passed. |
 
 ## Verification Evidence
 
@@ -299,11 +306,12 @@ Verification results: implementation, static validation, and 54/54 focused
 tests at exit 0 pass against the corrected upstream schemas. The exactly-once
 corrected runtime acceptance pair passed with actual exits `0/30`, positive
 capture, replacement, rollback/post-health, cleanup, and zero-resource proof.
-Historical
-fixture-only preflight, producer compatibility, immutable-input,
+Historical fixture-only preflight, producer compatibility, immutable-input,
 pair-manifest, and positive-then-injected-negative runtime evidence remain
-valid for their exact inputs and reviewed range only. Fresh independent
-corrected-range review remains pending. Exit classes are `0=pass`,
+valid for their exact inputs and reviewed range only. The corrected-successor
+specification and quality/security reviews approve local lifecycle closure.
+Final whole-branch post-closure confirmation remains pending. Exit classes are
+`0=pass`,
 `2=usage`,
 `10=verdict/pair-manifest/preflight`, `20=baseline`, `30=canary/health`,
 `40=promotion record`, `50=rollback`, and `60=cleanup`.
@@ -311,9 +319,8 @@ corrected-range review remains pending. Exit classes are `0=pass`,
 Task 7 created the accepted portable pair but did not itself execute Task 5.
 The historical approved delivery sequence created both positive and rollback
 evidence. That negative replacement is retained only under an explicitly stale
-filename because corrected upstream handoffs changed its bound hashes. Current
-Task 5 remains active after the successful successor implementation sequence;
-independent corrected-evidence reviews are pending.
+filename because corrected upstream handoffs changed its bound hashes. The
+corrected successor reviews close the current Task 5 local lifecycle gate.
 The Program-owned controlled all-files wrapper passed on 2026-07-26 from clean
 checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0,
 snapshot pass, zero observed path counts, and all four path sets empty.
@@ -398,13 +405,25 @@ remain historical remediation evidence.
 The initial final Program specification review after the controlled-wrapper
 checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
 were stale, and the 15 local-isolated lifecycle documents still reported
-`active`. Commit `78265090` refreshed the generated owners; this lifecycle
-logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
-their indexes. The initial final quality review returned
+`active`. Commit `78265090` refreshed the generated owners; historical lifecycle
+commit `0f931be1` transitioned the exact 15 Specs, Plans, and Tasks and
+synchronized their indexes. The initial final quality review returned
 `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
 unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
-through the bounded stable-private reader. Fresh final specification and
-quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+through the bounded stable-private reader. Final whole-branch post-closure
+confirmation of that broader range remains pending.
+
+For the corrected successor, initial specification review of exact range
+`568908598d6b01a19f9c275fccfe0750c08f44f6..883efcec16ea4ed8c46e3207142eecf3d61d6223`
+returned `CHANGES REQUIRED C0/I1/M1`. Remediation
+`ca76f85db2bde06ee3716795a17363f6f2db49a1` corrected the range-bound review
+and current-state wording. Exact-delta re-review of
+`883efcec16ea4ed8c46e3207142eecf3d61d6223..ca76f85db2bde06ee3716795a17363f6f2db49a1`
+returned `APPROVED C0/I0/M0` and `SAFE_FOR_LIFECYCLE_CLOSURE`. Independent
+quality/security review of
+`568908598d6b01a19f9c275fccfe0750c08f44f6..ca76f85db2bde06ee3716795a17363f6f2db49a1`
+returned `APPROVED C0/I0/M0`. These scoped verdicts close this Task at the
+local-isolated boundary without promoting external or branch-wide coverage.
 
 ## Commit Ledger
 
@@ -419,9 +438,15 @@ Portable consumer GREEN is `a6c12e18`; canonical-preservation remediation is
 This five-file review/document closure intentionally does not self-record its
 final SHA.
 Post-wrapper remediation identities are generated-owner refresh `78265090`,
-OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.
-They are validated by targeted gates and the pending final re-review, not by
-the exact-once wrapper.
+OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, corrected successor evidence
+`883efcec16ea4ed8c46e3207142eecf3d61d6223`, review-boundary remediation
+`ca76f85db2bde06ee3716795a17363f6f2db49a1`, and this lifecycle logical unit.
+They are outside the exact-once wrapper. The successor ranges are independently
+reviewed; final whole-branch post-closure confirmation remains separate.
+
+Lifecycle closure logical unit:
+`docs(sdlc): close corrected delivery lifecycle`. It intentionally does not
+self-record its own SHA.
 
 Logical unit: `feat(release): add local promotion and rollback`.
 
@@ -434,7 +459,15 @@ specification v5 and quality/security v3 reviews are also APPROVED C0/I0/M0.
 The historical positive/rollback runtime evidence has exact-range specification
 and quality/security approvals at C0/I0/M0 with no findings. Successor
 activation is `35a9365f`; its static gates and corrected actual `0/30` runtime
-pair pass. Current Task 5 independent re-review remains pending.
+pair pass. Corrected-successor specification re-review and independent
+quality/security review are `APPROVED C0/I0/M0`.
+Post-closure gates against exact base
+`ca76f85db2bde06ee3716795a17363f6f2db49a1` pass at changed metadata 6/0/0/0,
+lifecycle impacted 173/0 with only the expected Task-directory budget warning,
+promoted lifecycle 0, template body contracts 38/38, traceability 46/0,
+alignment 668/5,544/141/0, status wording 225/0, semantic inventory 929/2,145,
+fresh Wiki 1,316/1,315, exactly three `active` to `completed` frontmatter
+transitions, and diff hygiene.
 
 ## Deferred and Blocked Items
 
@@ -442,12 +475,12 @@ Deferred items: GitHub workflows/environments/releases, registry publication,
 remote deployment, production targets, OIDC/credentials, real Release records,
 and stateful data rollback.
 
-Blocked items: no implementation/runtime blocker remains at the authorized
-local-isolated boundary. Fresh independent corrected-evidence review remains
-required before completion or approval. Any stateful impact still blocks
-promotion and routes to Spec 125. The Program-owned controlled wrapper PASS at
-`263e046f` does not cover the corrected runtime/evidence range and is not
-rerun. This Task is active, and no current completion or approval is reported.
+Blocked items: no implementation, runtime, or review blocker remains at the
+authorized local-isolated boundary. Any stateful impact still blocks promotion
+and routes to Spec 125. The Program-owned controlled wrapper PASS at `263e046f`
+does not cover the corrected runtime/evidence range and is not rerun. Final
+whole-branch post-closure confirmation remains a separate branch-level gate and
+does not reopen this completed Task.
 
 Deferral destination: data recovery routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
