@@ -78,6 +78,20 @@ artifacts:
       artifact_type: agent-role
       agent_id: $path_stem
       status: active
+  - profile_id: github-navigation-index
+    artifact_type: github-navigation-index
+    path_pattern: .github/INDEX.md
+    repository_section: harness
+    canonical: false
+    required_keys: []
+    key_order: []
+    required_sections:
+      - Purpose
+      - Surface Map
+      - Authority and Change Routes
+      - Verification
+      - Related Documents
+    expected_values: {}
   - profile_id: governance-current-memory
     artifact_type: governance-current-memory
     path_pattern: docs/00.agent-governance/memory/current.md
@@ -136,7 +150,7 @@ artifacts:
       layer: agentic
   - profile_id: governance-memory-note
     artifact_type: governance-document
-    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,docker-doc-contract-backlog,execution-stage-legacy-debt,github-ci-contract-audit,governance-memory-usage-contract,harness-agent-first-gap-audit,stage-docs-lifecycle-audit}.md
+    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,docker-doc-contract-backlog,execution-stage-legacy-debt,governance-memory-usage-contract,harness-agent-first-gap-audit,stage-docs-lifecycle-audit}.md
     repository_section: harness
     canonical: true
     required_keys: [layer]
@@ -564,8 +578,10 @@ path_authority:
   - authority_id: github-quality-workflow
     path_patterns:
       - .github/CODEOWNERS
+      - .github/INDEX.md
       - .github/PULL_REQUEST_TEMPLATE.md
       - .github/labeler.yml
+      - .github/rulesets/main-protection.md
       - .github/workflows/ci-quality.yml
     canonical_owner: ci-cd-engineer
     entry_owners: []

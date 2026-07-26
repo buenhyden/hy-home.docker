@@ -936,6 +936,11 @@ workflow_files = sorted(
 )
 sha_re = re.compile(r"^[0-9a-f]{40}$")
 workflow_documents: dict[pathlib.Path, dict[object, object]] = {}
+workflow_purposes: dict[str, pathlib.Path] = {}
+workflow_job_owners: dict[str, pathlib.Path] = {}
+untrusted_run_re = re.compile(
+    r"\$\{\{\s*github\.(?:event(?:\.|_)|head_ref\b|ref_name\b|ref\b)"
+)
 
 
 class DuplicateKeyError(yaml.YAMLError):
@@ -995,10 +1000,49 @@ for path in workflow_files:
     if data is None:
         continue
     workflow_documents[path] = data
+    purpose = data.get("name")
+    if not isinstance(purpose, str) or not purpose.strip():
+        failures.append(f"{path}: workflow purpose must be a non-empty name")
+    else:
+        normalized_purpose = " ".join(purpose.split()).casefold()
+        previous = workflow_purposes.get(normalized_purpose)
+        if previous is not None:
+            failures.append(
+                f"{path}: duplicate workflow purpose conflicts with another tracked workflow"
+            )
+        else:
+            workflow_purposes[normalized_purpose] = path
     jobs = data.get("jobs") or {}
     if not isinstance(jobs, dict):
         failures.append(f"{path}: workflow jobs must be a mapping")
         jobs = {}
+    for job_id, job in jobs.items():
+        if not isinstance(job_id, str):
+            failures.append(f"{path}: workflow job id must be a string")
+            continue
+        previous = workflow_job_owners.get(job_id)
+        if previous is not None:
+            failures.append(
+                f"{path}: duplicate workflow job id across files: {job_id}"
+            )
+        else:
+            workflow_job_owners[job_id] = path
+        if not isinstance(job, dict):
+            failures.append(f"{path}: job {job_id!r} must be a mapping")
+            continue
+        timeout = job.get("timeout-minutes")
+        if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 30:
+            failures.append(
+                f"{path}: job {job_id!r} timeout-minutes must use a bounded integer"
+            )
+        for step in job.get("steps") or []:
+            if not isinstance(step, dict):
+                continue
+            run = step.get("run")
+            if isinstance(run, str) and untrusted_run_re.search(run):
+                failures.append(
+                    f"{path}: job {job_id!r} run step uses an untrusted GitHub context directly"
+                )
     top_permissions = data.get("permissions")
 
     if top_permissions is None:
@@ -1110,9 +1154,6 @@ if ci_quality in workflow_documents:
         "actions": "read",
         "contents": "read",
     }
-    untrusted_run_re = re.compile(
-        r"\$\{\{\s*github\.(?:event(?:\.|_)|head_ref\b|ref_name\b|ref\b)"
-    )
     for job_id, job in jobs.items():
         if not isinstance(job, dict):
             failures.append(f"{ci_quality}: job {job_id!r} must be a mapping")
@@ -1128,14 +1169,6 @@ if ci_quality in workflow_documents:
             failures.append(
                 f"{ci_quality}: job {job_id!r} timeout-minutes must equal the approved bound"
             )
-        for step in job.get("steps") or []:
-            if not isinstance(step, dict):
-                continue
-            run = step.get("run")
-            if isinstance(run, str) and untrusted_run_re.search(run):
-                failures.append(
-                    f"{ci_quality}: job {job_id!r} run step uses an untrusted GitHub context directly"
-                )
     operational_readiness_test_command = "python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v"
     supply_chain_job = jobs.get("supply-chain-fixture-policy")
     supply_chain_steps = (
@@ -1154,6 +1187,32 @@ if ci_quality in workflow_documents:
         failures.append(
             f"{ci_quality}: supply-chain focused regression step must match the approved command exactly once"
         )
+    expected_zizmor_command = (
+        "uvx --from 'zizmor==1.28.0' "
+        "zizmor . --format sarif . > results.sarif"
+    )
+    zizmor_job = jobs.get("zizmor")
+    zizmor_steps = (
+        zizmor_job.get("steps") or []
+        if isinstance(zizmor_job, dict)
+        else []
+    )
+    zizmor_commands = [
+        step.get("run")
+        for step in zizmor_steps
+        if isinstance(step, dict)
+        and isinstance(step.get("run"), str)
+        and "zizmor" in step.get("run", "")
+    ]
+    if zizmor_commands != [expected_zizmor_command]:
+        failures.append(f"{ci_quality}: unpinned dynamic tool package")
+    zizmor_run_steps = [
+        step
+        for step in zizmor_steps
+        if isinstance(step, dict) and step.get("run") == expected_zizmor_command
+    ]
+    if len(zizmor_run_steps) != 1 or "env" in zizmor_run_steps[0]:
+        failures.append(f"{ci_quality}: zizmor credential environment is forbidden")
     for literal in [
         "Publish QA gate recommendations",
         "GITHUB_STEP_SUMMARY",
@@ -1250,6 +1309,278 @@ if ruleset.is_file():
             failures.append(f"{ruleset}: status check is not a CI Quality Gates job: {check}")
 else:
     failures.append("missing local branch protection proposal: .github/rulesets/main-protection.md")
+
+github_index = pathlib.Path(".github/INDEX.md")
+github_readme = pathlib.Path(".github/README.md")
+required_index_sections = (
+    "Purpose",
+    "Surface Map",
+    "Authority and Change Routes",
+    "Verification",
+    "Related Documents",
+)
+required_index_links = (
+    "./workflows/ci-quality.yml",
+    "./rulesets/main-protection.md",
+    "../docs/00.agent-governance/rules/github-governance.md",
+    "../scripts/validation/run-local-qa-gates.sh",
+    "../docs/90.references/data/governance/github-actions-control-plane-observation.yaml",
+)
+if github_readme.exists():
+    failures.append(f"{github_readme}: GitHub navigation README is forbidden")
+if not github_index.is_file():
+    failures.append(f"missing GitHub navigation index: {github_index}")
+else:
+    index_text = github_index.read_text(encoding="utf-8")
+    if index_text.startswith("---"):
+        failures.append(f"{github_index}: frontmatter is forbidden")
+    index_sections = tuple(re.findall(r"(?m)^## (.+?)\s*$", index_text))
+    if index_sections != required_index_sections:
+        failures.append(f"{github_index}: section envelope must match navigation contract")
+    for link in required_index_links:
+        if f"]({link})" not in index_text:
+            failures.append(f"{github_index}: missing canonical navigation link")
+    if any(f"`{job_id}`" in index_text for job_id in required_jobs):
+        failures.append(f"{github_index}: CI job identity duplication is forbidden")
+    index_forbidden_patterns = (
+        r"(?i)\b(?:must|shall)\b",
+        r"(?i)\b16[- ]job\b",
+        r"(?i)\b(?:secrets?|vars?|variables?)\.",
+        r"\bGITHUB_TOKEN\b",
+        r"(?i)\bremote\b.{0,40}\b(?:active|enforced)\b",
+        r"(?i)\b(?:active|enforced)\b.{0,40}\bremote\b",
+    )
+    if any(re.search(pattern, index_text) for pattern in index_forbidden_patterns):
+        failures.append(f"{github_index}: navigation-only authority was exceeded")
+
+artifact_contract = pathlib.Path(
+    "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
+)
+if not artifact_contract.is_file():
+    failures.append(f"missing agent-governance artifact contract: {artifact_contract}")
+else:
+    try:
+        artifact_data = yaml.load(
+            artifact_contract.read_text(encoding="utf-8"),
+            Loader=UniqueKeyLoader,
+        )
+    except DuplicateKeyError:
+        failures.append(f"{artifact_contract}: duplicate YAML mapping key")
+        artifact_data = None
+    except yaml.YAMLError:
+        failures.append(f"{artifact_contract}: invalid artifact contract YAML")
+        artifact_data = None
+    expected_index_profile = {
+        "profile_id": "github-navigation-index",
+        "artifact_type": "github-navigation-index",
+        "path_pattern": ".github/INDEX.md",
+        "repository_section": "harness",
+        "canonical": False,
+        "required_keys": [],
+        "key_order": [],
+        "required_sections": list(required_index_sections),
+        "expected_values": {},
+    }
+    profiles = (
+        artifact_data.get("artifacts") or []
+        if isinstance(artifact_data, dict)
+        else []
+    )
+    matching_profiles = [
+        profile
+        for profile in profiles
+        if isinstance(profile, dict)
+        and profile.get("profile_id") == "github-navigation-index"
+    ]
+    if matching_profiles != [expected_index_profile]:
+        failures.append(
+            f"{artifact_contract}: GitHub navigation profile must match the approved non-canonical contract"
+        )
+    if "github-ci-contract-audit" in artifact_contract.read_text(encoding="utf-8"):
+        failures.append(
+            f"{artifact_contract}: deleted GitHub CI memo remains an active artifact consumer"
+        )
+
+observation_path = pathlib.Path(
+    "docs/90.references/data/governance/"
+    "github-actions-control-plane-observation.yaml"
+)
+observation: dict[object, object] | None = None
+if not observation_path.is_file():
+    failures.append(f"missing remote GitHub observation: {observation_path}")
+else:
+    observation_text = observation_path.read_text(encoding="utf-8")
+    try:
+        loaded_observation = yaml.load(observation_text, Loader=UniqueKeyLoader)
+    except DuplicateKeyError:
+        failures.append(f"{observation_path}: duplicate YAML mapping key")
+    except yaml.YAMLError:
+        failures.append(f"{observation_path}: invalid remote observation field")
+    else:
+        if isinstance(loaded_observation, dict):
+            observation = loaded_observation
+        else:
+            failures.append(f"{observation_path}: invalid remote observation field")
+    sensitive_observation_re = re.compile(
+        r"(?i)(?:\$\{\{\s*secrets\.|github_pat_|ghp_[A-Za-z0-9]|"
+        r"authorization\s*:|bearer\s+[A-Za-z0-9])"
+    )
+    if sensitive_observation_re.search(observation_text):
+        failures.append(f"{observation_path}: invalid remote observation field")
+
+if observation is not None:
+    expected_observation_keys = {
+        "schema_version",
+        "observed_at",
+        "repository",
+        "authority",
+        "source_visibility",
+        "remote_default_commit",
+        "remote_default_source_url",
+        "local_base_commit",
+        "latest_ci_run_id",
+        "latest_ci_source_url",
+        "latest_ci_conclusion",
+        "observed_ci_jobs",
+        "root_cause",
+        "managed_workflows",
+        "control_plane_verification",
+        "public_sources",
+        "limitations",
+    }
+    expected_observation_values = {
+        "schema_version": 1,
+        "observed_at": "2026-07-26T18:22:32+09:00",
+        "repository": "buenhyden/hy-home.docker",
+        "authority": "non-authoritative-observation",
+        "source_visibility": "public-metadata-only",
+        "remote_default_commit": "a897978f",
+        "remote_default_source_url": (
+            "https://github.com/buenhyden/hy-home.docker/commit/a897978f"
+        ),
+        "local_base_commit": "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee",
+        "latest_ci_run_id": 29777690571,
+        "latest_ci_source_url": (
+            "https://github.com/buenhyden/hy-home.docker/actions/runs/29777690571"
+        ),
+        "latest_ci_conclusion": "failure",
+        "observed_ci_jobs": 15,
+        "root_cause": "unverified",
+        "control_plane_verification": "unverified",
+    }
+    if set(observation) != expected_observation_keys or any(
+        observation.get(key) != value
+        for key, value in expected_observation_values.items()
+    ):
+        failures.append(f"{observation_path}: invalid remote observation field")
+
+    expected_managed_workflows = (
+        (222509952, "Dependabot Updates"),
+        (223086017, "CodeQL"),
+        (282786058, "Dependency Graph"),
+    )
+    expected_managed_keys = {
+        "id",
+        "name",
+        "management_class",
+        "observed_state",
+        "last_run",
+        "source_visibility",
+        "review_owner",
+        "retrieved_at",
+        "source_url",
+    }
+    managed_workflows = observation.get("managed_workflows")
+    managed_valid = (
+        isinstance(managed_workflows, list)
+        and len(managed_workflows) == len(expected_managed_workflows)
+    )
+    if managed_valid:
+        for record, expected_identity in zip(
+            managed_workflows,
+            expected_managed_workflows,
+            strict=True,
+        ):
+            if not isinstance(record, dict):
+                managed_valid = False
+                break
+            workflow_id, workflow_name = expected_identity
+            expected_record = {
+                "id": workflow_id,
+                "name": workflow_name,
+                "management_class": "github-managed",
+                "observed_state": "active",
+                "last_run": "unverified",
+                "source_visibility": "public-metadata-only",
+                "review_owner": "ci-cd-engineer",
+                "retrieved_at": "2026-07-26T18:22:32+09:00",
+                "source_url": (
+                    "https://api.github.com/repos/buenhyden/hy-home.docker/"
+                    f"actions/workflows/{workflow_id}"
+                ),
+            }
+            if set(record) != expected_managed_keys or record != expected_record:
+                managed_valid = False
+                break
+    if not managed_valid:
+        failures.append(f"{observation_path}: invalid remote observation field")
+
+    expected_public_sources = {
+        "repository": "https://github.com/buenhyden/hy-home.docker",
+        "actions_secure_use": (
+            "https://docs.github.com/en/actions/reference/security/secure-use"
+        ),
+        "workflow_monitoring": (
+            "https://docs.github.com/en/actions/how-tos/monitor-workflows"
+        ),
+        "rulesets": (
+            "https://docs.github.com/en/enterprise-cloud@latest/repositories/"
+            "configuring-branches-and-merges-in-your-repository/"
+            "managing-rulesets/about-rulesets"
+        ),
+        "zizmor_v1_28_0": (
+            "https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0"
+        ),
+    }
+    expected_limitations = [
+        "Authenticated control-plane readback was unavailable, so no enforcement state is inferred.",
+        "Public run metadata does not establish a failure root cause.",
+        "No raw payload or authenticated workflow log is retained.",
+    ]
+    if (
+        observation.get("public_sources") != expected_public_sources
+        or observation.get("limitations") != expected_limitations
+    ):
+        failures.append(f"{observation_path}: invalid remote observation field")
+
+stale_remote_patterns = (
+    r"2026-07-04",
+    r"12 remote contexts",
+    r"classic branch protection (?:is )?active",
+    r"Repository rulesets API returned `0`",
+    r"enforce_admins=false",
+)
+for active_path in (
+    pathlib.Path("docs/00.agent-governance/rules/github-governance.md"),
+    ruleset,
+):
+    if not active_path.is_file():
+        failures.append(f"missing active GitHub governance surface: {active_path}")
+        continue
+    active_text = active_path.read_text(encoding="utf-8")
+    if (
+        "github-actions-control-plane-observation.yaml" not in active_text
+        or not re.search(
+            r"(?is)(?:control[- ]plane.{0,120}unverified|"
+            r"unverified.{0,120}control[- ]plane)",
+            active_text,
+        )
+        or any(
+            re.search(pattern, active_text, re.IGNORECASE)
+            for pattern in stale_remote_patterns
+        )
+    ):
+        failures.append(f"{active_path}: stale active remote-state claim")
 
 if failures:
     for failure in failures:
@@ -2077,6 +2408,29 @@ profiles = yaml.safe_load(
 generated_outputs = {
     pathlib.Path(path) for path in profiles["common"]["generated_outputs"]
 }
+artifact_contract = yaml.safe_load(
+    pathlib.Path(
+        "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
+    ).read_text()
+)
+current_memory_path = pathlib.Path(
+    "docs/00.agent-governance/memory/current.md"
+)
+current_memory_profiles = [
+    profile
+    for profile in artifact_contract.get("artifacts", [])
+    if isinstance(profile, dict)
+    and profile.get("profile_id") == "governance-current-memory"
+]
+if (
+    len(current_memory_profiles) != 1
+    or current_memory_profiles[0].get("path_pattern")
+    != current_memory_path.as_posix()
+):
+    failures.append("governance current-memory profile path mismatch")
+    related_documents_exemptions: set[pathlib.Path] = set()
+else:
+    related_documents_exemptions = {current_memory_path}
 
 markdown_link = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\(([^)\n]+)\)")
 pseudo_doc_link = re.compile(r"`\[((?:\.{1,2}/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
@@ -2288,9 +2642,10 @@ active_markdown_files = [
 
 for path in active_markdown_files:
     text = path.read_text(errors="ignore")
-    for required in ["## Related Documents"]:
-        if required not in text:
-            failures.append(f"{path}: missing {required}")
+    if path not in related_documents_exemptions:
+        for required in ["## Related Documents"]:
+            if required not in text:
+                failures.append(f"{path}: missing {required}")
     failures.extend(validate_fenced_code_blocks(path))
 
     for line_no, line in iter_unfenced_lines(path):
@@ -2587,10 +2942,14 @@ from __future__ import annotations
 import pathlib
 import sys
 
+sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
+import agent_governance_contract as governance_contract
+
 failures: list[str] = []
 
 required_files = [
     pathlib.Path("docs/00.agent-governance/memory/README.md"),
+    pathlib.Path("docs/00.agent-governance/memory/current.md"),
     pathlib.Path("docs/00.agent-governance/memory/progress.md"),
     pathlib.Path("docs/99.templates/templates/governance/memory.template.md"),
     pathlib.Path("docs/99.templates/templates/governance/progress.template.md"),
@@ -2600,68 +2959,39 @@ for path in required_files:
     if not path.is_file():
         failures.append(f"missing governance memory file: {path}")
 
-checks = {
+route_checks = {
     pathlib.Path("docs/00.agent-governance/README.md"): [
         "[LOAD:MEMORY]",
+        "memory/current.md",
         "memory/README.md",
-        "mandatory work progress log",
+        "applicable Stage 04 Task",
     ],
     pathlib.Path("docs/00.agent-governance/rules/bootstrap.md"): [
         "[LOAD:MEMORY]",
         "Memory is advisory",
-        "memory/progress.md",
-        "progress logging",
-        "docs/99.templates/templates/governance/memory.template.md",
+        "memory/current.md",
+        "applicable Stage 04 Task",
     ],
     pathlib.Path("docs/00.agent-governance/rules/agentic.md"): [
-        "advisory retrieval context",
-        "Memory notes must not",
-        "running work log",
-        "docs/99.templates/templates/governance/memory.template.md",
+        "memory/current.md",
+        "applicable Stage 04 Task",
     ],
     pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
-        "progress.md",
-        "durable finding report",
-        "material task progress",
-        "final status",
+        "memory/current.md",
+        "applicable Stage 04 Task",
     ],
     pathlib.Path("docs/00.agent-governance/rules/stage-authoring-matrix.md"): [
-        "docs/99.templates/templates/governance/memory.template.md",
-        "docs/99.templates/templates/governance/progress.template.md",
-        "progress log updated",
+        "memory/current.md",
+        "Stage 04 Task evidence recorded",
     ],
     pathlib.Path("docs/00.agent-governance/memory/README.md"): [
-        "advisory retrieval context",
-        "do not define active policy",
-        "Retrieve relevant notes",
-        "docs/99.templates/templates/governance/memory.template.md",
-        "mandatory agent progress log",
-        "docs/99.templates/templates/governance/progress.template.md",
-    ],
-    pathlib.Path("docs/99.templates/templates/governance/memory.template.md"): [
-        "# {{title}}",
-        "## Problem",
-        "## Context",
-        "## Resolution",
-        "## Prevention",
-        "## Evidence",
-        "## Related Documents",
-    ],
-    pathlib.Path("docs/00.agent-governance/memory/progress.md"): [
-        "docs/99.templates/templates/governance/progress.template.md",
-        "## Current Work Log",
-    ],
-    pathlib.Path("docs/99.templates/templates/governance/progress.template.md"): [
-        "# {{title}}",
-        "## Current Work Log",
-        "## Phase Tracker",
-        "## Layer Audit",
-        "## Open Issues",
-        "## Related Documents",
+        "current.md",
+        "Stage 04 Task",
+        "progress.md",
     ],
 }
 
-for path, literals in checks.items():
+for path, literals in route_checks.items():
     if not path.is_file():
         failures.append(f"missing file for memory contract check: {path}")
         continue
@@ -2686,12 +3016,33 @@ memory_note_required = [
 ]
 memory_dir = pathlib.Path("docs/00.agent-governance/memory")
 for path in sorted(memory_dir.glob("*.md")) if memory_dir.exists() else []:
-    if path.name in {"README.md", "progress.md", "template.md"}:
+    if path.name in {"README.md", "current.md", "progress.md", "template.md"}:
         continue
     text = path.read_text(errors="ignore")
     for literal in memory_note_required:
         if literal not in text:
             failures.append(f"{path}: missing memory note template literal: {literal}")
+
+try:
+    contract_bundle = governance_contract.load_contract_bundle(
+        pathlib.Path(".").resolve()
+    )
+except governance_contract.ContractLoadError as error:
+    failures.append(
+        f"{error.code} path={error.path} location={error.location}"
+    )
+except (OSError, UnicodeError, ValueError, TypeError):
+    failures.append("governance current-memory contract unavailable")
+else:
+    current_memory_findings = governance_contract._validate_current_memory(
+        pathlib.Path(".").resolve(),
+        contract_bundle,
+    )
+    if current_memory_findings:
+        failures.extend(
+            governance_contract.render_findings([finding])
+            for finding in current_memory_findings
+        )
 
 if failures:
     for failure in failures:

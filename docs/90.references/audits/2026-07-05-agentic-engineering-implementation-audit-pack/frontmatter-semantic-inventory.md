@@ -39,7 +39,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 932
+- **Tracked records**: 934
 - **Records with findings**: 558
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
@@ -53,7 +53,7 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `ard` | 25 |
 | `audit` | 33 |
 | `generated` | 9 |
-| `governance` | 112 |
+| `governance` | 114 |
 | `guide` | 66 |
 | `plan` | 100 |
 | `policy` | 64 |
@@ -110,6 +110,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/00.agent-governance/agents/functions/knowledge-map-agent.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/agents/functions/ops-runbook-agent.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/agents/functions/policy-gate-agent.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
+| `docs/00.agent-governance/agents/functions/project-memory-stewardship.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
+| `docs/00.agent-governance/agents/functions/provider-model-evaluation.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/agents/functions/requirements-to-design-agent.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/agents/functions/security-audit.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/agents/functions/style-validation.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
@@ -120,9 +122,9 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/memory/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=governance-catalog; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/00.agent-governance/memory/agentic-harness-contract-hardening.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
+| `docs/00.agent-governance/memory/current.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/memory/docker-doc-contract-backlog.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/memory/execution-stage-legacy-debt.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
-| `docs/00.agent-governance/memory/github-ci-contract-audit.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/memory/governance-memory-usage-contract.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/memory/harness-agent-first-gap-audit.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | not-provided-optional | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |
 | `docs/00.agent-governance/memory/progress.md` | `governance` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | governance profile | none | governance exception |

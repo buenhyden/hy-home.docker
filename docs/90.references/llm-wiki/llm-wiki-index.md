@@ -109,6 +109,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/functions/knowledge-map-agent.md](../../00.agent-governance/agents/functions/knowledge-map-agent.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/ops-runbook-agent.md](../../00.agent-governance/agents/functions/ops-runbook-agent.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/policy-gate-agent.md](../../00.agent-governance/agents/functions/policy-gate-agent.md) | Markdown reference |
+| [docs/00.agent-governance/agents/functions/project-memory-stewardship.md](../../00.agent-governance/agents/functions/project-memory-stewardship.md) | Markdown reference |
+| [docs/00.agent-governance/agents/functions/provider-model-evaluation.md](../../00.agent-governance/agents/functions/provider-model-evaluation.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/requirements-to-design-agent.md](../../00.agent-governance/agents/functions/requirements-to-design-agent.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/security-audit.md](../../00.agent-governance/agents/functions/security-audit.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/style-validation.md](../../00.agent-governance/agents/functions/style-validation.md) | Markdown reference |
@@ -122,9 +124,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md](../../00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md) | Markdown reference |
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
 | [docs/00.agent-governance/memory/agentic-harness-contract-hardening.md](../../00.agent-governance/memory/agentic-harness-contract-hardening.md) | Markdown reference |
+| [docs/00.agent-governance/memory/current.md](../../00.agent-governance/memory/current.md) | Markdown reference |
 | [docs/00.agent-governance/memory/docker-doc-contract-backlog.md](../../00.agent-governance/memory/docker-doc-contract-backlog.md) | Markdown reference |
 | [docs/00.agent-governance/memory/execution-stage-legacy-debt.md](../../00.agent-governance/memory/execution-stage-legacy-debt.md) | Markdown reference |
-| [docs/00.agent-governance/memory/github-ci-contract-audit.md](../../00.agent-governance/memory/github-ci-contract-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/governance-memory-usage-contract.md](../../00.agent-governance/memory/governance-memory-usage-contract.md) | Markdown reference |
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
@@ -229,6 +231,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/knowledge-map-agent/SKILL.md](../../../.claude/skills/knowledge-map-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/ops-runbook-agent/SKILL.md](../../../.claude/skills/ops-runbook-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/policy-gate-agent/SKILL.md](../../../.claude/skills/policy-gate-agent/SKILL.md) | Markdown reference |
+| [.claude/skills/project-memory-stewardship/SKILL.md](../../../.claude/skills/project-memory-stewardship/SKILL.md) | Markdown reference |
+| [.claude/skills/provider-model-evaluation/SKILL.md](../../../.claude/skills/provider-model-evaluation/SKILL.md) | Markdown reference |
 | [.claude/skills/requirements-to-design-agent/SKILL.md](../../../.claude/skills/requirements-to-design-agent/SKILL.md) | Markdown reference |
 | [.claude/skills/security-audit/SKILL.md](../../../.claude/skills/security-audit/SKILL.md) | Markdown reference |
 | [.claude/skills/style-validation/SKILL.md](../../../.claude/skills/style-validation/SKILL.md) | Markdown reference |
@@ -985,6 +989,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/glossary/README.md](../data/glossary/README.md) | folder index |
 | [docs/90.references/data/glossary/stable-reference-terms.md](../data/glossary/stable-reference-terms.md) | Markdown reference |
 | [docs/90.references/data/governance/README.md](../data/governance/README.md) | folder index |
+| [docs/90.references/data/governance/agent-governance-retirement-ledger.yaml](../data/governance/agent-governance-retirement-ledger.yaml) | YAML config |
 | [docs/90.references/data/governance/agent-output-eval-fixtures.md](../data/governance/agent-output-eval-fixtures.md) | Markdown reference |
 | [docs/90.references/data/governance/audit-implementation-matrix.md](../data/governance/audit-implementation-matrix.md) | Markdown reference |
 | [docs/90.references/data/governance/document-corpus-lifecycle/README.md](../data/governance/document-corpus-lifecycle/README.md) | folder index |
@@ -993,6 +998,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md](../data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md) | Markdown reference |
 | [docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml](../data/governance/document-corpus-lifecycle/target-surface-convergence.yaml) | YAML config |
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
+| [docs/90.references/data/governance/github-actions-control-plane-observation.yaml](../data/governance/github-actions-control-plane-observation.yaml) | YAML config |
 | [docs/90.references/data/governance/provider-hook-parity-matrix.md](../data/governance/provider-hook-parity-matrix.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/profile.md](../data/hads/profile.md) | Markdown reference |
@@ -1385,6 +1391,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [.github/CODEOWNERS](../../../.github/CODEOWNERS) | source path |
+| [.github/INDEX.md](../../../.github/INDEX.md) | Markdown reference |
 | [.github/ISSUE_TEMPLATE/bug_report.yml](../../../.github/ISSUE_TEMPLATE/bug_report.yml) | YAML config |
 | [.github/ISSUE_TEMPLATE/feature_request.yml](../../../.github/ISSUE_TEMPLATE/feature_request.yml) | YAML config |
 | [.github/PULL_REQUEST_TEMPLATE.md](../../../.github/PULL_REQUEST_TEMPLATE.md) | Markdown reference |

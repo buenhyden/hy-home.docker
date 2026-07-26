@@ -41,6 +41,8 @@ This README is for:
 - Record out-of-scope breakages that should not be fixed during the current task.
 - Record repeated failure patterns, validator pitfalls, and resolved governance conflicts.
 - Retrieve relevant notes before governance, docs, runtime, or repeated-failure tasks.
+- Route dated external control-plane observations to Stage 90 reference data
+  instead of storing them as active Memory notes.
 - Create or update memory notes from `docs/99.templates/templates/governance/memory.template.md`.
 - Write entries in English.
 
@@ -116,4 +118,5 @@ memory/
 - [Task checklists](../rules/task-checklists.md)
 - [Current project memory](./current.md)
 - [Historical progress navigation](./progress.md)
+- [GitHub Actions control-plane observation](../../90.references/data/governance/github-actions-control-plane-observation.yaml)
 - [Memory template](../../99.templates/templates/governance/memory.template.md)
