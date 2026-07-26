@@ -20,8 +20,8 @@ or remote environment was created.
 
 Fresh independent specification and quality/security reviews of the Task 5
 runtime evidence are both `APPROVED C0/I0/M0` with no findings. This Task stays
-active until the Program-owned controlled wrapper and lifecycle closure are
-complete; the wrapper remains `not_run`.
+active until final whole-branch reviews and lifecycle reconciliation are
+complete. The Program-owned controlled wrapper passed on 2026-07-26.
 
 The Task owns the concise
 `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json`
@@ -263,9 +263,9 @@ Task 7 created the accepted portable pair but did not itself execute Task 5.
 The later approved delivery sequence created both positive and rollback
 evidence, with the negative replacement retained as the canonical record. The
 Task 5 runtime, independent reviews, and tracked document closure are complete.
-The Program-owned controlled all-files wrapper is `READY / not_run` for the
-exact clean checkpoint containing this five-file closure; its full commit
-identity is recorded only in the ignored Task 6 report after that commit exists.
+The Program-owned controlled all-files wrapper passed on 2026-07-26 from clean
+checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0,
+snapshot pass, zero observed path counts, and all four path sets empty.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -274,16 +274,20 @@ owns the one final all-files invocation.
 
 Allowed prefixes: `not_applicable` at domain activation.
 
-Wrapper exit status: `not_run`.
+Program wrapper result: `hook_result=passed hook_exit=0`;
+`snapshot_result=passed`.
 
-Snapshot result and path sets: `not_run`.
+Observed counts were
+`before_count=0 after_count=0 changed_count=0 unexpected_count=0`; all four
+Git-visible non-ignored path sets were `(none)`.
 
-Observation boundary: only Git-visible, non-ignored repository paths are
-observable when the program wrapper later runs.
+Observation boundary:
+`observation=git-visible-non-ignored-repository-status`.
 
-Disposition: defer to the
-[program Task](./2026-07-19-operational-readiness-closure-program.md); direct
-`pre-commit run --all-files` is prohibited.
+Disposition: Program-owned wrapper **PASS**; see the
+[program Task](./2026-07-19-operational-readiness-closure-program.md) for the
+full command and exact allowed prefixes. Direct `pre-commit run --all-files`
+remains prohibited.
 
 ## Review Evidence
 
@@ -366,8 +370,8 @@ or tracked document-closure gates remain blocked. The approved
 positive-first/injected-negative-second sequence is complete, with healthy
 baseline restoration and canonical replacement proved. Any future stateful
 impact still blocks promotion and routes to Spec 125. The Program-owned
-controlled all-files wrapper is `READY / not_run` for its exact clean checkpoint;
-this Task remains active until wrapper and lifecycle closure and does not
+controlled all-files wrapper passed on 2026-07-26; this Task remains active
+pending final whole-branch reviews and lifecycle reconciliation and does not
 authorize a rehearsal rerun.
 
 Deferral destination: data recovery routes to

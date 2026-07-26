@@ -208,14 +208,19 @@ quality/security reviews of `b070a06c..086744f8` are both
 did not run here; it later completed under the delivery Task's separate approval.
 Its fresh exact-range specification and quality/security reviews are also
 `APPROVED C0/I0/M0` with no findings. The Program-owned controlled all-files
-wrapper is `READY / not_run` for the exact clean five-file closure checkpoint.
+wrapper subsequently passed on 2026-07-26 from clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0, snapshot pass,
+zero observed path counts, and all four path sets empty.
 
 ## Controlled Agent Pre-commit Evidence
 
 Controlled wrapper command, allowed prefixes, exit status, snapshots, observed
-path sets, and disposition: `not_applicable`. Task 6 remains the sole owner and
-the wrapper is explicitly forbidden in this Task. The Program records it as
-`READY / not_run`; no wrapper execution is claimed here.
+path sets, and disposition remain Program-owned and `not_applicable` to this
+Task. The wrapper was explicitly forbidden within this Task and did not run
+here. The Program records the later 2026-07-26 result as **PASS**:
+`hook_result=passed hook_exit=0`, `snapshot_result=passed`,
+`before_count=0 after_count=0 changed_count=0 unexpected_count=0`, with every
+Git-visible non-ignored path set `(none)`.
 
 ## Review Evidence
 
@@ -260,12 +265,13 @@ separate evidence-only commit does not embed its own SHA.
 Deferred items: Task 5 positive/rollback runtime is no longer deferred; it is
 complete under the delivery Task. Fresh Task 5 independent reviews and tracked
 review/document closure are also complete. The controlled all-files wrapper
-remains Program-owned, `READY / not_run`, and separately bounded.
+remains Program-owned and separately bounded; its sole 2026-07-26 execution
+passed.
 
 Blocked items: seed retrieval, no-exception policy acceptance, and portable
 pair publication have no remaining runtime or review blocker. The Task stays
-active while Program sequencing proceeds; do not relax policy or create an
-exception during any repeat.
+active pending final whole-branch reviews and lifecycle reconciliation; do not
+relax policy or create an exception during any repeat.
 
 Deferral destination: the delivery Task owns Task 5 runtime evidence and its
 fresh reviews; the existing Program Task owns final wrapper sequencing from the

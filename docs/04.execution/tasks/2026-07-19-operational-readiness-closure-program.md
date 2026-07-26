@@ -137,7 +137,7 @@ Redaction boundary:
 | `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Active; source-bound advisory and portable pair pass, and fresh exact-range Task 7 specification plus quality/security reviews are `APPROVED C0/I0/M0` |
 | `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Active; current 48/48, strict frozen runtime, and terminal v3/v5 reviews approved |
 | `T-ORC-005` | Pair-bound promotion and previous-runtime-image-ID rollback. | Delivery domain Task | Complete; exact positive and injected-rollback runtime plus fresh specification and quality/security reviews are `APPROVED C0/I0/M0` with no findings |
-| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; controlled wrapper `READY / not_run` for the exact clean five-file closure checkpoint; lifecycle reconciliation follows wrapper evidence |
+| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; the controlled wrapper passed on 2026-07-26 from the exact clean five-file checkpoint; final whole-branch reviews and lifecycle reconciliation remain pending |
 
 ## Work Log
 
@@ -177,6 +177,7 @@ facts they name.
 | 2026-07-23 | `T-ORC-005` portable consumer readiness (historical prerequisite checkpoint) | Delivery implementation agent | Producer `1937ec75`, consumer `a6c12e18`, and remediation through `b070a06c` bind verdict v2, pair v3, and rehearsal record v4. Focused tests pass 54/54 after `4f7284a9`; portable reviews are C0/I0/M0. The accepted pair prerequisite was satisfied, but no Task 5 runtime had run at this checkpoint. |
 | 2026-07-23 | `T-ORC-005` approved runtime sequence | Delivery runtime implementation agent | Unit validation passed 54/54 at exit 0 and fixture preflight exited 0. Exactly one positive rehearsal then exited 0 for `hyhome-dre-20260719-1709404-baseline` and `hyhome-dre-20260719-1709404-canary`, from `2026-07-22T20:54:30Z` to `2026-07-22T20:54:46Z`; both roles passed, result was `promoted`, cleanup passed, and `data_impact=none`. Its mode-0600, 3,295-byte record had inode `1290126` and SHA-256 `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`. Exactly one injected rehearsal then exited expected class 30 with `health-deadline-exceeded` for `hyhome-dre-20260719-1731921-baseline` and `hyhome-dre-20260719-1731921-canary`, from `2026-07-22T20:56:27Z` to `2026-07-22T20:58:59Z`; baseline passed, candidate failed, promotion was denied, rollback restored the healthy baseline, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record has inode `538673` and SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`. Both records bind source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, pair `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, readiness `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, recovery `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`, and the full portable tuple. All owner/task/name-scoped containers, networks, volumes, and `/tmp` publication paths were empty afterward; tracked HEAD remained clean at `f3e4701115734e71f8848e706e9d37d499f0c2ac`. No standalone cleanup, rerun, remote/release/registry action, wrapper, or pre-commit ran. |
 | 2026-07-23 | `T-ORC-005` Task 5 review/document closure | Independent specification and quality/security reviewers | Both fresh reviews returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. Specification checks passed delivery 54/54, metadata 6/0 plus one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. Quality/security checks passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. No Docker, Compose, rehearsal, cleanup, advisory, Task 4, controlled wrapper, pre-commit, or remote action ran. |
+| 2026-07-26 | `T-ORC-006` controlled all-files QA | Documentation/QA closure agent | The sole authorized wrapper ran from clean checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f` and passed: `hook_result=passed hook_exit=0`, `snapshot_result=passed`, and `observation=git-visible-non-ignored-repository-status`. Counts were `before_count=0 after_count=0 changed_count=0 unexpected_count=0`; before, after, changed, and unexpected path sets were all `(none)`. Final whole-branch reviews and lifecycle reconciliation remain pending. |
 
 ## Verification Evidence
 
@@ -270,9 +271,10 @@ branch range through `20022458` plus the then-current 26-document reconciliation
 diff. Terminal specification review v5 is `APPROVED C0/I0/M0` for the full
 branch range through `20022458` plus the final 26-document reconciliation diff.
 Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence.
-Task 5 runtime, reviews, and tracked document closure are complete. The
-controlled all-files wrapper is `READY / not_run` for the exact clean five-file
-closure checkpoint and has not run.
+Task 5 runtime, reviews, and tracked document closure are complete. The sole
+controlled all-files wrapper ran on 2026-07-26 from clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f` and passed. Final whole-branch
+reviews and lifecycle reconciliation remain pending.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -286,21 +288,32 @@ Allowed prefixes are exactly the repeated `--allow-prefix` values above. The
 command may run once only during `T-ORC-006`, from an initially clean linked
 worktree after pre-wrapper evidence is committed.
 
-Wrapper exit status: `not_run`.
+Wrapper exit status: `hook_result=passed hook_exit=0`.
 
-Snapshot result: `not_run`.
+Snapshot result: `snapshot_result=passed`.
 
 Observation boundary: Git-visible, non-ignored repository paths only. The
 wrapper does not claim visibility into ignored or out-of-repository writes.
 
-Before, after, changed, and unexpected path sets: `not_run`.
+Observation result:
+`observation=git-visible-non-ignored-repository-status`.
 
-Disposition: **READY / not_run**. The seed, policy pass, accepted pair, positive
-promotion, injected rollback, fresh Task 5 independent reviews, and tracked
-review/document closure are complete. The exact clean checkpoint is the commit
-containing this five-file closure; its full identity is intentionally recorded
-only in the ignored Task 6 report after that commit exists. The wrapper has not
-run and remains Program-owned.
+Counts:
+`before_count=0 after_count=0 changed_count=0 unexpected_count=0`.
+
+Path sets:
+
+- before: `(none)`
+- after: `(none)`
+- changed: `(none)`
+- unexpected: `(none)`
+
+Disposition: **PASS**. The seed, policy pass, accepted pair, positive
+promotion, injected rollback, fresh Task 5 independent reviews, tracked
+review/document closure, and the Program-owned controlled wrapper are complete.
+The wrapper ran once on 2026-07-26 from initially clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Final whole-branch reviews and
+lifecycle reconciliation remain pending.
 
 ## Review Evidence
 
@@ -426,10 +439,13 @@ Current implementation/remediation ledger:
   `a6c12e18`, canonical preservation `b192c0db`, and test isolation
   `4f7284a9`.
 
-The reviewed tracked state plus this five-file review/document closure form the
-exact clean pre-wrapper checkpoint. Its final commit identity is intentionally
-omitted from tracked content and recorded only in the ignored Task 6 report
-after creation. The controlled wrapper remains `not_run`.
+The reviewed tracked state plus the prior five-file review/document closure
+formed exact clean pre-wrapper checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. The sole controlled wrapper
+subsequently passed with empty Git-visible non-ignored before, after, changed,
+and unexpected path sets. The final five-file wrapper-evidence commit identity
+is intentionally omitted from tracked content and recorded only in the ignored
+Task 6 report after creation.
 
 ## Deferred and Blocked Items
 
@@ -442,10 +458,10 @@ Deferred items:
 
 Blocked items: none remain for the Task 3 seed/policy/pair or Task 5
 implementation, runtime, review, and tracked document-closure gates.
-`T-ORC-005` evidence is complete. `T-ORC-006` is `READY / not_run` for the exact
-clean five-file closure checkpoint. The Program and delivery Task remain active
-until the controlled wrapper evidence and lifecycle closure are complete; no
-wrapper, release, deployment, or remote action is claimed here.
+`T-ORC-005` evidence is complete. The `T-ORC-006` controlled wrapper passed on
+2026-07-26; final whole-branch reviews and lifecycle reconciliation remain
+pending. The Program and delivery Task remain active until those gates complete.
+No release, deployment, publication, or remote action is claimed here.
 
 Deferral destination: each remote, credential, production, publication, or
 live-data expansion requires a new Stage 01-04 design chain and explicit human

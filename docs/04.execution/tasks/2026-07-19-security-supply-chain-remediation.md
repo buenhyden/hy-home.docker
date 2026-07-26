@@ -291,8 +291,10 @@ re-review are recorded by the Program Task. The database-seed, policy-pass,
 and accepted-pair prerequisites are now satisfied by the Task 7 evidence
 above. Task 5 has recorded both the positive promotion and injected rollback
 rehearsals plus fresh specification and quality/security approvals at
-`C0/I0/M0` with no findings. The Program-owned controlled all-files wrapper is
-`READY / not_run` for the exact clean five-file closure checkpoint.
+`C0/I0/M0` with no findings. The Program-owned controlled all-files wrapper
+passed on 2026-07-26 from clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0, snapshot pass,
+zero observed path counts, and all four path sets empty.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -301,16 +303,20 @@ owns the one final all-files invocation.
 
 Allowed prefixes: `not_applicable` at domain activation.
 
-Wrapper exit status: `not_run`.
+Program wrapper result: `hook_result=passed hook_exit=0`;
+`snapshot_result=passed`.
 
-Snapshot result and path sets: `not_run`.
+Observed counts were
+`before_count=0 after_count=0 changed_count=0 unexpected_count=0`; all four
+Git-visible non-ignored path sets were `(none)`.
 
-Observation boundary: only Git-visible, non-ignored repository paths are
-observable when the program wrapper later runs.
+Observation boundary:
+`observation=git-visible-non-ignored-repository-status`.
 
-Disposition: defer to the
-[program Task](./2026-07-19-operational-readiness-closure-program.md); direct
-`pre-commit run --all-files` is prohibited.
+Disposition: Program-owned wrapper **PASS**; see the
+[program Task](./2026-07-19-operational-readiness-closure-program.md) for the
+full command and exact allowed prefixes. Direct `pre-commit run --all-files`
+remains prohibited.
 
 ## Review Evidence
 
@@ -387,9 +393,9 @@ Blocked items: the approved offline Grype seed, policy pass, accepted distinct
 same-revision verdict pair, and later Task 5 delivery runtime, independent
 reviews, and tracked document closure are complete.
 `--scorecard-advisory` remains skipped until read-only network scope is
-confirmed. The Program-owned controlled all-files wrapper is `READY / not_run`
-for its exact clean checkpoint; this Task remains active until Program wrapper
-and lifecycle closure.
+confirmed. The Program-owned controlled all-files wrapper passed on 2026-07-26;
+this Task remains active pending final whole-branch reviews and lifecycle
+reconciliation.
 
 Deferral destination: remote identity, publication, or enforcement needs a new
 approved Stage 01-04 chain; local accepted verdicts are consumed only by
