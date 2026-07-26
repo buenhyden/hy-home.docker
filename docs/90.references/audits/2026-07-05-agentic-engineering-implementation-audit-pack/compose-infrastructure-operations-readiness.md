@@ -3,7 +3,7 @@ status: active
 artifact_id: audit:agentic-engineering-implementation:compose-infrastructure-operations-readiness
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
-reviewed_at: 2026-07-12
+reviewed_at: 2026-07-22
 review_cycle: per-remediation-task
 ---
 
@@ -22,8 +22,9 @@ change services.
 
 The purpose is to separate structural render, inventory, hardening, and
 documentation evidence from startup, observed health, failure recovery,
-upgrade, migration, backup/restore, promotion, and rollback evidence. Missing
-runtime evidence is routed to the independent Task 11 follow-up workstreams.
+upgrade, migration, backup/restore, promotion, and rollback evidence. The
+historical gaps were routed to the independent Task 11 follow-up workstreams;
+the bounded current state is recorded separately below.
 
 ## Repository Role
 
@@ -72,6 +73,29 @@ profile/service snapshot was fresh. No service was started, no runtime or
 secret data was read, and no procedure was executed. Graphify remains advisory
 and was corroborated against tracked Compose, Stage 05, generator, and
 validation sources.
+
+## Bounded Revalidation (2026-07-22)
+
+The criterion matrix below remains the historical 2026-07-19 assessment and is
+not rewritten as if its original observation scope included later work. Current
+bounded evidence is narrower and is owned by the Stage 04 task records:
+
+- [Compose runtime remediation](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+  has current passing local startup, recovery, and timeout cases for its
+  governed test boundary; its latest image-identity hardening review is pending.
+- [Infrastructure operations remediation](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+  has current passing synthetic PostgreSQL backup-and-restore evidence with
+  integrity checks inside its governed test boundary; its latest image-identity
+  hardening review is pending.
+- [Deployment and release remediation](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+  completed implementation and static verification only. Positive promotion
+  and rollback runtime evidence remain blocked until the security workstream
+  supplies accepted verdicts and their generation-bound pair manifest.
+
+These results do not prove broad service health, production recovery, upgrade
+coverage, deployment readiness, or remote release enforcement. Exact commands,
+project identities, digests, timings, reviews, and commits remain in the linked
+task evidence rather than this audit summary.
 
 ## Criterion Matrix
 

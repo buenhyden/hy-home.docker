@@ -1,8 +1,11 @@
 ---
-status: draft
+status: completed
 artifact_id: spec:124-compose-runtime-readiness-remediation
 artifact_type: spec
 parent_ids:
+  - prd:025-operational-readiness-closure
+  - ard:0028-operational-readiness-closure
+  - adr:0028-local-isolated-readiness-evidence
   - spec:123-agentic-engineering-audit-remediation
 ---
 
@@ -10,15 +13,13 @@ parent_ids:
 
 ## Overview
 
-This draft defines the future contract for proving that an explicitly bounded
-Compose service set can start, become ready, recover from approved failure
-scenarios, and tear down without unapproved data or secret exposure. It owns
-three canonical audit gaps and does not authorize service startup, runtime
-mutation, secret access, or remote action.
-
-Spec 123 is the approved audit lineage and typed parent. Its approval authorizes
-this documentation follow-up only; it is not runtime authorization. Activation
-requires the unresolved Stage 01/02 predecessors and every approval gate below.
+This completed specification records the local-isolated contract used to prove
+that the exact `core` five-service Compose set can start, become ready, recover
+from approved failure scenarios, and tear down without unapproved data or
+secret exposure. It owns three canonical audit gaps. PRD 025, ARD 0028, and
+ADR 0028 approve the architecture; the linked Plan and Task own command
+authorization and observed local evidence. Broader or remote execution
+requires a new Task.
 
 ## Strategic Boundaries & Non-goals
 
@@ -30,25 +31,25 @@ requires the unresolved Stage 01/02 predecessors and every approval gate below.
   those decisions.
 - Do not infer runtime health from Compose rendering, healthcheck YAML, or
   documentation presence.
-- Do not select services, profiles, hosts, credentials, or failure-injection
-  methods in this draft.
+- Do not expand beyond the `core` profile services `keycloak`, `oauth2-proxy`,
+  `traefik`, `vault`, and `vault-agent` without a new architecture decision and
+  task approval.
 
 ## Boundaries and Inputs
 
-- **PRD**: Unresolved prerequisite. A Stage 01 owner must define approved
-  runtime-readiness value, bounded service/profile scope, acceptable disruption,
-  and acceptance criteria.
-- **ARD**: Unresolved prerequisite. A Stage 02 architecture owner must define
-  the isolated test topology, dependency boundary, state/secret boundary,
-  observability surface, and teardown guarantees.
-- **Related ADRs**: Unresolved prerequisites for runtime isolation strategy,
-  readiness evidence source, and permitted failure-injection/cleanup approach.
+- **PRD**: [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+  defines the bounded local value, exact representative scope, and acceptance
+  intent.
+- **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+  defines the isolated topology, evidence boundary, and cleanup guarantees.
+- **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+  selects contract-first local-isolated vertical slices.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
-  authorizes this draft only.
+  remains the canonical audit lineage.
 
 Architecture-changing runtime harness, topology, network, volume, healthcheck,
-or initialization changes are blocked until the required PRD, ARD, and ADRs
-exist and are approved. This specification does not create or claim them.
+or initialization changes remain blocked until the Plan identifies the exact
+test-only change and the active Task records protected-surface approval.
 
 ## Canonical Gap Ownership
 
@@ -78,7 +79,7 @@ Owned gap count: **3**.
 
 ### Configuration Contract
 
-- A future active contract must name exact Compose files, profiles, services,
+- The approved Plan and active Task must name exact Compose files, profiles, services,
   target host class, resource limits, timeouts, and teardown commands.
 - Test-only overlays or healthcheck/initialization changes are architecture or
   runtime changes and require predecessor approval plus scoped review.
@@ -102,21 +103,23 @@ log, auth token, credential, or private endpoint payload.
 
 ## Current Evidence
 
-At the 2026-07-11 canonical audit baseline, the tracked Compose inventory
-contained 49 files, 169 service entries, and 25 profiles. Static core rendering
-passed with five services and all eleven hardening tiers passed. Healthcheck,
-dependency, initialization, observability, and recovery documentation exists,
-but no service startup, observed live health, or recovery drill was authorized
-or recorded. These static results are prerequisites only.
+This Spec defines the readiness contract; it does not own observed execution
+evidence or lifecycle conclusions. Observed evidence and current status are
+owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
-- **Component Boundary**: A future bounded runtime evidence harness around a
-  separately approved Compose target; no harness is selected here.
-- **Key Dependencies**: Spec 125 for stateful recovery; Spec 126 for artifact
-  verification inputs; Spec 127 for promoted artifact/config identity.
-- **Tech Stack**: Unresolved. Compose and repository validators are candidates,
-  not approved runtime commands.
+- **Component Boundary**: A task-scoped Compose runtime evidence harness using a
+  unique project identity, synthetic configuration, explicit timeouts, owned
+  resources, and deterministic teardown.
+- **Key Dependencies and Consumers**: The tracked Compose source, ARD 0028,
+  and ADR 0028 define the input boundary. Spec 125 consumes the recovery
+  boundary and Spec 127 consumes the readiness verdict; neither is a prerequisite
+  for the first bounded `core` rehearsal.
+- **Tech Stack**: Docker Compose v2, repository validation scripts, service
+  healthchecks, bounded endpoint probes, and shell wrappers with strict mode
+  and trap-based cleanup. Exact commands belong in the approved Plan and Task.
 
 ## Data Modeling & Storage Strategy
 
@@ -124,10 +127,10 @@ or recorded. These static results are prerequisites only.
   record per approved scenario and service acceptance set. Keep raw runtime
   diagnostics outside tracked documentation and handle them under the future
   task's approved evidence boundary.
-- **Migration / Transition Plan**: Draft -> predecessor approval -> active spec
-  approval -> approved Stage 04 plan/task -> isolated rehearsal -> reviewed
-  evidence. Existing Compose defaults remain unchanged until that sequence
-  completes.
+- **Migration / Transition Plan**: Approved Stage 04 Plan/Task -> isolated
+  rehearsal -> independent review -> evidence and honest lifecycle
+  reconciliation. Existing Compose defaults remain unchanged unless the Task
+  explicitly approves a test-only overlay.
 
 ## Interfaces and Data
 
@@ -138,11 +141,11 @@ or recorded. These static results are prerequisites only.
 | Approved runtime scope | Human/architecture approval | Future runtime task | Exact target, files, profiles, services, duration, and teardown. |
 | Readiness result | Approved observation mechanism | QA/SRE review | Service criteria plus ready/degraded/failed/timed-out result. |
 | Recovery result | Approved scenario executor | Operations/security review | Scenario, data impact, recovery time, stop/escalation, and cleanup. |
-| Stateful recovery handoff | Spec 125 implementation | This workstream | Approved restore/rollback boundary; no duplicated requirement. |
+| Stateful recovery handoff | This workstream | Spec 125 implementation | Stop and hand off when a scenario crosses from service recovery into data restore. |
 
 ## API Contract (If Applicable)
 
-Not applicable. This draft defines runtime evidence and approval contracts and
+Not applicable. This specification defines runtime evidence and approval contracts and
 does not expose an external API.
 
 ## Agent Role & IO Contract (If Applicable)
@@ -157,10 +160,11 @@ does not expose an external API.
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: Unresolved until the future task names exact Compose and
-  observation command classes.
-- **Permission Boundary**: Documentation and static validation only under this
-  draft; no service command is permitted.
+- **Tool List**: Docker Compose v2 plus repository-owned preflight, observation,
+  timeout, evidence-summary, and cleanup wrappers defined by the future Plan.
+- **Permission Boundary**: This active Spec approves the local-isolated design,
+  not command execution. The active Task must authorize exact files, services,
+  projects, resources, and commands.
 - **Failure Handling**: Stop on scope drift, secret exposure, target ambiguity,
   resource exhaustion, state corruption, or teardown failure.
 
@@ -168,7 +172,7 @@ does not expose an external API.
 
 - Instructions must repeat the exact approved target/profile/service set and
   prohibited surfaces.
-- No agent may infer runtime approval from Spec 123, this draft, or a static
+- No agent may infer runtime approval from Spec 123, this specification, or a static
   validation pass.
 - Model/provider selection is outside this specification.
 
@@ -191,7 +195,7 @@ raw logs, runtime dumps, secrets, or credentials in memory or documentation.
 
 ## Approval Gates
 
-| Gate | Unresolved approval required before activation/execution | Evidence required |
+| Gate | Remaining approval required before execution | Evidence required |
 | --- | --- | --- |
 | Architecture | Approved PRD, ARD, and relevant ADRs for topology, isolation, evidence, and failure injection | Canonical paths/IDs and approval state. |
 | Human | Named owner approves scenario scope, blast radius, maintenance window, stop criteria, and residual risk | Approval reference in a future Stage 04 task. |
@@ -241,15 +245,16 @@ bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
 ```
 
-Runtime commands are intentionally absent. A future active task must define
-them after approvals and must include one negative/stop-path check.
+Runtime commands are intentionally absent from the Spec. The active Plan and
+Task define them and include timeout, unhealthy dependency,
+recovery, and cleanup negative paths.
 
 ## Success Criteria & Verification Plan
 
 - **VAL-CRR-001**: The three owned audit gaps appear exactly once across Specs
   124-127 and map to `CRR-001` through `CRR-003`.
-- **VAL-CRR-002**: Static evidence remains labeled static; no runtime result is
-  claimed.
+- **VAL-CRR-002**: Static evidence remains labeled static and distinct from
+  Task-owned observed runtime evidence.
 - **VAL-CRR-003**: Every future scenario has approved scope, readiness criteria,
   teardown, redaction, recovery, and independent review evidence.
 - **VAL-CRR-004**: Architecture, human, runtime, secret, and remote gates are
@@ -257,7 +262,11 @@ them after approvals and must include one negative/stop-path check.
 
 ## Related Documents
 
-- **Plan**: [Compose runtime-readiness draft plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **Plan**: [Compose runtime-readiness plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
+- **Task**: [Compose runtime-readiness Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Compose audit**: [Compose, infrastructure, and operations readiness](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
 - **Research**: [Compose and infrastructure research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)

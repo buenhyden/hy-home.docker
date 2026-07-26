@@ -92,10 +92,10 @@ docs/03.specs/
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
 ├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
 ├── 123-agentic-engineering-audit-remediation/ # Completed agentic audit remediation; I-01 through I-03-R1 resolved
-├── 124-compose-runtime-readiness-remediation/ # Draft Compose startup, readiness, recovery, and teardown contract
-├── 125-infrastructure-operations-readiness-remediation/ # Draft upgrade, migration, backup, restore, and recovery contract
-├── 126-security-supply-chain-remediation/ # Draft scanning, SBOM, provenance, signing, and verification contract
-├── 127-deployment-release-engineering-remediation/ # Draft environment, promotion, release, deployment, and rollback contract
+├── 124-compose-runtime-readiness-remediation/ # Completed local-isolated Compose readiness contract
+├── 125-infrastructure-operations-readiness-remediation/ # Completed representative PostgreSQL recovery contract
+├── 126-security-supply-chain-remediation/ # Completed local sample-service supply-chain contract
+├── 127-deployment-release-engineering-remediation/ # Completed local promotion and rollback contract
 ├── 128-agentic-audit-harness-consolidation/ # Completed canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
 ├── 129-document-contract-canonicalization/ # Completed contract-first foundation; post-closure findings resolved
 ├── 130-template-contract-system-canonicalization/ # Completed template-role, body, validator, and direct-consumer canonicalization
@@ -231,10 +231,11 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Dependency Vulnerability Audit Gate Spec**: [121-dependency-vulnerability-audit-gate/spec.md](./121-dependency-vulnerability-audit-gate/spec.md)
 - **Agentic Research Pack Consolidation Spec**: [122-agentic-research-pack-consolidation/spec.md](./122-agentic-research-pack-consolidation/spec.md)
 - **Agentic Engineering Audit and Remediation Spec**: [123-agentic-engineering-audit-remediation/spec.md](./123-agentic-engineering-audit-remediation/spec.md)
-- **Compose Runtime Readiness Remediation Spec**: [124-compose-runtime-readiness-remediation/spec.md](./124-compose-runtime-readiness-remediation/spec.md)
-- **Infrastructure Operations Readiness Remediation Spec**: [125-infrastructure-operations-readiness-remediation/spec.md](./125-infrastructure-operations-readiness-remediation/spec.md)
-- **Security Supply-Chain Remediation Spec**: [126-security-supply-chain-remediation/spec.md](./126-security-supply-chain-remediation/spec.md)
-- **Deployment and Release Engineering Remediation Spec**: [127-deployment-release-engineering-remediation/spec.md](./127-deployment-release-engineering-remediation/spec.md)
+- **Compose Runtime Readiness Remediation Spec (completed local-isolated contract)**: [124-compose-runtime-readiness-remediation/spec.md](./124-compose-runtime-readiness-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+- **Infrastructure Operations Readiness Remediation Spec (completed representative-local contract)**: [125-infrastructure-operations-readiness-remediation/spec.md](./125-infrastructure-operations-readiness-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+- **Security Supply-Chain Remediation Spec (completed local contract)**: [126-security-supply-chain-remediation/spec.md](./126-security-supply-chain-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
+- **Deployment and Release Engineering Remediation Spec (completed local contract)**: [127-deployment-release-engineering-remediation/spec.md](./127-deployment-release-engineering-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+- **Operational Readiness Program evidence owner**: [Program Task](../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - **Agentic Audit Harness Consolidation Spec**: [128-agentic-audit-harness-consolidation/spec.md](./128-agentic-audit-harness-consolidation/spec.md)
 - **Document Contract Canonicalization Spec**: [129-document-contract-canonicalization/spec.md](./129-document-contract-canonicalization/spec.md)
 - **Template Contract System Canonicalization Spec**: [130-template-contract-system-canonicalization/spec.md](./130-template-contract-system-canonicalization/spec.md)

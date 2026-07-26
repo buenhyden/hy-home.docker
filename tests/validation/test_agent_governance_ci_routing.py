@@ -17,6 +17,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 RECOMMENDER = ROOT / "scripts/validation/recommend-qa-gates.sh"
 PRE_COMMIT = ROOT / ".pre-commit-config.yaml"
 WORKFLOW = ROOT / ".github/workflows/ci-quality.yml"
+GITHUB_GOVERNANCE = (
+    ROOT / "docs/00.agent-governance/rules/github-governance.md"
+)
 CODEOWNERS = ROOT / ".github/CODEOWNERS"
 LABELER = ROOT / ".github/labeler.yml"
 PR_TEMPLATE = ROOT / ".github/PULL_REQUEST_TEMPLATE.md"
@@ -26,6 +29,38 @@ REPO_CONTRACT = ROOT / "scripts/validation/check-repo-contracts.sh"
 TARGET_CLI_COMMAND = "python3 scripts/validation/check-target-surface-contract.py"
 TARGET_TEST_COMMAND = (
     "python3 -m unittest tests.validation.test_target_surface_contracts -v"
+)
+OPERATIONAL_READINESS_TEST_COMMAND = (
+    "python3 -m unittest "
+    "tests.validation.test_compose_core_readiness "
+    "tests.validation.test_postgres_logical_upgrade_rehearsal "
+    "tests.validation.test_grype_db_seed "
+    "tests.validation.test_supply_chain_policy "
+    "tests.validation.test_sample_service_delivery_rehearsal -v"
+)
+REQUIRED_CI_JOBS = frozenset(
+    {
+        "docs-traceability",
+        "docs-implementation-alignment",
+        "repo-contracts",
+        "agent-output-eval-fixture-gate",
+        "supply-chain-fixture-policy",
+        "dependency-vulnerability-audit",
+        "git-flow-contract",
+        "compose-validation",
+        "compose-all-profiles-validation",
+        "infrastructure-hardening",
+        "template-security-baseline",
+        "quickwin-baseline",
+        "pre-commit",
+        "frontend-quality",
+        "storybook-coverage",
+        "zizmor",
+    }
+)
+SUPPLY_CHAIN_GOVERNANCE_DESCRIPTION = (
+    "Five focused operational-readiness unittest modules, the deterministic "
+    "supply-chain policy check, and the supply-chain summary freshness check"
 )
 
 TARGET_SURFACE_PATHS = (
@@ -130,7 +165,15 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
     def test_existing_repo_contracts_job_runs_target_surface_contracts(self) -> None:
         workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
         jobs = workflow["jobs"]
-        self.assertEqual(15, len(jobs))
+        actual_jobs = set(jobs)
+        missing_jobs = sorted(REQUIRED_CI_JOBS - actual_jobs)
+        unexpected_jobs = sorted(actual_jobs - REQUIRED_CI_JOBS)
+        self.assertEqual(
+            ([], []),
+            (missing_jobs, unexpected_jobs),
+            "required CI job-set drift "
+            f"(missing={missing_jobs}, unexpected={unexpected_jobs})",
+        )
         repo_steps = jobs["repo-contracts"]["steps"]
         commands = "\n".join(
             str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
@@ -147,6 +190,65 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 for step in repo_steps
                 if isinstance(step, dict)
             ),
+        )
+
+    def test_existing_supply_chain_job_runs_focused_operational_suites(
+        self,
+    ) -> None:
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        job = workflow["jobs"]["supply-chain-fixture-policy"]
+        self.assertEqual({"contents": "read"}, job["permissions"])
+        matching = [
+            step
+            for step in job["steps"]
+            if isinstance(step, dict)
+            and step.get("run") == OPERATIONAL_READINESS_TEST_COMMAND
+        ]
+        self.assertEqual(1, len(matching))
+        self.assertEqual(
+            "Run focused operational readiness regressions",
+            matching[0].get("name"),
+        )
+        contract = REPO_CONTRACT.read_text(encoding="utf-8")
+        self.assertIn(OPERATIONAL_READINESS_TEST_COMMAND, contract)
+        self.assertIn(
+            "supply-chain focused regression step must match",
+            contract,
+        )
+        governance_text = GITHUB_GOVERNANCE.read_text(encoding="utf-8")
+        governance_row = re.search(
+            r"(?m)^\|\s*`supply-chain-fixture-policy`\s*\|\s*(.*?)\s*\|$",
+            governance_text,
+        )
+        self.assertIsNotNone(governance_row)
+        assert governance_row is not None
+        self.assertEqual(
+            SUPPLY_CHAIN_GOVERNANCE_DESCRIPTION,
+            governance_row.group(1),
+        )
+
+    def test_supply_chain_focused_regression_routing_fails_closed(self) -> None:
+        program = self._workflow_security_program()
+        with self._workflow_fixture() as root:
+            workflow_path = root / ".github/workflows/ci-quality.yml"
+            text = workflow_path.read_text(encoding="utf-8")
+            old = "          tests.validation.test_grype_db_seed\n"
+            self.assertIn(old, text)
+            workflow_path.write_text(
+                text.replace(old, "", 1),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertIn(
+            "supply-chain focused regression step must match",
+            result.stderr,
         )
 
     def test_ci_quality_policy_mutations_fail_closed(self) -> None:

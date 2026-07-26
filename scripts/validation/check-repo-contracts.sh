@@ -91,6 +91,27 @@ if [[ -f "$target_surface_checker" && -f "$target_surface_library" ]]; then
   fi
 fi
 
+section "Supply-chain deterministic fixture policy"
+supply_chain_checker="scripts/validation/check-supply-chain-policy.py"
+supply_chain_summary="scripts/security/generate-supply-chain-sample-service-summary.sh"
+supply_chain_tests=(
+  "tests/validation/test_compose_core_readiness.py"
+  "tests/validation/test_postgres_logical_upgrade_rehearsal.py"
+  "tests/validation/test_grype_db_seed.py"
+  "tests/validation/test_supply_chain_policy.py"
+  "tests/validation/test_sample_service_delivery_rehearsal.py"
+)
+for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" \
+  "${supply_chain_tests[@]}"; do
+  [[ -f "$supply_chain_path" ]] || fail "missing supply-chain policy surface: $supply_chain_path"
+done
+if [[ -f "$supply_chain_checker" ]] && ! python3 "$supply_chain_checker" --check; then
+  failures=$((failures + 1))
+fi
+if [[ -f "$supply_chain_summary" ]] && ! bash "$supply_chain_summary" --check; then
+  failures=$((failures + 1))
+fi
+
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
   echo "Expected:" >&2
@@ -1030,6 +1051,7 @@ required_jobs = {
     "docs-implementation-alignment",
     "repo-contracts",
     "agent-output-eval-fixture-gate",
+    "supply-chain-fixture-policy",
     "dependency-vulnerability-audit",
     "git-flow-contract",
     "compose-validation",
@@ -1069,6 +1091,7 @@ if ci_quality in workflow_documents:
         "docs-implementation-alignment": 5,
         "repo-contracts": 10,
         "agent-output-eval-fixture-gate": 5,
+        "supply-chain-fixture-policy": 5,
         "dependency-vulnerability-audit": 10,
         "git-flow-contract": 5,
         "compose-validation": 10,
@@ -1113,6 +1136,24 @@ if ci_quality in workflow_documents:
                 failures.append(
                     f"{ci_quality}: job {job_id!r} run step uses an untrusted GitHub context directly"
                 )
+    operational_readiness_test_command = "python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v"
+    supply_chain_job = jobs.get("supply-chain-fixture-policy")
+    supply_chain_steps = (
+        supply_chain_job.get("steps") or []
+        if isinstance(supply_chain_job, dict)
+        else []
+    )
+    focused_regression_steps = [
+        step
+        for step in supply_chain_steps
+        if isinstance(step, dict)
+        and step.get("name") == "Run focused operational readiness regressions"
+        and step.get("run") == operational_readiness_test_command
+    ]
+    if len(focused_regression_steps) != 1:
+        failures.append(
+            f"{ci_quality}: supply-chain focused regression step must match the approved command exactly once"
+        )
     for literal in [
         "Publish QA gate recommendations",
         "GITHUB_STEP_SUMMARY",
@@ -3981,6 +4022,8 @@ lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") i
 expected_implementations = {
     pathlib.Path("scripts/validation/validate-docker-compose.sh"),
     pathlib.Path("scripts/validation/validate-harness.sh"),
+    pathlib.Path("scripts/validation/compose-core-readiness.lib.sh"),
+    pathlib.Path("scripts/validation/run-compose-core-readiness.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
     pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),
@@ -3996,6 +4039,10 @@ expected_implementations = {
     pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"),
     pathlib.Path("scripts/validation/run-agent-precommit-all-files.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
+    pathlib.Path("scripts/validation/rehearse-postgres-logical-upgrade.sh"),
+    pathlib.Path("scripts/security/generate-supply-chain-sample-service-summary.sh"),
+    pathlib.Path("scripts/security/seed-grype-db-cache.sh"),
+    pathlib.Path("scripts/security/verify-sample-service-supply-chain.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
@@ -4004,6 +4051,7 @@ expected_implementations = {
     pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
+    pathlib.Path("scripts/operations/rehearse-sample-service-delivery.sh"),
     pathlib.Path("scripts/operations/generate-compose-profile-service-coverage.sh"),
     pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"),
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
@@ -4012,7 +4060,7 @@ expected_implementations = {
 }
 implementation_scripts = sorted(
     path
-    for folder in ["validation", "hardening", "hooks", "knowledge", "operations"]
+    for folder in ["validation", "hardening", "hooks", "knowledge", "operations", "security"]
     for path in pathlib.Path("scripts", folder).glob("*.sh")
     if path.is_file()
 )

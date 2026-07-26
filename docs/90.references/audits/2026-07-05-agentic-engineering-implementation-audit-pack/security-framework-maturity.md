@@ -3,7 +3,7 @@ status: active
 artifact_id: audit:agentic-engineering-implementation:security-framework-maturity
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
-reviewed_at: 2026-07-12
+reviewed_at: 2026-07-22
 review_cycle: per-remediation-task
 ---
 
@@ -106,6 +106,26 @@ were not established by that observation.
 | Observed remote configuration | Classic protection is enabled with 12 required contexts; rulesets are `0`; environments are `0`. | Three local contexts are absent; the observation does not establish every CODEOWNERS enforcement detail. |
 | Recent execution | No recent check-run, review, deployment, or rollback result was collected. | Configuration must not be promoted to a successful security outcome. |
 | Enforcement mutation | No protection, ruleset, environment, workflow, CODEOWNERS, or repository setting was changed. | A later change needs separate approval, exact contexts, rollback evidence, and read-back. |
+
+## Bounded Revalidation (2026-07-22)
+
+The framework matrices below preserve the 2026-07-12 baseline, while the
+2026-07-19 scanner observations remain dated historical evidence. The current
+[security supply-chain task](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
+has deterministic local fixture, policy, orchestration, and immutable
+build-context surfaces with hardened input validation. Its present runtime boundary is still blocked before
+Docker execution because no approved current scanner database seed is
+available; consequently, no current policy pass, accepted verdicts, or
+generation-bound pair manifest exists. The earlier vulnerable-image advisory result is historical
+and superseded, not an active exception or current acceptance result.
+
+The [deployment and release task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+therefore has implementation and static verification only. It has not produced
+positive promotion or rollback runtime evidence. This bounded local progress
+does not establish broad dependency or image coverage, SBOM retention, SLSA
+provenance, signing or attestation verification, OpenSSF Scorecard maturity,
+remote enforcement, or production readiness. Exact commands, classifications,
+digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 ## Criterion Matrix
 

@@ -15,7 +15,8 @@ itself.
   `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
   `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, `storybook-coverage`.
 - Local CI contract includes `docs-implementation-alignment`,
-  `agent-output-eval-fixture-gate`, and `dependency-vulnerability-audit`, but
+  `agent-output-eval-fixture-gate`, `supply-chain-fixture-policy`, and
+  `dependency-vulnerability-audit`, but
   the 2026-07-04 read-only verification confirmed those contexts are not
   currently remote required checks. Agents must not assert remote enforcement
   for these contexts until repository protection is updated and reverified.
@@ -52,6 +53,7 @@ Use the CI Quality Gates workflow job names as required checks:
 - `docs-implementation-alignment`
 - `repo-contracts`
 - `agent-output-eval-fixture-gate`
+- `supply-chain-fixture-policy`
 - `dependency-vulnerability-audit`
 - `git-flow-contract`
 - `compose-validation`

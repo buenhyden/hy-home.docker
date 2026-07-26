@@ -1,0 +1,34 @@
+{
+  "ci_enforcement": "fixture-policy-only",
+  "policy_id": "sample-service-local-v1",
+  "provenance": {
+    "predicate_type": "https://slsa.dev/provenance/v1"
+  },
+  "sbom": {
+    "format": "cyclonedx-json"
+  },
+  "schema_version": 1,
+  "scorecard": {
+    "mode": "read-only-advisory"
+  },
+  "signature": {
+    "key_lifetime": "process",
+    "mode": "cosign-sign-blob"
+  },
+  "subject": {
+    "roles": [
+      "baseline",
+      "candidate"
+    ],
+    "service": "examples/sample-web-service"
+  },
+  "vulnerability": {
+    "blocking_severities": [
+      "critical"
+    ],
+    "exception_registry": "infra/supply-chain.vulnerability-exceptions.json",
+    "review_severities": [
+      "high"
+    ]
+  }
+}

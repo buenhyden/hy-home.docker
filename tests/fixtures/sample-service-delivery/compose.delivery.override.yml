@@ -1,0 +1,18 @@
+services:
+  web:
+    build: !reset null
+    image: ${DRE_IMAGE_REF:?verified local image reference required}
+    pull_policy: never
+    env_file: !override []
+    ports: !override
+      - 127.0.0.1:${DRE_HOST_PORT:?loopback host port required}:8080
+    labels:
+      org.hyhome.delivery.owner: task:2026-07-19-deployment-release-engineering-remediation
+      org.hyhome.delivery.task-id: ${DRE_TASK_ID:?delivery task id required}
+      org.hyhome.delivery.role: ${DRE_ROLE:?delivery role required}
+networks:
+  sample-internal:
+    labels:
+      org.hyhome.delivery.owner: task:2026-07-19-deployment-release-engineering-remediation
+      org.hyhome.delivery.task-id: ${DRE_TASK_ID:?delivery task id required}
+      org.hyhome.delivery.role: ${DRE_ROLE:?delivery role required}

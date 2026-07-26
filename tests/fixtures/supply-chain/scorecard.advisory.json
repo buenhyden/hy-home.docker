@@ -1,0 +1,8 @@
+{
+  "ci_enforcement": "fixture-policy-only",
+  "mode": "read-only-advisory",
+  "observation": "read-only",
+  "repository": "github.com/buenhyden/hy-home.docker",
+  "schema_version": 1,
+  "score": 7.3
+}

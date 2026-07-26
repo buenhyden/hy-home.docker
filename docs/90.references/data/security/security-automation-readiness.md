@@ -60,9 +60,9 @@ management procedures.
 
 | Status | Count |
 | --- | ---: |
-| Implemented | 7 |
+| Implemented | 11 |
 | Partially Implemented | 1 |
-| Gap | 5 |
+| Gap | 1 |
 
 ## Readiness Matrix
 
@@ -75,12 +75,12 @@ management procedures.
 | SEC-AUTO-005 | Infrastructure hardening baseline | Implemented | [scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | Hardening script is wired into CI quality checks. |
 | SEC-AUTO-006 | Tracked image/version provenance snapshot | Implemented | [infra/tech-stack.versions.json](../../../../infra/tech-stack.versions.json)<br>[infra/image-tag-policy.exceptions.json](../../../../infra/image-tag-policy.exceptions.json)<br>[scripts/operations/generate-tech-stack-version-provenance.sh](../../../../scripts/operations/generate-tech-stack-version-provenance.sh)<br>[docs/90.references/data/docker/tech-stack-version-provenance.md](../../../../docs/90.references/data/docker/tech-stack-version-provenance.md) | Generated provenance describes tracked registry/Compose evidence, not SBOMs, signatures, or SLSA attestations. |
 | SEC-AUTO-008 | Scoped ecosystem vulnerability gate | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | The tracked Storybook Next.js npm audit gate has an explicit project and severity scope. |
+| SEC-AUTO-009 | SBOM generation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | An SBOM generation command is present in tracked workflow/script surfaces. |
+| SEC-AUTO-010 | Artifact signing or provenance attestation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Signing or attestation command is present in tracked workflow/script surfaces. |
+| SEC-AUTO-011 | OpenSSF Scorecard automation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Scorecard automation is present in tracked workflow/script surfaces. |
+| SEC-AUTO-013 | Container/image vulnerability scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | A container/image vulnerability scanning command is present in tracked workflow/script surfaces. |
 | SEC-AUTO-007 | Branch protection and review evidence | Partially Implemented | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Local and last-recorded branch-protection evidence exist; live remote enforcement must be re-verified before current claims. |
-| SEC-AUTO-009 | SBOM generation | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked SBOM generator command was found in workflow/script surfaces. Scanned tracked workflow/script surfaces: 7 workflows, 29 scripts, and `.pre-commit-config.yaml`. |
-| SEC-AUTO-010 | Artifact signing or provenance attestation | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked signing, SLSA provenance, or attestation workflow command was found. Scanned tracked workflow/script surfaces: 7 workflows, 29 scripts, and `.pre-commit-config.yaml`. |
-| SEC-AUTO-011 | OpenSSF Scorecard automation | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked OpenSSF Scorecard automation command was found. Scanned tracked workflow/script surfaces: 7 workflows, 29 scripts, and `.pre-commit-config.yaml`. |
-| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 29 scripts, and `.pre-commit-config.yaml`. |
-| SEC-AUTO-013 | Container/image vulnerability scanning | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked container/image vulnerability scanning command was found. Scanned tracked workflow/script surfaces: 7 workflows, 29 scripts, and `.pre-commit-config.yaml`. |
+| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 36 scripts, and `.pre-commit-config.yaml`. |
 
 ## Findings
 
@@ -91,18 +91,15 @@ management procedures.
   stores CODEOWNERS and last-recorded ruleset evidence, but this generator
   does not query live remote GitHub settings.
 - The scoped Storybook Next.js npm audit gate does not close broad dependency
-  SCA or container/image vulnerability scanning readiness.
-- SBOM generation, artifact signing/provenance attestation, OpenSSF Scorecard automation, broad dependency SCA, and container/image vulnerability scanning are still gaps in tracked workflow/script surfaces.
+  SCA. Local sample-service image scanning is a separate fixture-policy and
+  advisory-rehearsal contract, not a live runtime or release claim.
+- broad dependency SCA are still gaps in tracked workflow/script surfaces.
 
 ## Gap / Follow-up
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| `SEC-AUTO-009` | Add SBOM generation and storage rules for build or release artifacts. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
-| `SEC-AUTO-010` | Add artifact signing, SLSA provenance, or attestation design for artifact-producing workflows. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
-| `SEC-AUTO-011` | Add OpenSSF Scorecard advisory reporting if maintainers want an external security-health signal. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
-| `SEC-AUTO-012` | Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
-| `SEC-AUTO-013` | Define container/image scan targets, digest identity, thresholds, exceptions, and remediation ownership. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
+| `SEC-AUTO-012` | Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode. | [Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
 
 ## Source Rules
 

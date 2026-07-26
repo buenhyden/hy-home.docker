@@ -6,7 +6,7 @@
 
 ## Overview
 
-`runbooks/04-data/relational`는 `docs/05.operations`의 relational runbook 문서를 관리한다. 현재는 선택 include인 PostgreSQL HA cluster의 compose 기반 트리거 조건, 순서 있는 점검 절차, evidence, recovery boundary, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
+`runbooks/04-data/relational`는 `docs/05.operations`의 relational runbook 문서를 관리한다. 선택 include인 PostgreSQL HA cluster triage와 synthetic PostgreSQL logical upgrade/restore rehearsal의 트리거 조건, 순서 있는 점검 절차, evidence, recovery boundary, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
 
 ## Audience
 
@@ -22,6 +22,7 @@
 ### In Scope
 
 - PostgreSQL HA cluster 장애 triage, 정기 점검, escalation, evidence capture
+- Synthetic PostgreSQL 17.6-to-18.4 logical backup/restore rehearsal
 - 현재 경로에 속한 runbook 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
@@ -35,6 +36,7 @@
 
 ```text
 runbooks/04-data/relational/
+├── postgresql-logical-upgrade-restore-rehearsal.md
 ├── postgresql-cluster.md
 └── README.md
 ```
@@ -49,6 +51,7 @@ runbooks/04-data/relational/
 | Path | Purpose |
 | --- | --- |
 | [postgresql-cluster.md](./postgresql-cluster.md) | PostgreSQL HA cluster triage runbook |
+| [postgresql-logical-upgrade-restore-rehearsal.md](./postgresql-logical-upgrade-restore-rehearsal.md) | Synthetic local logical upgrade, restore, integrity, negative-path, and cleanup rehearsal |
 
 ## Related Documents
 

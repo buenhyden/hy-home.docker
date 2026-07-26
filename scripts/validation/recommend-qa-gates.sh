@@ -178,6 +178,21 @@ recommend_for_path() {
   fi
 
   case "$path" in
+  infra/supply-chain.tool-images.json | \
+    infra/supply-chain.sample-service-policy.json | \
+    infra/supply-chain.vulnerability-exceptions.json | \
+    scripts/security/* | \
+    scripts/validation/check-supply-chain-policy.py | \
+    tests/fixtures/supply-chain/* | \
+    tests/validation/test_supply_chain_policy.py | \
+    docs/90.references/data/security/supply-chain-sample-service.md)
+    add_gate "python3 scripts/validation/check-supply-chain-policy.py --check" "local supply-chain policy or fixture surface changed"
+    add_gate "bash scripts/security/generate-supply-chain-sample-service-summary.sh --check" "local supply-chain summary may be stale"
+    add_gate "bash scripts/validation/check-repo-contracts.sh" "supply-chain CI and script contracts changed"
+    ;;
+  esac
+
+  case "$path" in
   AGENTS.md | CLAUDE.md | GEMINI.md | .agents/* | .claude/* | .codex/* | .gemini/*)
     add_gate "bash scripts/operations/sync-provider-surfaces.sh --check" "provider and root agent surfaces changed"
     add_gate "bash scripts/validation/validate-harness.sh" "agent harness surfaces changed"

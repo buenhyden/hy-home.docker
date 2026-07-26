@@ -49,16 +49,18 @@ docs/02.architecture/requirements/
 ├── ...
 ├── 0026-standardize-infra-net.md        # Canonical infra_net ARD
 ├── 0027-agent-governance-canonical-adapter.md # Canonical agent governance adapter ARD
+├── 0028-operational-readiness-closure.md # Local-isolated readiness evidence architecture
 └── README.md                            # This file
 ```
 
 ## Current Inventory
 
-- 24 ARD leaf documents are present.
+- 25 ARD leaf documents are present.
 - `0001` through `0014` cover the base service and tier architecture set.
 - `0018` through `0026` cover hardening/HA and network architecture follow-up work.
 - [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md) is the canonical `infra_net` ARD for this stage.
 - [`0027-agent-governance-canonical-adapter.md`](./0027-agent-governance-canonical-adapter.md) is the canonical agent governance adapter ARD for this stage.
+- [`0028-operational-readiness-closure.md`](./0028-operational-readiness-closure.md) is the canonical local-isolated operational readiness architecture for Specs 124-127.
 
 ## How to Work in This Area
 
@@ -89,6 +91,7 @@ docs/02.architecture/requirements/
 - **PRD**: [Product requirements](../../01.requirements/README.md)
 - **ADR**: [Architecture decisions](../decisions/README.md)
 - **Agent Governance Adapter ARD**: [0027-agent-governance-canonical-adapter](./0027-agent-governance-canonical-adapter.md)
+- **Operational Readiness Closure ARD**: [0028-operational-readiness-closure](./0028-operational-readiness-closure.md)
 - **Spec**: [Technical specifications](../../03.specs/README.md)
 - **Plan**: [Execution plans](../../04.execution/plans/README.md)
 - **Task**: [Execution tasks](../../04.execution/tasks/README.md)

@@ -280,6 +280,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/01.requirements/022-laboratory-optimization-hardening.md](../../01.requirements/022-laboratory-optimization-hardening.md) | Markdown reference |
 | [docs/01.requirements/023-standardize-infra-net.md](../../01.requirements/023-standardize-infra-net.md) | Markdown reference |
 | [docs/01.requirements/024-agent-governance-standardization.md](../../01.requirements/024-agent-governance-standardization.md) | Markdown reference |
+| [docs/01.requirements/025-operational-readiness-closure.md](../../01.requirements/025-operational-readiness-closure.md) | Markdown reference |
 | [docs/01.requirements/README.md](../../01.requirements/README.md) | folder index |
 | [docs/02.architecture/README.md](../../02.architecture/README.md) | folder index |
 | [docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md) | Markdown reference |
@@ -306,6 +307,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md) | Markdown reference |
+| [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
 | [docs/02.architecture/decisions/README.md](../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/requirements/0001-gateway-architecture.md](../../02.architecture/requirements/0001-gateway-architecture.md) | Markdown reference |
 | [docs/02.architecture/requirements/0002-auth-architecture.md](../../02.architecture/requirements/0002-auth-architecture.md) | Markdown reference |
@@ -331,6 +333,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md) | Markdown reference |
 | [docs/02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/requirements/0027-agent-governance-canonical-adapter.md](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md) | Markdown reference |
+| [docs/02.architecture/requirements/0028-operational-readiness-closure.md](../../02.architecture/requirements/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/requirements/README.md](../../02.architecture/requirements/README.md) | folder index |
 | [docs/03.specs/001-gateway/README.md](../../03.specs/001-gateway/README.md) | folder index |
 | [docs/03.specs/001-gateway/spec.md](../../03.specs/001-gateway/spec.md) | Markdown reference |
@@ -528,6 +531,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-15-agent-governance-harness-convergence.md](../../04.execution/plans/2026-07-15-agent-governance-harness-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md](../../04.execution/plans/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md](../../04.execution/plans/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -649,6 +653,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md](../../04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md](../../04.execution/tasks/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-operational-readiness-closure-program.md](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-19-security-supply-chain-remediation.md](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md](../../04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md](../../04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -867,6 +878,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/04-data/optimization/optimization-hardening.md](../../05.operations/runbooks/04-data/optimization/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/relational/README.md](../../05.operations/runbooks/04-data/relational/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md](../../05.operations/runbooks/04-data/relational/postgresql-cluster.md) | Markdown reference |
+| [docs/05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md](../../05.operations/runbooks/04-data/relational/postgresql-logical-upgrade-restore-rehearsal.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/specialized/README.md](../../05.operations/runbooks/04-data/specialized/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/specialized/neo4j.md](../../05.operations/runbooks/04-data/specialized/neo4j.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/specialized/qdrant.md](../../05.operations/runbooks/04-data/specialized/qdrant.md) | Markdown reference |
@@ -987,6 +999,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/kubernetes/docker-compose-to-k3s-migration.md](../data/kubernetes/docker-compose-to-k3s-migration.md) | Markdown reference |
 | [docs/90.references/data/security/README.md](../data/security/README.md) | folder index |
 | [docs/90.references/data/security/security-automation-readiness.md](../data/security/security-automation-readiness.md) | Markdown reference |
+| [docs/90.references/data/security/supply-chain-sample-service.md](../data/security/supply-chain-sample-service.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
 | [docs/90.references/learning/roadmap-v1.md](../learning/roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |
@@ -1311,6 +1324,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) | JSON registry |
 | [infra/common-optimizations.yml](../../../infra/common-optimizations.yml) | YAML config |
 | [infra/image-tag-policy.exceptions.json](../../../infra/image-tag-policy.exceptions.json) | JSON registry |
+| [infra/supply-chain.cosign-offline-signing-config.json](../../../infra/supply-chain.cosign-offline-signing-config.json) | JSON registry |
+| [infra/supply-chain.cosign-offline-trusted-root.json](../../../infra/supply-chain.cosign-offline-trusted-root.json) | JSON registry |
+| [infra/supply-chain.sample-service-policy.json](../../../infra/supply-chain.sample-service-policy.json) | JSON registry |
+| [infra/supply-chain.tool-images.json](../../../infra/supply-chain.tool-images.json) | JSON registry |
+| [infra/supply-chain.vulnerability-exceptions.json](../../../infra/supply-chain.vulnerability-exceptions.json) | JSON registry |
 | [infra/tech-stack.versions.json](../../../infra/tech-stack.versions.json) | JSON registry |
 
 ### Scripts and validators
@@ -1329,10 +1347,14 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-compose-profile-service-coverage.sh](../../../scripts/operations/generate-compose-profile-service-coverage.sh) | script |
 | [scripts/operations/generate-tech-stack-version-provenance.sh](../../../scripts/operations/generate-tech-stack-version-provenance.sh) | script |
+| [scripts/operations/rehearse-sample-service-delivery.sh](../../../scripts/operations/rehearse-sample-service-delivery.sh) | script |
 | [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
+| [scripts/security/generate-supply-chain-sample-service-summary.sh](../../../scripts/security/generate-supply-chain-sample-service-summary.sh) | script |
+| [scripts/security/seed-grype-db-cache.sh](../../../scripts/security/seed-grype-db-cache.sh) | script |
+| [scripts/security/verify-sample-service-supply-chain.sh](../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
 | [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
@@ -1340,14 +1362,17 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
+| [scripts/validation/compose-core-readiness.lib.sh](../../../scripts/validation/compose-core-readiness.lib.sh) | script |
 | [scripts/validation/generate-audit-implementation-matrix.sh](../../../scripts/validation/generate-audit-implementation-matrix.sh) | script |
 | [scripts/validation/generate-security-automation-readiness.sh](../../../scripts/validation/generate-security-automation-readiness.sh) | script |
 | [scripts/validation/recommend-gap-routing.sh](../../../scripts/validation/recommend-gap-routing.sh) | script |
 | [scripts/validation/recommend-qa-gates.sh](../../../scripts/validation/recommend-qa-gates.sh) | script |
+| [scripts/validation/rehearse-postgres-logical-upgrade.sh](../../../scripts/validation/rehearse-postgres-logical-upgrade.sh) | script |
 | [scripts/validation/report-audit-pack-coverage.sh](../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../scripts/validation/report-provider-hook-parity.sh) | script |
 | [scripts/validation/run-agent-output-eval-fixtures.sh](../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
 | [scripts/validation/run-agent-precommit-all-files.sh](../../../scripts/validation/run-agent-precommit-all-files.sh) | script |
+| [scripts/validation/run-compose-core-readiness.sh](../../../scripts/validation/run-compose-core-readiness.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 | [scripts/validation/validate-harness.sh](../../../scripts/validation/validate-harness.sh) | script |

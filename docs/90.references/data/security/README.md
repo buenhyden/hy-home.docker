@@ -54,7 +54,8 @@ approved Stage 04 task evidence가 담당합니다.
 ```text
 security/
 ├── README.md                         # This file
-└── security-automation-readiness.md  # Generated security automation readiness snapshot
+├── security-automation-readiness.md  # Generated security automation readiness snapshot
+└── supply-chain-sample-service.md    # Generated local supply-chain fixture summary
 ```
 
 ## Current References
@@ -63,6 +64,9 @@ security/
   generated security automation readiness snapshot for vulnerability gate,
   SBOM, provenance/attestation, Scorecard, workflow security, secret scanning,
   Dependabot, and hardening coverage
+- [supply-chain-sample-service.md](./supply-chain-sample-service.md) -
+  generated pinned local sample-service supply-chain fixture and advisory
+  boundary summary
 
 ## How to Work in This Area
 
@@ -74,11 +78,15 @@ security/
 4. Route new security controls to Stage 03 specs and Stage 04 plans/tasks before
    changing CI, scanners, SBOM generation, signing, attestation, branch
    protection, or remote GitHub state.
+5. Refresh the local sample-service summary with
+   `bash scripts/security/generate-supply-chain-sample-service-summary.sh` and
+   check it with the same command plus `--check`.
 
 ## Related Documents
 
 - [reference data index](../README.md)
 - [security automation readiness](./security-automation-readiness.md)
+- [sample-service supply-chain summary](./supply-chain-sample-service.md)
 - [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
 - [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)

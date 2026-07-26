@@ -6,7 +6,7 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
   - task:2026-07-11-agentic-engineering-audit-remediation
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:overview]
-reviewed_at: 2026-07-12
+reviewed_at: 2026-07-22
 review_cycle: per-remediation-task
 ---
 
@@ -16,10 +16,11 @@ review_cycle: per-remediation-task
 
 ## Overview
 
-This reference summarizes how much of the researched agentic engineering model
-is currently implemented in `hy-home.docker`. It is the canonical current-state
-audit built from the Stage 90 research pack, tracked source, and completed
-T-AER-008 through T-AER-012 evidence.
+This reference preserves the canonical criterion baseline for how much of the
+researched agentic engineering model was implemented in `hy-home.docker` and
+adds bounded revalidation notes for later remediation work. It is built from
+the Stage 90 research pack, tracked source, and completed T-AER-008 through
+T-AER-012 evidence.
 
 ## Purpose
 
@@ -65,7 +66,7 @@ runtime Compose files.
 - **Needs Revalidation**: required current/provider/runtime evidence is absent
   or cannot safely establish the claim.
 
-## Current Criterion Distribution
+## Criterion Distribution (Historical Audit Baseline)
 
 | State | Criteria |
 | --- | ---: |
@@ -75,6 +76,9 @@ runtime Compose files.
 | Not Applicable | 2 |
 | Needs Revalidation | 9 |
 | **Total** | **161** |
+
+This fixed distribution belongs to the dated criterion assessment below. The
+2026-07-22 bounded revalidation does not rewrite those 161 historical rows.
 
 ## Assessment Method
 
@@ -112,6 +116,31 @@ criterion reports containing 161 unique rows. The shared parser validates the
 ten-field schema, vocabularies, ID uniqueness, exact per-report counts, and all
 15 overview categories. Historical Task 4-6 baseline facts remain dated context,
 not current implementation state.
+
+## Bounded Revalidation (2026-07-22)
+
+The 2026-07-12 criterion distribution and the 2026-07-19 observations above
+remain a historical audit baseline. The following narrower state is current:
+
+- [Compose runtime remediation](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+  has current passing bounded local startup, recovery, and timeout evidence;
+  its latest identity-hardening review is pending.
+- [Infrastructure operations remediation](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+  has current passing bounded synthetic PostgreSQL backup-and-restore evidence;
+  its latest identity-hardening review is pending.
+- [Security supply-chain remediation](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
+  has hardened deterministic scanning behavior, but remains active because an
+  approved current scanner database seed, policy pass, and accepted artifact
+  verdicts, and generation-bound pair manifest do not exist.
+- [Deployment and release remediation](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+  has completed implementation and static verification, but positive promotion
+  and rollback runtime evidence remain blocked on the accepted supply-chain
+  manifest-bound accepted verdict pair.
+
+These local results do not establish production readiness, remote enforcement,
+broad supply-chain coverage, deployment success, or a formal framework claim.
+Exact commands, project identities, digests, review outcomes, and commit
+identities remain owned by the linked Stage 04 task records.
 
 ## Implementation Status Matrix
 

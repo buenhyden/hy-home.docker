@@ -77,6 +77,8 @@ Local script-backed gates:
 - tests/validation/test_document_corpus_lifecycle.py
 - scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
 - scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+- python3 scripts/validation/check-supply-chain-policy.py --check
+- bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
 - python3 -m unittest tests.validation.test_target_surface_contracts -v
 - python3 scripts/validation/check-target-surface-contract.py
 - scripts/validation/validate-docker-compose.sh
@@ -143,6 +145,11 @@ run_generated_freshness_gates() {
   run_step "LLM Wiki coverage freshness" bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 }
 
+run_supply_chain_fixture_gates() {
+  run_step "Supply-chain fixture policy" python3 scripts/validation/check-supply-chain-policy.py --check
+  run_step "Supply-chain summary freshness" bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
+}
+
 run_script_backed_gates() {
   if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
     # shellcheck source=../operations/use-qa-ci-tools.sh
@@ -159,6 +166,7 @@ run_script_backed_gates() {
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
   run_lifecycle_gates
   run_target_surface_gates
+  run_supply_chain_fixture_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
   run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
@@ -177,6 +185,7 @@ run_harness_gates() {
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
   run_lifecycle_gates
   run_target_surface_gates
+  run_supply_chain_fixture_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
   run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh

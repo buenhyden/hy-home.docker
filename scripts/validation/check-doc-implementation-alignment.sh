@@ -158,6 +158,7 @@ NON_SERVICE_STEMS = {
     "new-service-onboarding",
     "optimization-hardening",
     "performance-testing",
+    "postgresql-logical-upgrade-restore-rehearsal",
     "rag-workflow",
     "retention",
     "release-management",
