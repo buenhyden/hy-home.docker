@@ -1323,6 +1323,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) | JSON registry |
 | [infra/common-optimizations.yml](../../../infra/common-optimizations.yml) | YAML config |
 | [infra/image-tag-policy.exceptions.json](../../../infra/image-tag-policy.exceptions.json) | JSON registry |
+| [infra/supply-chain.cosign-offline-signing-config.json](../../../infra/supply-chain.cosign-offline-signing-config.json) | JSON registry |
+| [infra/supply-chain.cosign-offline-trusted-root.json](../../../infra/supply-chain.cosign-offline-trusted-root.json) | JSON registry |
 | [infra/supply-chain.sample-service-policy.json](../../../infra/supply-chain.sample-service-policy.json) | JSON registry |
 | [infra/supply-chain.tool-images.json](../../../infra/supply-chain.tool-images.json) | JSON registry |
 | [infra/supply-chain.vulnerability-exceptions.json](../../../infra/supply-chain.vulnerability-exceptions.json) | JSON registry |
