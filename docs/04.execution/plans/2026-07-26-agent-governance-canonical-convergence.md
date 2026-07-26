@@ -27,7 +27,7 @@ observation evidence. Stage 04 owns execution and review evidence.
 
 **Tech Stack:** YAML contracts, Python 3.12, PyYAML, markdown-it-py, html5lib,
 unittest, Markdown/CommonMark, JSON, TOML, Bash, Claude Code project agents,
-Codex project agents, Gemini CLI project agents, GitHub Actions, zizmor 1.27.0,
+Codex project agents, Gemini CLI project agents, GitHub Actions, zizmor 1.28.0,
 pre-commit, and Git.
 
 ## Global Constraints
@@ -135,8 +135,8 @@ fast-moving claim:
 - GitHub Actions secure-use and monitoring documentation:
   <https://docs.github.com/en/actions/reference/security/secure-use>,
   <https://docs.github.com/en/actions/how-tos/monitor-workflows>
-- zizmor immutable v1.27.0 release:
-  <https://github.com/zizmorcore/zizmor/releases/tag/v1.27.0>
+- zizmor immutable v1.28.0 security release:
+  <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
 - `agency-agents` capability catalog and pre-commit behavior:
   <https://github.com/msitarzewski/agency-agents/blob/main/README.md>,
   <https://pre-commit.com/>
@@ -160,8 +160,11 @@ fast-moving claim:
 - Local `ci-quality.yml` owns 16 jobs. The public remote observation exposed 15
   jobs in the last failed run and three GitHub-managed workflows; authenticated
   control-plane state remains unverified.
-- Local zizmor is 1.25.2, while the official immutable current release observed
-  on 2026-07-26 is 1.27.0. CI must use the explicit 1.27.0 package version.
+- Local zizmor was 1.25.2 at baseline. The initially planned 1.27.0 package was
+  yanked for `GHSA-f42p-wjw5-97qh` because it could log configured GitHub
+  credentials in cleartext. The official immutable current security release
+  observed on 2026-07-26 is 1.28.0. CI must use the explicit 1.28.0 package
+  version and must reject 1.27.0.
 
 ## Goals and Non-goals
 
@@ -747,7 +750,7 @@ git diff --check
 **Pinned CI command:**
 
 ```bash
-uvx --from 'zizmor==1.27.0' zizmor . --format sarif . > results.sarif
+uvx --from 'zizmor==1.28.0' zizmor . --format sarif . > results.sarif
 ```
 
 **Remote observation record:**
@@ -809,7 +812,7 @@ inferred branch protection.
 
 - [ ] Add RED
   `AgentGovernanceRoutingTests.test_zizmor_dynamic_tool_is_exactly_pinned`
-  requiring package `zizmor==1.27.0`.
+  requiring package `zizmor==1.28.0` and rejecting the yanked 1.27.0 release.
 - [ ] Add RED
   `AgentGovernanceRoutingTests.test_github_index_is_navigation_only_and_not_readme`
   requiring the exact path, section envelope, canonical links, absent
@@ -821,7 +824,7 @@ inferred branch protection.
   from active local proposal/policy surfaces.
 - [ ] Run focused RED tests and record the unpinned command, missing inventory,
   and stale remote-state failures.
-- [ ] Pin zizmor 1.27.0 while retaining full-SHA action pins, least privilege,
+- [ ] Pin zizmor 1.28.0 while retaining full-SHA action pins, least privilege,
   timeout, SARIF upload, and the existing 16 job IDs.
 - [ ] Create `.github/INDEX.md`, register it as a non-canonical
   `github-navigation-index`, and keep policy, job identities, and observed
@@ -851,10 +854,10 @@ pre-commit run actionlint --files \
 git diff --check
 ```
 
-- [ ] Expect exact 16-job parity, pinned zizmor 1.27.0, one navigation-only
+- [ ] Expect exact 16-job parity, pinned zizmor 1.28.0, one navigation-only
   `.github/INDEX.md`, no `.github/README.md`, static workflow policy pass, and
   remote state still explicitly unverified.
-- [ ] If local zizmor 1.27.0 cannot be fetched in the restricted environment,
+- [ ] If local zizmor 1.28.0 cannot be fetched in the restricted environment,
   record `environment_blocked`; do not substitute local 1.25.2 as a pass.
 - [ ] Update Task evidence and commit
   `ci(governance): reconcile agent quality controls`.
@@ -1038,7 +1041,7 @@ Every task must produce:
 | Semantic eval | 11 fixtures and 16 regressions |
 | Provider drift | 0 across four provider surfaces |
 | Local CI jobs | 16 exact jobs |
-| Dynamic zizmor package | exact 1.27.0 |
+| Dynamic zizmor package | exact 1.28.0; yanked 1.27.0 rejected |
 | Canonical audit | 11 criterion reports, 161 exact rows |
 | Remote GitHub | read-only dated observation; control plane unverified |
 | Task/branch review | each task plus whole branch C0/I0 |
@@ -1080,7 +1083,7 @@ Every task must produce:
 - [ ] Eight harness layers, eight workflow states, and bounded retry/approval
   semantics validate.
 - [ ] Exact 11/16 semantic fixture/regression gates pass.
-- [ ] Local 16-job CI/QA contract and zizmor 1.27.0 pin validate.
+- [ ] Local 16-job CI/QA contract and zizmor 1.28.0 pin validate.
 - [ ] Remote observations are dated, source-linked, non-authoritative, and
   explicitly unverified where authentication was unavailable.
 - [ ] Canonical research/audit and registered generated owners are fresh.

@@ -432,6 +432,7 @@ checks:
 - bounded timeouts;
 - full 40-character action commit pins;
 - pinned versions for dynamically executed tools such as `zizmor`;
+- rejection of a pinned release that is yanked for a published security defect;
 - no unsafe `pull_request_target`;
 - no direct untrusted GitHub-context interpolation into shell;
 - deterministic wrapper and validator routes;
@@ -604,7 +605,8 @@ and read back.
 
 - local 16-job source and validator contract agree;
 - `actionlint` passes;
-- pinned `zizmor` reports no actionable finding;
+- pinned `zizmor` reports no actionable finding and is not the yanked 1.27.0
+  credential-logging release;
 - action pins, permissions, timeouts, triggers, and untrusted-input checks pass;
 - remote inventory is current, source-linked, and explicitly non-authoritative;
 - canonical audit counts and claims are generated from current criterion rows;
