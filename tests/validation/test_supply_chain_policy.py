@@ -1168,7 +1168,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             advisory.index("build_role_image baseline"),
         )
 
-    def test_local_image_identity_accepts_independent_manifest_and_config(self) -> None:
+    def test_local_image_identity_accepts_target_descriptor_runtime_id(self) -> None:
         manifest_digest = "sha256:" + ("a" * 64)
         config_id = "sha256:" + ("b" * 64)
         reference = f"example.invalid/tool@{manifest_digest}"
@@ -1176,6 +1176,32 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
             {
                 "RepoDigests": [reference],
                 "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        valid = self.run_wrapper_library(
+            f"source {shlex.quote(str(WRAPPER))}\n"
+            f"TEST_INSPECTION={shlex.quote(inspection)}\n"
+            f"TEST_CONFIG_ID={config_id}\n"
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_image_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} "
+            f"{manifest_digest} {config_id}\n"
+        )
+        self.assertEqual(0, valid.returncode, valid.stderr)
+
+    def test_local_image_identity_accepts_config_digest_runtime_id(self) -> None:
+        manifest_digest = "sha256:" + ("a" * 64)
+        config_id = "sha256:" + ("b" * 64)
+        reference = f"example.invalid/tool@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [reference],
+                "Id": config_id,
                 "Descriptor": {
                     "digest": manifest_digest,
                     "mediaType": "application/vnd.oci.image.index.v1+json",
@@ -1248,6 +1274,33 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         )
         self.assertEqual(10, result.returncode)
         self.assertIn("pinned-image-config-id-mismatch", result.stderr)
+
+    def test_local_image_identity_rejects_unrelated_runtime_id(self) -> None:
+        manifest_digest = "sha256:" + ("a" * 64)
+        config_id = "sha256:" + ("b" * 64)
+        reference = f"example.invalid/tool@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [reference],
+                "Id": "sha256:" + ("e" * 64),
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        result = self.run_wrapper_library(
+            f"source {shlex.quote(str(WRAPPER))}\n"
+            f"TEST_INSPECTION={shlex.quote(inspection)}\n"
+            f"TEST_CONFIG_ID={config_id}\n"
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_image_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            f"assert_local_image_identity {reference} {reference} "
+            f"{manifest_digest} {config_id}\n"
+        )
+        self.assertEqual(10, result.returncode)
+        self.assertIn("pinned-image-manifest-mismatch", result.stderr)
 
     def test_local_image_identity_rejects_missing_image(self) -> None:
         manifest_digest = "sha256:" + ("a" * 64)

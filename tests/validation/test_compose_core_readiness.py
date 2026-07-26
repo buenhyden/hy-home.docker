@@ -701,7 +701,7 @@ on_exit
                 section = text.split(f"\n  {service}:\n", maxsplit=1)[1]
                 self.assertIn(f"    image: {image}\n", section)
 
-    def test_local_image_identity_gate_accepts_independent_manifest_and_config_id(
+    def test_local_image_identity_gate_accepts_target_descriptor_runtime_id(
         self,
     ) -> None:
         runner = RUNNER.read_text(encoding="utf-8")
@@ -724,6 +724,36 @@ on_exit
             {
                 "RepoDigests": [expected_repo_digest],
                 "Id": manifest_digest,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        valid = self.run_library(
+            "docker() { printf '%s\\n' \"$CRR_TEST_INSPECTION\"; }; "
+            "observe_docker_image_config_digest() { "
+            "printf '%s\\n' \"$CRR_TEST_CONFIG_ID\"; }; "
+            "assert_local_image_identity "
+            f"{image_ref} {expected_repo_digest} {manifest_digest} {config_id}",
+            env={
+                "CRR_TEST_INSPECTION": inspection,
+                "CRR_TEST_CONFIG_ID": config_id,
+            },
+        )
+        self.assertEqual(0, valid.returncode, valid.stderr)
+
+    def test_local_image_identity_gate_accepts_config_digest_runtime_id(
+        self,
+    ) -> None:
+        manifest_digest = "sha256:" + "1" * 64
+        config_id = "sha256:" + "2" * 64
+        image_ref = f"example.invalid/readiness@{manifest_digest}"
+        expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [expected_repo_digest],
+                "Id": config_id,
                 "Descriptor": {
                     "digest": manifest_digest,
                     "mediaType": "application/vnd.oci.image.index.v1+json",
@@ -817,6 +847,35 @@ on_exit
         )
         self.assertEqual(10, rejected.returncode)
         self.assertIn("configuration ID", rejected.stderr)
+
+    def test_local_image_identity_gate_rejects_unrelated_runtime_id(self) -> None:
+        manifest_digest = "sha256:" + "1" * 64
+        config_id = "sha256:" + "2" * 64
+        image_ref = f"example.invalid/readiness@{manifest_digest}"
+        expected_repo_digest = f"example.invalid/readiness@{manifest_digest}"
+        inspection = json.dumps(
+            {
+                "RepoDigests": [expected_repo_digest],
+                "Id": "sha256:" + "5" * 64,
+                "Descriptor": {
+                    "digest": manifest_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        rejected = self.run_library(
+            "docker() { printf '%s\\n' \"$CRR_TEST_INSPECTION\"; }; "
+            "observe_docker_image_config_digest() { "
+            "printf '%s\\n' \"$CRR_TEST_CONFIG_ID\"; }; "
+            "assert_local_image_identity "
+            f"{image_ref} {expected_repo_digest} {manifest_digest} {config_id}",
+            env={
+                "CRR_TEST_INSPECTION": inspection,
+                "CRR_TEST_CONFIG_ID": config_id,
+            },
+        )
+        self.assertEqual(10, rejected.returncode)
+        self.assertIn("repository manifest", rejected.stderr)
 
     def test_local_image_identity_gate_rejects_missing_image(self) -> None:
         manifest_digest = "sha256:" + "1" * 64

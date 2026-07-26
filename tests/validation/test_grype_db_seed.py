@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import pathlib
 import stat
 import subprocess
@@ -59,6 +60,32 @@ def write_status(path: pathlib.Path, *, checksum: str = PACKAGE_SHA256) -> None:
 
 
 class GrypeDbSeedHarnessContractTests(unittest.TestCase):
+    def run_harness_library(
+        self,
+        body: str,
+        *,
+        env: dict[str, str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        source = HARNESS_PATH.read_text(encoding="utf-8")
+        library = source.split('\ncase "$MODE" in\n', maxsplit=1)[0]
+        self.assertNotEqual(source, library, "seed harness dispatch boundary is missing")
+        with tempfile.TemporaryDirectory(
+            prefix="grype-seed-library-", dir="/tmp"
+        ) as raw:
+            library_path = pathlib.Path(raw) / "seed-grype-db-cache.lib.sh"
+            library_path.write_text(library + "\n", encoding="utf-8")
+            environment = os.environ.copy()
+            if env:
+                environment.update(env)
+            return subprocess.run(
+                ["bash", "-c", f"source {library_path!s}\n{body}"],
+                cwd=ROOT,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
     def test_harness_is_narrowly_networked_and_keeps_advisory_offline(self) -> None:
         self.assertTrue(HARNESS_PATH.is_file(), "dedicated seed harness is missing")
         text = HARNESS_PATH.read_text(encoding="utf-8")
@@ -107,6 +134,76 @@ class GrypeDbSeedHarnessContractTests(unittest.TestCase):
             GRYPE_TOOL["target_descriptor_digest"],
             GRYPE_TOOL["config_id"],
         )
+
+    def test_local_image_identity_accepts_target_descriptor_runtime_id(self) -> None:
+        inspection = json.dumps(
+            {
+                "RepoDigests": [GRYPE_TOOL["repo_digest"]],
+                "Id": GRYPE_TOOL["target_descriptor_digest"],
+                "Descriptor": {
+                    "digest": GRYPE_TOOL["target_descriptor_digest"],
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        result = self.run_harness_library(
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_grype_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            "assert_local_grype_identity\n",
+            env={
+                "TEST_INSPECTION": inspection,
+                "TEST_CONFIG_ID": GRYPE_TOOL["config_id"],
+            },
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_local_image_identity_accepts_config_digest_runtime_id(self) -> None:
+        inspection = json.dumps(
+            {
+                "RepoDigests": [GRYPE_TOOL["repo_digest"]],
+                "Id": GRYPE_TOOL["config_id"],
+                "Descriptor": {
+                    "digest": GRYPE_TOOL["target_descriptor_digest"],
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        result = self.run_harness_library(
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_grype_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            "assert_local_grype_identity\n",
+            env={
+                "TEST_INSPECTION": inspection,
+                "TEST_CONFIG_ID": GRYPE_TOOL["config_id"],
+            },
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_local_image_identity_rejects_unrelated_runtime_id(self) -> None:
+        inspection = json.dumps(
+            {
+                "RepoDigests": [GRYPE_TOOL["repo_digest"]],
+                "Id": "sha256:" + ("e" * 64),
+                "Descriptor": {
+                    "digest": GRYPE_TOOL["target_descriptor_digest"],
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            }
+        )
+        result = self.run_harness_library(
+            "docker() { printf '%s\\n' \"$TEST_INSPECTION\"; }\n"
+            "observe_local_grype_config_digest() { "
+            "printf '%s\\n' \"$TEST_CONFIG_ID\"; }\n"
+            "assert_local_grype_identity\n",
+            env={
+                "TEST_INSPECTION": inspection,
+                "TEST_CONFIG_ID": GRYPE_TOOL["config_id"],
+            },
+        )
+        self.assertEqual(10, result.returncode)
+        self.assertIn("pinned-grype-manifest-mismatch", result.stderr)
 
 
 class GrypeDbSeedPublicationTests(unittest.TestCase):

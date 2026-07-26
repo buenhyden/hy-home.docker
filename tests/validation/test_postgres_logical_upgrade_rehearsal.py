@@ -855,7 +855,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             preflight.index("docker compose version"),
         )
 
-    def test_local_image_identity_accepts_distinct_manifest_and_config(self) -> None:
+    def test_local_image_identity_accepts_target_descriptor_runtime_id(self) -> None:
         image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
         repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
         target_digest = "sha256:" + "a" * 64
@@ -864,6 +864,34 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             {
                 "RepoDigests": [repo_digest],
                 "Id": target_digest,
+                "Descriptor": {
+                    "digest": target_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            },
+            separators=(",", ":"),
+        )
+        result = self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                OPERATION_DEADLINE=$((SECONDS + 30))
+                run_bounded() {{ printf '%s\n' {inspection!r}; }}
+                observe_local_image_config_digest() {{ printf '%s\n' {config_id!r}; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {target_digest} {config_id}
+                """
+            )
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_local_image_identity_accepts_config_digest_runtime_id(self) -> None:
+        image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
+        repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        target_digest = "sha256:" + "a" * 64
+        config_id = "sha256:" + "b" * 64
+        inspection = json.dumps(
+            {
+                "RepoDigests": [repo_digest],
+                "Id": config_id,
                 "Descriptor": {
                     "digest": target_digest,
                     "mediaType": "application/vnd.oci.image.index.v1+json",
@@ -942,6 +970,35 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         )
         self.assertEqual(10, result.returncode, result.stdout + result.stderr)
         self.assertIn("reason=source-image-config-id-drift", result.stdout)
+
+    def test_local_image_identity_rejects_unrelated_runtime_id(self) -> None:
+        image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
+        repo_digest = "example.invalid/postgres@sha256:" + "a" * 64
+        target_digest = "sha256:" + "a" * 64
+        config_id = "sha256:" + "b" * 64
+        inspection = json.dumps(
+            {
+                "RepoDigests": [repo_digest],
+                "Id": "sha256:" + "e" * 64,
+                "Descriptor": {
+                    "digest": target_digest,
+                    "mediaType": "application/vnd.oci.image.index.v1+json",
+                },
+            },
+            separators=(",", ":"),
+        )
+        result = self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                OPERATION_DEADLINE=$((SECONDS + 30))
+                run_bounded() {{ printf '%s\n' {inspection!r}; }}
+                observe_local_image_config_digest() {{ printf '%s\n' {config_id!r}; }}
+                assert_exact_local_image_identity source {image} {repo_digest} {target_digest} {config_id}
+                """
+            )
+        )
+        self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+        self.assertIn("reason=source-image-manifest-drift", result.stdout)
 
     def test_missing_local_image_fails_before_other_runtime_calls(self) -> None:
         with tempfile.TemporaryDirectory(prefix="ior-image-gate-", dir="/tmp") as tmp:
