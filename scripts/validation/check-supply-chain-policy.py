@@ -1621,9 +1621,13 @@ def inspect_oci_archive_config_digest(archive_path: pathlib.Path | str) -> str:
     """Return the config digest cryptographically bound by an OCI archive index."""
 
     try:
-        content = pathlib.Path(archive_path).read_bytes()
-    except OSError as exc:
-        raise ValueError("oci-archive-invalid") from exc
+        content = _read_stable_private_bytes(
+            pathlib.Path(archive_path), max_bytes=OCI_ARCHIVE_MAX_BYTES
+        )
+    except SecureOutputError as exc:
+        if str(exc) == "private-source-size-limit-exceeded":
+            raise ValueError("oci-archive-size-limit-exceeded") from exc
+        raise ValueError("oci-archive-private-input-invalid") from exc
     return str(_inspect_oci_archive_bytes(content)["image_config_digest"])
 
 
