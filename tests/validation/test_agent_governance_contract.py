@@ -2345,12 +2345,12 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_114_uniquely_routed_artifacts(
+    def test_repository_harness_inventory_has_113_uniquely_routed_artifacts(
         self,
     ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(114, len(inventory))
+        self.assertEqual(113, len(inventory))
         self.assertTrue(
             {
                 ROOT

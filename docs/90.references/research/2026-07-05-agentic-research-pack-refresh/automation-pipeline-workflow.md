@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:automation-pipeline-workflow
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-16
+reviewed_at: 2026-07-27
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md -->
@@ -16,7 +16,8 @@ This reference maps tracked local scripts, hooks, generated-reference checks,
 GitHub workflows, and agent orchestration to their triggers, authorities,
 evidence, retry behavior, and external-action boundaries. The inventory is from
 tracked source at `cf8790ca98ad395bb58c127ea41b1d0d02455f0e`, not from the
-older advisory Graphify report.
+older advisory Graphify report; current workflow counts and public remote
+evidence were revalidated on 2026-07-27.
 
 ## Purpose
 
@@ -67,7 +68,7 @@ YAML file, not from workflow filenames or Graphify.
 
 | Workflow | Trigger | Tracked job IDs | Count | Class / caveat |
 | --- | --- | --- | --- | --- |
-| [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | push/PR to `main`; manual dispatch | `docs-traceability`, `docs-implementation-alignment`, `repo-contracts`, `agent-output-eval-fixture-gate`, `dependency-vulnerability-audit`, `git-flow-contract`, `compose-validation`, `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`, `quickwin-baseline`, `pre-commit`, `frontend-quality`, `storybook-coverage`, `zizmor` | 15 | CI jobs; tracked presence does not prove remote required-check enforcement. |
+| [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | push/PR to `main`; manual dispatch | `docs-traceability`, `docs-implementation-alignment`, `repo-contracts`, `agent-output-eval-fixture-gate`, `supply-chain-fixture-policy`, `dependency-vulnerability-audit`, `git-flow-contract`, `compose-validation`, `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`, `quickwin-baseline`, `pre-commit`, `frontend-quality`, `storybook-coverage`, `zizmor` | 16 | CI jobs; tracked presence does not prove remote required-check enforcement. |
 | [`generate-changelog.yml`](../../../../.github/workflows/generate-changelog.yml) | pushed `v*.*.*` tag | `changelog` | 1 | Remote verifier; checks tag coverage in `CHANGELOG.md` and does not generate it. |
 | [`greetings.yml`](../../../../.github/workflows/greetings.yml) | newly opened issue/PR | `issue-greeting`, `pull-request-greeting` | 2 | Remote write automation with scoped token permissions. |
 | [`pr-labeler.yml`](../../../../.github/workflows/pr-labeler.yml) | opened/synchronized/reopened PR to `main` | `triage` | 1 | Remote PR-label mutation. |
@@ -75,11 +76,11 @@ YAML file, not from workflow filenames or Graphify.
 | [`tech-stack-version-sync.yml`](../../../../.github/workflows/tech-stack-version-sync.yml) | PR paths affecting Compose/version registry | `drift-gate` | 1 | Read-only CI drift gate; does not auto-commit. |
 | [`document-corpus-lifecycle.yml`](../../../../.github/workflows/document-corpus-lifecycle.yml) | schedule; manual dispatch | `document-corpus-lifecycle` | 1 | Read-only advisory lifecycle drift/evidence job; no corpus migration or archive mutation. |
 
-Total: **7 workflows, 22 job IDs**. The 15-job local CI contract is distinct
-from the historical 12 required remote contexts recorded on 2026-07-04 in
-[`main-protection.md`](../../../../.github/rulesets/main-protection.md). This
-task did not reverify remote settings, so current enforcement is remote-only and
-unknown.
+Total: **7 workflows, 23 job IDs**. The 16-job local CI definition is distinct
+from the latest public remote observation, which recorded 15 jobs in failed run
+`29777690571` at default commit `a897978f` on 2026-07-26. The root cause is
+unverified, and current authenticated branch protection, rulesets,
+environments, secrets, and variables remain unknown.
 
 ## Automation Loop Matrix
 
@@ -94,7 +95,7 @@ unknown.
 | LLM Wiki index freshness | Docs path change or explicit generator/check | [`generate-llm-wiki-index.sh`](../../../../scripts/knowledge/generate-llm-wiki-index.sh) | Indexed tracked paths | Generates or verifies Wiki path index | Fresh/stale result; `repo-contracts` coverage | Run generator, inspect generated diff, rerun check | Revert generated output and fix source/index rules | Local generated reference; never hand-edit |
 | LLM Wiki coverage freshness | Stage/category coverage change or explicit generator/check | [`generate-llm-wiki-coverage.sh`](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh) | Tracked stage paths and Wiki data | Generates or verifies coverage snapshot | Fresh/stale result | Run canonical generator and rerun check | Revert generated output and escalate schema drift | Local generated reference; never hand-edit |
 | Other generated evidence checks | Repo-contract execution or explicit generator `--check` | Canonical scripts listed in [`scripts/README.md`](../../../../scripts/README.md) | Audit pack, security/workflow surfaces, Compose and version registry | Generate/check audit matrix, security readiness, profile coverage, and version provenance | Generator check output and `repo-contracts` | Use only the owning generator; inspect source drift | Report stale generated data before any scope expansion | Local reference generation; does not run scanners, sign artifacts, query registries, or query GitHub |
-| CI quality workflow | push/PR to `main` or manual dispatch | [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | Checked-out commit, pinned actions, GitHub runner context | Runs 15 independent job definitions, including docs, contracts, Compose, frontend, coverage, dependency, and `zizmor` evidence | GitHub job/check status and SARIF for `zizmor` | Fix job-specific failure and rerun through GitHub controls | Revert offending commit; permissions/workflow changes require review | Remote GitHub CI; YAML presence does not prove required-check enforcement |
+| CI quality workflow | push/PR to `main` or manual dispatch | [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | Checked-out commit, pinned actions, GitHub runner context | Runs 16 independent job definitions, including docs, contracts, supply-chain fixtures, Compose, frontend, coverage, dependency, and `zizmor` evidence | GitHub job/check status and SARIF for `zizmor` | Fix job-specific failure and rerun through GitHub controls | Revert offending commit; permissions/workflow changes require review | Remote GitHub CI; YAML presence does not prove required-check enforcement |
 | Tech-stack drift workflow | Relevant PR path filter | [`tech-stack-version-sync.yml`](../../../../.github/workflows/tech-stack-version-sync.yml) | PR Compose/version-registry diff | Runs sync script in read-only `--check` mode | `drift-gate` status | Author updates the registry locally and pushes through approved workflow | Revert mismatched registry/Compose edit; no auto-commit | Remote CI read-only content permission |
 | Changelog tag-coverage verification | Push of a semantic-looking `v*.*.*` tag | [`generate-changelog.yml`](../../../../.github/workflows/generate-changelog.yml) | Tag name and tracked `CHANGELOG.md` | Verifies that the pushed release tag already appears in the changelog | `changelog` job status and error naming absent tag | Update changelog through a release-branch PR before repushing tag | Delete/correct an erroneous tag only with explicit remote approval | Remote verifier; despite filename, it does not generate or commit a changelog |
 | PR labeler | PR opened, synchronized, or reopened | [`pr-labeler.yml`](../../../../.github/workflows/pr-labeler.yml) | PR file paths and labeler config | Applies path-based labels | `triage` job and resulting labels | Correct config/permissions and rerun via GitHub event/action controls | Remove incorrect labels with approved remote mutation | Remote PR mutation; no local equivalent |
@@ -108,9 +109,9 @@ unknown.
 | Category | Current state | Primary comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Local automation | Purpose-folder scripts and hook dispatchers expose bounded validate/recommend/sync/generate loops. | pre-commit shows configurable local/CI hooks; EditorConfig/Prettier show tool-specific style automation. | Implemented | Consumers can be mistaken for owners, and advisory output for a gate. | Cite the purpose-folder script and state whether it checks, writes, or only recommends. | `scripts/README.md` | Matrix above and tracked scripts | High |
-| GitHub workflows | Seven YAML workflows define 22 job IDs and scoped permissions. | GitHub syntax defines triggers/jobs/steps; secure-use guidance frames permissions and action pinning. | Partially Implemented | Tracked definitions do not prove current remote run results or required-check enforcement. | Keep tracked implementation and remote enforcement as separate evidence classes. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml`, dated remote observations | High |
+| GitHub workflows | Seven YAML workflows define 23 job IDs and scoped permissions. | GitHub syntax defines triggers/jobs/steps; secure-use guidance frames permissions and action pinning. | Partially Implemented | Tracked definitions do not prove current remote run results or required-check enforcement. | Keep tracked implementation and remote enforcement as separate evidence classes. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml`, dated remote observations | High |
 | Changelog authority | `generate-changelog.yml` only verifies that a pushed tag already appears in `CHANGELOG.md`, while active Stage 00 governance labels it “generate release changelog.” | GitHub syntax distinguishes the tracked steps actually executed from a workflow filename or governance summary. | Partially Implemented | The active governance claim contradicts the tracked workflow and can reintroduce the stale generation claim. | Correct `docs/00.agent-governance/rules/github-governance.md` in separately approved Stage 00 work; do not change policy or workflow in this Stage 90 task. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/generate-changelog.yml:15-42`; `docs/00.agent-governance/rules/github-governance.md:147-155` | High |
-| CI feedback | Quality, drift, release-tag, and contributor loops produce inspectable repository-event feedback; the 15 quality jobs have no `needs:` dependency chain. | GitHub Actions defines event-triggered jobs and optional job dependencies. | Implemented | Job definitions and local checks do not prove remote success or required-check enforcement. | Report exact job/run evidence and keep remote enforcement separately verified. | `docs/00.agent-governance/rules/github-governance.md` | Workflow inventory | High |
+| CI feedback | Quality, drift, release-tag, and contributor loops produce inspectable repository-event feedback; the 16 quality jobs have no `needs:` dependency chain. | GitHub Actions defines event-triggered jobs and optional job dependencies. | Implemented | Job definitions and local checks do not prove remote success or required-check enforcement. | Report exact job/run evidence and keep remote enforcement separately verified. | `docs/00.agent-governance/rules/github-governance.md` | Workflow inventory | High |
 | CD / deployment promotion | No workflow job uses a GitHub environment or deploys an application/infrastructure target. | GitHub environments gate jobs with reviewers, branch restrictions, protection rules, delayed secret access, and deployment history. | Missing | CI, build, and tag verification are not deployment promotion. | Author a later Stage 03/04 delivery contract before adding environment/promotion automation. | `docs/03.specs/README.md` | Workflow scan; release runbook | High |
 | Release records | A typed Stage 05 Release template, route, and index now exist beside `CHANGELOG.md`, the release runbook, and pushed-tag coverage validation; no event leaf, GitHub Release, or artifact upload was created. | GitHub Releases associate a tag with release notes and optional downloadable assets; GitHub deployment history is separate execution evidence. | Partially Implemented | Contract readiness is not a real release event, artifact integrity statement, or release-to-deployment linkage. | Create a Release leaf only from actual event evidence and keep deployment runtime in its separately approved chain. | `docs/05.operations/releases/README.md` | Release contract surfaces, changelog workflow, and runbook | High |
 | Deployment approval | Repository governance requires explicit approval for remote/runtime changes, but no tracked deployment environment implements that approval. | GitHub deployment protection rules can require reviewers/custom checks and prevent secret access until approval. | Partially Implemented | Policy intent is not an executable deployment gate. | Preserve the manual hard stop and implement environment controls only after a concrete target and rollback contract are approved. | `docs/00.agent-governance/rules/approval-boundaries.md` | Stage 00 policy; workflow absence | High |
@@ -140,8 +141,9 @@ another merely because one automation loop completed successfully.
 - Keep the contradictory Stage 00 “generate release changelog” label visible as
   an unresolved governance gap until separately approved policy work corrects
   `docs/00.agent-governance/rules/github-governance.md`.
-- Treat current branch protection/required checks as unknown until a direct
-  read-only remote check is recorded.
+- Treat the 2026-07-26 public failed-run observation as dated workflow metadata;
+  current authenticated branch protection, rulesets, and environment controls
+  remain unknown until an authorized read-back is recorded.
 - Treat Release templates and routing as contract readiness, not as automation,
   a GitHub Release, or deployment evidence.
 - Never repair stale generated data by hand; run the canonical generator or
@@ -151,7 +153,7 @@ another merely because one automation loop completed successfully.
 
 - Reverify remote branch protection and required contexts in a separately
   authorized GitHub audit.
-- Keep the tracked 15-job CI contract and any remote required-check list coupled
+- Keep the tracked 16-job CI contract and any remote required-check list coupled
   only through approved governance/workflow work.
 - In separately approved Stage 00 work, correct the non-gating automation table
   in `docs/00.agent-governance/rules/github-governance.md` so it describes
@@ -169,10 +171,9 @@ another merely because one automation loop completed successfully.
   inventory or remote-state verdict.
 - The exact official GitHub workflow-syntax, secure-use,
   deployments/environments, and rulesets URLs, plus pre-commit and DORA metrics,
-  were re-opened on **2026-07-19**. No stale claim was confirmed in that bounded
-  set; lower-risk source dates remain unchanged. The repository still has 15
-  local quality jobs, while the dated 12-context remote observation is not a
-  current enforcement claim and no delivery metric is inferred from CI YAML.
+  were re-opened during bounded revalidation. The repository now has 16 local
+  quality jobs, while the dated remote 15-job failed run is not a current
+  enforcement claim and no delivery metric is inferred from CI YAML.
 - GitHub and tool pages are mutable retrieval-time guidance.
 - Repo-local facts come from tracked workflow/job/script/config definitions;
   Graphify is advisory and was not used for counts.
@@ -196,6 +197,7 @@ another merely because one automation loop completed successfully.
 - [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback
 - [Scripts README](../../../../scripts/README.md) - canonical script inventory and lifecycle
 - [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - workflow/job implementation entry point
+- [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary
 
 ## Maintenance
 

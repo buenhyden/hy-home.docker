@@ -4,7 +4,7 @@ artifact_id: audit:agentic-engineering-implementation:provider-harness-loop
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:harness-loop]
-reviewed_at: 2026-07-12
+reviewed_at: 2026-07-27
 review_cycle: per-remediation-task
 ---
 
@@ -16,7 +16,7 @@ review_cycle: per-remediation-task
 
 This reference assesses every `PIC-*` provider criterion against tracked
 Claude, Codex, Gemini/Antigravity, and Stage 00 surfaces at baseline `507cd505`
-on 2026-07-11.
+on 2026-07-11, with bounded revalidation through 2026-07-27.
 
 ## Purpose
 
@@ -43,14 +43,16 @@ files remain authoritative; the fixed model catalog remains bound to the
 
 ## Definitions / Facts
 
-- Stage 00 owns 14 roles (one supervisor and thirteen workers) and 22
+- Stage 00 owns 14 roles (one supervisor and thirteen workers) and 24
   functions. The renderer emits 14 role adapters in each of `.claude`,
   `.codex`, `.gemini`, and `.agents`; function skills intentionally project to
-  22 Claude and 22 shared `.agents` directories.
-- Current work profiles map supervision to Claude Opus 4.8, Codex GPT-5.6, and
-  Gemini 3.5 Flash; complex implementation to Sonnet 5, GPT-5.6, and Gemini 3.5
-  Flash; and read-heavy work to Haiku 4.5, GPT-5.6 Terra, and Gemini 3.1
-  Flash-Lite. Exact provider controls remain distinct.
+  24 Claude and 24 shared `.agents` directories.
+- Five current profiles map eleven cataloged models exactly: adversarial review
+  and long-horizon supervision use Opus 5 / Sol / Gemini 3.6; complex
+  implementation uses Sonnet 5 / Sol / Gemini 3.6; evidence research uses
+  Sonnet 5 / Terra / Gemini 3.5 Lite; routine validation uses Haiku 4.5 /
+  Terra / Gemini 3.5 Lite. Exact provider controls remain distinct. There is
+  no active fallback graph and implicit substitution is prohibited.
 - One typed seven-event contract renders seven Claude mappings, six Codex
   native mappings plus explicit unsupported `SessionEnd`, and seven Gemini
   mappings. All tracked bindings are configured-not-executed, so local parity
@@ -58,8 +60,9 @@ files remain authoritative; the fixed model catalog remains bound to the
 
 ## Assessment Method
 
-Provider facts use the fixed-cutoff ledger and the separate typed retrieval at
-`2026-07-16T01:17:36+09:00`.
+Provider facts use the fixed-cutoff ledger, the provider-model contract
+retrieval at `2026-07-26T20:08:18+09:00`, and mutable official-source
+revalidation at `2026-07-27T02:33:54+09:00`.
 Workspace status uses only tracked files and reproduced sync/eval commands.
 Mutable official pages are retrieval-time evidence, not historical cutoff
 proof. Graphify was stale/advisory and was not used as authority.
@@ -82,9 +85,9 @@ proof. Graphify was stale/advisory and was not used as authority.
 | PIC-12 | Bound headless/noninteractive automation to trigger authority. | Scripts and CI workflows exist; remote writes remain approval-gated and provider batch modes are not adopted as policy. | Partial | 2 | Retain | Workflow/CI owner | Existing workflow validation; no autonomous remote expansion. | Inspect workflows, scripts, and approval rules. | High. |
 | PIC-13 | Treat checkpoint/resume as provider state, not repository rollback. | Git/worktree/task evidence define repository recovery; no uniform tracked provider checkpoint/resume contract exists. | Partial | 2 | Improve | Git workflow and Stage 04 task owner | Improve restart evidence before adding provider checkpoint automation. | Inspect git workflow, task evidence, and provider notes. | High. |
 | PIC-14 | Observe execution with redaction-safe evidence. | Diffs, CI/SARIF, commands, and task evidence exist; no unified provider trace backend is tracked and opt-in telemetry state is unknown. | Partial | 2 | Retain | QA/task evidence owner | Explicit non-automation unless actionable telemetry use and privacy controls are approved. | Tracked telemetry/config scan and task evidence review. | High. |
-| PIC-15 | Generate provider adapters without equating generation with native compatibility. | The Stage 00-only renderer reports three providers and zero drift across 14 native/shared role adapters per surface, 22 Claude/shared function skills, provider settings/hooks, exact schema checks, and changed/new metadata validation. Generation still does not prove native runtime acceptance. | Partial | 3 | Retain | Provider renderer/validator owner | Retain sync, semantic parity, hook parity, and CI definition checks without equating them with native compatibility. | Provider sync/parity freshness, workflow checks, and T-AGHC Task 3-4 review evidence. | High for tracked definitions; native/live acceptance remains unobserved. |
-| PIC-16 | Select exact models/reasoning while separating policy from availability. | Exact supervision, complex, and read-heavy profiles plus provider-native controls, fallbacks, renderer literals, and validators are coupled. GPT-5.6 cutoff qualification, entitlement, and provider runtime acceptance remain unverified. | Partial | 3 | Retain | `subagent-protocol.md` and provider-model contract | Preserve atomic change/rollback protocol and keep runtime availability a separate evidence state. | Model-contract check, adapter literals, provider sync, and repo contracts. | High for tracked values; provider acceptance remains unobserved. |
-| PIC-17 | Integrate provider execution with repository evaluation evidence. | Deterministic QA, independent review, eight exact fixtures, ten synthetic regressions, calibrated thresholds, and value-free bounded scoring are routed through local/CI harness gates. They do not call or benchmark live provider models. | Partial | 4 | Retain | QA/eval owner | Retain the synthetic semantic gate; design live provider comparison separately if approved. | Eval `8/8` and regression `10/10` markers plus task review ledger. | High for repository semantics; live model quality is unverified. |
+| PIC-15 | Generate provider adapters without equating generation with native compatibility. | The Stage 00-only renderer reports three providers and zero drift across 14 native/shared role adapters per surface, 24 Claude/shared function skills, provider settings/hooks, exact schema checks, and changed/new metadata validation. Generation still does not prove native runtime acceptance. | Partial | 3 | Retain | Provider renderer/validator owner | Retain sync, semantic parity, hook parity, and CI definition checks without equating them with native compatibility. | Provider sync/parity freshness, workflow checks, and T-AGHC Task 3-4 review evidence. | High for tracked definitions; native/live acceptance remains unobserved. |
+| PIC-16 | Select exact models/reasoning while separating policy from availability. | Five exact profiles, eleven cataloged models, provider-native controls, renderer literals, validators, and current stable lifecycle records are coupled. The historical cutoff remains separate, entitlement and provider runtime acceptance remain unverified, and the current contract has no active fallback graph or implicit substitution. | Partial | 3 | Retain | `subagent-protocol.md` and provider-model contract | Preserve atomic change/rollback protocol and keep runtime availability a separate evidence state. | Model-contract check, adapter literals, provider sync, no-fallback invariant, and repo contracts. | High for tracked values and current lifecycle; provider acceptance remains unobserved. |
+| PIC-17 | Integrate provider execution with repository evaluation evidence. | Deterministic QA, independent review, eleven exact fixtures, sixteen synthetic regressions, calibrated thresholds, and value-free bounded scoring are routed through local/CI harness gates. They do not call or benchmark live provider models. | Partial | 4 | Retain | QA/eval owner | Retain the synthetic semantic gate; design live provider comparison separately if approved. | Eval `11/11` and regression `16/16` markers plus task review ledger. | High for repository semantics; live model quality is unverified. |
 
 ## Findings
 
@@ -103,7 +106,7 @@ proof. Graphify was stale/advisory and was not used as authority.
 | --- | --- | --- |
 | Provider-native schema and hook acceptance | Fix | Tracked provider/governance/generator/validator parity is current; verify live native acceptance only through separate approved scope. |
 | Gemini CLI native runtime acceptance | Improve | Keep `.gemini` native adapters and `.agents` compatibility semantics distinct; validate live acceptance only in separate approved scope. |
-| Provider model runtime evidence | Improve | Preserve the typed profiles and fallbacks; verify entitlement and runtime acceptance only in separate approved scope. |
+| Provider model runtime evidence | Improve | Preserve the exact typed profiles and no-fallback invariant; verify entitlement and runtime acceptance only in separate approved scope. |
 | Live sandbox/network/MCP facts | Retain unknown state | Observe only within an authorized executing task; never persist secrets. |
 
 ## Automation Impact

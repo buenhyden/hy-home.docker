@@ -3,7 +3,7 @@ status: active
 artifact_id: audit:agentic-engineering-implementation:security-framework-maturity
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
-reviewed_at: 2026-07-22
+reviewed_at: 2026-07-27
 review_cycle: per-remediation-task
 ---
 
@@ -90,26 +90,27 @@ live provider, scanner, deployment, or remote enforcement mutation, so no
 supply-chain or remote-security criterion is promoted from those definitions
 alone.
 
-No remote GitHub setting was changed for this report. Read-only evidence
-captured on 2026-07-12 establishes classic `main` protection with 12 required
-contexts, zero repository rulesets, and zero environments. The local contract
-names 15 contexts; `docs-implementation-alignment`,
-`agent-output-eval-fixture-gate`, and `dependency-vulnerability-audit` are
-absent remotely. Recent check execution and complete CODEOWNERS enforcement
-were not established by that observation.
+No remote GitHub setting was changed for this report. Seven tracked workflows
+now define 23 jobs, including 16 in `ci-quality.yml`. The latest public remote
+observation at `2026-07-26T18:22:32+09:00` records default commit `a897978f`,
+failed run `29777690571`, and 15 observed jobs; its root cause is unverified.
+Authenticated classic protection, rulesets, environments, secrets, variables,
+and complete CODEOWNERS enforcement were not available in that observation.
+The older 2026-07-12 12-context result remains historical evidence rather than
+current remote control state.
 
-### Remote Evidence Classes as of 2026-07-12
+### Remote Evidence Classes as of 2026-07-26
 
 | Evidence class | Evidence | Security boundary |
 | --- | --- | --- |
-| Tracked definitions | Local workflow/protection sources name 15 contexts and include CODEOWNERS policy. | Local source is not remote enforcement or execution evidence. |
-| Observed remote configuration | Classic protection is enabled with 12 required contexts; rulesets are `0`; environments are `0`. | Three local contexts are absent; the observation does not establish every CODEOWNERS enforcement detail. |
-| Recent execution | No recent check-run, review, deployment, or rollback result was collected. | Configuration must not be promoted to a successful security outcome. |
+| Tracked definitions | Seven local workflows define 23 jobs, including 16 quality jobs, and tracked governance includes CODEOWNERS policy. | Local source is not remote enforcement or execution evidence. |
+| Public remote observation | Default commit `a897978f` and failed run `29777690571` expose 15 observed jobs plus three GitHub-managed workflows. | The failed run's root cause is unverified and does not prove current local-definition coverage. |
+| Authenticated remote controls | Classic protection, rulesets, environments, secrets, variables, and complete CODEOWNERS enforcement remain unverified in the latest observation. | Historical 2026-07-12 configuration must not be promoted to current state. |
 | Enforcement mutation | No protection, ruleset, environment, workflow, CODEOWNERS, or repository setting was changed. | A later change needs separate approval, exact contexts, rollback evidence, and read-back. |
 
-## Bounded Revalidation (2026-07-22)
+## Bounded Revalidation (through 2026-07-27)
 
-The framework matrices below preserve the 2026-07-12 baseline, while the
+The framework criterion statuses below preserve the existing baseline, while the
 2026-07-19 scanner observations remain dated historical evidence. The current
 [security supply-chain task](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
 has deterministic local fixture, policy, orchestration, and immutable
@@ -133,7 +134,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | SEC-01 | Publish a vulnerability reporting boundary and response expectations. | `.github/SECURITY.md` defines reporting channels and boundaries. | Implemented | 2 | Retain | Security governance owner | Document freshness review; no intake automation claimed. | Inspect policy links, contacts, and supported-version language. | High. |
 | SEC-02 | Require explicit approval and redacted evidence for protected security/runtime surfaces. | Stage 00 approval boundaries, scopes, task checklists, and Stage 04 evidence requirements exist. | Implemented | 2 | Retain | Stage 00 security/approval governance | Existing contract checks; approvals remain human/state dependent. | Trace one protected-surface task contract and repo contracts. | High. |
-| SEC-03 | Minimize workflow permissions and pin third-party actions. | `ci-quality.yml` uses explicit read permissions and SHA-pinned actions; repo contracts check workflow patterns. | Implemented | 3 | Retain | GitHub workflow and repository-contract owners | Existing workflow contract and zizmor definition. | Inspect permissions/action refs and run applicable workflow validators. | High for tracked definitions. |
+| SEC-03 | Minimize workflow permissions and pin third-party actions. | `ci-quality.yml` uses explicit read permissions and SHA-pinned actions; repo contracts check workflow patterns. The workflow pins `zizmor==1.28.0`, which is patched for the advisory affecting 1.27.0. | Implemented | 3 | Retain | GitHub workflow and repository-contract owners | Existing workflow contract and pinned zizmor definition. | Inspect permissions/action refs and run applicable workflow validators. | High for tracked definitions. |
 | SEC-04 | Scan committed content for secret patterns while preserving redaction boundaries. | Gitleaks is configured in pre-commit; governance prohibits recording secret values and routes secrets to mounts/Docker Secrets. | Implemented | 3 | Retain | Security scope and pre-commit owner | Existing file-filtered secret scan; a pass is not proof of zero secrets. | Applicable gitleaks hook result without exposing findings. | High. |
 | SEC-05 | Automate dependency updates for declared ecosystems and keep update coverage separate from vulnerability gating. | Dependabot covers Actions, Docker, Compose, and Storybook npm dependencies. | Implemented | 3 | Retain | Dependabot/GitHub governance owner | Existing update PR automation. | Inspect `.github/dependabot.yml` ecosystems/directories/schedule. | High. |
 | SEC-06 | Fail builds on an approved vulnerability threshold for an explicitly scoped project. | CI runs high-severity `npm audit` for Storybook Next.js only. | Partial | 3 | Improve | Security/QA and Storybook owner | Existing scoped npm gate; exception/coverage semantics remain narrow. | Inspect/run `dependency-vulnerability-audit` in an approved applicable environment. | High for the scoped npm project. |
@@ -144,7 +145,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 | SEC-11 | Run OpenSSF Scorecard only as an explicit security-health signal with reviewed findings. | Framework mapping exists, but no Scorecard action/CLI execution or score evidence exists. | Missing | 0 | Add | Task 11 security supply-chain spec/plan | Candidate advisory Scorecard report; no maturity claim from mapping alone. | Require pinned tool/action, scoped permissions, result review, and false-positive handling. | High. |
 | SEC-12 | Attach threat-model evidence to changes that cross trust or protected-surface boundaries. | Security scopes and threat-model guidance exist, but no universal change-scoped machine gate or complete evidence inventory exists. | Partial | 1 | Improve | Stage 00 security governance plus affected Stage 03/04 owner | Candidate profile/checklist integration only after false-positive review. | Review protected-surface task evidence for threats, mitigations, and residual risk. | Medium. |
 | SEC-13 | Maintain incident/vulnerability response procedures and exercise them periodically. | Security policy and Stage 05 incident structure exist; no current vulnerability drill, SLA dashboard, or remediation-metric evidence was collected. | Partial | 1 | Improve | Security and Operations/SRE owners | Future tabletop/drill evidence; do not manufacture incidents. | Require dated scenario, roles, timeline, decisions, actions, and improvement owners. | High for documents; no exercise evidence. |
-| SEC-14 | Revalidate remote branch protection, required checks, and CODEOWNERS enforcement before asserting live protection. | The 2026-07-12 read-only observation confirms classic `main` protection, 12 required contexts, zero rulesets, and zero environments. Three local contexts are absent remotely; recent runs and complete CODEOWNERS enforcement evidence were not collected, and no mutation occurred. | Needs Revalidation | 1 | Improve | GitHub governance owner | Retain dated configuration evidence; verify CODEOWNERS/recent named runs and synchronize only through a separately approved rollback-bound remote task. | Timestamped protection/context/CODEOWNERS query, recent named runs, exact local/remote diff, and post-mutation read-back when authorized. | High for the configuration/run/mutation boundary. |
+| SEC-14 | Revalidate remote branch protection, required checks, and CODEOWNERS enforcement before asserting live protection. | The 2026-07-26 public observation records default commit `a897978f`, failed run `29777690571`, and 15 observed jobs with unverified root cause. Current authenticated protection, rulesets, environments, secrets, variables, and complete CODEOWNERS enforcement remain unknown; no mutation occurred. | Needs Revalidation | 1 | Improve | GitHub governance owner | Retain dated public evidence; verify authenticated controls, CODEOWNERS, and recent named runs before any separately approved rollback-bound synchronization task. | Timestamped public observation, authorized protection/context/CODEOWNERS query, exact local/remote diff, and post-mutation read-back when approved. | High for the tracked-definition/public-run/authenticated-control/mutation boundary. |
 
 ## SSDF Coverage Matrix
 
@@ -159,7 +160,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 | SLSA Area | Status | Repo-local Evidence | Gap / Follow-up |
 | --- | --- | --- | --- |
-| Source control and change review | Partially Implemented | [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [main protection record](../../../../.github/rulesets/main-protection.md), [CODEOWNERS](../../../../.github/CODEOWNERS), [CI quality workflow](../../../../.github/workflows/ci-quality.yml) | Dated read-only evidence confirms classic protection and 12 required contexts, but three local contexts are absent and recent-run/complete CODEOWNERS enforcement evidence remains uncollected. |
+| Source control and change review | Partially Implemented | [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml), [CODEOWNERS](../../../../.github/CODEOWNERS), [CI quality workflow](../../../../.github/workflows/ci-quality.yml) | Dated public evidence records a failed 15-job run; current authenticated protection/ruleset state and complete CODEOWNERS enforcement remain unverified. |
 | Workflow token and action integrity | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | Workflows use explicit permissions and SHA-pinned actions; continue checking any new workflow action references through repo contracts and workflow review. |
 | Build track and artifact production | Gap | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [quality audit](./sdlc-quality-formatting-implementation.md) | CI validates docs, Compose, hardening, frontend build, coverage, and workflow security, but does not publish SLSA build provenance or declare SLSA build-level compliance. |
 | Provenance, attestations, and verification | Gap | [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | No tracked provenance, attestation, signing, verification summary, or consumer verification workflow was found. |
@@ -171,10 +172,10 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 | --- | --- | --- | --- |
 | Security Policy | Implemented | [Security Policy](../../../../.github/SECURITY.md) | Keep reporting contacts and response targets current. |
 | Token Permissions | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | New workflows must preserve explicit least-privilege permissions. |
-| Dangerous Workflow Patterns | Implemented | [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [zizmor CI job](../../../../.github/workflows/ci-quality.yml) | Continue treating `pull_request_target`, permission expansion, and untrusted interpolation as protected-surface findings. |
+| Dangerous Workflow Patterns | Implemented | [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [zizmor CI job](../../../../.github/workflows/ci-quality.yml) | `zizmor==1.28.0` is pinned after the 1.27.0 advisory; continue treating `pull_request_target`, permission expansion, and untrusted interpolation as protected-surface findings. |
 | Dependency Update Tool | Implemented | [Dependabot](../../../../.github/dependabot.yml) | Dependabot coverage exists for GitHub Actions, Docker, Docker Compose, and Storybook npm dependencies. |
 | CI Tests | Partially Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) | CI is broad for docs, infra, frontend, and workflow security, but not a universal runtime or vulnerability test suite. |
-| Code Review | Partially Implemented | [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [main protection record](../../../../.github/rulesets/main-protection.md), [CODEOWNERS](../../../../.github/CODEOWNERS) | Classic protection is dated read-only evidence; complete CODEOWNERS enforcement and recent review execution remain separately unverified. |
+| Code Review | Partially Implemented | [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml), [CODEOWNERS](../../../../.github/CODEOWNERS) | Public run metadata is dated evidence; current authenticated protection and complete CODEOWNERS enforcement remain separately unverified. |
 | Vulnerabilities | Partially Implemented | `.pre-commit-config.yaml`, [Security Policy](../../../../.github/SECURITY.md), `.github/workflows/ci-quality.yml` | Secret scanning exists through gitleaks and Storybook Next.js has a high-severity npm audit gate; Scorecard vulnerability reporting, OSV/container scanning, and vulnerability dashboards are not implemented. |
 
 ## Findings
@@ -197,10 +198,11 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
   satisfies only `SEC-AUTO-008`; broad dependency SCA (`SEC-AUTO-012`) and
   container/image vulnerability scanning (`SEC-AUTO-013`) remain `Gap`, along
   with SBOM, signing, attestation, and Scorecard automation.
-- Remote GitHub protection should be described as the dated 2026-07-12
-  configuration observation: classic protection and 12 contexts are present,
-  three local contexts are absent, rulesets/environments are zero, and recent
-  runs or remote mutation are not claimed.
+- Remote GitHub state should be described by evidence class: the dated
+  2026-07-26 public observation records a failed 15-job run with unverified
+  root cause, while authenticated protection/ruleset/environment state and
+  complete CODEOWNERS enforcement remain unknown. No remote mutation is
+  claimed.
 
 ## Gap / Follow-up
 
@@ -210,7 +212,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 | SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
 | SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
 | SEC-MAT-004 | Define change-scoped threat-model evidence requirements for protected surfaces. | Stage 00 governance update + Stage 04 task evidence |
-| SEC-MAT-005 | Verify recent named runs and complete CODEOWNERS enforcement, then reconcile the three local-only contexts through a separately approved rollback-bound remote task. | Stage 04 GitHub governance audit |
+| SEC-MAT-005 | Verify authenticated protection/ruleset/environment state, recent named runs, and complete CODEOWNERS enforcement; reconcile any confirmed drift only through a separately approved rollback-bound remote task. | Stage 04 GitHub governance audit |
 
 ## Automation Impact
 
@@ -230,8 +232,9 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - Separate tracked definitions, dated remote configuration, recent run results,
   and remote mutation/read-back.
 - The exact GitHub secure-use and rulesets URLs, SLSA v1.2, and NIST SP 800-61
-  Rev. 3 were re-opened on 2026-07-19; no stale claim was confirmed. This does
-  not establish SLSA conformance, NIST adoption, remote enforcement, or runtime
+  Rev. 3 were re-opened during bounded revalidation. The zizmor 1.27.0
+  advisory and 1.28.0 patched release were also verified. This does not
+  establish SLSA conformance, NIST adoption, remote enforcement, or runtime
   security posture.
 - Do not record secret values, private keys, tokens, shell history, raw secret
   logs, or `.env` values.
@@ -243,6 +246,8 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - [SLSA specification v1.2](https://slsa.dev/spec/v1.2/) - source/build tracks, levels, and attestation criteria.
 - [OpenSSF Scorecard](https://scorecard.dev/) - supply-chain security check categories and scoring model.
 - [OpenSSF Scorecard checks](https://github.com/ossf/scorecard/blob/main/docs/checks.md) - detailed check criteria for CI, code review, dangerous workflows, dependency update tools, token permissions, and vulnerabilities.
+- [zizmor 1.27.0 advisory](https://github.com/zizmorcore/zizmor/security/advisories/GHSA-f42p-wjw5-97qh) - affected-version boundary.
+- [zizmor 1.28.0 release](https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0) - patched release evidence.
 - [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - prior secure SDLC and supply-chain reference analysis.
 - [Quality CI formatting research](../../research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) - QA/CI and secure quality gate criteria.
 - [Security scope](../../../00.agent-governance/scopes/security.md) - repo-local security and redaction scope.
@@ -253,6 +258,7 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - [Security Policy](../../../../.github/SECURITY.md) - repo-local vulnerability reporting boundary.
 - [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - workflow action pinning and required quality-gate contract.
 - [Security automation readiness](../../data/security/security-automation-readiness.md) - generated repo-local security automation readiness snapshot.
+- [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary.
 - [Spec 129](../../../03.specs/129-document-contract-canonicalization/spec.md) - 2026-07-12 read-only remote evidence boundary and later-wave mutation guardrail.
 
 ## Maintenance

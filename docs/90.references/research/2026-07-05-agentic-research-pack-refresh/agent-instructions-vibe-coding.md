@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:agent-instructions-vibe-coding
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-16
+reviewed_at: 2026-07-27
 review_cycle: on-source-change
 ---
 
@@ -66,7 +66,7 @@ surfaces, not additional instruction authorities.
 | Criterion ID | Practice | Primary source | Workspace applicability | Required evidence | Potential owner |
 | --- | --- | --- | --- | --- | --- |
 | AIV-01 | Define one canonical instruction authority and explicit projection/precedence rules. | OpenAI Codex `AGENTS.md`; GitHub repository instructions; Stage 00 governance | Stage 00 is canonical; root/provider files remain thin projections and GitHub-native instructions are not adopted policy. | Authority map; precedence test; provider no-drift check | Stage 00 agent governance |
-| AIV-02 | Scope instructions to repository, directory, file pattern, and task context. | OpenAI Codex `AGENTS.md`; Claude Code memory/rules | Prefer nearest applicable tracked guidance and load only context relevant to the changed surface. | Scope/path examples; conflict resolution; context-size/fallback behavior | Provider-neutral instruction owner |
+| AIV-02 | Scope instructions to repository, directory, file pattern, and task context. | OpenAI Codex `AGENTS.md`; Claude Code memory/rules | Prefer nearest applicable tracked guidance and load only context relevant to the changed surface. | Scope/path examples; conflict resolution; context-size/overflow behavior | Provider-neutral instruction owner |
 | AIV-03 | Keep instructions short, direct, specific, and verifiable. | GitHub custom-instruction guidance | Replace vague quality demands with named paths, commands, expected results, and exclusions. | Instruction review checklist; executable examples; stale-reference scan | Stage 00 documentation owner |
 | AIV-04 | Declare available tools and their intended purpose; do not infer authority from tool presence. | OpenAI practical guide to building agents | Tool access remains subordinate to task scope, sandbox, approval, and external-action boundaries. | Tool list; allowed action class; failure behavior; audit evidence | Agent/runtime contract owner |
 | AIV-05 | Default to least privilege and request approval for state-changing, sensitive, or out-of-scope actions. | Claude Code security; OpenAI agent guardrails | Matches repository sandbox and approval-boundary rules; permission metadata alone is not proof of enforcement. | Sandbox/permission evidence; approval source; denied-action test | Security and approval-boundary owner |
@@ -80,18 +80,18 @@ surfaces, not additional instruction authorities.
 | AIV-13 | Bound vibe coding to a branch/worktree, explicit objective, small increments, and reversible commits. | GitHub vibe-coding tutorial | Suitable for prototypes and approved implementation when the same plan, review, and evidence gates apply. | Scoped plan/task; isolated workspace; per-iteration diff/test; logical commits | Implementation task owner |
 | AIV-14 | Keep vibe coding away from unapproved runtime, production data, secrets, remote mutations, and security-critical decisions. | GitHub vibe-coding permissions/testing; OpenAI/Claude security guidance | Those surfaces need explicit authority, specialist review, rollback/recovery, and validation before action. | Approval record; redaction boundary; rollback; specialist verdict | Security/operations owner |
 | AIV-15 | Use a closed loop: plan, act, observe tool results, verify, review, and either correct or stop. | OpenAI agent guide; Anthropic effective-agent/eval guidance | Agent completion text is not evidence; tracked outputs and checks determine completion. | Plan/task state, tool results, verification, review verdict, residual concerns | Workflow supervisor / QA |
-| AIV-16 | Import external agent knowledge only through the canonical catalog intake boundary. | Official provider instruction docs; pinned upstream catalog evidence | The typed seven-entry capability intake records adopt/merge/reject/defer decisions; catalog breadth or publisher maturity claims never authorize installation or execution. | Pin/license/source review; rewritten scope; security and eval evidence | Stage 00 agent catalog owner |
+| AIV-16 | Import external agent knowledge only through the canonical catalog intake boundary. | Official provider instruction docs; pinned upstream catalog evidence | The typed nine-entry capability intake records adopt/merge/reject/defer decisions; four bounded capabilities are adopted, no upstream persona or voice prose is installed, and catalog breadth or publisher maturity claims never authorize execution. | Pin/license/source review; rewritten scope; security and eval evidence | Stage 00 agent catalog owner |
 
 ## Current Workspace Implementation
 
 - Four role surfaces contain the same 14 canonical role IDs while preserving
   provider-native schemas; `.agents` remains compatibility/shared skills, not
   Gemini CLI configuration.
-- Twenty-two canonical functions project to Claude and shared skill surfaces.
+- Twenty-four canonical functions project to Claude and shared skill surfaces.
   Provider sync and repository contract checks detect drift from Stage 00.
 - Seven semantic hook events and four typed loops bind instruction execution to
   approval, verification, review, retry, and escalation boundaries.
-- Eight deterministic fixtures and ten synthetic regressions exercise agent
+- Eleven deterministic fixtures and sixteen synthetic regressions exercise agent
   output/eval behavior without making a live-model quality claim.
 - The controlled all-files wrapper is implemented but remains an explicit
   task-evidence gate; direct agent execution of `pre-commit run --all-files`
@@ -107,9 +107,10 @@ surfaces, not additional instruction authorities.
 
 ## Source Rules
 
-- External sources were revalidated on **2026-07-11** and the repo-local
-  implementation comparison was reconciled on **2026-07-16**. OpenAI, Anthropic, and
-  GitHub product guidance is mutable and proves retrieval-time behavior only.
+- Mutable official provider sources were revalidated at
+  `2026-07-27T02:33:54+09:00`, and the repo-local implementation comparison was
+  reconciled on **2026-07-27**. OpenAI, Anthropic, and GitHub product guidance
+  proves retrieval-time behavior only.
 - NIST SSDF v1.1 is a February 2022 high-level secure-development framework;
   this reference does not claim formal conformance.
 - GitHub's vibe-coding tutorial is official workflow guidance, not evidence that
@@ -131,7 +132,7 @@ surfaces, not additional instruction authorities.
 - [Anthropic Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) - transparent, testable agent/workflow patterns
 - [Anthropic agent eval guidance](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) - multi-turn tool/state evaluation and lifecycle feedback
 - [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - reviewed action ownership and prevention learning
-- [agency-agents pinned repository](https://github.com/msitarzewski/agency-agents/tree/9f3e401ccd09aa0ee0ef8e015226d0647908e01e) - immutable upstream catalog tree supporting the reference-only intake and pin/review boundary
+- [agency-agents pinned repository](https://github.com/msitarzewski/agency-agents/tree/8ef49232e02431f7ca4792b487e5a85a7939ff3a) - immutable upstream catalog tree supporting the reference-only intake and pin/review boundary
 - [Agent-first rule](../../../00.agent-governance/rules/agentic.md) - current workspace authority, evidence, and lifecycle behavior
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - current protected actions and escalation boundary
 - [Spec 123](../../../03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved instruction/vibe and task-evidence constraints

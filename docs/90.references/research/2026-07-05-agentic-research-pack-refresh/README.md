@@ -28,15 +28,17 @@ status: active
 
 ## Current Implementation Reconciliation
 
-2026-07-16 저장소 관찰 결과를 이 pack의 구현 비교에 반영했습니다. Stage
-00은 14개 role, 22개 function, 3개 provider와 4개 role projection surface를
+2026-07-27 canonical reconciliation 결과를 이 pack의 구현 비교에 반영했습니다.
+Stage 00은 14개 role, 24개 function, 3개 provider와 4개 role projection surface를
 typed contract로 소유합니다. 생성기는 Claude, Codex, Gemini native adapter와
 공유 `.agents` compatibility adapter를 분리하며, provider sync는 3개
-provider에서 drift 0을 보고합니다. 7개 semantic hook event, 4개 typed loop,
-8개 fixture와 10개 synthetic regression도 tracked validation owner에 연결되어
-있습니다.
+provider에서 drift 0을 보고합니다. 7개 semantic hook event, 8개 harness layer,
+8개 ordered workflow state, 4개 typed loop, 11개 fixture와 16개 synthetic
+regression도 tracked validation owner에 연결되어 있습니다. 외부 capability
+intake는 source date가 2026-07-26인 9개 merge/defer 결정으로 고정됩니다.
 
-QA/CI 관찰값은 7개 workflow와 22개 job, 24개 pre-commit hook, 기본 20개와
+QA/CI tracked source는 7개 workflow와 23개 job, `ci-quality.yml`의 16개 quality
+job, 24개 pre-commit hook, 기본 20개와
 harness 18개의 script-backed local QA step입니다. Controlled all-files wrapper는
 별도 승인된 최종 evidence gate이므로 이 step 수에 포함하지 않습니다. 이
 구현 정합화에 따라 canonical audit 분포는 161개 criterion 중 Implemented 77,
@@ -47,17 +49,26 @@ CLI의 live acceptance, 모델 entitlement/actual availability, remote required-
 enforcement, CD·deployment·rollback은 별도 관찰 또는 승인이 없으므로 계속
 Partial 또는 Needs Revalidation 경계에 둡니다. 모델의 historical cutoff는
 2026-07-10 10:00 KST이고 typed current registry의 retrieval boundary는
-2026-07-16입니다.
+2026-07-26T20:08:18+09:00이며, 공식 외부 source 재검증은
+2026-07-27T02:33:54+09:00에 별도 수행했습니다. 현재 model policy는
+5개 exact work profile과 11개 model record를 가지며 active fallback graph나
+implicit substitution을 허용하지 않습니다.
 
 2026-07-19 target-surface wave의 현재 저장소 근거도 같은 경계로 반영했습니다.
 root Vault/content와 Stage 98 SDLC archive는 별도 profile로 분류되고, canonical
 manifest promotion 후보는 483행(삭제 3, 이관 10, 보존 470)이며 전체가 독립
 검토를 거친 `pass/pass`입니다. InfluxDB 2, OpenSearch `.example`, SeaweedFS
 `security.toml`의 destructive evidence는 별도 검토를 유지합니다. SeaweedFS의 유지된 `.example`은 현재 Compose에
-mount되지 않으며 활성화는 별도 승인 runtime 작업입니다. 로컬 workflow source의
-품질 job은 15개이지만, 2026-07-12에 관찰한 원격 required context 12개는 최신
-enforcement 증거로 승격하지 않았습니다. 이 정합화는 service startup, remote
-query/mutation, secret value inspection 또는 deployment 증거를 포함하지 않습니다.
+mount되지 않으며 활성화는 별도 승인 runtime 작업입니다. 로컬 workflow
+contract의 품질 job은 16개입니다. 최신 read-only remote observation은
+2026-07-26T18:22:32+09:00 public metadata에서 remote default commit
+`a897978f`, 실패한 run `29777690571`, 15개 observed job, root cause
+`unverified`, GitHub-managed workflow 3개를 기록했습니다. authenticated
+ruleset/branch-protection/environment/secret/variable readback은 없으므로 remote
+control plane은 계속 `unverified`이며, 2026-07-12 classic-protection 기록을
+현재 enforcement 증거로 사용하지 않습니다. 이 정합화는 service startup,
+remote mutation, secret value inspection 또는 deployment 증거를 포함하지
+않습니다.
 
 2026-07-19에는 GitHub workflow syntax·secure use·deployments/environments·rulesets,
 pre-commit, DORA metrics, Docker Compose include·profiles·secrets·trust model,
@@ -65,6 +76,13 @@ SLSA v1.2, NIST SP 800-61 Rev. 3의 정확한 공식 URL만 다시 열었습니�
 범위에서 낡은 외부 주장은 확인되지 않았습니다. 그 밖의 안정적·저위험 출처는
 기존 retrieval 날짜와 caveat를 유지하며, provider model cutoff도 변경하지
 않습니다.
+
+2026-07-27에는 Anthropic model/ID/effort/subagent/memory, OpenAI
+model/latest-model/Codex manual, Gemini model/subagent/generation/memory/hook,
+GitHub secure-use/monitoring/ruleset, zizmor v1.28.0 advisory/release, 그리고
+`agency-agents` immutable pin의 README·`tools.json`·integration·MIT license를
+다시 확인했습니다. 이 현재 관찰은 2026-07-26 typed contract의 timestamp를
+소급 변경하거나 2026-07-10 historical model ledger를 재작성하지 않습니다.
 
 ## Audience
 

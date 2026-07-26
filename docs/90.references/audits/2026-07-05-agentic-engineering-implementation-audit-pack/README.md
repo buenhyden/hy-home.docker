@@ -130,8 +130,18 @@ reviewed `pass/pass`. The separately reviewed InfluxDB 2, OpenSearch `.example`,
 and SeaweedFS `security.toml` destructive evidence remains intact. The retained SeaweedFS
 `security.toml.example` is not mounted by current Compose. Activation, service
 health, deployment, and remote enforcement remain outside this audit evidence.
-The tracked quality workflow has 15 local jobs; the dated remote observation of
-12 required contexts has not been revalidated and is not current remote truth.
+The tracked quality workflow has 16 local jobs. The latest bounded remote
+observation at `2026-07-26T18:22:32+09:00` saw 15 jobs in a failed public run
+and left root cause plus authenticated ruleset, branch-protection, environment,
+secret, and variable state unverified. The older 12-context observation is
+historical evidence, not current remote truth.
+
+The 2026-07-27 canonical reconciliation retains 14 roles, 24 functions, five
+exact work profiles, 11 model records, eight harness layers, eight ordered
+workflow states, nine capability-intake decisions, 11 fixtures, and 16
+regressions. It does not change the 11-report / 161-row shape or the
+77/60/13/2/9 status distribution, and it makes no live-provider, remote-control,
+or deployment claim.
 
 ### Contract and Evidence Boundary
 

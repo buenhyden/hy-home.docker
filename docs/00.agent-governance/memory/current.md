@@ -9,7 +9,8 @@ status: active
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
 - T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
-  while the active convergence chain advances to T-AGCC-006.
+  while the T-AGCC-006 implementation candidate advances through independent
+  Task review.
 
 ## Approved decisions
 
@@ -30,23 +31,23 @@ status: active
 
 ## Verified state
 
-- Verified commit: `b993beb2d7d94326944575f9306d2b85dfd20e59`
-- Verified at: `2026-07-27T02:28:15+09:00`
+- Verified commit: `8da882ca9162de8391735206e0824f22f2816437`
+- Verified at: `2026-07-27T03:44:05+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
-- T-AGCC-005 specification review is C0/I0/M1 APPROVED with its sole
-  bookkeeping Minor closed.
-- T-AGCC-005 quality/security review of `9bdbd903..b993beb2` is C0/I0/M0 with
-  `QUALITY: APPROVED` and `READY_FOR_TASK5_CLOSURE: YES`.
+- T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
+  exactly 11 criterion reports and 161 unique ten-column rows.
+- The post-remediation dependency-locked aggregate is 312/312; repository,
+  provider-drift, semantic-eval, traceability, alignment, and generated-owner
+  gates pass.
 
 ## Blockers and unverified facts
 
 - No active implementation blocker is known.
-- `/root/task6_canonical_evidence_refresh` owns the active T-AGCC-006
-  implementation.
-- The closure RED found exact active drift in the Codex provider overlay,
-  postflight semantic counts, and four canonical sibling research summaries;
-  the Plan now bounds their remediation and regression evidence.
+- Fresh Task 6 specification and quality/security reviews have not yet
+  authorized Task closure.
+- Provider acceptance/entitlement, live comparative evaluation, and
+  authenticated remote GitHub enforcement remain explicitly unverified.
 - The controlled repository-wide QA gate remains separately approval-bound.
 - Remote work remains read-only; remote mutation, live provider calls, and
   runtime changes are not authorized.
@@ -60,6 +61,6 @@ status: active
 
 ## Next handoff
 
-- Complete T-AGCC-006 canonical evidence and direct-impact drift remediation,
-  then dispatch fresh specification and quality/security reviewers before any
+- Commit the T-AGCC-006 implementation candidate, record its exact SHA, and
+  dispatch fresh specification and quality/security reviewers before any
   branch lifecycle transition.
