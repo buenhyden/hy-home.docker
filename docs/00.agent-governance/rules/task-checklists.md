@@ -18,7 +18,11 @@ Unified task execution checklists for all agent work.
 - [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
 - [ ] For audit/review/validation gaps, classify the canonical owner with
       `documentation-protocol.md` gap-to-stage routing before editing.
-- [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
+- [ ] Review `docs/00.agent-governance/memory/README.md` and
+      `docs/00.agent-governance/memory/current.md`; corroborate the bounded
+      handoff against the applicable Stage 04 Task, then retrieve relevant
+      memory notes when the task touches governance, docs, runtime, or repeated
+      failures.
 - [ ] Identify ambiguity. Ask before state changes if a wrong assumption could
       change scope, policy, security posture, or verification outcome.
 - [ ] Treat ambiguity as blocking before planning, implementation, model/config
@@ -76,7 +80,10 @@ Unified task execution checklists for all agent work.
       `contracts/provider-models.yaml`; do not add prompt-local loop policy.
 - [ ] Keep loop owners and independent reviewers distinct, and record only
       `command`, `result`, `rollback`, and `skipped_checks`.
-- [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
+- [ ] Record material progress and verification evidence in the applicable
+      Stage 04 Task, then refresh
+      `docs/00.agent-governance/memory/current.md` with only the bounded current
+      handoff.
 - [ ] For archive work, run safe provenance and confidentiality checks through
       the lifecycle validator; do not inspect or record prohibited payloads.
 - [ ] Select `content-archive` for root `archive/**` and `sdlc-archive` for
@@ -126,7 +133,11 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm migration Task evidence records the reviewed manifest, consumer
       and replacement proof, provenance result, rollback boundary, generator
       freshness, independent reviews, and conditional controlled-wrapper evidence.
-- [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
+- [ ] Record final status, verification evidence, and durable Memory links in
+      the applicable Stage 04 Task; update
+      `docs/00.agent-governance/memory/current.md` with the bounded next
+      handoff. `progress.md` remains historical navigation and is not updated
+      as an active payload.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/templates/governance/memory.template.md` when needed.
 - [ ] For completed repository-modifying agent work, create logical Conventional Commits or record why commits were intentionally skipped.
 - [ ] Summarize what changed, what was verified, and what remains out-of-scope.

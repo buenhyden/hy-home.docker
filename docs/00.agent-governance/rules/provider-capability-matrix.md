@@ -19,8 +19,8 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Hooks              | `contracts/provider-models.yaml` semantic events           | `.claude/hooks/*.sh` + `settings.json`         | `.codex/hooks.json`                         | `.gemini/settings.json` + one native event adapter |
 | Output style       | `rules/output-style.md`                                    | `.claude/output-styles/*.md` + `settings.json` | behavioral contract                         | behavioral contract                     |
 | Workflows          | `rules/workflows.md` (+ `rules/stage-authoring-matrix.md`) | orchestration skills / commands                | orchestration skills (mirror)               | orchestration skills (pointer)          |
-| Memory             | `memory/` (`progress.md`, notes)                           | read/write `memory/progress.md` + notes        | read/write `memory/progress.md` + notes     | read/write `memory/progress.md` + notes |
-| Models             | `contracts/provider-models.yaml` work profiles             | Opus 4.8 / Sonnet 5 / Haiku 4.5                | GPT-5.6 / GPT-5.6 Terra + reasoning effort | Gemini 3.5 Flash / 3.1 Flash-Lite       |
+| Memory             | `memory/README.md` + `memory/current.md`                   | shared bounded handoff                         | shared bounded handoff                      | shared bounded handoff                  |
+| Models             | `contracts/provider-models.yaml` work profiles             | `claude-opus-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` | `gpt-5.6-sol` / `gpt-5.6-terra` + reasoning effort | `gemini-3.6-flash` / `gemini-3.5-flash-lite` |
 | Templates          | `docs/99.templates/` via `rules/documentation-protocol.md` | shared                                         | shared                                      | shared                                  |
 | Harness loops      | `contracts/provider-models.yaml` `harness_loops`           | shared bounded contract; native event where configured | shared bounded contract; `SessionEnd` unsupported | shared bounded contract; native event adapter where configured |
 
@@ -35,8 +35,11 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 3. Stage 00 is the canonical runtime catalog. Claude, Codex, and Gemini expose
    provider adapters and must not redefine governance. See the Stage 00
    Canonical Adapter Model for enforcement details.
-4. Memory is shared: every runtime reads `memory/progress.md` before mutating the
-   repository and appends progress after completing repository-modifying work.
+4. Memory is shared: every runtime reviews `memory/README.md` and
+   `memory/current.md` before mutating the repository. Progress, verification,
+   and final evidence belong in the applicable Stage 04 Task; the bounded
+   current handoff is refreshed after verified changes, while
+   `memory/progress.md` remains append-preserved historical navigation.
 5. Capability, tracked adoption, and runtime depth are independent facts.
    `configured-not-executed` records a tracked native binding without claiming
    live execution; only authenticated runtime evidence can establish execution.

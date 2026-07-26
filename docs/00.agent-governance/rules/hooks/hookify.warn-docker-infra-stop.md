@@ -24,10 +24,12 @@ action: warn
 - [ ] `settings.local.json` contains only personal overrides.
 - [ ] The two files have no duplicate settings.
 
-**Governance memory update:**
+**Governance evidence and current handoff:**
 
-- [ ] Record the work log in `docs/00.agent-governance/memory/progress.md`.
-- [ ] Record changed files, verification evidence, and unresolved risk.
+- [ ] Record changed files, verification evidence, unresolved risk, and final
+      status in the applicable Stage 04 Task.
+- [ ] Refresh `docs/00.agent-governance/memory/current.md` with only the bounded
+      next handoff; `memory/progress.md` remains historical navigation.
 
 **Completion blockers (halt conditions):**
 

@@ -3,13 +3,18 @@ layer: agentic
 status: active
 ---
 
-# Agent Progress Log
+# Historical Agent Progress Navigation
 
-Running repo-local log for agent work, progress, verification, and durable memory pointers.
+Append-preserved historical navigation for earlier agent work, verification,
+and durable memory pointers. This file is not the active bootstrap payload.
+Use [`current.md`](./current.md) for the bounded current objective, verified
+state, blockers, evidence links, and next handoff.
 
-This file follows `docs/99.templates/templates/governance/progress.template.md`.
-Its usage and preservation contract is maintained by
-[`memory/README.md`](./README.md) and the Stage 00 task checklists.
+Historical entries were originally authored from
+`docs/99.templates/templates/governance/progress.template.md`. Their
+preservation contract is maintained by [`memory/README.md`](./README.md);
+existing rows remain durable navigation and are not rewritten to represent
+current state.
 
 ## Target Surface Contract Convergence Task 1
 

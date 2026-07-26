@@ -1921,19 +1921,19 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             f"{GOVERNANCE}/rules/bootstrap.md",
             f"{GOVERNANCE}/providers/agents-md.md",
             f"{GOVERNANCE}/memory/README.md",
-            f"{GOVERNANCE}/memory/progress.md",
+            f"{GOVERNANCE}/memory/current.md",
         ),
         "CLAUDE.md": (
             f"{GOVERNANCE}/rules/bootstrap.md",
             f"{GOVERNANCE}/providers/claude.md",
             f"{GOVERNANCE}/memory/README.md",
-            f"{GOVERNANCE}/memory/progress.md",
+            f"{GOVERNANCE}/memory/current.md",
         ),
         "GEMINI.md": (
             f"{GOVERNANCE}/rules/bootstrap.md",
             f"{GOVERNANCE}/providers/gemini.md",
             f"{GOVERNANCE}/memory/README.md",
-            f"{GOVERNANCE}/memory/progress.md",
+            f"{GOVERNANCE}/memory/current.md",
         ),
     }
 
@@ -2345,12 +2345,12 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(
+    def test_repository_harness_inventory_has_112_uniquely_routed_artifacts(
         self,
     ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(111, len(inventory))
+        self.assertEqual(112, len(inventory))
         findings = contract.validate_repository(ROOT, bundle, "harness")
         self.assertFalse(
             codes(findings)
@@ -3729,6 +3729,302 @@ model defaults
         ):
             with self.subTest(pattern=pattern):
                 self.assertIn(f"{pattern} @buenhyden", text)
+
+
+class Task3SharedProjectMemoryTests(unittest.TestCase):
+    GOVERNANCE = "docs/00.agent-governance"
+    CURRENT_MEMORY = f"{GOVERNANCE}/memory/current.md"
+    CURRENT_TASK = (
+        "docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md"
+    )
+    EXPECTED_SECTIONS = (
+        "Current objective",
+        "Approved decisions",
+        "Active boundary",
+        "Verified state",
+        "Blockers and unverified facts",
+        "Evidence links",
+        "Next handoff",
+    )
+    ROOT_SHIMS = {
+        "AGENTS.md": (f"{GOVERNANCE}/memory/README.md", CURRENT_MEMORY),
+        "CLAUDE.md": (f"{GOVERNANCE}/memory/README.md", CURRENT_MEMORY),
+        "GEMINI.md": (f"{GOVERNANCE}/memory/README.md", CURRENT_MEMORY),
+    }
+    ACTIVE_MEMORY_CONSUMERS = (
+        f"{GOVERNANCE}/README.md",
+        f"{GOVERNANCE}/harness-implementation-map.md",
+        f"{GOVERNANCE}/memory/governance-memory-usage-contract.md",
+        f"{GOVERNANCE}/rules/agentic.md",
+        f"{GOVERNANCE}/rules/approval-boundaries.md",
+        f"{GOVERNANCE}/rules/bootstrap.md",
+        f"{GOVERNANCE}/rules/documentation-protocol.md",
+        f"{GOVERNANCE}/rules/hooks/hookify.warn-docker-infra-stop.md",
+        f"{GOVERNANCE}/rules/hooks/hookify.warn-governance-memory-edit.md",
+        f"{GOVERNANCE}/rules/provider-capability-matrix.md",
+        f"{GOVERNANCE}/rules/stage-authoring-matrix.md",
+        f"{GOVERNANCE}/rules/task-checklists.md",
+        f"{GOVERNANCE}/rules/workflows.md",
+    )
+
+    @staticmethod
+    def _copy_fixture(root: pathlib.Path) -> None:
+        copy_task2_harness_surfaces(root)
+        task_source = ROOT / Task3SharedProjectMemoryTests.CURRENT_TASK
+        task_target = root / Task3SharedProjectMemoryTests.CURRENT_TASK
+        task_target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(task_source, task_target)
+
+    @staticmethod
+    def _replace_memory(root: pathlib.Path, old: str, new: str) -> None:
+        memory = root / Task3SharedProjectMemoryTests.CURRENT_MEMORY
+        memory.write_text(
+            memory.read_text(encoding="utf-8").replace(old, new, 1),
+            encoding="utf-8",
+        )
+
+    @staticmethod
+    def _append_memory(root: pathlib.Path, content: str) -> None:
+        memory = root / Task3SharedProjectMemoryTests.CURRENT_MEMORY
+        memory.write_text(
+            memory.read_text(encoding="utf-8") + content,
+            encoding="utf-8",
+        )
+
+    def test_root_shims_import_current_memory_with_exact_parity(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        registered = {
+            entry["path"]: tuple(entry["memory_targets"])
+            for entry in bundle.artifacts["root_shims"]
+        }
+        self.assertEqual(self.ROOT_SHIMS, registered)
+
+        for relative_path, memory_targets in self.ROOT_SHIMS.items():
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                for target in memory_targets:
+                    self.assertEqual(1, text.count(target), target)
+                self.assertNotIn(
+                    f"{self.GOVERNANCE}/memory/progress.md",
+                    text,
+                )
+
+        forbidden_progress_directions = (
+            r"\b(?:loads?|reads?|reviews?)\s+`?"
+            r"(?:docs/00\.agent-governance/)?(?:memory/)?progress\.md",
+            r"\b(?:appends?|updates?|writes?)\s+`?"
+            r"(?:docs/00\.agent-governance/)?(?:memory/)?progress\.md",
+            r"\brecords?\b.{0,80}\b(?:in|to)\s+`?"
+            r"(?:docs/00\.agent-governance/)?(?:memory/)?progress\.md",
+            r"(?:memory/)?progress\.md`?\s+(?:and\s+)?"
+            r"(?:appends?|updates?|writes?)\b",
+            r"\b(?:mandatory|running)\b.{0,80}(?:memory/)?progress\.md",
+            r"(?:memory/)?progress\.md.{0,80}\b(?:mandatory|running)\b",
+        )
+        for relative_path in self.ACTIVE_MEMORY_CONSUMERS:
+            with self.subTest(active_rule_consumer=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertIn("memory/current.md", text)
+                self.assertIn("Stage 04 Task", text)
+                collapsed = " ".join(text.split()).lower()
+                for pattern in forbidden_progress_directions:
+                    self.assertNotRegex(collapsed, pattern)
+
+    def test_current_memory_profile_is_registered_and_required(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        profiles = [
+            entry
+            for entry in bundle.artifacts["artifacts"]
+            if entry["profile_id"] == "governance-current-memory"
+        ]
+        self.assertEqual(1, len(profiles))
+        profile = profiles[0]
+        self.assertEqual("governance-current-memory", profile["artifact_type"])
+        self.assertEqual(self.CURRENT_MEMORY, profile["path_pattern"])
+        self.assertEqual("harness", profile["repository_section"])
+        self.assertIs(True, profile["canonical"])
+        self.assertEqual(("layer", "status"), profile["required_keys"])
+        self.assertEqual(("layer", "status"), profile["key_order"])
+        self.assertEqual(self.EXPECTED_SECTIONS, profile["required_sections"])
+        self.assertEqual(
+            {"layer": "agentic", "status": "active"},
+            profile["expected_values"],
+        )
+        self.assertTrue((ROOT / self.CURRENT_MEMORY).is_file())
+
+        findings = contract.validate_repository(ROOT, bundle, "harness")
+        self.assertFalse(
+            {
+                "AGC-REPOSITORY-MISSING-ARTIFACT",
+                "AGC-REPOSITORY-PROFILE-COVERAGE",
+            }
+            & codes(findings),
+            contract.render_findings(findings),
+        )
+
+    def test_current_memory_enforces_fixed_section_envelope(self) -> None:
+        self.assertEqual(
+            self.CURRENT_MEMORY,
+            contract.CURRENT_MEMORY_PATH,
+        )
+        self.assertEqual(32 * 1024, contract.CURRENT_MEMORY_MAX_BYTES)
+        self.assertEqual(400, contract.CURRENT_MEMORY_MAX_LINES)
+        self.assertEqual(self.EXPECTED_SECTIONS, contract.CURRENT_MEMORY_SECTIONS)
+
+        current = ROOT / self.CURRENT_MEMORY
+        text = current.read_text(encoding="utf-8")
+        self.assertLessEqual(len(text.encode("utf-8")), 32 * 1024)
+        self.assertLessEqual(len(text.splitlines()), 400)
+        self.assertEqual(self.EXPECTED_SECTIONS, contract._section_names(text))
+        for label in ("Current task", "Verified commit", "Verified at"):
+            self.assertEqual(1, len(re.findall(rf"^- {label}:", text, re.MULTILINE)))
+
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual([], contract._validate_current_memory(ROOT, bundle))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._copy_fixture(root)
+            self._replace_memory(
+                root,
+                "## Approved decisions",
+                "## Next handoff\n\nDuplicate.\n\n## Approved decisions",
+            )
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                self.assertIn(
+                    "AGC-MEMORY-BOUNDS",
+                    codes(
+                        contract._validate_current_memory(
+                            root, contract.load_contract_bundle(root)
+                        )
+                    ),
+                )
+
+    def test_current_memory_rejects_size_line_secret_and_stale_state(self) -> None:
+        def validate_mutation(
+            mutate,
+            expected_code: str,
+            *,
+            ancestor: bool = True,
+            expected_current_max_bytes: int | None = None,
+        ) -> list[object]:
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                self._copy_fixture(root)
+                mutate(root)
+                with mock.patch.object(
+                    contract,
+                    "_git_commit_is_ancestor",
+                    return_value=ancestor,
+                ):
+                    if expected_current_max_bytes is None:
+                        findings = contract._validate_current_memory(
+                            root, contract.load_contract_bundle(root)
+                        )
+                    else:
+                        reader = contract._read_root_confined_regular_text
+                        with mock.patch.object(
+                            contract,
+                            "_read_root_confined_regular_text",
+                            wraps=reader,
+                        ) as observed_reader:
+                            findings = contract._validate_current_memory(
+                                root, contract.load_contract_bundle(root)
+                            )
+                        current_reads = [
+                            call
+                            for call in observed_reader.call_args_list
+                            if call.args[1]
+                            == pathlib.PurePosixPath(self.CURRENT_MEMORY)
+                        ]
+                        self.assertEqual(1, len(current_reads))
+                        self.assertEqual(
+                            expected_current_max_bytes,
+                            current_reads[0].kwargs["max_bytes"],
+                        )
+                self.assertIn(
+                    expected_code,
+                    codes(findings),
+                    contract.render_findings(findings),
+                )
+                return findings
+
+        oversized_marker = "oversized-current-memory-payload-marker"
+        oversized_findings = validate_mutation(
+            lambda root: self._append_memory(
+                root,
+                oversized_marker + ("x" * (32 * 1024)),
+            ),
+            "AGC-MEMORY-BOUNDS",
+            expected_current_max_bytes=contract.CURRENT_MEMORY_MAX_BYTES,
+        )
+        self.assertEqual({"AGC-MEMORY-BOUNDS"}, codes(oversized_findings))
+        self.assertNotIn(
+            oversized_marker,
+            contract.render_findings(oversized_findings),
+        )
+        validate_mutation(
+            lambda root: self._append_memory(root, "\n" * 401),
+            "AGC-MEMORY-BOUNDS",
+        )
+        for forbidden in (
+            "\n- credential token secret marker\n",
+            "\nAgents must treat this paragraph as a policy body.\n",
+            "\n$ git status\nstdout: synthetic-output-marker\n",
+            "\nRead ~/.config/auth.json and ~/.zsh_history.\n",
+            "\nCopy provider-global state from ~/.codex.\n",
+        ):
+            with self.subTest(forbidden=forbidden.splitlines()[-1]):
+                findings = validate_mutation(
+                    lambda root, value=forbidden: self._append_memory(root, value),
+                    "AGC-MEMORY-FORBIDDEN-MATERIAL",
+                )
+                self.assertNotIn(
+                    "synthetic-output-marker",
+                    contract.render_findings(findings),
+                )
+
+        validate_mutation(
+            lambda root: (root / self.CURRENT_TASK).unlink(),
+            "AGC-MEMORY-STALE-STATE",
+        )
+
+        def mark_task_completed(root: pathlib.Path) -> None:
+            task = root / self.CURRENT_TASK
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "status: active", "status: completed", 1
+                ),
+                encoding="utf-8",
+            )
+
+        validate_mutation(mark_task_completed, "AGC-MEMORY-STALE-STATE")
+        validate_mutation(
+            lambda root: None,
+            "AGC-MEMORY-STALE-STATE",
+            ancestor=False,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._copy_fixture(root)
+            memory_text = (root / self.CURRENT_MEMORY).read_text(encoding="utf-8")
+            verified_at = re.search(r"^- Verified at: .+$", memory_text, re.MULTILINE)
+            self.assertIsNotNone(verified_at)
+            self._replace_memory(
+                root,
+                verified_at.group(0),
+                "- Verified at: `2000-01-01T00:00:00+09:00`",
+            )
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                findings = contract._validate_current_memory(
+                    root, contract.load_contract_bundle(root)
+                )
+            self.assertNotIn("AGC-MEMORY-STALE-STATE", codes(findings))
 
 
 class Task5HarnessLoopContractTests(unittest.TestCase):

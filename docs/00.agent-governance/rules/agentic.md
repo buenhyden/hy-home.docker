@@ -38,10 +38,11 @@ Standard behavior contract for repo-local, auditable agent execution.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.
 - Do not import external harness identities or create GitHub-native instruction
   layers for local execution policy.
-- Use `docs/00.agent-governance/memory/` as advisory retrieval context and
-  `memory/progress.md` as the running work log. Memory notes must not
-  override current rules, scopes, provider overlays, direct user instructions,
-  or live repository evidence.
+- Use `docs/00.agent-governance/memory/README.md` and `memory/current.md` for
+  the bounded active handoff, and use other Memory notes only as advisory
+  retrieval context. `memory/progress.md` is append-preserved historical
+  navigation. Memory must not override current rules, scopes, provider
+  overlays, direct user instructions, or live repository evidence.
 - Keep governance text in English and user-facing responses in Korean by default.
 
 ## 3. Implementation Flow
@@ -51,16 +52,17 @@ Standard behavior contract for repo-local, auditable agent execution.
 3. Load `rules/task-checklists.md` and run pre-task gate.
 4. Load this Agent-first rule.
 5. Load one primary scope from `scopes/<layer>.md`.
-6. Review governance memory and `memory/progress.md`; use `rg` to retrieve
-   only relevant notes when the task matches memory triggers.
+6. Review `memory/README.md` and `memory/current.md`; use `rg` to retrieve only
+   relevant durable notes when the task matches memory triggers.
 7. Discover current repository state with read-only commands.
 8. Resolve ambiguities: ask before state changes for risky ambiguity; otherwise
    record explicit assumptions and proceed conservatively.
 9. Plan the smallest scoped change and name the verification gate.
 10. Execute the change in place.
 11. Verify with the smallest checks that prove the contract.
-12. Update `memory/progress.md` with final progress, verification evidence,
-    and durable memory pointers.
+12. Record progress, verification evidence, and durable memory links in the
+    applicable Stage 04 Task, then refresh `memory/current.md` with only the
+    bounded next handoff.
 13. Report changed files, checks run, and any residual risk or out-of-scope gap.
 
 ## 4. Operational Procedures
@@ -83,7 +85,8 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Keep provider-specific behavior in provider files, not in generic scope/rule files.
 - Keep runtime behavior synchronized across the active provider's runtime surface and the corresponding
   `docs/00.agent-governance/agents/` catalog entries.
-- Record work progress in `docs/00.agent-governance/memory/progress.md`.
+- Record work progress and final evidence in the applicable Stage 04 Task and
+  keep `docs/00.agent-governance/memory/current.md` bounded to the next handoff.
 - Record historical notes under `docs/00.agent-governance/memory/` from
   `docs/99.templates/templates/governance/memory.template.md`; do not use memory notes as active policy.
 

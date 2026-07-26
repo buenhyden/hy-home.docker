@@ -78,6 +78,28 @@ artifacts:
       artifact_type: agent-role
       agent_id: $path_stem
       status: active
+  - profile_id: governance-current-memory
+    artifact_type: governance-current-memory
+    path_pattern: docs/00.agent-governance/memory/current.md
+    repository_section: harness
+    canonical: true
+    required_keys:
+      - layer
+      - status
+    key_order:
+      - layer
+      - status
+    required_sections:
+      - Current objective
+      - Approved decisions
+      - Active boundary
+      - Verified state
+      - Blockers and unverified facts
+      - Evidence links
+      - Next handoff
+    expected_values:
+      layer: agentic
+      status: active
   - profile_id: governance-harness-map
     artifact_type: governance-document
     path_pattern: docs/00.agent-governance/harness-implementation-map.md
@@ -405,7 +427,7 @@ root_shims:
     provider_target: docs/00.agent-governance/providers/agents-md.md
     memory_targets:
       - docs/00.agent-governance/memory/README.md
-      - docs/00.agent-governance/memory/progress.md
+      - docs/00.agent-governance/memory/current.md
     import_style: numbered-load
     frontmatter: forbidden
   - path: CLAUDE.md
@@ -414,7 +436,7 @@ root_shims:
     provider_target: docs/00.agent-governance/providers/claude.md
     memory_targets:
       - docs/00.agent-governance/memory/README.md
-      - docs/00.agent-governance/memory/progress.md
+      - docs/00.agent-governance/memory/current.md
     import_style: at-import
     frontmatter: forbidden
   - path: GEMINI.md
@@ -423,7 +445,7 @@ root_shims:
     provider_target: docs/00.agent-governance/providers/gemini.md
     memory_targets:
       - docs/00.agent-governance/memory/README.md
-      - docs/00.agent-governance/memory/progress.md
+      - docs/00.agent-governance/memory/current.md
     import_style: at-dot-import
     frontmatter: forbidden
 readme_profiles:

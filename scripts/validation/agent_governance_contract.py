@@ -13,6 +13,7 @@ import pathlib
 import re
 import secrets
 import stat
+import subprocess
 import sys
 import tomllib
 from collections.abc import Iterator, Mapping, Sequence
@@ -52,6 +53,18 @@ CONTRACT_RELATIVE_PATHS = MappingProxyType(
 RETIREMENT_LEDGER_PATH = pathlib.PurePosixPath(
     "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
 )
+CURRENT_MEMORY_PATH = "docs/00.agent-governance/memory/current.md"
+CURRENT_MEMORY_MAX_BYTES = 32 * 1024
+CURRENT_MEMORY_MAX_LINES = 400
+CURRENT_MEMORY_SECTIONS = (
+    "Current objective",
+    "Approved decisions",
+    "Active boundary",
+    "Verified state",
+    "Blockers and unverified facts",
+    "Evidence links",
+    "Next handoff",
+)
 
 EXPECTED_AGENT_COUNT = 14
 EXPECTED_FUNCTION_COUNT = 22
@@ -63,6 +76,30 @@ MAX_REPOSITORY_TEXT_BYTES = 2 * 1_048_576
 MAX_QA_GUIDANCE_BYTES = 256 * 1_024
 MAX_QA_GUIDANCE_CLAUSES = 256
 MAX_QA_GUIDANCE_CLAUSE_CHARS = 2_048
+_CURRENT_MEMORY_LABELS = ("Current task", "Verified commit", "Verified at")
+_CURRENT_MEMORY_TASK_PREFIX = "docs/04.execution/tasks/"
+_CURRENT_MEMORY_FORBIDDEN_PATTERNS = (
+    re.compile(r"(?im)^\s*(?:`{3,}|~{3,})"),
+    re.compile(r"(?i)\b(?:credential|credentials|token|tokens|secret|secrets)\b"),
+    re.compile(
+        r"(?i)(?:^|[\s`])(?:~?/)?(?:\.config/)?"
+        r"auth(?:entication|orization)?\.(?:json|toml|ya?ml)(?=$|[\s`])|"
+        r"\bauth(?:entication|orization)? files?\b"
+    ),
+    re.compile(r"(?i)\.(?:bash|zsh|fish)_history\b|\bshell history\b"),
+    re.compile(
+        r"(?i)\bprovider-global state\b|\bglobal provider state\b|"
+        r"\bprivate provider (?:memory|state)\b|~/\.(?:claude|codex|gemini)\b"
+    ),
+    re.compile(
+        r"(?i)\bpolicy body\b|"
+        r"\b(?:must|shall|always|never|required|forbidden|prohibited)\b"
+    ),
+    re.compile(
+        r"(?im)^\s*(?:[$>]\s+|(?:command|stdout|stderr|traceback|command log|"
+        r"raw output|exit code)\s*:)"
+    ),
+)
 _PRECOMMIT_OPTION_NAME = r"--?[a-z0-9][\w-]*"
 _PRECOMMIT_OPTION_VALUE = r"[^\s,;]+"
 _PRECOMMIT_OPTION = (
@@ -5079,6 +5116,232 @@ def _section_names(text: str) -> tuple[str, ...]:
     return tuple(headings)
 
 
+def _current_memory_label_values(text: str, label: str) -> tuple[str, ...]:
+    pattern = re.compile(
+        rf"^-\s+{re.escape(label)}:\s+`([^`\r\n]+)`\s*$",
+        re.MULTILINE,
+    )
+    return tuple(match.group(1) for match in pattern.finditer(text))
+
+
+def _git_commit_is_ancestor(root: pathlib.Path, commit: str) -> bool:
+    try:
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+            cwd=root,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
+
+
+def _validate_current_memory(
+    root: pathlib.Path, bundle: ContractBundle
+) -> list[Finding]:
+    """Validate the bounded advisory current-state record without value output."""
+
+    findings: list[Finding] = []
+    source = "agent-governance-artifacts"
+    profiles = [
+        entry
+        for entry in _sequence_or_empty(bundle.artifacts.get("artifacts"))
+        if isinstance(entry, Mapping)
+        and entry.get("profile_id") == "governance-current-memory"
+    ]
+    if (
+        len(profiles) != 1
+        or profiles[0].get("path_pattern") != CURRENT_MEMORY_PATH
+        or profiles[0].get("artifact_type") != "governance-current-memory"
+        or profiles[0].get("repository_section") != "harness"
+        or profiles[0].get("canonical") is not True
+        or tuple(_sequence_or_empty(profiles[0].get("required_sections")))
+        != CURRENT_MEMORY_SECTIONS
+    ):
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "profile",
+            "one-registered-current-memory-profile",
+            "profile-contract-mismatch",
+            source,
+        )
+
+    try:
+        text = _read_root_confined_regular_text(
+            root,
+            pathlib.PurePosixPath(CURRENT_MEMORY_PATH),
+            max_bytes=CURRENT_MEMORY_MAX_BYTES,
+        )
+    except (FileNotFoundError, OSError, UnicodeError, _UnsafeRootFileError):
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "file",
+            "bounded-readable-current-memory",
+            "current-memory-unavailable",
+            source,
+        )
+        return sorted(findings, key=finding_sort_key)
+
+    if len(text.encode("utf-8")) > CURRENT_MEMORY_MAX_BYTES:
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "bytes",
+            "at-most-32768-bytes",
+            "byte-bound-exceeded",
+            source,
+        )
+    if len(text.splitlines()) > CURRENT_MEMORY_MAX_LINES:
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "lines",
+            "at-most-400-lines",
+            "line-bound-exceeded",
+            source,
+        )
+    if _section_names(text) != CURRENT_MEMORY_SECTIONS:
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "sections",
+            "exact-ordered-seven-section-envelope",
+            "section-envelope-mismatch",
+            source,
+        )
+
+    body = _markdown_body(text)
+    if any(pattern.search(body) for pattern in _CURRENT_MEMORY_FORBIDDEN_PATTERNS):
+        _add(
+            findings,
+            "AGC-MEMORY-FORBIDDEN-MATERIAL",
+            CURRENT_MEMORY_PATH,
+            "content",
+            "advisory-value-free-current-state",
+            "forbidden-material-present",
+            source,
+        )
+
+    labels = {
+        label: _current_memory_label_values(body, label)
+        for label in _CURRENT_MEMORY_LABELS
+    }
+    for label, values in labels.items():
+        if len(values) != 1:
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                f"label.{label.lower().replace(' ', '-')}",
+                "exactly-one-value-free-label",
+                "label-cardinality-mismatch",
+                source,
+            )
+
+    task_values = labels["Current task"]
+    if len(task_values) == 1:
+        task_path = task_values[0]
+        if (
+            not _is_safe_repo_path(task_path)
+            or not task_path.startswith(_CURRENT_MEMORY_TASK_PREFIX)
+            or not task_path.endswith(".md")
+        ):
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                "label.current-task",
+                "safe-stage04-task-path",
+                "invalid-task-reference",
+                source,
+            )
+        else:
+            try:
+                task_text = _read_root_confined_regular_text(
+                    root,
+                    pathlib.PurePosixPath(task_path),
+                    max_bytes=MAX_REPOSITORY_TEXT_BYTES,
+                )
+                _, task_metadata = _frontmatter(task_text)
+            except (
+                FileNotFoundError,
+                OSError,
+                UnicodeError,
+                _UnsafeRootFileError,
+            ):
+                task_metadata = None
+            if not isinstance(task_metadata, Mapping) or task_metadata.get(
+                "status"
+            ) not in {"draft", "active"}:
+                _add(
+                    findings,
+                    "AGC-MEMORY-STALE-STATE",
+                    CURRENT_MEMORY_PATH,
+                    "label.current-task",
+                    "existing-draft-or-active-task",
+                    "task-state-stale",
+                    source,
+                )
+
+    commit_values = labels["Verified commit"]
+    if len(commit_values) == 1:
+        verified_commit = commit_values[0]
+        if re.fullmatch(r"[0-9a-f]{40}", verified_commit) is None:
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                "label.verified-commit",
+                "full-lowercase-git-commit",
+                "invalid-commit-label",
+                source,
+            )
+        elif not _git_commit_is_ancestor(root, verified_commit):
+            _add(
+                findings,
+                "AGC-MEMORY-STALE-STATE",
+                CURRENT_MEMORY_PATH,
+                "label.verified-commit",
+                "commit-resolving-to-head-ancestor",
+                "verified-commit-stale",
+                source,
+            )
+
+    verified_at_values = labels["Verified at"]
+    if len(verified_at_values) == 1:
+        try:
+            verified_at = dt.datetime.fromisoformat(verified_at_values[0])
+        except ValueError:
+            verified_at = None
+        if (
+            verified_at is None
+            or verified_at.tzinfo is None
+            or verified_at.utcoffset() is None
+        ):
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                "label.verified-at",
+                "timezone-aware-iso8601-value",
+                "invalid-verification-time",
+                source,
+            )
+
+    return sorted(findings, key=finding_sort_key)
+
+
 def _readme_policy_prose(text: str) -> str:
     """Return normalized natural-language README prose for policy-topic scans."""
 
@@ -6334,6 +6597,7 @@ def validate_repository(
     if section in {"all", "harness"}:
         _validate_root_shims(reader, bundle.artifacts, findings)
         _validate_readme_profiles(reader, bundle.artifacts, findings)
+        findings.extend(_validate_current_memory(root, bundle))
         _validate_harness_semantic_surfaces(reader, bundle, findings)
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"
         if not harness.is_file():
