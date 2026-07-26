@@ -78,6 +78,51 @@ def write_native_projection(
 
 
 class ProviderNativeSurfaceTests(unittest.TestCase):
+    def test_gemini_reasoning_uses_scoped_model_configs_without_sampling_parameters(
+        self,
+    ) -> None:
+        renderer = load_renderer()
+        projection = expected_native_projection(self, renderer, ROOT)
+        catalog = renderer.load_catalog(ROOT)
+        values = load_provider_contract()
+        selections = renderer._provider_selections(values)
+        settings = json.loads(projection[pathlib.Path(".gemini/settings.json")])
+        expected_overrides = [
+            {
+                "match": {"overrideScope": agent.agent_id},
+                "modelConfig": {
+                    "generateContentConfig": {
+                        "thinkingConfig": {
+                            "thinkingLevel": selections[
+                                (agent.work_profile, "gemini")
+                            ].control_value.upper()
+                        }
+                    }
+                },
+            }
+            for agent in catalog.agents
+        ]
+
+        self.assertEqual(
+            expected_overrides,
+            settings["modelConfigs"]["overrides"],
+        )
+        serialized = json.dumps(settings, sort_keys=True)
+        for forbidden in ("temperature", "top_p", "top_k", "topP", "topK"):
+            self.assertNotIn(forbidden, serialized)
+        for agent in catalog.agents:
+            metadata = yaml.safe_load(
+                projection[
+                    pathlib.Path(f".gemini/agents/{agent.agent_id}.md")
+                ]
+                .decode()
+                .split("---\n", 2)[1]
+            )
+            self.assertEqual(
+                selections[(agent.work_profile, "gemini")].model_id,
+                metadata["model"],
+            )
+
     def test_contract_loader_rejects_duplicate_provider_model_keys(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -114,17 +159,16 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             sol = next(
                 item
                 for item in values["models"]
-                if item["provider"] == "codex" and item["model_id"] == "gpt-5.6"
+                if item["provider"] == "codex"
+                and item["model_id"] == "gpt-5.6-sol"
             )
-            sol["normalized_status"] = "stable"
             sol["repository_reasoning_controls"] = [
                 "high",
                 "medium",
                 "ultra",
                 "xhigh",
             ]
-            sol["fallback_policy"] = "same-profile"
-            sol["fallback_approval"] = None
+            sol["runtime_activation_eligible"] = True
             path.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
 
             bundle = contract.load_contract_bundle(root)
@@ -133,109 +177,100 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             }
             self.assertTrue(
                 {
-                    "AGC-MODEL-FALLBACK-POLICY",
+                    "AGC-MODEL-ACTIVATION-ELIGIBILITY",
                     "AGC-MODEL-REASONING-POLICY",
-                    "AGC-MODEL-STATUS-NORMALIZATION",
                     "AGC-SOURCE-OBSERVATION-ORDER",
                 }.issubset(observed)
             )
 
-    def test_model_observation_separates_cutoff_status_and_reasoning_policy(
+    def test_model_observation_separates_lifecycle_runtime_and_reasoning_policy(
         self,
     ) -> None:
         values = load_provider_contract()
-        self.assertEqual("2026-07-10T10:00:00+09:00", values.get("cutoff_at"))
-        self.assertTrue(str(values.get("retrieved_at", "")).startswith("2026-07-16T"))
+        retrieved_at = "2026-07-26T20:08:18+09:00"
+        self.assertEqual(retrieved_at, values.get("cutoff_at"))
+        self.assertEqual(retrieved_at, values.get("retrieved_at"))
 
         models = {
             (item["provider"], item["model_id"]): item for item in values["models"]
         }
-        sol = models[("codex", "gpt-5.6")]
-        self.assertEqual("gpt-5.6-sol", sol["canonical_model_id"])
-        self.assertEqual("listed", sol["provider_status"])
-        self.assertEqual("unclassified-listed", sol["normalized_status"])
-        self.assertEqual("historical-state-unverified", sol["cutoff_evidence_status"])
+        sol = models[("codex", "gpt-5.6-sol")]
+        self.assertEqual("stable", sol["provider_lifecycle"])
+        self.assertEqual("default", sol["repository_disposition"])
+        self.assertEqual("needs_revalidation", sol["runtime_acceptance"])
+        self.assertEqual("needs_revalidation", sol["entitlement"])
+        self.assertTrue(sol["repository_default_eligible"])
+        self.assertFalse(sol["runtime_activation_eligible"])
         self.assertEqual(
             ["high", "low", "max", "medium", "none", "xhigh"],
             sol["supported_reasoning_controls"],
         )
-        self.assertEqual(
-            ["high", "medium", "xhigh"], sol["repository_reasoning_controls"]
-        )
-        self.assertNotIn("reasoning_controls", sol)
+        self.assertEqual(["high", "xhigh"], sol["repository_reasoning_controls"])
 
-        gemini = models[("gemini", "gemini-3.5-flash")]
+        gemini = models[("gemini", "gemini-3.6-flash")]
         self.assertEqual(
             ["high", "low", "medium", "minimal"],
             gemini["supported_reasoning_controls"],
         )
-        self.assertEqual(["high", "medium"], gemini["repository_reasoning_controls"])
+        self.assertEqual(["high"], gemini["repository_reasoning_controls"])
         self.assertNotIn("model-selected", json.dumps(values, sort_keys=True))
 
         fable = models[("claude", "claude-fable-5")]
         mythos = models[("claude", "claude-mythos-5")]
         haiku = models[("claude", "claude-haiku-4-5-20251001")]
-        opus = models[("claude", "claude-opus-4-8")]
+        opus = models[("claude", "claude-opus-5")]
         sonnet = models[("claude", "claude-sonnet-5")]
-        self.assertEqual("adaptive-always-on", fable["thinking_control_kind"])
-        self.assertEqual(["always-on-adaptive"], fable["supported_thinking_controls"])
-        self.assertEqual("adaptive-always-on", mythos["thinking_control_kind"])
-        self.assertEqual(["always-on-adaptive"], mythos["supported_thinking_controls"])
-        self.assertEqual("extended-thinking", haiku["thinking_control_kind"])
-        self.assertEqual(["extended-thinking"], haiku["supported_thinking_controls"])
-        self.assertEqual("adaptive", opus["thinking_control_kind"])
+        self.assertEqual("effort", fable["reasoning_control_kind"])
+        self.assertEqual("effort", mythos["reasoning_control_kind"])
+        self.assertEqual("unsupported", haiku["reasoning_control_kind"])
+        self.assertEqual([], haiku["supported_reasoning_controls"])
+        self.assertEqual("effort", opus["reasoning_control_kind"])
         self.assertEqual(
             ["high", "low", "max", "medium", "xhigh"],
-            opus["supported_effort_controls"],
+            opus["supported_reasoning_controls"],
         )
-        self.assertEqual("adaptive-default", sonnet["thinking_control_kind"])
         self.assertEqual(
-            ["adaptive", "disabled"], sonnet["supported_thinking_controls"]
+            ["high", "low", "max", "medium", "xhigh"],
+            sonnet["supported_reasoning_controls"],
         )
 
         self.assertEqual(
-            {
-                "limited",
-                "preview",
-                "stable",
-                "unclassified-listed",
-            },
-            {item["normalized_status"] for item in values["models"]},
+            {"limited_availability", "preview", "stable"},
+            {item["provider_lifecycle"] for item in values["models"]},
         )
         retired_model_ids = {
             "claude-opus-4-1-20250805",
+            "claude-opus-4-8",
+            "gemini-3.1-flash-lite",
             "gemini-3.1-flash-lite-preview",
+            "gemini-3.1-pro-preview",
+            "gemini-3.5-flash",
             "gpt-5.2-codex",
+            "gpt-5.6",
         }
         self.assertTrue(
             retired_model_ids.isdisjoint(
                 {item["model_id"] for item in values["models"]}
             )
         )
-        self.assertTrue(
-            retired_model_ids.isdisjoint(
-                {
-                    model_id
-                    for approval in values["fallback_approvals"]
-                    for model_id in (
-                        approval["source_model_id"],
-                        approval["target_model_id"],
-                    )
-                }
-            )
-        )
+        removed_fields = {
+            "canonical_model_id",
+            "cutoff_evidence_id",
+            "cutoff_evidence_status",
+            "fallback",
+            "fallback_approval",
+            "fallback_policy",
+            "normalized_status",
+            "provider_status",
+            "supported_effort_controls",
+            "supported_thinking_controls",
+            "thinking_control_kind",
+        }
         for item in values["models"]:
-            self.assertIn(
-                item["fallback_policy"], {"same-profile", "approved-degraded"}
-            )
-            if item["fallback_policy"] == "approved-degraded":
-                self.assertEqual(
-                    f"fallback:{item['provider']}:"
-                    f"{item['model_id']}-to-{item['fallback']}",
-                    item["fallback_approval"],
-                )
+            self.assertTrue(removed_fields.isdisjoint(item))
+            self.assertEqual(retrieved_at, item["source_retrieved_at"])
 
-    def test_contract_requires_fallback_to_cover_every_declared_profile(self) -> None:
+    def test_contract_rejects_automatic_fallback_fields(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             shutil.copytree(
@@ -244,47 +279,50 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             )
             path = root / "docs/00.agent-governance/contracts/provider-models.yaml"
             values = yaml.safe_load(path.read_text(encoding="utf-8"))
-            fable = next(
-                item
-                for item in values["models"]
-                if item["provider"] == "claude" and item["model_id"] == "claude-fable-5"
-            )
-            fable["fallback_policy"] = "same-profile"
-            fable["fallback_approval"] = None
+            values["models"][0]["fallback"] = values["models"][1]["model_id"]
             path.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
 
             bundle = contract.load_contract_bundle(root)
             observed = {
                 item.code for item in contract.validate_contract_bundle(root, bundle)
             }
-            self.assertIn("AGC-MODEL-FALLBACK-POLICY", observed)
+            self.assertIn("AGC-SCHEMA-UNKNOWN-FIELD", observed)
 
-    def test_claude_controls_fallback_and_cutoff_evidence_are_typed(self) -> None:
+    def test_claude_controls_use_unified_reasoning_schema_without_fallbacks(
+        self,
+    ) -> None:
         values = load_provider_contract()
         models = {
             (item["provider"], item["model_id"]): item for item in values["models"]
         }
+        removed_fields = {
+            "cutoff_evidence_id",
+            "cutoff_evidence_observed_at",
+            "cutoff_evidence_status",
+            "cutoff_evidence_url",
+            "fallback",
+            "fallback_approval",
+            "fallback_policy",
+            "supported_effort_controls",
+            "supported_thinking_controls",
+            "thinking_control_kind",
+        }
         for model in values["models"]:
-            self.assertIn("cutoff_evidence_id", model)
-            self.assertNotIn("cutoff_evidence_url", model)
-            self.assertNotIn("cutoff_evidence_observed_at", model)
+            self.assertTrue(removed_fields.isdisjoint(model))
 
-        for model_id in ("claude-opus-4-8", "claude-sonnet-5"):
+        for model_id in ("claude-opus-5", "claude-sonnet-5"):
             model = models[("claude", model_id)]
-            self.assertIn("thinking_control_kind", model)
-            self.assertIn("supported_thinking_controls", model)
+            self.assertEqual("effort", model["reasoning_control_kind"])
             self.assertEqual(
                 ["high", "low", "max", "medium", "xhigh"],
-                model["supported_effort_controls"],
+                model["supported_reasoning_controls"],
             )
-            self.assertNotIn("reasoning_control_kind", model)
+            self.assertEqual("effort", model["native_reasoning_field"])
 
-        sonnet = models[("claude", "claude-sonnet-5")]
-        self.assertEqual("claude-opus-4-8", sonnet["fallback"])
-        self.assertEqual(
-            "fallback:claude:claude-sonnet-5-to-claude-opus-4-8",
-            sonnet["fallback_approval"],
-        )
+        haiku = models[("claude", "claude-haiku-4-5-20251001")]
+        self.assertEqual("unsupported", haiku["reasoning_control_kind"])
+        self.assertEqual([], haiku["supported_reasoning_controls"])
+        self.assertIsNone(haiku["native_reasoning_field"])
 
     def test_claude_native_subagents_use_effort_without_per_agent_thinking(
         self,
@@ -357,38 +395,17 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                 }
                 self.assertIn(expected_code, codes)
 
-    def test_fallback_approval_registry_resolves_anchor_and_exact_edge(self) -> None:
-        values = load_provider_contract()
-        approvals = {item["approval_id"]: item for item in values["fallback_approvals"]}
-        for model in values["models"]:
-            if model["fallback_policy"] != "approved-degraded":
-                self.assertIsNone(model["fallback_approval"])
-                continue
-            approval = approvals[model["fallback_approval"]]
-            self.assertEqual(model["provider"], approval["provider"])
-            self.assertEqual(model["model_id"], approval["source_model_id"])
-            self.assertEqual(model["fallback"], approval["target_model_id"])
-            self.assertEqual(model["work_profiles"], approval["work_profiles"])
-            reference_path, anchor = approval["reference"].split("#", 1)
-            self.assertTrue((ROOT / reference_path).is_file())
-            self.assertEqual("approved-fallback-edges", anchor)
-
+    def test_active_contract_rejects_legacy_fallback_registry(self) -> None:
         mutations = {
-            "missing": lambda document, model, approval: document[
-                "fallback_approvals"
-            ].remove(approval),
-            "wrong-anchor": lambda document, model, approval: approval.__setitem__(
-                "reference",
-                "docs/03.specs/132-agent-governance-harness-convergence/spec.md#missing-edge-authority",
+            "registry": lambda document: document.__setitem__(
+                "fallback_approvals", []
             ),
-            "wrong-edge": lambda document, model, approval: approval.__setitem__(
-                "target_model_id", model["model_id"]
+            "model-edge": lambda document: document["models"][0].__setitem__(
+                "fallback", document["models"][1]["model_id"]
             ),
-        }
-        expected_codes = {
-            "missing": "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
-            "wrong-anchor": "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
-            "wrong-edge": "AGC-MODEL-FALLBACK-APPROVAL-EDGE",
+            "approval-reference": lambda document: document["models"][
+                0
+            ].__setitem__("fallback_approval", "fallback:claude:legacy"),
         }
         for name, mutate in mutations.items():
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
@@ -397,26 +414,9 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                     ROOT / "docs/00.agent-governance",
                     root / "docs/00.agent-governance",
                 )
-                spec_source = (
-                    ROOT
-                    / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
-                )
-                spec_target = root / spec_source.relative_to(ROOT)
-                spec_target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(spec_source, spec_target)
                 path = root / "docs/00.agent-governance/contracts/provider-models.yaml"
                 document = yaml.safe_load(path.read_text(encoding="utf-8"))
-                model = next(
-                    item
-                    for item in document["models"]
-                    if item["fallback_policy"] == "approved-degraded"
-                )
-                approval = next(
-                    item
-                    for item in document["fallback_approvals"]
-                    if item["approval_id"] == model["fallback_approval"]
-                )
-                mutate(document, model, approval)
+                mutate(document)
                 path.write_text(
                     yaml.safe_dump(document, sort_keys=False), encoding="utf-8"
                 )
@@ -425,49 +425,43 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                     item.code
                     for item in contract.validate_contract_bundle(root, bundle)
                 }
-                self.assertIn(expected_codes[name], codes)
+                self.assertIn("AGC-SCHEMA-UNKNOWN-FIELD", codes)
 
-    def test_cutoff_evidence_registry_rejects_unofficial_or_backdated_claims(
-        self,
-    ) -> None:
+    def test_model_sources_are_per_record_and_bound_to_retrieval_time(self) -> None:
         values = load_provider_contract()
-        self.assertIn("cutoff_evidence", values)
-        self.assertEqual([], values["cutoff_evidence"])
+        self.assertNotIn("cutoff_evidence", values)
         for model in values["models"]:
-            self.assertEqual(
-                "historical-state-unverified", model["cutoff_evidence_status"]
-            )
-            self.assertIsNone(model["cutoff_evidence_id"])
-            self.assertNotIn("cutoff_evidence_url", model)
-            self.assertNotIn("cutoff_evidence_observed_at", model)
-        gpt_56 = next(
-            item
-            for item in values["models"]
-            if item["provider"] == "codex" and item["model_id"] == "gpt-5.6"
-        )
-        self.assertIsNone(gpt_56["cutoff_evidence_id"])
+            with self.subTest(model=model["model_id"]):
+                self.assertEqual(
+                    values["retrieved_at"], model["source_retrieved_at"]
+                )
+                for field in (
+                    "source_url",
+                    "task_fit_source_url",
+                    "reasoning_source_url",
+                    "native_schema_source_url",
+                ):
+                    self.assertTrue(str(model[field]).startswith("https://"))
 
         mutations = {
-            "unofficial-source": {
-                "source_url": "https://example.com/provider-model-history",
-                "published_at": "2026-07-09T10:00:00+09:00",
-                "observed_at": values["retrieved_at"],
-                "code": "AGC-MODEL-CUTOFF-EVIDENCE-SOURCE",
-            },
-            "backdated-observation": {
-                "source_url": "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
-                "published_at": "2026-07-09T10:00:00+09:00",
-                "observed_at": "2026-07-09T10:00:00+09:00",
-                "code": "AGC-MODEL-CUTOFF-EVIDENCE-DATE",
-            },
-            "post-cutoff-publication": {
-                "source_url": "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
-                "published_at": "2026-07-11T10:00:00+09:00",
-                "observed_at": values["retrieved_at"],
-                "code": "AGC-MODEL-CUTOFF-EVIDENCE-DATE",
-            },
+            "observation-time": (
+                lambda document: document["models"][0].__setitem__(
+                    "source_retrieved_at", "2026-07-26T20:08:17+09:00"
+                ),
+                "AGC-SOURCE-OBSERVATION-ORDER",
+            ),
+            "invalid-source": (
+                lambda document: document["models"][0].__setitem__(
+                    "source_url", "not-a-url"
+                ),
+                "AGC-SOURCE-INVALID-URL",
+            ),
+            "legacy-registry": (
+                lambda document: document.__setitem__("cutoff_evidence", []),
+                "AGC-SCHEMA-UNKNOWN-FIELD",
+            ),
         }
-        for name, mutation in mutations.items():
+        for name, (mutate, expected_code) in mutations.items():
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 shutil.copytree(
@@ -476,24 +470,7 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                 )
                 path = root / "docs/00.agent-governance/contracts/provider-models.yaml"
                 document = yaml.safe_load(path.read_text(encoding="utf-8"))
-                model = next(
-                    item
-                    for item in document["models"]
-                    if item["provider"] == "claude"
-                    and item["model_id"] == "claude-sonnet-5"
-                )
-                evidence_id = "evidence:claude-sonnet-5-before-cutoff"
-                model["cutoff_evidence_status"] = "verified-before-cutoff"
-                model["cutoff_evidence_id"] = evidence_id
-                document["cutoff_evidence"].append(
-                    {
-                        "evidence_id": evidence_id,
-                        "provider": "claude",
-                        "source_url": mutation["source_url"],
-                        "published_at": mutation["published_at"],
-                        "observed_at": mutation["observed_at"],
-                    }
-                )
+                mutate(document)
                 path.write_text(
                     yaml.safe_dump(document, sort_keys=False), encoding="utf-8"
                 )
@@ -502,45 +479,53 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                     item.code
                     for item in contract.validate_contract_bundle(root, bundle)
                 }
-                self.assertIn(mutation["code"], codes)
+                self.assertIn(expected_code, codes)
 
-    def test_cutoff_evidence_registry_accepts_official_dated_record(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            copy_provider_contract_root(root)
-            path = root / "docs/00.agent-governance/contracts/provider-models.yaml"
-            values = yaml.safe_load(path.read_text(encoding="utf-8"))
-            sonnet = next(
-                item
-                for item in values["models"]
-                if item["provider"] == "claude"
-                and item["model_id"] == "claude-sonnet-5"
-            )
-            evidence_id = "evidence:claude:sonnet-5-before-cutoff"
-            sonnet["cutoff_evidence_status"] = "verified-before-cutoff"
-            sonnet["cutoff_evidence_id"] = evidence_id
-            values["cutoff_evidence"].append(
-                {
-                    "evidence_id": evidence_id,
-                    "provider": "claude",
-                    "source_url": "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
-                    "published_at": "2026-07-09T10:00:00+09:00",
-                    "observed_at": values["retrieved_at"],
+    def test_runtime_activation_requires_acceptance_and_entitlement(self) -> None:
+        mutations = {
+            "unverified-activation": (
+                lambda model: model.__setitem__(
+                    "runtime_activation_eligible", True
+                ),
+                True,
+            ),
+            "verified-activation": (
+                lambda model: model.update(
+                    {
+                        "runtime_acceptance": "accepted",
+                        "entitlement": "available",
+                        "runtime_activation_eligible": True,
+                    }
+                ),
+                False,
+            ),
+        }
+        for name, (mutate, expect_finding) in mutations.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_provider_contract_root(root)
+                path = root / "docs/00.agent-governance/contracts/provider-models.yaml"
+                values = yaml.safe_load(path.read_text(encoding="utf-8"))
+                sonnet = next(
+                    item
+                    for item in values["models"]
+                    if item["provider"] == "claude"
+                    and item["model_id"] == "claude-sonnet-5"
+                )
+                mutate(sonnet)
+                path.write_text(
+                    yaml.safe_dump(values, sort_keys=False), encoding="utf-8"
+                )
+
+                bundle = contract.load_contract_bundle(root)
+                codes = {
+                    item.code
+                    for item in contract.validate_contract_bundle(root, bundle)
                 }
-            )
-            path.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
-
-            bundle = contract.load_contract_bundle(root)
-            codes = {
-                item.code for item in contract.validate_contract_bundle(root, bundle)
-            }
-            self.assertFalse(
-                {
-                    "AGC-MODEL-CUTOFF-EVIDENCE-DATE",
-                    "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
-                    "AGC-MODEL-CUTOFF-EVIDENCE-SOURCE",
-                }.intersection(codes)
-            )
+                self.assertIs(
+                    expect_finding,
+                    "AGC-MODEL-ACTIVATION-ELIGIBILITY" in codes,
+                )
 
     def test_native_projection_contains_every_exact_owned_path(self) -> None:
         renderer = load_renderer()
@@ -596,6 +581,7 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         renderer = load_renderer()
         projection = expected_native_projection(self, renderer, ROOT)
         catalog = renderer.load_catalog(ROOT)
+        selections = renderer._provider_selections(load_provider_contract())
 
         claude_base = {
             "name",
@@ -625,9 +611,10 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             ].decode()
             claude_meta = yaml.safe_load(claude_text.split("---\n", 2)[1])
             claude_allowed = set(claude_base)
-            if agent.work_profile in {"complex-implementation", "supervision"}:
+            selection = selections[(agent.work_profile, "claude")]
+            if selection.control_value is not None:
                 claude_allowed.add("effort")
-                self.assertEqual("high", claude_meta["effort"])
+                self.assertEqual(selection.control_value, claude_meta["effort"])
             self.assertEqual(claude_allowed, set(claude_meta))
             self.assertNotIn("thinking", claude_meta)
             self.assertEqual(agent.agent_id, claude_meta["name"])
@@ -938,7 +925,7 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
                     {item.code for item in findings},
                 )
 
-    def test_contract_rejects_unbound_fallback_approval_and_cutoff_evidence(
+    def test_contract_rejects_removed_historical_model_fields(
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -961,14 +948,20 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             path.write_text(yaml.safe_dump(values, sort_keys=False), encoding="utf-8")
 
             bundle = contract.load_contract_bundle(root)
-            codes = {
-                item.code for item in contract.validate_contract_bundle(root, bundle)
+            findings = contract.validate_contract_bundle(root, bundle)
+            unknown_locations = {
+                item.location
+                for item in findings
+                if item.code == "AGC-SCHEMA-UNKNOWN-FIELD"
             }
-            self.assertTrue(
+            model_index = values["models"].index(sonnet)
+            self.assertEqual(
                 {
-                    "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
-                    "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
-                }.issubset(codes)
+                    f"models[{model_index}].cutoff_evidence_id",
+                    f"models[{model_index}].cutoff_evidence_status",
+                    f"models[{model_index}].fallback_approval",
+                },
+                unknown_locations,
             )
 
     def test_gemini_adapter_translates_all_seven_native_event_outputs(self) -> None:

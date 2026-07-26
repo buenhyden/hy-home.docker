@@ -11,7 +11,7 @@ tools:
 - write_file
 - replace
 - run_shell_command
-model: gemini-3.1-flash-lite
+model: gemini-3.5-flash-lite
 max_turns: 8
 timeout_mins: 20
 ---

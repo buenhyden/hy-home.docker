@@ -80,6 +80,178 @@
       }
     ]
   },
+  "modelConfigs": {
+    "overrides": [
+      {
+        "match": {
+          "overrideScope": "ci-cd-engineer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "code-reviewer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "doc-writer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "MEDIUM"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "drift-detector"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "MINIMAL"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "eval-engineer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "hook-developer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "iac-reviewer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "incident-responder"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "infra-implementer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "qa-engineer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "rules-engineer"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "security-auditor"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "skill-creator"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      },
+      {
+        "match": {
+          "overrideScope": "workflow-supervisor"
+        },
+        "modelConfig": {
+          "generateContentConfig": {
+            "thinkingConfig": {
+              "thinkingLevel": "HIGH"
+            }
+          }
+        }
+      }
+    ]
+  },
   "security": {
     "environmentVariableRedaction": {
       "enabled": true

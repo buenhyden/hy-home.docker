@@ -1,6 +1,6 @@
 schema_version: 1
-cutoff_at: "2026-07-10T10:00:00+09:00"
-retrieved_at: "2026-07-16T01:17:36+09:00"
+cutoff_at: "2026-07-26T20:08:18+09:00"
+retrieved_at: "2026-07-26T20:08:18+09:00"
 providers:
   - provider_id: claude
     capability_status: supported
@@ -33,7 +33,7 @@ providers:
     native_config_path: .gemini/settings.json
     native_skill_pattern: .agents/skills/**/SKILL.md
     canonical_skill_source_pattern: docs/00.agent-governance/agents/functions/*.md
-    source_url: https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md
+    source_url: https://geminicli.com/docs/core/subagents/
     hook_source_url: https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/writing-hooks.md
     local_cli_version: null
     local_cli_observation: unavailable
@@ -49,20 +49,56 @@ compatibility_surfaces:
       - shared-skills
     source_url: https://agents.md/
 work_profiles:
+  - profile_id: adversarial-review
+    description: Adversarial correctness, policy, infrastructure, and security review.
+    defaults:
+      - provider: claude
+        model_id: claude-opus-5
+        effort: high
+      - provider: codex
+        model_id: gpt-5.6-sol
+        reasoning: xhigh
+      - provider: gemini
+        model_id: gemini-3.6-flash
+        reasoning: high
   - profile_id: complex-implementation
-    description: Complex implementation, security analysis, and precision review.
+    description: Complex implementation with high tool autonomy and verification depth.
     defaults:
       - provider: claude
         model_id: claude-sonnet-5
         effort: high
       - provider: codex
-        model_id: gpt-5.6
+        model_id: gpt-5.6-sol
         reasoning: high
       - provider: gemini
-        model_id: gemini-3.5-flash
+        model_id: gemini-3.6-flash
         reasoning: high
-  - profile_id: read-heavy-repetitive
-    description: Exploration, large reads, repetitive organization, and bounded classification.
+  - profile_id: evidence-research
+    description: Source-grounded research, documentation, and bounded synthesis.
+    defaults:
+      - provider: claude
+        model_id: claude-sonnet-5
+        effort: low
+      - provider: codex
+        model_id: gpt-5.6-terra
+        reasoning: medium
+      - provider: gemini
+        model_id: gemini-3.5-flash-lite
+        reasoning: medium
+  - profile_id: long-horizon-supervision
+    description: Long-horizon supervision, architecture, planning, and final synthesis.
+    defaults:
+      - provider: claude
+        model_id: claude-opus-5
+        effort: xhigh
+      - provider: codex
+        model_id: gpt-5.6-sol
+        reasoning: xhigh
+      - provider: gemini
+        model_id: gemini-3.6-flash
+        reasoning: high
+  - profile_id: routine-validation
+    description: Routine validation, drift checks, and high-volume classification.
     defaults:
       - provider: claude
         model_id: claude-haiku-4-5-20251001
@@ -71,290 +107,188 @@ work_profiles:
         model_id: gpt-5.6-terra
         reasoning: low
       - provider: gemini
-        model_id: gemini-3.1-flash-lite
+        model_id: gemini-3.5-flash-lite
         reasoning: minimal
-  - profile_id: supervision
-    description: Supervision, architecture, complex planning, and final synthesis.
-    defaults:
-      - provider: claude
-        model_id: claude-opus-4-8
-        effort: high
-      - provider: codex
-        model_id: gpt-5.6
-        reasoning: xhigh
-      - provider: gemini
-        model_id: gemini-3.5-flash
-        reasoning: high
-fallback_approvals:
-  - approval_id: fallback:claude:claude-fable-5-to-claude-opus-4-8
-    provider: claude
-    source_model_id: claude-fable-5
-    target_model_id: claude-opus-4-8
-    work_profiles:
-      - complex-implementation
-      - supervision
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:claude:claude-haiku-4-5-20251001-to-claude-sonnet-5
-    provider: claude
-    source_model_id: claude-haiku-4-5-20251001
-    target_model_id: claude-sonnet-5
-    work_profiles:
-      - read-heavy-repetitive
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:claude:claude-mythos-5-to-claude-opus-4-8
-    provider: claude
-    source_model_id: claude-mythos-5
-    target_model_id: claude-opus-4-8
-    work_profiles:
-      - complex-implementation
-      - supervision
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:claude:claude-opus-4-8-to-claude-sonnet-5
-    provider: claude
-    source_model_id: claude-opus-4-8
-    target_model_id: claude-sonnet-5
-    work_profiles:
-      - supervision
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:claude:claude-sonnet-5-to-claude-opus-4-8
-    provider: claude
-    source_model_id: claude-sonnet-5
-    target_model_id: claude-opus-4-8
-    work_profiles:
-      - complex-implementation
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:codex:gpt-5.6-terra-to-gpt-5.6
-    provider: codex
-    source_model_id: gpt-5.6-terra
-    target_model_id: gpt-5.6
-    work_profiles:
-      - read-heavy-repetitive
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:codex:gpt-5.6-to-gpt-5.6-terra
-    provider: codex
-    source_model_id: gpt-5.6
-    target_model_id: gpt-5.6-terra
-    work_profiles:
-      - complex-implementation
-      - supervision
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:gemini:gemini-3.1-flash-lite-to-gemini-3.5-flash
-    provider: gemini
-    source_model_id: gemini-3.1-flash-lite
-    target_model_id: gemini-3.5-flash
-    work_profiles:
-      - read-heavy-repetitive
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-  - approval_id: fallback:gemini:gemini-3.5-flash-to-gemini-3.1-flash-lite
-    provider: gemini
-    source_model_id: gemini-3.5-flash
-    target_model_id: gemini-3.1-flash-lite
-    work_profiles:
-      - complex-implementation
-      - supervision
-    reference: docs/03.specs/132-agent-governance-harness-convergence/spec.md#approved-fallback-edges
-cutoff_evidence: []
 models:
   - provider: claude
     model_id: claude-fable-5
-    canonical_model_id: claude-fable-5
-    provider_status: generally-available
-    normalized_status: stable
-    repository_default_eligible: false
-    entitlement: needs_revalidation
+    provider_lifecycle: stable
+    repository_disposition: candidate
     runtime_acceptance: needs_revalidation
-    thinking_control_kind: adaptive-always-on
-    supported_thinking_controls:
-      - always-on-adaptive
-    repository_thinking_controls:
-      - always-on-adaptive
-    supported_effort_controls:
+    entitlement: needs_revalidation
+    repository_default_eligible: false
+    runtime_activation_eligible: false
+    reasoning_control_kind: effort
+    supported_reasoning_controls:
       - high
       - low
       - max
       - medium
       - xhigh
-    repository_effort_controls: []
-    work_profiles:
-      - complex-implementation
-      - supervision
+    repository_reasoning_controls: []
+    native_model_field: model
+    native_reasoning_field: effort
+    work_profiles: []
     agent_coding_fit: exceptional
     task_characteristics:
       - exceptional-capability
       - long-running-agent
-    fallback: claude-opus-4-8
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:claude:claude-fable-5-to-claude-opus-4-8
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    task_fit_source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    reasoning_source_url: https://platform.claude.com/docs/en/build-with-claude/effort
+    native_schema_source_url: https://code.claude.com/docs/en/sub-agents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: claude
     model_id: claude-haiku-4-5-20251001
-    canonical_model_id: claude-haiku-4-5-20251001
-    provider_status: active
-    normalized_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
+    provider_lifecycle: stable
+    repository_disposition: default
     runtime_acceptance: needs_revalidation
-    thinking_control_kind: extended-thinking
-    supported_thinking_controls:
-      - extended-thinking
-    repository_thinking_controls:
-      - extended-thinking
-    supported_effort_controls: []
-    repository_effort_controls: []
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
+    reasoning_control_kind: unsupported
+    supported_reasoning_controls: []
+    repository_reasoning_controls: []
+    native_model_field: model
+    native_reasoning_field: null
     work_profiles:
-      - read-heavy-repetitive
+      - routine-validation
     agent_coding_fit: bounded
     task_characteristics:
+      - fastest-current-claude
       - high-volume
-      - read-heavy
-    fallback: claude-sonnet-5
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:claude:claude-haiku-4-5-20251001-to-claude-sonnet-5
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+      - routine-validation
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    task_fit_source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    reasoning_source_url: https://platform.claude.com/docs/en/build-with-claude/effort
+    native_schema_source_url: https://code.claude.com/docs/en/sub-agents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: claude
     model_id: claude-mythos-5
-    canonical_model_id: claude-mythos-5
-    provider_status: limited-availability
-    normalized_status: limited
-    repository_default_eligible: false
-    entitlement: needs_revalidation
+    provider_lifecycle: limited_availability
+    repository_disposition: catalog_only
     runtime_acceptance: needs_revalidation
-    thinking_control_kind: adaptive-always-on
-    supported_thinking_controls:
-      - always-on-adaptive
-    repository_thinking_controls:
-      - always-on-adaptive
-    supported_effort_controls:
+    entitlement: needs_revalidation
+    repository_default_eligible: false
+    runtime_activation_eligible: false
+    reasoning_control_kind: effort
+    supported_reasoning_controls:
       - high
       - low
       - max
       - medium
       - xhigh
-    repository_effort_controls: []
-    work_profiles:
-      - complex-implementation
-      - supervision
+    repository_reasoning_controls: []
+    native_model_field: model
+    native_reasoning_field: effort
+    work_profiles: []
     agent_coding_fit: exceptional
     task_characteristics:
       - defensive-cybersecurity
       - invitation-only
-    fallback: claude-opus-4-8
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:claude:claude-mythos-5-to-claude-opus-4-8
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    task_fit_source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    reasoning_source_url: https://platform.claude.com/docs/en/build-with-claude/effort
+    native_schema_source_url: https://code.claude.com/docs/en/sub-agents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: claude
-    model_id: claude-opus-4-8
-    canonical_model_id: claude-opus-4-8
-    provider_status: active
-    normalized_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
+    model_id: claude-opus-5
+    provider_lifecycle: stable
+    repository_disposition: default
     runtime_acceptance: needs_revalidation
-    thinking_control_kind: adaptive
-    supported_thinking_controls:
-      - adaptive
-      - disabled
-    repository_thinking_controls:
-      - adaptive
-    supported_effort_controls:
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
+    reasoning_control_kind: effort
+    supported_reasoning_controls:
       - high
       - low
       - max
       - medium
       - xhigh
-    repository_effort_controls:
+    repository_reasoning_controls:
       - high
+      - xhigh
+    native_model_field: model
+    native_reasoning_field: effort
     work_profiles:
-      - supervision
+      - adversarial-review
+      - long-horizon-supervision
     agent_coding_fit: exceptional
     task_characteristics:
-      - architecture
-      - complex-planning
-      - final-synthesis
-    fallback: claude-sonnet-5
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:claude:claude-opus-4-8-to-claude-sonnet-5
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+      - complex-agentic-coding
+      - enterprise-work
+      - long-horizon-supervision
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    task_fit_source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    reasoning_source_url: https://platform.claude.com/docs/en/build-with-claude/effort
+    native_schema_source_url: https://code.claude.com/docs/en/sub-agents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: claude
     model_id: claude-sonnet-5
-    canonical_model_id: claude-sonnet-5
-    provider_status: current
-    normalized_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
+    provider_lifecycle: stable
+    repository_disposition: default
     runtime_acceptance: needs_revalidation
-    thinking_control_kind: adaptive-default
-    supported_thinking_controls:
-      - adaptive
-      - disabled
-    repository_thinking_controls:
-      - adaptive
-    supported_effort_controls:
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
+    reasoning_control_kind: effort
+    supported_reasoning_controls:
       - high
       - low
       - max
       - medium
       - xhigh
-    repository_effort_controls:
+    repository_reasoning_controls:
       - high
+      - low
+    native_model_field: model
+    native_reasoning_field: effort
     work_profiles:
       - complex-implementation
+      - evidence-research
     agent_coding_fit: strong
     task_characteristics:
+      - balanced-speed-intelligence
       - complex-implementation
-      - precision-review
-      - security-analysis
-    fallback: claude-opus-4-8
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:claude:claude-sonnet-5-to-claude-opus-4-8
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions
+      - evidence-research
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    task_fit_source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+    reasoning_source_url: https://platform.claude.com/docs/en/build-with-claude/effort
+    native_schema_source_url: https://code.claude.com/docs/en/sub-agents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: codex
     model_id: gpt-5.3-codex-spark
-    canonical_model_id: gpt-5.3-codex-spark
-    provider_status: preview
-    normalized_status: preview
-    repository_default_eligible: false
-    entitlement: needs_revalidation
+    provider_lifecycle: preview
+    repository_disposition: catalog_only
     runtime_acceptance: needs_revalidation
+    entitlement: needs_revalidation
+    repository_default_eligible: false
+    runtime_activation_eligible: false
     reasoning_control_kind: unverified
     supported_reasoning_controls: []
     repository_reasoning_controls: []
-    work_profiles:
-      - complex-implementation
+    native_model_field: model
+    native_reasoning_field: model_reasoning_effort
+    work_profiles: []
     agent_coding_fit: strong
     task_characteristics:
-      - invitation-only
       - low-latency-coding
-    fallback: gpt-5.6
-    fallback_policy: same-profile
-    fallback_approval: null
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://learn.chatgpt.com/docs/models
+      - real-time-coding
+      - research-preview
+    source_url: https://openai.com/index/introducing-gpt-5-3-codex-spark/
+    task_fit_source_url: https://openai.com/index/introducing-gpt-5-3-codex-spark/
+    reasoning_source_url: https://openai.com/index/introducing-gpt-5-3-codex-spark/
+    native_schema_source_url: https://learn.chatgpt.com/docs/agent-configuration/subagents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: codex
-    model_id: gpt-5.6
-    canonical_model_id: gpt-5.6-sol
-    provider_status: listed
-    normalized_status: unclassified-listed
-    repository_default_eligible: true
-    entitlement: needs_revalidation
+    model_id: gpt-5.6-luna
+    provider_lifecycle: stable
+    repository_disposition: catalog_only
     runtime_acceptance: needs_revalidation
+    entitlement: needs_revalidation
+    repository_default_eligible: false
+    runtime_activation_eligible: false
     reasoning_control_kind: reasoning-effort
     supported_reasoning_controls:
       - high
@@ -363,125 +297,128 @@ models:
       - medium
       - none
       - xhigh
-    repository_reasoning_controls:
-      - high
-      - medium
-      - xhigh
-    work_profiles:
-      - complex-implementation
-      - supervision
-    agent_coding_fit: exceptional
-    task_characteristics:
-      - agentic-coding
-      - architecture
-      - complex-implementation
-      - supervision
-    fallback: gpt-5.6-terra
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:codex:gpt-5.6-to-gpt-5.6-terra
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://developers.openai.com/api/docs/models/gpt-5.6-sol
-  - provider: codex
-    model_id: gpt-5.6-terra
-    canonical_model_id: gpt-5.6-terra
-    provider_status: listed
-    normalized_status: unclassified-listed
-    repository_default_eligible: true
-    entitlement: needs_revalidation
-    runtime_acceptance: needs_revalidation
-    reasoning_control_kind: reasoning-effort
-    supported_reasoning_controls:
-      - high
-      - low
-      - max
-      - medium
-      - none
-      - xhigh
-    repository_reasoning_controls:
-      - low
-      - medium
-    work_profiles:
-      - read-heavy-repetitive
-    agent_coding_fit: strong
-    task_characteristics:
-      - bounded-classification
-      - repetitive-organization
-      - repository-exploration
-    fallback: gpt-5.6
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:codex:gpt-5.6-terra-to-gpt-5.6
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://developers.openai.com/api/docs/models/gpt-5.6-terra
-  - provider: gemini
-    model_id: gemini-3.1-flash-lite
-    canonical_model_id: gemini-3.1-flash-lite
-    provider_status: stable
-    normalized_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
-    runtime_acceptance: needs_revalidation
-    reasoning_control_kind: thinking-level
-    supported_reasoning_controls:
-      - high
-      - low
-      - medium
-      - minimal
-    repository_reasoning_controls:
-      - low
-      - minimal
-    work_profiles:
-      - read-heavy-repetitive
+    repository_reasoning_controls: []
+    native_model_field: model
+    native_reasoning_field: model_reasoning_effort
+    work_profiles: []
     agent_coding_fit: bounded
     task_characteristics:
+      - cost-sensitive
       - high-volume
-      - repetitive-organization
-    fallback: gemini-3.5-flash
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:gemini:gemini-3.1-flash-lite-to-gemini-3.5-flash
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite
-  - provider: gemini
-    model_id: gemini-3.1-pro-preview
-    canonical_model_id: gemini-3.1-pro-preview
-    provider_status: preview
-    normalized_status: preview
-    repository_default_eligible: false
-    entitlement: needs_revalidation
+    source_url: https://developers.openai.com/api/docs/models
+    task_fit_source_url: https://developers.openai.com/api/docs/guides/latest-model
+    reasoning_source_url: https://developers.openai.com/api/docs/guides/latest-model
+    native_schema_source_url: https://learn.chatgpt.com/docs/agent-configuration/subagents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
+  - provider: codex
+    model_id: gpt-5.6-sol
+    provider_lifecycle: stable
+    repository_disposition: default
     runtime_acceptance: needs_revalidation
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
+    reasoning_control_kind: reasoning-effort
+    supported_reasoning_controls:
+      - high
+      - low
+      - max
+      - medium
+      - none
+      - xhigh
+    repository_reasoning_controls:
+      - high
+      - xhigh
+    native_model_field: model
+    native_reasoning_field: model_reasoning_effort
+    work_profiles:
+      - adversarial-review
+      - complex-implementation
+      - long-horizon-supervision
+    agent_coding_fit: exceptional
+    task_characteristics:
+      - complex-reasoning
+      - frontier-coding
+      - long-horizon-supervision
+    source_url: https://developers.openai.com/api/docs/models
+    task_fit_source_url: https://developers.openai.com/api/docs/guides/latest-model
+    reasoning_source_url: https://developers.openai.com/api/docs/guides/latest-model
+    native_schema_source_url: https://learn.chatgpt.com/docs/agent-configuration/subagents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
+  - provider: codex
+    model_id: gpt-5.6-terra
+    provider_lifecycle: stable
+    repository_disposition: default
+    runtime_acceptance: needs_revalidation
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
+    reasoning_control_kind: reasoning-effort
+    supported_reasoning_controls:
+      - high
+      - low
+      - max
+      - medium
+      - none
+      - xhigh
+    repository_reasoning_controls:
+      - low
+      - medium
+    native_model_field: model
+    native_reasoning_field: model_reasoning_effort
+    work_profiles:
+      - evidence-research
+      - routine-validation
+    agent_coding_fit: strong
+    task_characteristics:
+      - balanced-intelligence-cost
+      - evidence-research
+      - routine-validation
+    source_url: https://developers.openai.com/api/docs/models
+    task_fit_source_url: https://developers.openai.com/api/docs/guides/latest-model
+    reasoning_source_url: https://developers.openai.com/api/docs/guides/latest-model
+    native_schema_source_url: https://learn.chatgpt.com/docs/agent-configuration/subagents
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
+  - provider: gemini
+    model_id: gemini-3.5-flash-lite
+    provider_lifecycle: stable
+    repository_disposition: default
+    runtime_acceptance: needs_revalidation
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
     reasoning_control_kind: thinking-level
     supported_reasoning_controls:
       - high
       - low
       - medium
-    repository_reasoning_controls: []
+      - minimal
+    repository_reasoning_controls:
+      - medium
+      - minimal
+    native_model_field: model
+    native_reasoning_field: modelConfigs.overrides[].modelConfig.generateContentConfig.thinkingConfig.thinkingLevel
     work_profiles:
-      - complex-implementation
-      - supervision
-    agent_coding_fit: strong
+      - evidence-research
+      - routine-validation
+    agent_coding_fit: bounded
     task_characteristics:
-      - complex-reasoning
-      - preview-evaluation
-    fallback: gemini-3.5-flash
-    fallback_policy: same-profile
-    fallback_approval: null
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+      - autonomous-subagent
+      - high-volume
+      - routine-validation
+    source_url: https://ai.google.dev/gemini-api/docs/latest-model
+    task_fit_source_url: https://ai.google.dev/gemini-api/docs/latest-model
+    reasoning_source_url: https://ai.google.dev/gemini-api/docs/latest-model
+    native_schema_source_url: https://geminicli.com/docs/cli/generation-settings/
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
   - provider: gemini
-    model_id: gemini-3.5-flash
-    canonical_model_id: gemini-3.5-flash
-    provider_status: stable
-    normalized_status: stable
-    repository_default_eligible: true
-    entitlement: needs_revalidation
+    model_id: gemini-3.6-flash
+    provider_lifecycle: stable
+    repository_disposition: default
     runtime_acceptance: needs_revalidation
+    entitlement: needs_revalidation
+    repository_default_eligible: true
+    runtime_activation_eligible: false
     reasoning_control_kind: thinking-level
     supported_reasoning_controls:
       - high
@@ -490,23 +427,22 @@ models:
       - minimal
     repository_reasoning_controls:
       - high
-      - medium
+    native_model_field: model
+    native_reasoning_field: modelConfigs.overrides[].modelConfig.generateContentConfig.thinkingConfig.thinkingLevel
     work_profiles:
+      - adversarial-review
       - complex-implementation
-      - supervision
+      - long-horizon-supervision
     agent_coding_fit: exceptional
     task_characteristics:
       - agentic-coding
       - complex-implementation
       - multimodal-tools
-      - supervision
-    fallback: gemini-3.1-flash-lite
-    fallback_policy: approved-degraded
-    fallback_approval: fallback:gemini:gemini-3.5-flash-to-gemini-3.1-flash-lite
-    cutoff_evidence_status: historical-state-unverified
-    cutoff_evidence_id: null
-    checked_at: "2026-07-16T01:17:36+09:00"
-    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash
+    source_url: https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash
+    task_fit_source_url: https://ai.google.dev/gemini-api/docs/latest-model
+    reasoning_source_url: https://ai.google.dev/gemini-api/docs/latest-model
+    native_schema_source_url: https://geminicli.com/docs/cli/generation-settings/
+    source_retrieved_at: "2026-07-26T20:08:18+09:00"
 harness_loops:
   - event_id: approved-all-files-gate
     owner_agent: qa-engineer

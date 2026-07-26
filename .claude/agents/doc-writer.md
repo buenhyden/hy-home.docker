@@ -8,7 +8,8 @@ tools:
 - Edit
 - Write
 - Bash
-model: claude-haiku-4-5-20251001
+model: claude-sonnet-5
+effort: low
 permissionMode: default
 skills:
 - adr-writing

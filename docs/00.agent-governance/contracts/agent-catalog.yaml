@@ -70,7 +70,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/code-reviewer.md
     permission_profile: read-only
-    work_profile: complex-implementation
+    work_profile: adversarial-review
     function_ids:
       - code-review-dimensions
       - code-reviewer
@@ -86,7 +86,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/doc-writer.md
     permission_profile: workspace-write
-    work_profile: read-heavy-repetitive
+    work_profile: evidence-research
     function_ids:
       - adr-writing
       - knowledge-map-agent
@@ -103,7 +103,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/drift-detector.md
     permission_profile: read-only
-    work_profile: read-heavy-repetitive
+    work_profile: routine-validation
     function_ids: []
     provider_projections:
       - agents-md
@@ -117,7 +117,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/eval-engineer.md
     permission_profile: read-only
-    work_profile: complex-implementation
+    work_profile: adversarial-review
     function_ids:
       - workspace-audit-revalidation
     provider_projections:
@@ -146,7 +146,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/iac-reviewer.md
     permission_profile: read-only
-    work_profile: complex-implementation
+    work_profile: adversarial-review
     function_ids:
       - infra-cross-validate
     provider_projections:
@@ -210,7 +210,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/rules-engineer.md
     permission_profile: read-only
-    work_profile: complex-implementation
+    work_profile: adversarial-review
     function_ids:
       - policy-gate-agent
       - requirements-to-design-agent
@@ -226,7 +226,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/security-auditor.md
     permission_profile: read-only
-    work_profile: complex-implementation
+    work_profile: adversarial-review
     function_ids:
       - container-threat-modeling
       - security-audit
@@ -256,7 +256,7 @@ agents:
     status: active
     catalog_path: docs/00.agent-governance/agents/agents/workflow-supervisor.md
     permission_profile: read-only
-    work_profile: supervision
+    work_profile: long-horizon-supervision
     function_ids:
       - execution-plan-agent
       - task-breakdown-agent

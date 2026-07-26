@@ -8,7 +8,7 @@ tools:
 - search_file_content
 - glob
 - list_directory
-model: gemini-3.5-flash
+model: gemini-3.6-flash
 max_turns: 8
 timeout_mins: 20
 ---

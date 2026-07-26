@@ -489,6 +489,202 @@ class ProviderContractTests(unittest.TestCase):
                     )
 
 
+class ProviderModelConvergenceTests(unittest.TestCase):
+    def test_model_catalog_matches_2026_07_26_official_set(self) -> None:
+        values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["providers"]
+        )
+        models = {
+            (entry["provider"], entry["model_id"]): entry
+            for entry in values["models"]
+        }
+        expected = {
+            ("claude", "claude-fable-5"): ("stable", "candidate", False),
+            (
+                "claude",
+                "claude-haiku-4-5-20251001",
+            ): ("stable", "default", True),
+            (
+                "claude",
+                "claude-mythos-5",
+            ): ("limited_availability", "catalog_only", False),
+            ("claude", "claude-opus-5"): ("stable", "default", True),
+            ("claude", "claude-sonnet-5"): ("stable", "default", True),
+            (
+                "codex",
+                "gpt-5.3-codex-spark",
+            ): ("preview", "catalog_only", False),
+            ("codex", "gpt-5.6-luna"): ("stable", "catalog_only", False),
+            ("codex", "gpt-5.6-sol"): ("stable", "default", True),
+            ("codex", "gpt-5.6-terra"): ("stable", "default", True),
+            (
+                "gemini",
+                "gemini-3.5-flash-lite",
+            ): ("stable", "default", True),
+            ("gemini", "gemini-3.6-flash"): ("stable", "default", True),
+        }
+
+        self.assertEqual(set(expected), set(models))
+        self.assertEqual(
+            "2026-07-26T20:08:18+09:00",
+            values["retrieved_at"],
+        )
+        independent_axes = {
+            "provider_lifecycle",
+            "repository_disposition",
+            "runtime_acceptance",
+            "entitlement",
+            "repository_default_eligible",
+            "runtime_activation_eligible",
+        }
+        sourced_policy_fields = {
+            "agent_coding_fit",
+            "native_model_field",
+            "native_reasoning_field",
+            "reasoning_control_kind",
+            "reasoning_source_url",
+            "repository_reasoning_controls",
+            "source_retrieved_at",
+            "source_url",
+            "supported_reasoning_controls",
+            "task_characteristics",
+            "task_fit_source_url",
+            "native_schema_source_url",
+            "work_profiles",
+        }
+        legacy_status_fields = {
+            "canonical_model_id",
+            "normalized_status",
+            "provider_status",
+        }
+        for key, (lifecycle, disposition, default_eligible) in expected.items():
+            with self.subTest(model=key):
+                model = models[key]
+                self.assertTrue(independent_axes.issubset(model))
+                self.assertTrue(sourced_policy_fields.issubset(model))
+                self.assertTrue(legacy_status_fields.isdisjoint(model))
+                self.assertEqual(lifecycle, model["provider_lifecycle"])
+                self.assertEqual(disposition, model["repository_disposition"])
+                self.assertEqual(
+                    "needs_revalidation", model["runtime_acceptance"]
+                )
+                self.assertEqual("needs_revalidation", model["entitlement"])
+                self.assertIs(
+                    default_eligible, model["repository_default_eligible"]
+                )
+                self.assertFalse(model["runtime_activation_eligible"])
+                self.assertEqual(values["retrieved_at"], model["source_retrieved_at"])
+
+    def test_work_profiles_and_role_assignments_are_exact(self) -> None:
+        provider_values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["providers"]
+        )
+        catalog_values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["catalog"]
+        )
+        observed_profiles = {
+            profile["profile_id"]: {
+                default["provider"]: (
+                    default["model_id"],
+                    (
+                        "effort"
+                        if default["provider"] == "claude"
+                        else "reasoning"
+                    ),
+                    default.get("effort", default.get("reasoning")),
+                )
+                for default in profile["defaults"]
+            }
+            for profile in provider_values["work_profiles"]
+        }
+        expected_profiles = {
+            "adversarial-review": {
+                "claude": ("claude-opus-5", "effort", "high"),
+                "codex": ("gpt-5.6-sol", "reasoning", "xhigh"),
+                "gemini": ("gemini-3.6-flash", "reasoning", "high"),
+            },
+            "complex-implementation": {
+                "claude": ("claude-sonnet-5", "effort", "high"),
+                "codex": ("gpt-5.6-sol", "reasoning", "high"),
+                "gemini": ("gemini-3.6-flash", "reasoning", "high"),
+            },
+            "evidence-research": {
+                "claude": ("claude-sonnet-5", "effort", "low"),
+                "codex": ("gpt-5.6-terra", "reasoning", "medium"),
+                "gemini": ("gemini-3.5-flash-lite", "reasoning", "medium"),
+            },
+            "long-horizon-supervision": {
+                "claude": ("claude-opus-5", "effort", "xhigh"),
+                "codex": ("gpt-5.6-sol", "reasoning", "xhigh"),
+                "gemini": ("gemini-3.6-flash", "reasoning", "high"),
+            },
+            "routine-validation": {
+                "claude": (
+                    "claude-haiku-4-5-20251001",
+                    "effort",
+                    None,
+                ),
+                "codex": ("gpt-5.6-terra", "reasoning", "low"),
+                "gemini": ("gemini-3.5-flash-lite", "reasoning", "minimal"),
+            },
+        }
+        expected_roles = {
+            "ci-cd-engineer": "complex-implementation",
+            "code-reviewer": "adversarial-review",
+            "doc-writer": "evidence-research",
+            "drift-detector": "routine-validation",
+            "eval-engineer": "adversarial-review",
+            "hook-developer": "complex-implementation",
+            "iac-reviewer": "adversarial-review",
+            "incident-responder": "complex-implementation",
+            "infra-implementer": "complex-implementation",
+            "qa-engineer": "complex-implementation",
+            "rules-engineer": "adversarial-review",
+            "security-auditor": "adversarial-review",
+            "skill-creator": "complex-implementation",
+            "workflow-supervisor": "long-horizon-supervision",
+        }
+
+        self.assertEqual(expected_profiles, observed_profiles)
+        self.assertEqual(
+            expected_roles,
+            {
+                entry["agent_id"]: entry["work_profile"]
+                for entry in catalog_values["agents"]
+            },
+        )
+
+    def test_no_automatic_fallback_or_legacy_model_is_active(self) -> None:
+        values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["providers"]
+        )
+        legacy_model_ids = {
+            "claude-opus-4-8",
+            "gemini-3.1-flash-lite",
+            "gemini-3.1-pro-preview",
+            "gemini-3.5-flash",
+            "gpt-5.6",
+        }
+        fallback_fields = {"fallback", "fallback_approval", "fallback_policy"}
+
+        self.assertNotIn("fallback_approvals", values)
+        self.assertTrue(
+            legacy_model_ids.isdisjoint(
+                {entry["model_id"] for entry in values["models"]}
+            )
+        )
+        for model in values["models"]:
+            with self.subTest(model=model["model_id"]):
+                self.assertTrue(fallback_fields.isdisjoint(model))
+                self.assertNotIn(
+                    model["provider_lifecycle"], {"deprecated", "retired"}
+                )
+                if model["repository_disposition"] == "catalog_only":
+                    self.assertNotEqual(
+                        "deprecated", model["provider_lifecycle"]
+                    )
+
+
 class RetirementLedgerTests(unittest.TestCase):
     def test_retirement_ledger_rejects_exact_fact_mutations_without_values(
         self,
@@ -566,6 +762,36 @@ class RetirementLedgerTests(unittest.TestCase):
                 "source_retrieved_at",
                 "2026-07-15T10:00:01+09:00",
             ),
+            (
+                "superseded-claude-replacement",
+                "model:claude:claude-opus-4-8",
+                "replacement_ids",
+                ["claude-sonnet-5"],
+            ),
+            (
+                "superseded-codex-status",
+                "model:codex:gpt-5.6",
+                "former_normalized_status",
+                "stable",
+            ),
+            (
+                "superseded-gemini-lite-date",
+                "model:gemini:gemini-3.1-flash-lite",
+                "superseded_at",
+                "2026-07-25",
+            ),
+            (
+                "superseded-gemini-preview-source",
+                "model:gemini:gemini-3.1-pro-preview",
+                "source_url",
+                "https://ai.google.dev/gemini-api/docs/deprecations",
+            ),
+            (
+                "superseded-gemini-flash-rationale",
+                "model:gemini:gemini-3.5-flash",
+                "rationale",
+                "A syntactically valid but unapproved rationale.",
+            ),
         )
         for label, record_id, field, mutated_value in mutations:
             with (
@@ -623,16 +849,29 @@ class RetirementLedgerTests(unittest.TestCase):
         }
         expected_replacements = {
             "model:claude:claude-opus-4-1-20250805": ("claude-opus-4-8",),
+            "model:claude:claude-opus-4-8": ("claude-opus-5",),
             "model:codex:gpt-5.2-codex": ("gpt-5.6-terra",),
+            "model:codex:gpt-5.6": ("gpt-5.6-sol",),
+            "model:gemini:gemini-3.1-flash-lite": (
+                "gemini-3.5-flash-lite",
+            ),
             "model:gemini:gemini-3.1-flash-lite-preview": (
                 "gemini-3.1-flash-lite",
             ),
+            "model:gemini:gemini-3.1-pro-preview": ("gemini-3.6-flash",),
+            "model:gemini:gemini-3.5-flash": ("gemini-3.6-flash",),
             "role:style-enforcer": ("qa-engineer", "rules-engineer"),
             "role:wiki-curator": ("doc-writer",),
         }
         expected_blobs = {
             "deprecated-model": "58ee9b29cb0e519a34ff919e1e29791171c458a4",
             "retired-role": "9f6a0fba4df6d37ab5f1a3390dc57d0dd99e8034",
+            "superseded-model": "a376b9d76263c3c2c42fbcb480af1791c1ec7a6f",
+        }
+        expected_commits = {
+            "deprecated-model": "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee",
+            "retired-role": "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee",
+            "superseded-model": "2a8a3af24b7e4b98d9f9a0dfba5c7f938af1ae82",
         }
         baseline_commit = "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee"
 
@@ -642,11 +881,18 @@ class RetirementLedgerTests(unittest.TestCase):
             with self.subTest(record_id=record_id):
                 record = records[record_id]
                 self.assertEqual(replacement_ids, record["replacement_ids"])
-                self.assertEqual(baseline_commit, record["source_commit"])
+                self.assertEqual(
+                    expected_commits[record["record_kind"]],
+                    record["source_commit"],
+                )
                 self.assertEqual(
                     expected_blobs[record["record_kind"]],
                     record["source_blob"],
                 )
+                if record["record_kind"] == "superseded-model":
+                    self.assertNotEqual(
+                        "deprecated", record["former_normalized_status"]
+                    )
                 observed_blob = subprocess.run(
                     [
                         "git",
@@ -1383,7 +1629,7 @@ class ContractSchemaTests(unittest.TestCase):
 
             def mutate(values) -> None:
                 values["providers"][0]["adoption_status"] = "sentinel-provider-state"
-                values["models"][0]["provider_status"] = "sentinel-model-state"
+                values["models"][0]["provider_lifecycle"] = "sentinel-model-state"
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             findings = validate_fixture(root)
@@ -1399,7 +1645,7 @@ class ContractSchemaTests(unittest.TestCase):
 
             def mutate(values) -> None:
                 values["models"][0].pop("source_url")
-                values["models"][1].pop("checked_at")
+                values["models"][1].pop("source_retrieved_at")
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             findings = validate_fixture(root)
@@ -1408,28 +1654,17 @@ class ContractSchemaTests(unittest.TestCase):
                 sum(item.code == "AGC-SCHEMA-MISSING-FIELD" for item in findings),
             )
 
-    def test_default_ineligible_fallback_is_rejected(self) -> None:
+    def test_automatic_fallback_field_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
 
             def mutate(values) -> None:
-                ineligible = next(
-                    item
-                    for item in values["models"]
-                    if not item["repository_default_eligible"]
-                )
-                eligible = next(
-                    item
-                    for item in values["models"]
-                    if item["provider"] == ineligible["provider"]
-                    and item["repository_default_eligible"]
-                )
-                eligible["fallback"] = ineligible["model_id"]
+                values["models"][0]["fallback"] = values["models"][1]["model_id"]
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             self.assertIn(
-                "AGC-MODEL-INELIGIBLE-FALLBACK", codes(validate_fixture(root))
+                "AGC-SCHEMA-UNKNOWN-FIELD", codes(validate_fixture(root))
             )
 
     def test_findings_are_deterministic_and_rendered_without_raw_values(self) -> None:
@@ -1439,7 +1674,7 @@ class ContractSchemaTests(unittest.TestCase):
             copy_contracts(root)
 
             def mutate(values) -> None:
-                values["models"][0]["provider_status"] = sentinel
+                values["models"][0]["provider_lifecycle"] = sentinel
                 values["models"][1]["source_url"] = sentinel
 
             mutate_yaml(root, "provider-models.yaml", mutate)
