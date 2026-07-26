@@ -24,6 +24,15 @@ active, until fresh independent specification and quality/security re-review
 returns a verdict. Historical reviews and the stale-input rehearsal record
 remain evidence for their exact earlier ranges and hashes only.
 
+Activation commit `35a9365f0fccbfc452a994d3ef9cae4ab41df1ba`
+established a clean post-activation boundary. Formal prerequisites, 54/54
+focused tests, and fixture-only preflight passed. The single authorized
+positive invocation then stopped before project startup at unexpected class
+`10`: the sandboxed process could not access `/var/run/docker.sock`, and the
+wrapper reported `code=local-image-object-missing`. The positive was not
+repeated, and the injected-negative command was not run, as required by the
+approved stop/no-repeat rule. No current record or task-owned resource exists.
+
 ## Inputs
 
 - [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
@@ -160,18 +169,21 @@ tokens, keys, authentication material, or shell history.
 
 | Task ID | Description | Parent contract | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-CDER-001` | Correct historical review-range/count overclaims and activate this successor Task | Program and Delivery Plans | Metadata, lifecycle, Task/README wording, generated freshness, diff hygiene | Successor implementation agent | In progress |
-| `T-CDER-002` | Reconcile corrected handoffs, accepted pair, stale/current record state, focused suite, and fixture preflight | Specs 124-127 | Exact mode/hash/tuple checks, 54-test suite, preflight exit 0 | Successor implementation agent | Pending clean activation commit |
-| `T-CDER-003` | Run exactly one corrected-hash positive rehearsal and capture the record before replacement | Spec 127 / Delivery Plan | Exit 0 plus concise record and zero-resource evidence | Successor implementation agent | Pending |
-| `T-CDER-004` | Run exactly one injected `canary-health-timeout` rehearsal and prove replacement/rollback/cleanup | Spec 127 / Delivery Plan | Exit 30 plus replacement, rollback, post-health, and zero-resource evidence | Successor implementation agent | Pending |
-| `T-CDER-005` | Reconcile tracked/ignored evidence and hand off for independent review | Program Plan | Scoped validation and logical evidence commit | Successor implementation agent and independent reviewers | Pending |
+| `T-CDER-001` | Correct historical review-range/count overclaims and activate this successor Task | Program and Delivery Plans | Metadata, lifecycle, Task/README wording, generated freshness, diff hygiene | Successor implementation agent | Complete in activation commit `35a9365f` |
+| `T-CDER-002` | Reconcile corrected handoffs, accepted pair, stale/current record state, focused suite, and fixture preflight | Specs 124-127 | Exact mode/hash/tuple checks, 54-test suite, preflight exit 0 | Successor implementation agent | Complete; all formal gates passed |
+| `T-CDER-003` | Run exactly one corrected-hash positive rehearsal and capture the record before replacement | Spec 127 / Delivery Plan | Exit 0 plus concise record and zero-resource evidence | Successor implementation agent | Stopped before startup at unexpected class 10; no record |
+| `T-CDER-004` | Run exactly one injected `canary-health-timeout` rehearsal and prove replacement/rollback/cleanup | Spec 127 / Delivery Plan | Exit 30 plus replacement, rollback, post-health, and zero-resource evidence | Successor implementation agent | Not run because `T-CDER-003` triggered the stop/no-repeat rule |
+| `T-CDER-005` | Reconcile tracked/ignored evidence and hand off for independent review | Program Plan | Scoped validation and logical evidence commit | Successor implementation agent and independent reviewers | Evidence reconciliation in progress; review pending |
 
 ## Work Log
 
 | Date | Work unit | Result |
 | --- | --- | --- |
 | 2026-07-26 | Discovery | Confirmed the successor authorization and historical review residuals. Preliminary read-only discovery found the expected corrected handoff and accepted-pair files, the stale historical record, and no current record. This was not the formal post-activation prerequisite gate and did not run Docker. |
-| 2026-07-26 | `T-CDER-001` activation | Pending the clean activation commit. No rehearsal, cleanup, advisory, build, pull, network, wrapper, pre-commit, remote, registry, Release, deployment, production/shared runtime, credential, or secret-value action has run under this Task. |
+| 2026-07-26 | `T-CDER-001` activation | Commit `35a9365f0fccbfc452a994d3ef9cae4ab41df1ba` activated the successor Task from a clean tracked tree. Metadata selected 10/0; repository metadata contracts passed; template contracts passed 38/38; traceability passed 46/0; alignment passed 668 documents / 5,542 links / 141 operations documents / 0; semantic inventory was fresh at 929/2,145; Wiki index/coverage were fresh at 1,316/1,315; Task/README wording and diff hygiene passed. |
+| 2026-07-26 | `T-CDER-002` post-activation gates | Formal reconciliation passed readiness mode/size/SHA `0600`/1,198/`20f46377…`, recovery `0600`/642/`dab8e587…`, pair `0600`/1,806/`ac61c176…`, exact baseline/candidate verdict hashes and full tuples, current-record absence, and historical stale-record classification. The delivery suite passed 54/54, and fixture-only preflight exited 0 with ports `18080,18081` without Docker. |
+| 2026-07-26 | `T-CDER-003` exactly-once positive attempt | Exactly one approved positive command was invoked with task ID `2026-07-26-dre-corrected`. It returned unexpected class `10` immediately: Docker socket access was denied and the wrapper emitted `code=local-image-object-missing`. Failure was observed by `2026-07-26T04:50:03Z`. No project IDs, start/end record timestamps, result, promotion, rollback, post-health, cleanup, or data-impact fields were published because execution stopped before startup and record construction. The command was not repeated. |
+| 2026-07-26 | `T-CDER-004` stop disposition | The injected-negative command was not invoked. Read-only Docker inventory returned zero owner-, task-, and `hyhome-dre-20260719-*` name-scoped containers, networks, and volumes. The current record and task `/tmp` publication paths were absent, so rescue cleanup was not required or run. No advisory, build, pull, network, wrapper, pre-commit, remote, registry, Release, deployment, production/shared runtime, credential, or secret-value action ran. |
 
 ## Verification Evidence
 
@@ -197,8 +209,31 @@ negative record proves failed canary, no promotion, rollback to baseline,
 post-rollback health, `data_impact=none`, cleanup passed, and zero owned
 containers, networks, volumes, and publication paths.
 
-Actual evidence: pending the clean activation commit. No runtime PASS is
-claimed here.
+Actual evidence:
+
+- activation is commit
+  `35a9365f0fccbfc452a994d3ef9cae4ab41df1ba`;
+- the formal handoff/pair gate, 54/54 focused suite, and fixture-only preflight
+  passed exactly as recorded in the Work Log. Preflight was fixture-only and
+  intentionally made no Docker call;
+- exactly one positive command was run:
+  `bash scripts/operations/rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-26-dre-corrected --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none`.
+  It exited `10` after Docker socket permission denial, followed by
+  `code=local-image-object-missing`; this unexpected pre-start result triggered
+  the approved stop/no-repeat rule;
+- the failure occurred before any project or canonical record existed, so
+  project IDs, record timestamps, mode/size/inode/hash, result, promotion,
+  rollback, post-health, cleanup, and data-impact values are `not_published`;
+- the injected-negative command was `not_run` under the stop/no-repeat rule;
+- the current record is absent. The historical stale record remains mode
+  `0600`, 3,305 bytes, inode `538673`, SHA-256
+  `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`;
+- read-only scoped Docker and `/tmp` inventories are zero, and no rescue
+  cleanup was required.
+
+Verification result: prerequisite/static evidence passes, but the corrected
+positive/negative runtime acceptance pair is incomplete. No runtime PASS,
+promotion, rollback, record replacement, completion, or approval is claimed.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -218,8 +253,9 @@ be rerun, and direct all-files pre-commit remains prohibited.
 
 ## Review Evidence
 
-Implementation review verdict: pending activation, the exact runtime sequence,
-and evidence reconciliation.
+Implementation review verdict: activation and prerequisite/static gates pass.
+Runtime acceptance is blocked by the exactly-once positive's unexpected
+pre-start class `10`; the injected-negative lane was not run.
 
 Specification review verdict: pending fresh independent scoped re-review.
 
@@ -227,21 +263,25 @@ Quality/security review verdict: pending fresh independent scoped re-review.
 
 Findings and disposition: historical Task 5 and whole-branch approvals remain
 historical-only for their exact ranges and bound hashes. Scoped residual
-`I1/M1` is owned by `T-CDER-001`; no current approval is inferred from its
-correction.
+`I1/M1` is corrected in activation commit `35a9365f`; no current approval is
+inferred from that correction. Fresh reviewers must assess the stopped runtime
+and any separately authorized successor disposition.
 
 ## Commit Ledger
 
-Activation identity: pending. The intended logical unit is
-`docs(sdlc): authorize corrected delivery evidence`; tracked content does not
-self-record that commit's SHA.
+Activation identity:
+`35a9365f0fccbfc452a994d3ef9cae4ab41df1ba`
+(`docs(sdlc): authorize corrected delivery evidence`).
 
 Runtime/evidence identity: pending. The intended logical unit is
 `docs(evidence): record corrected delivery rehearsal`; tracked content will not
 self-record that commit's SHA.
 
-Commit validation: activation and runtime evidence gates remain pending.
-Full commit SHAs belong in the ignored successor report after each commit.
+Commit validation: activation metadata/contracts/template/traceability/
+alignment/generated/status-wording/diff gates pass. Runtime evidence records
+the exact stop without converting it into a PASS. The current evidence commit
+does not self-record its own SHA; its full identity belongs in the ignored
+successor report after creation.
 
 ## Deferred and Blocked Items
 
@@ -250,10 +290,13 @@ production/shared runtime, live-data, credential/OIDC, secret-value, image
 build/pull, network, advisory, Task 3 producer, controlled-wrapper, and
 all-files pre-commit action.
 
-Blocked items: runtime is blocked until the clean activation commit exists and
-the formal prerequisite, focused-suite, and fixture-only preflight gates pass.
-Completion remains blocked on the exact positive/negative evidence pair and
-fresh independent scoped re-review.
+Blocked items: the activation and formal prerequisite/static gates passed, but
+the exactly-once positive stopped before startup because the sandboxed command
+could not access the Docker socket. The approved no-repeat rule prohibits a
+retry, and its stop rule prevented the injected-negative command. Completion
+remains blocked on a valid positive/negative evidence pair and fresh
+independent scoped re-review. Any change to that boundary requires new explicit
+human direction; it is not inferred here.
 
 Deferral destination: stateful impact routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md).

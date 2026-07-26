@@ -160,13 +160,13 @@ docs/04.execution/tasks/
 ├── 2026-07-13-document-contract-canonicalization.md # Completed document-contract evidence; post-closure findings resolved
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness execution evidence
 ├── 2026-07-18-target-surface-contract-convergence.md # Completed; 483-row blocking/pass promotion and closure reviews passed
-├── 2026-07-19-operational-readiness-closure-program.md # Reopened Program; Task 5 rerun and final re-review pending
+├── 2026-07-19-operational-readiness-closure-program.md # Reopened Program; stopped Task 5 successor disposition and final re-review pending
 ├── 2026-07-19-compose-runtime-readiness-remediation.md # Completed local Compose readiness evidence
 ├── 2026-07-19-security-supply-chain-remediation.md # Completed local supply-chain evidence
 ├── 2026-07-19-infrastructure-operations-readiness-remediation.md # Completed representative PostgreSQL recovery evidence
 ├── 2026-07-19-deployment-release-engineering-remediation.md # Active; corrected-handoff rehearsal pending
 ├── 2026-07-23-security-supply-chain-runtime-closure.md # Completed approved-network Grype seed and local Spec 126 runtime evidence
-├── 2026-07-26-corrected-delivery-evidence-reconciliation.md # Active corrected-hash Task 5 successor; fresh review pending
+├── 2026-07-26-corrected-delivery-evidence-reconciliation.md # Active Task 5 successor; positive stopped, negative not run, fresh review pending
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -264,13 +264,13 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Document Corpus Lifecycle Migration Foundation Task (completed)**: [2026-07-14-document-corpus-lifecycle-migration-foundation.md](./2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - **Agent Governance Harness Convergence Task (completed; post-closure review pending)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
 - **Target Surface Contract Convergence Task**: [2026-07-18-target-surface-contract-convergence.md](./2026-07-18-target-surface-contract-convergence.md)
-- **Operational Readiness Closure Program Task (reopened; Task 5 rerun and final re-review pending)**: [2026-07-19-operational-readiness-closure-program.md](./2026-07-19-operational-readiness-closure-program.md)
+- **Operational Readiness Closure Program Task (reopened; stopped Task 5 successor disposition and final re-review pending)**: [2026-07-19-operational-readiness-closure-program.md](./2026-07-19-operational-readiness-closure-program.md)
 - **Compose Runtime Readiness Remediation Task (completed local evidence owner)**: [2026-07-19-compose-runtime-readiness-remediation.md](./2026-07-19-compose-runtime-readiness-remediation.md)
 - **Security Supply-Chain Remediation Task (completed local evidence owner)**: [2026-07-19-security-supply-chain-remediation.md](./2026-07-19-security-supply-chain-remediation.md)
 - **Infrastructure Operations Readiness Remediation Task (completed representative-local evidence owner)**: [2026-07-19-infrastructure-operations-readiness-remediation.md](./2026-07-19-infrastructure-operations-readiness-remediation.md)
 - **Deployment and Release Engineering Remediation Task (active; corrected-handoff rehearsal pending)**: [2026-07-19-deployment-release-engineering-remediation.md](./2026-07-19-deployment-release-engineering-remediation.md)
 - **Security Supply-Chain Runtime Closure Task (completed approved-network evidence owner)**: [2026-07-23-security-supply-chain-runtime-closure.md](./2026-07-23-security-supply-chain-runtime-closure.md)
-- **Corrected Delivery Evidence Reconciliation Task (active; exact local sequence and fresh review pending)**: [2026-07-26-corrected-delivery-evidence-reconciliation.md](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
+- **Corrected Delivery Evidence Reconciliation Task (active; positive stopped, negative not run, fresh review pending)**: [2026-07-26-corrected-delivery-evidence-reconciliation.md](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)

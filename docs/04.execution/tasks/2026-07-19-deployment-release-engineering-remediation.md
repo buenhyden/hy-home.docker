@@ -26,9 +26,11 @@ Independent specification and quality/security reviews of the historical Task
 do not cover a new rehearsal against the corrected upstream handoffs. The
 fixed `rehearsal-record.json` path is absent; its prior bytes are preserved
 under an explicitly stale ignored filename. Task 5 remains active pending
-the clean activation of the
-[corrected evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md),
-its exact local rehearsal sequence, evidence reconciliation, and re-review.
+resolution of the stopped
+[corrected evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
+and fresh re-review. That Task activated cleanly, but its exactly-once positive
+invocation stopped before startup at unexpected class `10`; it was not
+repeated, and the injected-negative command was not run.
 The Program-owned controlled wrapper passed on 2026-07-26 only for its exact
 pre-remediation checkpoint.
 
@@ -154,9 +156,9 @@ untracked.
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
 | `T-DRE-001` | Typed verdict/record fixtures, gates, CLI, and tests | `DRE-001`–`DRE-004` | Focused RED/GREEN and preflight | Fresh implementation agent | Complete; current focused suite 54/54 and fixture-only preflight pass |
-| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Reopened; historical runtime passed, but a new run against corrected readiness/recovery handoffs is not authorized or run |
-| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Reopened; fixed current record is absent and the stale-input record is preserved only as historical evidence |
-| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Reopened; historical exact-range reviews remain valid only for their range, and fresh runtime/evidence re-review is pending |
+| `T-DRE-002` | Project-scopable service and baseline/canary health | `DRE-001`, `DRE-003` | Separate projects and two-part health | Fresh implementation agent | Reopened; the authorized corrected-hash positive stopped before startup at class 10 |
+| `T-DRE-003` | Promotion record, failure injection, rollback, cleanup | `DRE-002`, `DRE-004` | Positive and expected-failure rehearsal | Fresh implementation agent | Reopened; no current record, positive not repeated, injected negative not run |
+| `T-DRE-004` | Runbook handoff and independent reviews | `VAL-DRE-001`–`004` | Spec plus release/security C0/I0/M0 | Separate reviewers | Reopened; historical reviews remain range-bound and fresh disposition/re-review is pending |
 
 ## Work Log
 
@@ -181,6 +183,7 @@ untracked.
 | 2026-07-26 | Final lifecycle review remediation | The local promotion/rollback boundary is complete and this Task transitions to `completed`; Release, registry, remote deployment, live environments, credentials, and production targets remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
 | 2026-07-26 | Final-review upstream reconciliation and lifecycle reopen | Delivery implementation remains GREEN at 54/54 against the new Compose/PostgreSQL canonical schemas. The corrected readiness handoff is mode 0600, 1,198 bytes, SHA-256 `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; corrected recovery is mode 0600, 642 bytes, SHA-256 `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`. The historical mode-0600 Task 5 record SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823` binds the superseded hashes `12fbe9fa…` and `bf7109f5…`, so it was not reused. Its bytes were preserved as ignored `rehearsal-record.stale-inputs-2026-07-26.json`, and the fixed current `rehearsal-record.json` path is absent. No Task 5 rehearsal, cleanup, release, deployment, build, pull, network, or remote action ran. This Task returns to `active` pending fresh authorization, runtime evidence, and independent re-review; no current approval or completion is claimed. |
 | 2026-07-26 | Corrected evidence successor activation | The user explicitly authorized one bounded corrected-hash positive rehearsal followed by one injected `canary-health-timeout` rehearsal under the successor Task. Runtime remains pending until that Task has a clean activation commit and its formal prerequisite, focused-suite, and fixture-only preflight gates pass. The Delivery Task, successor Task, and Program Task remain active and review-pending. |
+| 2026-07-26 | Corrected evidence successor stop | Activation commit `35a9365f` was clean; exact corrected handoff/pair reconciliation, 54/54 delivery tests, and fixture preflight passed. Exactly one positive command with task ID `2026-07-26-dre-corrected` then exited unexpected class `10` before startup because Docker socket access was denied, followed by `code=local-image-object-missing`. It created no project or current record. The positive was not repeated and the injected-negative command was not run. Read-only owner/task/name-scoped Docker inventory and task `/tmp` paths were empty, so rescue cleanup was not required. |
 
 ## Verification Evidence
 
@@ -225,6 +228,20 @@ Actual evidence:
 - fixture-only preflight exits 0 and reports exact revision, passing readiness
   and recovery boundaries, valid project-scopable Compose, and loopback ports
   `18080,18081`, with no Docker call;
+- successor activation `35a9365f` passed exact corrected readiness/recovery
+  hash, accepted-pair mode/hash/full-tuple, stale/current record, 54/54 focused,
+  and fixture-only preflight gates; preflight intentionally made no Docker
+  call;
+- exactly one successor positive invocation used
+  `bash scripts/operations/rehearse-sample-service-delivery.sh rehearse --task-id 2026-07-26-dre-corrected --baseline-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json --candidate-verdict _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json --failure-mode none`.
+  It exited unexpected class `10` before startup because Docker socket access
+  was denied, followed by `code=local-image-object-missing`. It published no
+  project IDs, timestamps, result, promotion, rollback, post-health, cleanup,
+  data-impact, or current record fields. The positive was not repeated and the
+  injected-negative command was not run;
+- read-only owner-, task-, and `hyhome-dre-20260719-*` name-scoped Docker
+  inventory plus task `/tmp` publication paths were empty. No rescue cleanup
+  was required;
 - the historical sole real command exited `10` with
   `code=pair-manifest-missing`; Docker was not reached and the Task 5 canonical
   directory/record remained absent;
@@ -273,11 +290,14 @@ Actual evidence:
   stat/hash/ignore/`jq`/tuple reconciliation passed.
 
 Verification results: implementation, static validation, and 54/54 focused
-tests at exit 0 pass against the corrected upstream schemas. Historical
+tests at exit 0 pass against the corrected upstream schemas. The successor
+runtime acceptance pair is incomplete: the exactly-once positive stopped at
+unexpected pre-start class `10`, and the injected negative was not run.
+Historical
 fixture-only preflight, producer compatibility, immutable-input,
 pair-manifest, and positive-then-injected-negative runtime evidence remain
 valid for their exact inputs and reviewed range only. There is no current
-canonical ignored record and no new runtime claim. Exit classes are `0=pass`,
+canonical ignored record and no new runtime PASS. Exit classes are `0=pass`,
 `2=usage`,
 `10=verdict/pair-manifest/preflight`, `20=baseline`, `30=canary/health`,
 `40=promotion record`, `50=rollback`, and `60=cleanup`.
@@ -286,7 +306,8 @@ Task 7 created the accepted portable pair but did not itself execute Task 5.
 The historical approved delivery sequence created both positive and rollback
 evidence. That negative replacement is retained only under an explicitly stale
 filename because corrected upstream handoffs changed its bound hashes. Current
-Task 5 runtime, evidence reconciliation, and independent reviews are pending.
+Task 5 remains active after the stopped successor attempt; evidence
+reconciliation and independent disposition/reviews are pending.
 The Program-owned controlled all-files wrapper passed on 2026-07-26 from clean
 checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0,
 snapshot pass, zero observed path counts, and all four path sets empty.
@@ -320,7 +341,9 @@ The wrapper is not rerun under its exact-once contract, and direct
 ## Review Evidence
 
 Implementation review verdict: implementation and the corrected-schema
-contract suite pass 54/54. Historical runtime execution, evidence
+contract suite pass 54/54. The successor positive stopped before startup at
+unexpected class `10`, so no corrected runtime acceptance verdict exists.
+Historical runtime execution, evidence
 reconciliation, author self-check, and both independent runtime-evidence
 reviews remain exact-range evidence; they do not approve a new run against the
 corrected upstream hashes.
@@ -402,8 +425,10 @@ Python compilation, Bash syntax, ShellCheck, and diff hygiene pass.
 Historical terminal domain reviews are APPROVED C0/I0/M0; whole-branch
 specification v5 and quality/security v3 reviews are also APPROVED C0/I0/M0.
 The historical positive/rollback runtime evidence has exact-range specification
-and quality/security approvals at C0/I0/M0 with no findings. Current Task 5
-runtime and re-review remain pending.
+and quality/security approvals at C0/I0/M0 with no findings. Successor
+activation is `35a9365f`; its static gates pass, but its positive stopped before
+startup and its negative was not run. Current Task 5 runtime acceptance and
+re-review remain pending.
 
 ## Deferred and Blocked Items
 
@@ -411,14 +436,16 @@ Deferred items: GitHub workflows/environments/releases, registry publication,
 remote deployment, production targets, OIDC/credentials, real Release records,
 and stateful data rollback.
 
-Blocked items: Spec 126 seed/policy/pair inputs are current, but Task 5 has no
-current record because its historical record binds superseded readiness and
-recovery hashes. A new local positive/injected-negative sequence requires
-fresh explicit authorization; after execution, its evidence requires fresh
-independent review. Any stateful impact still blocks promotion and routes to
-Spec 125. The Program-owned controlled all-files wrapper passed on 2026-07-26
-only for checkpoint `263e046f`; it neither authorizes nor validates a rehearsal
-rerun. This Task is active, and no current completion or approval is reported.
+Blocked items: Spec 126 seed/policy/pair inputs and corrected upstream handoffs
+are current, but Task 5 has no current record. The fresh authorization was
+activated in `35a9365f`; its exactly-once positive stopped before startup at
+unexpected class `10` because the sandboxed invocation could not access the
+Docker socket. It was not repeated, and the injected-negative command was not
+run. Any change to that stop/no-repeat boundary requires new explicit human
+direction, followed by fresh independent review. Any stateful impact still
+blocks promotion and routes to Spec 125. The Program-owned controlled wrapper
+PASS at `263e046f` neither authorizes nor validates a rehearsal rerun. This Task
+is active, and no current completion or approval is reported.
 
 Deferral destination: data recovery routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);

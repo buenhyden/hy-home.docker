@@ -14,9 +14,11 @@ This active Task is the execution and closure ledger for the local-isolated
 operational readiness program. It coordinates four domain Tasks without
 replacing their evidence ownership. Final-review corrections produced current
 Compose and PostgreSQL handoffs and retained the supply-chain pair, but they
-also invalidated the prior Task 5 record's upstream hashes. Task 5 and this
-Program are therefore reopened pending a newly authorized delivery rehearsal
-and fresh independent re-review. The activation statement remains historical:
+also invalidated the prior Task 5 record's upstream hashes. The corrected
+successor activated, but its exactly-once positive stopped before startup at
+unexpected class `10`; it was not repeated and the injected negative was not
+run. Task 5 and this Program remain active pending disposition and fresh
+independent re-review. The activation statement remains historical:
 no Compose service, database rehearsal, image build, signing operation,
 promotion, rollback, remote action, or controlled all-files QA result was
 claimed at activation.
@@ -148,8 +150,8 @@ Redaction boundary:
 | `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete at the local-isolated boundary; current 44/44 and corrected runtime evidence pass |
 | `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Complete at the local boundary; current 65/65 plus 9/9 seed tests, corrected tool/material identity, migrated seed, and portable pair reconciliation pass |
 | `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Complete at the representative-local boundary; current 49/49 and corrected strict frozen runtime pass |
-| `T-ORC-005` | Pair-bound promotion and previous-runtime-image-ID rollback. | Delivery domain Task | Reopened; implementation passes 54/54, but the historical record binds superseded readiness/recovery hashes and no current record exists |
-| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; corrected Task 5 successor authorization is recorded, while runtime evidence and fresh final re-review remain pending |
+| `T-ORC-005` | Pair-bound promotion and previous-runtime-image-ID rollback. | Delivery domain Task | Reopened; implementation passes 54/54, but the corrected positive stopped before startup at class 10 and no current record exists |
+| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; stopped successor disposition and fresh final re-review remain pending |
 
 ## Work Log
 
@@ -194,6 +196,7 @@ facts they name.
 | 2026-07-26 | `T-ORC-006` historical targeted lifecycle checkpoint | Documentation specialist | Historical checkpoint only: against full base `73f4ea68ce51f59ed0ee7baef64a2ebf471501aa`, changed metadata selected 24 documents with 0 violations, 0 legacy exceptions, and 0 transition overrides; repository metadata contracts and lifecycle contract each returned 0 violations. Impacted lifecycle selected 221 surfaces with 0 violations and only the configured Task-directory budget warning; promoted lifecycle returned 0 violations. Semantic inventory was fresh at 928 records/2,145 advisory findings. Foundation manifest/summary, audit matrix, security-readiness/supply-chain owners, and LLM Wiki index/coverage were fresh. Traceability passed 46/0; alignment passed at 667 documents, 5,522 links, and 141 operations documents with 0 failures; the focused supply-chain suite passed 63/63; diff hygiene passed. The later final correction checkpoint superseded the 24/221/63 counts. The exact-once wrapper and direct all-files pre-commit were not rerun. |
 | 2026-07-26 | `T-ORC-006` final-review correction wave | Final-review remediation agent | RED `163f434b` covers unhealthy-service masking and collapsed target/config identity. GREEN `e8934783` fails closed on service health and binds repo, target descriptor, and independently hashed config body across Compose, PostgreSQL, supply-chain tools/materials, and Grype seed metadata. CI routing `324a5ea3` runs all five focused modules, and lifecycle wording correction is `b342a5ae`. Pre-runtime suites pass Compose 44/44, PostgreSQL 49/49, Grype seed 9/9, and supply chain 65/65; delivery passes 54/54 after corrected upstream canonicals exist. Corrected Compose runtime returned `0/0/30`, preserved mode-0600 canonical SHA-256 `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`, and left zero owned resources. PostgreSQL returned exact `0/50/50/10/20/0`, published mode-0600 canonical SHA-256 `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`, and left zero owned resources; no later Task 4 command or test ran. The existing supply pair remains exact after read-only typed tuple, runtime target, independent config-body, hash, and mode reconciliation; no advisory was rerun. The Grype seed was atomically republished with corrected tool tuple and unchanged cache/database identity. Because the historical Task 5 record binds the superseded handoff hashes, its bytes are preserved under an explicitly stale ignored filename and the fixed current record is absent. Task 5 and the Program return to `active`; fresh authorization/runtime evidence and independent re-review remain pending. No build, pull, network, remote, release, deployment, wrapper, or all-files pre-commit action ran. |
 | 2026-07-26 | `T-ORC-005` corrected evidence successor activation | Successor implementation agent | The user's immediately preceding instruction authorizes exactly one corrected-hash positive rehearsal followed by exactly one injected `canary-health-timeout` rehearsal, with task-owned resources and full cleanup only. The canonical successor Task records the no-network/no-pull/no-build and external-action boundary. Runtime remains pending until the clean activation commit and post-activation prerequisite gates pass; the Delivery Task, successor Task, and Program Task remain active and review-pending. |
+| 2026-07-26 | `T-ORC-005` corrected evidence successor stop | Successor implementation agent | Activation `35a9365f`, formal handoff/pair gates, delivery 54/54, and fixture-only preflight passed. Exactly one positive then exited unexpected class `10` before startup because the sandboxed invocation could not access the Docker socket; the wrapper also reported `code=local-image-object-missing`. The positive was not repeated and the injected negative was not run. Current record and task `/tmp` paths were absent; owner/task/name-scoped Docker inventories were zero, so rescue cleanup was not required. New explicit human direction is required to alter the stop/no-repeat boundary. |
 
 ## Verification Evidence
 
@@ -257,9 +260,11 @@ Current domain evidence is bounded as follows:
   binds superseded readiness `12fbe9fa…` and recovery `bf7109f5…` hashes.
   Those bytes are preserved as
   `rehearsal-record.stale-inputs-2026-07-26.json`; the fixed current
-  `rehearsal-record.json` path is absent. No Task 5 runtime was authorized or
-  run in this correction wave. Task 5 is active pending fresh authorization,
-  runtime evidence, and independent re-review.
+  `rehearsal-record.json` path is absent. Successor activation `35a9365f` and
+  formal gates passed, but its exactly-once positive exited unexpected class
+  `10` before startup on Docker socket denial. It was not repeated, the
+  injected negative was not run, and scoped resource inventories were zero.
+  Task 5 is active pending explicit disposition and independent re-review.
 
 The earlier Task 6 lifecycle/generated-owner reconciliation remains historical
 evidence. Its exact checkpoint results were 24 changed metadata documents,
@@ -504,10 +509,11 @@ Deferred items:
 - production RTO/RPO, SLSA conformance, and production-readiness claims.
 
 Blocked items: none remain for the Task 3 seed/policy/pair or the Task 5
-implementation contract. `T-ORC-005` runtime evidence is reopened because its
-historical record binds superseded readiness/recovery hashes. A new delivery
-sequence requires explicit authorization, followed by evidence reconciliation
-and fresh independent review. The `T-ORC-006` controlled wrapper passed on
+implementation contract. `T-ORC-005` runtime evidence remains incomplete
+because the authorized exactly-once positive stopped before startup at class
+`10`; the no-repeat rule prevented a retry and the injected negative was not
+run. New explicit human direction is required to alter that boundary, followed
+by fresh independent review. The `T-ORC-006` controlled wrapper passed on
 2026-07-26 only for exact checkpoint `263e046f`; it does not cover or authorize
 the correction wave. The delivery Task and Program Task are active. Fresh final
 re-review remains pending and is not reported as approval. No release,
