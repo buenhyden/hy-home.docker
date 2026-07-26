@@ -276,6 +276,7 @@ entries:
   - scripts/validation/check-doc-implementation-alignment.sh
   - scripts/validation/check-document-metadata.py
   - scripts/validation/check-repo-contracts.sh
+  - tests/validation/test_agent_governance_ci_routing.py
   partition_plan: null
   preservation_class: null
   evidence:
