@@ -1,11 +1,11 @@
 # Compose Runtime Readiness Remediation
 
-> Active local-isolated contract for bounded Compose startup, observed readiness, and failure-recovery evidence.
+> Completed local-isolated contract for bounded Compose startup, observed readiness, and failure-recovery evidence.
 
 ## Overview
 
 This folder owns the Compose runtime-readiness follow-up created from the
-canonical agentic engineering audit. It records the active local-isolated
+canonical agentic engineering audit. It records the completed local-isolated
 contract for the `core` five-service set. It does not own observed execution or
 current lifecycle evidence; those are owned by the exact
 [domain Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
@@ -50,7 +50,7 @@ separately owned and are dependencies only where their outputs are consumed.
 
 ## How to Work in This Area
 
-1. Read [spec.md](./spec.md) for the active local contract.
+1. Read [spec.md](./spec.md) for the completed local contract.
 2. Treat PRD 025, ARD 0028, and ADR 0028 as the approved architecture chain;
    Spec 123 remains audit lineage only.
 3. Use the [domain Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
@@ -67,7 +67,7 @@ separately owned and are dependencies only where their outputs are consumed.
 - [Operational readiness PRD](../../01.requirements/025-operational-readiness-closure.md)
 - [Operational readiness ARD](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [Local-isolated evidence ADR](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Active transition plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
+- [Completed transition plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
 - [Domain Task evidence owner](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
 - [Program Task evidence owner](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)

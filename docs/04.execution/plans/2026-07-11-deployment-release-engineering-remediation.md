@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-11-deployment-release-engineering-remediation
 artifact_type: plan
 parent_ids:
@@ -52,7 +52,7 @@ typed JSON handoff/record fixtures; local HTTP and container-health probes.
 
 ## Overview
 
-This active plan turns Spec 127 into an executable local sequence for
+This prospective plan turns Spec 127 into an executable local sequence for
 `examples/sample-web-service` baseline/canary environments, verified-digest
 promotion, health gates, release/deployment evidence records, and previous
 runtime-image-ID rollback. Observed execution and lifecycle evidence belongs only in the

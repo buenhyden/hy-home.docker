@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:126-security-supply-chain-remediation
 artifact_type: spec
 parent_ids:

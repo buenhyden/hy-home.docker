@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-19-deployment-release-engineering-remediation
 artifact_type: task
 parent_ids:
@@ -11,7 +11,7 @@ parent_ids:
 
 ## Overview
 
-This active Task records the completed local pair-bound baseline/canary
+This completed Task records the local pair-bound baseline/canary
 promotion and previous-runtime-image-ID rollback rehearsal for
 `examples/sample-web-service`. The approved sequence ran exactly once in each
 mode: a positive promotion followed by an injected canary-health failure and
@@ -19,9 +19,10 @@ verified rollback. No GitHub Release, registry publication, remote deployment,
 or remote environment was created.
 
 Fresh independent specification and quality/security reviews of the Task 5
-runtime evidence are both `APPROVED C0/I0/M0` with no findings. This Task stays
-active until final whole-branch reviews and lifecycle reconciliation are
-complete. The Program-owned controlled wrapper passed on 2026-07-26.
+runtime evidence are both `APPROVED C0/I0/M0` with no findings. The Task is
+completed at the local-isolated boundary; the Program's post-remediation final
+re-review remains pending. The Program-owned controlled wrapper passed on
+2026-07-26 only for its exact pre-remediation checkpoint.
 
 The Task owns the concise
 `_workspace/repo-support/task-2026-07-19-deployment-release-engineering-remediation/delivery/rehearsal-record.json`
@@ -161,6 +162,7 @@ untracked.
 | 2026-07-23 | Accepted input readiness | Task 7 published a mode-0600 schema-v3 pair for source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, generation `hyhome-verification-verdict-pair-v3`, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`. Its baseline/candidate verdict hashes are `057f301edbb1475a398c41d16272986580f754d149473263be6ca29b5728497b` and `89db847616e1533240edeb060f008c21406de5703cf49d09a7590839c3df27ce`; the full pair-bound local refs and runtime IDs satisfy the static Task 5 consumer contract. At this checkpoint no real Task 5 rehearsal had run; the later runtime row supersedes that prerequisite-only state. |
 | 2026-07-23 | Approved Task 5 runtime sequence | The focused unit suite passed 54/54 at exit 0, followed by fixture-only preflight at exit 0. Exactly one positive real rehearsal then exited 0 for projects `hyhome-dre-20260719-1709404-baseline` and `hyhome-dre-20260719-1709404-canary`. It ran from `2026-07-22T20:54:30Z` through `2026-07-22T20:54:46Z`; baseline/candidate both passed, promotion was `promoted`, rollback was `not_required`, post-rollback health was `not_applicable`, result was `promoted`, cleanup passed, and `data_impact=none`. Its mode-0600, 3,295-byte canonical record had inode `1290126` and SHA-256 `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`. Exactly one injected `canary-health-timeout` rehearsal then exited expected class 30 with `health-deadline-exceeded` for projects `hyhome-dre-20260719-1731921-baseline` and `hyhome-dre-20260719-1731921-canary`. It ran from `2026-07-22T20:56:27Z` through `2026-07-22T20:58:59Z`; baseline passed, candidate failed, promotion was `not_promoted`, rollback was `rolled_back_to_baseline`, post-rollback health passed, result was `rolled_back`, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record has inode `538673` and SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`; changed inode and hash prove replacement rather than stale-record reuse. Both records bind source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, pair hash `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, readiness hash `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, and recovery hash `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`. After both runs, all owner/task/name-scoped containers, networks, volumes, and `/tmp` publication paths were empty. Tracked HEAD remained `f3e4701115734e71f8848e706e9d37d499f0c2ac` and clean. No standalone cleanup, rerun, remote action, release, registry operation, controlled wrapper, or pre-commit command ran. |
 | 2026-07-23 | `T-DRE-004` Task 5 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. The specification review passed delivery 54/54, metadata 6/0 with one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. The quality/security review passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. Neither review ran Docker, Compose, rehearsal, cleanup, advisory, Task 4, the controlled wrapper, pre-commit, or any remote action. |
+| 2026-07-26 | Final lifecycle review remediation | The local promotion/rollback boundary is complete and this Task transitions to `completed`; Release, registry, remote deployment, live environments, credentials, and production targets remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
 
 ## Verification Evidence
 
@@ -269,8 +271,8 @@ snapshot pass, zero observed path counts, and all four path sets empty.
 
 ## Controlled Agent Pre-commit Evidence
 
-Controlled wrapper command: not owned by this domain Task. The program Task
-owns the one final all-files invocation.
+Controlled wrapper command: not owned by this domain Task. The Program Task
+owned the sole exact-once all-files invocation.
 
 Allowed prefixes: `not_applicable` at domain activation.
 
@@ -284,10 +286,14 @@ Git-visible non-ignored path sets were `(none)`.
 Observation boundary:
 `observation=git-visible-non-ignored-repository-status`.
 
-Disposition: Program-owned wrapper **PASS**; see the
+Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`; see the
 [program Task](./2026-07-19-operational-readiness-closure-program.md) for the
-full command and exact allowed prefixes. Direct `pre-commit run --all-files`
-remains prohibited.
+full command and exact allowed prefixes. Post-wrapper commits
+`9a24b0cb`, `78265090`, `73f4ea68`, and this lifecycle logical unit are
+explicitly outside its coverage and use targeted gates plus final re-review.
+The wrapper is not rerun under its exact-once contract, and direct
+`pre-commit run --all-files` remains prohibited.
 
 ## Review Evidence
 
@@ -335,6 +341,17 @@ independent specification and quality/security reviews are closed at
 `APPROVED C0/I0/M0` with no findings. Earlier `CHANGES REQUIRED` iterations
 remain historical remediation evidence.
 
+The initial final Program specification review after the controlled-wrapper
+checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
+were stale, and the 15 local-isolated lifecycle documents still reported
+`active`. Commit `78265090` refreshed the generated owners; this lifecycle
+logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
+their indexes. The initial final quality review returned
+`CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
+unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
+through the bounded stable-private reader. Fresh final specification and
+quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+
 ## Commit Ledger
 
 Historical implementation identity: `b5441c53`, reviewed by both terminal
@@ -347,6 +364,10 @@ Portable consumer GREEN is `a6c12e18`; canonical-preservation remediation is
 `a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`.
 This five-file review/document closure intentionally does not self-record its
 final SHA.
+Post-wrapper remediation identities are generated-owner refresh `78265090`,
+OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.
+They are validated by targeted gates and the pending final re-review, not by
+the exact-once wrapper.
 
 Logical unit: `feat(release): add local promotion and rollback`.
 
@@ -370,14 +391,16 @@ or tracked document-closure gates remain blocked. The approved
 positive-first/injected-negative-second sequence is complete, with healthy
 baseline restoration and canonical replacement proved. Any future stateful
 impact still blocks promotion and routes to Spec 125. The Program-owned
-controlled all-files wrapper passed on 2026-07-26; this Task remains active
-pending final whole-branch reviews and lifecycle reconciliation and does not
-authorize a rehearsal rerun.
+controlled all-files wrapper passed on 2026-07-26 only for checkpoint
+`263e046f`; this Task is completed at the approved local-isolated boundary and
+does not authorize a rehearsal rerun. Fresh final Program re-review of the
+post-wrapper remediation range remains pending and is not reported as approval.
 
 Deferral destination: data recovery routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
 remote delivery requires a new approved Stage 01-04 chain and explicit external
-action approval.
+action approval; the same new-chain boundary applies to Release, registry,
+credential, live-environment, and production expansion.
 
 ## Related Documents
 

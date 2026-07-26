@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:127-deployment-release-engineering-remediation
 artifact_type: spec
 parent_ids:

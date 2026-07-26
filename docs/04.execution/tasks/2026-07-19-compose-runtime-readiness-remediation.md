@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-19-compose-runtime-readiness-remediation
 artifact_type: task
 parent_ids:
@@ -11,7 +11,7 @@ parent_ids:
 
 ## Overview
 
-This active Task records implementation and execution evidence for the
+This completed Task records implementation and execution evidence for the
 exact local-isolated `core` service set: `keycloak`, `oauth2-proxy`, `traefik`,
 `vault`, and `vault-agent`. At activation, no service has been started and no
 readiness, recovery, timeout, or cleanup result is claimed.
@@ -136,7 +136,7 @@ private endpoint payloads.
 | `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done; current focused suite 42/42 |
 | `T-CRR-002` | Exact five-service startup and endpoint readiness | `CRR-001`, `CRR-002` | Startup/readiness scenario and typed verdict | Fresh implementation agent | Done (runtime) |
 | `T-CRR-003` | Vault restart, timeout, and cleanup ambiguity | `CRR-003` | Recovery and expected non-zero timeout scenarios | Fresh implementation agent | Done (runtime) |
-| `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Current terminal reviews approved C0/I0/M0; Task lifecycle remains active under Program closure |
+| `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local-isolated Task boundary; the Program's post-remediation final re-review remains pending |
 
 ## Work Log
 
@@ -195,6 +195,7 @@ private endpoint payloads.
 | 2026-07-22 | Independent image-identity RED/GREEN | RED `9838034c` proved that a matching configuration ID alone did not establish the required manifest identity. GREEN `14e1dd5d` independently validates membership of every expected manifest digest in `.RepoDigests` and equality of the expected configuration digest with `.Id`, before runtime. The focused suite passes 42/42; static, preflight, and exact render gates pass. Historical terminal reviews predate these commits; the terminal whole-branch reviews below cover them. |
 | 2026-07-22 | Current startup/recovery/timeout acceptance | Startup project `hyhome-crr-20260719-2642602-fxq2siqi` passed in 62 seconds. Recovery project `hyhome-crr-20260719-2648660-ov2uzbas` passed Vault restart/unseal/fresh-sentinel recovery in 81 seconds and produced the current canonical. Timeout project `hyhome-crr-20260719-2661806-zqukerpv` returned expected class 30 in 61 seconds while preserving that canonical byte-for-byte. The mode-0600, 1,197-byte canonical SHA-256 is `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`; every owner-scoped container, network, volume, and `/tmp` inventory is zero. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These approvals do not change the active Task or Program lifecycle and do not authorize the controlled wrapper. |
+| 2026-07-26 | Final lifecycle review remediation | The local-isolated Compose boundary is complete and this Task transitions to `completed`; remote/live or broader runtime remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
 
 ## Verification Evidence
 
@@ -267,27 +268,37 @@ Exit classes remain
 `0=pass`, `2=usage`, `10=preflight/scope`, `20=startup`, `30=readiness`,
 `40=recovery`, and `50=cleanup ambiguity`.
 
-Task 6 documentation, owner regeneration, safe gates, and whole-branch
-re-review are recorded by the Program Task. The controlled all-files wrapper
-remains blocked and `not_run`.
+Task 6 documentation, owner regeneration, safe gates, and review history are
+recorded by the Program Task. The controlled all-files wrapper passed exactly
+once from checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Later code, generated-owner, and
+lifecycle commits were not covered by that wrapper; they use targeted gates
+and fresh final re-review. The wrapper is not rerun because its contract is
+exact-once.
 
 ## Controlled Agent Pre-commit Evidence
 
-Controlled wrapper command: not owned by this domain Task. The program Task
-owns the single final all-files invocation after all domains and reviews pass.
+Controlled wrapper command: not owned by this domain Task. The Program Task
+owned the sole exact-once all-files invocation.
 
 Allowed prefixes: `not_applicable` at domain activation.
 
-Wrapper exit status: `not_run`.
+Program wrapper result: `hook_result=passed hook_exit=0`;
+`snapshot_result=passed`.
 
-Snapshot result and path sets: `not_run`.
+Observed counts were
+`before_count=0 after_count=0 changed_count=0 unexpected_count=0`; all four
+Git-visible non-ignored path sets were `(none)`.
 
-Observation boundary: if the program wrapper later runs, it observes only
-Git-visible, non-ignored repository paths.
+Observation boundary:
+`observation=git-visible-non-ignored-repository-status`.
 
-Disposition: defer to the
-[program Task](./2026-07-19-operational-readiness-closure-program.md); never run
-`pre-commit run --all-files` directly.
+Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Post-wrapper commits
+`9a24b0cb`, `78265090`, `73f4ea68`, and this lifecycle logical unit are
+explicitly outside its coverage and use targeted gates plus final re-review.
+The wrapper is not rerun under its exact-once contract, and direct
+`pre-commit run --all-files` remains prohibited.
 
 ## Review Evidence
 
@@ -325,6 +336,17 @@ document gates. The current whole-branch review severities are specification
 v5 `C0/I0/M0` and quality/security v3 `C0/I0/M0`; earlier
 `CHANGES REQUIRED` iterations remain historical remediation evidence.
 
+The initial final Program specification review after the controlled-wrapper
+checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
+were stale, and the 15 local-isolated lifecycle documents still reported
+`active`. Commit `78265090` refreshed the generated owners; this lifecycle
+logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
+their indexes. The initial final quality review returned
+`CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
+unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
+through the bounded stable-private reader. Fresh final specification and
+quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+
 ## Commit Ledger
 
 Original implementation identity:
@@ -342,18 +364,24 @@ redaction, and byte-identical ready handoff preservation. Focused/static gates
 pass; terminal whole-branch specification v5 and quality/security v3 reviews
 are APPROVED C0/I0/M0.
 
+Post-wrapper remediation identities are generated-owner refresh `78265090`,
+OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.
+They are validated by targeted gates and the pending final re-review, not by
+the exact-once wrapper.
+
 ## Deferred and Blocked Items
 
 Deferred items: production/shared-host startup, broader profiles, data restore,
 remote observability, registry access, deployment, and live secret integration.
 
-Blocked items: implementation/runtime and current review have no remaining
-local blocker. The Task remains active under the Program lifecycle; the
-controlled wrapper is still blocked by the separate Task 3 and Task 5 domain
-outcomes.
+Blocked items: implementation/runtime has no remaining local blocker. This Task
+is completed at the approved local-isolated boundary. Fresh final Program
+re-review of the post-wrapper remediation range remains pending and is not
+reported as approval.
 
 Deferral destination: data restore routes to [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
-remote or broader runtime requires a new approved design chain and Task.
+remote, live, shared, or broader runtime requires a new approved Stage 01-04
+design chain, Task, and explicit human approval.
 
 ## Related Documents
 

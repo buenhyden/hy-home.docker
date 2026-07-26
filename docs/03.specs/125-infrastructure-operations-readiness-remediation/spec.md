@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:125-infrastructure-operations-readiness-remediation
 artifact_type: spec
 parent_ids:

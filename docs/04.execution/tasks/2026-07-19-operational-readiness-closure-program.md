@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-19-operational-readiness-closure-program
 artifact_type: task
 parent_ids:
@@ -10,11 +10,17 @@ parent_ids:
 
 ## Overview
 
-This Task is the execution and closure ledger for the local-isolated operational
-readiness program. It coordinates four domain Tasks without replacing their
-evidence ownership. The Task is active and evidence-ready; no Compose service,
-database rehearsal, image build, signing operation, promotion, rollback,
-remote action, or controlled all-files QA result is claimed at activation.
+This completed Task is the execution and closure ledger for the local-isolated
+operational readiness program. It coordinates four domain Tasks without
+replacing their evidence ownership. The activation statement remains
+historical: no Compose service, database rehearsal, image build, signing
+operation, promotion, rollback, remote action, or controlled all-files QA
+result was claimed at activation.
+
+Completion is strictly local-isolated. Remote/live/production, registry,
+credential, publication, Release, and deployment expansion is deferred to a
+new approved Stage 01-04 chain. Final independent re-review of the
+post-wrapper remediation range remains pending and is not claimed as approval.
 
 Execution is limited to the linked worktree on
 `codex/stage03-04-unimplemented-closure`. The comparison base for changed
@@ -133,11 +139,11 @@ Redaction boundary:
 | Work unit | Responsibility | Evidence owner | State |
 | --- | --- | --- | --- |
 | `T-ORC-001` | Activate five Task contracts and the Task index. | This Task | Complete; documentation gates pass, runtime not run |
-| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Active; current 42/42, runtime evidence, and terminal v3/v5 reviews approved |
-| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Active; source-bound advisory and portable pair pass, and fresh exact-range Task 7 specification plus quality/security reviews are `APPROVED C0/I0/M0` |
-| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Active; current 48/48, strict frozen runtime, and terminal v3/v5 reviews approved |
+| `T-ORC-002` | Exact five-service Compose readiness and bounded recovery. | Compose domain Task | Complete at the local-isolated boundary; current 42/42 and runtime evidence pass |
+| `T-ORC-003` | Baseline/candidate local supply-chain verification. | Supply-chain domain Task | Complete at the local boundary; source-bound advisory, portable pair, and exact-range Task 7 reviews pass |
+| `T-ORC-004` | Synthetic PostgreSQL 17-to-18 logical recovery. | Infrastructure domain Task | Complete at the representative-local boundary; current 48/48 and strict frozen runtime pass |
 | `T-ORC-005` | Pair-bound promotion and previous-runtime-image-ID rollback. | Delivery domain Task | Complete; exact positive and injected-rollback runtime plus fresh specification and quality/security reviews are `APPROVED C0/I0/M0` with no findings |
-| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Active; the controlled wrapper passed on 2026-07-26 from the exact clean five-file checkpoint; final whole-branch reviews and lifecycle reconciliation remain pending |
+| `T-ORC-006` | Whole-branch reviews, controlled QA, and lifecycle reconciliation. | This Task | Complete for lifecycle closure; the initial final reviews returned specification C0/I2/M0 and quality C0/I1/M0, their remediations are committed, and fresh final re-review remains pending |
 
 ## Work Log
 
@@ -177,7 +183,9 @@ facts they name.
 | 2026-07-23 | `T-ORC-005` portable consumer readiness (historical prerequisite checkpoint) | Delivery implementation agent | Producer `1937ec75`, consumer `a6c12e18`, and remediation through `b070a06c` bind verdict v2, pair v3, and rehearsal record v4. Focused tests pass 54/54 after `4f7284a9`; portable reviews are C0/I0/M0. The accepted pair prerequisite was satisfied, but no Task 5 runtime had run at this checkpoint. |
 | 2026-07-23 | `T-ORC-005` approved runtime sequence | Delivery runtime implementation agent | Unit validation passed 54/54 at exit 0 and fixture preflight exited 0. Exactly one positive rehearsal then exited 0 for `hyhome-dre-20260719-1709404-baseline` and `hyhome-dre-20260719-1709404-canary`, from `2026-07-22T20:54:30Z` to `2026-07-22T20:54:46Z`; both roles passed, result was `promoted`, cleanup passed, and `data_impact=none`. Its mode-0600, 3,295-byte record had inode `1290126` and SHA-256 `6bc6de4b34bd6fe6439c682de33eb580e2b5074e12762cd25ad9c1b4a9eeb5c1`. Exactly one injected rehearsal then exited expected class 30 with `health-deadline-exceeded` for `hyhome-dre-20260719-1731921-baseline` and `hyhome-dre-20260719-1731921-canary`, from `2026-07-22T20:56:27Z` to `2026-07-22T20:58:59Z`; baseline passed, candidate failed, promotion was denied, rollback restored the healthy baseline, cleanup passed, and `data_impact=none`. The replacement mode-0600, 3,305-byte record has inode `538673` and SHA-256 `e6c3efd320014eb7b89324974c3c8a7e71e4ac32ff122a0432e5dc21ac16e823`. Both records bind source `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, pair `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, readiness `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0`, recovery `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`, and the full portable tuple. All owner/task/name-scoped containers, networks, volumes, and `/tmp` publication paths were empty afterward; tracked HEAD remained clean at `f3e4701115734e71f8848e706e9d37d499f0c2ac`. No standalone cleanup, rerun, remote/release/registry action, wrapper, or pre-commit ran. |
 | 2026-07-23 | `T-ORC-005` Task 5 review/document closure | Independent specification and quality/security reviewers | Both fresh reviews returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. Specification checks passed delivery 54/54, metadata 6/0 plus one unchanged legacy exception, traceability 46/0, alignment 667 documents / 5,524 links / 141 operations documents / 0, diff hygiene, and read-only canonical/upstream reconciliation. Quality/security checks passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. No Docker, Compose, rehearsal, cleanup, advisory, Task 4, controlled wrapper, pre-commit, or remote action ran. |
-| 2026-07-26 | `T-ORC-006` controlled all-files QA | Documentation/QA closure agent | The sole authorized wrapper ran from clean checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f` and passed: `hook_result=passed hook_exit=0`, `snapshot_result=passed`, and `observation=git-visible-non-ignored-repository-status`. Counts were `before_count=0 after_count=0 changed_count=0 unexpected_count=0`; before, after, changed, and unexpected path sets were all `(none)`. Final whole-branch reviews and lifecycle reconciliation remain pending. |
+| 2026-07-26 | `T-ORC-006` controlled all-files QA | Documentation/QA closure agent | The sole authorized wrapper ran from clean checkpoint `263e046f64f249b0e771e4f0c5d77a91c967e10f` and passed: `hook_result=passed hook_exit=0`, `snapshot_result=passed`, and `observation=git-visible-non-ignored-repository-status`. Counts were `before_count=0 after_count=0 changed_count=0 unexpected_count=0`; before, after, changed, and unexpected path sets were all `(none)`. At that checkpoint, final whole-branch reviews and lifecycle reconciliation remained pending; the following rows supersede that historical state. |
+| 2026-07-26 | `T-ORC-006` initial final reviews and remediation | Independent specification and quality reviewers plus bounded remediation owners | Initial final specification review returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners were stale and the 15 local-isolated Specs/Plans/Tasks still had active lifecycle metadata. Commit `78265090` refreshed the generated owners; this lifecycle logical unit transitions exactly those 15 documents and synchronizes the requested indexes. Initial final quality review returned `CHANGES REQUIRED C0/I1/M0`: OCI config-digest inspection used an unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it through the bounded stable-private reader. The local-isolated lifecycle is completed, but fresh final specification and quality re-review remain pending; no final PASS or APPROVED verdict is claimed. |
+| 2026-07-26 | `T-ORC-006` targeted lifecycle validation | Documentation specialist | Against full base `73f4ea68ce51f59ed0ee7baef64a2ebf471501aa`, changed metadata selected 24 documents with 0 violations, 0 legacy exceptions, and 0 transition overrides; repository metadata contracts and lifecycle contract each returned 0 violations. Impacted lifecycle selected 221 surfaces with 0 violations and only the configured Task-directory budget warning; promoted lifecycle returned 0 violations. Semantic inventory is fresh at 928 records/2,145 advisory findings. Foundation manifest/summary, audit matrix, security-readiness/supply-chain owners, and LLM Wiki index/coverage are fresh. Traceability passed 46/0; alignment passed at 667 stage documents, 5,522 repository-local Markdown links, and 141 operations documents with 0 failures; the focused supply-chain suite passed 63/63; diff hygiene passed. The exact-once wrapper and direct all-files pre-commit were not rerun. |
 
 ## Verification Evidence
 
@@ -253,20 +261,22 @@ Current domain evidence is bounded as follows:
   54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff
   hygiene, and stat/hash/ignore/`jq`/tuple reconciliation.
 
-Task 6 documentation and generated-owner reconciliation is complete for this
-working tree. Exact-base metadata checks selected 41 documents against
-`758aa0d2^` and 35 against `758aa0d2`, each with zero violations, one unchanged
-legacy exception, and zero transition overrides. Impacted lifecycle checks
-selected 290 and 289 surfaces respectively with zero violations and only the
-configured Task-directory budget warning. Traceability passed 46/0; alignment
-passed at 666 stage documents, 5,507 repository-local Markdown links, and 141
-operations documents with zero failures. Lifecycle contract, Foundation
-manifest/summary, and promoted checks passed. The audit matrix, semantic
-inventory (927 records/2,145 advisory findings), audit-semantic contract (11/0),
-LLM Wiki index/coverage, and security-readiness owners are fresh. The
-dependency-locked repository aggregate returned `failures=0` after an approved
-rerun resolved the sandbox-only PyPI DNS boundary, and `git diff --check`
-passed. Terminal quality/security review v3 is `APPROVED C0/I0/M0` for the full
+Task 6 lifecycle and generated-owner reconciliation is complete for this
+working tree. Against full base
+`73f4ea68ce51f59ed0ee7baef64a2ebf471501aa`, changed metadata selected 24
+documents with 0 violations, 0 legacy exceptions, and 0 transition overrides.
+Repository metadata contracts and lifecycle contract each returned 0
+violations. Impacted lifecycle selected 221 surfaces with 0 violations and only
+the configured Task-directory budget warning; promoted lifecycle returned 0
+violations. Traceability passed 46/0; alignment passed at 667 stage documents,
+5,522 repository-local Markdown links, and 141 operations documents with 0
+failures. Foundation manifest/summary, audit matrix,
+security-readiness/supply-chain owners, and LLM Wiki index/coverage are fresh.
+Semantic inventory is fresh at 928 records/2,145 advisory findings. The focused
+supply-chain suite passed 63/63 and `git diff --check` passed. The exact-once
+wrapper and direct all-files pre-commit were not rerun.
+
+Terminal quality/security review v3 is `APPROVED C0/I0/M0` for the full
 branch range through `20022458` plus the then-current 26-document reconciliation
 diff. Terminal specification review v5 is `APPROVED C0/I0/M0` for the full
 branch range through `20022458` plus the final 26-document reconciliation diff.
@@ -274,7 +284,12 @@ Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence.
 Task 5 runtime, reviews, and tracked document closure are complete. The sole
 controlled all-files wrapper ran on 2026-07-26 from clean checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f` and passed. Final whole-branch
-reviews and lifecycle reconciliation remain pending.
+initial reviews then returned specification `CHANGES REQUIRED C0/I2/M0` and
+quality `CHANGES REQUIRED C0/I1/M0`. Generated-owner remediation `78265090`,
+OCI-reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this exact 15-document
+lifecycle logical unit are post-wrapper changes. They were not covered by the
+wrapper and use targeted canonical gates plus fresh final re-review. The
+lifecycle reconciliation is complete; final re-review remains pending.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -285,8 +300,8 @@ bash scripts/validation/run-agent-precommit-all-files.sh --task docs/04.executio
 ```
 
 Allowed prefixes are exactly the repeated `--allow-prefix` values above. The
-command may run once only during `T-ORC-006`, from an initially clean linked
-worktree after pre-wrapper evidence is committed.
+command ran once only during `T-ORC-006`, from an initially clean linked
+worktree after pre-wrapper evidence was committed.
 
 Wrapper exit status: `hook_result=passed hook_exit=0`.
 
@@ -312,8 +327,12 @@ Disposition: **PASS**. The seed, policy pass, accepted pair, positive
 promotion, injected rollback, fresh Task 5 independent reviews, tracked
 review/document closure, and the Program-owned controlled wrapper are complete.
 The wrapper ran once on 2026-07-26 from initially clean checkpoint
-`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Final whole-branch reviews and
-lifecycle reconciliation remain pending.
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Its PASS is scoped only to that
+checkpoint. Post-wrapper code commits `9a24b0cb`/`73f4ea68`, generated-owner
+commit `78265090`, and this lifecycle logical unit were not covered. They use
+targeted canonical gates and fresh final re-review. The wrapper is not rerun
+because the authorization is exact-once; direct all-files pre-commit remains
+prohibited.
 
 ## Review Evidence
 
@@ -330,9 +349,10 @@ specification and quality/security reviews of exact range
 both returned `APPROVED C0/I0/M0` with no findings. Earlier
 domain terminal reviews remain historical evidence for their reviewed commits;
 the subsequent whole-review remediation and this documentation reconciliation
-are covered by the terminal v3/v5 approvals below. No
-claim closes Spec 126/127, `T-ORC-003`, `T-ORC-005`, `T-ORC-006`, or the
-Program.
+are covered by the terminal v3/v5 approvals below. This lifecycle logical unit
+closes Specs 124-127, the five Plans, and six Tasks only at the local-isolated
+boundary. It does not close or authorize any remote, live, production,
+registry, credential, publication, Release, or deployment scope.
 
 Task-activation specification review: the initial review returned C0/I1/M0.
 The Important finding was remediated by making the delivery baseline/canary
@@ -413,6 +433,23 @@ with no findings. It closes the Task 5 runtime-review gate without changing any
 historical review boundary or claiming release, deployment, remote action, or
 controlled-wrapper execution.
 
+Initial final Program specification review: `CHANGES REQUIRED C0/I2/M0`.
+I-01 found stale generated navigation owners; commit `78265090` refreshed the
+LLM Wiki index and coverage owners. I-02 found that the exact 15
+local-isolated Specs, Plans, and Tasks still reported `active`; this lifecycle
+logical unit transitions them to `completed` and synchronizes their parent
+indexes.
+
+Initial final Program quality review: `CHANGES REQUIRED C0/I1/M0`. I-01 found
+that OCI config-digest inspection used an unbounded, symlink-following
+`Path.read_bytes()` path instead of the existing stable-private reader. RED
+`9a24b0cb` covers oversized and symlink inputs; GREEN `73f4ea68` enforces the
+bounded stable-private read and stable failure classes.
+
+Both initial final review verdicts remain controlling until fresh re-review of
+the complete remediation range. No final specification PASS or quality
+APPROVED verdict is claimed yet.
+
 ## Commit Ledger
 
 Commit identity: `ff988ece` for Task activation.
@@ -438,6 +475,9 @@ Current implementation/remediation ledger:
   pair-manifest RED `f0c3e032`, GREEN `20022458`, portable consumer
   `a6c12e18`, canonical preservation `b192c0db`, and test isolation
   `4f7284a9`.
+- Final-review remediation: OCI reader RED `9a24b0cb` and GREEN `73f4ea68`;
+  generated navigation owners `78265090`; exact 15-document lifecycle and
+  index closure in this logical unit.
 
 The reviewed tracked state plus the prior five-file review/document closure
 formed exact clean pre-wrapper checkpoint
@@ -446,6 +486,10 @@ subsequently passed with empty Git-visible non-ignored before, after, changed,
 and unexpected path sets. The final five-file wrapper-evidence commit identity
 is intentionally omitted from tracked content and recorded only in the ignored
 Task 6 report after creation.
+
+The wrapper does not cover any final-review remediation commit listed above.
+Those post-wrapper changes use targeted canonical gates and fresh final
+re-review; the exact-once wrapper is not rerun.
 
 ## Deferred and Blocked Items
 
@@ -459,14 +503,16 @@ Deferred items:
 Blocked items: none remain for the Task 3 seed/policy/pair or Task 5
 implementation, runtime, review, and tracked document-closure gates.
 `T-ORC-005` evidence is complete. The `T-ORC-006` controlled wrapper passed on
-2026-07-26; final whole-branch reviews and lifecycle reconciliation remain
-pending. The Program and delivery Task remain active until those gates complete.
-No release, deployment, publication, or remote action is claimed here.
+2026-07-26 only for exact checkpoint `263e046f`. Lifecycle reconciliation is
+complete and the Program plus domain Tasks are completed at the local-isolated
+boundary. Fresh final re-review of the post-wrapper remediation range remains
+pending and is not reported as approval. No release, deployment, publication,
+or remote action is claimed here.
 
-Deferral destination: each remote, credential, production, publication, or
-live-data expansion requires a new Stage 01-04 design chain and explicit human
-approval; state recovery remains Spec 125-owned and remote delivery remains
-Spec 127 follow-up scope.
+Deferral destination: each remote, live, registry, credential, production,
+publication, Release, deployment, or live-data expansion requires a new
+Stage 01-04 design chain and explicit human approval; state recovery remains
+Spec 125-owned and remote delivery remains Spec 127 follow-up scope.
 
 ## Related Documents
 

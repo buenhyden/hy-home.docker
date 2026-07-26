@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: spec:124-compose-runtime-readiness-remediation
 artifact_type: spec
 parent_ids:

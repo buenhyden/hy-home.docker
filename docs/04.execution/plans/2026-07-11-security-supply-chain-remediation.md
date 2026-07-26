@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-11-security-supply-chain-remediation
 artifact_type: plan
 parent_ids:
@@ -52,7 +52,7 @@ for each digest so Spec 127 can prove previous-runtime-ID rollback.
 
 ## Overview
 
-This active plan turns Spec 126 into an executable local sequence for
+This prospective plan turns Spec 126 into an executable local sequence for
 `examples/sample-web-service` supply-chain evidence: digest-bound SBOM,
 vulnerability verdict, provenance statement, local blob signing/verification,
 and reviewed OpenSSF Scorecard advisory signals. Observed execution and

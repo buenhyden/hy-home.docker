@@ -1,10 +1,10 @@
 # Security Supply-Chain Remediation
 
-> Active technical contract for sample-service vulnerability scanning, SBOM, provenance, signing, verification, and reviewed security-health signals.
+> Completed local technical contract for sample-service vulnerability scanning, SBOM, provenance, signing, verification, and reviewed security-health signals.
 
 ## Overview
 
-This folder owns the security supply-chain follow-up created from the canonical
+This folder owns the completed local security supply-chain follow-up created from the canonical
 quality and security audits. It selects a local-isolated sample-service evidence
 contract for vulnerability policy, SBOM, provenance, signing, verification,
 and advisory security-health signals. It does not own observed execution or
@@ -63,7 +63,7 @@ scope.
 - [Operational readiness PRD](../../01.requirements/025-operational-readiness-closure.md)
 - [Operational readiness ARD](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [Local-isolated evidence ADR](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Active implementation plan](../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md)
+- [Completed implementation plan](../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md)
 - [Domain Task evidence owner](../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
 - [Program Task evidence owner](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: plan:2026-07-11-compose-runtime-readiness-remediation
 artifact_type: plan
 parent_ids:

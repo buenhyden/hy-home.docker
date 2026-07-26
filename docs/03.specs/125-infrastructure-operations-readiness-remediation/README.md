@@ -1,10 +1,10 @@
 # Infrastructure Operations Readiness Remediation
 
-> Active synthetic-local contract for representative PostgreSQL upgrade, backup, restore, and state-aware recovery evidence.
+> Completed synthetic-local contract for representative PostgreSQL upgrade, backup, restore, and state-aware recovery evidence.
 
 ## Overview
 
-This folder owns the infrastructure operations follow-up for representative
+This folder owns the completed infrastructure operations follow-up for representative
 upgrade, migration, backup, and restore rehearsals using synthetic PostgreSQL
 state. It does not own observed execution or current lifecycle evidence; those
 are owned by the exact
@@ -61,7 +61,7 @@ organization RTO/RPO remain unauthorized.
 - [Operational readiness PRD](../../01.requirements/025-operational-readiness-closure.md)
 - [Operational readiness ARD](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [Local-isolated evidence ADR](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Active transition plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
+- [Completed transition plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
 - [Domain Task evidence owner](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
 - [Program Task evidence owner](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-19-security-supply-chain-remediation
 artifact_type: task
 parent_ids:
@@ -11,7 +11,7 @@ parent_ids:
 
 ## Overview
 
-This active Task records local, digest-bound supply-chain evidence for
+This completed Task records local, digest-bound supply-chain evidence for
 `examples/sample-web-service` baseline and candidate variants. Deterministic
 implementation and the current offline advisory pass are complete. Schema-v2
 accepted verdicts and their schema-v3 pair manifest now exist for source
@@ -139,7 +139,7 @@ credentials, and Scorecard response bodies remain transient.
 | `T-SSC-002` | Distinct builds, OCI/Docker portable handoff, SBOM, and scan verdict | `SSC-001`, `SSC-002` | Two full portable subject tuples and verdicts | Fresh implementation agent | Complete; current preflight/advisory pass and publish two distinct accepted schema-v2 verdicts plus pair v3 |
 | `T-SSC-003` | Provenance and local signature verification | `SSC-003`, `SSC-004` | Success plus tamper/wrong-subject rejection | Fresh implementation agent | Complete; current Cosign v3.0.6 new-format offline bundle path verifies both originals and rejects tampered/wrong subjects |
 | `T-SSC-004` | Fixture-only CI/repo gate and advisory summary | `SSC-005` | Network-independent check and freshness | Fresh implementation agent | Complete; CI/local/repository wiring and generated summaries pass |
-| `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete; fresh specification and quality/security reviews of `b070a06c..086744f8` are both `APPROVED C0/I0/M0` |
+| `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local Task boundary; fresh domain reviews are approved and the Program's post-remediation final re-review remains pending |
 
 ## Work Log
 
@@ -161,6 +161,7 @@ credentials, and Scorecard response bodies remain transient.
 | 2026-07-23 | Current Task 7 source-bound offline advisory | At source revision `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, preflight exited 0 with `supply_chain_preflight=pass` and advisory exited 0 with `supply_chain_verification=pass roles=baseline,candidate redaction=passed`. Grype seed `v6.1.9` was built `2026-07-22T07:06:24Z` from package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`; both roles had 0 Critical, 0 High, and 3 Medium, no exception, and `reason=outside-policy`. The mode-0600 pair is schema 3/generation `hyhome-verification-verdict-pair-v3`, size 1,806, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, and binds build context `sha256:1e2ff714895bb6352d101a6f0a7b5beb45dd9f414ade788d77a7d6e9df650034`. Docker inspection matched each pair-bound runtime ID and role label. Task-owned container inventory and `/tmp/hyhome-supply-chain.*` were empty and tracked worktree state was clean after the run. The former pair at `6803949d` with hash `729ca2e3…` is historical/superseded. Task 5 and the controlled wrapper were not run within this Task; the delivery Task later consumed the pair in its separately approved runtime sequence. |
 | 2026-07-23 | Task 7 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each approved exact range `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b..086744f8bd20370262ce297dd5b6dc101a5b54dc` at `C0/I0/M0`. At that review checkpoint, their safe, non-runtime evidence confirmed delivery 54/54, seed 8/8, checker 13/13, generated-summary freshness, ignored handoff mode/hash/full-tuple equality, Task 5 record absence, and clean diff hygiene. No Docker, advisory, Task 5, wrapper, or remote action ran during the review. The later Task 5 runtime is owned by the delivery Task and is outside this review range. |
 | 2026-07-23 | Downstream Task 5 review/document closure | Fresh delivery specification and quality/security reviews each returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. Specification checks passed delivery 54/54, metadata 6/0 plus one unchanged legacy exception, traceability 46/0, alignment 667/5,524/141/0, diff hygiene, and read-only canonical/upstream reconciliation. Quality/security checks passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. This supply-chain Task did not run Task 5 or the controlled wrapper. |
+| 2026-07-26 | Final lifecycle review remediation | The local digest-bound supply-chain boundary is complete and this Task transitions to `completed`; registry publication, remote trust, live Scorecard enforcement, credentials, release, and deployment remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection bypassed the bounded stable-private reader; RED `9a24b0cb` and GREEN `73f4ea68` close that helper boundary. Fresh final re-review has not yet approved these remediations. |
 
 ## Verification Evidence
 
@@ -294,12 +295,16 @@ rehearsals plus fresh specification and quality/security approvals at
 `C0/I0/M0` with no findings. The Program-owned controlled all-files wrapper
 passed on 2026-07-26 from clean checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0, snapshot pass,
-zero observed path counts, and all four path sets empty.
+zero observed path counts, and all four path sets empty. That PASS covers only
+the exact checkpoint. Later code commits `9a24b0cb`/`73f4ea68`, generated-owner
+commit `78265090`, and this lifecycle logical unit were not covered; they use
+targeted gates and fresh final re-review. The wrapper is not rerun because its
+contract is exact-once.
 
 ## Controlled Agent Pre-commit Evidence
 
-Controlled wrapper command: not owned by this domain Task. The program Task
-owns the one final all-files invocation.
+Controlled wrapper command: not owned by this domain Task. The Program Task
+owned the sole exact-once all-files invocation.
 
 Allowed prefixes: `not_applicable` at domain activation.
 
@@ -313,10 +318,13 @@ Git-visible non-ignored path sets were `(none)`.
 Observation boundary:
 `observation=git-visible-non-ignored-repository-status`.
 
-Disposition: Program-owned wrapper **PASS**; see the
+Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`; see the
 [program Task](./2026-07-19-operational-readiness-closure-program.md) for the
-full command and exact allowed prefixes. Direct `pre-commit run --all-files`
-remains prohibited.
+full command and exact allowed prefixes. Post-wrapper code, generated-owner,
+and lifecycle commits use targeted gates plus final re-review. The wrapper is
+not rerun under its exact-once contract, and direct
+`pre-commit run --all-files` remains prohibited.
 
 ## Review Evidence
 
@@ -360,6 +368,17 @@ reviews of exact range
 are both `APPROVED C0/I0/M0` with no findings.
 Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence.
 
+The initial final Program specification review after the controlled-wrapper
+checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
+were stale, and the 15 local-isolated lifecycle documents still reported
+`active`. Commit `78265090` refreshed the generated owners; this lifecycle
+logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
+their indexes. The initial final quality review returned
+`CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
+unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
+through the bounded stable-private reader. Fresh final specification and
+quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+
 ## Commit Ledger
 
 Historical implementation identity:
@@ -372,6 +391,10 @@ producer GREEN `1937ec75`, consumer GREEN `a6c12e18`, and remediation
 `d156aca8`, `b192c0db`, `8bb94ded`, `e70008f3`, `df0fd186`, `664babbc`, and
 `b070a06c`.
 The separate evidence update does not embed its own SHA.
+Post-wrapper remediation identities are OCI reader RED/GREEN
+`9a24b0cb`/`73f4ea68`, generated-owner refresh `78265090`, and this lifecycle
+logical unit. They are validated by targeted gates and the pending final
+re-review, not by the exact-once wrapper.
 
 Logical unit: `feat(security): add local supply-chain verification`.
 
@@ -393,12 +416,14 @@ Blocked items: the approved offline Grype seed, policy pass, accepted distinct
 same-revision verdict pair, and later Task 5 delivery runtime, independent
 reviews, and tracked document closure are complete.
 `--scorecard-advisory` remains skipped until read-only network scope is
-confirmed. The Program-owned controlled all-files wrapper passed on 2026-07-26;
-this Task remains active pending final whole-branch reviews and lifecycle
-reconciliation.
+confirmed. The Program-owned controlled all-files wrapper passed on 2026-07-26
+only for checkpoint `263e046f`; this Task is completed at the approved local
+boundary. Fresh final Program re-review of the post-wrapper remediation range
+remains pending and is not reported as approval.
 
-Deferral destination: remote identity, publication, or enforcement needs a new
-approved Stage 01-04 chain; local accepted verdicts are consumed only by
+Deferral destination: remote identity, publication, enforcement, registry,
+credential, live, release, or deployment work needs a new approved Stage 01-04
+chain and explicit human approval; local accepted verdicts are consumed only by
 [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md).
 
 ## Related Documents

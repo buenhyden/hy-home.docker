@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 artifact_id: task:2026-07-19-infrastructure-operations-readiness-remediation
 artifact_type: task
 parent_ids:
@@ -11,7 +11,7 @@ parent_ids:
 
 ## Overview
 
-This active Task records the synthetic local PostgreSQL 17-to-18 logical
+This completed Task records the synthetic local PostgreSQL 17-to-18 logical
 backup, restore, integrity, upgrade, and negative-path rehearsal. At activation,
 no database container has started, no dump or row data has been produced, and
 no recovery or elapsed-time result is claimed.
@@ -131,7 +131,7 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; current boundary RED `da06a080`, GREEN `adbbdce2`, focused suite 48/48, and static checks pass |
 | `T-IOR-002` | Logical backup and isolated restore | `IOR-003`, `IOR-004` | Dump, restore, oracle, timing, cleanup | Fresh implementation agent | Complete; final normal pass |
 | `T-IOR-003` | 17-to-18 and corrupted/partial negative paths | `IOR-001`, `IOR-002` | Stable failures and cleanup disposition | Fresh implementation agent | Complete; classes 50/50/10/20 |
-| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Current terminal reviews approved C0/I0/M0; Task lifecycle remains active under Program closure |
+| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Complete for the representative-local Task boundary; the Program's post-remediation final re-review remains pending |
 
 ## Work Log
 
@@ -154,6 +154,7 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | 2026-07-22 | Independent PostgreSQL image-identity RED/GREEN | RED `da06a080` proved source, target, and helper-client manifest identities were not independently established from configuration IDs. GREEN `adbbdce2` separately requires every expected manifest digest in `.RepoDigests` and every expected configuration digest in `.Id` before runtime. The focused suite passes 48/48; Bash syntax, ShellCheck, Python compilation, and diff hygiene pass. Historical terminal reviews predate these commits; the terminal whole-branch reviews below cover them. |
 | 2026-07-22 | Current strict ordered acceptance and frozen canonical | The exact sequence was check `0`, checksum mismatch `50`, partial state `50`, bad target major `10`, timeout `20`, then exactly one final normal `0`. Project `hyhome-ior-20260719-2866314-source/target` used fixture SHA-256 `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`; the 4,484-byte dump SHA-256 is `e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`, with backup 1s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical SHA-256 is `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a`; integrity, cleanup, and redaction passed. Every post-step owner-scoped container, helper client, network, volume, dump, and `/tmp` inventory was zero. No Task 4 wrapper, test, check, negative, or normal command ran after the final normal. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. No Task 4 command or test ran for this evidence-only closure, and the approvals do not change the active Task or Program lifecycle or authorize the controlled wrapper. |
+| 2026-07-26 | Final lifecycle review remediation | The representative synthetic PostgreSQL boundary is complete and this Task transitions to `completed`; live/shared/production recovery remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
 
 ## Verification Evidence
 
@@ -218,28 +219,38 @@ Exit classes are `0=pass`, `2=usage`,
 `10=preflight`, `20=readiness`, `30=backup`, `40=restore`,
 `50=integrity/negative case`, and `60=cleanup`.
 
-Task 6 documentation, owner regeneration, safe gates, and whole-branch
-re-review are recorded by the Program Task. No PostgreSQL wrapper, test, check,
-negative, or normal command followed the current canonical-producing normal
-run. The controlled all-files wrapper remains blocked and `not_run`.
+Task 6 documentation, owner regeneration, safe gates, and review history are
+recorded by the Program Task. No PostgreSQL wrapper, test, check, negative, or
+normal command followed the current canonical-producing normal run. The
+controlled all-files wrapper passed exactly once from checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Later code, generated-owner, and
+lifecycle commits were not covered by that wrapper; they use targeted gates
+and fresh final re-review. The wrapper is not rerun because its contract is
+exact-once.
 
 ## Controlled Agent Pre-commit Evidence
 
-Controlled wrapper command: not owned by this domain Task. The program Task
-owns the one final all-files invocation.
+Controlled wrapper command: not owned by this domain Task. The Program Task
+owned the sole exact-once all-files invocation.
 
 Allowed prefixes: `not_applicable` at domain activation.
 
-Wrapper exit status: `not_run`.
+Program wrapper result: `hook_result=passed hook_exit=0`;
+`snapshot_result=passed`.
 
-Snapshot result and path sets: `not_run`.
+Observed counts were
+`before_count=0 after_count=0 changed_count=0 unexpected_count=0`; all four
+Git-visible non-ignored path sets were `(none)`.
 
-Observation boundary: only Git-visible, non-ignored repository paths are
-observable when the program wrapper later runs.
+Observation boundary:
+`observation=git-visible-non-ignored-repository-status`.
 
-Disposition: defer to the
-[program Task](./2026-07-19-operational-readiness-closure-program.md); direct
-`pre-commit run --all-files` is prohibited.
+Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
+`263e046f64f249b0e771e4f0c5d77a91c967e10f`. Post-wrapper commits
+`9a24b0cb`, `78265090`, `73f4ea68`, and this lifecycle logical unit are
+explicitly outside its coverage and use targeted gates plus final re-review.
+The wrapper is not rerun under its exact-once contract, and direct
+`pre-commit run --all-files` remains prohibited.
 
 ## Review Evidence
 
@@ -285,6 +296,17 @@ the separate v3/v5 whole-branch approvals above cover the current independent-
 identity hardening. Earlier `CHANGES REQUIRED` iterations remain historical
 remediation evidence.
 
+The initial final Program specification review after the controlled-wrapper
+checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
+were stale, and the 15 local-isolated lifecycle documents still reported
+`active`. Commit `78265090` refreshed the generated owners; this lifecycle
+logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
+their indexes. The initial final quality review returned
+`CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
+unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
+through the bounded stable-private reader. Fresh final specification and
+quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+
 ## Commit Ledger
 
 Historical implementation identity: branch-history commit `db150a19`
@@ -301,20 +323,27 @@ operations/quality reviews are APPROVED C0/I0/M0 only for their exact reviewed
 commits; terminal whole-branch specification v5 and quality/security v3
 reviews are APPROVED C0/I0/M0 for the current range.
 
+Post-wrapper remediation identities are generated-owner refresh `78265090`,
+OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.
+They are validated by targeted gates and the pending final re-review, not by
+the exact-once wrapper.
+
 ## Deferred and Blocked Items
 
 Deferred items: live data, physical backup, PITR, HA/replication, remote
 storage, retention/encryption certification, production recovery, and
 organization RTO/RPO.
 
-Blocked items: Task 4 has no remaining implementation/runtime or current-review
-blocker. The broader Program remains active, and Tasks 3, 5, and 6 retain their
-own prerequisites. Delivery may reference this verdict only
-as a recovery boundary and must not claim database recovery for the stateless
-sample service.
+Blocked items: Task 4 has no remaining local implementation/runtime blocker.
+This Task is completed at the representative-local boundary. Fresh final
+Program re-review of the post-wrapper remediation range remains pending and is
+not reported as approval. Delivery may reference this verdict only as a
+recovery boundary and must not claim database recovery for the stateless sample
+service.
 
-Deferral destination: broader/live recovery requires a new approved Stage
-01-04 chain and operations/security review. Stateful delivery impact routes to
+Deferral destination: broader, live, shared, remote, or production recovery
+requires a new approved Stage 01-04 chain, explicit human approval, and
+operations/security review. Stateful delivery impact routes to
 [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 rather than expanding Spec 127.
 

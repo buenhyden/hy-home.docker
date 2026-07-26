@@ -1,10 +1,10 @@
 # Deployment and Release Engineering Remediation
 
-> Active technical contract for local sample-service promotion, health evidence, and rollback.
+> Completed local technical contract for sample-service promotion, health evidence, and rollback.
 
 ## Overview
 
-This folder owns the deployment, release, and CD follow-up created from the
+This folder owns the completed local deployment, release, and CD follow-up created from the
 canonical quality, automation, Compose, and release evidence. It selects
 separate local baseline and canary projects for verified-digest promotion and
 rollback. It does not own observed execution or current lifecycle evidence;
@@ -64,7 +64,7 @@ publication, secret access, or remote deployment.
 - [Operational readiness PRD](../../01.requirements/025-operational-readiness-closure.md)
 - [Operational readiness ARD](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [Local-isolated evidence ADR](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Active implementation plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
+- [Completed implementation plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Domain Task evidence owner](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
 - [Program Task evidence owner](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)
