@@ -130,7 +130,7 @@ raise SystemExit(0 if (
     and isinstance(descriptor, dict)
     and descriptor.get("digest") == expected_target
     and descriptor.get("mediaType") in media_types
-    and target_id == expected_target
+    and target_id in (expected_target, expected_config)
 ) else 1)
 PY
   actual_config_id="$(observe_local_grype_config_digest)" ||

@@ -215,7 +215,7 @@ if (
     or not isinstance(descriptor, dict)
     or descriptor.get("digest") != expected_target
     or descriptor.get("mediaType") not in media_types
-    or target_id != expected_target
+    or target_id not in (expected_target, expected_config)
 ):
     raise SystemExit(1)
 PY
