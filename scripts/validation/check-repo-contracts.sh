@@ -94,8 +94,15 @@ fi
 section "Supply-chain deterministic fixture policy"
 supply_chain_checker="scripts/validation/check-supply-chain-policy.py"
 supply_chain_summary="scripts/security/generate-supply-chain-sample-service-summary.sh"
-supply_chain_test="tests/validation/test_supply_chain_policy.py"
-for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" "$supply_chain_test"; do
+supply_chain_tests=(
+  "tests/validation/test_compose_core_readiness.py"
+  "tests/validation/test_postgres_logical_upgrade_rehearsal.py"
+  "tests/validation/test_grype_db_seed.py"
+  "tests/validation/test_supply_chain_policy.py"
+  "tests/validation/test_sample_service_delivery_rehearsal.py"
+)
+for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" \
+  "${supply_chain_tests[@]}"; do
   [[ -f "$supply_chain_path" ]] || fail "missing supply-chain policy surface: $supply_chain_path"
 done
 if [[ -f "$supply_chain_checker" ]] && ! python3 "$supply_chain_checker" --check; then
@@ -1129,6 +1136,24 @@ if ci_quality in workflow_documents:
                 failures.append(
                     f"{ci_quality}: job {job_id!r} run step uses an untrusted GitHub context directly"
                 )
+    operational_readiness_test_command = "python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v"
+    supply_chain_job = jobs.get("supply-chain-fixture-policy")
+    supply_chain_steps = (
+        supply_chain_job.get("steps") or []
+        if isinstance(supply_chain_job, dict)
+        else []
+    )
+    focused_regression_steps = [
+        step
+        for step in supply_chain_steps
+        if isinstance(step, dict)
+        and step.get("name") == "Run focused operational readiness regressions"
+        and step.get("run") == operational_readiness_test_command
+    ]
+    if len(focused_regression_steps) != 1:
+        failures.append(
+            f"{ci_quality}: supply-chain focused regression step must match the approved command exactly once"
+        )
     for literal in [
         "Publish QA gate recommendations",
         "GITHUB_STEP_SUMMARY",

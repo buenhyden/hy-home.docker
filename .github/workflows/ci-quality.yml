@@ -147,6 +147,14 @@ jobs:
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.12'
+      - name: Run focused operational readiness regressions
+        run: >-
+          python3 -m unittest
+          tests.validation.test_compose_core_readiness
+          tests.validation.test_postgres_logical_upgrade_rehearsal
+          tests.validation.test_grype_db_seed
+          tests.validation.test_supply_chain_policy
+          tests.validation.test_sample_service_delivery_rehearsal -v
       - name: Check deterministic supply-chain policy fixtures
         run: python3 scripts/validation/check-supply-chain-policy.py --check
       - name: Check supply-chain summary freshness

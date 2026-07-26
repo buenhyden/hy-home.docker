@@ -181,6 +181,30 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             contract,
         )
 
+    def test_supply_chain_focused_regression_routing_fails_closed(self) -> None:
+        program = self._workflow_security_program()
+        with self._workflow_fixture() as root:
+            workflow_path = root / ".github/workflows/ci-quality.yml"
+            text = workflow_path.read_text(encoding="utf-8")
+            old = "          tests.validation.test_grype_db_seed\n"
+            self.assertIn(old, text)
+            workflow_path.write_text(
+                text.replace(old, "", 1),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertIn(
+            "supply-chain focused regression step must match",
+            result.stderr,
+        )
+
     def test_ci_quality_policy_mutations_fail_closed(self) -> None:
         cases = (
             (
