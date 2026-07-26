@@ -136,11 +136,11 @@ credentials, and Scorecard response bodies remain transient.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-SSC-001` | Tool registry, policies, exceptions, checker, and fixtures | `SSC-001`–`SSC-005` | Deterministic fixture RED/GREEN suite | Fresh implementation agent | Complete; current focused suite 65/65 and checker 13/13 pass |
+| `T-SSC-001` | Tool registry, policies, exceptions, checker, and fixtures | `SSC-001`–`SSC-005` | Deterministic fixture RED/GREEN suite | Fresh implementation agent | Complete; current focused suite 67/67 and checker 13/13 pass |
 | `T-SSC-002` | Distinct builds, OCI/Docker portable handoff, SBOM, and scan verdict | `SSC-001`, `SSC-002` | Two full portable subject tuples and verdicts | Fresh implementation agent | Complete; current preflight/advisory pass and publish two distinct accepted schema-v2 verdicts plus pair v3 |
 | `T-SSC-003` | Provenance and local signature verification | `SSC-003`, `SSC-004` | Success plus tamper/wrong-subject rejection | Fresh implementation agent | Complete; current Cosign v3.0.6 new-format offline bundle path verifies both originals and rejects tampered/wrong subjects |
 | `T-SSC-004` | Fixture-only CI/repo gate and advisory summary | `SSC-005` | Network-independent check and freshness | Fresh implementation agent | Complete; CI/local/repository wiring and generated summaries pass |
-| `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local Task boundary; fresh domain reviews are approved and the Program's post-remediation final re-review remains pending |
+| `T-SSC-005` | Independent specification and security/quality review | `VAL-SSC-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local Task boundary; domain and final implementation re-reviews are approved while post-evidence branch confirmation remains pending |
 
 ## Work Log
 
@@ -158,12 +158,13 @@ credentials, and Scorecard response bodies remain transient.
 | 2026-07-22 | Immutable build-context RED/GREEN | RED `abc1dd21` captured mutable-context and mixed input-generation gaps. GREEN `c8342c09` records independent manifest and configuration image identities, constructs one deterministic mode-0600 `.dockerignore`-aware tar inside a mode-0700 private runtime, snapshots device/inode/size/mtime/ctime/mode/UID/hash metadata, passes that exact tar to Buildx over stdin, and immediately revalidates it after build. A mutate-and-restore attempt fails class 50 without publishing a pair. That committed state passed 44/44 with 13 fixtures plus Bash/static/Python/diff and preflight gates; the later portable suite supersedes only the focused count. |
 | 2026-07-22 | Historical committed-tree advisory boundary (superseded) | At that revision, exactly one hardened advisory exited class `10` with `grype-db-seed-unavailable-advisory-blocked` before Docker because the one-time approved seed was absent and no reusable local database existed. No accepted baseline/candidate verdict, committed pair manifest, transient run verdict, signing key, private runtime tree, or tool container remained. The later Task 7 source-bound advisory below supersedes this prerequisite state. |
 | 2026-07-23 | Historical terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. At that reviewed revision the database seed/policy pass/pair were still absent; later Task 7 evidence below supersedes only that runtime prerequisite state. |
-| 2026-07-23 | Portable handoff RED/GREEN and review | RED `2ae6e883` required a cross-store local image handoff. GREEN `1937ec75` and consumer `a6c12e18` bind verdict schema v2, pair schema/generation v3, and rehearsal-record schema v4 to the full OCI/Docker/runtime tuple. Review remediation `d156aca8..b070a06c` added canonical-record preservation, gzip DiffID verification, bounded uncompressed OCI/USTAR/PAX parsing, and hidden-metadata rejection. Current supply-chain tests pass 61/61, checker fixtures pass 13/13, and independent portable-handoff reviews are C0/I0/M0. |
+| 2026-07-23 | Portable handoff RED/GREEN and review | RED `2ae6e883` required a cross-store local image handoff. GREEN `1937ec75` and consumer `a6c12e18` bind verdict schema v2, pair schema/generation v3, and rehearsal-record schema v4 to the full OCI/Docker/runtime tuple. Review remediation `d156aca8..b070a06c` added canonical-record preservation, gzip DiffID verification, bounded uncompressed OCI/USTAR/PAX parsing, and hidden-metadata rejection. At that portable-handoff checkpoint supply-chain tests passed 61/61, checker fixtures passed 13/13, and independent reviews were C0/I0/M0. |
 | 2026-07-23 | Current Task 7 source-bound offline advisory | At source revision `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b`, preflight exited 0 with `supply_chain_preflight=pass` and advisory exited 0 with `supply_chain_verification=pass roles=baseline,candidate redaction=passed`. Grype seed `v6.1.9` was built `2026-07-22T07:06:24Z` from package SHA-256 `8496f58655ba6b5d1ed133e8591629d729a53021e7f1b20063b0577ca7c0f02f`; both roles had 0 Critical, 0 High, and 3 Medium, no exception, and `reason=outside-policy`. The mode-0600 pair is schema 3/generation `hyhome-verification-verdict-pair-v3`, size 1,806, SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, and binds build context `sha256:1e2ff714895bb6352d101a6f0a7b5beb45dd9f414ade788d77a7d6e9df650034`. Docker inspection matched each pair-bound runtime ID and role label. Task-owned container inventory and `/tmp/hyhome-supply-chain.*` were empty and tracked worktree state was clean after the run. The former pair at `6803949d` with hash `729ca2e3…` is historical/superseded. Task 5 and the controlled wrapper were not run within this Task; the delivery Task later consumed the pair in its separately approved runtime sequence. |
 | 2026-07-23 | Task 7 runtime-evidence review closure | Fresh independent specification and quality/security reviewers each approved exact range `b070a06ceac2f3e60fdb5bdb3fa87b4b0433545b..086744f8bd20370262ce297dd5b6dc101a5b54dc` at `C0/I0/M0`. At that review checkpoint, their safe, non-runtime evidence confirmed delivery 54/54, seed 8/8, checker 13/13, generated-summary freshness, ignored handoff mode/hash/full-tuple equality, Task 5 record absence, and clean diff hygiene. No Docker, advisory, Task 5, wrapper, or remote action ran during the review. The later Task 5 runtime is owned by the delivery Task and is outside this review range. |
 | 2026-07-23 | Downstream Task 5 review/document closure | Fresh delivery specification and quality/security reviews each returned `APPROVED C0/I0/M0` with no findings for exact range `f3e4701115734e71f8848e706e9d37d499f0c2ac..a5c97e0a62bb71029c73e84f5dbe07b4c1dc0efe`. Specification checks passed delivery 54/54, metadata 6/0 plus one unchanged legacy exception, traceability 46/0, alignment 667/5,524/141/0, diff hygiene, and read-only canonical/upstream reconciliation. Quality/security checks passed delivery 54/54, fixture preflight at exit 0, Bash syntax, Python compilation, diff hygiene, and stat/hash/ignore/`jq`/tuple reconciliation. This supply-chain Task did not run Task 5 or the controlled wrapper. |
-| 2026-07-26 | Final lifecycle review remediation | The local digest-bound supply-chain boundary is complete and this Task transitions to `completed`; registry publication, remote trust, live Scorecard enforcement, credentials, release, and deployment remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection bypassed the bounded stable-private reader; RED `9a24b0cb` and GREEN `73f4ea68` close that helper boundary. Fresh final re-review has not yet approved these remediations. |
-| 2026-07-26 | Final-review typed identity and seed reconciliation | RED `163f434b` proves that manifest/target/config identity must remain distinct and that private Docker-save config observations must fail closed. GREEN `e8934783` upgrades the tool registry to schema 3, binds repo digest, target descriptor, and independently hashed config JSON for every exact tool/material image, and reuses the bounded stable-private reader plus strict uncompressed-tar validation. The focused supply-chain suite passes 65/65 and the Grype seed suite passes 9/9. Local read-only preflight validated all exact immutable tool/material tuples without pull, build, or network. The ignored seed was atomically republished as generation `a2eccd73475a39aea051be83b3fc1a51524c69e036e032a9a49704b5803fa7e4`; its 1,949,126,944 cache bytes, three files, tree SHA-256 `d4ddbc75da746cff08eb90e6ed998dd82a888dd242055114770bf2ed197aeb52`, database build/package identity, and seeded timestamp are unchanged, while its Grype tool record now contains distinct target and config digests. Read-only pair reconciliation confirms the existing mode-0600 schema-v3 pair SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, both verdict hashes, and both full seven-field subject tuples remain exact. Independent private Docker-save config-body hashes match the pair's baseline/candidate config digests, and local runtime target IDs match the pair. No new advisory, build, pull, or network action ran. The pair remains current, but the downstream Task 5 record is reopened because the corrected Compose/PostgreSQL handoff hashes changed. Fresh final re-review remains pending; no approval is claimed. |
+| 2026-07-26 | Final lifecycle review remediation (historical checkpoint) | The local digest-bound supply-chain boundary is complete and this Task transitions to `completed`; registry publication, remote trust, live Scorecard enforcement, credentials, release, and deployment remain deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection bypassed the bounded stable-private reader; RED `9a24b0cb` and GREEN `73f4ea68` close that helper boundary. At that checkpoint fresh final re-review had not approved the remediations; the later dual-ID and CI/governance row records the exact approved re-reviews. |
+| 2026-07-26 | Final-review typed identity and seed reconciliation | RED `163f434b` proves that manifest/target/config identity must remain distinct and that private Docker-save config observations must fail closed. GREEN `e8934783` upgrades the tool registry to schema 3, binds repo digest, target descriptor, and independently hashed config JSON for every exact tool/material image, and reuses the bounded stable-private reader plus strict uncompressed-tar validation. At that correction checkpoint the focused supply-chain suite passed 65/65 and the Grype seed suite passed 9/9. Local read-only preflight validated all exact immutable tool/material tuples without pull, build, or network. The ignored seed was atomically republished as generation `a2eccd73475a39aea051be83b3fc1a51524c69e036e032a9a49704b5803fa7e4`; its 1,949,126,944 cache bytes, three files, tree SHA-256 `d4ddbc75da746cff08eb90e6ed998dd82a888dd242055114770bf2ed197aeb52`, database build/package identity, and seeded timestamp are unchanged, while its Grype tool record now contains distinct target and config digests. Read-only pair reconciliation confirms the existing mode-0600 schema-v3 pair SHA-256 `ac61c1763f1c14cc8d07b3e58421d1f7355bf22b47632da67f8aad061f6b1220`, both verdict hashes, and both full seven-field subject tuples remain exact. Independent private Docker-save config-body hashes match the pair's baseline/candidate config digests, and local runtime target IDs match the pair. No new advisory, build, pull, or network action ran. The pair remains current; the corrected downstream Task 5 successor and its scoped reviews later restored local closure. The dual-ID row supersedes only the focused counts and final review disposition. |
+| 2026-07-26 | Dual-ID compatibility RED/GREEN and review closure | Initial whole-branch quality review at `0828857657611e570e2a654efff4b17ff95083ca` returned `CHANGES REQUIRED C0/I1/M0` because the supply-chain image predicate accepted `.Id` only as the target descriptor. RED `ffc1cf130e64db3d61d2de067239c7d720fa3ee5` added target-ID acceptance, config-ID acceptance, and unrelated-ID rejection; the config-ID case was the one intended supply-chain failure. GREEN `d186644e6243b0598e54303ee9bec5344516cb99` accepts `.Id` only when equal to the expected target or expected config while keeping RepoDigest, Descriptor/target, and independently hashed config-body gates separate and mandatory. The supply-chain suite passes 67/67 and the Grype seed suite passes 12/12; all four focused modules pass 176/176. Exact quality re-review of `0828857657611e570e2a654efff4b17ff95083ca..d186644e6243b0598e54303ee9bec5344516cb99` returned `APPROVED C0/I0/M0`, and exact specification re-review of `d186644e6243b0598e54303ee9bec5344516cb99..8a0bd6f440e884fec875f442c55906c0dec48edd` returned `APPROVED C0/I0/M0`. Existing pair and seed runtime evidence used `.Id=target`, remains a valid accepted form, and was not rerun or regenerated; no config-ID runtime or fresh advisory is claimed. Final post-evidence whole-branch confirmation remains pending. |
 
 ## Verification Evidence
 
@@ -225,9 +226,9 @@ transient `vulnerability-verdict.json`, exits class `40` with
 absent; it therefore never converts an exception-approved scan into a Task 5
 consumer verdict.
 
-Current verification results: deterministic implementation, 65/65
-focused/static
-checks, preflight, and the source-bound advisory pass. Task 7 supplied the
+Current verification results: deterministic implementation, 67/67
+focused/static checks, 12/12 Grype seed compatibility tests, preflight, and the
+source-bound advisory pass. Task 7 supplied the
 approved reusable database seed, official runtime-material remediation, the
 Cosign v3 offline new-format bundle path, and the portable local-image
 handoff. At source revision
@@ -303,16 +304,22 @@ Task 6 documentation, owner regeneration, safe gates, and whole-branch
 re-review are recorded by the Program Task. The database-seed, policy-pass,
 and accepted-pair prerequisites are now satisfied by the Task 7 evidence
 above. Task 5's prior positive promotion and injected rollback plus their
-reviews remain historical evidence for the old readiness/recovery hashes; the
-fixed current record path is absent pending a newly authorized rehearsal.
+reviews remain historical evidence for the old readiness/recovery hashes. The
+corrected successor later completed exactly one actual positive exit `0` and
+one injected negative exit `30`, published the current mode-0600 record with
+SHA-256
+`f2625d260494e1eb6c16af75ebcf287f3deebc0fd034210df62f24d712d08082`,
+and received approved scoped reviews.
 The Program-owned controlled all-files wrapper
 passed on 2026-07-26 from clean checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`, with hook exit 0, snapshot pass,
 zero observed path counts, and all four path sets empty. That PASS covers only
 the exact checkpoint. Later code commits `9a24b0cb`/`73f4ea68`, generated-owner
 commit `78265090`, and this lifecycle logical unit were not covered; they use
-targeted gates and fresh final re-review. The wrapper is not rerun because its
-contract is exact-once.
+targeted gates and exact re-reviews. The later quality re-review of
+`08288576..d186644e` and specification re-review of
+`d186644e..8a0bd6f4` are both `APPROVED C0/I0/M0`. The wrapper is not rerun
+because its contract is exact-once.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -335,7 +342,7 @@ Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`; see the
 [program Task](./2026-07-19-operational-readiness-closure-program.md) for the
 full command and exact allowed prefixes. Post-wrapper code, generated-owner,
-and lifecycle commits use targeted gates plus final re-review. The wrapper is
+and lifecycle commits use targeted gates plus exact re-review. The wrapper is
 not rerun under its exact-once contract, and direct
 `pre-commit run --all-files` remains prohibited.
 
@@ -389,8 +396,13 @@ logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
 their indexes. The initial final quality review returned
 `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
 unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
-through the bounded stable-private reader. Fresh final specification and
-quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+through the bounded stable-private reader. This paragraph preserves that
+historical checkpoint. The later initial post-closure review at `08288576`
+returned specification `CHANGES REQUIRED C0/I1/M1` and quality
+`CHANGES REQUIRED C0/I1/M0`; dual-ID RED/GREEN
+`ffc1cf13`/`d186644e` and CI/governance correction `8a0bd6f4` close them.
+Exact quality re-review `08288576..d186644e` and exact specification re-review
+`d186644e..8a0bd6f4` are both `APPROVED C0/I0/M0`.
 
 ## Commit Ledger
 
@@ -405,16 +417,24 @@ producer GREEN `1937ec75`, consumer GREEN `a6c12e18`, and remediation
 `b070a06c`.
 The separate evidence update does not embed its own SHA.
 Post-wrapper remediation identities are OCI reader RED/GREEN
-`9a24b0cb`/`73f4ea68`, generated-owner refresh `78265090`, and this lifecycle
-logical unit. They are validated by targeted gates and the pending final
-re-review, not by the exact-once wrapper.
+`9a24b0cb`/`73f4ea68`, generated-owner refresh `78265090`, this lifecycle
+logical unit, dual-ID RED/GREEN `ffc1cf13`/`d186644e`, and CI/governance
+correction `8a0bd6f4`. They are validated by targeted gates and exact approved
+re-reviews, not by the exact-once wrapper.
+Evidence reconciliation then found that the CI routing test was absent from the
+Foundation manifest's `github-governance.md` consumers. Commit
+`e46a0e5a4356b8439cefdc26ed6a5fa23fd0f2d9` adds that exact consumer only;
+the Foundation summary remains byte-identical. Fresh manifest/summary checks
+pass, impacted lifecycle passes 159/0 with only the expected Task-directory
+warning, and promoted lifecycle passes at zero.
 
 Logical unit: `feat(security): add local supply-chain verification`.
 
-Commit validation: the current 65/65 focused fixture/wrapper tests, 13/13
-deterministic checker fixtures, static checks, preflight, fixture-only, summary
-freshness, immutable-context revalidation, and source-bound accepted advisory
-are recorded above. Historical terminal reviews are `APPROVED C0/I0/M0` for
+Commit validation: the current 67/67 focused fixture/wrapper tests, 12/12
+Grype seed compatibility tests, 13/13 deterministic checker fixtures, static
+checks, preflight, fixture-only, summary freshness, immutable-context
+revalidation, and source-bound accepted advisory are recorded above.
+Historical terminal reviews are `APPROVED C0/I0/M0` for
 their exact reviewed commits; portable-handoff reviews are `C0/I0/M0`; and the
 fresh full Task 7 specification and quality/security reviews of
 `b070a06c..086744f8` are both `APPROVED C0/I0/M0`.
@@ -428,13 +448,13 @@ level claims.
 Blocked items: the approved offline Grype seed, policy pass, and accepted
 distinct same-revision verdict pair remain complete and current. Task 5's prior
 delivery runtime and reviews are historical for the superseded readiness and
-recovery hashes; a newly authorized local rehearsal and fresh review are
-required before downstream completion can be restored.
+recovery hashes; the corrected successor's `0/30` rehearsal and scoped reviews
+restored downstream local closure.
 `--scorecard-advisory` remains skipped until read-only network scope is
 confirmed. The Program-owned controlled all-files wrapper passed on 2026-07-26
 only for checkpoint `263e046f`; this Task is completed at the approved local
-boundary. Fresh final Program re-review of the post-wrapper remediation range
-remains pending and is not reported as approval.
+boundary. Exact implementation re-reviews through `8a0bd6f4` are approved;
+final post-evidence whole-branch confirmation remains pending.
 
 Deferral destination: remote identity, publication, enforcement, registry,
 credential, live, release, or deployment work needs a new approved Stage 01-04

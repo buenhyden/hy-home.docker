@@ -133,10 +133,10 @@ private endpoint payloads.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done; current focused suite 44/44 |
+| `T-CRR-001` | Wrapper, override, synthetic environment, and verdict contract | `CRR-001`–`CRR-003` | Focused RED/GREEN tests and preflight | Fresh implementation agent | Done; current focused suite 46/46 |
 | `T-CRR-002` | Exact five-service startup and endpoint readiness | `CRR-001`, `CRR-002` | Startup/readiness scenario and typed verdict | Fresh implementation agent | Done (runtime) |
 | `T-CRR-003` | Vault restart, timeout, and cleanup ambiguity | `CRR-003` | Recovery and expected non-zero timeout scenarios | Fresh implementation agent | Done (runtime) |
-| `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local-isolated Task boundary; the Program's post-remediation final re-review remains pending |
+| `T-CRR-004` | Independent specification and quality/security review | `VAL-CRR-001`–`004` | C0/I0/M0 re-review | Separate reviewers | Complete for the local-isolated Task boundary; final implementation re-reviews pass and post-evidence branch confirmation remains pending |
 
 ## Work Log
 
@@ -195,8 +195,9 @@ private endpoint payloads.
 | 2026-07-22 | Independent image-identity RED/GREEN (historical, superseded) | RED `9838034c` proved that a matching configuration ID alone did not establish the required manifest identity. GREEN `14e1dd5d` compared the manifest and engine `.Id` observations available at that checkpoint. Docker Engine 29/containerd later established that `.Id` is the target descriptor rather than the image configuration digest, so the final-review correction below supersedes this observation model. |
 | 2026-07-22 | Startup/recovery/timeout acceptance before descriptor/config correction (historical, superseded) | Startup project `hyhome-crr-20260719-2642602-fxq2siqi`, recovery project `hyhome-crr-20260719-2648660-ov2uzbas`, timeout project `hyhome-crr-20260719-2661806-zqukerpv`, and canonical SHA-256 `12fbe9fa47eb0e96a8a2ed23d033dc176bf279fce8e9a8d6b91ccd1d166e76a0` were valid for the earlier observation model. The corrected final-review acceptance below supersedes them. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. These approvals do not change the active Task or Program lifecycle and do not authorize the controlled wrapper. |
-| 2026-07-26 | Final lifecycle review remediation | The local-isolated Compose boundary is complete and this Task transitions to `completed`; remote/live or broader runtime remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
-| 2026-07-26 | Final-review identity and health correction | RED `163f434b` proves that endpoint success could mask an unhealthy service and that engine `.Id` could not stand in for the image config digest. GREEN `e8934783` fails closed when any service is unhealthy and binds repo digest, target descriptor, and independently hashed Docker-save config body as distinct fields. CI routing `324a5ea3` runs the five focused readiness modules. The focused Compose suite passes 44/44. Corrected runtime acceptance is startup `hyhome-crr-20260719-1056090-w6eb8tzo` exit 0 in 83 seconds, recovery `hyhome-crr-20260719-1065568-wswf8ocg` exit 0 in 100 seconds, and timeout `hyhome-crr-20260719-1089075-gowjwtw6` expected exit 30 in 81 seconds. The timeout preserved the recovery canonical byte-for-byte. The exact mode-0600, 1,198-byte canonical SHA-256 is `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; every owner-scoped container, network, volume, and `/tmp` inventory is zero. Fresh final specification and quality re-review of this correction remain pending; no approval is claimed. |
+| 2026-07-26 | Final lifecycle review remediation (historical checkpoint) | The local-isolated Compose boundary is complete and this Task transitions to `completed`; remote/live or broader runtime remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. At that checkpoint fresh final re-review had not approved the remediations; the later dual-ID and CI/governance row records the exact approved re-reviews. |
+| 2026-07-26 | Final-review identity and health correction | RED `163f434b` proves that endpoint success could mask an unhealthy service and that engine `.Id` could not stand in for the image config digest. GREEN `e8934783` fails closed when any service is unhealthy and binds repo digest, target descriptor, and independently hashed Docker-save config body as distinct fields. CI routing `324a5ea3` runs the five focused readiness modules. At that correction checkpoint the focused Compose suite passed 44/44. Corrected runtime acceptance is startup `hyhome-crr-20260719-1056090-w6eb8tzo` exit 0 in 83 seconds, recovery `hyhome-crr-20260719-1065568-wswf8ocg` exit 0 in 100 seconds, and timeout `hyhome-crr-20260719-1089075-gowjwtw6` expected exit 30 in 81 seconds. The timeout preserved the recovery canonical byte-for-byte. The exact mode-0600, 1,198-byte canonical SHA-256 is `20f4637780101b727947aaa6c00c6a56438e72426d1165448b01450e6d260d59`; every owner-scoped container, network, volume, and `/tmp` inventory is zero. The later dual-ID row supersedes only the focused count and review disposition; it does not replace or rerun this runtime evidence. |
+| 2026-07-26 | Dual-ID compatibility RED/GREEN and review closure | Initial whole-branch quality review at `0828857657611e570e2a654efff4b17ff95083ca` returned `CHANGES REQUIRED C0/I1/M0` because the local-image predicate accepted `.Id` only as the target descriptor. RED `ffc1cf130e64db3d61d2de067239c7d720fa3ee5` added the Compose target-ID acceptance, config-ID acceptance, and unrelated-ID rejection matrix; the config-ID case was the one intended Compose failure. GREEN `d186644e6243b0598e54303ee9bec5344516cb99` accepts `.Id` only when it equals the expected target or expected config while keeping RepoDigest, Descriptor/target, and independently hashed config-body checks mandatory. The focused suite passes 46/46, and the four-module total is 176/176. Exact quality re-review of `0828857657611e570e2a654efff4b17ff95083ca..d186644e6243b0598e54303ee9bec5344516cb99` returned `APPROVED C0/I0/M0`; the exact specification re-review of the following governance delta also returned `APPROVED C0/I0/M0`. Existing Compose runtime used `.Id=target`, remains accepted, and was not rerun; no config-ID runtime execution is claimed. Final post-evidence whole-branch confirmation remains pending. |
 
 ## Verification Evidence
 
@@ -242,7 +243,7 @@ Actual static evidence:
   path also invalidated the canonical handoff only after render/daemon/capacity
   and had no unconditional early-failure scenario finalizer;
 - `python3 -m pytest` was unavailable in the repository runtime (`No module named pytest`), so no pytest verdict is claimed;
-- `python3 -m unittest tests.validation.test_compose_core_readiness` passes the current focused suite `44/44` after the routing, signal-cleanup, local-only readiness, unhealthy-service classification, and independent target/config identity RED cycles;
+- `python3 -m unittest tests.validation.test_compose_core_readiness` passes the current focused suite `46/46` after the routing, signal-cleanup, local-only readiness, unhealthy-service classification, independent target/config identity, and dual-ID compatibility RED cycles;
 - `timeout 120s bash scripts/validation/validate-docker-compose.sh` exited `0` with `services_total=5`;
 - `timeout 60s bash scripts/validation/run-compose-core-readiness.sh --preflight` exited `0`, emitted `keycloak,oauth2-proxy,traefik,vault,vault-agent` and ports `18000,18443,18082,18083,18200`, and left no owned temporary path;
 - the focused daemon-separation regression proves `assert_docker_compose` passes with a Compose-capable CLI even when the Docker API fails, while `assert_docker_daemon` returns class `10`.
@@ -276,8 +277,8 @@ recorded by the Program Task. The controlled all-files wrapper passed exactly
 once from checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`. Later code, generated-owner, and
 lifecycle commits were not covered by that wrapper; they use targeted gates
-and fresh final re-review. The wrapper is not rerun because its contract is
-exact-once.
+and exact final re-reviews. Final post-evidence confirmation remains pending;
+the wrapper is not rerun because its contract is exact-once.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -299,8 +300,8 @@ Observation boundary:
 Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`. Post-wrapper commits
 `9a24b0cb`, `78265090`, `73f4ea68`, and this lifecycle logical unit are
-explicitly outside its coverage and use targeted gates plus final re-review.
-The wrapper is not rerun under its exact-once contract, and direct
+explicitly outside its coverage and use targeted gates plus the exact review
+sequence recorded below. The wrapper is not rerun under its exact-once contract, and direct
 `pre-commit run --all-files` remains prohibited.
 
 ## Review Evidence
@@ -311,8 +312,8 @@ identity boundary. The routing findings have a test-first implementation and
 live runtime response. Historical terminal reviews pass only for their exact
 reviewed commits. The terminal whole-branch reviews below end at `20022458`
 and therefore predate current RED `163f434b`, GREEN `e8934783`, focused CI
-routing `324a5ea3`, and the corrected runtime handoff. Fresh independent
-review of that later range remains pending.
+routing `324a5ea3`, and the corrected runtime handoff. The later exact review
+sequence through `8a0bd6f4` closes the remaining implementation findings.
 
 Specification review verdict: the earlier remediation review returned
 `APPROVED C0/I0/M0`; it is retained as historical pre-routing evidence. The
@@ -336,11 +337,16 @@ review v3 returned `APPROVED C0/I0/M0` for the full branch range through
 
 Findings and disposition: terminal routing review severities were specification
 `C0/I0/M0` and quality/security `C0/I0/M0` for their historical exact range.
-The current implementation response passes `44/44` focused tests and the
+The current implementation response passes `46/46` focused tests and the
 document gates. Specification v5 and quality/security v3 are historical
 `C0/I0/M0` evidence through `20022458`; they are not verdicts for the current
 hardening or corrected runtime. Earlier `CHANGES REQUIRED` iterations remain
-historical remediation evidence, and the current range is review-pending.
+historical remediation evidence. The later initial post-closure quality review
+returned `CHANGES REQUIRED C0/I1/M0`; dual-ID RED/GREEN
+`ffc1cf13`/`d186644e` closes it, and exact quality re-review of
+`08288576..d186644e` is `APPROVED C0/I0/M0`. Exact specification re-review of
+the following `d186644e..8a0bd6f4` governance delta is also
+`APPROVED C0/I0/M0`. Final post-evidence confirmation remains pending.
 
 The initial final Program specification review after the controlled-wrapper
 checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
@@ -350,8 +356,9 @@ logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
 their indexes. The initial final quality review returned
 `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
 unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
-through the bounded stable-private reader. Fresh final specification and
-quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+through the bounded stable-private reader. That row preserves the historical
+checkpoint; the later exact quality and specification re-reviews are both
+`APPROVED C0/I0/M0`.
 
 ## Commit Ledger
 
@@ -362,21 +369,32 @@ Original implementation identity:
 GREEN `7c6c4ea1`; historical engine-identity hardening used RED `9838034c`
 followed by GREEN `14e1dd5d`. Current health and descriptor/config hardening is
 RED `163f434b` followed by GREEN `e8934783`; focused CI routing is `324a5ea3`.
+Final compatibility evidence is RED
+`ffc1cf130e64db3d61d2de067239c7d720fa3ee5`, GREEN
+`d186644e6243b0598e54303ee9bec5344516cb99`, and CI/governance correction
+`8a0bd6f440e884fec875f442c55906c0dec48edd`. Evidence reconciliation then
+found that the CI routing test was absent from the Foundation manifest's
+`github-governance.md` consumers. Commit
+`e46a0e5a4356b8439cefdc26ed6a5fa23fd0f2d9` adds that exact consumer only;
+the Foundation summary remains byte-identical. Fresh manifest/summary checks
+pass, impacted lifecycle passes 159/0 with only the expected Task-directory
+warning, and promoted lifecycle passes at zero.
 
 Logical unit: `feat(harness): add compose runtime acceptance`.
 
 Commit validation: the three current routed runtime scenarios pass as recorded
 above, including independent manifest/config identity checks, scoped cleanup,
 redaction, and byte-identical ready handoff preservation. Focused/static gates
-pass. Terminal whole-branch specification v5 and quality/security v3 remain
-APPROVED C0/I0/M0 only through historical endpoint `20022458`; fresh
-independent review of `163f434b`/`e8934783` and the corrected handoff is
-pending.
+pass at 46/46. Terminal whole-branch specification v5 and quality/security v3
+remain historical through endpoint `20022458`. Exact quality re-review
+`08288576..d186644e` and exact specification re-review
+`d186644e..8a0bd6f4` are both `APPROVED C0/I0/M0`; post-evidence
+whole-branch confirmation remains pending.
 
 Post-wrapper remediation identities are generated-owner refresh `78265090`,
 OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.
-They are validated by targeted gates and the pending final re-review, not by
-the exact-once wrapper.
+They and the later dual-ID/CI-governance corrections are validated by targeted
+gates and the exact final re-reviews, not by the exact-once wrapper.
 
 ## Deferred and Blocked Items
 
@@ -384,9 +402,9 @@ Deferred items: production/shared-host startup, broader profiles, data restore,
 remote observability, registry access, deployment, and live secret integration.
 
 Blocked items: implementation/runtime has no remaining local blocker. This Task
-is completed at the approved local-isolated boundary. Fresh final Program
-re-review of the post-wrapper remediation range remains pending and is not
-reported as approval.
+is completed at the approved local-isolated boundary. The implementation
+re-reviews are approved; only final post-evidence whole-branch confirmation
+remains pending.
 
 Deferral destination: data restore routes to [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
 remote, live, shared, or broader runtime requires a new approved Stage 01-04

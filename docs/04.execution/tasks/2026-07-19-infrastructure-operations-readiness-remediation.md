@@ -128,10 +128,10 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 
 | Task ID | Description | Parent requirement | Validation / evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; current focused suite 49/49 and static checks pass |
+| `T-IOR-001` | Fixture, oracle, wrapper, verdict, and tests | `IOR-001`–`IOR-004` | Focused RED/GREEN suite and `--check` | Fresh implementation agent | Complete; current focused suite 51/51 and static checks pass |
 | `T-IOR-002` | Logical backup and isolated restore | `IOR-003`, `IOR-004` | Dump, restore, oracle, timing, cleanup | Fresh implementation agent | Complete; final normal pass |
 | `T-IOR-003` | 17-to-18 and corrupted/partial negative paths | `IOR-001`, `IOR-002` | Stable failures and cleanup disposition | Fresh implementation agent | Complete; classes 50/50/10/20 |
-| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Complete for the representative-local Task boundary; the Program's post-remediation final re-review remains pending |
+| `T-IOR-004` | Bounded runbook and independent reviews | `VAL-IOR-001`–`004` | Spec plus operations/security C0/I0/M0 | Separate reviewers | Complete for the representative-local Task boundary; final implementation re-reviews pass and post-evidence branch confirmation remains pending |
 
 ## Work Log
 
@@ -154,8 +154,9 @@ dump, SQL row payloads, passwords, environment values, raw queries, or logs.
 | 2026-07-22 | Independent PostgreSQL image-identity RED/GREEN (historical, superseded) | RED `da06a080` proved source, target, and helper-client manifest identities were not independently established from configuration IDs. GREEN `adbbdce2` compared the manifest and engine `.Id` observations available at that checkpoint. Docker Engine 29/containerd later established that `.Id` is the target descriptor rather than the image configuration digest, so the final-review correction below supersedes this observation model. |
 | 2026-07-22 | Strict ordered acceptance before descriptor/config correction (historical, superseded) | The check/negative/final-normal sequence, project `hyhome-ior-20260719-2866314-source/target`, dump SHA-256 `e1f8f97636739cacf00a0824e21dc5b296e6198ed52715c496960710b0925534`, and canonical SHA-256 `bf7109f5fd15cf04615ed331cb63be7c7848d8656749e427c2a54a1aecd2d18a` were valid for the earlier observation model. The corrected final-review acceptance below supersedes them. |
 | 2026-07-23 | Terminal whole-branch review closure | Quality/security review v3 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the then-current 26-document reconciliation diff. Specification review v5 returned `APPROVED C0/I0/M0` for the full branch range through `20022458` plus the final 26-document reconciliation diff. Earlier `CHANGES REQUIRED` iterations remain historical remediation evidence. No Task 4 command or test ran for this evidence-only closure, and the approvals do not change the active Task or Program lifecycle or authorize the controlled wrapper. |
-| 2026-07-26 | Final lifecycle review remediation | The representative synthetic PostgreSQL boundary is complete and this Task transitions to `completed`; live/shared/production recovery remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. Fresh final re-review has not yet approved these remediations. |
-| 2026-07-26 | Final-review identity correction and strict acceptance | RED `163f434b` proves that engine `.Id` cannot establish the config digest. GREEN `e8934783` binds repo digest, target descriptor, and independently hashed Docker-save config body for source, target, and helper client. The focused suite passes 49/49 and the local read-only preflight passed before runtime. The exact ordered sequence returned check `0`, checksum mismatch `50`, partial state `50`, bad target major `10`, timeout `20`, and one final normal `0`; every negative reported cleanup passed. Final project `hyhome-ior-20260719-1128131-source/target` used fixture SHA-256 `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`; its 4,484-byte dump SHA-256 is `c3ebc52895bda22559f99efb72471f9928b9a097d64d0df6066be354d9a65581`, with backup 0s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical SHA-256 is `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`; integrity, cleanup, and redaction passed. Every owner-scoped container, helper client, network, volume, dump, and `/tmp` inventory is zero. No Task 4 wrapper, test, check, negative, or normal command ran after that final normal. Fresh final re-review remains pending; no approval is claimed. |
+| 2026-07-26 | Final lifecycle review remediation (historical checkpoint) | The representative synthetic PostgreSQL boundary is complete and this Task transitions to `completed`; live/shared/production recovery remains deferred to a new Stage 01-04 chain. The initial final Program specification review returned `CHANGES REQUIRED C0/I2/M0` for stale generated owners and still-active lifecycle metadata; generated-owner remediation is `78265090`, and this lifecycle logical unit closes the status/index finding. The initial final quality review returned `CHANGES REQUIRED C0/I1/M0` for the OCI digest helper; RED `9a24b0cb` and GREEN `73f4ea68` close that code boundary. At that checkpoint fresh final re-review had not approved the remediations; the later dual-ID and CI/governance row records the exact approved re-reviews. |
+| 2026-07-26 | Final-review identity correction and strict acceptance | RED `163f434b` proves that engine `.Id` cannot establish the config digest. GREEN `e8934783` binds repo digest, target descriptor, and independently hashed Docker-save config body for source, target, and helper client. At that correction checkpoint the focused suite passed 49/49 and the local read-only preflight passed before runtime. The exact ordered sequence returned check `0`, checksum mismatch `50`, partial state `50`, bad target major `10`, timeout `20`, and one final normal `0`; every negative reported cleanup passed. Final project `hyhome-ior-20260719-1128131-source/target` used fixture SHA-256 `523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57`; its 4,484-byte dump SHA-256 is `c3ebc52895bda22559f99efb72471f9928b9a097d64d0df6066be354d9a65581`, with backup 0s and restore 0s. The exact 12-key, mode-0600, 642-byte canonical SHA-256 is `dab8e587519a48059d62a46ae7f6b7b757fbad53486215df436fd0a90bd4b45a`; integrity, cleanup, and redaction passed. Every owner-scoped container, helper client, network, volume, dump, and `/tmp` inventory is zero. No Task 4 wrapper, test, check, negative, or normal command ran after that final normal. The later dual-ID row supersedes only the focused count and review disposition. |
+| 2026-07-26 | Dual-ID compatibility RED/GREEN and review closure | Initial whole-branch quality review at `0828857657611e570e2a654efff4b17ff95083ca` returned `CHANGES REQUIRED C0/I1/M0` because the PostgreSQL predicate accepted `.Id` only as the target descriptor. RED `ffc1cf130e64db3d61d2de067239c7d720fa3ee5` added target-ID acceptance, config-ID acceptance, and unrelated-ID rejection; the config-ID case was the one intended PostgreSQL failure. GREEN `d186644e6243b0598e54303ee9bec5344516cb99` accepts `.Id` only when equal to the expected target or expected config while keeping RepoDigest, Descriptor/target, and independently hashed config-body checks mandatory. The focused suite passes 51/51, and the four-module total is 176/176. Exact quality re-review of `0828857657611e570e2a654efff4b17ff95083ca..d186644e6243b0598e54303ee9bec5344516cb99` returned `APPROVED C0/I0/M0`; the following exact specification re-review also returned `APPROVED C0/I0/M0`. The frozen runtime used `.Id=target`, remains valid, and was not rerun; no config-ID runtime execution or post-canonical Task 4 command is claimed. Final post-evidence whole-branch confirmation remains pending. |
 
 ## Verification Evidence
 
@@ -180,10 +181,12 @@ match on all integrity fields except declared server version; the verdict has
 `scope=synthetic-local`, `integrity_status=passed`,
 `cleanup_status=passed`, and `redaction_status=passed`.
 
-Actual evidence: focused tests pass 49/49 after historical review-remediation
+Actual evidence: focused tests pass 51/51 after historical review-remediation
 RED 7/31, readiness-race RED 1/1, and second-review RED with 13 expected
 assertion/subtest failures across 7 focused methods. The terminal-review
-regression was RED in all 8 direct-control subcases before the ordering fix.
+regression was RED in all 8 direct-control subcases before the ordering fix;
+the later dual-ID matrix added target-ID acceptance, config-ID acceptance, and
+unrelated-ID rejection while preserving the independent config-body gate.
 `--check` passes with independent local source/target/client manifest and
 configuration identities, the
 full rendered topology, exclusive retained evidence identity, 360-second
@@ -217,8 +220,8 @@ Verification results: implementation/runtime PASS. Historical findings were
 remediated and reviewed for their exact commits. The terminal whole-branch
 review pair recorded below ends at `20022458` and predates current RED
 `163f434b`, GREEN `e8934783`, focused CI routing `324a5ea3`, and the corrected
-runtime handoff. Fresh independent specification and operations/quality review
-of that later range remains pending.
+runtime handoff. The later exact review sequence through `8a0bd6f4` closes the
+remaining implementation findings; post-evidence confirmation remains pending.
 Exit classes are `0=pass`, `2=usage`,
 `10=preflight`, `20=readiness`, `30=backup`, `40=restore`,
 `50=integrity/negative case`, and `60=cleanup`.
@@ -229,8 +232,8 @@ normal command followed the current canonical-producing normal run. The
 controlled all-files wrapper passed exactly once from checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`. Later code, generated-owner, and
 lifecycle commits were not covered by that wrapper; they use targeted gates
-and fresh final re-review. The wrapper is not rerun because its contract is
-exact-once.
+and exact final re-reviews. The wrapper is not rerun because its contract is
+exact-once; final post-evidence confirmation remains pending.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -252,8 +255,8 @@ Observation boundary:
 Disposition: Program-owned wrapper **PASS** only for exact clean checkpoint
 `263e046f64f249b0e771e4f0c5d77a91c967e10f`. Post-wrapper commits
 `9a24b0cb`, `78265090`, `73f4ea68`, and this lifecycle logical unit are
-explicitly outside its coverage and use targeted gates plus final re-review.
-The wrapper is not rerun under its exact-once contract, and direct
+explicitly outside its coverage and use targeted gates plus the exact review
+sequence recorded below. The wrapper is not rerun under its exact-once contract, and direct
 `pre-commit run --all-files` remains prohibited.
 
 ## Review Evidence
@@ -298,8 +301,12 @@ terminal APPROVED C0/I0/M0 re-review for its exact historical range. No review
 verdict from those historical iterations is promoted to the current range;
 the separate v3/v5 whole-branch approvals above also stop at `20022458` and do
 not cover the current independent-identity hardening. Earlier
-`CHANGES REQUIRED` iterations remain historical remediation evidence, and the
-current range is review-pending.
+`CHANGES REQUIRED` iterations remain historical remediation evidence. The
+later initial post-closure quality review returned `CHANGES REQUIRED C0/I1/M0`;
+dual-ID RED/GREEN `ffc1cf13`/`d186644e` closes it, and exact quality re-review
+`08288576..d186644e` is `APPROVED C0/I0/M0`. Exact specification re-review of
+`d186644e..8a0bd6f4` is also `APPROVED C0/I0/M0`. Final post-evidence
+confirmation remains pending.
 
 The initial final Program specification review after the controlled-wrapper
 checkpoint returned `CHANGES REQUIRED C0/I2/M0`: generated navigation owners
@@ -309,8 +316,9 @@ logical unit transitions the exact 15 Specs, Plans, and Tasks and synchronizes
 their indexes. The initial final quality review returned
 `CHANGES REQUIRED C0/I1/M0` because OCI config-digest inspection used an
 unbounded, symlink-following read. RED `9a24b0cb` and GREEN `73f4ea68` route it
-through the bounded stable-private reader. Fresh final specification and
-quality re-review remain pending; no final PASS or APPROVED verdict is claimed.
+through the bounded stable-private reader. That row preserves the historical
+checkpoint; the later exact quality and specification re-reviews are both
+`APPROVED C0/I0/M0`.
 
 ## Commit Ledger
 
@@ -319,21 +327,33 @@ Historical implementation identity: branch-history commit `db150a19`
 used RED `00a65be1` and GREEN `571b2ab1`; historical engine-identity hardening
 used RED `da06a080` followed by GREEN `adbbdce2`. Current target/config
 hardening is RED `163f434b` followed by GREEN `e8934783`; focused CI routing is
-`324a5ea3`. This evidence-only reconciliation intentionally omits its own SHA.
+`324a5ea3`. Final compatibility evidence is RED
+`ffc1cf130e64db3d61d2de067239c7d720fa3ee5`, GREEN
+`d186644e6243b0598e54303ee9bec5344516cb99`, and CI/governance correction
+`8a0bd6f440e884fec875f442c55906c0dec48edd`. Evidence reconciliation then
+found that the CI routing test was absent from the Foundation manifest's
+`github-governance.md` consumers. Commit
+`e46a0e5a4356b8439cefdc26ed6a5fa23fd0f2d9` adds that exact consumer only;
+the Foundation summary remains byte-identical. Fresh manifest/summary checks
+pass, impacted lifecycle passes 159/0 with only the expected Task-directory
+warning, and promoted lifecycle passes at zero. This evidence-only
+reconciliation intentionally omits its own SHA.
 
 Logical unit: `feat(ops): add postgres recovery rehearsal`.
 
-Commit validation: 49/49 focused tests, static gates, and the strict frozen
+Commit validation: 51/51 focused tests, static gates, and the strict frozen
 runtime evidence pass as recorded above. Historical terminal specification and
 operations/quality reviews are APPROVED C0/I0/M0 only for their exact reviewed
 commits; terminal whole-branch specification v5 and quality/security v3 are
-APPROVED C0/I0/M0 only through historical endpoint `20022458`. Fresh review
-of `163f434b`/`e8934783` and the corrected handoff remains pending.
+APPROVED C0/I0/M0 only through historical endpoint `20022458`. Exact quality
+re-review `08288576..d186644e` and exact specification re-review
+`d186644e..8a0bd6f4` are both `APPROVED C0/I0/M0`; post-evidence
+whole-branch confirmation remains pending.
 
 Post-wrapper remediation identities are generated-owner refresh `78265090`,
 OCI reader RED/GREEN `9a24b0cb`/`73f4ea68`, and this lifecycle logical unit.
-They are validated by targeted gates and the pending final re-review, not by
-the exact-once wrapper.
+They and the later dual-ID/CI-governance corrections are validated by targeted
+gates and the exact final re-reviews, not by the exact-once wrapper.
 
 ## Deferred and Blocked Items
 
@@ -342,11 +362,10 @@ storage, retention/encryption certification, production recovery, and
 organization RTO/RPO.
 
 Blocked items: Task 4 has no remaining local implementation/runtime blocker.
-This Task is completed at the representative-local boundary. Fresh final
-Program re-review of the post-wrapper remediation range remains pending and is
-not reported as approval. Delivery may reference this verdict only as a
-recovery boundary and must not claim database recovery for the stateless sample
-service.
+This Task is completed at the representative-local boundary. The implementation
+re-reviews are approved; only final post-evidence whole-branch confirmation
+remains pending. Delivery may reference this verdict only as a recovery boundary
+and must not claim database recovery for the stateless sample service.
 
 Deferral destination: broader, live, shared, remote, or production recovery
 requires a new approved Stage 01-04 chain, explicit human approval, and
