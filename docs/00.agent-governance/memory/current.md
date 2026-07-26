@@ -53,5 +53,5 @@ status: active
 
 ## Next handoff
 
-- Commit the approved `.github/INDEX.md` Task 5 interface amendment as separate
-  Plan evidence, then dispatch a fresh T-AGCC-004 implementer.
+- Preserve the approved `.github/INDEX.md` Task 5 interface amendment and
+  dispatch a fresh T-AGCC-004 implementer.
