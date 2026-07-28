@@ -3704,9 +3704,27 @@ if [[ -x "$wrapper_script" && -x "$wrapper_tests" ]]; then
   if ! bash "$wrapper_tests" >"$wrapper_test_output" 2>&1; then
     fail "controlled agent pre-commit wrapper tests failed"
     cat "$wrapper_test_output" >&2
-  elif ! grep -q 'passed=29 failed=0' "$wrapper_test_output"; then
+  elif ! grep -Eq '^passed=[1-9][0-9]* failed=0$' "$wrapper_test_output"; then
     fail "controlled agent pre-commit wrapper tests did not print the expected pass marker"
     cat "$wrapper_test_output" >&2
+  else
+    critical_wrapper_cases=(
+      "clean linked worktree runs the exact command"
+      "fake pre-commit exit status is propagated"
+      "after snapshot Git failure fails closed and reports hook exit"
+      "unexpected-path status remains distinct from hook failure"
+      "registered files-modified failure emits one bounded tuple"
+      "unsafe or incomplete failure metadata emits unavailable"
+      "duplicate registered metadata fails closed"
+      "raw-output spoof fails closed without leaking values"
+    )
+    for critical_wrapper_case in "${critical_wrapper_cases[@]}"; do
+      if ! grep -Fxq "ok - $critical_wrapper_case" "$wrapper_test_output"; then
+        fail "controlled agent pre-commit wrapper tests omitted a critical case: $critical_wrapper_case"
+        cat "$wrapper_test_output" >&2
+        break
+      fi
+    done
   fi
   rm -f "$wrapper_test_output"
 fi
