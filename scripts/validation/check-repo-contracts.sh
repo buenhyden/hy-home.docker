@@ -116,13 +116,6 @@ for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" \
   "${supply_chain_tests[@]}"; do
   [[ -f "$supply_chain_path" ]] || fail "missing supply-chain policy surface: $supply_chain_path"
 done
-if [[ -f "$supply_chain_checker" ]] && ! python3 "$supply_chain_checker" --check; then
-  failures=$((failures + 1))
-fi
-if [[ -f "$supply_chain_summary" ]] && ! bash "$supply_chain_summary" --check; then
-  failures=$((failures + 1))
-fi
-
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
   echo "Expected:" >&2

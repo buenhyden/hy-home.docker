@@ -5,6 +5,7 @@ import dataclasses
 import os
 import pathlib
 import re
+import shlex
 import stat
 import sys
 from typing import Final
@@ -232,6 +233,147 @@ _ACTION_REGISTRY_BASELINE: Final = (
     (
         "github/codeql-action/upload-sarif",
         "7188fc363630916deb702c7fdcf4e481b751f97a",
+    ),
+)
+_EXPENSIVE_COMMAND_BASELINE: Final = (
+    ExpensiveCommandOwner(
+        "docs-traceability",
+        ".github/workflows/ci-quality.yml",
+        "docs-traceability",
+        "bash scripts/validation/check-doc-traceability.sh",
+    ),
+    ExpensiveCommandOwner(
+        "docs-implementation-alignment",
+        ".github/workflows/ci-quality.yml",
+        "docs-implementation-alignment",
+        "bash scripts/validation/check-doc-implementation-alignment.sh",
+    ),
+    ExpensiveCommandOwner(
+        "repo-contracts",
+        ".github/workflows/ci-quality.yml",
+        "repo-contracts",
+        "bash scripts/validation/check-repo-contracts.sh",
+    ),
+    ExpensiveCommandOwner(
+        "repo-contracts-control-plane-regressions",
+        ".github/workflows/ci-quality.yml",
+        "repo-contracts",
+        (
+            "python3 -m unittest "
+            "tests.validation.test_agent_governance_ci_routing -v"
+        ),
+    ),
+    ExpensiveCommandOwner(
+        "agent-output-eval-fixture-gate",
+        ".github/workflows/ci-quality.yml",
+        "agent-output-eval-fixture-gate",
+        (
+            'output="$(bash scripts/validation/'
+            "run-agent-output-eval-fixtures.sh "
+            '--check-fixtures --check-regressions)"'
+        ),
+    ),
+    ExpensiveCommandOwner(
+        "agent-output-eval-fixture-regressions",
+        ".github/workflows/ci-quality.yml",
+        "agent-output-eval-fixture-gate",
+        (
+            "python3 -m unittest "
+            "tests.validation.test_agent_output_eval_fixtures -v"
+        ),
+    ),
+    ExpensiveCommandOwner(
+        "supply-chain-fixture-policy",
+        ".github/workflows/ci-quality.yml",
+        "supply-chain-fixture-policy",
+        (
+            "python3 -m unittest tests.validation.test_compose_core_readiness "
+            "tests.validation.test_postgres_logical_upgrade_rehearsal "
+            "tests.validation.test_grype_db_seed "
+            "tests.validation.test_supply_chain_policy "
+            "tests.validation.test_sample_service_delivery_rehearsal -v"
+        ),
+    ),
+    ExpensiveCommandOwner(
+        "supply-chain-deterministic-policy",
+        ".github/workflows/ci-quality.yml",
+        "supply-chain-fixture-policy",
+        "python3 scripts/validation/check-supply-chain-policy.py --check",
+    ),
+    ExpensiveCommandOwner(
+        "supply-chain-summary-freshness",
+        ".github/workflows/ci-quality.yml",
+        "supply-chain-fixture-policy",
+        (
+            "bash scripts/security/"
+            "generate-supply-chain-sample-service-summary.sh --check"
+        ),
+    ),
+    ExpensiveCommandOwner(
+        "dependency-vulnerability-audit",
+        ".github/workflows/ci-quality.yml",
+        "dependency-vulnerability-audit",
+        "npm audit --audit-level=high --prefix projects/storybook/nextjs",
+    ),
+    ExpensiveCommandOwner(
+        "git-flow-contract",
+        ".github/workflows/ci-quality.yml",
+        "git-flow-contract",
+        'if ! [[ "$PR_TITLE" =~ $title_re ]]; then',
+    ),
+    ExpensiveCommandOwner(
+        "compose-validation",
+        ".github/workflows/ci-quality.yml",
+        "compose-validation",
+        "bash scripts/validation/validate-docker-compose.sh",
+    ),
+    ExpensiveCommandOwner(
+        "compose-all-profiles-validation",
+        ".github/workflows/ci-quality.yml",
+        "compose-all-profiles-validation",
+        "bash scripts/validation/validate-docker-compose.sh",
+    ),
+    ExpensiveCommandOwner(
+        "infrastructure-hardening",
+        ".github/workflows/ci-quality.yml",
+        "infrastructure-hardening",
+        "bash scripts/hardening/check-all-hardening.sh",
+    ),
+    ExpensiveCommandOwner(
+        "template-security-baseline",
+        ".github/workflows/ci-quality.yml",
+        "template-security-baseline",
+        "bash scripts/validation/check-template-security-baseline.sh",
+    ),
+    ExpensiveCommandOwner(
+        "quickwin-baseline",
+        ".github/workflows/ci-quality.yml",
+        "quickwin-baseline",
+        "bash scripts/validation/check-quickwin-baseline.sh",
+    ),
+    ExpensiveCommandOwner(
+        "pre-commit",
+        ".github/workflows/ci-quality.yml",
+        "pre-commit",
+        "bash scripts/validation/run-ci-precommit.sh",
+    ),
+    ExpensiveCommandOwner(
+        "frontend-quality",
+        ".github/workflows/ci-quality.yml",
+        "frontend-quality",
+        "npm run build-storybook --prefix projects/storybook/nextjs",
+    ),
+    ExpensiveCommandOwner(
+        "storybook-coverage",
+        ".github/workflows/ci-quality.yml",
+        "storybook-coverage",
+        "npm run coverage --prefix projects/storybook/nextjs",
+    ),
+    ExpensiveCommandOwner(
+        "zizmor",
+        ".github/workflows/ci-quality.yml",
+        "zizmor",
+        "uvx --from 'zizmor==1.28.0' zizmor . --format sarif . > results.sarif",
     ),
 )
 
@@ -978,11 +1120,17 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             "exactly one required-quality workflow with 16 jobs is required",
         )
     required_workflow = required_workflows[0]
+    if tuple(expensive) != _EXPENSIVE_COMMAND_BASELINE:
+        raise WorkflowContractError(
+            "contract-expensive-owner-baseline-invalid",
+            WORKFLOW_CONTRACT.as_posix(),
+            "semantic command ownership differs from the code baseline",
+        )
     expensive_job_ids: set[str] = set()
+    expensive_commands_by_job: dict[str, list[str]] = {}
     for owner in expensive:
         if (
             owner.workflow != required_workflow.path
-            or owner.identifier != owner.job
             or owner.job not in required_workflow.jobs
             or owner.command
             not in required_workflow.jobs[owner.job].owner_commands
@@ -993,12 +1141,20 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
                 "expensive command ownership does not match the required workflow",
             )
         expensive_job_ids.add(owner.job)
+        expensive_commands_by_job.setdefault(owner.job, []).append(owner.command)
     if expensive_job_ids != set(required_workflow.jobs):
         raise WorkflowContractError(
             "contract-expensive-owner-incomplete",
             WORKFLOW_CONTRACT.as_posix(),
             "every required-quality job must own one expensive semantic command",
         )
+    for job_id, job in required_workflow.jobs.items():
+        if job.owner_commands != tuple(expensive_commands_by_job[job_id]):
+            raise WorkflowContractError(
+                "contract-expensive-owner-incomplete",
+                WORKFLOW_CONTRACT.as_posix(),
+                "required-quality semantic commands must be completely registered",
+            )
     return WorkflowContract(
         schema_version=1,
         workflows=tuple(workflows),
@@ -1076,24 +1232,65 @@ def _read_repository_aggregate(root: pathlib.Path) -> str | None:
         return None
 
 
-def _shell_executable_lines(text: str) -> tuple[str, ...]:
-    lines: list[str] = []
-    heredoc_terminator: str | None = None
-    heredoc_pattern = re.compile(
-        r"<<-?['\"]?([A-Za-z_][A-Za-z0-9_]*)['\"]?"
+ShellLexemeLine = tuple[str, tuple[str, ...]]
+
+
+def _shell_tokens(line: str) -> tuple[str, ...] | None:
+    lexer = shlex.shlex(
+        line,
+        posix=True,
+        punctuation_chars=";&|<>()",
     )
+    lexer.whitespace_split = True
+    lexer.commenters = "#"
+    try:
+        return tuple(lexer)
+    except ValueError:
+        return None
+
+
+def _shell_executable_lines(text: str) -> tuple[ShellLexemeLine, ...] | None:
+    lines: list[ShellLexemeLine] = []
+    heredocs: list[tuple[str, bool]] = []
+    continued = ""
     for raw_line in text.splitlines():
-        stripped = raw_line.strip()
-        if heredoc_terminator is not None:
-            if stripped == heredoc_terminator:
-                heredoc_terminator = None
+        if heredocs:
+            delimiter, strip_tabs = heredocs[0]
+            candidate = raw_line.lstrip("\t") if strip_tabs else raw_line
+            if candidate == delimiter:
+                heredocs.pop(0)
             continue
-        if not stripped or stripped.startswith("#"):
+
+        logical = f"{continued}{raw_line}"
+        if logical.rstrip().endswith("\\"):
+            continued = f"{logical.rstrip()[:-1]} "
             continue
-        lines.append(stripped)
-        heredoc = heredoc_pattern.search(stripped)
-        if heredoc is not None:
-            heredoc_terminator = heredoc.group(1)
+        continued = ""
+        tokens = _shell_tokens(logical)
+        if tokens is None:
+            return None
+        if not tokens:
+            continue
+        lines.append((logical.strip(), tokens))
+        index = 0
+        while index < len(tokens):
+            if tokens[index] != "<<":
+                index += 1
+                continue
+            index += 1
+            strip_tabs = index < len(tokens) and tokens[index] == "-"
+            if strip_tabs:
+                index += 1
+            if (
+                index >= len(tokens)
+                or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", tokens[index])
+                is None
+            ):
+                return None
+            heredocs.append((tokens[index], strip_tabs))
+            index += 1
+    if continued or heredocs:
+        return None
     return tuple(lines)
 
 
@@ -1105,17 +1302,127 @@ def _semantic_command_marker(command: str) -> str:
     return repository_script.group(0) if repository_script else command
 
 
-def _executes_semantic_marker(line: str, marker: str) -> bool:
-    if marker.startswith("scripts/"):
+def _shell_command_segments(tokens: tuple[str, ...]) -> tuple[tuple[str, ...], ...]:
+    separators = {";", "&&", "||", "|", "&", "(", ")"}
+    segments: list[tuple[str, ...]] = []
+    start = 0
+    for index, token in enumerate(tokens):
+        if token not in separators:
+            continue
+        if start < index:
+            segments.append(tokens[start:index])
+        start = index + 1
+    if start < len(tokens):
+        segments.append(tokens[start:])
+    return tuple(segments)
+
+
+def _normalized_shell_command(segment: tuple[str, ...]) -> tuple[str, ...]:
+    tokens = list(segment)
+    while tokens and tokens[0] in {
+        "if",
+        "then",
+        "elif",
+        "while",
+        "until",
+        "do",
+        "else",
+        "!",
+    }:
+        tokens.pop(0)
+    while tokens and re.fullmatch(
+        r"[A-Za-z_][A-Za-z0-9_]*=.*",
+        tokens[0],
+    ):
+        tokens.pop(0)
+    if tokens and tokens[0] in {"command", "exec"}:
+        tokens.pop(0)
+        if tokens and tokens[0] == "--":
+            tokens.pop(0)
+    if tokens and tokens[0] == "env":
+        tokens.pop(0)
+        while tokens and (
+            tokens[0].startswith("-")
+            or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*=.*", tokens[0])
+        ):
+            tokens.pop(0)
+    return tuple(tokens)
+
+
+def _semantic_marker_status(
+    lines: tuple[ShellLexemeLine, ...],
+    marker: str,
+) -> str:
+    if not marker.startswith("scripts/"):
         return (
-            re.search(
-                rf"\b(?:bash|python3|python)\s+['\"]?"
-                rf"{re.escape(marker)}(?=$|[\s'\";&|>)])",
-                line,
-            )
-            is not None
+            "executes"
+            if any(source == marker for source, _ in lines)
+            else "absent"
         )
-    return marker in line
+
+    marker_tokens = {marker, f"./{marker}"}
+    marker_variables: set[str] = set()
+    status = "absent"
+    for _, tokens in lines:
+        for token in tokens:
+            assignment = re.fullmatch(
+                r"([A-Za-z_][A-Za-z0-9_]*)=(?:\./)?"
+                + re.escape(marker),
+                token,
+            )
+            if assignment is not None:
+                marker_variables.add(assignment.group(1))
+            substitution = re.fullmatch(
+                r"[A-Za-z_][A-Za-z0-9_]*=\$\((.*)\)",
+                token,
+            )
+            if substitution is not None:
+                nested_tokens = _shell_tokens(substitution.group(1))
+                if nested_tokens is None:
+                    return "ambiguous"
+                nested_status = _semantic_marker_status(
+                    ((substitution.group(1), nested_tokens),),
+                    marker,
+                )
+                if nested_status != "absent":
+                    status = nested_status
+
+        for segment in _shell_command_segments(tokens):
+            command = _normalized_shell_command(segment)
+            if not command:
+                continue
+            executable = command[0]
+            if executable in marker_tokens:
+                status = "executes"
+                continue
+            if executable in {"bash", "python3", "python"}:
+                arguments = command[1:]
+                if any(argument in marker_tokens for argument in arguments):
+                    status = "executes"
+                    continue
+                if any(
+                    argument in {
+                        f"${variable}",
+                        f"${{{variable}}}",
+                    }
+                    for variable in marker_variables
+                    for argument in arguments
+                ):
+                    return "ambiguous"
+            if executable in {"echo", "printf"}:
+                continue
+            if any(token in marker_tokens for token in command[1:]):
+                return "ambiguous"
+            if any(marker in token and "$(" in token for token in command):
+                return "ambiguous"
+    return status
+
+
+def _semantic_marker_status_for_text(text: str, marker: str) -> str:
+    lines = _shell_executable_lines(text)
+    if lines is None:
+        return "ambiguous"
+    return _semantic_marker_status(lines, marker)
 
 
 def _finding(code: str, path: str, message: str) -> WorkflowFinding:
@@ -1497,14 +1804,17 @@ def validate_workflows(
         identity
         for identity, tokens in workflow_job_tokens.items()
         if any(
-            _executes_semantic_marker(token, aggregate_marker)
+            _semantic_marker_status_for_text(token, aggregate_marker)
+            == "executes"
             for token in tokens
         )
     }
-    aggregate_lines: tuple[str, ...] = ()
+    aggregate_lines: tuple[ShellLexemeLine, ...] = ()
+    aggregate_source_invalid = False
     if aggregate_callers:
         aggregate_source = _read_repository_aggregate(root)
         if aggregate_source is None:
+            aggregate_source_invalid = True
             findings.append(
                 _finding(
                     "workflow-aggregate-source-invalid",
@@ -1513,22 +1823,59 @@ def validate_workflows(
                 )
             )
         else:
-            aggregate_lines = _shell_executable_lines(aggregate_source)
+            parsed_aggregate = _shell_executable_lines(aggregate_source)
+            if parsed_aggregate is None:
+                aggregate_source_invalid = True
+                findings.append(
+                    _finding(
+                        "workflow-aggregate-source-invalid",
+                        REPOSITORY_AGGREGATE.as_posix(),
+                        "repository aggregate command grammar is invalid",
+                    )
+                )
+            else:
+                aggregate_lines = parsed_aggregate
     for command, expected_owners in registered_expensive.items():
         marker = _semantic_command_marker(command)
-        actual_owners = {
-            identity
-            for identity, tokens in workflow_job_tokens.items()
-            if any(
-                _executes_semantic_marker(token, marker)
+        workflow_statuses = {
+            identity: tuple(
+                _semantic_marker_status_for_text(token, marker)
                 for token in tokens
             )
+            for identity, tokens in workflow_job_tokens.items()
+        }
+        if any(
+            "ambiguous" in statuses
+            for statuses in workflow_statuses.values()
+        ):
+            findings.append(
+                _finding(
+                    "workflow-semantic-command-source-invalid",
+                    WORKFLOW_CONTRACT.as_posix(),
+                    "workflow semantic command grammar is ambiguous",
+                )
+            )
+        aggregate_status = (
+            _semantic_marker_status(aggregate_lines, marker)
+            if aggregate_lines
+            else "absent"
+        )
+        if aggregate_status == "ambiguous" and not aggregate_source_invalid:
+            aggregate_source_invalid = True
+            findings.append(
+                _finding(
+                    "workflow-aggregate-source-invalid",
+                    REPOSITORY_AGGREGATE.as_posix(),
+                    "repository aggregate semantic invocation is ambiguous",
+                )
+            )
+        actual_owners = {
+            identity
+            for identity, statuses in workflow_statuses.items()
+            if "executes" in statuses
             or (
                 identity in aggregate_callers
-                and any(
-                    _executes_semantic_marker(line, marker)
-                    for line in aggregate_lines
-                )
+                and aggregate_status == "executes"
             )
         }
         if actual_owners != expected_owners:

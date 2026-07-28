@@ -70,6 +70,7 @@ Local script-backed gates:
 - scripts/validation/recommend-qa-gates.sh (advisory; recommends gates, does not execute them)
 - scripts/operations/sync-provider-surfaces.sh --check
 - scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+- python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v
 - scripts/validation/check-agent-governance-contract.py --mode repository --section all
 - scripts/operations/sync-tech-stack-versions.sh --check
 - scripts/validation/check-doc-traceability.sh
@@ -84,6 +85,7 @@ Local script-backed gates:
 - python3 -m unittest tests.validation.test_target_surface_delta_contracts -v
 - python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 - python3 -m unittest tests.validation.test_github_workflow_contract -v
+- python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
 - python3 scripts/validation/check-github-workflow-contract.py
 - bash tests/validation/test_run_ci_precommit.sh
 - scripts/validation/validate-docker-compose.sh
@@ -149,6 +151,7 @@ run_target_surface_gates() {
 
 run_github_workflow_gates() {
   run_step "GitHub workflow contract tests" python3 -m unittest tests.validation.test_github_workflow_contract -v
+  run_step "Agent governance CI routing tests" python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
   run_step "GitHub workflow contracts" python3 scripts/validation/check-github-workflow-contract.py
   run_step "CI-only pre-commit wrapper tests" bash tests/validation/test_run_ci_precommit.sh
 }
@@ -165,6 +168,11 @@ run_supply_chain_fixture_gates() {
   run_step "Supply-chain summary freshness" bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
 }
 
+run_agent_semantic_eval_gates() {
+  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+  run_step "Agent semantic eval fixture tests" python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v
+}
+
 run_script_backed_gates() {
   if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
     # shellcheck source=../operations/use-qa-ci-tools.sh
@@ -174,7 +182,7 @@ run_script_backed_gates() {
   run_step "Diff whitespace hygiene" git diff --check
   run_step "Shell syntax" run_bash_syntax
   run_step "Provider surface drift" bash scripts/operations/sync-provider-surfaces.sh --check
-  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+  run_agent_semantic_eval_gates
   run_step "Typed agent governance repository contract" python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
   run_step "Tech-stack version drift" bash scripts/operations/sync-tech-stack-versions.sh --check
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
@@ -195,7 +203,7 @@ run_harness_gates() {
   run_step "Diff whitespace hygiene" git diff --check
   run_step "Shell syntax" run_bash_syntax
   run_step "Provider surface drift" bash scripts/operations/sync-provider-surfaces.sh --check
-  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+  run_agent_semantic_eval_gates
   run_step "Typed agent governance repository contract" python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
   run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh

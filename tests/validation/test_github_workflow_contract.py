@@ -33,6 +33,30 @@ REQUIRED_CI_JOBS = frozenset(
         "zizmor",
     }
 )
+SUPPLY_CHAIN_SEMANTIC_COMMANDS = (
+    (
+        "python3 -m unittest tests.validation.test_compose_core_readiness "
+        "tests.validation.test_postgres_logical_upgrade_rehearsal "
+        "tests.validation.test_grype_db_seed "
+        "tests.validation.test_supply_chain_policy "
+        "tests.validation.test_sample_service_delivery_rehearsal -v"
+    ),
+    "python3 scripts/validation/check-supply-chain-policy.py --check",
+    (
+        "bash scripts/security/"
+        "generate-supply-chain-sample-service-summary.sh --check"
+    ),
+)
+CONTROL_PLANE_SEMANTIC_COMMANDS = (
+    (
+        "python3 -m unittest "
+        "tests.validation.test_agent_governance_ci_routing -v"
+    ),
+    (
+        "python3 -m unittest "
+        "tests.validation.test_agent_output_eval_fixtures -v"
+    ),
+)
 
 
 def load_contract_module():
@@ -77,7 +101,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(7, len(workflows))
         self.assertEqual((), self.module.validate_workflows(ROOT, contract))
 
-    def test_ci_quality_retains_sixteen_semantic_job_owners(self) -> None:
+    def test_ci_quality_retains_complete_semantic_command_owners(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         ci = next(
             workflow
@@ -86,10 +110,42 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
         self.assertEqual(16, len(ci.jobs))
-        self.assertEqual(16, len(contract.expensive_commands))
+        self.assertEqual(20, len(contract.expensive_commands))
         self.assertEqual(
             REQUIRED_CI_JOBS,
             frozenset(owner.job for owner in contract.expensive_commands),
+        )
+        registered = {
+            (owner.job, owner.command)
+            for owner in contract.expensive_commands
+        }
+        for command in SUPPLY_CHAIN_SEMANTIC_COMMANDS:
+            with self.subTest(job="supply-chain-fixture-policy", command=command):
+                self.assertIn(
+                    ("supply-chain-fixture-policy", command),
+                    registered,
+                )
+        for job, command in zip(
+            ("repo-contracts", "agent-output-eval-fixture-gate"),
+            CONTROL_PLANE_SEMANTIC_COMMANDS,
+            strict=True,
+        ):
+            with self.subTest(job=job):
+                self.assertIn((job, command), registered)
+
+        aggregate = (
+            ROOT / "scripts/validation/check-repo-contracts.sh"
+        ).read_text(encoding="utf-8")
+        for marker in SUPPLY_CHAIN_SEMANTIC_COMMANDS[1:]:
+            with self.subTest(label="aggregate-does-not-rerun", marker=marker):
+                self.assertNotIn(marker, aggregate)
+        self.assertNotIn(
+            'python3 "$supply_chain_checker" --check',
+            aggregate,
+        )
+        self.assertNotIn(
+            'bash "$supply_chain_summary" --check',
+            aggregate,
         )
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
@@ -465,7 +521,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if isinstance(step, dict)
         )
         for marker in (
-            "tests.validation.test_agent_governance_ci_routing",
             "scripts/validation/check-target-surface-contract.py",
             "scripts/validation/check-agentic-audit-semantic-freshness.py",
             "scripts/validation/check-agent-governance-contract.py",
@@ -521,6 +576,166 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "expensive-command-ownership-duplicate",
                     {finding.code for finding in findings},
                 )
+
+    def test_supply_chain_semantic_commands_are_all_transitively_owned(
+        self,
+    ) -> None:
+        for command in SUPPLY_CHAIN_SEMANTIC_COMMANDS:
+            with self.subTest(command=command), self.workflow_fixture() as root:
+                aggregate = root / "scripts/validation/check-repo-contracts.sh"
+                aggregate.write_text(
+                    aggregate.read_text(encoding="utf-8")
+                    + f"\n{command}\n",
+                    encoding="utf-8",
+                )
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                self.assertIn(
+                    "expensive-command-ownership-duplicate",
+                    {finding.code for finding in findings},
+                )
+
+    def test_semantic_owner_workflow_contract_co_mutations_fail_code_baseline(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "repo-contracts-control-plane-regressions",
+                "repo-contracts",
+                CONTROL_PLANE_SEMANTIC_COMMANDS[0],
+                "Check agent governance CI routing mutations",
+            ),
+            (
+                "agent-output-eval-fixture-regressions",
+                "agent-output-eval-fixture-gate",
+                CONTROL_PLANE_SEMANTIC_COMMANDS[1],
+                "Check agent-output eval fixture regressions",
+            ),
+            (
+                "supply-chain-deterministic-policy",
+                "supply-chain-fixture-policy",
+                SUPPLY_CHAIN_SEMANTIC_COMMANDS[1],
+                "Check deterministic supply-chain policy fixtures",
+            ),
+            (
+                "supply-chain-summary-freshness",
+                "supply-chain-fixture-policy",
+                SUPPLY_CHAIN_SEMANTIC_COMMANDS[2],
+                "Check supply-chain summary freshness",
+            ),
+        )
+        for identifier, job, command, step_name in cases:
+            with self.subTest(identifier=identifier), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                workflow_text = workflow.read_text(encoding="utf-8")
+                workflow_step = (
+                    f"      - name: {step_name}\n"
+                    f"        run: {command}\n"
+                )
+                self.assertIn(workflow_step, workflow_text)
+                workflow.write_text(
+                    workflow_text.replace(workflow_step, "", 1),
+                    encoding="utf-8",
+                )
+
+                contract_path = root / ".github/workflow-contract.yml"
+                contract_text = contract_path.read_text(encoding="utf-8")
+                owner_command = f"          - {command}\n"
+                owner_record = (
+                    f"  - id: {identifier}\n"
+                    "    workflow: .github/workflows/ci-quality.yml\n"
+                    f"    job: {job}\n"
+                    f"    command: {command}\n"
+                )
+                self.assertIn(owner_command, contract_text)
+                self.assertIn(owner_record, contract_text)
+                contract_path.write_text(
+                    contract_text.replace(owner_command, "", 1).replace(
+                        owner_record,
+                        "",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                with self.assertRaises(
+                    self.module.WorkflowContractError
+                ) as raised:
+                    self.module.load_workflow_contract(root)
+                self.assertEqual(
+                    "contract-expensive-owner-baseline-invalid",
+                    raised.exception.code,
+                )
+
+    def test_semantic_owner_shell_grammar_is_fail_closed_and_data_safe(
+        self,
+    ) -> None:
+        marker = "scripts/hardening/check-all-hardening.sh"
+        cases = (
+            (
+                "direct-executable",
+                f"./{marker}\n",
+                {"expensive-command-ownership-duplicate"},
+            ),
+            (
+                "variable-indirection",
+                f'checker="{marker}"\nbash "$checker"\n',
+                {"workflow-aggregate-source-invalid"},
+            ),
+            (
+                "unknown-wrapper",
+                f"run_gate {marker}\n",
+                {"workflow-aggregate-source-invalid"},
+            ),
+            (
+                "comment",
+                f"# bash {marker}\n",
+                set(),
+            ),
+            (
+                "quoted-data",
+                f"printf '%s\\n' 'bash {marker}'\n",
+                set(),
+            ),
+            (
+                "heredoc-data",
+                f"cat <<'REPORT'\nbash {marker}\nREPORT\n",
+                set(),
+            ),
+            (
+                "quoted-heredoc-lookalike-before-executable",
+                (
+                    "printf '%s\\n' '<<REPORT'\n"
+                    f"./{marker}\n"
+                    "REPORT\n"
+                ),
+                {"expensive-command-ownership-duplicate"},
+            ),
+        )
+        for label, mutation, expected_codes in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                aggregate = root / "scripts/validation/check-repo-contracts.sh"
+                aggregate.write_text(
+                    aggregate.read_text(encoding="utf-8")
+                    + "\n"
+                    + mutation,
+                    encoding="utf-8",
+                )
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                relevant_codes = {
+                    finding.code
+                    for finding in findings
+                    if finding.code
+                    in {
+                        "expensive-command-ownership-duplicate",
+                        "workflow-aggregate-source-invalid",
+                    }
+                }
+                self.assertEqual(expected_codes, relevant_codes)
 
     def test_alternate_boolean_trigger_keys_cannot_masquerade_as_on(
         self,

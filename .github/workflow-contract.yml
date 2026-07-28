@@ -34,18 +34,22 @@ workflows:
         timeout_minutes: 10
         owner_commands:
           - bash scripts/validation/check-repo-contracts.sh
+          - python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
       agent-output-eval-fixture-gate:
         permissions: {contents: read}
         runs_on: ubuntu-latest
         timeout_minutes: 5
         owner_commands:
           - 'output="$(bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions)"'
+          - python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v
       supply-chain-fixture-policy:
         permissions: {contents: read}
         runs_on: ubuntu-latest
         timeout_minutes: 5
         owner_commands:
           - python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v
+          - python3 scripts/validation/check-supply-chain-policy.py --check
+          - bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
       dependency-vulnerability-audit:
         permissions: {contents: read}
         runs_on: ubuntu-latest
@@ -259,14 +263,30 @@ expensive_commands:
     workflow: .github/workflows/ci-quality.yml
     job: repo-contracts
     command: bash scripts/validation/check-repo-contracts.sh
+  - id: repo-contracts-control-plane-regressions
+    workflow: .github/workflows/ci-quality.yml
+    job: repo-contracts
+    command: python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
   - id: agent-output-eval-fixture-gate
     workflow: .github/workflows/ci-quality.yml
     job: agent-output-eval-fixture-gate
     command: 'output="$(bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions)"'
+  - id: agent-output-eval-fixture-regressions
+    workflow: .github/workflows/ci-quality.yml
+    job: agent-output-eval-fixture-gate
+    command: python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v
   - id: supply-chain-fixture-policy
     workflow: .github/workflows/ci-quality.yml
     job: supply-chain-fixture-policy
     command: python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v
+  - id: supply-chain-deterministic-policy
+    workflow: .github/workflows/ci-quality.yml
+    job: supply-chain-fixture-policy
+    command: python3 scripts/validation/check-supply-chain-policy.py --check
+  - id: supply-chain-summary-freshness
+    workflow: .github/workflows/ci-quality.yml
+    job: supply-chain-fixture-policy
+    command: bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
   - id: dependency-vulnerability-audit
     workflow: .github/workflows/ci-quality.yml
     job: dependency-vulnerability-audit

@@ -1065,6 +1065,11 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             "check-agent-governance-contract.py --mode repository --section all",
             repo_commands,
         )
+        self.assertIn(
+            "python3 -m unittest "
+            "tests.validation.test_agent_governance_ci_routing -v",
+            repo_commands,
+        )
         aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
         self.assertRegex(
             aggregate,
@@ -1078,6 +1083,11 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )
         self.assertIn(
             "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
+            eval_commands,
+        )
+        self.assertIn(
+            "python3 -m unittest "
+            "tests.validation.test_agent_output_eval_fixtures -v",
             eval_commands,
         )
         self.assertIn("fixtures_check=pass", eval_commands)
@@ -1101,6 +1111,22 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             "bash scripts/hardening/check-all-hardening.sh",
             local_qa,
         )
+        for command in (
+            "python3 -m unittest "
+            "tests.validation.test_agent_governance_ci_routing -v",
+            "python3 -m unittest "
+            "tests.validation.test_agent_output_eval_fixtures -v",
+        ):
+            with self.subTest(local_owner=command):
+                self.assertEqual(
+                    1,
+                    len(
+                        re.findall(
+                            rf"(?m)^  run_step .+ {re.escape(command)}$",
+                            local_qa,
+                        )
+                    ),
+                )
         self.assertEqual({"contents": "read"}, jobs["repo-contracts"]["permissions"])
         self.assertEqual(
             {"contents": "read"},
