@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:135-target-surface-delta-convergence
 artifact_type: spec
 parent_ids:
@@ -11,7 +11,7 @@ parent_ids:
 
 **Date:** 2026-07-28 (Asia/Seoul)
 
-**Status:** Draft
+**Status:** Active
 
 ## Overview
 
