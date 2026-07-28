@@ -1328,6 +1328,98 @@ class CommandLineTests(unittest.TestCase):
             self.assertEqual(1, result)
             self.assertIn("delta-readme-registry-invalid", stderr.getvalue())
 
+    def test_advisory_rejects_explicit_failed_review_verdicts_value_free(
+        self,
+    ) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            rows = [
+                valid_row(path, changed_since=fixture.predecessor)
+                for path in fixture.changed_paths
+            ]
+            document = valid_document(
+                fixture.predecessor,
+                fixture.implementation_base,
+                rows,
+            )
+            fixture.write_manifest(document)
+            self.assertEqual(
+                0,
+                contract.main(
+                    ["--root", str(fixture.root), "--write-summary"]
+                ),
+            )
+            self.assertEqual(
+                0,
+                contract.main(
+                    ["--root", str(fixture.root), "--mode", "advisory"]
+                ),
+            )
+            self.assertEqual(
+                1,
+                contract.main(
+                    ["--root", str(fixture.root), "--mode", "blocking"]
+                ),
+            )
+
+            cases = (
+                (
+                    "spec_verdict",
+                    "delta-spec-review-rejected",
+                    "specification review did not approve the row",
+                ),
+                (
+                    "quality_verdict",
+                    "delta-quality-review-rejected",
+                    "quality review did not approve the row",
+                ),
+            )
+            for field, code, message in cases:
+                with self.subTest(field=field):
+                    rows[0]["spec_verdict"] = "pending"
+                    rows[0]["quality_verdict"] = "pending"
+                    rows[0][field] = "fail"
+                    fixture.write_manifest(document)
+                    loaded = contract.load_delta_manifest(fixture.root)
+                    summary = contract.render_delta_summary(
+                        loaded,
+                        contract.current_target_inventory(fixture.root),
+                    )
+                    write_text(
+                        fixture.root,
+                        contract.DELTA_SUMMARY.as_posix(),
+                        summary,
+                    )
+
+                    advisory_stderr = io.StringIO()
+                    with contextlib.redirect_stderr(advisory_stderr):
+                        advisory_result = contract.main(
+                            [
+                                "--root",
+                                str(fixture.root),
+                                "--mode",
+                                "advisory",
+                            ]
+                        )
+                    expected = (
+                        f"{code}: {rows[0]['path']}: {message}"
+                    )
+                    self.assertEqual(1, advisory_result)
+                    self.assertEqual(expected, advisory_stderr.getvalue().strip())
+
+                    blocking_stderr = io.StringIO()
+                    with contextlib.redirect_stderr(blocking_stderr):
+                        blocking_result = contract.main(
+                            [
+                                "--root",
+                                str(fixture.root),
+                                "--mode",
+                                "blocking",
+                            ]
+                        )
+                    self.assertEqual(1, blocking_result)
+                    self.assertIn(expected, blocking_stderr.getvalue())
+
     def test_bootstrap_creates_only_through_no_follow_repository_parents(
         self,
     ) -> None:

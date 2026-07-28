@@ -71,7 +71,16 @@ UNSAFE_LABEL_RE: Final = re.compile(
     r"private[_-]?key|pwd|secret|token)$"
 )
 DISPOSITIONS: Final = frozenset({"preserve", "update", "migrate", "delete"})
-REVIEW_VERDICTS: Final = frozenset({"pending", "pass", "fail"})
+PENDING_REVIEW_VERDICT: Final = "pending"
+PASSING_REVIEW_VERDICT: Final = "pass"
+FAILED_REVIEW_VERDICT: Final = "fail"
+REVIEW_VERDICTS: Final = frozenset(
+    {
+        PENDING_REVIEW_VERDICT,
+        PASSING_REVIEW_VERDICT,
+        FAILED_REVIEW_VERDICT,
+    }
+)
 SECRET_SAFETY_VALUES: Final = frozenset({"not-applicable", "path-only"})
 SURFACE_CLASSES: Final = frozenset(
     {
@@ -839,12 +848,31 @@ def validate_delta_manifest(
                     "row disposition is not in the canonical vocabulary",
                 )
             )
-        if row.spec_verdict not in REVIEW_VERDICTS or row.quality_verdict not in REVIEW_VERDICTS:
+        if (
+            row.spec_verdict not in REVIEW_VERDICTS
+            or row.quality_verdict not in REVIEW_VERDICTS
+        ):
             findings.append(
                 _finding(
                     "delta-review-invalid",
                     row.path,
                     "row review verdict is not in the canonical vocabulary",
+                )
+            )
+        if row.spec_verdict == FAILED_REVIEW_VERDICT:
+            findings.append(
+                _finding(
+                    "delta-spec-review-rejected",
+                    row.path,
+                    "specification review did not approve the row",
+                )
+            )
+        if row.quality_verdict == FAILED_REVIEW_VERDICT:
+            findings.append(
+                _finding(
+                    "delta-quality-review-rejected",
+                    row.path,
+                    "quality review did not approve the row",
                 )
             )
         expected_secret_safety = (
@@ -1028,7 +1056,10 @@ def validate_delta_manifest(
                         "destructive row tests are outside the test boundary",
                     )
                 )
-            if row.spec_verdict != "pass" or row.quality_verdict != "pass":
+            if (
+                row.spec_verdict != PASSING_REVIEW_VERDICT
+                or row.quality_verdict != PASSING_REVIEW_VERDICT
+            ):
                 findings.append(
                     _finding(
                         "delta-destructive-review-invalid",
@@ -1237,8 +1268,8 @@ def _bootstrap_row(
             f"implementation-base:{implementation_base_commit}",
         ),
         rollback=(f"git-revert:{evidence_head}:{path}",),
-        spec_verdict="pending",
-        quality_verdict="pending",
+        spec_verdict=PENDING_REVIEW_VERDICT,
+        quality_verdict=PENDING_REVIEW_VERDICT,
     )
 
 
@@ -1593,7 +1624,7 @@ def _blocking_review_findings(
 ) -> tuple[DeltaFinding, ...]:
     findings: list[DeltaFinding] = []
     for row in document.entries:
-        if row.spec_verdict != "pass":
+        if row.spec_verdict != PASSING_REVIEW_VERDICT:
             findings.append(
                 _finding(
                     "delta-spec-verdict-not-pass",
@@ -1601,7 +1632,7 @@ def _blocking_review_findings(
                     "blocking mode requires a passing specification verdict",
                 )
             )
-        if row.quality_verdict != "pass":
+        if row.quality_verdict != PASSING_REVIEW_VERDICT:
             findings.append(
                 _finding(
                     "delta-quality-verdict-not-pass",
