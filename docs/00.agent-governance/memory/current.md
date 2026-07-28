@@ -50,8 +50,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `b493aa32b7e8ee9428ca8010331732592c977bdb`
-- Verified at: `2026-07-28T13:59:07+09:00`
+- Verified commit: `78f8a11a516fa9c0c7c3ea1d2f5cf17a4da1a525`
+- Verified at: `2026-07-28T14:03:27+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -94,12 +94,16 @@ status: active
   eight critical named cases. Fake suite 33/33 and independent security
   re-review C0/I0/M0 passed; the full checker then remained environment-blocked
   only on three existing missing-`html5lib` paths.
+- T-AGCC-006-QA-D2 Plan/evidence commit
+  `78f8a11a516fa9c0c7c3ea1d2f5cf17a4da1a525` passed independent
+  read-only Plan review with C0/I0/M0. The bounded recovery route is ready for
+  a new exact user approval; no recovery run is authorized yet.
 
 ## Blockers and unverified facts
 
 - The unauthorized post-pass wrapper discrepancy blocks lifecycle closure.
-  T-AGCC-006-QA-D2 must receive an independent Plan review and a new exact user
-  approval before one recovery run. Without that approval the required
+  T-AGCC-006-QA-D2 Plan review is complete, but a new exact user approval is
+  required before one recovery run. Without that approval the required
   disposition is record-and-stop.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
@@ -118,7 +122,7 @@ status: active
 
 ## Next handoff
 
-- Independently review the T-AGCC-006-QA-D2 discrepancy plan. After a clean
-  evidence commit, request exact user approval for one named recovery wrapper
-  attempt. On pass, use entirely fresh whole-branch reviewers; on failure,
-  record and stop without another run.
+- From the next clean evidence commit, request exact user approval for one
+  named recovery wrapper attempt that acknowledges the unauthorized
+  intervening execution. On pass, use entirely fresh whole-branch reviewers;
+  on failure, record and stop without another run.
