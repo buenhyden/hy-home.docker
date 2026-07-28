@@ -145,6 +145,18 @@ case "${FAKE_PRECOMMIT_OUTPUT_MODE:-opaque}" in
     printf '%s\n' '- hook id: shellcheck'
     printf '%s\n' '- exit code: 256'
     ;;
+  nul-output)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: shellcheck'
+    printf '%s\0%s\n' '- exit code: ' '37'
+    printf '%s\n' 'raw token=super-secret-output'
+    ;;
+  oversized-output)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: shellcheck'
+    printf '%s\n' '- exit code: 37'
+    printf '%1048577s\n' ''
+    ;;
   duplicate-metadata)
     printf '%s\n' 'Fixture hook..........................................................Failed'
     printf '%s\n' '- hook id: shellcheck'
@@ -663,7 +675,7 @@ test_unavailable_diagnostic_cases() {
   local mode
   local all_safe=1
 
-  for mode in absent-metadata malformed-id overlong-id unregistered-id invalid-detail; do
+  for mode in absent-metadata malformed-id overlong-id unregistered-id invalid-detail nul-output oversized-output; do
     new_fixture "unavailable-$mode"
     FAKE_PRECOMMIT_OUTPUT_MODE="$mode" FAKE_PRECOMMIT_EXIT=19 \
       invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
