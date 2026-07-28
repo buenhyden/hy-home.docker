@@ -95,6 +95,7 @@ TASK2_UPDATE_PATHS = frozenset(
 TASK3_UPDATE_PATHS = frozenset(
     {
         "infra/01-gateway/README.md",
+        "infra/11-laboratory/dozzle/README.md",
         "infra/tech-stack.versions.json",
         "scripts/hardening/check-all-hardening.sh",
         "tests/validation/test_tech_stack_version_contract.py",
@@ -1144,7 +1145,7 @@ class RepositoryManifestTests(unittest.TestCase):
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
-        self.assertEqual(140, len(document.entries))
+        self.assertEqual(141, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
@@ -1158,7 +1159,7 @@ class RepositoryManifestTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            {"preserve": 90, "update": 50},
+            {"preserve": 90, "update": 51},
             {
                 disposition: sum(
                     row.disposition == disposition for row in document.entries
@@ -1173,6 +1174,9 @@ class RepositoryManifestTests(unittest.TestCase):
                 self.assertEqual("pending", rows[path].quality_verdict)
         task3_owners = {
             "infra/01-gateway/README.md": "infra/01-gateway/README.md",
+            "infra/11-laboratory/dozzle/README.md": (
+                "infra/11-laboratory/dozzle/README.md"
+            ),
             "infra/tech-stack.versions.json": (
                 "scripts/operations/sync-tech-stack-versions.sh"
             ),
@@ -1193,6 +1197,12 @@ class RepositoryManifestTests(unittest.TestCase):
                     "tests/validation/test_tech_stack_version_contract.py",
                     rows[path].tests,
                 )
+        self.assertEqual(
+            ("tests/validation/test_tech_stack_version_contract.py",),
+            rows[
+                "infra/11-laboratory/dozzle/README.md"
+            ].direct_consumers,
+        )
         self.assertFalse(
             any(
                 row.disposition in {"migrate", "delete"}

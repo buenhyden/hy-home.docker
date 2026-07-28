@@ -12,6 +12,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
 REPOSITORY_CHECKER = ROOT / "scripts/validation/check-repo-contracts.sh"
+DOZZLE_COMPOSE = ROOT / "infra/11-laboratory/dozzle/docker-compose.yml"
 DRIFT_COMPONENTS = (
     "Traefik",
     "Keycloak",
@@ -26,6 +27,7 @@ STALE_IMAGES = {
     "Prometheus": "prom/prometheus:v3.13.0",
     "Alloy": "grafana/alloy:v1.17.1",
     "Ollama": "ollama/ollama:0.31.1",
+    "Dozzle": "amir20/dozzle:v10.6.6",
 }
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
@@ -88,6 +90,7 @@ DIRECT_CURRENT_DOCS = {
     "infra/06-observability/pyroscope/README.md": (("Alloy", "tag"),),
     "infra/06-observability/tempo/README.md": (("Alloy", "tag"),),
     "infra/08-ai/README.md": (("Ollama", "image"),),
+    "infra/11-laboratory/dozzle/README.md": (("Dozzle", "tag"),),
     "docs/05.operations/guides/06-observability/alloy.md": (
         ("Alloy", "image"),
     ),
@@ -219,7 +222,11 @@ class TechStackVersionContractTests(unittest.TestCase):
             text = (ROOT / relative_path).read_text(encoding="utf-8")
             for component, representation in expectations:
                 with self.subTest(path=relative_path, component=component):
-                    images = entries[component]["images"]
+                    images = (
+                        sorted(declared_images(DOZZLE_COMPOSE))
+                        if component == "Dozzle"
+                        else entries[component]["images"]
+                    )
                     self.assertEqual(1, len(images))
                     image = images[0]
                     expected = (
@@ -393,6 +400,35 @@ class TechStackVersionContractTests(unittest.TestCase):
                         "    image: registry.example.test/team/app:1\n"
                         f"  {second_key}:\n"
                         "    image: registry.example.test/team/app:2\n"
+                    )
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertEqual("", result.stdout)
+                self.assertEqual(
+                    "FAIL: invalid compose service image contract\n",
+                    result.stderr,
+                )
+
+    def test_compose_image_resolver_rejects_duplicate_sibling_service_names(
+        self,
+    ) -> None:
+        duplicate_pairs = (
+            ("unquoted-single", "other", "'other'"),
+            ("single-unquoted", "'other'", "other"),
+            ("unquoted-double", "other", '"other"'),
+            ("double-unquoted", '"other"', "other"),
+        )
+        for label, first_key, second_key in duplicate_pairs:
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    (
+                        "services:\n"
+                        "  target:\n"
+                        "    image: registry.example.test/team/app:1\n"
+                        f"  {first_key}:\n"
+                        "    image: registry.example.test/team/other:1\n"
+                        f"  {second_key}:\n"
+                        "    image: registry.example.test/team/other:2\n"
                     )
                 )
                 self.assertEqual(2, result.returncode)

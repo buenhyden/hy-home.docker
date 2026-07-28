@@ -154,6 +154,9 @@ service_keys = [
     for index in range(services_index + 1, services_end)
     if (key := service_key(lines[index])) is not None
 ]
+service_names = [key for _index, key in service_keys]
+if len(service_names) != len(set(service_names)):
+    reject()
 target_keys = [index for index, key in service_keys if key == service]
 if len(target_keys) != 1:
     reject()

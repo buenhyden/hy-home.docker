@@ -6,7 +6,7 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 140
+- Delta entries: 141
 - Current tracked target paths: 478
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
@@ -27,7 +27,7 @@
 ## Dispositions
 
 - `preserve`: 90
-- `update`: 50
+- `update`: 51
 - `migrate`: 0
 - `delete`: 0
 
@@ -91,6 +91,7 @@
 | `infra/09-tooling/locust/Dockerfile` | `native-file` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/09-tooling/terraform/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/09-tooling/terrakube/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/11-laboratory/dozzle/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/11-laboratory/dozzle/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/README.md` | `readme` | `infrastructure-root` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/supply-chain.cosign-offline-signing-config.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |

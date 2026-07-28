@@ -1248,6 +1248,28 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/09-tooling/terrakube/docker-compose.yml
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/11-laboratory/dozzle/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/11-laboratory/dozzle/README.md
+  direct_consumers:
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/11-laboratory/dozzle/README.md to the Compose-declared Dozzle v10.6.11 static version.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: infra/11-laboratory/dozzle/docker-compose.yml
   surface_class: native-configuration
   profile: null
