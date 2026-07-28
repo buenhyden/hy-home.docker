@@ -13,6 +13,8 @@ parent_ids:
 
 **Status:** Active
 
+**Design revision:** 2026-07-29 (Asia/Seoul)
+
 ## Overview
 
 This specification defines a successor delta-convergence wave for every
@@ -46,6 +48,13 @@ contexts on `main`. The remote default branch was behind the local baseline,
 and recent remote CI runs failed. This wave records that drift and improves
 tracked definitions, but it neither mutates remote GitHub settings nor claims
 that local validation proves remote enforcement.
+
+The CI ownership design is structural rather than interpretive. A typed gate
+registry and declarative directed acyclic graph (DAG) define the only admitted
+first-party CI entry points, their exact argument vectors, and their required
+job roots. Workflows and local QA project from that same graph. The contract
+does not attempt to infer arbitrary shell or leaf-program semantics; it proves
+registered gate identity, ownership, reachability, and exact invocation.
 
 Implementation uses six logical tasks, a fresh implementation agent and
 independent reviewers for each task, logical commits, and a final whole-branch
@@ -142,16 +151,19 @@ target consumer in the Task ledger. Directory adjacency is not authorization.
 
 ### External Source Basis
 
-The rolling source verification was performed on 2026-07-28 KST. External
-sources define platform behavior and industry syntax; they do not define this
-repository's path taxonomy, lifecycle states, approval authority, archive
-dispositions, or evidence vocabulary.
+The rolling source verification was performed on 2026-07-28 KST and the CI
+execution sources were revalidated for this design revision on 2026-07-29 KST.
+External sources define platform behavior and industry syntax; they do not
+define this repository's path taxonomy, lifecycle states, approval authority,
+archive dispositions, or evidence vocabulary.
 
 | Official or primary source | Local design consequence |
 | --- | --- |
 | [GitHub workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) | Register exact workflow events, branch and path filters, permissions, concurrency, and timeouts. Keep required quality checks off path filters because a filtered required workflow can remain pending. |
 | [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) | Require least-privilege tokens, reject dangerous trusted-context checkout, and use full commit SHAs for immutable direct Action references. |
 | [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) | Keep required job names unique and distinguish tracked desired checks from authenticated remote enforcement. |
+| [GitHub reusable workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) | Reuse workflow structure where it reduces duplication, but do not treat a reusable workflow as a second command-ownership authority. |
+| [GitHub Action metadata syntax](https://docs.github.com/en/enterprise-cloud%40latest/actions/reference/workflows-and-actions/metadata-syntax) | Treat composite Actions as executable dependency surfaces; register admitted uses and do not use a composite Action to hide untyped shell execution. |
 | [Node 20 deprecation on Actions runners](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/) | Reject Node 20 Action runtime dependencies and record Node 24 compatibility evidence. |
 | [GitHub self-hosted runner minimum-version enforcement](https://github.blog/changelog/2026-06-12-github-actions-minimum-version-enforcement-timeline-for-self-hosted-runners/) | Keep runner compatibility a dated observation and do not claim self-hosted readiness without an authenticated inventory. |
 | [pre-commit](https://pre-commit.com/) | Treat all-files execution as repository-wide and potentially mutating; keep Agent and CI entry points distinct and pinned. |
@@ -208,7 +220,7 @@ this specification.
 | TSDC-009 | Remove active deprecated state safely. | Every active deletion or migration has consumer, replacement, provenance, rollback, test, and review evidence; historical evidence remains intact. |
 | TSDC-010 | Type workflow triggers. | Every tracked workflow matches an approved event, branch, path, schedule, permission, timeout, and concurrency contract. |
 | TSDC-011 | Preserve CI status identity. | The 16 required job IDs remain unique and synchronized across workflow, validator, governance, and desired-state protection documents. |
-| TSDC-012 | Remove redundant CI execution. | Each expensive semantic gate has one CI job owner; shared scripts do not cause the same focused suite to run twice in one workflow. |
+| TSDC-012 | Enforce typed CI gate ownership. | Every required semantic check has one registered `suite_key`, one required-job root owner, and at most one reachable execution in a workflow; governed `run` steps use only the exact static gate runner grammar. |
 | TSDC-013 | Harden Action dependencies. | Direct Actions are full-SHA pinned, approved runtime evidence is current, Node 20 is rejected, and the mutable transitive pre-commit Action path is removed. |
 | TSDC-014 | Keep Agent and CI QA distinct. | CI uses its repository-owned entry point; Agents use only the separately approved controlled wrapper for an all-files run. |
 | TSDC-015 | Represent remote state honestly. | Dated remote observations, desired-state differences, and unverified causes are separate from local pass/fail evidence; no mutation occurs. |
@@ -328,10 +340,91 @@ the following 16 unique job IDs:
 - `storybook-coverage`;
 - `zizmor`.
 
-Each job owns one semantic gate. A repository-contract umbrella may verify
-wiring and static ownership, but it must not rerun a focused expensive suite
-already owned by another job in the same workflow. Shared setup or script
-entry points are reused without merging required status identities.
+`.github/workflow-contract.yml` advances to schema version 2 and remains the
+single canonical machine registry. A parallel command registry is forbidden.
+The schema retains workflow triggers, permissions, concurrency, job metadata,
+and Action dependency facts while replacing free-form `owner_commands` and
+string-based expensive-command matching with:
+
+- `gate_nodes`, keyed by a unique stable `gate_id`;
+- `job_roots`, mapping each required-quality job to exactly one root `gate_id`;
+- `profile_roots`, mapping each local QA profile to ordered root gate IDs;
+- the existing workflow and Action registries.
+
+A gate node has exactly one `kind`: `leaf`, `aggregate`, or `setup`.
+
+- A `leaf` identifies one semantic suite with a stable `suite_key`, tracked
+  first-party executable `entrypoint`, an exact string-array `argv` containing
+  only arguments after that entry point, repository-relative `cwd`, admitted
+  environment-key list, timeout, applicability profiles, and explicit
+  opaque-leaf classification.
+- An `aggregate` has only ordered `children`. It owns no entry point, argument
+  vector, environment, or executable shell body.
+- A `setup` represents required executable preparation that cannot be
+  expressed as an immutable admitted Action. It uses the same typed
+  entrypoint, argument, directory, environment, timeout, and profile rules as
+  a leaf but has no semantic `suite_key`.
+
+The graph must be acyclic. Every child must exist, every active node must be
+reachable from a registered job or local profile root, and nodes forbidden by
+their kind are rejected. Each semantic `suite_key` belongs to exactly one leaf.
+Every required semantic `suite_key` has exactly one required-job root owner and
+is reachable at most once from a workflow. Reachability is deduplicated by gate
+identity before execution. Normal Compose validation and all-profile Compose
+validation remain separate gate and suite identities because their
+applicability and expected coverage differ.
+
+Each of the 16 required job IDs maps to one root gate without merging status
+identities. A repository-contract umbrella may verify graph wiring, registry
+freshness, and static ownership, but it must not execute a focused suite owned
+by another job. An opaque leaf is an explicit assurance boundary: it requires
+gate-specific tests and review, cannot be an aggregate owner, and is not
+recursively interpreted as arbitrary shell or Python.
+
+The planned repository-owned runner is
+`scripts/validation/run-ci-gate.py`. Its admitted interface is:
+
+```text
+python3 scripts/validation/run-ci-gate.py --profile <profile> --gate <static-gate-id>
+python3 scripts/validation/run-ci-gate.py --profile <profile> --all
+python3 scripts/validation/run-ci-gate.py --profile <profile> --list
+python3 scripts/validation/run-ci-gate.py --profile <profile> --dry-run (--gate <static-gate-id> | --all)
+```
+
+The runner expands the registered DAG deterministically, preserves child
+order, deduplicates gate identities, and executes each leaf or setup argument
+vector as `[verified_entrypoint, *argv]` with `shell=False` and the registered
+timeout. It confines working directories and entry points to tracked
+repository-relative regular files, rejects symlinks and identity changes
+between validation and execution, and binds execution to the verified file
+identity rather than an unchecked path re-resolution. It starts from a minimal
+allowlisted environment, clears all ambient `GIT_*` variables, and never
+prints secret values. Required Git context is passed as a typed argument or
+constructed from separately admitted CI metadata, not inherited through
+`GIT_*`. Unknown profiles, unknown gates, malformed arguments, graph drift, or
+provenance failures stop before execution.
+
+The required workflow projection admits only:
+
+- an immutable registered `uses:` reference; or
+- the exact single-line static runner invocation
+  `python3 scripts/validation/run-ci-gate.py --profile ci --gate <gate-id>`.
+
+Executable multiline bodies, dynamic gate IDs, workflow-expression command
+construction, variables, heredocs, substitutions, `eval`, `source`, shell
+`-c`, direct script/tool execution, and unregistered local Actions are
+rejected. Executable setup currently embedded in workflow shell is migrated to
+a typed `setup` node or an immutable registered Action; there is no hidden
+setup-shell exemption.
+
+CI and local QA consume the same registry and graph. The `ci` profile derives
+its roots from `job_roots`; `local-script-backed` and `local-harness` derive
+theirs from `profile_roots`. Profiles may select different admitted roots, but
+they may not redefine a gate's entrypoint or arguments. Local aggregate
+execution uses the ordered profile-root projection rather than a second command
+list.
+`scripts/validation/check-repo-contracts.sh` remains a wiring and repository
+contract checker, not a second gate executor.
 
 GitHub-native automation remains separate because its events and mutation
 authority differ from required quality gates. The non-gating catalog includes
@@ -351,9 +444,12 @@ The machine contract records exact allowed triggers per workflow:
   explicitly registered event, branch, path, schedule, or manual combinations.
 
 The validator rejects `pull_request_target`, unauthorized `workflow_run`,
-unauthorized `workflow_call`, event widening, permission widening,
-write-all, missing timeouts, unsafe interpolation, mutable direct Action
-references, and duplicate required job IDs.
+unauthorized `workflow_call`, event widening, permission widening, write-all,
+missing timeouts, unsafe interpolation, mutable direct Action references, and
+duplicate required job IDs. In the required-quality workflow it also rejects
+executable steps outside the typed gate projection. Non-gating automation
+remains governed by its registered trigger, permission, Action, and
+classification contract rather than being counted as a required gate root.
 
 ### Action Dependency and Pre-commit Contract
 
@@ -403,7 +499,7 @@ approved and inspected.
 | T-TSDC-001 | Delta foundation | Successor manifest, baseline contract, whole-surface omissions check, failing fixtures |
 | T-TSDC-002 | Document surface convergence | README, typed example, archive, project, and redacted secret-catalog normalization |
 | T-TSDC-003 | Runtime-support and legacy convergence | Verified active-path cleanup across infra, scripts, and tests with provenance and rollback |
-| T-TSDC-004 | CI and QA control-plane convergence | Trigger and dependency contracts, CI pre-commit entry point, job ownership, governance coupling |
+| T-TSDC-004 | CI and QA control-plane convergence | Typed gate registry and DAG, exact runner, workflow/local projections, trigger and dependency contracts, CI pre-commit entry point, governance coupling |
 | T-TSDC-005 | Audit and remote evidence reconciliation | Updated canonical audit facts, generated summaries, remote drift observation, cross-links |
 | T-TSDC-006 | Closure and whole-branch review | Full validation ladder, independent reviews, terminal Task and memory evidence |
 
@@ -412,6 +508,19 @@ and 3 consume its classification and validation interfaces. Task 4 may proceed
 after the foundation contract is stable but must account for scripts and tests
 owned by Task 3. Task 5 consumes the implementation heads of Tasks 2 through 4.
 Task 6 begins only after all prior task reviews are closed.
+
+Task 4 uses a three-wave cutover:
+
+1. introduce the version 2 registry, DAG validator, runner, and failing
+   contract fixtures while retaining current workflow execution;
+2. convert workflow and local QA routes to typed gates and prove ordered
+   one-time parity with a fake executor;
+3. remove the prior shell/Python semantic interpreter and its obsolete tests
+   only after independent parity review.
+
+The old interpreter may coexist only as temporary cutover evidence inside Task
+4. It is not a permanent fallback or a second post-cutover authority. Failure
+in any wave leaves Task 4 blocked without weakening the exact runner grammar.
 
 ### Convergence Flow
 
@@ -470,6 +579,54 @@ Records are ordered deterministically by action and path. The validator
 requires an exact registry match for every external `uses:` reference and
 rejects unused active records.
 
+### Typed Gate Node Record
+
+Each gate node contains:
+
+- `gate_id`;
+- `kind`;
+- `suite_key` for semantic leaves;
+- `entrypoint` and `argv` for executable leaves and setup nodes;
+- `cwd`;
+- `allowed_env_keys`;
+- `timeout_minutes`;
+- `profiles`;
+- `opaque`;
+- ordered `children` for aggregate nodes.
+
+Fields not admitted by the selected `kind` are forbidden rather than ignored.
+Argument vectors contain literal strings. The runner performs no shell,
+workflow-expression, substitution, or implicit environment expansion; a leaf
+program that interprets an argument is covered only by that opaque leaf's
+focused tests and review. Registry ordering and `--list` or `--dry-run` output
+are deterministic.
+
+### CI Job Root Record
+
+Each job-root record contains:
+
+- `workflow`;
+- `job_id`;
+- `root_gate_id`;
+- `classification`.
+
+The 16 required-quality records must match the preserved job-ID set exactly.
+Graph validation computes root ownership and semantic-suite reachability from
+these records; a second hard-coded command table is not permitted.
+
+### Local QA Profile Root Record
+
+Each local profile-root record contains:
+
+- `profile`;
+- ordered `root_gate_ids`;
+- `classification`.
+
+The admitted local profiles are `local-script-backed` and `local-harness`.
+Their roots may reuse CI gates but cannot override node fields. The `ci`
+profile is derived from required `job_roots`, so the registry cannot define a
+conflicting second CI root list.
+
 ### Remote Observation Record
 
 The observation contains value-free fields for:
@@ -499,7 +656,12 @@ It is evidence, not desired-state authority and not a mutation instruction.
 | Required status identity changes accidentally | Four-way coupling check compares workflow, validator, governance, and desired protection document. |
 | Workflow trigger widens | Exact event/branch/path contract rejects unregistered trigger changes. |
 | Mutable or Node 20 Action enters CI | Dependency registry and full-SHA/runtime tests fail. |
-| CI duplicates an expensive suite | Job ownership tests map each primary command to one job owner. |
+| CI duplicates a semantic suite | DAG reachability requires one required-job owner and at most one workflow execution for each `suite_key`. |
+| A workflow bypasses the registry | Exact projection checks reject free-form, multiline, computed, indirect, or unregistered executable steps. |
+| Gate graph contains a cycle, missing child, or orphan | Schema and graph validation fail before workflow or local execution. |
+| Aggregate node hides executable behavior | Kind-specific forbidden fields and opaque-leaf rules reject executable aggregate nodes. |
+| Entrypoint or environment is redirected after validation | Repository confinement, no-follow regular-file checks, verified identity binding, and minimal environment construction fail closed. |
+| CI and local QA drift | Both projections resolve gate identities from the same versioned registry and deterministic runner. |
 | Local pass is reported as remote enforcement | Evidence schema separates local, desired, observed, and unverified axes. |
 | Generated output is hand-edited | Generator-owner and byte-for-byte check mode reject drift. |
 | Another agent's work is overwritten | File ownership, isolated worktree, status checks, and scoped commits are mandatory. |
@@ -534,6 +696,7 @@ Each task records:
 2. **Native syntax:** YAML, JSON, TOML, shell, Python, workflow, Compose, and
    Markdown checks selected by changed paths.
 3. **Focused regression:** target-surface, metadata, archive, workflow,
+   typed-gate schema, DAG ownership, exact projection, runner,
    action-dependency, QA-routing, and script tests for the changed contract.
 4. **Repository contracts:** document implementation alignment, cross-links,
    target-surface checker, audit freshness, and repository contract suite.
@@ -547,6 +710,22 @@ Each task records:
 Remote workflow success is not a local validation rung. It remains pending
 until a separately approved push or pull request executes the tracked
 definitions.
+
+Task 4 focused evidence must include positive and mutation cases for duplicate
+IDs, duplicate owners, duplicate suite reachability, cycles, missing children,
+orphans, unregistered entrypoints, symlink or provenance failure, dynamic gate
+IDs, co-mutated workflow and registry data, free-form shell, direct program
+execution, permission drift, Action drift, trigger drift, and required-job
+drift. A fake executor must demonstrate the exact ordered leaf set and one-time
+execution without invoking real suites. The existing trigger, permission,
+concurrency, timeout, Action, CI pre-commit, and 16-job contracts remain
+regression gates through cutover.
+
+The resulting assurance is intentionally structural and repository-local. It
+does not prove arbitrary equivalence inside an opaque leaf, remote enforcement,
+or immunity from a malicious change to the validator and registry in the same
+revision. Independent review, immutable provenance, branch protection, and
+remote CI remain separate controls.
 
 ## Agent Role and IO Contract
 
@@ -563,6 +742,12 @@ test adequacy, secret safety, and deletion evidence. Review findings return to
 the same task implementation loop until resolved. The final whole-branch
 reviewer is fresh and did not implement the reviewed task.
 
+Task 4 requires an additional independent cutover review before deleting the
+old semantic interpreter. That review compares the preserved 16 job roots,
+ordered fake-executor output, local/CI profile projection, negative mutation
+coverage, and retained workflow-shape controls. It cannot authorize remote
+mutation or expand the approved retry budget.
+
 The root agent owns task sequencing, worktree integrity, cross-task conflict
 resolution, logical commits, generated-evidence timing, terminal Task state,
 and the distinction between local, remote, skipped, and unverified evidence.
@@ -576,6 +761,7 @@ and the distinction between local, remote, skipped, and unverified evidence.
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+- [Workflow contract](../../../.github/workflow-contract.yml)
 - [Target surface checker](../../../scripts/validation/check-target-surface-contract.py)
 - [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
 - [Controlled Agent pre-commit wrapper](../../../scripts/validation/run-agent-precommit-all-files.sh)
