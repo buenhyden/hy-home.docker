@@ -62,6 +62,10 @@ configuration, credentials, and remote GitHub state remain out of scope.
 - The user approved the exact Plan-listed controlled all-files wrapper command
   on 2026-07-28. That one-attempt approval was consumed by the failed execution
   recorded below; it does not authorize a retry.
+- The user approved T-AGCC-006-QA-R1 on 2026-07-28 to add a bounded,
+  value-free first-failure diagnostic to the wrapper, test it, synchronize its
+  contract documentation, and obtain independent reviews. This approval does
+  not authorize another wrapper run.
 - No approval exists for push, remote merge, workflow dispatch, provider live
   call, remote control-plane change, or a second controlled-wrapper attempt.
 
@@ -78,6 +82,7 @@ surfaces. No rollback command may discard unrelated user changes.
 | T-AGCC-004 | Add functions and type harness, loop, and evals | harness/code | AGCC-008–010 | Task 4 | 14/24, 8 layers/states, 11/16 evals | `/root/task4_harness_loops_evals` | completed |
 | T-AGCC-005 | Reconcile local Actions/QA, GitHub index, and remote observation | CI/security | AGCC-012–014 | Task 5 | navigation-only index, 16 jobs, zizmor pin, remote inventory | `/root/task5_ci_github_convergence` | completed |
 | T-AGCC-006 | Refresh canonical evidence and close branch | docs/QA | AGCC-014–016 | Task 6 | audit 11/161, direct-impact drift 0, aggregate QA, branch reviews | `/root/task6_canonical_evidence_refresh` | blocked |
+| T-AGCC-006-QA-R1 | Add a value-free first-failure wrapper diagnostic | QA/security | AGCC-014–016 | Task 6 bounded remediation | fake-hook RED/GREEN, unchanged wrapper command/exit/snapshot semantics, independent reviews | fresh QA implementer | approved |
 
 ## Work Log
 
@@ -125,6 +130,8 @@ surfaces. No rollback command may discard unrelated user changes.
 | 2026-07-27 | T-AGCC-006 quality/security review | `/root/task6_quality_security_reviewer_final` | Read-only review of `371ffc6d..2db2f366` returned C0/I0/M0, `QUALITY_SECURITY: APPROVED`, and `READY_FOR_TASK6_CLOSURE: YES`. The reviewer confirmed no deletion or runtime/infra/deploy/provider-live scope, honest 11/161 and 77/60/13/2/9 audit evidence, fresh generated matrix and semantic assertions, dependency-locked repository contracts, dated/unverified remote state, provider catalog/runtime separation, and no secret value or raw-log retention. The later `39e2e254` change only clarifies baseline/current Plan wording and was independently specification re-reviewed. |
 | 2026-07-28 | Controlled all-files gate | User / Controller | The user approved the exact Plan-listed wrapper command for one run from clean committed checkpoint `84a6dbab598360c24d9c9056a0f1d8c5f3a2be41`. The wrapper reported `hook_result=failed hook_exit=3` and `snapshot_result=passed`; before, after, changed, and unexpected Git-visible non-ignored path counts were all zero and every path set was `(none)`. The wrapper intentionally retained no raw hook output, so no hook identity or root cause is claimed. The typed `approved-all-files-gate` loop requires `record_and_stop` after its single failed attempt; no retry, whole-branch closure review, lifecycle transition, cleanup, or scope expansion followed. |
 | 2026-07-28 | Wrapper evidence synchronization | Controller | Explicit-base metadata selected the two changed documents with 0 violations, legacy exceptions, or transition overrides; traceability passed 46/0; implementation alignment passed 671 documents, 5,598 links, 141 operations documents, and 0 failures; diff hygiene passed. The four current-memory regressions were environment-blocked rather than product-failed: offline `uv` could not resolve cached `pyyaml`, and bare Python failed closed on missing `html5lib`. No dependency was installed and no pass is claimed for those four tests at this checkpoint. |
+| 2026-07-28 | T-AGCC-006-QA-R1 approval | User / Controller | Approved only a bounded sanitizer remediation that may report one registered first failing hook ID and a numeric-exit/files-modified/unavailable class while retaining no raw output. The exact inner command, wrapper arguments, exit and snapshot semantics, cleanup, and observation boundary remain unchanged. Another all-files run, raw-log retention, environment or cache mutation, dependency installation, scope expansion, and lifecycle closure remain unauthorized. |
+| 2026-07-28 | T-AGCC-006-QA-R1 Plan review | `/root/qa_diagnostic_plan_review` | Initial read-only review returned C0/I0/M1 APPROVED. The sole Minor requested an explicit duplicate/ambiguous registered-ID fixture; the Plan's TDD list now includes it. Read-only re-review returned C0/I0/M0 APPROVED and confirmed bounded scope, feasibility, value-free evidence, unchanged wrapper semantics, retained one-attempt `record_and_stop`, and no retry authority. |
 
 Implementation rows are appended only after the responsible agent finishes a
 logical unit. Review rows identify the exact reviewed commit range and finding
@@ -226,7 +233,7 @@ when required.
 | Remote ruleset, protection, required-check, environment, secret, and variable verification | unverified | GitHub authentication unavailable; remote is read-only | Stage 90 observation plus future approved GitHub task |
 | Runtime, Compose, infrastructure, deployment, and release changes | deferred | explicitly outside Spec 134 | existing runtime readiness specs |
 | Dependency-locked validator/renderer | previously_resolved_currently_unavailable | earlier locked runs completed the recorded aggregate evidence; at this wrapper-evidence checkpoint offline `uv` lacked cached `pyyaml` and bare Python lacked `html5lib` | rerun in the canonical dependency-locked environment before any resumed closure claim |
-| Controlled all-files wrapper | failed_record_and_stop | the exact one-attempt approval was consumed; hook exit 3, snapshot pass, and empty observed path sets do not establish a hook pass or root cause | future bounded QA diagnosis/remediation with a new exact retry approval if requested |
+| Controlled all-files wrapper | diagnostic_remediation_approved_retry_not_approved | the exact one-attempt approval was consumed; hook exit 3, snapshot pass, and empty observed path sets do not establish a hook pass or root cause | T-AGCC-006-QA-R1, then a separate exact retry approval if requested |
 | Push/remote merge/remote branch cleanup | not_approved | requires separate finish action approval | finishing-a-development-branch handoff |
 
 ## Related Documents

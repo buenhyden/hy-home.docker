@@ -1022,6 +1022,68 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 - [ ] Record only sanitized wrapper markers, exit status, snapshot result, and
   before/after/changed/unexpected path sets.
+
+#### T-AGCC-006-QA-R1: Value-free Wrapper Failure Diagnostic
+
+The user approved this bounded remediation on 2026-07-28 after the separately
+recorded one-attempt wrapper failure. This approval authorizes sanitizer
+implementation, focused tests, documentation synchronization, and independent
+review only. It does not authorize another all-files wrapper execution.
+
+**Files:**
+
+- Modify
+  `scripts/validation/run-agent-precommit-all-files.sh`.
+- Modify
+  `tests/validation/test_run_agent_precommit_all_files.sh`.
+- Modify `scripts/README.md` only to describe the new value-free result.
+- Modify this Plan, the sibling Task ledger, and
+  `docs/00.agent-governance/memory/current.md` for bounded approval and
+  evidence synchronization.
+
+**Interfaces and safety bounds:**
+
+- Preserve the exact inner command
+  `pre-commit run --all-files --show-diff-on-failure`, all existing wrapper
+  arguments, worktree/task/prefix validation, snapshot semantics, exit
+  propagation, exit `20` precedence, signal handling, cleanup, and observation
+  boundary.
+- On a nonzero hook exit, emit at most one first-failure tuple derived from the
+  first pre-commit-owned failure metadata block. A reported hook ID must match
+  both the strict token grammar
+  `[A-Za-z0-9][A-Za-z0-9._-]{0,63}` and an exact hook ID in the tracked
+  `.pre-commit-config.yaml`.
+- The tuple may contain only a hook ID plus one bounded class:
+  numeric exit `0..255`, files modified, or unavailable. Do not emit hook
+  names, messages, durations, command output, file content, configuration
+  values, environment values, paths from hook output, or subsequent metadata
+  that could have been forged by raw hook output.
+- If the first metadata record is absent, malformed, unregistered, ambiguous,
+  or not followed by a recognized bounded detail, emit `unavailable`. A
+  successful hook run emits `not_applicable`.
+- Keep raw stdout/stderr ephemeral and delete it through the existing wrapper
+  cleanup. Never persist or print credentials, tokens, secret values, auth
+  files, shell history, or raw logs.
+
+**TDD and verification:**
+
+- [ ] Add failing fake-hook tests for a registered first failing hook with a
+  numeric exit and for the confidentiality boundary before implementation.
+- [ ] Add coverage for files-modified, absent metadata, malformed or
+  unregistered IDs, duplicate or ambiguous registered-ID metadata, raw-output
+  spoof attempts, successful runs, after-snapshot failure, unchanged exit
+  propagation, and temporary-file cleanup.
+- [ ] Run the focused fake-hook suite, Bash syntax, ShellCheck for the wrapper
+  and test, repository wrapper-contract checks when dependencies are
+  available, and `git diff --check`.
+- [ ] Record environment-blocked checks without converting them to pass.
+- [ ] Commit the remediation as one logical wrapper/test/docs unit, then
+  dispatch fresh specification and quality/security reviewers and remediate
+  every Critical or Important finding.
+- [ ] Do not run the controlled wrapper during this remediation. After clean
+  reviews, request a new exact user approval that explicitly authorizes one
+  exceptional second attempt from a named clean commit.
+
 - [ ] Dispatch a fresh whole-branch correctness reviewer and a separate fresh
   whole-branch security reviewer for
   `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD`.

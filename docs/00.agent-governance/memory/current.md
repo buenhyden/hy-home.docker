@@ -19,6 +19,9 @@ status: active
   bootstrap current-state payload.
 - Current state is replaced in place and links to durable Stage 03 and Stage 04
   evidence instead of duplicating their content.
+- The approved T-AGCC-006-QA-R1 unit may improve only the wrapper's value-free
+  first-failure diagnostic and focused contract evidence. It does not authorize
+  another all-files execution.
 
 ## Active boundary
 
@@ -26,14 +29,15 @@ status: active
   evidence, six bounded direct-impact drift consumers, aggregate QA,
   independent Task review, and whole-branch review.
 - The exact controlled all-files wrapper approval was consumed by one failed
-  attempt. A retry is not authorized. Remote mutation, live provider calls,
-  runtime changes, Compose, infrastructure, deployment, and release remain
-  separately gated or outside this task.
+  attempt. T-AGCC-006-QA-R1 may implement and review a bounded diagnostic; a
+  retry is not authorized. Remote mutation, live provider calls, runtime
+  changes, Compose, infrastructure, deployment, and release remain separately
+  gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `84a6dbab598360c24d9c9056a0f1d8c5f3a2be41`
-- Verified at: `2026-07-28T12:22:20+09:00`
+- Verified commit: `0271081ca63bfe45cbd0fd8d3b229c194b8ddace`
+- Verified at: `2026-07-28T12:31:07+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -50,8 +54,8 @@ status: active
 ## Blockers and unverified facts
 
 - The controlled wrapper did not pass. Its typed one-attempt loop requires
-  `record_and_stop`; a second attempt needs a new exact approval plus an
-  explicit bounded remediation or override record.
+  `record_and_stop`; T-AGCC-006-QA-R1 remediation is approved, but a second
+  attempt still needs a new exact approval plus an explicit override record.
 - The sanitized wrapper result cannot identify the failing hook or distinguish
   one exit-3 hook from a bitwise combination of hook exits. No root cause is
   claimed.
@@ -69,7 +73,6 @@ status: active
 
 ## Next handoff
 
-- Preserve the failed wrapper evidence in the active Task and stop closure.
-  Diagnose only through bounded targeted checks; any second wrapper attempt
-  requires a new exact user approval before whole-branch reviews or lifecycle
-  transition resume.
+- Implement and independently review T-AGCC-006-QA-R1 without running the
+  wrapper. Any second wrapper attempt requires a new exact user approval before
+  whole-branch reviews or lifecycle transition resume.
