@@ -9,9 +9,10 @@ status: active
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
 - T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
-  while T-AGCC-006 remains active after its separately approved repository-wide
-  wrapper attempt failed and stopped the closure loop. The bounded
-  T-AGCC-006-QA-R1 implementation and independent reviews are complete.
+  while T-AGCC-006 remains active. Its first approved repository-wide wrapper
+  attempt failed and stopped the loop; the bounded T-AGCC-006-QA-R1
+  remediation and reviews completed, and a separately approved exceptional
+  second attempt passed. Whole-branch reviews are next.
 
 ## Approved decisions
 
@@ -23,22 +24,25 @@ status: active
 - The approved T-AGCC-006-QA-R1 unit may improve only the wrapper's value-free
   first-failure diagnostic and focused contract evidence. It does not authorize
   another all-files execution.
+- The user separately approved one exceptional second wrapper attempt from
+  clean commit `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`; the passing
+  execution consumed that approval. No further wrapper run is authorized.
 
 ## Active boundary
 
 - T-AGCC-006 covers canonical research and audit refresh, registered generated
   evidence, six bounded direct-impact drift consumers, aggregate QA,
   independent Task review, and whole-branch review.
-- The exact controlled all-files wrapper approval was consumed by one failed
-  attempt. T-AGCC-006-QA-R1 may implement and review a bounded diagnostic; a
-  retry is not authorized. Remote mutation, live provider calls, runtime
-  changes, Compose, infrastructure, deployment, and release remain separately
-  gated or outside this task.
+- The initial controlled-wrapper approval was consumed by a failed attempt.
+  T-AGCC-006-QA-R1 and its clean reviews enabled a separately approved
+  exceptional second attempt, which passed. Remote mutation, live provider
+  calls, runtime changes, Compose, infrastructure, deployment, release, and
+  any further wrapper run remain separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `0828f4f0b2c8792ed2d3ecdc220b9ce5c45ea2b2`
-- Verified at: `2026-07-28T13:25:37+09:00`
+- Verified commit: `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`
+- Verified at: `2026-07-28T13:27:40+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -63,16 +67,20 @@ status: active
   `b426956d..0828f4f0` are both C0/I0/M0 APPROVED. The first quality review is
   disqualified because its reviewer improperly created the test commit from a
   read-only role; its verdict is not closure evidence.
+- From clean commit `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`,
+  the separately approved exceptional second wrapper attempt returned 0 with
+  `hook_result=passed hook_exit=0`, `first_failure=not_applicable`, and
+  `snapshot_result=passed`. All four Git-visible path counts were zero and all
+  four path sets were `(none)`.
 
 ## Blockers and unverified facts
 
-- The controlled wrapper did not pass. Its typed one-attempt loop requires
-  `record_and_stop`; T-AGCC-006-QA-R1 implementation and clean independent
-  reviews are complete. A second attempt still needs a new exact approval plus
-  an explicit override record.
-- The sanitized wrapper result cannot identify the failing hook or distinguish
-  one exit-3 hook from a bitwise combination of hook exits. No root cause is
-  claimed.
+- Fresh whole-branch correctness and security reviews remain required before
+  lifecycle closure. Any Critical or Important finding must be remediated and
+  re-reviewed.
+- The first failed attempt remains historical evidence. Its sanitized result
+  cannot identify the failing hook or distinguish one exit-3 hook from a
+  bitwise combination of hook exits; no root cause is claimed.
 - Provider acceptance/entitlement, live comparative evaluation, and
   authenticated remote GitHub enforcement remain explicitly unverified.
 - Remote work remains read-only; remote mutation, live provider calls, and
@@ -87,7 +95,7 @@ status: active
 
 ## Next handoff
 
-- Request a new exact user approval for one exceptional second controlled
-  wrapper attempt from a named clean evidence commit. Whole-branch reviews and
-  lifecycle transition remain paused until that run passes or the user makes a
-  separate bounded disposition decision.
+- Dispatch fresh whole-branch correctness and security reviewers for
+  `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD`, remediate and re-review
+  every Critical or Important finding, then perform lifecycle closure and
+  final gates.
