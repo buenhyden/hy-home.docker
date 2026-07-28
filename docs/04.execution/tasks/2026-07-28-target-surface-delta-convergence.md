@@ -117,6 +117,10 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-001 RED | Task 1 implementation agent | Added 13 focused tests before implementation. The first run produced 1 passing predecessor-integrity test and 12 expected missing-module errors. No product implementation existed. |
 | 2026-07-28 | T-TSDC-001 implementation | Task 1 implementation agent | Added the duplicate-safe, size-bounded, no-follow successor parser, exact dataclasses, Git-delta union, whole-target inventory, advisory evidence gates, create-only bootstrap, deterministic summary, thin CLI, repository-contract/local-QA routing, and registered generated owner. The manifest computes 105 rows: 96 preserve, 9 update, 0 migrate/delete, and 105 pending review pairs. |
 | 2026-07-28 | T-TSDC-001 direct-impact expansion | Controller / Task 1 implementation agent | The generated-output registry exposed one stale exact oracle outside the initial file list. The controller explicitly expanded ownership only to `tests/validation/test_document_metadata.py`; the exact new summary-to-checker pair was added without unrelated refactoring. |
+| 2026-07-28 | T-TSDC-001 specification review | Distinct specification reviewer | Reported C0/I4/M2: the surface class was not closed or path-derived; blocking mode did not require both pass verdicts on every row; README registry failure did not fail closed; disposition and destructive evidence semantics were incomplete; the destructive-validator negative assertion was omitted; and generic preserve rationales plus speculative consumer edges were not factual enough. Review remains unresolved pending remediation re-review. |
+| 2026-07-28 | T-TSDC-001 quality/security review | Distinct quality/security reviewer | Reported C0/I1/M2: summary overwrite lacked descriptor-relative no-follow and race-safe replacement checks; untracked coverage was not isolated from staged/unstaged coverage; and canonical paths admitted control or Markdown-injection characters. Review remains unresolved pending remediation re-review. |
+| 2026-07-28 | T-TSDC-001 remediation RED | Task 1 implementation agent | Added focused regressions before remediation. The combined C/I run emitted 12 failing markers; isolated witnesses included one missing `delta-surface-class-invalid`, four registry fail-closed cascade failures, one unsafe profile-name failure, and 98 path-specific rationale/consumer-proof failures against the old manifest. |
+| 2026-07-28 | T-TSDC-001 remediation GREEN | Task 1 implementation agent | Closed surface classes, effective blocking review gates, one-finding README registry failure, typed disposition/evidence rules, tracked regular-file evidence checks, descriptor-relative summary overwrite, explicit untracked coverage, injection-safe canonical paths, factual preserve rationales, and proven consumer mappings. Intermediate focused suites passed 6/6 and 5/5; final successor and predecessor suites passed 25/25 and 40/40. |
 
 ## Verification Evidence
 
@@ -135,7 +139,7 @@ have no unresolved Critical or Important findings.
 
 | Task | RED evidence | GREEN evidence | Aggregate evidence | Result |
 | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Initial focused run: 13 tests, 1 pass and 12 expected missing-module errors | Focused successor suite 15/15; advisory CLI and summary freshness pass; exact metadata generated-owner oracle passes | Predecessor target suite 40/40; metadata contracts 0 violations; Bash syntax and Ruff pass. Repository contracts retain 11 pre-existing or later-task groups with no Task 1 routing omission. | implementation_complete_review_pending |
+| T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. Remediation: 12 focused failing markers; isolated 1 surface-class, 5 registry fail-closed mutations, and 98 manifest-rationale failures. | Initial 15/15. Remediation focused suites 6/6 and 5/5; final successor suite 25/25. Advisory/write/advisory passed; blocking returned 1 with 105 spec and 105 quality non-pass findings. | Predecessor target suite 40/40 and CLI pass; metadata owner oracle 1/1, changed 1/0, repository contracts 0 violations; Ruff, compile, Bash, Markdown 1/0, and diff hygiene pass. Broad known-failing aggregate was not repeated. | implementation_complete_review_pending |
 | T-TSDC-002 | Not run — Task 1 review pending | Not run — Task 1 review pending | Not run — Task 1 review pending | pending |
 | T-TSDC-003 | Not run — Task 2 review pending | Not run — Task 2 review pending | Not run — Task 2 review pending | pending |
 | T-TSDC-004 | Not run — Task 3 review pending | Not run — Task 3 review pending | Not run — Task 3 review pending | pending |
@@ -156,8 +160,24 @@ have no unresolved Critical or Important findings.
   focused test.
 - Classification: 96 `preserve`, 9 `update`, 0 `migrate`, and 0 `delete`.
   Native paths own themselves unless a repository generator, lockfile source,
-  or fixture test is the more truthful owner; 66 rows name direct repository
-  consumers. No row uses Spec 135 as a generic owner.
+  or fixture test is the more truthful owner; 53 rows name 58 direct repository
+  consumer edges. Each declared consumer is a tracked regular file and is
+  supported by a literal reference or an explicit focused-test group mapping.
+  Self-contained service Compose rows declare no speculative root Compose
+  consumer. No row uses Spec 135 as a generic owner.
+- Remediation review state: the specification review reported C0/I4/M2 and the
+  quality/security review reported C0/I1/M2. The implementation addresses each
+  reported finding, but neither review is marked approved until the distinct
+  reviewers re-review the remediation commit.
+- Remediation final gates: successor tests passed 25/25 in 95.838 seconds and
+  predecessor tests passed 40/40 in 99.790 seconds. The metadata generated-owner
+  oracle passed 1/1; changed metadata selected one document with zero
+  violations; repository metadata contracts reported zero violations.
+  Advisory validation passed before and after the descriptor-safe summary
+  write. Expected blocking validation returned 1 with exactly 105
+  specification and 105 quality non-pass findings because all production rows
+  remain pending. Ruff, Python compile, Bash syntax, one-file Markdown stdin
+  lint, predecessor CLI, and `git diff --check` passed.
 - Safety: secret rows are `path-only`; findings, summary, and diagnostics
   contain paths and typed states only. No secret payload, raw log, workflow
   log, credential, or runtime value was read or persisted.
@@ -210,7 +230,7 @@ consume or create Agent authorization.
 
 | Task | Implementer | Specification reviewer | Quality/security reviewer | Exact range | Verdict | Findings |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Task 1 implementation agent | pending distinct reviewer | pending distinct reviewer | starts at `72eef68c`; head is this logical commit | implementation complete; review pending | No implementation finding remains; independent gates have not run. |
+| T-TSDC-001 | Task 1 implementation agent | C0/I4/M2 reported; remediation re-review pending | C0/I1/M2 reported; remediation re-review pending | `1671e9be..` remediation commit | implementation remediated; reviews not approved | Surface class, blocking verdict, registry, destructive semantics, validator assertion, factual classification, safe overwrite, untracked coverage, and path-injection findings have implementation evidence but await distinct reviewer confirmation. |
 | T-TSDC-002 | pending | pending | pending | not available | pending | Task 1 review pending |
 | T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 review pending |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
@@ -227,7 +247,8 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- | --- |
 | Planning specification | Define successor convergence design | `docs(spec): define target surface delta convergence` | `e828745a` | metadata, Markdown, alignment, diff hygiene passed |
 | Planning activation | Activate Spec and define Plan/Task | `docs(plan): define target surface delta execution` | `a2ba9eb4` | metadata 3/0, Markdown 3/0, traceability 46/0, alignment 674/5,658/141/0, diff hygiene passed |
-| T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | this logical commit | focused 15/15, predecessor 40/40, metadata 0 violations, advisory CLI, Ruff, Bash syntax, and diff hygiene pass; aggregate limitations recorded |
+| T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | `1671e9be` | focused 15/15, predecessor 40/40, metadata 0 violations, advisory CLI, Ruff, Bash syntax, and diff hygiene pass; aggregate limitations recorded |
+| T-TSDC-001 remediation | Harden successor evidence contract after two reviews | `fix(governance): harden target delta evidence` | this logical commit | remediation RED/GREEN, successor/predecessor/metadata, advisory/blocking, summary, static QA, and diff hygiene |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | not started | Task 1 review pending |
 | T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |

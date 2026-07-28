@@ -42,9 +42,23 @@ DEFAULT_IMPLEMENTATION_BASE: Final = (
 SCHEMA_VERSION: Final = 1
 MAX_CONTRACT_FILE_BYTES: Final = 2 * 1_048_576
 FULL_SHA_RE: Final = re.compile(r"^[0-9a-f]{40}$")
+README_PROFILE_NAME_RE: Final = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
 DISPOSITIONS: Final = frozenset({"preserve", "update", "migrate", "delete"})
 REVIEW_VERDICTS: Final = frozenset({"pending", "pass", "fail"})
 SECRET_SAFETY_VALUES: Final = frozenset({"not-applicable", "path-only"})
+SURFACE_CLASSES: Final = frozenset(
+    {
+        "content-archive",
+        "executable-script",
+        "native-configuration",
+        "native-file",
+        "native-platform",
+        "python-source",
+        "readme",
+        "test-or-fixture",
+        "typed-example",
+    }
+)
 TOP_LEVEL_KEYS: Final = frozenset(
     {
         "schema_version",
@@ -216,6 +230,9 @@ def _canonical_relative(value: object) -> str:
         or not value
         or "\\" in value
         or "://" in value
+        or "|" in value
+        or "`" in value
+        or any(ord(character) < 32 or ord(character) == 127 for character in value)
     ):
         raise ContractInputError
     path = pathlib.PurePosixPath(value)
@@ -510,29 +527,33 @@ def _readme_glob_matches(path: pathlib.PurePosixPath, pattern: str) -> bool:
     )
 
 
-def _load_readme_profiles(root: pathlib.Path) -> dict[str, tuple[str, ...]] | None:
+def _load_readme_profiles(root: pathlib.Path) -> dict[str, tuple[str, ...]]:
     try:
         raw = _safe_load_unique(
             _read_contract_text(root, PROFILE_REGISTRY.as_posix())
         )
         if not isinstance(raw, dict):
-            return None
+            raise ContractInputError
         profiles = raw.get("readme_profiles")
-        if not isinstance(profiles, dict):
-            return None
+        if not isinstance(profiles, dict) or not profiles:
+            raise ContractInputError
         result: dict[str, tuple[str, ...]] = {}
         for name, profile in profiles.items():
-            if not isinstance(name, str) or not isinstance(profile, dict):
-                return None
+            if (
+                not isinstance(name, str)
+                or README_PROFILE_NAME_RE.fullmatch(name) is None
+                or not isinstance(profile, dict)
+            ):
+                raise ContractInputError
             patterns = profile.get("path_globs")
             if not isinstance(patterns, list) or not patterns:
-                return None
-            result[_safe_label(name)] = tuple(
+                raise ContractInputError
+            result[name] = tuple(
                 _canonical_relative(pattern) for pattern in patterns
             )
         return result
-    except (ContractInputError, yaml.YAMLError):
-        return None
+    except yaml.YAMLError:
+        raise ContractInputError from None
 
 
 def _matching_readme_profiles(
@@ -565,6 +586,55 @@ def _expected_profile(
 
 def _finding(code: str, path: str, message: str) -> DeltaFinding:
     return DeltaFinding(code=code, path=path, message=message)
+
+
+def _tracked_regular(root: pathlib.Path, path: str) -> bool:
+    tracked = _git_bytes(root, "ls-files", "--error-unmatch", "-z", "--", path)
+    if tracked.returncode != 0 or _decode_nul_paths(tracked.stdout) != {path}:
+        return False
+    try:
+        metadata = os.lstat(root / path)
+    except OSError:
+        return False
+    return stat.S_ISREG(metadata.st_mode)
+
+
+def _valid_provenance(
+    root: pathlib.Path,
+    row_path: str,
+    evidence: tuple[str, ...],
+) -> bool:
+    for item in evidence:
+        match = re.fullmatch(
+            r"git:([0-9a-f]{40})(?:\.\.([0-9a-f]{40}))?:(.+)",
+            item,
+        )
+        if match is None or match.group(3) != row_path:
+            continue
+        older, newer = match.group(1), match.group(2)
+        if not _commit_exists(root, older):
+            continue
+        if newer is None:
+            return True
+        if _commit_exists(root, newer) and _is_ancestor(root, older, newer):
+            return True
+    return False
+
+
+def _valid_rollback(
+    root: pathlib.Path,
+    row_path: str,
+    evidence: tuple[str, ...],
+) -> bool:
+    for item in evidence:
+        match = re.fullmatch(r"git-revert:([0-9a-f]{40}):(.+)", item)
+        if (
+            match is not None
+            and match.group(2) == row_path
+            and _commit_exists(root, match.group(1))
+        ):
+            return True
+    return False
 
 
 def validate_delta_manifest(
@@ -662,8 +732,18 @@ def validate_delta_manifest(
             )
         )
 
-    readme_profiles = _load_readme_profiles(repo_root)
-    if readme_profiles is not None:
+    try:
+        readme_profiles = _load_readme_profiles(repo_root)
+    except ContractInputError:
+        readme_profiles = None
+        findings.append(
+            _finding(
+                "delta-readme-registry-invalid",
+                PROFILE_REGISTRY.as_posix(),
+                "README profile registry is missing, unsafe, or invalid",
+            )
+        )
+    else:
         try:
             inventory = current_target_inventory(repo_root)
         except ContractInputError:
@@ -689,6 +769,17 @@ def validate_delta_manifest(
                     )
 
     for row in document.entries:
+        if (
+            row.surface_class not in SURFACE_CLASSES
+            or row.surface_class != _surface_class(row.path)
+        ):
+            findings.append(
+                _finding(
+                    "delta-surface-class-invalid",
+                    row.path,
+                    "row surface class does not match the closed path-derived vocabulary",
+                )
+            )
         if row.changed_since != document.predecessor_closure:
             findings.append(
                 _finding(
@@ -727,13 +818,86 @@ def validate_delta_manifest(
                     "row secret-safety class does not match its path boundary",
                 )
             )
-        expected_profile = _expected_profile(row.path, readme_profiles)
-        if row.profile != expected_profile:
+        if not (row.path.endswith("README.md") and readme_profiles is None):
+            expected_profile = _expected_profile(row.path, readme_profiles)
+            if row.profile != expected_profile:
+                findings.append(
+                    _finding(
+                        "delta-profile-invalid",
+                        row.path,
+                        "row document profile does not match its native consumer",
+                    )
+                )
+        if not _tracked_regular(repo_root, row.canonical_owner):
             findings.append(
                 _finding(
-                    "delta-profile-invalid",
+                    "delta-owner-invalid",
                     row.path,
-                    "row document profile does not match its native consumer",
+                    "row canonical owner is not an existing tracked regular file",
+                )
+            )
+        for consumer in row.direct_consumers:
+            if not _tracked_regular(repo_root, consumer):
+                findings.append(
+                    _finding(
+                        "delta-consumer-invalid",
+                        row.path,
+                        "row direct consumer is not an existing tracked regular file",
+                    )
+                )
+                break
+        for validator in row.validators:
+            if not _tracked_regular(repo_root, validator):
+                findings.append(
+                    _finding(
+                        "delta-validator-invalid",
+                        row.path,
+                        "row validator is not an existing tracked regular file",
+                    )
+                )
+                break
+        for test in row.tests:
+            if not _tracked_regular(repo_root, test):
+                findings.append(
+                    _finding(
+                        "delta-test-invalid",
+                        row.path,
+                        "row test is not an existing tracked regular file",
+                    )
+                )
+                break
+
+        if row.disposition in {"preserve", "update"} and row.replacement is not None:
+            findings.append(
+                _finding(
+                    "delta-nondestructive-replacement-invalid",
+                    row.path,
+                    "non-destructive row must not declare replacement evidence",
+                )
+            )
+        if row.disposition == "migrate" and (
+            row.replacement in {None, "withdrawn", row.path}
+            or not _tracked_regular(repo_root, row.replacement)
+        ):
+            findings.append(
+                _finding(
+                    "delta-migrate-replacement-invalid",
+                    row.path,
+                    "migrate row replacement is not a distinct tracked regular path",
+                )
+            )
+        if row.disposition == "delete" and (
+            row.replacement == row.path
+            or (
+                row.replacement not in {None, "withdrawn"}
+                and not _tracked_regular(repo_root, row.replacement)
+            )
+        ):
+            findings.append(
+                _finding(
+                    "delta-delete-replacement-invalid",
+                    row.path,
+                    "delete row replacement is not withdrawal or a distinct tracked regular path",
                 )
             )
 
@@ -762,12 +926,28 @@ def validate_delta_manifest(
                         "destructive row lacks immutable provenance evidence",
                     )
                 )
+            elif not _valid_provenance(repo_root, row.path, row.provenance):
+                findings.append(
+                    _finding(
+                        "delta-destructive-provenance-invalid",
+                        row.path,
+                        "destructive row provenance is not commit-bound and path-bound",
+                    )
+                )
             if not row.rollback:
                 findings.append(
                     _finding(
                         "delta-destructive-rollback-missing",
                         row.path,
                         "destructive row lacks rollback evidence",
+                    )
+                )
+            elif not _valid_rollback(repo_root, row.path, row.rollback):
+                findings.append(
+                    _finding(
+                        "delta-destructive-rollback-invalid",
+                        row.path,
+                        "destructive row rollback is not commit-bound and path-bound",
                     )
                 )
             if not row.validators:
@@ -778,12 +958,31 @@ def validate_delta_manifest(
                         "destructive row lacks validator evidence",
                     )
                 )
+            elif any(
+                not validator.startswith("scripts/validation/")
+                for validator in row.validators
+            ):
+                findings.append(
+                    _finding(
+                        "delta-destructive-validators-invalid",
+                        row.path,
+                        "destructive row validators are outside the validation boundary",
+                    )
+                )
             if not row.tests:
                 findings.append(
                     _finding(
                         "delta-destructive-tests-missing",
                         row.path,
                         "destructive row lacks test evidence",
+                    )
+                )
+            elif any(not test.startswith("tests/") for test in row.tests):
+                findings.append(
+                    _finding(
+                        "delta-destructive-tests-invalid",
+                        row.path,
+                        "destructive row tests are outside the test boundary",
                     )
                 )
             if row.spec_verdict != "pass" or row.quality_verdict != "pass":
@@ -862,17 +1061,18 @@ def _canonical_owner(path: str) -> str:
 
 def _direct_consumers(path: str) -> tuple[str, ...]:
     if path == "projects/storybook/nextjs/package-lock.json":
-        return ("projects/storybook/nextjs/package.json",)
+        return (".github/workflows/ci-quality.yml",)
     if path.startswith("tests/fixtures/"):
         return (_canonical_owner(path),)
+    if path in {
+        "infra/supply-chain.cosign-offline-signing-config.json",
+        "infra/supply-chain.cosign-offline-trusted-root.json",
+    }:
+        return ("scripts/security/verify-sample-service-supply-chain.sh",)
     if path.startswith("infra/supply-chain."):
         return ("scripts/validation/check-supply-chain-policy.py",)
-    if path.startswith("infra/") and pathlib.PurePosixPath(path).name.startswith(
-        "docker-compose"
-    ):
-        return ("docker-compose.yml",)
     if path == "examples/sample-web-service/.dockerignore":
-        return ("examples/sample-web-service/Dockerfile",)
+        return ("scripts/validation/check-supply-chain-policy.py",)
     if path == "examples/sample-web-service/Dockerfile":
         return ("examples/sample-web-service/docker-compose.yml",)
     if path == "examples/sample-web-service/docker-compose.yml":
@@ -907,40 +1107,68 @@ def _direct_consumers(path: str) -> tuple[str, ...]:
             "scripts/validation/run-local-qa-gates.sh",
         )
     if path == "scripts/validation/run-local-qa-gates.sh":
-        return (".github/workflows/ci-quality.yml",)
+        return ("scripts/validation/validate-harness.sh",)
     return ()
 
 
 def _classification_finding(path: str, disposition: str) -> str:
     if disposition == "update":
         return PLANNED_UPDATE_FINDINGS[path]
+    owner = _canonical_owner(path)
     if path.startswith("tests/fixtures/"):
-        return "Retain this value-free fixture as focused regression evidence."
+        return (
+            f"Preserve {path} as value-free regression input exercised by {owner}."
+        )
     if path.startswith("tests/"):
-        return "Retain this focused test as post-predecessor contract evidence."
+        return (
+            f"Preserve {path} as the tracked test oracle for its current validation "
+            "boundary."
+        )
     if path.startswith(".github/workflows/"):
-        return "Retain this GitHub-native workflow until its registered owner changes it."
+        return (
+            f"Preserve {path} as a GitHub-native workflow registered by "
+            ".github/INDEX.md."
+        )
     if path.startswith("infra/") and pathlib.PurePosixPath(path).name.startswith(
         "docker-compose"
     ):
-        return "Retain this Compose declaration; this task does not mutate runtime services."
+        return (
+            f"Preserve {path} as its service-local Compose declaration; no root "
+            "Compose consumer is asserted."
+        )
     if path.startswith("infra/supply-chain."):
-        return "Retain this value-free supply-chain policy or trust fixture."
+        return (
+            f"Preserve {path} as a value-free supply-chain policy or trust input "
+            "consumed by its declared checker."
+        )
     if path.startswith("scripts/"):
-        return "Retain this implemented validation or operations support surface."
+        return (
+            f"Preserve {path} as an implemented validation or operations support "
+            f"surface owned by {owner}."
+        )
     if path.startswith("projects/"):
-        return "Retain this project-native dependency or source surface."
+        return (
+            f"Preserve {path} as a project-native dependency or source surface "
+            f"owned by {owner}."
+        )
     if path.startswith("examples/"):
-        return "Retain this bounded example implementation surface."
+        return (
+            f"Preserve {path} as a bounded sample-service implementation artifact "
+            f"owned by {owner}."
+        )
     if path.startswith(".github/"):
-        return "Retain this GitHub-native repository control surface."
-    return "Retain this current native target surface."
+        return (
+            f"Preserve {path} as a GitHub-native repository control surface owned "
+            f"by {owner}."
+        )
+    return f"Preserve {path} as the current tracked native target owned by {owner}."
 
 
 def _bootstrap_row(
     path: str,
     predecessor_commit: str,
     implementation_base_commit: str,
+    evidence_head: str,
     readme_profiles: dict[str, tuple[str, ...]] | None,
 ) -> DeltaManifestRow:
     disposition = "update" if path in PLANNED_UPDATE_PATHS else "preserve"
@@ -962,10 +1190,10 @@ def _bootstrap_row(
         ),
         tests=("tests/validation/test_target_surface_delta_contracts.py",),
         provenance=(
-            f"git:{predecessor_commit}..HEAD:{path}",
+            f"git:{predecessor_commit}..{evidence_head}:{path}",
             f"implementation-base:{implementation_base_commit}",
         ),
-        rollback=(f"revert the logical commit that changes {path}",),
+        rollback=(f"git-revert:{evidence_head}:{path}",),
         spec_verdict="pending",
         quality_verdict="pending",
     )
@@ -1044,11 +1272,16 @@ def bootstrap_delta_manifest(
         raise ContractInputError
 
     readme_profiles = _load_readme_profiles(repo_root)
+    head_result = _git_text(repo_root, "rev-parse", "HEAD")
+    evidence_head = head_result.stdout.strip()
+    if head_result.returncode != 0 or FULL_SHA_RE.fullmatch(evidence_head) is None:
+        raise ContractInputError
     rows = tuple(
         _bootstrap_row(
             path,
             predecessor_commit,
             implementation_base_commit,
+            evidence_head,
             readme_profiles,
         )
         for path in changed_target_paths(repo_root, predecessor_commit)
@@ -1145,18 +1378,75 @@ def render_delta_summary(
 
 def _write_summary(root: pathlib.Path, summary: str) -> None:
     repo_root = pathlib.Path(root).resolve()
-    path = repo_root / DELTA_SUMMARY
-    if os.path.lexists(path):
+    relative = _canonical_relative(DELTA_SUMMARY.as_posix())
+    payload = summary.encode("utf-8")
+    if len(payload) > MAX_CONTRACT_FILE_BYTES:
+        raise ContractInputError
+    try:
+        root_descriptor = os.open(
+            repo_root,
+            os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+        )
+    except OSError:
+        raise ContractInputError from None
+    descriptors = [root_descriptor]
+    try:
+        parts = pathlib.PurePosixPath(relative).parts
+        for component in parts[:-1]:
+            descriptor = os.open(
+                component,
+                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                dir_fd=descriptors[-1],
+            )
+            descriptors.append(descriptor)
+        parent_descriptor = descriptors[-1]
         try:
-            metadata = os.lstat(path)
-        except OSError:
-            raise ContractInputError from None
-        if not stat.S_ISREG(metadata.st_mode):
+            file_descriptor = os.open(
+                parts[-1],
+                os.O_WRONLY | os.O_TRUNC | os.O_NOFOLLOW,
+                dir_fd=parent_descriptor,
+            )
+        except FileNotFoundError:
+            file_descriptor = os.open(
+                parts[-1],
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o644,
+                dir_fd=parent_descriptor,
+            )
+        descriptors.append(file_descriptor)
+        opened = os.fstat(file_descriptor)
+        if not stat.S_ISREG(opened.st_mode):
             raise ContractInputError
-        path.write_text(summary, encoding="utf-8")
-        return
-    path.parent.mkdir(parents=True, exist_ok=True)
-    _write_new_file(path, summary.encode("utf-8"))
+        offset = 0
+        while offset < len(payload):
+            written = os.write(file_descriptor, payload[offset:])
+            if written <= 0:
+                raise ContractInputError
+            offset += written
+        os.fsync(file_descriptor)
+        final = os.fstat(file_descriptor)
+        linked = os.stat(
+            parts[-1],
+            dir_fd=parent_descriptor,
+            follow_symlinks=False,
+        )
+        opened_identity = (opened.st_dev, opened.st_ino, opened.st_mode)
+        if (
+            opened_identity
+            != (final.st_dev, final.st_ino, final.st_mode)
+            or opened_identity
+            != (linked.st_dev, linked.st_ino, linked.st_mode)
+            or final.st_size != len(payload)
+        ):
+            raise ContractInputError
+    except OSError:
+        raise ContractInputError from None
+    finally:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
 
 def _summary_finding(root: pathlib.Path, expected: str) -> DeltaFinding | None:
@@ -1175,6 +1465,30 @@ def _summary_finding(root: pathlib.Path, expected: str) -> DeltaFinding | None:
             "generated successor summary is stale",
         )
     return None
+
+
+def _blocking_review_findings(
+    document: DeltaManifestDocument,
+) -> tuple[DeltaFinding, ...]:
+    findings: list[DeltaFinding] = []
+    for row in document.entries:
+        if row.spec_verdict != "pass":
+            findings.append(
+                _finding(
+                    "delta-spec-verdict-not-pass",
+                    row.path,
+                    "blocking mode requires a passing specification verdict",
+                )
+            )
+        if row.quality_verdict != "pass":
+            findings.append(
+                _finding(
+                    "delta-quality-verdict-not-pass",
+                    row.path,
+                    "blocking mode requires a passing quality verdict",
+                )
+            )
+    return tuple(findings)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1222,6 +1536,18 @@ def main(argv: list[str] | None = None) -> int:
     try:
         document = load_delta_manifest(root)
         findings = list(validate_delta_manifest(root, document))
+        blocking = (
+            document.enforcement == "blocking" or arguments.mode == "blocking"
+        )
+        if blocking:
+            findings.extend(_blocking_review_findings(document))
+        if arguments.write_summary and findings:
+            for finding in sorted(set(findings)):
+                print(
+                    f"{finding.code}: {finding.path}: {finding.message}",
+                    file=sys.stderr,
+                )
+            return 1
         inventory = current_target_inventory(root)
         summary = render_delta_summary(document, inventory)
         if arguments.write_summary:
@@ -1243,8 +1569,7 @@ def main(argv: list[str] | None = None) -> int:
             f"{finding.code}: {finding.path}: {finding.message}",
             file=sys.stderr,
         )
-    mode = arguments.mode or document.enforcement
-    return 1 if mode == "blocking" and findings else 0
+    return 1 if blocking and findings else 0
 
 
 if __name__ == "__main__":

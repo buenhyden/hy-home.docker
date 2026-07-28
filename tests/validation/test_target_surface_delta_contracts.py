@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import hashlib
+import io
+import os
 import pathlib
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -83,8 +87,25 @@ def valid_row(
     *,
     changed_since: str,
     disposition: str = "preserve",
+    evidence_head: str | None = None,
 ) -> dict[str, object]:
+    suffix = pathlib.PurePosixPath(path).suffix.lower()
+    if path.endswith("README.md"):
+        surface_class = "readme"
+    elif path.startswith(".github/"):
+        surface_class = "native-platform"
+    elif path.startswith("tests/"):
+        surface_class = "test-or-fixture"
+    elif suffix == ".sh":
+        surface_class = "executable-script"
+    elif suffix == ".py":
+        surface_class = "python-source"
+    elif suffix in {".json", ".yaml", ".yml", ".example"}:
+        surface_class = "native-configuration"
+    else:
+        surface_class = "native-file"
     secret_safety = "path-only" if path.startswith("secrets/") else "not-applicable"
+    profile = "infrastructure-root" if path == "infra/README.md" else None
     replacement: str | None = None
     direct_consumers: list[str] = []
     validators: list[str] = []
@@ -94,18 +115,22 @@ def valid_row(
     spec_verdict = "pending"
     quality_verdict = "pending"
     if disposition in {"migrate", "delete"}:
+        if evidence_head is None:
+            raise ValueError("destructive rows require an evidence head")
         direct_consumers = ["docs/03.specs/135-target-surface-delta-convergence/spec.md"]
-        replacement = "withdrawn" if disposition == "delete" else path
+        replacement = (
+            "withdrawn" if disposition == "delete" else "infra/replacement.txt"
+        )
         validators = ["scripts/validation/check-target-surface-delta-contract.py"]
         tests = ["tests/validation/test_target_surface_delta_contracts.py"]
-        provenance = [f"{changed_since}:{path}"]
-        rollback = ["revert the owning logical task commit"]
+        provenance = [f"git:{changed_since}..{evidence_head}:{path}"]
+        rollback = [f"git-revert:{evidence_head}:{path}"]
         spec_verdict = "pass"
         quality_verdict = "pass"
     return {
         "path": path,
-        "surface_class": "native-platform",
-        "profile": None,
+        "surface_class": surface_class,
+        "profile": profile,
         "changed_since": changed_since,
         "disposition": disposition,
         "canonical_owner": (
@@ -151,12 +176,27 @@ class TemporaryDeltaRepository:
         baseline = {
             ".github/workflows/ci.yml": "name: CI\n",
             "archive/note.md": "# Archived note\n",
+            "docs/03.specs/135-target-surface-delta-convergence/spec.md": (
+                "# Target Surface Delta Convergence\n"
+            ),
+            "docs/99.templates/support/document-metadata-profiles.yaml": (
+                "readme_profiles:\n"
+                "  infrastructure-root:\n"
+                "    path_globs: [infra/README.md]\n"
+            ),
             "examples/sample/service.md": "# Service fixture\n",
             "infra/README.md": "# Infrastructure\n",
+            "infra/replacement.txt": "canonical replacement\n",
             "projects/app/config.json": "{}\n",
             "scripts/tool.sh": "#!/usr/bin/env bash\n",
+            "scripts/validation/check-target-surface-delta-contract.py": (
+                "#!/usr/bin/env python3\n"
+            ),
             "secrets/example.env.example": "PASSWORD=SUPER_SECRET_VALUE\n",
             "tests/test_sample.py": "def test_sample():\n    assert True\n",
+            "tests/validation/test_target_surface_delta_contracts.py": (
+                "def test_contract():\n    assert True\n"
+            ),
         }
         for path, text in baseline.items():
             write_text(self.root, path, text)
@@ -180,6 +220,11 @@ class TemporaryDeltaRepository:
             "scripts/tool.sh",
             "#!/usr/bin/env bash\nset -euo pipefail\n",
         )
+        write_text(
+            self.root,
+            ".github/untracked.yml",
+            "name: untracked target evidence\n",
+        )
         return self
 
     def __exit__(self, *_args: object) -> None:
@@ -188,6 +233,7 @@ class TemporaryDeltaRepository:
     @property
     def changed_paths(self) -> tuple[str, ...]:
         return (
+            ".github/untracked.yml",
             "infra/README.md",
             "scripts/tool.sh",
             "tests/test_delta.py",
@@ -291,6 +337,33 @@ class ManifestReaderTests(unittest.TestCase):
             with self.assertRaises(contract.ContractInputError):
                 contract.load_delta_manifest(fixture.root)
 
+    def test_control_and_markdown_injection_paths_are_rejected(self) -> None:
+        contract = load_contract_module()
+        unsafe_paths = (
+            "infra/table|escape.md",
+            "infra/inline`escape.md",
+            "infra/tab\tescape.md",
+            "infra/cr\rescape.md",
+            "infra/line\nescape.md",
+            "infra/nul\0escape.md",
+        )
+        with TemporaryDeltaRepository() as fixture:
+            for unsafe_path in unsafe_paths:
+                with self.subTest(path=repr(unsafe_path)):
+                    row = valid_row(
+                        unsafe_path,
+                        changed_since=fixture.predecessor,
+                    )
+                    fixture.write_manifest(
+                        valid_document(
+                            fixture.predecessor,
+                            fixture.implementation_base,
+                            [row],
+                        )
+                    )
+                    with self.assertRaises(contract.ContractInputError):
+                        contract.load_delta_manifest(fixture.root)
+
     def test_oversized_and_symlinked_manifest_inputs_are_rejected(self) -> None:
         contract = load_contract_module()
         with TemporaryDeltaRepository() as fixture:
@@ -306,6 +379,29 @@ class ManifestReaderTests(unittest.TestCase):
 
 
 class DeltaCoverageTests(unittest.TestCase):
+    def test_untracked_target_path_is_included_separately(self) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            untracked = ".github/untracked.yml"
+            result = subprocess.run(
+                ["git", "ls-files", "--error-unmatch", "--", untracked],
+                cwd=fixture.root,
+                capture_output=True,
+                check=False,
+            )
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn(
+                f"?? {untracked}",
+                git(fixture.root, "status", "--short", "--untracked-files=all"),
+            )
+            self.assertIn(
+                untracked,
+                contract.changed_target_paths(
+                    fixture.root,
+                    fixture.predecessor,
+                ),
+            )
+
     def test_every_changed_target_path_has_exactly_one_row(self) -> None:
         contract = load_contract_module()
         with TemporaryDeltaRepository() as fixture:
@@ -397,6 +493,7 @@ class DestructiveDispositionTests(unittest.TestCase):
             "delta-destructive-review-invalid",
             "delta-destructive-rollback-missing",
             "delta-destructive-tests-missing",
+            "delta-destructive-validators-missing",
         }
         for disposition in ("migrate", "delete"):
             with self.subTest(disposition=disposition):
@@ -432,6 +529,240 @@ class DestructiveDispositionTests(unittest.TestCase):
                     self.assertTrue(
                         required_codes <= {finding.code for finding in findings}
                     )
+
+    def test_migrate_and_delete_accept_only_complete_path_bound_evidence(self) -> None:
+        contract = load_contract_module()
+        for disposition, replacement in (
+            ("migrate", "infra/replacement.txt"),
+            ("delete", "withdrawn"),
+            ("delete", "infra/replacement.txt"),
+        ):
+            with self.subTest(disposition=disposition, replacement=replacement):
+                with TemporaryDeltaRepository() as fixture:
+                    rows = [
+                        valid_row(
+                            path,
+                            changed_since=fixture.predecessor,
+                            disposition=(
+                                disposition if path == "infra/README.md" else "preserve"
+                            ),
+                            evidence_head=(
+                                fixture.implementation_base
+                                if path == "infra/README.md"
+                                else None
+                            ),
+                        )
+                        for path in fixture.changed_paths
+                    ]
+                    destructive = next(
+                        row for row in rows if row["path"] == "infra/README.md"
+                    )
+                    destructive["replacement"] = replacement
+                    fixture.write_manifest(
+                        valid_document(
+                            fixture.predecessor,
+                            fixture.implementation_base,
+                            rows,
+                        )
+                    )
+                    document = contract.load_delta_manifest(fixture.root)
+                    self.assertEqual(
+                        (),
+                        contract.validate_delta_manifest(fixture.root, document),
+                    )
+
+    def test_disposition_and_evidence_semantics_fail_closed(self) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            rows = [
+                valid_row(path, changed_since=fixture.predecessor)
+                for path in fixture.changed_paths
+            ]
+            rows[0]["replacement"] = "infra/replacement.txt"
+            destructive = next(
+                row for row in rows if row["path"] == "infra/README.md"
+            )
+            destructive.update(
+                valid_row(
+                    "infra/README.md",
+                    changed_since=fixture.predecessor,
+                    disposition="migrate",
+                    evidence_head=fixture.implementation_base,
+                )
+            )
+            destructive["canonical_owner"] = "projects/missing-owner.md"
+            destructive["direct_consumers"] = ["projects/missing-consumer.md"]
+            destructive["replacement"] = "infra/README.md"
+            destructive["validators"] = ["scripts/tool.sh"]
+            destructive["tests"] = ["scripts/tool.sh"]
+            destructive["provenance"] = [
+                (
+                    f"git:{fixture.predecessor}..{fixture.implementation_base}:"
+                    "scripts/tool.sh"
+                )
+            ]
+            destructive["rollback"] = [
+                f"git-revert:{fixture.implementation_base}:scripts/tool.sh"
+            ]
+            fixture.write_manifest(
+                valid_document(
+                    fixture.predecessor,
+                    fixture.implementation_base,
+                    rows,
+                )
+            )
+            document = contract.load_delta_manifest(fixture.root)
+            codes = {
+                finding.code
+                for finding in contract.validate_delta_manifest(
+                    fixture.root,
+                    document,
+                )
+            }
+            self.assertTrue(
+                {
+                    "delta-consumer-invalid",
+                    "delta-destructive-provenance-invalid",
+                    "delta-destructive-rollback-invalid",
+                    "delta-destructive-tests-invalid",
+                    "delta-destructive-validators-invalid",
+                    "delta-migrate-replacement-invalid",
+                    "delta-nondestructive-replacement-invalid",
+                    "delta-owner-invalid",
+                }
+                <= codes
+            )
+
+
+class SummaryWriterSafetyTests(unittest.TestCase):
+    def test_summary_overwrite_refuses_symlink(self) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            summary = fixture.root / contract.DELTA_SUMMARY
+            summary.parent.mkdir(parents=True, exist_ok=True)
+            victim = fixture.root / "victim.md"
+            victim.write_text("victim\n", encoding="utf-8")
+            summary.symlink_to(victim)
+            with self.assertRaises(contract.ContractInputError):
+                contract._write_summary(fixture.root, "replacement\n")
+            self.assertEqual("victim\n", victim.read_text(encoding="utf-8"))
+
+    def test_summary_overwrite_detects_directory_entry_swap(self) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            summary = fixture.root / contract.DELTA_SUMMARY
+            summary.parent.mkdir(parents=True, exist_ok=True)
+            summary.write_text("old\n", encoding="utf-8")
+            replacement = summary.with_suffix(".swap")
+            replacement.write_text("swapped\n", encoding="utf-8")
+
+            def swap_entry(_descriptor: int) -> None:
+                summary.unlink()
+                replacement.replace(summary)
+
+            with mock.patch.object(contract.os, "fsync", side_effect=swap_entry):
+                with self.assertRaises(contract.ContractInputError):
+                    contract._write_summary(fixture.root, "new\n")
+            self.assertEqual("swapped\n", summary.read_text(encoding="utf-8"))
+
+
+class FailClosedInputTests(unittest.TestCase):
+    def test_unknown_surface_class_is_value_free_and_refuses_summary_write(self) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            rows = [
+                valid_row(path, changed_since=fixture.predecessor)
+                for path in fixture.changed_paths
+            ]
+            rows[0]["surface_class"] = "PASSWORD=SUPER_SECRET_SURFACE"
+            fixture.write_manifest(
+                valid_document(
+                    fixture.predecessor,
+                    fixture.implementation_base,
+                    rows,
+                )
+            )
+            summary = fixture.root / contract.DELTA_SUMMARY
+            summary.parent.mkdir(parents=True, exist_ok=True)
+            summary.write_text("sentinel\n", encoding="utf-8")
+
+            loaded = contract.load_delta_manifest(fixture.root)
+            findings = contract.validate_delta_manifest(fixture.root, loaded)
+            self.assertIn(
+                "delta-surface-class-invalid",
+                {finding.code for finding in findings},
+            )
+            self.assertNotIn("SUPER_SECRET_SURFACE", repr(findings))
+
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = contract.main(
+                    [
+                        "--root",
+                        str(fixture.root),
+                        "--write-summary",
+                    ]
+                )
+            self.assertEqual(1, result)
+            self.assertEqual("sentinel\n", summary.read_text(encoding="utf-8"))
+            self.assertNotIn("SUPER_SECRET_SURFACE", stderr.getvalue())
+
+    def test_readme_registry_missing_or_invalid_is_one_value_free_finding(self) -> None:
+        contract = load_contract_module()
+        registry_relative = contract.PROFILE_REGISTRY.as_posix()
+        invalid_sources = (
+            None,
+            "readme_profiles: []\n",
+            (
+                "readme_profiles:\n"
+                "  infrastructure-root:\n"
+                "    path_globs: [infra/README.md]\n"
+                "  infrastructure-root:\n"
+                "    path_globs: [infra/OTHER.md]\n"
+            ),
+            (
+                "readme_profiles:\n"
+                "  infrastructure-root:\n"
+                "    path_globs: ['infra/README.md|PASSWORD=SECRET']\n"
+            ),
+            (
+                "readme_profiles:\n"
+                "  'PASSWORD=SECRET':\n"
+                "    path_globs: [infra/README.md]\n"
+            ),
+        )
+        for invalid_source in invalid_sources:
+            with self.subTest(source=invalid_source):
+                with TemporaryDeltaRepository() as fixture:
+                    rows = [
+                        valid_row(path, changed_since=fixture.predecessor)
+                        for path in fixture.changed_paths
+                    ]
+                    fixture.write_manifest(
+                        valid_document(
+                            fixture.predecessor,
+                            fixture.implementation_base,
+                            rows,
+                        )
+                    )
+                    registry = fixture.root / registry_relative
+                    if invalid_source is None:
+                        registry.unlink()
+                    else:
+                        registry.write_text(invalid_source, encoding="utf-8")
+                    document = contract.load_delta_manifest(fixture.root)
+                    findings = contract.validate_delta_manifest(
+                        fixture.root,
+                        document,
+                    )
+                    registry_findings = [
+                        finding
+                        for finding in findings
+                        if finding.code == "delta-readme-registry-invalid"
+                    ]
+                    self.assertEqual(1, len(registry_findings))
+                    self.assertEqual(registry_findings, list(findings))
+                    self.assertNotIn("PASSWORD=SECRET", repr(findings))
 
 
 class SecretSafetyTests(unittest.TestCase):
@@ -653,6 +984,110 @@ class RepositoryManifestTests(unittest.TestCase):
                     self.assertTrue((ROOT / consumer).is_file())
         self.assertEqual((), contract.validate_delta_manifest(ROOT, document))
 
+    def test_preserve_rationales_and_declared_consumers_are_factual(self) -> None:
+        contract = load_contract_module()
+        document = contract.load_delta_manifest(ROOT)
+        retired_boilerplate = {
+            "Retain this value-free fixture as focused regression evidence.",
+            "Retain this focused test as post-predecessor contract evidence.",
+            (
+                "Retain this GitHub-native workflow until its registered owner "
+                "changes it."
+            ),
+            (
+                "Retain this Compose declaration; this task does not mutate "
+                "runtime services."
+            ),
+            "Retain this value-free supply-chain policy or trust fixture.",
+            "Retain this implemented validation or operations support surface.",
+            "Retain this project-native dependency or source surface.",
+            "Retain this bounded example implementation surface.",
+            "Retain this GitHub-native repository control surface.",
+            "Retain this current native target surface.",
+        }
+        focused_fixture_owners = (
+            (
+                "tests/fixtures/compose-core-readiness/",
+                "tests/validation/test_compose_core_readiness.py",
+            ),
+            (
+                "tests/fixtures/postgres-logical-upgrade/",
+                "tests/validation/test_postgres_logical_upgrade_rehearsal.py",
+            ),
+            (
+                "tests/fixtures/sample-service-delivery/",
+                "tests/validation/test_sample_service_delivery_rehearsal.py",
+            ),
+            (
+                "tests/fixtures/supply-chain/",
+                "tests/validation/test_supply_chain_policy.py",
+            ),
+        )
+        explicit_pairs = {
+            (
+                "examples/sample-web-service/.dockerignore",
+                "scripts/validation/check-supply-chain-policy.py",
+            ),
+            (
+                "scripts/validation/target_surface_delta_contract.py",
+                "scripts/validation/check-target-surface-delta-contract.py",
+            ),
+            (
+                "tests/validation/test_target_surface_delta_contracts.py",
+                "scripts/validation/run-local-qa-gates.sh",
+            ),
+        }
+
+        def is_proven_consumer(artifact: str, consumer: str) -> bool:
+            if (artifact, consumer) in explicit_pairs:
+                return True
+            if any(
+                artifact.startswith(prefix) and consumer == owner
+                for prefix, owner in focused_fixture_owners
+            ):
+                return True
+            consumer_text = (ROOT / consumer).read_text(
+                encoding="utf-8",
+                errors="strict",
+            )
+            relative = os.path.relpath(
+                artifact,
+                pathlib.PurePosixPath(consumer).parent.as_posix(),
+            ).replace(os.sep, "/")
+            return any(
+                token in consumer_text
+                for token in (artifact, relative, f"./{relative}")
+            )
+
+        for row in document.entries:
+            with self.subTest(path=row.path):
+                self.assertNotIn(row.finding, retired_boilerplate)
+                if row.disposition == "preserve":
+                    self.assertIn(row.path, row.finding)
+                for consumer in row.direct_consumers:
+                    tracked = subprocess.run(
+                        [
+                            "git",
+                            "ls-files",
+                            "--error-unmatch",
+                            "--",
+                            consumer,
+                        ],
+                        cwd=ROOT,
+                        capture_output=True,
+                        check=False,
+                    )
+                    self.assertEqual(0, tracked.returncode)
+                    self.assertTrue((ROOT / consumer).is_file())
+                    self.assertFalse((ROOT / consumer).is_symlink())
+                    self.assertTrue(is_proven_consumer(row.path, consumer))
+        observability = next(
+            row
+            for row in document.entries
+            if row.path == "infra/06-observability/docker-compose.yml"
+        )
+        self.assertEqual((), observability.direct_consumers)
+
 
 class CommandLineTests(unittest.TestCase):
     def test_bootstrap_refuses_existing_manifest_and_check_is_advisory(self) -> None:
@@ -675,6 +1110,41 @@ class CommandLineTests(unittest.TestCase):
             0,
             contract.main(["--root", str(ROOT), "--mode", "advisory"]),
         )
+
+    def test_blocking_mode_rejects_every_non_pass_verdict_and_cannot_be_downgraded(
+        self,
+    ) -> None:
+        contract = load_contract_module()
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            result = contract.main(["--root", str(ROOT), "--mode", "blocking"])
+        self.assertEqual(1, result)
+        self.assertIn("delta-spec-verdict-not-pass", stderr.getvalue())
+        self.assertIn("delta-quality-verdict-not-pass", stderr.getvalue())
+        with TemporaryDeltaRepository() as fixture:
+            rows = [
+                valid_row(path, changed_since=fixture.predecessor)
+                for path in fixture.changed_paths
+            ]
+            document = valid_document(
+                fixture.predecessor,
+                fixture.implementation_base,
+                rows,
+            )
+            document["enforcement"] = "blocking"
+            fixture.write_manifest(document)
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = contract.main(
+                    [
+                        "--root",
+                        str(fixture.root),
+                        "--mode",
+                        "advisory",
+                    ]
+                )
+            self.assertEqual(1, result)
+            self.assertIn("delta-spec-verdict-not-pass", stderr.getvalue())
 
 
 if __name__ == "__main__":
