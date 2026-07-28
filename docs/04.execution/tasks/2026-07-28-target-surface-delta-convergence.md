@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: task:2026-07-28-target-surface-delta-convergence
 artifact_type: task
 parent_ids:
@@ -75,8 +75,10 @@ read-only observation only.
 - The user authorized destructive and protected local changes within the
   approved Plan boundary, subject to consumer, provenance, rollback, tests,
   and review.
-- Approval of this exact Plan and Task ledger is pending. No implementation
-  task may start until that approval is recorded.
+- The user approved this exact Plan and Task ledger on 2026-07-28. The six
+  local implementation tasks, protected local targets, and Plan-bounded
+  destructive convergence are authorized through the selected
+  Subagent-Driven method.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
   is one exact attempt from one clean committed checkpoint.
@@ -111,6 +113,7 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | Remote observation | Controller | Read sanitized repository/run/protection metadata only. Observed 12 remote required contexts versus 16 local desired IDs and two recent failed runs; root causes remain unverified. No remote state changed. |
 | 2026-07-28 | Spec | Controller | Wrote and committed Spec 135 as `e828745a`; scoped metadata, Markdown, alignment, and diff checks passed. User approved continuing from the Spec. |
 | 2026-07-28 | Plan/Task draft | Controller | Activated the approved Spec and drafted this six-task TDD/Subagent-Driven Plan and evidence ledger. Implementation remains pending exact Plan approval. |
+| 2026-07-28 | Execution approval | User / Controller | User approved the exact Plan and Task ledger. Plan and Task transitioned to `active`; remote/runtime mutation and the controlled all-files wrapper remain separately gated. |
 
 ## Verification Evidence
 
@@ -185,7 +188,7 @@ finding and must not be silently accepted as independent review evidence.
 | Unit | Logical purpose | Expected commit | Actual commit | Validation |
 | --- | --- | --- | --- | --- |
 | Planning specification | Define successor convergence design | `docs(spec): define target surface delta convergence` | `e828745a` | metadata, Markdown, alignment, diff hygiene passed |
-| Planning activation | Activate Spec and define Plan/Task | `docs(plan): define target surface delta execution` | not committed | Plan review pending |
+| Planning activation | Activate Spec and define Plan/Task | `docs(plan): define target surface delta execution` | `a2ba9eb4` | metadata 3/0, Markdown 3/0, traceability 46/0, alignment 674/5,658/141/0, diff hygiene passed |
 | T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | not started | Plan approval pending |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | not started | Task 1 review pending |
 | T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |

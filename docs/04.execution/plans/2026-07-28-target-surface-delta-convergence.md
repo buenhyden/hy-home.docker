@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: plan:2026-07-28-target-surface-delta-convergence
 artifact_type: plan
 parent_ids:
@@ -998,8 +998,8 @@ is not applicable because neither surface is mutated.
 ## Approval Gates
 
 - Spec 135 and this design are approved.
-- This Plan and Task ledger require explicit user approval before Task 1
-  implementation begins.
+- The user approved this exact Plan and Task ledger on 2026-07-28; Task 1
+  implementation may begin through the selected Subagent-Driven method.
 - Protected local workflow, contract, governance, and template changes are
   within the Plan-bounded approved class after that approval.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
