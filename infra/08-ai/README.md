@@ -40,10 +40,16 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Read the [Ollama Usage Guide](../../docs/05.operations/guides/08-ai/ollama.md).
 2. Follow the [Open WebUI Usage Guide](../../docs/05.operations/guides/08-ai/open-webui.md) and [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/rag-workflow.md).
 3. Check the [operations policy index](../../docs/05.operations/policies/08-ai/README.md) for GPU, model, access, and logging controls.
 4. Consult the [AI Runbooks](../../docs/05.operations/runbooks/08-ai/README.md) for NVIDIA driver, OOM, or Open WebUI troubleshooting.
+
+5. Always pull models explicitly via `ollama pull <model>` before referencing them in RAG.
+6. Monitor VRAM usage via `ollama-exporter` to prevent OOM during concurrent inference.
+7. For RAG tasks, ensure `qwen3-embedding:0.6b` (or current standard) is available for vectorization.
 
 ## Tech Stack
 
@@ -77,14 +83,6 @@ docker compose exec ollama nvidia-smi
 # List loaded models
 docker compose exec ollama ollama list
 ```
-
-## AI Agent Guidance
-
-1. Always pull models explicitly via `ollama pull <model>` before referencing them in RAG.
-2. Monitor VRAM usage via `ollama-exporter` to prevent OOM during concurrent inference.
-3. For RAG tasks, ensure `qwen3-embedding:0.6b` (or current standard) is available for vectorization.
-
----
 
 ## Related Documents
 

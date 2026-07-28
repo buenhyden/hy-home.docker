@@ -6,7 +6,7 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 105
+- Delta entries: 136
 - Current tracked target paths: 477
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
@@ -26,8 +26,8 @@
 
 ## Dispositions
 
-- `preserve`: 96
-- `update`: 9
+- `preserve`: 90
+- `update`: 46
 - `migrate`: 0
 - `delete`: 0
 
@@ -48,21 +48,50 @@
 | `examples/sample-web-service/README.md` | `readme` | `examples` | `update` | `not-applicable` | `pending` | `pending` |
 | `examples/sample-web-service/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `examples/sample-web-service/service.md` | `typed-example` | `service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/01-gateway/nginx/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/01-gateway/traefik/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/01-gateway/traefik/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/02-auth/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/02-auth/keycloak/Dockerfile` | `native-file` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/02-auth/keycloak/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/02-auth/keycloak/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/02-auth/oauth2-proxy/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/03-security/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/03-security/vault/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/04-data/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/04-data/analytics/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/04-data/analytics/influxdb/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/04-data/analytics/influxdb/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/04-data/analytics/ksql/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/04-data/analytics/opensearch/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/04-data/analytics/warehouses/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/04-data/operational/mng-db/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/04-data/operational/supabase/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/04-data/relational/postgresql-cluster/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/05-messaging/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/05-messaging/kafka/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/05-messaging/rabbitmq/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/alertmanager/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/alloy/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/docker-compose.dev.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/06-observability/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/prometheus/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/pushgateway/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/pyroscope/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/06-observability/tempo/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/07-workflow/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/07-workflow/airflow/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/07-workflow/n8n/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/08-ai/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/08-ai/ollama/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/09-tooling/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/09-tooling/locust/Dockerfile` | `native-file` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/09-tooling/terraform/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/09-tooling/terrakube/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/11-laboratory/dozzle/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/README.md` | `readme` | `infrastructure-root` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/supply-chain.cosign-offline-signing-config.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/supply-chain.cosign-offline-trusted-root.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/supply-chain.sample-service-policy.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -79,8 +108,8 @@
 | `scripts/validation/agent_governance_contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/agent_output_eval.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-doc-implementation-alignment.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `scripts/validation/check-document-corpus-lifecycle.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `scripts/validation/check-document-metadata.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-document-corpus-lifecycle.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-document-metadata.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-repo-contracts.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-supply-chain-policy.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-target-surface-delta-contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -92,7 +121,9 @@
 | `scripts/validation/run-agent-precommit-all-files.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-compose-core-readiness.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-local-qa-gates.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/target_surface_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/target_surface_delta_contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `secrets/README.md` | `readme` | `secrets` | `update` | `path-only` | `pending` | `pending` |
 | `tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/fixtures/compose-core-readiness/env.runtime.example` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/fixtures/postgres-logical-upgrade/docker-compose.yml` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -128,8 +159,8 @@
 | `tests/validation/test_agent_governance_contract.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_output_eval_fixtures.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_compose_core_readiness.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `tests/validation/test_document_corpus_lifecycle.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `tests/validation/test_document_metadata.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_document_corpus_lifecycle.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_document_metadata.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_grype_db_seed.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_postgres_logical_upgrade_rehearsal.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_provider_native_surfaces.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -138,8 +169,8 @@
 | `tests/validation/test_sample_service_delivery_rehearsal.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_security_automation_readiness.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_supply_chain_policy.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `tests/validation/test_target_surface_contracts.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `tests/validation/test_target_surface_delta_contracts.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_target_surface_contracts.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_target_surface_delta_contracts.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 
 ## Evidence Boundary
 

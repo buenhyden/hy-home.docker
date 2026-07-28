@@ -1,9 +1,10 @@
 ---
-status: active
+status: draft
 artifact_id: spec:sample-web-service
 artifact_type: spec
 parent_ids:
-  - spec:133-target-surface-contract-convergence
+  - spec:126-security-supply-chain-remediation
+  - spec:127-deployment-release-engineering-remediation
 ---
 
 # sample-web-service Service Contract
@@ -16,8 +17,11 @@ parent_ids:
 
 ## Parent and Scope
 
-이 예제는 [Spec 133](../../docs/03.specs/133-target-surface-contract-convergence/spec.md)의
-typed-example 범위와 [로컬 README](./README.md)의 copyable scaffold 역할을 따른다.
+이 문서는 [Spec 126](../../docs/03.specs/126-security-supply-chain-remediation/spec.md)과
+[Spec 127](../../docs/03.specs/127-deployment-release-engineering-remediation/spec.md)의
+검증 경계를 함께 보여 주는 명시적 example fixture다. [로컬 README](./README.md)의
+copyable scaffold를 설명하지만, accepted current SDLC truth나 active 서비스 계약은
+아니다.
 
 - 단일 정적 웹 컨테이너와 hardened runtime 계약을 다룬다.
 - TLS termination, ingress routing, 영속 저장소, production SLA와 incident
@@ -79,6 +83,8 @@ typed-example 범위와 [로컬 README](./README.md)의 copyable scaffold 역할
 ## Related Documents
 
 - [Service README](./README.md)
+- [Spec 126](../../docs/03.specs/126-security-supply-chain-remediation/spec.md)
+- [Spec 127](../../docs/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [Service scaffold template](../../docs/99.templates/templates/spec-contracts/service.template.md)
 - [New-service onboarding guide](../../docs/05.operations/guides/00-workspace/new-service-onboarding.md)
 - [Release management runbook](../../docs/05.operations/runbooks/00-workspace/release-management.md)

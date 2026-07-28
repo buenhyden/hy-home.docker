@@ -473,7 +473,7 @@ template_roles:
   service:
     source: docs/99.templates/templates/spec-contracts/service.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/service.md]
+    target_globs: [docs/03.specs/*/service.md, examples/sample-web-service/service.md]
     required_headings: ["## Overview", "## Parent and Scope", "## Image and Build", "## Security", "## Networking and Storage", "## Secrets", "## Health and Operations", "## Validation", "## Related Documents"]
     conditional_headings: ["## Scaling"]
     forbidden_headings: ["## Template Usage"]

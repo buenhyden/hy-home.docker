@@ -21,6 +21,10 @@ TARGET_MANIFEST = (
     / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
 )
 TARGET_SUMMARY = TARGET_MANIFEST.with_name("target-surface-convergence-summary.md")
+CURRENT_DELTA_MANIFEST = (
+    ROOT
+    / "docs/90.references/data/governance/target-surface-delta-manifest.yaml"
+)
 TARGET_VALIDATOR = ROOT / "scripts/validation/target_surface_contract.py"
 TARGET_CLI = ROOT / "scripts/validation/check-target-surface-contract.py"
 TARGET_ROOTS = (
@@ -32,6 +36,47 @@ TARGET_ROOTS = (
     "scripts",
     "secrets",
     "tests",
+)
+OVERVIEW_HEADING_READMES = (
+    "infra/01-gateway/nginx/README.md",
+    "infra/01-gateway/traefik/README.md",
+    "infra/02-auth/keycloak/README.md",
+    "infra/04-data/analytics/README.md",
+    "infra/04-data/analytics/influxdb/README.md",
+    "infra/04-data/analytics/ksql/README.md",
+    "infra/04-data/analytics/opensearch/README.md",
+    "infra/04-data/analytics/warehouses/README.md",
+    "infra/05-messaging/rabbitmq/README.md",
+    "infra/07-workflow/n8n/README.md",
+    "infra/09-tooling/README.md",
+)
+SHARED_AGENT_POLICY_READMES = (
+    "infra/01-gateway/nginx/README.md",
+    "infra/01-gateway/traefik/README.md",
+    "infra/02-auth/README.md",
+    "infra/02-auth/keycloak/README.md",
+    "infra/02-auth/oauth2-proxy/README.md",
+    "infra/03-security/README.md",
+    "infra/03-security/vault/README.md",
+    "infra/04-data/analytics/README.md",
+    "infra/04-data/analytics/influxdb/README.md",
+    "infra/04-data/analytics/ksql/README.md",
+    "infra/04-data/analytics/opensearch/README.md",
+    "infra/04-data/analytics/warehouses/README.md",
+    "infra/05-messaging/README.md",
+    "infra/05-messaging/kafka/README.md",
+    "infra/06-observability/README.md",
+    "infra/06-observability/alertmanager/README.md",
+    "infra/06-observability/alloy/README.md",
+    "infra/06-observability/prometheus/README.md",
+    "infra/06-observability/pushgateway/README.md",
+    "infra/06-observability/pyroscope/README.md",
+    "infra/06-observability/tempo/README.md",
+    "infra/07-workflow/README.md",
+    "infra/07-workflow/airflow/README.md",
+    "infra/07-workflow/n8n/README.md",
+    "infra/08-ai/README.md",
+    "infra/README.md",
 )
 EXPECTED_FINDING_CODES = frozenset(
     {
@@ -81,11 +126,12 @@ SEAWEEDFS_RETAINED_PATH = (
 )
 
 VALID_SAMPLE_SERVICE = """---
-status: active
+status: draft
 artifact_id: spec:sample-web-service
 artifact_type: spec
 parent_ids:
-  - spec:133-target-surface-contract-convergence
+  - spec:126-security-supply-chain-remediation
+  - spec:127-deployment-release-engineering-remediation
 ---
 
 # sample-web-service Service Contract
@@ -601,10 +647,13 @@ class SampleServiceContractTests(unittest.TestCase):
     def test_sample_service_uses_canonical_metadata_in_canonical_order(self) -> None:
         self.assertEqual(
             {
-                "status": "active",
+                "status": "draft",
                 "artifact_id": "spec:sample-web-service",
                 "artifact_type": "spec",
-                "parent_ids": ["spec:133-target-surface-contract-convergence"],
+                "parent_ids": [
+                    "spec:126-security-supply-chain-remediation",
+                    "spec:127-deployment-release-engineering-remediation",
+                ],
             },
             metadata.parse_frontmatter(SERVICE_EXAMPLE),
         )
@@ -639,29 +688,58 @@ class SampleServiceContractTests(unittest.TestCase):
             with self.subTest(forbidden=forbidden):
                 self.assertNotIn(forbidden, self.text)
 
-    def test_migrated_typed_example_manifest_target_matches_document(self) -> None:
-        document = metadata._safe_load_unique(  # noqa: SLF001
+    def test_predecessor_records_history_and_successor_owns_current_disposition(
+        self,
+    ) -> None:
+        predecessor = metadata._safe_load_unique(  # noqa: SLF001
             TARGET_MANIFEST.read_text(encoding="utf-8")
         )
-        row = next(
+        predecessor_row = next(
             entry
-            for entry in document["entries"]
+            for entry in predecessor["entries"]
             if entry["source_path"] == "examples/sample-web-service/service.md"
         )
-        frontmatter = metadata.parse_frontmatter(SERVICE_EXAMPLE)
+        successor = metadata._safe_load_unique(  # noqa: SLF001
+            CURRENT_DELTA_MANIFEST.read_text(encoding="utf-8")
+        )
+        successor_row = next(
+            entry
+            for entry in successor["entries"]
+            if entry["path"] == "examples/sample-web-service/service.md"
+        )
 
-        self.assertEqual("typed-example", row["surface_class"])
-        self.assertEqual("migrate", row["disposition"])
         self.assertEqual(
             {
-                "artifact_id": frontmatter["artifact_id"],
-                "artifact_type_after": frontmatter["artifact_type"],
-                "parent_ids": frontmatter["parent_ids"],
+                "surface_class": "typed-example",
+                "disposition": "migrate",
+                "status_after": "active",
+                "parent_ids": ["spec:133-target-surface-contract-convergence"],
             },
             {
-                "artifact_id": row["artifact_id"],
-                "artifact_type_after": row["artifact_type_after"],
-                "parent_ids": row["parent_ids"],
+                key: predecessor_row[key]
+                for key in (
+                    "surface_class",
+                    "disposition",
+                    "status_after",
+                    "parent_ids",
+                )
+            },
+        )
+        self.assertEqual(
+            {
+                "surface_class": "typed-example",
+                "profile": "service",
+                "disposition": "update",
+                "canonical_owner": "examples/sample-web-service/service.md",
+            },
+            {
+                key: successor_row[key]
+                for key in (
+                    "surface_class",
+                    "profile",
+                    "disposition",
+                    "canonical_owner",
+                )
             },
         )
 
@@ -696,6 +774,146 @@ class TargetReadmeProfileTests(unittest.TestCase):
                 self.assertEqual(
                     [], metadata.matching_readme_profiles(path, self.profiles)
                 )
+
+    def test_confirmed_localized_overview_headings_use_exact_profile_id(
+        self,
+    ) -> None:
+        self.assertEqual(11, len(OVERVIEW_HEADING_READMES))
+        for relative in OVERVIEW_HEADING_READMES:
+            with self.subTest(path=relative):
+                headings = {
+                    line.strip()
+                    for line in (ROOT / relative).read_text(encoding="utf-8").splitlines()
+                    if line.startswith("## ")
+                }
+                self.assertIn("## Overview", headings)
+                self.assertNotIn("## Overview (KR)", headings)
+
+    def test_confirmed_shared_agent_policy_headings_are_removed(self) -> None:
+        self.assertEqual(26, len(SHARED_AGENT_POLICY_READMES))
+        forbidden = {
+            "## AI Agent Guidance",
+            "## AI Agent Operation Policy",
+        }
+        for relative in SHARED_AGENT_POLICY_READMES:
+            with self.subTest(path=relative):
+                headings = {
+                    line.strip()
+                    for line in (ROOT / relative).read_text(encoding="utf-8").splitlines()
+                    if line.startswith("## ")
+                }
+                self.assertTrue(
+                    headings.isdisjoint(forbidden),
+                    f"{relative} retains generic shared Agent policy headings",
+                )
+
+    def test_shared_policy_consumers_route_once_to_both_stage00_owners(
+        self,
+    ) -> None:
+        canonical_targets = (
+            "docs/00.agent-governance/rules/agentic.md",
+            "docs/00.agent-governance/rules/documentation-protocol.md",
+        )
+        for relative in SHARED_AGENT_POLICY_READMES:
+            with self.subTest(path=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8")
+                local_section = text.split("## How to Work in This Area\n", 1)[1]
+                local_section = local_section.split("\n## ", 1)[0]
+                for target in canonical_targets:
+                    self.assertEqual(1, text.count(target))
+                    self.assertIn(target, local_section)
+
+    def test_data_tier_readme_is_one_folder_index_with_one_operations_link(
+        self,
+    ) -> None:
+        text = (ROOT / "infra/04-data/README.md").read_text(encoding="utf-8")
+
+        self.assertNotIn("## 1. Context & Objective", text)
+        self.assertNotIn("## 5. Maintenance & Safety", text)
+        self.assertEqual(
+            1,
+            text.count(
+                "[docs/05.operations/README.md]"
+                "(../../docs/05.operations/README.md)"
+            ),
+        )
+
+    def test_secret_inventory_registers_surrealdb_path_only(self) -> None:
+        lines = (ROOT / "secrets/README.md").read_text(
+            encoding="utf-8"
+        ).splitlines()
+
+        self.assertEqual(
+            ["- `secrets/db/surreal_db/`"],
+            [line for line in lines if "secrets/db/surreal_db/" in line],
+        )
+
+    def test_archive_profiles_remain_distinct_and_windows_tombstone_is_valid(
+        self,
+    ) -> None:
+        content_path = pathlib.Path("archive/Windows-Network-IP.md")
+        sdlc_path = pathlib.Path(
+            "docs/98.archive/04.execution/plans/"
+            "2026-06-01-agent-governance-phase1-diagnostic.md"
+        )
+
+        self.assertEqual(
+            "content-archive",
+            metadata.classify_archive_profile(content_path, self.profiles),
+        )
+        self.assertEqual(
+            "sdlc-archive",
+            metadata.classify_archive_profile(sdlc_path, self.profiles),
+        )
+        values = metadata.parse_frontmatter(ROOT / content_path)
+        record = metadata.Record(
+            content_path,
+            values,
+            "archive",
+            frontmatter_present=True,
+        )
+        codes = {
+            finding.code
+            for finding in metadata.validate_record(
+                record,
+                self.profiles,
+                metadata.build_manifest([record]),
+            )
+        }
+        self.assertEqual(set(), codes)
+
+    def test_service_local_constraints_survive_in_allowed_working_section(
+        self,
+    ) -> None:
+        witnesses = {
+            "infra/01-gateway/traefik/README.md": (
+                "Do not modify `traefik.yml` entrypoints"
+            ),
+            "infra/02-auth/keycloak/README.md": "`9000/health/ready`",
+            "infra/05-messaging/kafka/README.md": "`UnderReplicatedPartitions`",
+            "infra/06-observability/alloy/README.md": "`discovery.docker`",
+            "infra/07-workflow/n8n/README.md": "`EXECUTIONS_MODE: queue`",
+        }
+        for relative, witness in witnesses.items():
+            with self.subTest(path=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8")
+                section = text.split("## How to Work in This Area\n", 1)[1]
+                section = section.split("\n## ", 1)[0]
+                self.assertIn(witness, section)
+
+    def test_policy_consumers_do_not_keep_copied_template_workflow(
+        self,
+    ) -> None:
+        copied = (
+            "상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.",
+            "새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.",
+            "변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.",
+        )
+        for relative in SHARED_AGENT_POLICY_READMES:
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            for sentence in copied:
+                with self.subTest(path=relative, sentence=sentence):
+                    self.assertNotIn(sentence, text)
 
 
 class StorybookPhantomContractTests(unittest.TestCase):

@@ -29,6 +29,15 @@ CORPUS_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/corpus-migration-contr
 ARCHIVE_HUMAN_CONTRACT = ROOT / "docs/99.templates/support/archive-retention-contract.md"
 TARGET_WAVE = "target-surface-convergence"
 TARGET_BASELINE = "32c40e11747bc0bd03789c24861d2e5d60c0e999"
+SUCCESSOR_MANIFEST = (
+    "docs/90.references/data/governance/target-surface-delta-manifest.yaml"
+)
+SAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
+SAMPLE_PREDECESSOR_EQUALITY_CODES = {
+    "manifest-target-parent-ids-mismatch",
+    "manifest-target-profile-invalid",
+    "manifest-target-status-mismatch",
+}
 
 
 def load_script(path: pathlib.Path, name: str):
@@ -654,6 +663,7 @@ class ManifestValidationTests(LifecycleTestCase):
             relative_path: str,
             *,
             require_tracked: bool,
+            max_bytes: int | None = None,
         ) -> bytes | None:
             if relative_path == target_path and not require_tracked:
                 return payload
@@ -661,6 +671,37 @@ class ManifestValidationTests(LifecycleTestCase):
                 root,
                 relative_path,
                 require_tracked=require_tracked,
+                max_bytes=max_bytes,
+            )
+
+        with mock.patch.object(
+            lifecycle,
+            "_read_regular_repo_bytes",
+            side_effect=read_result,
+        ):
+            return self.target_codes(document)
+
+    def target_codes_with_successor_payload(
+        self,
+        document: lifecycle.MigrationManifestDocument,
+        payload: bytes | None,
+    ) -> set[str]:
+        original_read = lifecycle._read_regular_repo_bytes
+
+        def read_result(
+            root: pathlib.Path,
+            relative_path: str,
+            *,
+            require_tracked: bool,
+            max_bytes: int | None = None,
+        ) -> bytes | None:
+            if relative_path == SUCCESSOR_MANIFEST:
+                return payload
+            return original_read(
+                root,
+                relative_path,
+                require_tracked=require_tracked,
+                max_bytes=max_bytes,
             )
 
         with mock.patch.object(
@@ -758,11 +799,9 @@ class ManifestValidationTests(LifecycleTestCase):
         self.assertEqual("pending", windows.review_verdict.specification)
         self.assertEqual("pending", windows.review_verdict.quality)
 
-    def test_v2_migrated_typed_target_uses_current_metadata_truth(self) -> None:
+    def test_v2_sample_fixture_successor_owns_current_metadata_truth(self) -> None:
         document = self.target_manifest()
-        row = self.target_row(
-            document, "examples/sample-web-service/service.md"
-        )
+        row = self.target_row(document, SAMPLE_FIXTURE_PATH)
         self.assertIsNone(row.artifact_type_before)
         self.assertEqual("spec", row.artifact_type_after)
         self.assertEqual("spec:sample-web-service", row.artifact_id)
@@ -770,14 +809,50 @@ class ManifestValidationTests(LifecycleTestCase):
             ("spec:133-target-surface-contract-convergence",), row.parent_ids
         )
         self.assertTrue(
-            {
-                "manifest-artifact-transition-invalid",
-                "manifest-baseline-artifact-id-mismatch",
-                "manifest-target-artifact-id-mismatch",
-                "manifest-target-artifact-type-mismatch",
-                "manifest-target-parent-ids-mismatch",
-                "manifest-target-status-mismatch",
-            }.isdisjoint(self.target_codes(document))
+            SAMPLE_PREDECESSOR_EQUALITY_CODES.isdisjoint(
+                self.target_codes(document)
+            )
+        )
+
+    def test_v2_sample_fixture_handoff_requires_exact_successor_update_row(
+        self,
+    ) -> None:
+        document = self.target_manifest()
+        successor = yaml.safe_load((ROOT / SUCCESSOR_MANIFEST).read_text(encoding="utf-8"))
+        sample_row = next(
+            row for row in successor["entries"] if row["path"] == SAMPLE_FIXTURE_PATH
+        )
+        sample_row["disposition"] = "preserve"
+
+        cases = {
+            "missing-successor": None,
+            "preserved-successor-row": yaml.safe_dump(
+                successor,
+                sort_keys=False,
+            ).encode(),
+        }
+        for name, payload in cases.items():
+            with self.subTest(case=name):
+                self.assertTrue(
+                    SAMPLE_PREDECESSOR_EQUALITY_CODES
+                    <= self.target_codes_with_successor_payload(document, payload)
+                )
+
+    def test_v2_sample_fixture_handoff_rejects_wrong_current_metadata(self) -> None:
+        document = self.target_manifest()
+        payload = (ROOT / SAMPLE_FIXTURE_PATH).read_text(encoding="utf-8").replace(
+            "artifact_id: spec:sample-web-service",
+            "artifact_id: spec:wrong-sample-web-service",
+            1,
+        ).encode()
+
+        self.assertTrue(
+            SAMPLE_PREDECESSOR_EQUALITY_CODES
+            <= self.target_codes_with_result_payload(
+                document,
+                SAMPLE_FIXTURE_PATH,
+                payload,
+            )
         )
 
     def test_promoted_status_witness_is_bounded_to_exact_blocking_chain(self) -> None:
@@ -963,6 +1038,7 @@ class ManifestValidationTests(LifecycleTestCase):
             relative_path: str,
             *,
             require_tracked: bool,
+            max_bytes: int | None = None,
         ) -> bytes | None:
             if relative_path == target and not require_tracked:
                 result_reads.append(relative_path)
@@ -971,6 +1047,7 @@ class ManifestValidationTests(LifecycleTestCase):
                 root,
                 relative_path,
                 require_tracked=require_tracked,
+                max_bytes=max_bytes,
             )
 
         with mock.patch.object(
@@ -1070,6 +1147,7 @@ class ManifestValidationTests(LifecycleTestCase):
             relative_path: str,
             *,
             require_tracked: bool,
+            max_bytes: int | None = None,
         ) -> bytes | None:
             if relative_path == replacement_path:
                 raise AssertionError("native replacement body must remain opaque")
@@ -1077,6 +1155,7 @@ class ManifestValidationTests(LifecycleTestCase):
                 root,
                 relative_path,
                 require_tracked=require_tracked,
+                max_bytes=max_bytes,
             )
 
         with (

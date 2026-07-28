@@ -92,7 +92,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | Task ID | Description | Type | Requirements | Validation owner | Implementation owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
-| T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | fresh implementer after Task 1 review | pending |
+| T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | implementation complete; reviews pending |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | fresh implementer after Task 2 review | pending |
 | T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | fresh implementer after Task 3 review | pending |
 | T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | pending |
@@ -131,6 +131,14 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-001 third remediation final gates | Task 1 implementation agent | The three affected CLI regressions passed 3/3 in 13.526 seconds; after making failed-field findings independent of a peer verdict's validity, the focused regression re-passed 1/1 in 4.485 seconds. Production advisory returned 0; production blocking returned 1 with exactly 105 specification and 105 quality pending findings and no other codes. Ruff, Python compile, one-file Markdown stdin lint, and diff hygiene passed. No broad suite or all-files pre-commit command ran. |
 | 2026-07-28 | T-TSDC-001 final specification re-review | Fresh independent specification reviewer | Exact range `72eef68c..43f78ad5`: C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES. |
 | 2026-07-28 | T-TSDC-001 final quality/security re-review | Fresh independent quality/security reviewer | Exact range `72eef68c..43f78ad5`: C0/I0/M0; APPROVED; COMMIT_READY YES. Task 1 is complete; per-row manifest verdicts remain pending for Task 6 blocking promotion. |
+| 2026-07-28 | T-TSDC-002 RED | Task 2 documentation-surface implementation agent | Before implementation, the three sample-fixture contracts failed 3/3; the heading and shared-policy checks emitted 37 failures across 11 and 26 path subcases; the data, secret, archive, and local-constraint group ran four tests with seven expected failures and one archive pass; and the copied-template check emitted 15 expected subcase failures across five affected READMEs. |
+| 2026-07-28 | T-TSDC-002 document implementation | Task 2 documentation-surface implementation agent | Registered the exact draft Service fixture on the existing role with the two approved domain parents; normalized 11 heading IDs; replaced 26 copied policy sections with one pointer to both Stage 00 owners while preserving local commands and constraints; collapsed the data tier to one folder index; and added only the SurrealDB directory path to the secret inventory. The already-valid Windows content tombstone remained byte-unchanged. |
+| 2026-07-28 | T-TSDC-002 direct-impact expansion | Controller / Task 2 documentation-surface implementation agent | The 31 newly changed target paths made the Task 1 fixed nine-update oracle stale. The controller expanded ownership only to `tests/validation/test_target_surface_delta_contracts.py`; the test now asserts the exact Task 2 path set, 136-row disposition counts, pending verdicts, and explicit import or runner consumer relationships without refactoring the delta library. |
+| 2026-07-28 | T-TSDC-002 manifest and focused GREEN | Task 2 documentation-surface implementation agent | Added 31 missing non-destructive `update` rows, updated five existing Task 2 rows factually, retained every per-row review verdict as `pending`, and regenerated the summary only through the canonical writer. The manifest now contains 136 rows: 92 preserve, 44 update, 0 migrate/delete. Metadata fixture checks passed 3/3; routing, predecessor/successor, and copied-policy checks passed 7/7; the two exact manifest owner/consumer checks passed 2/2; production advisory validation has zero findings. |
+| 2026-07-28 | T-TSDC-002 lifecycle coupling RED and expansion | Controller / Task 2 documentation-surface implementation agent | The combined focused run exposed that a target-suite aggregate still invoked the predecessor lifecycle checker, which emitted exactly `manifest-target-parent-ids-mismatch`, `manifest-target-profile-invalid`, and `manifest-target-status-mismatch` for the successor-owned sample fixture. The controller expanded ownership only to `scripts/validation/check-document-corpus-lifecycle.py` and `tests/validation/test_document_corpus_lifecycle.py`. A three-test RED had one expected positive-handoff failure while missing-row, preserve-row, and wrong-current-metadata negatives retained the three-code set. |
+| 2026-07-28 | T-TSDC-002 lifecycle handoff GREEN | Task 2 documentation-surface implementation agent | Added a fail-closed handoff limited to the exact sample path, duplicate-safe bounded successor manifest, `update` row, registered existing Service role, exact draft metadata, and exact two domain parents. The three focused tests passed 3/3, the predecessor manifest CLI returned zero findings, and the formerly failing aggregate witness passed 1/1. The two direct-impact rows are now `update`; canonical summary regeneration reports 136 rows: 90 preserve, 46 update, 0 migrate/delete, with all verdict pairs pending. |
+| 2026-07-28 | T-TSDC-002 lifecycle compatibility GREEN | Task 2 documentation-surface implementation agent | A focused class run exposed two existing predecessor-mutation expectations that the first handoff predicate had bypassed. The predicate was narrowed to the exact immutable predecessor row and pinned successor witness; the five directly affected tests passed 5/5, then all 34 `ManifestValidationTests` passed in 337.962 seconds. A final read-bound hardening uses a no-follow descriptor chain with a 2 MiB plus one-byte cap; the five affected tests, Ruff, compile, and predecessor CLI re-passed. |
+| 2026-07-28 | T-TSDC-002 final bounded gates | Task 2 documentation-surface implementation agent | The target, delta, and metadata modules passed 48/48 in 141.657 seconds, 30/30 in 145.831 seconds, and 225/225 in 109.752 seconds. Metadata contract and changed modes, target and advisory CLIs, alignment, current traceability, Ruff, compile, changed Markdown lint, generated-summary freshness, and diff hygiene passed. The Plan-stated `scripts/governance/validate-cross-links.sh` path is absent in this checkout and returned 127; no substitute claim was invented, while the tracked current traceability gate independently passed 46 pairs with zero failures. |
 
 ## Verification Evidence
 
@@ -150,7 +158,7 @@ have no unresolved Critical or Important findings.
 | Task | RED evidence | GREEN evidence | Aggregate evidence | Result |
 | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
-| T-TSDC-002 | Not run — Task 1 review pending | Not run — Task 1 review pending | Not run — Task 1 review pending | pending |
+| T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling then produced one positive-handoff failure with three exact codes while three fail-closed negative cases already held. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, predecessor manifest CLI, and the prior aggregate witness pass; advisory validation has zero findings and the canonical summary is fresh. | Target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Metadata, target, delta, alignment, current traceability, Ruff, compile, Markdown, summary freshness, and diff gates passed; the obsolete Plan cross-link path is recorded as unavailable. | implementation complete; reviews pending |
 | T-TSDC-003 | Not run — Task 2 review pending | Not run — Task 2 review pending | Not run — Task 2 review pending | pending |
 | T-TSDC-004 | Not run — Task 3 review pending | Not run — Task 3 review pending | Not run — Task 3 review pending | pending |
 | T-TSDC-005 | Not run — Task 4 review pending | Not run — Task 4 review pending | Not run — Task 4 review pending | pending |
@@ -215,6 +223,68 @@ have no unresolved Critical or Important findings.
   Task 1 script-inventory omission was corrected before the second run.
 - No controlled Agent wrapper or direct all-files pre-commit command ran.
 
+### T-TSDC-002 bounded implementation evidence
+
+- Starting commit:
+  `78af8462f87a4f7b2609a8e4930da6d9a780d5b3`.
+- README convergence: 11 exact `Overview` headings now retain the existing
+  localized bodies; 26 policy consumers have no generic Agent-policy heading
+  or copied template workflow and route once from their existing local-work
+  section to both Stage 00 rule owners.
+- Local truth: service-specific commands, constraints, validation, and
+  troubleshooting remain local. `infra/04-data/README.md` is one folder index
+  with one Operations link.
+- Typed fixture: `examples/sample-web-service/service.md` selects the existing
+  `service` role, remains `draft`, uses the exact two domain parents, and is
+  explicitly non-authoritative example evidence. The predecessor manifest
+  remains immutable history; the successor owns the current `update`
+  disposition.
+- Archive and secret safety: `archive/Windows-Network-IP.md` remained
+  byte-unchanged after its distinct `content-archive` profile passed. Only the
+  tracked identifier `secrets/db/surreal_db/` was added; no secret payload was
+  opened, echoed, or persisted.
+- Successor classification: 31 newly covered target paths plus seven existing
+  Task 2 rows yield 136 rows total: 90 `preserve`, 46 `update`, 0 `migrate`,
+  and 0 `delete`. All 136 specification and quality verdict pairs remain
+  `pending` for Task 6 promotion.
+- Direct-impact ownership first expanded only to
+  `tests/validation/test_target_surface_delta_contracts.py` because its fixed
+  nine-update Task 1 oracle would otherwise contradict the implemented Task 2
+  manifest. The target aggregate then proved one remaining predecessor/current
+  coupling, so the controller separately expanded ownership only to
+  `scripts/validation/check-document-corpus-lifecycle.py` and
+  `tests/validation/test_document_corpus_lifecycle.py`. The handoff is limited
+  to the exact successor row and fixture metadata; all other predecessor
+  equality checks remain active.
+- The canonical writer alone regenerated
+  `target-surface-delta-summary.md`; advisory validation reports zero
+  structural findings.
+- Aggregate tests passed: target surface 48/48 in 141.657 seconds, successor
+  delta 30/30 in 145.831 seconds, document metadata 225/225 in 109.752
+  seconds, and lifecycle manifest validation 34/34 in 337.962 seconds. The
+  lifecycle handoff requires the exact predecessor path and active/Spec133
+  row, fixed predecessor closure, tracked successor manifest path and
+  `changed_since` hash, exact successor `update` row, registered Service role,
+  and exact approved draft metadata. The successor read is no-follow and
+  capped at 2 MiB plus one byte.
+- Static gates passed with zero findings: both metadata modes, the
+  target-surface CLI, successor advisory CLI, document implementation
+  alignment, current document traceability, targeted Ruff, Python compile,
+  34 non-ledger changed Markdown files, the exact Task ledger via stdin, and
+  `git diff --check`. Canonical summary regeneration was byte-stable at
+  SHA-256 `3d8434429ce0f52370d70c8b72ab2829e4742a1240a5f103adab52958f9ab20e`.
+- The Plan-stated `scripts/governance/validate-cross-links.sh` path does not
+  exist in this checkout and returned 127. It remains unverified rather than
+  being reported as pass; the tracked
+  `scripts/validation/check-doc-traceability.sh` independently passed 46
+  catalog pairs with zero failures. The Plan was not changed.
+- The final scope contains 44 expected files: six under `docs`, one under
+  `examples`, 29 under `infra`, three under `scripts`, one under `secrets`,
+  and four under `tests`. The approved-scope comparison found zero unexpected
+  paths.
+- Independent Task 2 specification and quality/security reviews have not run.
+  No row review verdict was promoted.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -249,7 +319,7 @@ consume or create Agent authorization.
 | Task | Implementer | Specification reviewer | Quality/security reviewer | Exact range | Verdict | Findings |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Task 1 implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `72eef68c..43f78ad5` | approved; completed | Fresh independent reviewers found no unresolved issues. Per-row manifest verdicts remain pending for Task 6 blocking promotion. |
-| T-TSDC-002 | pending | pending | pending | not available | pending | Task 1 review pending |
+| T-TSDC-002 | Task 2 documentation-surface implementation agent | pending fresh reviewer | pending distinct quality/security reviewer | implementation range pending commit | pending | Implementation is complete; independent specification and quality/security reviews have not run. All 136 manifest row verdict pairs remain pending. |
 | T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 review pending |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
@@ -269,7 +339,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-001 remediation | Harden successor evidence contract after two reviews | `fix(governance): harden target delta evidence` | `72e452d0` | remediation RED/GREEN, successor/predecessor/metadata, advisory/blocking, summary, static QA, and diff hygiene |
 | T-TSDC-001 second remediation | Close fresh fail-closed review gaps | `fix(governance): close target delta fail-closed gaps` | `25f4c52a` | advisory structural RED/GREEN, secret-like field matrix, no-follow bootstrap, successor/static/metadata/diff gates |
 | T-TSDC-001 third remediation | Reject explicit failed review verdicts in advisory mode | `fix(governance): reject failed advisory verdicts` | `43f78ad5` | verdict-state RED/GREEN, focused advisory/blocking tests, production advisory/blocking, static and diff gates |
-| T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | not started | Task 1 review pending |
+| T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | this logical commit; identity reported in handoff | Target 48/48, delta 30/30, metadata 225/225, lifecycle 34/34, metadata/target/advisory/alignment/current-traceability/Ruff/compile/Markdown/summary/diff gates pass; obsolete Plan cross-link path unavailable and recorded |
 | T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |

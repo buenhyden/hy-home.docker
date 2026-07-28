@@ -43,10 +43,17 @@ alloy/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Follow the [Alloy Guide](../../../docs/05.operations/guides/06-observability/alloy.md).
 2. Modify `config.alloy` to add new pipeline components or relabeling rules.
 3. Access the Alloy UI at `https://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
 4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/policies/06-observability/alloy.md).
+5. Use Alloy's `discovery.docker` for automatic container metadata enrichment.
+
+6. **OTLP First**: Prefer `OTLP` ingestion for all new application instrumentation to ensure future-proof telemetry.
+7. **Performance**: Monitor `batch` processing metrics via the Alloy UI to prevent data loss or latency during high load periods.
+8. **Relabeling Rules**: When adding new services, ensure relabeling rules in `config.alloy` correctly assign the `scope` (infra vs app).
 
 ## Tech Stack
 
@@ -72,13 +79,6 @@ alloy/
 | `ALLOY_PORT`           |    No    | UI listening port (Default: 12345) |
 | `ALLOY_OTLP_GRPC_PORT` |    No    | OTLP gRPC port (Default: 4317)     |
 | `ALLOY_OTLP_HTTP_PORT` |    No    | OTLP HTTP port (Default: 4318)     |
-
-## AI Agent Guidance
-
-1. **OTLP First**: Prefer `OTLP` ingestion for all new application instrumentation to ensure future-proof telemetry.
-2. **Metadata Enrichment**: Use Alloy's `discovery.docker` for automatic container metadata enrichment (service_name, env, scope).
-3. **Performance**: Monitor `batch` processing metrics via the Alloy UI to prevent data loss or latency during high load periods.
-4. **Relabeling Rules**: When adding new services, ensure relabeling rules in `config.alloy` correctly assign the `scope` (infra vs app).
 
 ## Validation
 

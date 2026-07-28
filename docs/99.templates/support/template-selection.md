@@ -48,7 +48,7 @@ copyable source.
 | API spec | `docs/03.specs/NNN-<feature-id>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
 | Agent design | `docs/03.specs/NNN-<feature-id>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
 | Data model | `docs/03.specs/NNN-<feature-id>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
-| Service | `docs/03.specs/NNN-<feature-id>/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
+| Service | `docs/03.specs/NNN-<feature-id>/service.md`; registered draft fixture `examples/sample-web-service/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
 | Tests | `docs/03.specs/NNN-<feature-id>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
 | OpenAPI | `docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
 | GraphQL | `docs/03.specs/NNN-<feature-id>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
@@ -71,6 +71,9 @@ copyable source.
   [common document contract](./common-document-contract.md), then use this file
   only to locate the copyable source.
 - Use spec child templates only inside the matching feature spec directory.
+- The registered `examples/sample-web-service/service.md` path is the sole
+  service-role fixture outside `docs/03.specs/**`. It remains `status: draft`
+  example evidence and never becomes accepted current SDLC truth.
 - Use Plan only for prospective sequence, dependencies, verification strategy,
   risk, rollback, and completion criteria. Record commands as intended checks,
   not as executed results.

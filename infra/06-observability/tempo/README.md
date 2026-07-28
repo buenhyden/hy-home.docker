@@ -61,12 +61,6 @@ tempo/
 > [!IMPORTANT]
 > Tempo is configured with a **24-hour block retention policy**. Ensure critical performance issues are investigated within this timeframe or exported.
 
-## AI Agent Guidance
-
-1. **TraceQL Analysis**: Use TraceQL to correlate high-latency spans with specific service names and status codes.
-2. **Service Graphs**: Verify `metrics_generator` is active to visualize service dependency maps in Grafana.
-3. **Storage Health**: Monitor MinIO bucket availability if trace ingestion gaps occur.
-
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
@@ -110,7 +104,8 @@ tempo/
 
 ## How to Work in This Area
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
+1. **TraceQL Analysis**: Use TraceQL to correlate high-latency spans with specific service names and status codes.
+2. **Service Graphs**: Verify `metrics_generator` is active to visualize service dependency maps in Grafana.
+3. **Storage Health**: Monitor MinIO bucket availability if trace ingestion gaps occur.

@@ -28,6 +28,43 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
+TARGET_SURFACE_DELTA_MANIFEST = (
+    "docs/90.references/data/governance/target-surface-delta-manifest.yaml"
+)
+TARGET_SURFACE_PREDECESSOR_CLOSURE = (
+    "63039b5b0b20c99a10aae7162627afefcd7a1d8b"
+)
+SAMPLE_SERVICE_FIXTURE_PATH = "examples/sample-web-service/service.md"
+SAMPLE_SERVICE_FIXTURE_METADATA = {
+    "status": "draft",
+    "artifact_id": "spec:sample-web-service",
+    "artifact_type": "spec",
+    "parent_ids": [
+        "spec:126-security-supply-chain-remediation",
+        "spec:127-deployment-release-engineering-remediation",
+    ],
+}
+SUCCESSOR_DELTA_ROW_FIELDS = frozenset(
+    {
+        "path",
+        "surface_class",
+        "profile",
+        "changed_since",
+        "disposition",
+        "canonical_owner",
+        "direct_consumers",
+        "finding",
+        "replacement",
+        "secret_safety",
+        "validators",
+        "tests",
+        "provenance",
+        "rollback",
+        "spec_verdict",
+        "quality_verdict",
+    }
+)
+MAX_SUCCESSOR_MANIFEST_BYTES = 2 * 1_048_576
 
 MODES = (
     "check-contract",
@@ -653,10 +690,13 @@ def _read_regular_repo_bytes(
     relative_path: str,
     *,
     require_tracked: bool,
+    max_bytes: int | None = None,
 ) -> bytes | None:
     """Read a regular in-root file through a no-follow directory-fd chain."""
 
-    if not _safe_path(relative_path):
+    if not _safe_path(relative_path) or (
+        max_bytes is not None and max_bytes < 0
+    ):
         return None
     if require_tracked:
         tracked = _run_git(
@@ -678,11 +718,21 @@ def _read_regular_repo_bytes(
         return None
     try:
         chunks: list[bytes] = []
+        total_bytes = 0
         while True:
-            chunk = os.read(descriptor, 1024 * 1024)
+            read_size = 1024 * 1024
+            if max_bytes is not None:
+                remaining = max_bytes + 1 - total_bytes
+                if remaining <= 0:
+                    return None
+                read_size = min(read_size, remaining)
+            chunk = os.read(descriptor, read_size)
             if not chunk:
                 break
             chunks.append(chunk)
+            total_bytes += len(chunk)
+            if max_bytes is not None and total_bytes > max_bytes:
+                return None
         return b"".join(chunks)
     except OSError:
         return None
@@ -2048,6 +2098,96 @@ def _surface_partition_plan_findings(
     return []
 
 
+def _sample_service_predecessor_row_valid(
+    predecessor_row: MigrationManifestRow,
+) -> bool:
+    """Keep the predecessor manifest's historical sample row immutable."""
+
+    return (
+        predecessor_row.source_path.as_posix() == SAMPLE_SERVICE_FIXTURE_PATH
+        and _safe_path_text(predecessor_row.target_path)
+        == SAMPLE_SERVICE_FIXTURE_PATH
+        and predecessor_row.artifact_id == "spec:sample-web-service"
+        and predecessor_row.artifact_type_before is None
+        and predecessor_row.artifact_type_after == "spec"
+        and predecessor_row.surface_class == "typed-example"
+        and predecessor_row.status_before == "active"
+        and predecessor_row.status_after == "active"
+        and predecessor_row.parent_ids
+        == ("spec:133-target-surface-contract-convergence",)
+        and predecessor_row.disposition == "migrate"
+        and predecessor_row.canonical_replacement is None
+        and not predecessor_row.active_consumers
+        and predecessor_row.partition_plan is None
+        and predecessor_row.preservation_class is None
+        and predecessor_row.evidence == ManifestEvidence((), (), (), (), ())
+        and predecessor_row.review_verdict == ReviewVerdict("pass", "pass")
+    )
+
+
+def _sample_service_successor_handoff_valid(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    target: str,
+    target_record: Record,
+    predecessor_row: MigrationManifestRow,
+) -> bool:
+    """Admit the exact successor-owned sample fixture without rewriting history."""
+
+    if (
+        target != SAMPLE_SERVICE_FIXTURE_PATH
+        or not _sample_service_predecessor_row_valid(predecessor_row)
+        or not target_record.frontmatter_present
+        or target_record.metadata != SAMPLE_SERVICE_FIXTURE_METADATA
+        or metadata.matching_template_roles(
+            pathlib.Path(target),
+            "spec",
+            profiles,
+        )
+        != ["service"]
+    ):
+        return False
+    payload = _read_regular_repo_bytes(
+        root,
+        TARGET_SURFACE_DELTA_MANIFEST,
+        require_tracked=True,
+        max_bytes=MAX_SUCCESSOR_MANIFEST_BYTES,
+    )
+    if payload is None or len(payload) > MAX_SUCCESSOR_MANIFEST_BYTES:
+        return False
+    try:
+        loaded = metadata._safe_load_unique(payload.decode("utf-8"))
+    except (UnicodeDecodeError, yaml.YAMLError):
+        return False
+    if (
+        not isinstance(loaded, dict)
+        or loaded.get("schema_version") != 1
+        or loaded.get("predecessor_closure")
+        != TARGET_SURFACE_PREDECESSOR_CLOSURE
+        or not isinstance(loaded.get("entries"), list)
+    ):
+        return False
+    matching_rows = [
+        candidate
+        for candidate in loaded["entries"]
+        if isinstance(candidate, dict)
+        and candidate.get("path") == SAMPLE_SERVICE_FIXTURE_PATH
+    ]
+    if len(matching_rows) != 1:
+        return False
+    row = matching_rows[0]
+    return (
+        set(row) == SUCCESSOR_DELTA_ROW_FIELDS
+        and row.get("surface_class") == "typed-example"
+        and row.get("profile") == "service"
+        and row.get("changed_since") == TARGET_SURFACE_PREDECESSOR_CLOSURE
+        and row.get("disposition") == "update"
+        and row.get("canonical_owner") == SAMPLE_SERVICE_FIXTURE_PATH
+        and row.get("replacement") is None
+        and row.get("secret_safety") == "not-applicable"
+    )
+
+
 def _surface_result_state_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -2179,6 +2319,21 @@ def _surface_result_state_findings(
         and all(isinstance(item, str) for item in target_parents)
         else ()
     )
+    sample_successor_handoff = _sample_service_successor_handoff_valid(
+        root,
+        profiles,
+        target,
+        target_record,
+        row,
+    )
+    sample_predecessor_status_valid = (
+        target != SAMPLE_SERVICE_FIXTURE_PATH
+        or (row.status_before, row.status_after) == ("active", "active")
+    )
+    sample_predecessor_parents_valid = (
+        target != SAMPLE_SERVICE_FIXTURE_PATH
+        or row.parent_ids == ("spec:133-target-surface-contract-convergence",)
+    )
     if target_artifact_type != row.artifact_type_after:
         findings.append(
             _finding(
@@ -2225,7 +2380,14 @@ def _surface_result_state_findings(
         dataclasses.replace(target_record, previous_status=row.status_before),
         profiles,
     )
-    if normalized_status != row.status_after and not promoted_hop_valid:
+    if (
+        not sample_predecessor_status_valid
+        or (
+            normalized_status != row.status_after
+            and not promoted_hop_valid
+            and not sample_successor_handoff
+        )
+    ):
         findings.append(
             _finding(
                 target,
@@ -2233,7 +2395,9 @@ def _surface_result_state_findings(
                 "result target status differs from manifest truth",
             )
         )
-    if normalized_parents != row.parent_ids:
+    if not sample_predecessor_parents_valid or (
+        normalized_parents != row.parent_ids and not sample_successor_handoff
+    ):
         findings.append(
             _finding(
                 target,
@@ -2241,7 +2405,7 @@ def _surface_result_state_findings(
                 "result target parents differ from manifest truth",
             )
         )
-    if row.disposition == "migrate":
+    if row.disposition == "migrate" and not sample_successor_handoff:
         profile_type = row.artifact_type_after
         profile_errors: list[Finding] = []
         if not isinstance(profile_type, str) or profile_type not in registered_types:

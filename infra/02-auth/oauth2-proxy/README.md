@@ -63,10 +63,17 @@ oauth2-proxy/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Read the [Auth Guides](../../../docs/05.operations/guides/02-auth/README.md) for OIDC/ForwardAuth configuration.
 2. Refer to the [OAuth2 Proxy Guide](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md) for detailed configuration steps.
 3. Check `config/oauth2-proxy.cfg` for runtime provider and cookie settings.
 4. Use the [Auth Runbook](../../../docs/05.operations/runbooks/02-auth/README.md) for cookie secret rotation procedures.
+
+5. 이 README를 먼저 읽고 Traefik 레이블 설정을 확인한다.
+6. 새로운 서비스 추가 시 `forwardauth` 미들웨어를 `auth.${DEFAULT_URL}` 경로로 설정한다.
+7. `OAUTH2_PROXY_COOKIE_SECRET` 변경 시 모든 세션이 초기화됨을 인지한다.
+8. `config/oauth2-proxy.cfg`의 `redirect_url`과 Keycloak 클라이언트 설정을 동기화한다.
 
 ## Tech Stack
 
@@ -142,10 +149,3 @@ docker compose --profile auth logs oauth2-proxy --tail=200 | grep "OIDC"
 - [Keycloak](../keycloak/README.md) - The Identity Provider.
 - [01-gateway](../../01-gateway/README.md) - Traefik route configuration.
 - [docs/05.operations/02-auth/oauth2-proxy.md](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md) - Session policies.
-
-## AI Agent Guidance
-
-1. 이 README를 먼저 읽고 Traefik 레이블 설정을 확인한다.
-2. 새로운 서비스 추가 시 `forwardauth` 미들웨어를 `auth.${DEFAULT_URL}` 경로로 설정한다.
-3. `OAUTH2_PROXY_COOKIE_SECRET` 변경 시 모든 세션이 초기화됨을 인지한다.
-4. `config/oauth2-proxy.cfg`의 `redirect_url`과 Keycloak 클라이언트 설정을 동기화한다.

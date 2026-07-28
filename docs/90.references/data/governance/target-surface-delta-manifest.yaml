@@ -282,18 +282,66 @@ entries:
   canonical_owner: examples/sample-web-service/service.md
   direct_consumers:
   - examples/sample-web-service/README.md
-  finding: Task 2 will resolve typed example parentage without creating an active SDLC chain.
+  finding: Updated examples/sample-web-service/service.md as a draft Service fixture with its exact domain parent pair and no active SDLC claim.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_document_metadata.py
+  - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:examples/sample-web-service/service.md
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:examples/sample-web-service/service.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/01-gateway/nginx/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/01-gateway/nginx/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/01-gateway/nginx/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/01-gateway/traefik/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/01-gateway/traefik/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/01-gateway/traefik/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: infra/01-gateway/traefik/docker-compose.yml
@@ -317,6 +365,28 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/01-gateway/traefik/docker-compose.yml
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/02-auth/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/02-auth/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/02-auth/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: infra/02-auth/keycloak/Dockerfile
   surface_class: native-file
   profile: null
@@ -336,6 +406,28 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/02-auth/keycloak/Dockerfile
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/02-auth/keycloak/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/02-auth/keycloak/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/02-auth/keycloak/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: infra/02-auth/keycloak/docker-compose.yml
@@ -359,6 +451,138 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/02-auth/keycloak/docker-compose.yml
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/02-auth/oauth2-proxy/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/02-auth/oauth2-proxy/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/02-auth/oauth2-proxy/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/03-security/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/03-security/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/03-security/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/03-security/vault/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/03-security/vault/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/03-security/vault/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/04-data/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/04-data/README.md to one folder index with one Operations link and no obsolete prefixed guide.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/analytics/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/04-data/analytics/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/04-data/analytics/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/analytics/influxdb/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/04-data/analytics/influxdb/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/04-data/analytics/influxdb/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: infra/04-data/analytics/influxdb/docker-compose.yml
   surface_class: native-configuration
   profile: null
@@ -378,6 +602,72 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/04-data/analytics/influxdb/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/analytics/ksql/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/04-data/analytics/ksql/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/04-data/analytics/ksql/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/analytics/opensearch/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/04-data/analytics/opensearch/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/04-data/analytics/opensearch/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/analytics/warehouses/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/04-data/analytics/warehouses/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/04-data/analytics/warehouses/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
@@ -464,6 +754,138 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/04-data/relational/postgresql-cluster/docker-compose.yml
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/05-messaging/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/05-messaging/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/05-messaging/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/05-messaging/kafka/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/05-messaging/kafka/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/05-messaging/kafka/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/05-messaging/rabbitmq/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/05-messaging/rabbitmq/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/05-messaging/rabbitmq/README.md to use the exact Overview heading while retaining the existing localized body.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/alertmanager/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/alertmanager/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/alertmanager/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/alloy/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/alloy/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/alloy/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: infra/06-observability/docker-compose.dev.yml
   surface_class: native-configuration
   profile: null
@@ -506,6 +928,182 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/06-observability/docker-compose.yml
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/06-observability/prometheus/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/prometheus/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/prometheus/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/pushgateway/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/pushgateway/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/pushgateway/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/pyroscope/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/pyroscope/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/pyroscope/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/tempo/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/06-observability/tempo/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/06-observability/tempo/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/07-workflow/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/07-workflow/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/07-workflow/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/07-workflow/airflow/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/07-workflow/airflow/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/07-workflow/airflow/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/07-workflow/n8n/README.md
+  surface_class: readme
+  profile: infrastructure-service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/07-workflow/n8n/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/07-workflow/n8n/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/08-ai/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/08-ai/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/08-ai/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: infra/08-ai/ollama/docker-compose.yml
   surface_class: native-configuration
   profile: null
@@ -525,6 +1123,28 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/08-ai/ollama/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/09-tooling/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/09-tooling/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/09-tooling/README.md to use the exact Overview heading while retaining the existing localized body.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: infra/09-tooling/locust/Dockerfile
@@ -609,6 +1229,28 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/11-laboratory/dozzle/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/README.md
+  surface_class: readme
+  profile: infrastructure-root
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated infra/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: infra/supply-chain.cosign-offline-signing-config.json
@@ -957,15 +1599,19 @@ entries:
   surface_class: python-source
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: scripts/validation/check-document-corpus-lifecycle.py
-  direct_consumers: []
-  finding: Preserve scripts/validation/check-document-corpus-lifecycle.py as an implemented validation or operations support surface owned by scripts/validation/check-document-corpus-lifecycle.py.
+  direct_consumers:
+  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated scripts/validation/check-document-corpus-lifecycle.py to accept only the exact successor-owned draft Service fixture while preserving predecessor equality checks elsewhere.
   replacement: null
   secret_safety: not-applicable
   validators:
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_document_corpus_lifecycle.py
+  - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/check-document-corpus-lifecycle.py
@@ -978,15 +1624,19 @@ entries:
   surface_class: python-source
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: scripts/validation/check-document-metadata.py
-  direct_consumers: []
-  finding: Preserve scripts/validation/check-document-metadata.py as an implemented validation or operations support surface owned by scripts/validation/check-document-metadata.py.
+  direct_consumers:
+  - tests/validation/test_document_metadata.py
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated scripts/validation/check-document-metadata.py to reject active status and incorrect domain parents on the exact sample fixture path.
   replacement: null
   secret_safety: not-applicable
   validators:
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_document_metadata.py
+  - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/check-document-metadata.py
@@ -1232,6 +1882,28 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/run-local-qa-gates.sh
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/validation/target_surface_contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/target_surface_contract.py
+  direct_consumers:
+  - scripts/validation/check-target-surface-contract.py
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated scripts/validation/target_surface_contract.py to validate the draft sample fixture without deriving current parents from predecessor history.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/validation/target_surface_delta_contract.py
   surface_class: python-source
   profile: null
@@ -1253,6 +1925,28 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/target_surface_delta_contract.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: secrets/README.md
+  surface_class: readme
+  profile: secrets
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: secrets/README.md
+  direct_consumers:
+  - tests/validation/test_target_surface_contracts.py
+  finding: Updated secrets/README.md with the tracked SurrealDB directory path only and no secret payload.
+  replacement: null
+  secret_safety: path-only
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_contracts.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml
@@ -2025,15 +2719,19 @@ entries:
   surface_class: test-or-fixture
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: tests/validation/test_document_corpus_lifecycle.py
-  direct_consumers: []
-  finding: Preserve tests/validation/test_document_corpus_lifecycle.py as the tracked test oracle for its current validation boundary.
+  direct_consumers:
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Updated tests/validation/test_document_corpus_lifecycle.py with exact positive and fail-closed successor handoff regressions for the sample fixture.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-document-corpus-lifecycle.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_document_corpus_lifecycle.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_document_corpus_lifecycle.py
@@ -2046,15 +2744,18 @@ entries:
   surface_class: test-or-fixture
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: tests/validation/test_document_metadata.py
-  direct_consumers: []
-  finding: Preserve tests/validation/test_document_metadata.py as the tracked test oracle for its current validation boundary.
+  direct_consumers:
+  - scripts/validation/check-repo-contracts.sh
+  finding: Updated tests/validation/test_document_metadata.py with unit regressions for the exact Service role, draft-only status, and domain parent pair.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-document-metadata.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_document_metadata.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_document_metadata.py
@@ -2235,15 +2936,20 @@ entries:
   surface_class: test-or-fixture
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: tests/validation/test_target_surface_contracts.py
-  direct_consumers: []
-  finding: Preserve tests/validation/test_target_surface_contracts.py as the tracked test oracle for its current validation boundary.
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Updated tests/validation/test_target_surface_contracts.py with exact README, Stage 00 routing, archive split, secret path, and predecessor-successor regressions.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-target-surface-contract.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_target_surface_contracts.py
@@ -2256,12 +2962,12 @@ entries:
   surface_class: test-or-fixture
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: tests/validation/test_target_surface_delta_contracts.py
   direct_consumers:
   - scripts/validation/check-repo-contracts.sh
   - scripts/validation/run-local-qa-gates.sh
-  finding: Preserve tests/validation/test_target_surface_delta_contracts.py as the tracked test oracle for its current validation boundary.
+  finding: Updated tests/validation/test_target_surface_delta_contracts.py to assert the exact Task 2 update set, counts, and path-specific dispositions.
   replacement: null
   secret_safety: not-applicable
   validators:

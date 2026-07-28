@@ -2,7 +2,7 @@
 
 > Developer, quality, performance, registry, and IaC automation services.
 
-## Overview (KR)
+## Overview
 
 `09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust 및 k6 leaf의 Locust wrapper), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. 현재 root `docker-compose.yml`에서는 대부분 선택 include로 주석 처리되어 있으므로, 운영 문서는 optional root context와 service-local compose 경계를 구분한다.
 

@@ -642,6 +642,12 @@ README_PROFILE_KEYS = frozenset(
     }
 )
 README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
+TYPED_EXAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
+TYPED_EXAMPLE_FIXTURE_STATUS = "draft"
+TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
+    "spec:126-security-supply-chain-remediation",
+    "spec:127-deployment-release-engineering-remediation",
+)
 TEMPLATE_ROLE_KEYS = frozenset(
     {
         "source",
@@ -2372,6 +2378,25 @@ def validate_record(
     template_findings = _validate_template_source(record, profiles)
     if template_findings is not None:
         return template_findings
+    if record.path.as_posix() == TYPED_EXAMPLE_FIXTURE_PATH:
+        if record.metadata.get("status") != TYPED_EXAMPLE_FIXTURE_STATUS:
+            findings.append(
+                _finding(
+                    record,
+                    "typed-example-status-invalid",
+                    "typed example fixture must remain draft and cannot be active truth",
+                )
+            )
+        if record.metadata.get("parent_ids") != list(
+            TYPED_EXAMPLE_FIXTURE_PARENT_IDS
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "typed-example-parent-ids-invalid",
+                    "typed example fixture must use its exact domain parent pair",
+                )
+            )
     if record.artifact_type == "unsupported":
         findings.append(
             _finding(

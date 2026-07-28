@@ -58,10 +58,16 @@ airflow/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. [진입 가이드](../../../docs/05.operations/guides/07-workflow/airflow.md)를 읽고 시스템 전반을 이해합니다.
 2. [DAG 개발 가이드](../../../docs/05.operations/guides/07-workflow/airflow-dag-basics.md)를 참조하여 파이프라인을 작성합니다.
 3. [운영 정책](../../../docs/05.operations/policies/07-workflow/airflow.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
 4. 장애 발생 시 [장애 조치 런북](../../../docs/05.operations/runbooks/07-workflow/airflow.md)을 따릅니다.
+
+5. **Idempotency**: 모든 DAG 및 태스크는 멱등성을 보장해야 하며, Scheduler에서 무거운 계산을 수행하지 않아야 합니다.
+6. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
+7. **Traceability**: 모든 변경 사항은 관련 [ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md) 또는 [Spec](../../../docs/03.specs/008-workflow/spec.md)과 연결되어야 합니다.
 
 ## Tech Stack
 
@@ -89,12 +95,6 @@ airflow/
 | `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` | root workflow compose 정적 검증 |
 | `docker compose exec airflow-apiserver airflow dags list` | 실행 중인 Airflow DAG 목록 확인 |
 | `docker compose exec airflow-apiserver airflow db check` | 실행 중인 Airflow DB 연결 확인 |
-
-## AI Agent Guidance
-
-1. **Idempotency**: 모든 DAG 및 태스크는 멱등성을 보장해야 하며, Scheduler에서 무거운 계산을 수행하지 않아야 합니다.
-2. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
-3. **Traceability**: 모든 변경 사항은 관련 [ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md) 또는 [Spec](../../../docs/03.specs/008-workflow/spec.md)과 연결되어야 합니다.
 
 ## Validation
 

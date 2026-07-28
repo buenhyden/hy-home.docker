@@ -37,6 +37,62 @@ TARGET_ROOTS = (
     "secrets",
     "tests",
 )
+PRE_TASK2_UPDATE_PATHS = frozenset(
+    {
+        ".github/INDEX.md",
+        ".github/rulesets/main-protection.md",
+        ".github/workflows/ci-quality.yml",
+        ".github/workflows/tech-stack-version-sync.yml",
+        "examples/sample-web-service/README.md",
+        "examples/sample-web-service/service.md",
+        "scripts/README.md",
+        "scripts/validation/check-repo-contracts.sh",
+        "scripts/validation/run-local-qa-gates.sh",
+    }
+)
+TASK2_UPDATE_PATHS = frozenset(
+    {
+        "examples/sample-web-service/service.md",
+        "infra/01-gateway/nginx/README.md",
+        "infra/01-gateway/traefik/README.md",
+        "infra/02-auth/README.md",
+        "infra/02-auth/keycloak/README.md",
+        "infra/02-auth/oauth2-proxy/README.md",
+        "infra/03-security/README.md",
+        "infra/03-security/vault/README.md",
+        "infra/04-data/README.md",
+        "infra/04-data/analytics/README.md",
+        "infra/04-data/analytics/influxdb/README.md",
+        "infra/04-data/analytics/ksql/README.md",
+        "infra/04-data/analytics/opensearch/README.md",
+        "infra/04-data/analytics/warehouses/README.md",
+        "infra/05-messaging/README.md",
+        "infra/05-messaging/kafka/README.md",
+        "infra/05-messaging/rabbitmq/README.md",
+        "infra/06-observability/README.md",
+        "infra/06-observability/alertmanager/README.md",
+        "infra/06-observability/alloy/README.md",
+        "infra/06-observability/prometheus/README.md",
+        "infra/06-observability/pushgateway/README.md",
+        "infra/06-observability/pyroscope/README.md",
+        "infra/06-observability/tempo/README.md",
+        "infra/07-workflow/README.md",
+        "infra/07-workflow/airflow/README.md",
+        "infra/07-workflow/n8n/README.md",
+        "infra/08-ai/README.md",
+        "infra/09-tooling/README.md",
+        "infra/README.md",
+        "scripts/validation/check-document-corpus-lifecycle.py",
+        "scripts/validation/check-document-metadata.py",
+        "scripts/validation/target_surface_contract.py",
+        "secrets/README.md",
+        "tests/validation/test_document_corpus_lifecycle.py",
+        "tests/validation/test_document_metadata.py",
+        "tests/validation/test_target_surface_contracts.py",
+        "tests/validation/test_target_surface_delta_contracts.py",
+    }
+)
+EXPECTED_UPDATE_PATHS = PRE_TASK2_UPDATE_PATHS | TASK2_UPDATE_PATHS
 
 
 def load_contract_module():
@@ -1074,31 +1130,37 @@ class RepositoryManifestTests(unittest.TestCase):
     def test_repository_manifest_has_fixed_baselines_and_truthful_owners(self) -> None:
         contract = load_contract_module()
         document = contract.load_delta_manifest(ROOT)
+        rows = {row.path: row for row in document.entries}
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
+        self.assertEqual(136, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
         )
         self.assertEqual(
-            {
-                ".github/INDEX.md",
-                ".github/rulesets/main-protection.md",
-                ".github/workflows/ci-quality.yml",
-                ".github/workflows/tech-stack-version-sync.yml",
-                "examples/sample-web-service/README.md",
-                "examples/sample-web-service/service.md",
-                "scripts/README.md",
-                "scripts/validation/check-repo-contracts.sh",
-                "scripts/validation/run-local-qa-gates.sh",
-            },
+            EXPECTED_UPDATE_PATHS,
             {
                 row.path
                 for row in document.entries
                 if row.disposition == "update"
             },
         )
+        self.assertEqual(
+            {"preserve": 90, "update": 46},
+            {
+                disposition: sum(
+                    row.disposition == disposition for row in document.entries
+                )
+                for disposition in ("preserve", "update")
+            },
+        )
+        for path in TASK2_UPDATE_PATHS:
+            with self.subTest(task2_path=path):
+                self.assertEqual("update", rows[path].disposition)
+                self.assertEqual("pending", rows[path].spec_verdict)
+                self.assertEqual("pending", rows[path].quality_verdict)
         self.assertFalse(
             any(
                 row.disposition in {"migrate", "delete"}
@@ -1161,8 +1223,20 @@ class RepositoryManifestTests(unittest.TestCase):
                 "scripts/validation/check-supply-chain-policy.py",
             ),
             (
+                "scripts/validation/target_surface_contract.py",
+                "scripts/validation/check-target-surface-contract.py",
+            ),
+            (
                 "scripts/validation/target_surface_delta_contract.py",
                 "scripts/validation/check-target-surface-delta-contract.py",
+            ),
+            (
+                "tests/validation/test_target_surface_contracts.py",
+                ".github/workflows/ci-quality.yml",
+            ),
+            (
+                "tests/validation/test_target_surface_contracts.py",
+                "scripts/validation/run-local-qa-gates.sh",
             ),
             (
                 "tests/validation/test_target_surface_delta_contracts.py",

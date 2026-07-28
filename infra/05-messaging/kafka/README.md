@@ -62,10 +62,16 @@ kafka/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/guides/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
 2. **Configuration**: root dev는 `docker-compose.dev.yml`, full cluster는 `docker-compose.yml`의 Broker ID 및 포트 매핑 설정을 확인한다.
 3. **Execution**: 변경 사항 적용 후 repository root에서 root profile 검증을 먼저 수행한다.
 4. **Validation**: [Messaging Runbook](../../../docs/05.operations/runbooks/05-messaging/kafka.md)의 점검 절차를 수행한다.
+5. 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 확인한다.
+
+6. **Initialize Topics**: 새 토픽은 반드시 `docker-compose.yml`의 `kafka-init` 서비스를 통해 관리되도록 설정한다.
+7. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/006-messaging/spec.md`를 함께 갱신한다.
 
 ## Tech Stack
 
@@ -101,14 +107,6 @@ docker inspect --format '{{json .State.Health}}' schema-registry
 
 - **브로커 설정 변경**: 순차적 재시작(Rolling Restart)이 필요하며, 가용성 보장을 위해 쿼럼 상태를 확인해야 한다.
 - **토픽 정책 변경**: `replication.factor` 축소는 데이터 가용성을 낮추며, `retention` 변경은 디스크 용량에 즉각 영향을 준다.
-
-## AI Agent Guidance
-
-이 영역을 수정하기 전에 Agent는 다음을 먼저 수행해야 한다.
-
-1. **Initialize Topics**: 새 토픽은 반드시 `docker-compose.yml`의 `kafka-init` 서비스를 통해 관리되도록 설정한다.
-2. **Monitor Health**: 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 항상 확인한다.
-3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/006-messaging/spec.md`를 함께 갱신한다.
 
 ## Validation
 
