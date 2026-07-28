@@ -16,7 +16,9 @@ status: active
   read-only correctness reviewer returned a conflicting wrapper failure. The
   independently reviewed T-AGCC-006-QA-D2 route then received one exact
   recovery approval from clean `041262274f8965beacbcf02b9e28a665558600b4`;
-  the recovery passed, and entirely fresh whole-branch reviews are next.
+  the recovery and evidence commit passed. Entirely fresh whole-branch reviews
+  found one shared evidence-synchronization blocker, now under bounded
+  remediation.
 
 ## Approved decisions
 
@@ -52,15 +54,17 @@ status: active
   exceptional second attempt, which passed. The later unauthorized reviewer
   execution failed with no Git-visible path changes. T-AGCC-006-QA-D2's one
   separately approved recovery passed from clean `04126227`; its approval is
-  consumed. Only evidence synchronization and entirely fresh whole-branch
-  reviews may proceed. Remote mutation, live provider calls, runtime changes,
-  Compose, infrastructure, deployment, release, and any further wrapper or
-  direct `pre-commit` run remain separately gated or outside this task.
+  consumed and commit `0086ebfa763969aee8d489384ab097f7045b9694`
+  records the sanitized result. Only the evidence-sync remediation, read-only
+  delta re-reviews, and lifecycle closure may proceed. Remote mutation, live
+  provider calls, runtime changes, Compose, infrastructure, deployment,
+  release, and any further wrapper or direct `pre-commit` run remain
+  separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `041262274f8965beacbcf02b9e28a665558600b4`
-- Verified at: `2026-07-28T14:06:30+09:00`
+- Verified commit: `0086ebfa763969aee8d489384ab097f7045b9694`
+- Verified at: `2026-07-28T14:22:17+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -114,17 +118,28 @@ status: active
   four path sets were `(none)`. The approval is consumed; no raw hook output
   was persisted and no further wrapper or direct `pre-commit` run is
   authorized.
+- Commit `0086ebfa763969aee8d489384ab097f7045b9694` records that sanitized
+  recovery evidence. Fresh whole-branch correctness review returned C0/I2/M1
+  and fresh security review returned C0/I1/M0. Their shared blocking root
+  cause is this commit's missing Task-ledger row plus this record's stale
+  verified commit and completed-step handoff. The correctness Minor notes that
+  typed domain-memory taxonomy and lifecycle enforcement are outside Spec
+  134's bounded shared-current-memory requirement.
 
 ## Blockers and unverified facts
 
-- Lifecycle closure remains blocked until entirely fresh whole-branch
-  correctness and security reviewers independently review the exact
-  `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD` range and authorize
-  closure. They must remain read-only and must not run the wrapper or
-  `pre-commit`.
+- Lifecycle closure remains blocked until the bounded evidence-sync
+  remediation passes validation and both fresh whole-branch reviewers close
+  their Important findings by read-only delta re-review. They must not run the
+  wrapper or `pre-commit`.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
   bitwise combination of hook exits; no root cause is claimed.
+- A typed domain-memory taxonomy with validator-enforced promotion, retention,
+  archival, deletion, and domain ownership is not part of Spec 134. Durable
+  notes currently provide targeted retrieval through `Applies To`, tags, and
+  retrieval keywords; a stronger lifecycle is deferred to a future Stage 03
+  memory-governance specification.
 - Provider acceptance/entitlement, live comparative evaluation, and
   authenticated remote GitHub enforcement remain explicitly unverified.
 - Remote work remains read-only; remote mutation, live provider calls, and
@@ -139,6 +154,6 @@ status: active
 
 ## Next handoff
 
-- Commit the sanitized recovery evidence, then dispatch entirely fresh
-  whole-branch correctness and security reviewers over the exact feature-base
-  through evidence-commit range. Do not run the wrapper or `pre-commit` again.
+- Validate and commit the bounded Task/current-memory evidence
+  synchronization, then request read-only delta re-reviews from both fresh
+  whole-branch reviewers. Do not run the wrapper or `pre-commit` again.
