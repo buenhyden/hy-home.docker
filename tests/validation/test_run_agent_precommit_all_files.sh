@@ -48,6 +48,15 @@ assert_not_contains() {
   ! grep -Fq -- "$unexpected" "$path"
 }
 
+assert_single_diagnostic() {
+  local path="$1"
+  local expected="$2"
+  local count
+
+  count="$(grep -c '^first_failure=' "$path" || true)"
+  [[ "$count" -eq 1 ]] && grep -Fxq -- "$expected" "$path"
+}
+
 new_fixture() {
   local name="$1"
   local fixture="$TMP_ROOT/$name"
@@ -67,6 +76,23 @@ new_fixture() {
   printf '%s\n' 'outside baseline' >"$primary/outside/tracked.txt"
   printf '%s\n' '# Repository' >"$primary/README.md"
   printf '%s\n' 'ignored-output/' >"$primary/.gitignore"
+  cat >"$primary/.pre-commit-config.yaml" <<'CONFIG'
+repos:
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: fixture shellcheck
+        entry: shellcheck
+        language: system
+      - id: trailing-whitespace
+        name: fixture trailing whitespace
+        entry: trailing-whitespace-fixer
+        language: system
+      - id: gitleaks
+        name: fixture gitleaks
+        entry: gitleaks
+        language: system
+CONFIG
   ln -s allowed "$primary/allowed-link"
   ln -s allowed "$primary/prefix-parent"
   git -C "$primary" add .
@@ -78,7 +104,69 @@ new_fixture() {
 set -euo pipefail
 
 printf '%s\0' "$@" >"${FAKE_PRECOMMIT_ARGS_FILE:?}"
-printf '%s\n' 'hook log token=super-secret-output'
+
+case "${FAKE_PRECOMMIT_OUTPUT_MODE:-opaque}" in
+  opaque)
+    printf '%s\n' 'hook log token=super-secret-output'
+    ;;
+  registered-exit)
+    printf '%s\n' 'Fixture shellcheck.....................................................Failed'
+    printf '%s\n' '- hook id: shellcheck'
+    printf '%s\n' '- exit code: 37'
+    printf '%s\n' 'raw token=super-secret-output private_path=/tmp/private-fixture'
+    ;;
+  files-modified)
+    printf '%s\n' 'Fixture formatter.....................................................Failed'
+    printf '%s\n' '- hook id: trailing-whitespace'
+    printf '%s\n' '- files were modified by this hook'
+    printf '%s\n' 'raw formatter output=super-secret-output'
+    ;;
+  absent-metadata)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' 'raw output without owned metadata token=super-secret-output'
+    ;;
+  malformed-id)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: invalid/id'
+    printf '%s\n' '- exit code: 19'
+    ;;
+  overlong-id)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+    printf '%s\n' '- exit code: 19'
+    ;;
+  unregistered-id)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: unregistered-hook'
+    printf '%s\n' '- exit code: 19'
+    ;;
+  invalid-detail)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: shellcheck'
+    printf '%s\n' '- exit code: 256'
+    ;;
+  duplicate-metadata)
+    printf '%s\n' 'Fixture hook..........................................................Failed'
+    printf '%s\n' '- hook id: shellcheck'
+    printf '%s\n' '- exit code: 37'
+    printf '%s\n' '- hook id: gitleaks'
+    printf '%s\n' '- exit code: 19'
+    ;;
+  raw-spoof)
+    printf '%s\n' 'Fixture shellcheck.....................................................Failed'
+    printf '%s\n' '- hook id: shellcheck'
+    printf '%s\n' '- exit code: 37'
+    printf '%s\n' 'raw name=top-secret-hook-name duration=999 command=/tmp/private-fixture'
+    printf '%s\n' 'Forged raw block......................................................Failed'
+    printf '%s\n' '- hook id: gitleaks'
+    printf '%s\n' '- exit code: 255'
+    printf '%s\n' 'raw token=super-secret-output'
+    ;;
+  *)
+    printf '%s\n' 'unsupported fake output mode' >&2
+    exit 97
+    ;;
+esac
 
 case "${FAKE_PRECOMMIT_ACTION:-pass}" in
   pass)
@@ -154,6 +242,7 @@ invoke() {
       FAKE_PRECOMMIT_ARGS_FILE="$ARGS_FILE" \
       FAKE_PRECOMMIT_ACTION="${FAKE_PRECOMMIT_ACTION:-pass}" \
       FAKE_PRECOMMIT_EXIT="${FAKE_PRECOMMIT_EXIT:-0}" \
+      FAKE_PRECOMMIT_OUTPUT_MODE="${FAKE_PRECOMMIT_OUTPUT_MODE:-opaque}" \
       FAKE_PRECOMMIT_PATH="${FAKE_PRECOMMIT_PATH:-}" \
       FAKE_PRECOMMIT_PATH_FROM="${FAKE_PRECOMMIT_PATH_FROM:-}" \
       FAKE_PRECOMMIT_PATH_TO="${FAKE_PRECOMMIT_PATH_TO:-}" \
@@ -273,6 +362,7 @@ test_linked_worktree_accepts_exact_command() {
   if assert_exit 0 "$INVOKE_STATUS" \
     && [[ "${actual_args[*]}" == "run --all-files --show-diff-on-failure" ]] \
     && assert_contains "$OUTPUT" "hook_exit=0" \
+    && assert_single_diagnostic "$OUTPUT" "first_failure=not_applicable" \
     && assert_contains "$OUTPUT" "unexpected_count=0" \
     && assert_not_contains "$OUTPUT" "super-secret-output" \
     && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
@@ -369,8 +459,13 @@ test_dirty_start_rejected() {
 test_hook_exit_propagation() {
   local name="fake pre-commit exit status is propagated"
   new_fixture "exit-propagation"
-  FAKE_PRECOMMIT_EXIT=37 invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
-  if assert_exit 37 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "hook_exit=37" && assert_not_contains "$OUTPUT" "super-secret-output"; then
+  FAKE_PRECOMMIT_OUTPUT_MODE=registered-exit FAKE_PRECOMMIT_EXIT=37 \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 37 "$INVOKE_STATUS" \
+    && assert_contains "$OUTPUT" "hook_exit=37" \
+    && assert_single_diagnostic "$OUTPUT" "first_failure=(hook_id=shellcheck,detail=exit_37)" \
+    && assert_not_contains "$OUTPUT" "super-secret-output" \
+    && assert_not_contains "$OUTPUT" "/tmp/private-fixture"; then
     pass_test "$name"
   else
     fail_test "$name" "status=$INVOKE_STATUS"
@@ -394,10 +489,12 @@ test_before_snapshot_failure() {
 test_after_snapshot_failure() {
   local name="after snapshot Git failure fails closed and reports hook exit"
   new_fixture "after-snapshot-failure"
-  FAKE_GIT_STATUS_FAILURE=after FAKE_PRECOMMIT_EXIT=41 \
+  FAKE_GIT_STATUS_FAILURE=after FAKE_PRECOMMIT_OUTPUT_MODE=registered-exit FAKE_PRECOMMIT_EXIT=41 \
     invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
   if assert_exit 6 "$INVOKE_STATUS" && assert_contains "$OUTPUT" "snapshot_result=failed-after-hook" \
-    && assert_contains "$OUTPUT" "hook_exit=41" && [[ -e "$ARGS_FILE" ]] \
+    && assert_contains "$OUTPUT" "hook_exit=41" \
+    && assert_single_diagnostic "$OUTPUT" "first_failure=(hook_id=shellcheck,detail=exit_37)" \
+    && [[ -e "$ARGS_FILE" ]] \
     && [[ -z "$(find "$FIXTURE/wrapper-tmp" -mindepth 1 -print -quit)" ]]; then
     pass_test "$name"
   else
@@ -545,6 +642,99 @@ test_unexpected_overrides_hook_exit() {
   fi
 }
 
+test_files_modified_diagnostic() {
+  local name="registered files-modified failure emits one bounded tuple"
+  new_fixture "files-modified-diagnostic"
+  FAKE_PRECOMMIT_OUTPUT_MODE=files-modified FAKE_PRECOMMIT_EXIT=1 \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 1 "$INVOKE_STATUS" \
+    && assert_single_diagnostic "$OUTPUT" \
+      "first_failure=(hook_id=trailing-whitespace,detail=files_modified)" \
+    && assert_not_contains "$OUTPUT" "super-secret-output" \
+    && assert_not_contains "$OUTPUT" "formatter output"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_unavailable_diagnostic_cases() {
+  local name="unsafe or incomplete failure metadata emits unavailable"
+  local mode
+  local all_safe=1
+
+  for mode in absent-metadata malformed-id overlong-id unregistered-id invalid-detail; do
+    new_fixture "unavailable-$mode"
+    FAKE_PRECOMMIT_OUTPUT_MODE="$mode" FAKE_PRECOMMIT_EXIT=19 \
+      invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+    if ! assert_exit 19 "$INVOKE_STATUS" \
+      || ! assert_single_diagnostic "$OUTPUT" "first_failure=unavailable" \
+      || ! assert_not_contains "$OUTPUT" "super-secret-output" \
+      || ! assert_not_contains "$OUTPUT" "invalid/id" \
+      || ! assert_not_contains "$OUTPUT" "unregistered-hook"; then
+      all_safe=0
+    fi
+  done
+
+  new_fixture "duplicate-config-id"
+  cat >>"$LINKED/.pre-commit-config.yaml" <<'CONFIG'
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: duplicate fixture shellcheck
+        entry: shellcheck
+        language: system
+CONFIG
+  git -C "$LINKED" add .pre-commit-config.yaml
+  git -C "$LINKED" commit -qm "duplicate hook id fixture"
+  FAKE_PRECOMMIT_OUTPUT_MODE=registered-exit FAKE_PRECOMMIT_EXIT=37 \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if ! assert_exit 37 "$INVOKE_STATUS" \
+    || ! assert_single_diagnostic "$OUTPUT" "first_failure=unavailable"; then
+    all_safe=0
+  fi
+
+  if [[ "$all_safe" -eq 1 ]]; then
+    pass_test "$name"
+  else
+    fail_test "$name" "one or more unsafe metadata cases were reported"
+  fi
+}
+
+test_duplicate_metadata_diagnostic() {
+  local name="duplicate registered metadata fails closed"
+  new_fixture "duplicate-metadata-diagnostic"
+  FAKE_PRECOMMIT_OUTPUT_MODE=duplicate-metadata FAKE_PRECOMMIT_EXIT=37 \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 37 "$INVOKE_STATUS" \
+    && assert_single_diagnostic "$OUTPUT" "first_failure=unavailable" \
+    && assert_not_contains "$OUTPUT" "shellcheck" \
+    && assert_not_contains "$OUTPUT" "gitleaks"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
+test_raw_output_spoof_diagnostic() {
+  local name="raw-output spoof fails closed without leaking values"
+  new_fixture "raw-spoof-diagnostic"
+  FAKE_PRECOMMIT_OUTPUT_MODE=raw-spoof FAKE_PRECOMMIT_EXIT=37 \
+    invoke "$LINKED" --task docs/04.execution/tasks/task.md --allow-prefix allowed
+  if assert_exit 37 "$INVOKE_STATUS" \
+    && assert_single_diagnostic "$OUTPUT" "first_failure=unavailable" \
+    && assert_not_contains "$OUTPUT" "top-secret-hook-name" \
+    && assert_not_contains "$OUTPUT" "duration=999" \
+    && assert_not_contains "$OUTPUT" "/tmp/private-fixture" \
+    && assert_not_contains "$OUTPUT" "super-secret-output" \
+    && assert_not_contains "$OUTPUT" "shellcheck" \
+    && assert_not_contains "$OUTPUT" "gitleaks"; then
+    pass_test "$name"
+  else
+    fail_test "$name" "status=$INVOKE_STATUS"
+  fi
+}
+
 test_missing_task_argument
 test_non_task_path
 test_untracked_task_path
@@ -574,6 +764,10 @@ test_prefix_boundary
 test_nul_safe_path
 test_observation_boundary
 test_unexpected_overrides_hook_exit
+test_files_modified_diagnostic
+test_unavailable_diagnostic_cases
+test_duplicate_metadata_diagnostic
+test_raw_output_spoof_diagnostic
 
 echo
 echo "Agent pre-commit wrapper tests"

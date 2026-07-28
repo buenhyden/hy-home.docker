@@ -10,6 +10,7 @@ readonly EXIT_TASK=4
 readonly EXIT_DIRTY=5
 readonly EXIT_SNAPSHOT=6
 readonly EXIT_UNEXPECTED_PATHS=20
+readonly MAX_DIAGNOSTIC_OUTPUT_BYTES=1048576
 
 usage() {
   echo "Usage: $0 --task <tracked-task-path> --allow-prefix <repo-relative-prefix> [--allow-prefix ...]" >&2
@@ -126,6 +127,135 @@ path_is_allowed() {
   return 1
 }
 
+load_tracked_hook_ids() {
+  local config_path="$1"
+  local output_file="$2"
+  local config_index_entry config_index_mode config_index_path
+  local line hook_id previous_id=""
+  local malformed=0
+  local id_line_re='^[[:space:]]*-[[:space:]]+id:'
+  local valid_id_line_re='^[[:space:]]*-[[:space:]]+id:[[:space:]]*([A-Za-z0-9][A-Za-z0-9._-]{0,63})[[:space:]]*$'
+
+  : >"$output_file" || return 1
+  [[ -f "$config_path" && ! -L "$config_path" ]] || return 1
+  path_has_symlink_component "$config_path" && return 1
+
+  if ! config_index_entry="$(git ls-files --stage -- "$config_path")"; then
+    return 1
+  fi
+  [[ -n "$config_index_entry" && "$config_index_entry" != *$'\n'* ]] || return 1
+  config_index_mode="${config_index_entry%% *}"
+  [[ "$config_index_mode" == "100644" || "$config_index_mode" == "100755" ]] || return 1
+  config_index_path="${config_index_entry#*$'\t'}"
+  [[ "$config_index_path" == "$config_path" ]] || return 1
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ $id_line_re ]]; then
+      if [[ "$line" =~ $valid_id_line_re ]]; then
+        hook_id="${BASH_REMATCH[1]}"
+        printf '%s\n' "$hook_id" >>"$output_file" || return 1
+      else
+        malformed=1
+      fi
+    fi
+  done <"$config_path"
+  [[ "$malformed" -eq 0 && -s "$output_file" ]] || return 1
+
+  sort "$output_file" -o "$output_file" || return 1
+  while IFS= read -r hook_id; do
+    if [[ -n "$previous_id" && "$hook_id" == "$previous_id" ]]; then
+      return 1
+    fi
+    previous_id="$hook_id"
+  done <"$output_file"
+}
+
+derive_first_failure() {
+  local output_file="$1"
+  local hook_ids_file="$2"
+  local nul_free_file="$3"
+  local output_size line hook_id registered_id raw_exit
+  local candidate_id="" candidate_detail="" expected=""
+  local failure_headers=0 hook_metadata_lines=0 detail_metadata_lines=0
+  local valid_blocks=0 malformed=0 registered_matches=0
+  local failure_header_re='^.*\.{3,}Failed$'
+  local hook_id_re='^- hook id: ([A-Za-z0-9][A-Za-z0-9._-]{0,63})$'
+  local numeric_exit_re='^- exit code: ([0-9]{1,3})$'
+
+  if ! output_size="$(wc -c <"$output_file")"; then
+    return 1
+  fi
+  [[ "$output_size" =~ ^[0-9]+$ ]] || return 1
+  [[ "$output_size" -le "$MAX_DIAGNOSTIC_OUTPUT_BYTES" ]] || return 1
+
+  if ! LC_ALL=C tr -d '\000' <"$output_file" >"$nul_free_file"; then
+    return 1
+  fi
+  cmp -s -- "$output_file" "$nul_free_file" || return 1
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$expected" == "hook_id" ]]; then
+      if [[ "$line" =~ $hook_id_re ]]; then
+        hook_metadata_lines=$((hook_metadata_lines + 1))
+        candidate_id="${BASH_REMATCH[1]}"
+        expected="detail"
+        continue
+      fi
+      malformed=1
+      expected=""
+    elif [[ "$expected" == "detail" ]]; then
+      if [[ "$line" =~ $numeric_exit_re ]]; then
+        detail_metadata_lines=$((detail_metadata_lines + 1))
+        raw_exit="${BASH_REMATCH[1]}"
+        if [[ $((10#$raw_exit)) -le 255 ]]; then
+          candidate_detail="exit_$((10#$raw_exit))"
+          valid_blocks=$((valid_blocks + 1))
+        else
+          malformed=1
+        fi
+        expected=""
+        continue
+      fi
+      if [[ "$line" == "- files were modified by this hook" ]]; then
+        detail_metadata_lines=$((detail_metadata_lines + 1))
+        candidate_detail="files_modified"
+        valid_blocks=$((valid_blocks + 1))
+        expected=""
+        continue
+      fi
+      malformed=1
+      expected=""
+    fi
+
+    if [[ "$line" =~ $failure_header_re ]]; then
+      failure_headers=$((failure_headers + 1))
+      expected="hook_id"
+    elif [[ "$line" == "- hook id:"* ]]; then
+      hook_metadata_lines=$((hook_metadata_lines + 1))
+      malformed=1
+    elif [[ "$line" == "- exit code:"* || "$line" == "- files were modified by this hook"* ]]; then
+      detail_metadata_lines=$((detail_metadata_lines + 1))
+      malformed=1
+    fi
+  done <"$output_file"
+
+  [[ -z "$expected" ]] || malformed=1
+  [[ "$malformed" -eq 0 ]] || return 1
+  [[ "$failure_headers" -eq 1 ]] || return 1
+  [[ "$hook_metadata_lines" -eq 1 ]] || return 1
+  [[ "$detail_metadata_lines" -eq 1 ]] || return 1
+  [[ "$valid_blocks" -eq 1 ]] || return 1
+
+  while IFS= read -r registered_id; do
+    if [[ "$registered_id" == "$candidate_id" ]]; then
+      registered_matches=$((registered_matches + 1))
+    fi
+  done <"$hook_ids_file"
+  [[ "$registered_matches" -eq 1 ]] || return 1
+
+  printf '(hook_id=%s,detail=%s)' "$candidate_id" "$candidate_detail"
+}
+
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
     --task)
@@ -198,6 +328,8 @@ AFTER_FILE="$TEMP_DIR/after.paths"
 CHANGED_FILE="$TEMP_DIR/changed.paths"
 UNEXPECTED_FILE="$TEMP_DIR/unexpected.paths"
 HOOK_OUTPUT_FILE="$TEMP_DIR/hook.output"
+HOOK_OUTPUT_NUL_FREE_FILE="$TEMP_DIR/hook-output.nul-free"
+HOOK_IDS_FILE="$TEMP_DIR/hook-ids"
 
 # Invoked directly by the signal handler and indirectly by the EXIT trap.
 # shellcheck disable=SC2329
@@ -229,12 +361,30 @@ fi
 BEFORE_COUNT="$(count_paths "$BEFORE_FILE")"
 [[ "$BEFORE_COUNT" -eq 0 ]] || die "$EXIT_DIRTY" "wrapper requires a clean linked worktree before hook execution"
 
+HOOK_ID_REGISTRY_READY=0
+if load_tracked_hook_ids ".pre-commit-config.yaml" "$HOOK_IDS_FILE"; then
+  HOOK_ID_REGISTRY_READY=1
+fi
+
 if pre-commit run --all-files --show-diff-on-failure >"$HOOK_OUTPUT_FILE" 2>&1; then
   HOOK_EXIT=0
   HOOK_RESULT="passed"
 else
   HOOK_EXIT=$?
   HOOK_RESULT="failed"
+fi
+
+if [[ "$HOOK_EXIT" -eq 0 ]]; then
+  FIRST_FAILURE="not_applicable"
+else
+  FIRST_FAILURE="unavailable"
+  if [[ "$HOOK_ID_REGISTRY_READY" -eq 1 ]]; then
+    if SAFE_FAILURE="$(
+      derive_first_failure "$HOOK_OUTPUT_FILE" "$HOOK_IDS_FILE" "$HOOK_OUTPUT_NUL_FREE_FILE"
+    )"; then
+      FIRST_FAILURE="$SAFE_FAILURE"
+    fi
+  fi
 fi
 
 if ! snapshot_changed_paths "$AFTER_RAW_FILE" "$AFTER_FILE"; then
@@ -244,6 +394,7 @@ if ! snapshot_changed_paths "$AFTER_RAW_FILE" "$AFTER_FILE"; then
   printf '%q,' "${ALLOW_PREFIXES[@]}"
   printf '\n'
   echo "hook_result=$HOOK_RESULT hook_exit=$HOOK_EXIT"
+  printf 'first_failure=%s\n' "$FIRST_FAILURE"
   echo "snapshot_result=failed-after-hook"
   echo "observation=git-visible-non-ignored-repository-status"
   exit "$EXIT_SNAPSHOT"
@@ -255,6 +406,7 @@ if ! comm -z -13 "$BEFORE_FILE" "$AFTER_FILE" >"$CHANGED_FILE"; then
   printf '%q,' "${ALLOW_PREFIXES[@]}"
   printf '\n'
   echo "hook_result=$HOOK_RESULT hook_exit=$HOOK_EXIT"
+  printf 'first_failure=%s\n' "$FIRST_FAILURE"
   echo "snapshot_result=failed-after-hook"
   echo "observation=git-visible-non-ignored-repository-status"
   exit "$EXIT_SNAPSHOT"
@@ -279,6 +431,7 @@ for index in "${!ALLOW_PREFIXES[@]}"; do
 done
 printf '\n'
 echo "hook_result=$HOOK_RESULT hook_exit=$HOOK_EXIT"
+printf 'first_failure=%s\n' "$FIRST_FAILURE"
 echo "snapshot_result=passed"
 echo "observation=git-visible-non-ignored-repository-status"
 echo "before_count=$BEFORE_COUNT after_count=$AFTER_COUNT changed_count=$CHANGED_COUNT unexpected_count=$UNEXPECTED_COUNT"
