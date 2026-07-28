@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import dataclasses
 import os
 import pathlib
 import re
 import shlex
 import stat
+import subprocess
 import sys
 from typing import Final
 
@@ -18,6 +20,10 @@ WORKFLOW_ROOT: Final = pathlib.PurePosixPath(".github/workflows")
 MAX_YAML_BYTES: Final = 2 * 1_048_576
 MAX_WORKFLOWS: Final = 128
 MAX_AGGREGATE_BYTES: Final = 2 * 1_048_576
+MAX_SEMANTIC_HELPER_BYTES: Final = 256 * 1_024
+MAX_SEMANTIC_HELPER_TOTAL_BYTES: Final = 4 * 1_048_576
+MAX_SEMANTIC_HELPER_FILES: Final = 64
+MAX_SEMANTIC_HELPER_DEPTH: Final = 8
 REPOSITORY_AGGREGATE: Final = pathlib.PurePosixPath(
     "scripts/validation/check-repo-contracts.sh"
 )
@@ -1180,118 +1186,1199 @@ def _job_tokens(job: dict[object, object]) -> tuple[str, ...]:
     return tuple(tokens)
 
 
-def _read_repository_aggregate(root: pathlib.Path) -> str | None:
-    relative = REPOSITORY_AGGREGATE
+def _job_programs(job: dict[object, object]) -> tuple[str, ...]:
+    programs: list[str] = []
+    steps = job.get("steps")
+    if not isinstance(steps, list):
+        return ()
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        run = step.get("run")
+        if isinstance(run, str):
+            programs.append(run)
+    return tuple(programs)
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _ShellSubstitution:
+    placeholder: str
+    kind: str
+    body: str
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _PreparedShellProgram:
+    tokens: tuple[str, ...]
+    substitutions: tuple[_ShellSubstitution, ...]
+    heredoc_substitutions: tuple[_ShellSubstitution, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _ScriptInvocation:
+    path: str
+    direct: bool
+
+
+@dataclasses.dataclass(slots=True)
+class _ShellAnalysis:
+    command_signatures: set[tuple[str, ...]]
+    script_invocations: list[_ScriptInvocation]
+    invalid: bool = False
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _VariableBinding:
+    literal: str | None
+    tainted: bool
+
+
+@dataclasses.dataclass(slots=True)
+class _SemanticResolution:
+    command_signatures: set[tuple[str, ...]]
+    script_paths: set[str]
+    invalid: bool = False
+    aggregate_invalid: bool = False
+
+
+@dataclasses.dataclass(slots=True)
+class _TraversalBudget:
+    visited: set[str]
+    stack: list[str]
+    files: int = 0
+    total_bytes: int = 0
+
+
+_SHELL_SEPARATORS: Final = frozenset(
+    {";", "\n", "&&", "||", "|", "&", "(", ")"}
+)
+_SHELL_PUNCTUATION: Final = ";&|<>()\n"
+_SCRIPT_PATH_RE: Final = re.compile(
+    r"scripts/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.(?:py|sh)"
+)
+_VARIABLE_RE: Final = re.compile(
+    r"\$(?:([A-Za-z_][A-Za-z0-9_]*)|\{([A-Za-z_][A-Za-z0-9_]*)\})"
+)
+_INDIRECT_VARIABLE_RE: Final = re.compile(
+    r"\$\{!([A-Za-z_][A-Za-z0-9_]*)\}"
+)
+_ASSIGNMENT_RE: Final = re.compile(
+    r"([A-Za-z_][A-Za-z0-9_]*)=(.*)",
+    re.DOTALL,
+)
+_APPROVED_OWNER_SUBSTITUTION: Final = (
+    "bash",
+    "scripts/validation/run-agent-output-eval-fixtures.sh",
+    "--check-fixtures",
+    "--check-regressions",
+)
+_DATA_ONLY_COMMANDS: Final = frozenset(
+    {
+        "-d",
+        "-e",
+        "-f",
+        "-n",
+        "-r",
+        "-x",
+        "[",
+        "[[",
+        "cat",
+        "cd",
+        "echo",
+        "for",
+        "grep",
+        "printf",
+        "read",
+        "rg",
+        "rm",
+        "test",
+    }
+)
+_GOVERNED_NON_SCRIPT_SIGNATURES: Final = frozenset(
+    {
+        (
+            "python3",
+            "-m",
+            "unittest",
+            "tests.validation.test_agent_governance_ci_routing",
+            "-v",
+        ),
+        (
+            "python3",
+            "-m",
+            "unittest",
+            "tests.validation.test_agent_output_eval_fixtures",
+            "-v",
+        ),
+        (
+            "python3",
+            "-m",
+            "unittest",
+            "tests.validation.test_compose_core_readiness",
+            "tests.validation.test_postgres_logical_upgrade_rehearsal",
+            "tests.validation.test_grype_db_seed",
+            "tests.validation.test_supply_chain_policy",
+            "tests.validation.test_sample_service_delivery_rehearsal",
+            "-v",
+        ),
+        (
+            "npm",
+            "audit",
+            "--audit-level=high",
+            "--prefix",
+            "projects/storybook/nextjs",
+        ),
+        ("[[", "$PR_TITLE", "=~", "$title_re", "]]"),
+        (
+            "npm",
+            "run",
+            "build-storybook",
+            "--prefix",
+            "projects/storybook/nextjs",
+        ),
+        (
+            "npm",
+            "run",
+            "coverage",
+            "--prefix",
+            "projects/storybook/nextjs",
+        ),
+        (
+            "uvx",
+            "--from",
+            "zizmor==1.28.0",
+            "zizmor",
+            ".",
+            "--format",
+            "sarif",
+            ".",
+            ">",
+            "results.sarif",
+        ),
+    }
+)
+_ADMITTED_SHEBANGS: Final = {
+    ".sh": frozenset(
+        {
+            b"#!/bin/bash",
+            b"#!/usr/bin/bash",
+            b"#!/usr/bin/env bash",
+        }
+    ),
+    ".py": frozenset(
+        {
+            b"#!/usr/bin/python3",
+            b"#!/usr/bin/env python3",
+        }
+    ),
+}
+
+
+def _canonical_script_path(token: str) -> str | None:
+    candidate = token[2:] if token.startswith("./") else token
+    if _SCRIPT_PATH_RE.fullmatch(candidate) is None:
+        return None
+    relative = pathlib.PurePosixPath(candidate)
+    if (
+        relative.as_posix() != candidate
+        or not relative.parts
+        or relative.parts[0] != "scripts"
+        or any(part in {"", ".", ".."} for part in relative.parts)
+    ):
+        return None
+    return candidate
+
+
+def _looks_like_repo_script(token: str) -> bool:
+    return (
+        "scripts/" in token
+        and (".sh" in token or ".py" in token)
+    )
+
+
+def _read_repo_script_bytes(
+    root: pathlib.Path,
+    relative: pathlib.PurePosixPath,
+    *,
+    maximum: int,
+) -> bytes | None:
+    if _canonical_script_path(relative.as_posix()) != relative.as_posix():
+        return None
+    descriptors: list[int] = []
     try:
-        _assert_safe_parent_directories(root, relative)
-        path = root.joinpath(*relative.parts)
-        metadata = path.lstat()
-        if (
-            not stat.S_ISREG(metadata.st_mode)
-            or metadata.st_size > MAX_AGGREGATE_BYTES
-        ):
-            return None
-        flags = (
+        directory_flags = (
+            os.O_RDONLY
+            | getattr(os, "O_DIRECTORY", 0)
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+        )
+        descriptors.append(os.open(root, directory_flags))
+        for part in relative.parts[:-1]:
+            descriptor = os.open(
+                part,
+                directory_flags,
+                dir_fd=descriptors[-1],
+            )
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISDIR(metadata.st_mode):
+                os.close(descriptor)
+                return None
+            descriptors.append(descriptor)
+        file_flags = (
             os.O_RDONLY
             | getattr(os, "O_CLOEXEC", 0)
             | getattr(os, "O_NOFOLLOW", 0)
         )
-        descriptor = os.open(path, flags)
-        try:
-            opened = os.fstat(descriptor)
-            if (
-                not stat.S_ISREG(opened.st_mode)
-                or (metadata.st_dev, metadata.st_ino)
-                != (opened.st_dev, opened.st_ino)
-                or opened.st_size > MAX_AGGREGATE_BYTES
-            ):
-                return None
-            chunks: list[bytes] = []
-            remaining = MAX_AGGREGATE_BYTES + 1
-            while remaining:
-                chunk = os.read(descriptor, remaining)
-                if not chunk:
-                    break
-                chunks.append(chunk)
-                remaining -= len(chunk)
-            payload = b"".join(chunks)
-            if len(payload) != opened.st_size:
-                return None
-            closed = os.fstat(descriptor)
-        finally:
-            os.close(descriptor)
-        final = path.lstat()
+        descriptor = os.open(
+            relative.name,
+            file_flags,
+            dir_fd=descriptors[-1],
+        )
+        descriptors.append(descriptor)
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or opened.st_size > maximum:
+            return None
+        chunks: list[bytes] = []
+        remaining = maximum + 1
+        while remaining:
+            chunk = os.read(descriptor, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        payload = b"".join(chunks)
+        closed = os.fstat(descriptor)
         if (
-            opened.st_size != closed.st_size
-            or (opened.st_dev, opened.st_ino) != (final.st_dev, final.st_ino)
-            or not stat.S_ISREG(final.st_mode)
+            len(payload) != opened.st_size
+            or len(payload) > maximum
+            or opened.st_size != closed.st_size
+            or (opened.st_dev, opened.st_ino)
+            != (closed.st_dev, closed.st_ino)
+            or not stat.S_ISREG(closed.st_mode)
         ):
             return None
+        return payload
+    except OSError:
+        return None
+    finally:
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+
+
+def _read_repository_aggregate(root: pathlib.Path) -> str | None:
+    payload = _read_repo_script_bytes(
+        root,
+        REPOSITORY_AGGREGATE,
+        maximum=MAX_AGGREGATE_BYTES,
+    )
+    if payload is None:
+        return None
+    try:
         return payload.decode("utf-8")
-    except (OSError, UnicodeError, WorkflowContractError):
+    except UnicodeError:
         return None
 
 
-ShellLexemeLine = tuple[str, tuple[str, ...]]
+def _capture_parenthesized(
+    source: str,
+    start: int,
+) -> tuple[str, int] | None:
+    depth = 1
+    index = start + 2
+    quote: str | None = None
+    while index < len(source):
+        character = source[index]
+        if character == "\\" and quote != "'":
+            index += 2
+            continue
+        if quote == "'":
+            if character == "'":
+                quote = None
+            index += 1
+            continue
+        if quote == '"':
+            if character == '"':
+                quote = None
+                index += 1
+                continue
+            if source.startswith("$(", index):
+                depth += 1
+                index += 2
+                continue
+            if character == ")":
+                depth -= 1
+                if depth == 0:
+                    return source[start + 2 : index], index + 1
+            index += 1
+            continue
+        if character in {"'", '"'}:
+            quote = character
+            index += 1
+            continue
+        if character == "(":
+            depth += 1
+        elif character == ")":
+            depth -= 1
+            if depth == 0:
+                return source[start + 2 : index], index + 1
+        index += 1
+    return None
 
 
-def _shell_tokens(line: str) -> tuple[str, ...] | None:
+def _capture_backticks(
+    source: str,
+    start: int,
+) -> tuple[str, int] | None:
+    index = start + 1
+    while index < len(source):
+        if source[index] == "\\":
+            index += 2
+            continue
+        if source[index] == "`":
+            return source[start + 1 : index], index + 1
+        index += 1
+    return None
+
+
+def _mask_shell_substitutions(
+    source: str,
+) -> tuple[str, tuple[_ShellSubstitution, ...]] | None:
+    output: list[str] = []
+    substitutions: list[_ShellSubstitution] = []
+    quote: str | None = None
+    index = 0
+    while index < len(source):
+        character = source[index]
+        if character == "\\" and quote != "'":
+            output.append(source[index : index + 2])
+            index += 2
+            continue
+        if quote == "'":
+            output.append(character)
+            if character == "'":
+                quote = None
+            index += 1
+            continue
+        if character == "'" and quote is None:
+            quote = "'"
+            output.append(character)
+            index += 1
+            continue
+        if character == '"':
+            quote = None if quote == '"' else '"'
+            output.append(character)
+            index += 1
+            continue
+        kind: str | None = None
+        capture: tuple[str, int] | None = None
+        if source.startswith("$(", index):
+            kind = "command"
+            capture = _capture_parenthesized(source, index)
+        elif source.startswith("<(", index) or source.startswith(">(", index):
+            kind = "process"
+            capture = _capture_parenthesized(source, index)
+        elif character == "`":
+            kind = "backtick"
+            capture = _capture_backticks(source, index)
+        if kind is None:
+            output.append(character)
+            index += 1
+            continue
+        if capture is None:
+            return None
+        body, next_index = capture
+        placeholder = f"__TSDC_SUB_{len(substitutions):04d}__"
+        substitutions.append(
+            _ShellSubstitution(
+                placeholder=placeholder,
+                kind=kind,
+                body=body,
+            )
+        )
+        output.append(placeholder)
+        index = next_index
+    return "".join(output), tuple(substitutions)
+
+
+def _heredoc_declarations(
+    line: str,
+) -> tuple[tuple[str, bool, bool], ...] | None:
+    source = line
+    declarations: list[tuple[str, bool, bool]] = []
+    quote: str | None = None
+    index = 0
+    while index < len(source):
+        character = source[index]
+        if character == "\\" and quote != "'":
+            index += 2
+            continue
+        if quote is not None:
+            if character == quote:
+                quote = None
+            index += 1
+            continue
+        if character in {"'", '"'}:
+            quote = character
+            index += 1
+            continue
+        if character == "#":
+            break
+        if source.startswith("<<<", index):
+            index += 3
+            continue
+        if not source.startswith("<<", index):
+            index += 1
+            continue
+        index += 2
+        strip_tabs = index < len(source) and source[index] == "-"
+        if strip_tabs:
+            index += 1
+        while index < len(source) and source[index] in " \t":
+            index += 1
+        quoted = False
+        if index < len(source) and source[index] in {"'", '"'}:
+            quoted = True
+            delimiter_quote = source[index]
+            end = source.find(delimiter_quote, index + 1)
+            if end == -1:
+                return None
+            delimiter = source[index + 1 : end]
+            index = end + 1
+        elif index < len(source) and source[index] == "\\":
+            quoted = True
+            index += 1
+            match = re.match(r"[A-Za-z_][A-Za-z0-9_]*", source[index:])
+            if match is None:
+                return None
+            delimiter = match.group(0)
+            index += len(delimiter)
+        else:
+            match = re.match(r"[A-Za-z_][A-Za-z0-9_]*", source[index:])
+            if match is None:
+                return None
+            delimiter = match.group(0)
+            index += len(delimiter)
+        declarations.append((delimiter, quoted, strip_tabs))
+    return tuple(declarations)
+
+
+def _shell_program_tokens(source: str) -> tuple[str, ...] | None:
     lexer = shlex.shlex(
-        line,
+        source,
         posix=True,
-        punctuation_chars=";&|<>()",
+        punctuation_chars=_SHELL_PUNCTUATION,
     )
+    lexer.whitespace = " \t\r"
     lexer.whitespace_split = True
     lexer.commenters = "#"
     try:
-        return tuple(lexer)
+        raw_tokens = tuple(lexer)
     except ValueError:
         return None
+    tokens: list[str] = []
+    punctuation_pattern = re.compile(
+        r"&&|\|\||<<-|<<|>>|[;&|<>()\n]"
+    )
+    for token in raw_tokens:
+        if token and all(
+            character in _SHELL_PUNCTUATION for character in token
+        ):
+            pieces = punctuation_pattern.findall(token)
+            if "".join(pieces) != token:
+                return None
+            tokens.extend(pieces)
+        else:
+            tokens.append(token)
+    return tuple(tokens)
 
 
-def _shell_executable_lines(text: str) -> tuple[ShellLexemeLine, ...] | None:
-    lines: list[ShellLexemeLine] = []
-    heredocs: list[tuple[str, bool]] = []
-    continued = ""
+def _prepare_shell_program(text: str) -> _PreparedShellProgram | None:
+    retained: list[str] = []
+    heredocs: list[tuple[str, bool, bool]] = []
+    heredoc_substitutions: list[_ShellSubstitution] = []
     for raw_line in text.splitlines():
         if heredocs:
-            delimiter, strip_tabs = heredocs[0]
+            delimiter, quoted, strip_tabs = heredocs[0]
             candidate = raw_line.lstrip("\t") if strip_tabs else raw_line
             if candidate == delimiter:
                 heredocs.pop(0)
+            elif not quoted:
+                masked_body = _mask_shell_substitutions(raw_line)
+                if masked_body is None:
+                    return None
+                heredoc_substitutions.extend(
+                    substitution
+                    for substitution in masked_body[1]
+                    if substitution.kind in {"command", "backtick"}
+                )
+            retained.append("\n")
             continue
-
-        logical = f"{continued}{raw_line}"
-        if logical.rstrip().endswith("\\"):
-            continued = f"{logical.rstrip()[:-1]} "
-            continue
-        continued = ""
-        tokens = _shell_tokens(logical)
-        if tokens is None:
+        declarations = _heredoc_declarations(raw_line)
+        if declarations is None:
             return None
-        if not tokens:
-            continue
-        lines.append((logical.strip(), tokens))
-        index = 0
-        while index < len(tokens):
-            if tokens[index] != "<<":
-                index += 1
-                continue
-            index += 1
-            strip_tabs = index < len(tokens) and tokens[index] == "-"
-            if strip_tabs:
-                index += 1
-            if (
-                index >= len(tokens)
-                or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", tokens[index])
-                is None
-            ):
-                return None
-            heredocs.append((tokens[index], strip_tabs))
-            index += 1
-    if continued or heredocs:
+        heredocs.extend(declarations)
+        retained.append(raw_line)
+        retained.append("\n")
+    if heredocs:
         return None
-    return tuple(lines)
+    source = "".join(retained)
+    source = re.sub(r"\\\r?\n", " ", source)
+    masked = _mask_shell_substitutions(source)
+    if masked is None:
+        return None
+    tokens = _shell_program_tokens(masked[0])
+    if tokens is None:
+        return None
+    return _PreparedShellProgram(
+        tokens=tokens,
+        substitutions=masked[1],
+        heredoc_substitutions=tuple(heredoc_substitutions),
+    )
+
+
+def _shell_command_segments(
+    tokens: tuple[str, ...],
+) -> tuple[tuple[str, ...], ...]:
+    segments: list[tuple[str, ...]] = []
+    start = 0
+    conditional_depth = 0
+    for index, token in enumerate(tokens):
+        if token == "[[":
+            conditional_depth += 1
+        elif token == "]]" and conditional_depth:
+            conditional_depth -= 1
+        if token not in _SHELL_SEPARATORS or conditional_depth:
+            continue
+        if start < index:
+            segments.append(tokens[start:index])
+        start = index + 1
+    if start < len(tokens):
+        segments.append(tokens[start:])
+    return tuple(segments)
+
+
+def _strip_shell_control_tokens(tokens: list[str]) -> list[str]:
+    while tokens and tokens[0] in {
+        "if",
+        "then",
+        "elif",
+        "while",
+        "until",
+        "do",
+        "else",
+        "!",
+        "{",
+    }:
+        tokens.pop(0)
+    while tokens and tokens[-1] in {"then", "do", "fi", "done", "}"}:
+        tokens.pop()
+    return tokens
+
+
+def _binding_for_value(
+    value: str,
+    bindings: dict[str, _VariableBinding],
+    substitutions: dict[str, _ShellSubstitution],
+) -> _VariableBinding:
+    if value in substitutions:
+        return _VariableBinding(literal=None, tainted=False)
+    indirect = _INDIRECT_VARIABLE_RE.fullmatch(value)
+    if indirect is not None:
+        target = bindings.get(indirect.group(1))
+        if target is not None and target.literal in bindings:
+            return _VariableBinding(
+                literal=None,
+                tainted=bindings[target.literal].tainted,
+            )
+        return _VariableBinding(literal=None, tainted=True)
+    variable = _VARIABLE_RE.fullmatch(value)
+    if variable is not None:
+        binding = bindings.get(variable.group(1) or variable.group(2))
+        return binding or _VariableBinding(literal=None, tainted=False)
+    if "$" in value or "`" in value:
+        return _VariableBinding(
+            literal=None,
+            tainted=_looks_like_repo_script(value),
+        )
+    return _VariableBinding(
+        literal=value,
+        tainted=_looks_like_repo_script(value),
+    )
+
+
+def _resolve_shell_word(
+    word: str,
+    bindings: dict[str, _VariableBinding],
+) -> _VariableBinding:
+    indirect = _INDIRECT_VARIABLE_RE.fullmatch(word)
+    if indirect is not None:
+        pointer = bindings.get(indirect.group(1))
+        if pointer is not None and pointer.literal in bindings:
+            target = bindings[pointer.literal]
+            return _VariableBinding(literal=None, tainted=target.tainted)
+        return _VariableBinding(literal=None, tainted=True)
+    variable = _VARIABLE_RE.fullmatch(word)
+    if variable is not None:
+        return bindings.get(
+            variable.group(1) or variable.group(2),
+            _VariableBinding(literal=None, tainted=False),
+        )
+    if "$" in word or "`" in word:
+        return _VariableBinding(
+            literal=None,
+            tainted=_looks_like_repo_script(word),
+        )
+    return _VariableBinding(
+        literal=word,
+        tainted=_looks_like_repo_script(word),
+    )
+
+
+def _strip_safe_wrappers(
+    tokens: list[str],
+) -> tuple[list[str], bool]:
+    invalid = False
+    while tokens:
+        if tokens[0] in {"command", "exec"}:
+            tokens.pop(0)
+            if tokens and tokens[0] == "--":
+                tokens.pop(0)
+            elif tokens and tokens[0].startswith("-"):
+                invalid = True
+            continue
+        if tokens[0] != "env":
+            break
+        tokens.pop(0)
+        while tokens:
+            if tokens[0] == "--":
+                tokens.pop(0)
+                break
+            if tokens[0] in {"-i", "--ignore-environment"}:
+                tokens.pop(0)
+                continue
+            if tokens[0] in {"-u", "--unset"}:
+                if len(tokens) < 2:
+                    invalid = True
+                    break
+                del tokens[:2]
+                continue
+            if tokens[0].startswith("--unset="):
+                tokens.pop(0)
+                continue
+            if _ASSIGNMENT_RE.fullmatch(tokens[0]):
+                tokens.pop(0)
+                continue
+            break
+        if tokens and tokens[0].startswith("-"):
+            invalid = True
+        continue
+    return tokens, invalid
+
+
+def _tokens_reference_repo_script(
+    tokens: tuple[str, ...] | list[str],
+    bindings: dict[str, _VariableBinding],
+) -> bool:
+    for token in tokens:
+        resolved = _resolve_shell_word(token, bindings)
+        if resolved.tainted:
+            return True
+        if (
+            resolved.literal is not None
+            and _canonical_script_path(resolved.literal) is not None
+        ):
+            return True
+    return False
+
+
+def _tokens_contain_script_text(
+    tokens: tuple[str, ...] | list[str],
+    bindings: dict[str, _VariableBinding],
+) -> bool:
+    return any(
+        (
+            (resolved := _resolve_shell_word(token, bindings)).tainted
+            or (
+                resolved.literal is not None
+                and _looks_like_repo_script(resolved.literal)
+            )
+        )
+        for token in tokens
+    )
+
+
+def _analyze_shell_program(
+    text: str,
+    *,
+    allow_owner_substitution: bool,
+) -> _ShellAnalysis:
+    prepared = _prepare_shell_program(text)
+    analysis = _ShellAnalysis(
+        command_signatures=set(),
+        script_invocations=[],
+    )
+    if prepared is None:
+        analysis.invalid = True
+        return analysis
+    substitutions = {
+        substitution.placeholder: substitution
+        for substitution in prepared.substitutions
+    }
+    bindings: dict[str, _VariableBinding] = {}
+
+    def analyze_substitution(
+        substitution: _ShellSubstitution,
+    ) -> _ShellAnalysis:
+        return _analyze_shell_program(
+            substitution.body,
+            allow_owner_substitution=False,
+        )
+
+    def substitution_is_relevant(nested: _ShellAnalysis) -> bool:
+        return bool(
+            nested.script_invocations
+            or (
+                nested.command_signatures
+                & _GOVERNED_NON_SCRIPT_SIGNATURES
+            )
+        )
+
+    if prepared.heredoc_substitutions:
+        analysis.invalid = True
+
+    for raw_segment in _shell_command_segments(prepared.tokens):
+        segment = _strip_shell_control_tokens(list(raw_segment))
+        if not segment:
+            continue
+        segment_substitutions = [
+            substitutions[token]
+            for token in segment
+            if token in substitutions
+        ]
+        for token in segment:
+            assignment = _ASSIGNMENT_RE.fullmatch(token)
+            if assignment is None:
+                continue
+            value = assignment.group(2)
+            if value in substitutions:
+                segment_substitutions.append(substitutions[value])
+        approved_nested: list[_ShellAnalysis] = []
+        for substitution in segment_substitutions:
+            nested = analyze_substitution(substitution)
+            assignment_only = (
+                len(segment) == 1
+                and (assignment := _ASSIGNMENT_RE.fullmatch(segment[0]))
+                is not None
+                and assignment.group(2) == substitution.placeholder
+            )
+            approved = (
+                allow_owner_substitution
+                and substitution.kind == "command"
+                and assignment_only
+                and _APPROVED_OWNER_SUBSTITUTION
+                in nested.command_signatures
+                and {
+                    invocation.path
+                    for invocation in nested.script_invocations
+                }
+                == {_APPROVED_OWNER_SUBSTITUTION[1]}
+                and not nested.invalid
+            )
+            if approved:
+                approved_nested.append(nested)
+            elif substitution_is_relevant(nested):
+                analysis.invalid = True
+        for nested in approved_nested:
+            analysis.command_signatures.update(nested.command_signatures)
+            analysis.script_invocations.extend(nested.script_invocations)
+
+        while segment and (assignment := _ASSIGNMENT_RE.fullmatch(segment[0])):
+            name, value = assignment.groups()
+            bindings[name] = _binding_for_value(
+                value,
+                bindings,
+                substitutions,
+            )
+            segment.pop(0)
+        if not segment:
+            continue
+        segment, wrapper_invalid = _strip_safe_wrappers(segment)
+        if not segment:
+            continue
+        segment = _strip_shell_control_tokens(segment)
+        if not segment:
+            continue
+        signature = tuple(segment)
+        analysis.command_signatures.add(signature)
+        executable_binding = _resolve_shell_word(segment[0], bindings)
+        executable = executable_binding.literal
+        relevant = _tokens_reference_repo_script(segment, bindings)
+        if wrapper_invalid and relevant:
+            analysis.invalid = True
+            continue
+        if executable in _DATA_ONLY_COMMANDS:
+            continue
+        if executable in {"eval", "source", "."}:
+            if (
+                _tokens_contain_script_text(segment[1:], bindings)
+                or segment_substitutions
+            ):
+                analysis.invalid = True
+            continue
+        if executable in {"bash", "sh", "zsh", "python", "python3"}:
+            arguments = segment[1:]
+            if "-c" in arguments:
+                if (
+                    _tokens_contain_script_text(arguments, bindings)
+                    or segment_substitutions
+                ):
+                    analysis.invalid = True
+                continue
+            while arguments and arguments[0] == "--":
+                arguments.pop(0)
+            if not arguments or (
+                executable in {"python", "python3"}
+                and arguments[0] == "-m"
+            ):
+                continue
+            script_binding = _resolve_shell_word(arguments[0], bindings)
+            if script_binding.literal is None:
+                analysis.invalid = True
+                continue
+            script_path = _canonical_script_path(script_binding.literal)
+            if script_path is None:
+                if _looks_like_repo_script(script_binding.literal):
+                    analysis.invalid = True
+                continue
+            suffix = pathlib.PurePosixPath(script_path).suffix
+            if (
+                executable in {"bash", "sh", "zsh"}
+                and suffix != ".sh"
+            ) or (
+                executable in {"python", "python3"}
+                and suffix != ".py"
+            ):
+                analysis.invalid = True
+                continue
+            analysis.script_invocations.append(
+                _ScriptInvocation(path=script_path, direct=False)
+            )
+            continue
+        if executable is None:
+            if (
+                _VARIABLE_RE.fullmatch(segment[0])
+                or _INDIRECT_VARIABLE_RE.fullmatch(segment[0])
+                or executable_binding.tainted
+                or relevant
+            ):
+                analysis.invalid = True
+            continue
+        direct_path = _canonical_script_path(executable)
+        if direct_path is not None:
+            analysis.script_invocations.append(
+                _ScriptInvocation(path=direct_path, direct=True)
+            )
+            continue
+        if _looks_like_repo_script(executable) or relevant:
+            analysis.invalid = True
+    return analysis
+
+
+def _python_call_name(node: ast.expr) -> str | None:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        owner = _python_call_name(node.value)
+        return f"{owner}.{node.attr}" if owner else node.attr
+    return None
+
+
+def _literal_python_command(node: ast.expr) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if not isinstance(node, (ast.List, ast.Tuple)):
+        return None
+    values: list[str] = []
+    for element in node.elts:
+        if not (
+            isinstance(element, ast.Constant)
+            and isinstance(element.value, str)
+        ):
+            return None
+        values.append(element.value)
+    return shlex.join(values)
+
+
+def _analyze_python_helper(text: str) -> _ShellAnalysis:
+    analysis = _ShellAnalysis(
+        command_signatures=set(),
+        script_invocations=[],
+    )
+    try:
+        tree = ast.parse(text)
+    except (SyntaxError, ValueError):
+        analysis.invalid = True
+        return analysis
+    admitted_calls = {
+        "os.execl",
+        "os.execle",
+        "os.execlp",
+        "os.execlpe",
+        "os.execv",
+        "os.execve",
+        "os.execvp",
+        "os.execvpe",
+        "os.system",
+        "subprocess.Popen",
+        "subprocess.call",
+        "subprocess.check_call",
+        "subprocess.check_output",
+        "subprocess.run",
+    }
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if _python_call_name(node.func) not in admitted_calls or not node.args:
+            continue
+        command = _literal_python_command(node.args[0])
+        if command is None:
+            continue
+        nested = _analyze_shell_program(
+            command,
+            allow_owner_substitution=False,
+        )
+        analysis.command_signatures.update(nested.command_signatures)
+        analysis.script_invocations.extend(nested.script_invocations)
+        analysis.invalid = analysis.invalid or nested.invalid
+    return analysis
+
+
+def _tracked_executable_mode(
+    root: pathlib.Path,
+    relative: pathlib.PurePosixPath,
+) -> bool:
+    try:
+        result = subprocess.run(
+            [
+                "git",
+                "-C",
+                os.fspath(root),
+                "ls-files",
+                "--stage",
+                "--",
+                relative.as_posix(),
+            ],
+            check=False,
+            capture_output=True,
+            env={
+                **os.environ,
+                "GIT_LITERAL_PATHSPECS": "1",
+                "LC_ALL": "C",
+            },
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    if result.returncode != 0 or len(result.stdout) > 4_096:
+        return False
+    match = re.fullmatch(
+        rb"100755 [0-9a-f]{40,64} 0\t([^\x00\r\n]+)\n?",
+        result.stdout,
+    )
+    return (
+        match is not None
+        and match.group(1).decode("utf-8", errors="ignore")
+        == relative.as_posix()
+    )
+
+
+def _direct_script_admitted(
+    root: pathlib.Path,
+    relative: pathlib.PurePosixPath,
+    payload: bytes,
+) -> bool:
+    if not _tracked_executable_mode(root, relative):
+        return False
+    try:
+        metadata = root.joinpath(*relative.parts).lstat()
+    except OSError:
+        return False
+    if (
+        not stat.S_ISREG(metadata.st_mode)
+        or metadata.st_mode & 0o111 == 0
+    ):
+        return False
+    shebang = payload.splitlines()[0] if payload.splitlines() else b""
+    return shebang in _ADMITTED_SHEBANGS.get(relative.suffix, frozenset())
+
+
+def _governed_script_paths() -> frozenset[str]:
+    return frozenset(
+        marker
+        for owner in _EXPENSIVE_COMMAND_BASELINE
+        if (
+            marker := _semantic_command_marker(owner.command)
+        ).startswith("scripts/")
+    )
+
+
+def _merge_shell_analysis(
+    resolution: _SemanticResolution,
+    analysis: _ShellAnalysis,
+) -> None:
+    resolution.command_signatures.update(analysis.command_signatures)
+    resolution.script_paths.update(
+        invocation.path for invocation in analysis.script_invocations
+    )
+
+
+def _resolve_job_semantics(
+    root: pathlib.Path,
+    programs: tuple[str, ...],
+) -> _SemanticResolution:
+    resolution = _SemanticResolution(
+        command_signatures=set(),
+        script_paths=set(),
+    )
+    governed = _governed_script_paths()
+    budget = _TraversalBudget(visited=set(), stack=[])
+
+    def mark_invalid(*, aggregate: bool) -> None:
+        if aggregate:
+            resolution.aggregate_invalid = True
+        else:
+            resolution.invalid = True
+
+    def walk_script(
+        invocation: _ScriptInvocation,
+        *,
+        depth: int,
+        aggregate: bool,
+    ) -> None:
+        relative = pathlib.PurePosixPath(invocation.path)
+        if invocation.direct:
+            resolution.script_paths.discard(invocation.path)
+        maximum = (
+            MAX_AGGREGATE_BYTES
+            if relative == REPOSITORY_AGGREGATE
+            else MAX_SEMANTIC_HELPER_BYTES
+        )
+        payload = _read_repo_script_bytes(
+            root,
+            relative,
+            maximum=maximum,
+        )
+        if payload is None:
+            mark_invalid(aggregate=aggregate)
+            return
+        if invocation.direct and not _direct_script_admitted(
+            root,
+            relative,
+            payload,
+        ):
+            mark_invalid(aggregate=aggregate)
+            return
+        if invocation.direct:
+            resolution.script_paths.add(invocation.path)
+        if (
+            invocation.path in governed
+            and relative != REPOSITORY_AGGREGATE
+        ):
+            return
+        if depth > MAX_SEMANTIC_HELPER_DEPTH:
+            mark_invalid(aggregate=aggregate)
+            return
+        if invocation.path in budget.stack:
+            mark_invalid(aggregate=aggregate)
+            return
+        if invocation.path in budget.visited:
+            return
+        budget.files += 1
+        budget.total_bytes += len(payload)
+        if (
+            budget.files > MAX_SEMANTIC_HELPER_FILES
+            or budget.total_bytes > MAX_SEMANTIC_HELPER_TOTAL_BYTES
+        ):
+            mark_invalid(aggregate=aggregate)
+            return
+        budget.visited.add(invocation.path)
+        budget.stack.append(invocation.path)
+        try:
+            if relative.suffix == ".py":
+                text = payload.decode("utf-8")
+                analysis = _analyze_python_helper(text)
+                _merge_shell_analysis(resolution, analysis)
+                if analysis.invalid:
+                    mark_invalid(aggregate=aggregate)
+                for child in analysis.script_invocations:
+                    if child.path in governed:
+                        if child.direct:
+                            walk_script(
+                                child,
+                                depth=depth + 1,
+                                aggregate=aggregate,
+                            )
+                        continue
+                    walk_script(
+                        child,
+                        depth=depth + 1,
+                        aggregate=aggregate,
+                    )
+                return
+            text = payload.decode("utf-8")
+            analysis = _analyze_shell_program(
+                text,
+                allow_owner_substitution=False,
+            )
+            _merge_shell_analysis(resolution, analysis)
+            if analysis.invalid:
+                mark_invalid(aggregate=aggregate)
+            for child in analysis.script_invocations:
+                if child.path in governed:
+                    if child.direct:
+                        walk_script(
+                            child,
+                            depth=depth + 1,
+                            aggregate=aggregate,
+                        )
+                    continue
+                walk_script(
+                    child,
+                    depth=depth + 1,
+                    aggregate=aggregate,
+                )
+        except UnicodeError:
+            mark_invalid(aggregate=aggregate)
+        finally:
+            budget.stack.pop()
+
+    for program in programs:
+        analysis = _analyze_shell_program(
+            program,
+            allow_owner_substitution=True,
+        )
+        _merge_shell_analysis(resolution, analysis)
+        if analysis.invalid:
+            resolution.invalid = True
+        for invocation in analysis.script_invocations:
+            aggregate = invocation.path == REPOSITORY_AGGREGATE.as_posix()
+            if invocation.direct:
+                if aggregate or invocation.path in governed:
+                    walk_script(
+                        invocation,
+                        depth=0,
+                        aggregate=aggregate,
+                    )
+            elif aggregate:
+                walk_script(
+                    invocation,
+                    depth=0,
+                    aggregate=aggregate,
+                )
+    return resolution
 
 
 def _semantic_command_marker(command: str) -> str:
@@ -1302,127 +2389,12 @@ def _semantic_command_marker(command: str) -> str:
     return repository_script.group(0) if repository_script else command
 
 
-def _shell_command_segments(tokens: tuple[str, ...]) -> tuple[tuple[str, ...], ...]:
-    separators = {";", "&&", "||", "|", "&", "(", ")"}
-    segments: list[tuple[str, ...]] = []
-    start = 0
-    for index, token in enumerate(tokens):
-        if token not in separators:
-            continue
-        if start < index:
-            segments.append(tokens[start:index])
-        start = index + 1
-    if start < len(tokens):
-        segments.append(tokens[start:])
-    return tuple(segments)
-
-
-def _normalized_shell_command(segment: tuple[str, ...]) -> tuple[str, ...]:
-    tokens = list(segment)
-    while tokens and tokens[0] in {
-        "if",
-        "then",
-        "elif",
-        "while",
-        "until",
-        "do",
-        "else",
-        "!",
-    }:
-        tokens.pop(0)
-    while tokens and re.fullmatch(
-        r"[A-Za-z_][A-Za-z0-9_]*=.*",
-        tokens[0],
-    ):
-        tokens.pop(0)
-    if tokens and tokens[0] in {"command", "exec"}:
-        tokens.pop(0)
-        if tokens and tokens[0] == "--":
-            tokens.pop(0)
-    if tokens and tokens[0] == "env":
-        tokens.pop(0)
-        while tokens and (
-            tokens[0].startswith("-")
-            or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*=.*", tokens[0])
-        ):
-            tokens.pop(0)
-    return tuple(tokens)
-
-
-def _semantic_marker_status(
-    lines: tuple[ShellLexemeLine, ...],
-    marker: str,
-) -> str:
-    if not marker.startswith("scripts/"):
-        return (
-            "executes"
-            if any(source == marker for source, _ in lines)
-            else "absent"
-        )
-
-    marker_tokens = {marker, f"./{marker}"}
-    marker_variables: set[str] = set()
-    status = "absent"
-    for _, tokens in lines:
-        for token in tokens:
-            assignment = re.fullmatch(
-                r"([A-Za-z_][A-Za-z0-9_]*)=(?:\./)?"
-                + re.escape(marker),
-                token,
-            )
-            if assignment is not None:
-                marker_variables.add(assignment.group(1))
-            substitution = re.fullmatch(
-                r"[A-Za-z_][A-Za-z0-9_]*=\$\((.*)\)",
-                token,
-            )
-            if substitution is not None:
-                nested_tokens = _shell_tokens(substitution.group(1))
-                if nested_tokens is None:
-                    return "ambiguous"
-                nested_status = _semantic_marker_status(
-                    ((substitution.group(1), nested_tokens),),
-                    marker,
-                )
-                if nested_status != "absent":
-                    status = nested_status
-
-        for segment in _shell_command_segments(tokens):
-            command = _normalized_shell_command(segment)
-            if not command:
-                continue
-            executable = command[0]
-            if executable in marker_tokens:
-                status = "executes"
-                continue
-            if executable in {"bash", "python3", "python"}:
-                arguments = command[1:]
-                if any(argument in marker_tokens for argument in arguments):
-                    status = "executes"
-                    continue
-                if any(
-                    argument in {
-                        f"${variable}",
-                        f"${{{variable}}}",
-                    }
-                    for variable in marker_variables
-                    for argument in arguments
-                ):
-                    return "ambiguous"
-            if executable in {"echo", "printf"}:
-                continue
-            if any(token in marker_tokens for token in command[1:]):
-                return "ambiguous"
-            if any(marker in token and "$(" in token for token in command):
-                return "ambiguous"
-    return status
-
-
-def _semantic_marker_status_for_text(text: str, marker: str) -> str:
-    lines = _shell_executable_lines(text)
-    if lines is None:
-        return "ambiguous"
-    return _semantic_marker_status(lines, marker)
+def _semantic_command_signatures(command: str) -> frozenset[tuple[str, ...]]:
+    analysis = _analyze_shell_program(
+        command,
+        allow_owner_substitution=True,
+    )
+    return frozenset(analysis.command_signatures)
 
 
 def _finding(code: str, path: str, message: str) -> WorkflowFinding:
@@ -1528,6 +2500,7 @@ def validate_workflows(
     job_owners: dict[str, str] = {}
     action_consumers: dict[tuple[str, str], set[str]] = {}
     workflow_job_tokens: dict[tuple[str, str], tuple[str, ...]] = {}
+    workflow_job_programs: dict[tuple[str, str], tuple[str, ...]] = {}
     sha_pattern = re.compile(r"[0-9a-f]{40}")
     forbidden_events = {"pull_request_target", "workflow_run", "workflow_call"}
     workflow_names: dict[str, str] = {}
@@ -1663,6 +2636,7 @@ def validate_workflows(
                 )
             tokens = _job_tokens(raw_job)
             workflow_job_tokens[(path, job_id)] = tokens
+            workflow_job_programs[(path, job_id)] = _job_programs(raw_job)
             for command in expected_job.owner_commands:
                 if tokens.count(command) != 1:
                     findings.append(
@@ -1799,85 +2773,47 @@ def validate_workflows(
                     f"semantic gate {owner.identifier} does not have exactly one owner command",
                 )
             )
-    aggregate_marker = REPOSITORY_AGGREGATE.as_posix()
-    aggregate_callers = {
-        identity
-        for identity, tokens in workflow_job_tokens.items()
-        if any(
-            _semantic_marker_status_for_text(token, aggregate_marker)
-            == "executes"
-            for token in tokens
-        )
+    semantic_resolutions = {
+        identity: _resolve_job_semantics(root, programs)
+        for identity, programs in workflow_job_programs.items()
     }
-    aggregate_lines: tuple[ShellLexemeLine, ...] = ()
-    aggregate_source_invalid = False
-    if aggregate_callers:
-        aggregate_source = _read_repository_aggregate(root)
-        if aggregate_source is None:
-            aggregate_source_invalid = True
-            findings.append(
-                _finding(
-                    "workflow-aggregate-source-invalid",
-                    REPOSITORY_AGGREGATE.as_posix(),
-                    "repository aggregate source is unavailable or unsafe",
-                )
+    if any(
+        resolution.invalid
+        for resolution in semantic_resolutions.values()
+    ):
+        findings.append(
+            _finding(
+                "workflow-semantic-command-source-invalid",
+                WORKFLOW_CONTRACT.as_posix(),
+                "workflow semantic command grammar is ambiguous",
             )
-        else:
-            parsed_aggregate = _shell_executable_lines(aggregate_source)
-            if parsed_aggregate is None:
-                aggregate_source_invalid = True
-                findings.append(
-                    _finding(
-                        "workflow-aggregate-source-invalid",
-                        REPOSITORY_AGGREGATE.as_posix(),
-                        "repository aggregate command grammar is invalid",
-                    )
-                )
-            else:
-                aggregate_lines = parsed_aggregate
+        )
+    if any(
+        resolution.aggregate_invalid
+        for resolution in semantic_resolutions.values()
+    ):
+        findings.append(
+            _finding(
+                "workflow-aggregate-source-invalid",
+                REPOSITORY_AGGREGATE.as_posix(),
+                "repository aggregate semantic source is invalid",
+            )
+        )
     for command, expected_owners in registered_expensive.items():
         marker = _semantic_command_marker(command)
-        workflow_statuses = {
-            identity: tuple(
-                _semantic_marker_status_for_text(token, marker)
-                for token in tokens
-            )
-            for identity, tokens in workflow_job_tokens.items()
-        }
-        if any(
-            "ambiguous" in statuses
-            for statuses in workflow_statuses.values()
-        ):
-            findings.append(
-                _finding(
-                    "workflow-semantic-command-source-invalid",
-                    WORKFLOW_CONTRACT.as_posix(),
-                    "workflow semantic command grammar is ambiguous",
-                )
-            )
-        aggregate_status = (
-            _semantic_marker_status(aggregate_lines, marker)
-            if aggregate_lines
-            else "absent"
-        )
-        if aggregate_status == "ambiguous" and not aggregate_source_invalid:
-            aggregate_source_invalid = True
-            findings.append(
-                _finding(
-                    "workflow-aggregate-source-invalid",
-                    REPOSITORY_AGGREGATE.as_posix(),
-                    "repository aggregate semantic invocation is ambiguous",
-                )
-            )
-        actual_owners = {
-            identity
-            for identity, statuses in workflow_statuses.items()
-            if "executes" in statuses
-            or (
-                identity in aggregate_callers
-                and aggregate_status == "executes"
-            )
-        }
+        if marker.startswith("scripts/"):
+            actual_owners = {
+                identity
+                for identity, resolution in semantic_resolutions.items()
+                if marker in resolution.script_paths
+            }
+        else:
+            signatures = _semantic_command_signatures(command)
+            actual_owners = {
+                identity
+                for identity, resolution in semantic_resolutions.items()
+                if signatures & resolution.command_signatures
+            }
         if actual_owners != expected_owners:
             findings.append(
                 _finding(

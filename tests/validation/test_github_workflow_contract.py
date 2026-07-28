@@ -3,8 +3,10 @@ from __future__ import annotations
 import dataclasses
 import contextlib
 import importlib.util
+import os
 import pathlib
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -239,13 +241,63 @@ class GithubWorkflowContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             shutil.copytree(ROOT / ".github", root / ".github")
-            aggregate = root / "scripts/validation/check-repo-contracts.sh"
-            aggregate.parent.mkdir(parents=True)
-            shutil.copy2(
-                ROOT / "scripts/validation/check-repo-contracts.sh",
-                aggregate,
-            )
+            shutil.copytree(ROOT / "scripts", root / "scripts")
             yield root
+
+    def append_aggregate_program(
+        self,
+        root: pathlib.Path,
+        program: str,
+    ) -> None:
+        aggregate = root / "scripts/validation/check-repo-contracts.sh"
+        aggregate.write_text(
+            aggregate.read_text(encoding="utf-8")
+            + "\n"
+            + program.rstrip()
+            + "\n",
+            encoding="utf-8",
+        )
+
+    def append_workflow_program(
+        self,
+        root: pathlib.Path,
+        *,
+        name: str,
+        program: str,
+    ) -> None:
+        workflow = root / ".github/workflows/ci-quality.yml"
+        text = workflow.read_text(encoding="utf-8")
+        anchor = "      - name: Check docs traceability sync\n"
+        step = (
+            f"      - name: {name}\n"
+            "        shell: bash\n"
+            "        run: |\n"
+            + "".join(f"          {line}\n" for line in program.splitlines())
+        )
+        self.assertIn(anchor, text)
+        workflow.write_text(
+            text.replace(anchor, step + anchor, 1),
+            encoding="utf-8",
+        )
+
+    def semantic_finding_codes(
+        self,
+        root: pathlib.Path,
+    ) -> set[str]:
+        findings = self.module.validate_workflows(
+            root,
+            self.module.load_workflow_contract(root),
+        )
+        return {
+            finding.code
+            for finding in findings
+            if finding.code
+            in {
+                "expensive-command-ownership-duplicate",
+                "workflow-aggregate-source-invalid",
+                "workflow-semantic-command-source-invalid",
+            }
+        }
 
     def test_security_and_ownership_mutation_matrix_fails_closed(self) -> None:
         sentinel = "private-workflow-sentinel"
@@ -676,12 +728,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "direct-executable",
                 f"./{marker}\n",
-                {"expensive-command-ownership-duplicate"},
+                {"workflow-aggregate-source-invalid"},
             ),
             (
                 "variable-indirection",
                 f'checker="{marker}"\nbash "$checker"\n',
-                {"workflow-aggregate-source-invalid"},
+                {"expensive-command-ownership-duplicate"},
             ),
             (
                 "unknown-wrapper",
@@ -710,7 +762,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     f"./{marker}\n"
                     "REPORT\n"
                 ),
-                {"expensive-command-ownership-duplicate"},
+                {"workflow-aggregate-source-invalid"},
             ),
         )
         for label, mutation, expected_codes in cases:
@@ -736,6 +788,463 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     }
                 }
                 self.assertEqual(expected_codes, relevant_codes)
+
+    def test_semantic_owner_complete_program_variable_matrix(
+        self,
+    ) -> None:
+        marker = "scripts/hardening/check-all-hardening.sh"
+        safe_cases = (
+            (
+                "literal-assignment-later-interpreter",
+                f'checker="{marker}"\nbash "$checker"',
+            ),
+            (
+                "literal-assignment-same-line-direct",
+                f"checker={marker}; bash \"${{checker}}\"",
+            ),
+        )
+        for label, program in safe_cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                self.append_workflow_program(
+                    root,
+                    name=f"Duplicate semantic owner {label}",
+                    program=program,
+                )
+                self.assertIn(
+                    "expensive-command-ownership-duplicate",
+                    self.semantic_finding_codes(root),
+                )
+
+        ambiguous_cases = (
+            (
+                "dynamic-assignment",
+                (
+                    'prefix="${DYNAMIC_ROOT:-}"\n'
+                    f'checker="${{prefix}}/{marker}"\n'
+                    'bash "$checker"'
+                ),
+            ),
+            (
+                "variable-indirection",
+                (
+                    f'checker="{marker}"\n'
+                    'pointer=checker\n'
+                    'bash "${!pointer}"'
+                ),
+            ),
+            (
+                "unresolved-variable",
+                (
+                    f'expected="{marker}"\n'
+                    'bash "$unresolved_checker" "$expected"'
+                ),
+            ),
+            (
+                "dynamic-direct-executable",
+                (
+                    'checker="${DYNAMIC_CHECKER:-}"\n'
+                    '"$checker"'
+                ),
+            ),
+        )
+        for label, program in ambiguous_cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                self.append_workflow_program(
+                    root,
+                    name=f"Ambiguous semantic owner {label}",
+                    program=program,
+                )
+                self.assertIn(
+                    "workflow-semantic-command-source-invalid",
+                    self.semantic_finding_codes(root),
+                )
+
+    def test_non_script_semantic_commands_normalize_safe_wrappers_and_continuations(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "command-python",
+                (
+                    "command python3 -m unittest "
+                    "tests.validation.test_agent_governance_ci_routing -v"
+                ),
+            ),
+            (
+                "env-npm",
+                (
+                    "env LC_ALL=C npm audit --audit-level=high "
+                    "--prefix projects/storybook/nextjs"
+                ),
+            ),
+            (
+                "env-options-npm",
+                (
+                    "env -i --unset HOME LC_ALL=C "
+                    "npm audit --audit-level=high "
+                    "--prefix projects/storybook/nextjs"
+                ),
+            ),
+            (
+                "continued-python",
+                (
+                    "command python3 -m unittest \\\n"
+                    "  tests.validation.test_agent_governance_ci_routing \\\n"
+                    "  -v"
+                ),
+            ),
+        )
+        for label, program in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                self.append_workflow_program(
+                    root,
+                    name=f"Equivalent non-script owner {label}",
+                    program=program,
+                )
+                self.assertIn(
+                    "expensive-command-ownership-duplicate",
+                    self.semantic_finding_codes(root),
+                )
+
+    def test_semantic_owner_rejects_dynamic_shell_and_path_aliases(
+        self,
+    ) -> None:
+        marker = "scripts/hardening/check-all-hardening.sh"
+        sentinel = "private-semantic-payload"
+        cases = (
+            ("shell-c", f"bash -c 'bash {marker}'"),
+            ("eval", f"eval 'bash {marker}'"),
+            ("source", f"source {marker}"),
+            ("unknown-wrapper", f"run_gate {marker}"),
+            (
+                "command-substitution-echo",
+                f'echo "$({marker} {sentinel})"',
+            ),
+            (
+                "command-substitution-printf",
+                f'printf "%s\\n" "$(bash {marker} {sentinel})"',
+            ),
+            (
+                "process-substitution",
+                f"diff <(bash {marker}) /dev/null",
+            ),
+            (
+                "noncanonical-dot-dot",
+                (
+                    "bash scripts/validation/../hardening/"
+                    "check-all-hardening.sh"
+                ),
+            ),
+            (
+                "noncanonical-double-slash",
+                "bash scripts//hardening/check-all-hardening.sh",
+            ),
+            (
+                "noncanonical-absolute",
+                f"bash \"$PWD/{marker}\"",
+            ),
+        )
+        for label, program in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                self.append_aggregate_program(root, program)
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                self.assertIn(
+                    "workflow-aggregate-source-invalid",
+                    {finding.code for finding in findings},
+                )
+                self.assertTrue(
+                    all(
+                        sentinel not in finding.message
+                        for finding in findings
+                    )
+                )
+
+    def test_semantic_owner_heredoc_interpolation_is_fail_closed(
+        self,
+    ) -> None:
+        marker = "scripts/hardening/check-all-hardening.sh"
+        cases = (
+            (
+                "quoted-heredoc-data",
+                (
+                    "cat <<'REPORT'\n"
+                    f"$(bash {marker})\n"
+                    "REPORT"
+                ),
+                set(),
+            ),
+            (
+                "unquoted-heredoc-command-substitution",
+                (
+                    "cat <<REPORT\n"
+                    f"$(bash {marker})\n"
+                    "REPORT"
+                ),
+                {"workflow-aggregate-source-invalid"},
+            ),
+            (
+                "unquoted-heredoc-backtick-substitution",
+                (
+                    "cat <<REPORT\n"
+                    f"`bash {marker}`\n"
+                    "REPORT"
+                ),
+                {"workflow-aggregate-source-invalid"},
+            ),
+        )
+        for label, program, expected_codes in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                self.append_aggregate_program(root, program)
+                self.assertEqual(
+                    expected_codes,
+                    self.semantic_finding_codes(root),
+                )
+
+    def test_semantic_owner_recurses_literal_helpers_and_fails_closed_on_cycles(
+        self,
+    ) -> None:
+        marker = "scripts/hardening/check-all-hardening.sh"
+        cases = ("one-helper", "nested-helper", "python-helper", "cycle")
+        for label in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                helper_root = root / "scripts/validation"
+                helper_root.mkdir(parents=True, exist_ok=True)
+                first = helper_root / "task4-semantic-helper-a.sh"
+                second = helper_root / "task4-semantic-helper-b.sh"
+                if label == "one-helper":
+                    first.write_text(
+                        f"#!/usr/bin/env bash\nbash {marker}\n",
+                        encoding="utf-8",
+                    )
+                    expected = {
+                        "expensive-command-ownership-duplicate"
+                    }
+                elif label == "nested-helper":
+                    first.write_text(
+                        (
+                            "#!/usr/bin/env bash\n"
+                            "bash scripts/validation/"
+                            "task4-semantic-helper-b.sh\n"
+                        ),
+                        encoding="utf-8",
+                    )
+                    second.write_text(
+                        f"#!/usr/bin/env bash\nbash {marker}\n",
+                        encoding="utf-8",
+                    )
+                    expected = {
+                        "expensive-command-ownership-duplicate"
+                    }
+                elif label == "python-helper":
+                    first = first.with_suffix(".py")
+                    first.write_text(
+                        (
+                            "#!/usr/bin/env python3\n"
+                            "import subprocess\n"
+                            "subprocess.run(\n"
+                            f'    ["bash", "{marker}"],\n'
+                            "    check=True,\n"
+                            ")\n"
+                        ),
+                        encoding="utf-8",
+                    )
+                    expected = {
+                        "expensive-command-ownership-duplicate"
+                    }
+                else:
+                    first.write_text(
+                        (
+                            "#!/usr/bin/env bash\n"
+                            "bash scripts/validation/"
+                            "task4-semantic-helper-b.sh\n"
+                        ),
+                        encoding="utf-8",
+                    )
+                    second.write_text(
+                        (
+                            "#!/usr/bin/env bash\n"
+                            "bash scripts/validation/"
+                            "task4-semantic-helper-a.sh\n"
+                        ),
+                        encoding="utf-8",
+                    )
+                    expected = {"workflow-aggregate-source-invalid"}
+                self.append_aggregate_program(
+                    root,
+                    (
+                        "python3 scripts/validation/"
+                        "task4-semantic-helper-a.py"
+                        if label == "python-helper"
+                        else (
+                            "bash scripts/validation/"
+                            "task4-semantic-helper-a.sh"
+                        )
+                    ),
+                )
+                self.assertTrue(
+                    expected.issubset(self.semantic_finding_codes(root))
+                )
+
+    def test_semantic_helper_depth_file_byte_and_symlink_limits_fail_closed(
+        self,
+    ) -> None:
+        cases = ("depth", "files", "bytes", "symlink")
+        for label in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                helper_root = root / "scripts/validation"
+                helper_root.mkdir(parents=True, exist_ok=True)
+                if label == "depth":
+                    for index in range(10):
+                        successor = (
+                            f"bash scripts/validation/task4-depth-{index + 1}.sh\n"
+                            if index < 9
+                            else "true\n"
+                        )
+                        (helper_root / f"task4-depth-{index}.sh").write_text(
+                            "#!/usr/bin/env bash\n" + successor,
+                            encoding="utf-8",
+                        )
+                    entry = "bash scripts/validation/task4-depth-0.sh"
+                elif label == "files":
+                    invocations: list[str] = []
+                    for index in range(65):
+                        relative = (
+                            f"scripts/validation/task4-file-{index}.sh"
+                        )
+                        (root / relative).write_text(
+                            "#!/usr/bin/env bash\ntrue\n",
+                            encoding="utf-8",
+                        )
+                        invocations.append(f"bash {relative}")
+                    entry = "\n".join(invocations)
+                elif label == "bytes":
+                    relative = "scripts/validation/task4-large-helper.sh"
+                    (root / relative).write_text(
+                        "#!/usr/bin/env bash\n#"
+                        + ("x" * (256 * 1024))
+                        + "\n",
+                        encoding="utf-8",
+                    )
+                    entry = f"bash {relative}"
+                else:
+                    target = helper_root / "task4-helper-target.sh"
+                    target.write_text(
+                        "#!/usr/bin/env bash\ntrue\n",
+                        encoding="utf-8",
+                    )
+                    link = helper_root / "task4-helper-link.sh"
+                    os.symlink(target.name, link)
+                    entry = (
+                        "bash scripts/validation/task4-helper-link.sh"
+                    )
+                self.append_aggregate_program(root, entry)
+                self.assertIn(
+                    "workflow-aggregate-source-invalid",
+                    self.semantic_finding_codes(root),
+                )
+
+    def test_direct_local_executable_requires_tracked_mode_and_admitted_shebang(
+        self,
+    ) -> None:
+        marker = pathlib.PurePosixPath(
+            "scripts/hardening/check-all-hardening.sh"
+        )
+        cases = (
+            (
+                "tracked-executable",
+                "copy",
+                True,
+                {"expensive-command-ownership-duplicate"},
+            ),
+            (
+                "tracked-non-executable",
+                "copy",
+                False,
+                {"workflow-aggregate-source-invalid"},
+            ),
+            (
+                "untracked-executable",
+                "copy-untracked",
+                True,
+                {"workflow-aggregate-source-invalid"},
+            ),
+            (
+                "invalid-shebang",
+                "invalid-shebang",
+                True,
+                {"workflow-aggregate-source-invalid"},
+            ),
+            (
+                "symlink",
+                "symlink",
+                True,
+                {"workflow-aggregate-source-invalid"},
+            ),
+        )
+        for label, setup, executable, expected_codes in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                path = root.joinpath(*marker.parts)
+                path.parent.mkdir(parents=True, exist_ok=True)
+                if setup == "copy":
+                    shutil.copy2(ROOT.joinpath(*marker.parts), path)
+                elif setup == "copy-untracked":
+                    shutil.copy2(ROOT.joinpath(*marker.parts), path)
+                elif setup == "invalid-shebang":
+                    path.write_text(
+                        "#!/usr/bin/env ruby\nexit 0\n",
+                        encoding="utf-8",
+                    )
+                else:
+                    target = path.with_name("tracked-target.sh")
+                    target.write_text(
+                        "#!/usr/bin/env bash\nexit 0\n",
+                        encoding="utf-8",
+                    )
+                    path.unlink()
+                    os.symlink(target.name, path)
+                if not path.is_symlink():
+                    path.chmod(0o755 if executable else 0o644)
+
+                subprocess.run(
+                    ["git", "init", "-q"],
+                    cwd=root,
+                    check=True,
+                    capture_output=True,
+                )
+                if setup != "copy-untracked":
+                    subprocess.run(
+                        ["git", "add", marker.as_posix()],
+                        cwd=root,
+                        check=True,
+                        capture_output=True,
+                    )
+                    if setup == "copy":
+                        subprocess.run(
+                            [
+                                "git",
+                                "update-index",
+                                (
+                                    "--chmod=+x"
+                                    if executable
+                                    else "--chmod=-x"
+                                ),
+                                marker.as_posix(),
+                            ],
+                            cwd=root,
+                            check=True,
+                            capture_output=True,
+                        )
+                self.append_aggregate_program(
+                    root,
+                    f"./{marker.as_posix()}",
+                )
+                self.assertEqual(
+                    expected_codes,
+                    self.semantic_finding_codes(root),
+                )
 
     def test_alternate_boolean_trigger_keys_cannot_masquerade_as_on(
         self,
