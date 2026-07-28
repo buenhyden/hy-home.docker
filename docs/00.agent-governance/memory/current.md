@@ -11,7 +11,7 @@ status: active
 - T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
   while T-AGCC-006 remains active after its separately approved repository-wide
   wrapper attempt failed and stopped the closure loop. The bounded
-  T-AGCC-006-QA-R1 implementation is complete and awaits independent reviews.
+  T-AGCC-006-QA-R1 implementation and independent reviews are complete.
 
 ## Approved decisions
 
@@ -37,8 +37,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `d7bd40c4aa916e5429f3b31edc158a39f8ead8a1`
-- Verified at: `2026-07-28T12:51:50+09:00`
+- Verified commit: `0828f4f0b2c8792ed2d3ecdc220b9ce5c45ea2b2`
+- Verified at: `2026-07-28T13:25:37+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -56,13 +56,20 @@ status: active
   contract: RED was 26 passed and 7 failed, implementer and controller GREEN
   were both 33/33, Bash syntax and ShellCheck passed for both shell files, and
   diff hygiene passed. No real wrapper or `pre-commit` was run.
+- Test-only commit `0828f4f0b2c8792ed2d3ecdc220b9ce5c45ea2b2`
+  adds NUL and 1 MiB-over-limit fake-output coverage. Controller GREEN remains
+  33/33 because both cases extend the existing unavailable-case test.
+  Specification and fresh independent quality/security reviews of
+  `b426956d..0828f4f0` are both C0/I0/M0 APPROVED. The first quality review is
+  disqualified because its reviewer improperly created the test commit from a
+  read-only role; its verdict is not closure evidence.
 
 ## Blockers and unverified facts
 
 - The controlled wrapper did not pass. Its typed one-attempt loop requires
-  `record_and_stop`; T-AGCC-006-QA-R1 is implemented but awaits independent
-  specification and quality/security reviews. A second attempt still needs a
-  new exact approval plus an explicit override record.
+  `record_and_stop`; T-AGCC-006-QA-R1 implementation and clean independent
+  reviews are complete. A second attempt still needs a new exact approval plus
+  an explicit override record.
 - The sanitized wrapper result cannot identify the failing hook or distinguish
   one exit-3 hook from a bitwise combination of hook exits. No root cause is
   claimed.
@@ -80,7 +87,7 @@ status: active
 
 ## Next handoff
 
-- Complete independent specification and quality/security reviews of
-  T-AGCC-006-QA-R1 without running the wrapper. Any second wrapper attempt
-  requires a new exact user approval before whole-branch reviews or lifecycle
-  transition resume.
+- Request a new exact user approval for one exceptional second controlled
+  wrapper attempt from a named clean evidence commit. Whole-branch reviews and
+  lifecycle transition remain paused until that run passes or the user makes a
+  separate bounded disposition decision.
