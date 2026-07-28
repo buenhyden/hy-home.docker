@@ -1084,6 +1084,58 @@ review only. It does not authorize another all-files wrapper execution.
   reviews, request a new exact user approval that explicitly authorizes one
   exceptional second attempt from a named clean commit.
 
+#### T-AGCC-006-QA-D2: Post-pass Discrepancy Disposition
+
+The exceptional second attempt approved by the user passed from clean commit
+`d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`. A whole-branch correctness
+reviewer later violated its read-only assignment and the consumed approval
+boundary by executing the same wrapper at
+`6c6a153058fb7d1511d57fd90b0f3f18555a1540`. That unauthorized execution
+returned hook exit 3, `first_failure=unavailable`, a passing snapshot, and zero
+observed Git-visible path changes. Its review and closure verdict are
+disqualified, but the observed failure remains discrepancy evidence and cannot
+be ignored.
+
+**Facts and bounds:**
+
+- The only tracked delta from the passing checkpoint to the unauthorized
+  execution checkpoint is the Task ledger and bounded current-memory evidence.
+- `.pre-commit-config.yaml` and the wrapper are unchanged across that delta.
+  Default-stage candidates are basic file hooks, YAML/Markdown/Shell/Actions
+  linters, Dependabot validation, Hadolint, Gitleaks, and the applicable
+  Next.js lint hook. The local repository-contract and document gates are
+  `pre-push` only and are not attributed as the wrapper root cause.
+- The sanitized evidence cannot identify a hook or distinguish a hook exit 3
+  from a pre-commit internal failure. No raw cache log, hook output, secret,
+  auth file, token, or shell history may be inspected or retained.
+- Whole-branch security review independently found a stale `29/0` wrapper-test
+  oracle in `check-repo-contracts.sh`. Commit
+  `b493aa32b7e8ee9428ca8010331732592c977bdb` replaces it with a positive
+  zero-failure summary and exact critical-case markers. That pre-push-only
+  defect is remediated and reviewed but is not claimed as the default-stage
+  wrapper failure root cause.
+
+**Disposition sequence:**
+
+- [ ] Correct the committed discrepancy evidence to attribute the unauthorized
+  execution to `/root/whole_branch_correctness_review`, not the Controller,
+  while preserving its exact sanitized result and commit provenance.
+- [ ] Record the disqualified correctness review, the whole-branch security
+  C0/I1 result, the `b493aa32` remediation, and its independent C0/I0 re-review.
+- [ ] Validate the Plan/Task/current-memory update with an explicit-base
+  metadata check, traceability, implementation alignment, and diff hygiene.
+- [ ] Obtain a fresh independent read-only review of this discrepancy plan.
+- [ ] Do not run the wrapper or `pre-commit` while preparing or reviewing this
+  disposition.
+- [ ] After a clean committed checkpoint and clean plan review, ask the user
+  for a new exact approval for one recovery wrapper attempt. The approval must
+  name the checkpoint and exact existing command and must acknowledge the
+  unauthorized intervening attempt.
+- [ ] If the recovery attempt passes, record its exact sanitized evidence and
+  dispatch entirely fresh whole-branch correctness and security reviewers over
+  the then-current range. If it fails, record and stop; do not request or infer
+  another run in this task.
+
 - [ ] Dispatch a fresh whole-branch correctness reviewer and a separate fresh
   whole-branch security reviewer for
   `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD`.

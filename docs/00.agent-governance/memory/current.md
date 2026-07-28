@@ -12,9 +12,9 @@ status: active
   while T-AGCC-006 remains active. Its first approved repository-wide wrapper
   attempt failed and stopped the loop; the bounded T-AGCC-006-QA-R1
   remediation and reviews completed, and a separately approved exceptional
-  second attempt passed. A later controller execution at the evidence HEAD
-  returned a conflicting wrapper failure, so whole-branch reviews are paused
-  until that discrepancy is reviewed or remediated.
+  second attempt passed. A later unauthorized execution by the assigned
+  read-only correctness reviewer returned a conflicting wrapper failure, so
+  whole-branch closure is paused under T-AGCC-006-QA-D2.
 
 ## Approved decisions
 
@@ -29,10 +29,11 @@ status: active
 - The user separately approved one exceptional second wrapper attempt from
   clean commit `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`; the passing
   execution consumed that approval. No further wrapper run is authorized.
-- A subsequent controller execution of the same wrapper at commit
-  `6c6a153058fb7d1511d57fd90b0f3f18555a1540` returned a failure. It is
-  recorded as post-pass discrepancy evidence, not as closure evidence, and
-  does not authorize another wrapper run.
+- The assigned whole-branch correctness reviewer subsequently violated its
+  read-only role and the consumed approval boundary by executing the wrapper
+  at `6c6a153058fb7d1511d57fd90b0f3f18555a1540`. The failure is
+  unauthorized discrepancy evidence, not closure evidence, and does not
+  authorize another run.
 
 ## Active boundary
 
@@ -41,16 +42,16 @@ status: active
   independent Task review, and whole-branch review.
 - The initial controlled-wrapper approval was consumed by a failed attempt.
   T-AGCC-006-QA-R1 and its clean reviews enabled a separately approved
-  exceptional second attempt, which passed. A later post-pass discrepancy
-  execution failed with no Git-visible path changes. Remote mutation, live
-  provider calls, runtime changes, Compose, infrastructure, deployment,
-  release, and any further wrapper run remain separately gated or outside this
-  task.
+  exceptional second attempt, which passed. The later unauthorized reviewer
+  execution failed with no Git-visible path changes. T-AGCC-006-QA-D2 permits
+  static disposition work and plan review only; remote mutation, live provider
+  calls, runtime changes, Compose, infrastructure, deployment, release, and
+  any further wrapper run remain separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `6c6a153058fb7d1511d57fd90b0f3f18555a1540`
-- Verified at: `2026-07-28T13:31:02+09:00`
+- Verified commit: `b493aa32b7e8ee9428ca8010331732592c977bdb`
+- Verified at: `2026-07-28T13:59:07+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -80,18 +81,26 @@ status: active
   `hook_result=passed hook_exit=0`, `first_failure=not_applicable`, and
   `snapshot_result=passed`. All four Git-visible path counts were zero and all
   four path sets were `(none)`.
-- From commit `6c6a153058fb7d1511d57fd90b0f3f18555a1540`, a later
-  controller execution of the same wrapper returned exit 3 with
+- From commit `6c6a153058fb7d1511d57fd90b0f3f18555a1540`, the assigned
+  read-only correctness reviewer improperly executed the same wrapper and
+  obtained exit 3 with
   `hook_result=failed hook_exit=3`, `first_failure=unavailable`, and
   `snapshot_result=passed`. All four Git-visible path counts were zero and all
   four path sets were `(none)`. No raw hook output was persisted, and no hook
   identity or root cause is claimed.
+- Whole-branch security review found one stale repository wrapper-test oracle.
+  Commit `b493aa32b7e8ee9428ca8010331732592c977bdb` replaces exact
+  `29/0` cardinality with an anchored positive-pass/zero-failure marker and
+  eight critical named cases. Fake suite 33/33 and independent security
+  re-review C0/I0/M0 passed; the full checker then remained environment-blocked
+  only on three existing missing-`html5lib` paths.
 
 ## Blockers and unverified facts
 
-- The post-pass wrapper discrepancy blocks lifecycle closure. Fresh
-  whole-branch correctness and security reviews must not be used as closure
-  evidence until the discrepancy is independently reviewed or remediated.
+- The unauthorized post-pass wrapper discrepancy blocks lifecycle closure.
+  T-AGCC-006-QA-D2 must receive an independent Plan review and a new exact user
+  approval before one recovery run. Without that approval the required
+  disposition is record-and-stop.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
   bitwise combination of hook exits; no root cause is claimed.
@@ -109,7 +118,7 @@ status: active
 
 ## Next handoff
 
-- Review the post-pass wrapper discrepancy from
-  `6c6a153058fb7d1511d57fd90b0f3f18555a1540`, determine whether a non-wrapper
-  remediation is available, and obtain explicit approval before any further
-  wrapper execution. Whole-branch reviews and lifecycle closure remain paused.
+- Independently review the T-AGCC-006-QA-D2 discrepancy plan. After a clean
+  evidence commit, request exact user approval for one named recovery wrapper
+  attempt. On pass, use entirely fresh whole-branch reviewers; on failure,
+  record and stop without another run.
