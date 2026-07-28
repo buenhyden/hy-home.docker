@@ -183,6 +183,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             shutil.copytree(ROOT / ".github", root / ".github")
+            aggregate = root / "scripts/validation/check-repo-contracts.sh"
+            aggregate.parent.mkdir(parents=True)
+            shutil.copy2(
+                ROOT / "scripts/validation/check-repo-contracts.sh",
+                aggregate,
+            )
             yield root
 
     def test_security_and_ownership_mutation_matrix_fails_closed(self) -> None:
@@ -440,6 +446,163 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 findings = self.module.validate_workflows(root, contract)
                 self.assertIn(
                     "workflow-permission-baseline-invalid",
+                    {finding.code for finding in findings},
+                )
+
+    def test_semantic_owner_direct_and_transitive_duplicates_fail_closed(
+        self,
+    ) -> None:
+        workflows = {
+            workflow.path: workflow
+            for workflow in self.module.load_workflows(ROOT)
+        }
+        repo_steps = workflows[
+            ".github/workflows/ci-quality.yml"
+        ].data["jobs"]["repo-contracts"]["steps"]
+        repo_commands = "\n".join(
+            str(step.get("run", ""))
+            for step in repo_steps
+            if isinstance(step, dict)
+        )
+        for marker in (
+            "tests.validation.test_agent_governance_ci_routing",
+            "scripts/validation/check-target-surface-contract.py",
+            "scripts/validation/check-agentic-audit-semantic-freshness.py",
+            "scripts/validation/check-agent-governance-contract.py",
+        ):
+            with self.subTest(label="current-direct-owner", marker=marker):
+                self.assertNotIn(marker, repo_commands)
+
+        cases = ("direct-wrapper", "transitive-aggregate")
+        for label in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                workflow_text = workflow.read_text(encoding="utf-8")
+                if label == "direct-wrapper":
+                    owner = (
+                        "      - name: Check repository contracts\n"
+                        "        run: bash scripts/validation/"
+                        "check-repo-contracts.sh\n"
+                    )
+                    duplicate = (
+                        "      - name: Duplicate hardening owner\n"
+                        "        run: if ! bash scripts/hardening/"
+                        "check-all-hardening.sh >/tmp/result; then exit 1; fi\n"
+                    )
+                    self.assertIn(owner, workflow_text)
+                    workflow.write_text(
+                        workflow_text.replace(owner, duplicate + owner, 1),
+                        encoding="utf-8",
+                    )
+                else:
+                    aggregate = (
+                        root / "scripts/validation/check-repo-contracts.sh"
+                    )
+                    aggregate.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(
+                        ROOT / "scripts/validation/check-repo-contracts.sh",
+                        aggregate,
+                    )
+                    aggregate.write_text(
+                        aggregate.read_text(encoding="utf-8")
+                        + (
+                            "\nif ! bash scripts/hardening/"
+                            "check-all-hardening.sh >/tmp/result; then\n"
+                            "  exit 1\n"
+                            "fi\n"
+                        ),
+                        encoding="utf-8",
+                    )
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                self.assertIn(
+                    "expensive-command-ownership-duplicate",
+                    {finding.code for finding in findings},
+                )
+
+    def test_alternate_boolean_trigger_keys_cannot_masquerade_as_on(
+        self,
+    ) -> None:
+        for spelling in ("true", "yes", "ON"):
+            with self.subTest(spelling=spelling), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                self.assertIn("on:\n", text)
+                workflow.write_text(
+                    text.replace("on:\n", f"{spelling}:\n", 1),
+                    encoding="utf-8",
+                )
+                with self.assertRaises(
+                    self.module.WorkflowContractError
+                ) as raised:
+                    self.module.load_workflows(root)
+                self.assertEqual(
+                    "workflow-trigger-key-invalid",
+                    raised.exception.code,
+                )
+
+    def test_action_registry_and_local_action_policy_fail_closed(self) -> None:
+        cases = ("ninth-registered-action", "local-action")
+        for label in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                step = (
+                    "      - name: Additional Action probe\n"
+                    "        uses: "
+                )
+                if label == "ninth-registered-action":
+                    action = "example/action"
+                    sha = "0000000000000000000000000000000000000000"
+                    step += f"{action}@{sha}\n"
+                    contract_path = root / ".github/workflow-contract.yml"
+                    contract_data = self.module.yaml.safe_load(
+                        contract_path.read_text(encoding="utf-8")
+                    )
+                    contract_data["actions"].append(
+                        {
+                            "action": action,
+                            "sha": sha,
+                            "runtime": "node24",
+                            "manifest_url": (
+                                "https://raw.githubusercontent.com/"
+                                f"{action}/{sha}/action.yml"
+                            ),
+                            "retrieved_at": "2026-07-28",
+                            "consumers": [
+                                ".github/workflows/ci-quality.yml"
+                            ],
+                            "security_disposition": "approved-node24",
+                        }
+                    )
+                    contract_data["actions"].sort(
+                        key=lambda record: record["action"]
+                    )
+                    contract_path.write_text(
+                        self.module.yaml.safe_dump(
+                            contract_data,
+                            sort_keys=False,
+                        ),
+                        encoding="utf-8",
+                    )
+                    expected = "action-registry-baseline-invalid"
+                else:
+                    step += "./.github/actions/private-probe\n"
+                    expected = "action-local-reference-forbidden"
+                anchor = "      - name: Check docs traceability sync\n"
+                self.assertIn(anchor, text)
+                workflow.write_text(
+                    text.replace(anchor, step + anchor, 1),
+                    encoding="utf-8",
+                )
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                self.assertIn(
+                    expected,
                     {finding.code for finding in findings},
                 )
 
@@ -844,7 +1007,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         unrelated_value = object()
         normalized: dict[object, object] = {
-            True: {"workflow_dispatch": None},
             False: unrelated_value,
             "unrelated-boolean-value": True,
         }
@@ -852,9 +1014,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
             normalized,
             path=".github/workflows/example.yml",
         )
-        self.assertEqual({"workflow_dispatch": None}, normalized["on"])
         self.assertIs(unrelated_value, normalized[False])
         self.assertIs(True, normalized["unrelated-boolean-value"])
+        with self.assertRaises(self.module.WorkflowContractError) as invalid:
+            self.module._normalize_workflow_trigger_key(
+                {True: {"workflow_dispatch": None}},
+                path=".github/workflows/example.yml",
+            )
+        self.assertEqual("workflow-trigger-key-invalid", invalid.exception.code)
 
         with self.workflow_fixture() as root:
             workflow = root / ".github/workflows/ci-quality.yml"

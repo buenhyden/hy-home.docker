@@ -16,6 +16,10 @@ WORKFLOW_CONTRACT: Final = pathlib.PurePosixPath(".github/workflow-contract.yml"
 WORKFLOW_ROOT: Final = pathlib.PurePosixPath(".github/workflows")
 MAX_YAML_BYTES: Final = 2 * 1_048_576
 MAX_WORKFLOWS: Final = 128
+MAX_AGGREGATE_BYTES: Final = 2 * 1_048_576
+REPOSITORY_AGGREGATE: Final = pathlib.PurePosixPath(
+    "scripts/validation/check-repo-contracts.sh"
+)
 
 
 @dataclasses.dataclass(frozen=True, order=True, slots=True)
@@ -196,6 +200,40 @@ _WORKFLOW_PERMISSION_BASELINES: Final = (
         ),
     ),
 )
+_ACTION_REGISTRY_BASELINE: Final = (
+    (
+        "actions/checkout",
+        "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    ),
+    (
+        "actions/first-interaction",
+        "1c4688942c71f71d4f5502a26ea67c331730fa4d",
+    ),
+    (
+        "actions/labeler",
+        "bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13",
+    ),
+    (
+        "actions/setup-node",
+        "820762786026740c76f36085b0efc47a31fe5020",
+    ),
+    (
+        "actions/setup-python",
+        "5fda3b95a4ea91299a34e894583c3862153e4b97",
+    ),
+    (
+        "actions/stale",
+        "1e223db275d687790206a7acac4d1a11bd6fe629",
+    ),
+    (
+        "astral-sh/setup-uv",
+        "11f9893b081a58869d3b5fccaea48c9e9e46f990",
+    ),
+    (
+        "github/codeql-action/upload-sarif",
+        "7188fc363630916deb702c7fdcf4e481b751f97a",
+    ),
+)
 
 
 class WorkflowContractError(ValueError):
@@ -216,8 +254,15 @@ def _construct_unique_mapping(
     deep: bool = False,
 ) -> dict[object, object]:
     mapping: dict[object, object] = {}
+    key_tags: dict[object, str] = {}
     for key_node, value_node in node.value:
-        key = loader.construct_object(key_node, deep=deep)
+        if (
+            isinstance(key_node, yaml.nodes.ScalarNode)
+            and key_node.value == "on"
+        ):
+            key: object = "on"
+        else:
+            key = loader.construct_object(key_node, deep=deep)
         try:
             duplicate = key in mapping
         except TypeError as error:
@@ -228,12 +273,30 @@ def _construct_unique_mapping(
                 key_node.start_mark,
             ) from error
         if duplicate:
+            if (
+                key == "on"
+                and key_tags.get(key) != key_node.tag
+                and {
+                    key_tags.get(key),
+                    key_node.tag,
+                }
+                == {
+                    "tag:yaml.org,2002:bool",
+                    "tag:yaml.org,2002:str",
+                }
+            ):
+                raise WorkflowContractError(
+                    "workflow-trigger-key-ambiguous",
+                    "<yaml>",
+                    "workflow trigger key has ambiguous YAML forms",
+                )
             raise WorkflowContractError(
                 "yaml-duplicate-key",
                 "<yaml>",
                 "duplicate YAML mapping key",
             )
         mapping[key] = loader.construct_object(value_node, deep=deep)
+        key_tags[key] = key_node.tag
     return mapping
 
 
@@ -404,23 +467,17 @@ def _normalize_workflow_trigger_key(
     *,
     path: str,
 ) -> None:
-    has_string_on = any(
-        type(key) is str and key == "on"
-        for key in data
-    )
     boolean_on_keys = tuple(
         key
         for key in data
         if type(key) is bool and key is True
     )
-    if has_string_on and boolean_on_keys:
-        raise WorkflowContractError(
-            "workflow-trigger-key-ambiguous",
-            path,
-            "workflow trigger key has ambiguous YAML forms",
-        )
     if boolean_on_keys:
-        data["on"] = data.pop(boolean_on_keys[0])
+        raise WorkflowContractError(
+            "workflow-trigger-key-invalid",
+            path,
+            "workflow trigger key uses an invalid YAML scalar",
+        )
 
 
 def load_workflows(root: pathlib.Path) -> tuple[WorkflowDocument, ...]:
@@ -967,6 +1024,100 @@ def _job_tokens(job: dict[object, object]) -> tuple[str, ...]:
     return tuple(tokens)
 
 
+def _read_repository_aggregate(root: pathlib.Path) -> str | None:
+    relative = REPOSITORY_AGGREGATE
+    try:
+        _assert_safe_parent_directories(root, relative)
+        path = root.joinpath(*relative.parts)
+        metadata = path.lstat()
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_size > MAX_AGGREGATE_BYTES
+        ):
+            return None
+        flags = (
+            os.O_RDONLY
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+        )
+        descriptor = os.open(path, flags)
+        try:
+            opened = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(opened.st_mode)
+                or (metadata.st_dev, metadata.st_ino)
+                != (opened.st_dev, opened.st_ino)
+                or opened.st_size > MAX_AGGREGATE_BYTES
+            ):
+                return None
+            chunks: list[bytes] = []
+            remaining = MAX_AGGREGATE_BYTES + 1
+            while remaining:
+                chunk = os.read(descriptor, remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            payload = b"".join(chunks)
+            if len(payload) != opened.st_size:
+                return None
+            closed = os.fstat(descriptor)
+        finally:
+            os.close(descriptor)
+        final = path.lstat()
+        if (
+            opened.st_size != closed.st_size
+            or (opened.st_dev, opened.st_ino) != (final.st_dev, final.st_ino)
+            or not stat.S_ISREG(final.st_mode)
+        ):
+            return None
+        return payload.decode("utf-8")
+    except (OSError, UnicodeError, WorkflowContractError):
+        return None
+
+
+def _shell_executable_lines(text: str) -> tuple[str, ...]:
+    lines: list[str] = []
+    heredoc_terminator: str | None = None
+    heredoc_pattern = re.compile(
+        r"<<-?['\"]?([A-Za-z_][A-Za-z0-9_]*)['\"]?"
+    )
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if heredoc_terminator is not None:
+            if stripped == heredoc_terminator:
+                heredoc_terminator = None
+            continue
+        if not stripped or stripped.startswith("#"):
+            continue
+        lines.append(stripped)
+        heredoc = heredoc_pattern.search(stripped)
+        if heredoc is not None:
+            heredoc_terminator = heredoc.group(1)
+    return tuple(lines)
+
+
+def _semantic_command_marker(command: str) -> str:
+    repository_script = re.search(
+        r"scripts/[A-Za-z0-9_./-]+\.(?:py|sh)",
+        command,
+    )
+    return repository_script.group(0) if repository_script else command
+
+
+def _executes_semantic_marker(line: str, marker: str) -> bool:
+    if marker.startswith("scripts/"):
+        return (
+            re.search(
+                rf"\b(?:bash|python3|python)\s+['\"]?"
+                rf"{re.escape(marker)}(?=$|[\s'\";&|>)])",
+                line,
+            )
+            is not None
+        )
+    return marker in line
+
+
 def _finding(code: str, path: str, message: str) -> WorkflowFinding:
     return WorkflowFinding(code=code, path=path, message=message)
 
@@ -1287,7 +1438,16 @@ def validate_workflows(
                         )
                     )
                 uses = step.get("uses")
-                if not isinstance(uses, str) or uses.startswith("./"):
+                if not isinstance(uses, str):
+                    continue
+                if uses.startswith("./"):
+                    findings.append(
+                        _finding(
+                            "action-local-reference-forbidden",
+                            path,
+                            "local Action references are not approved",
+                        )
+                    )
                     continue
                 if "@" not in uses:
                     findings.append(
@@ -1332,11 +1492,44 @@ def validate_workflows(
                     f"semantic gate {owner.identifier} does not have exactly one owner command",
                 )
             )
+    aggregate_marker = REPOSITORY_AGGREGATE.as_posix()
+    aggregate_callers = {
+        identity
+        for identity, tokens in workflow_job_tokens.items()
+        if any(
+            _executes_semantic_marker(token, aggregate_marker)
+            for token in tokens
+        )
+    }
+    aggregate_lines: tuple[str, ...] = ()
+    if aggregate_callers:
+        aggregate_source = _read_repository_aggregate(root)
+        if aggregate_source is None:
+            findings.append(
+                _finding(
+                    "workflow-aggregate-source-invalid",
+                    REPOSITORY_AGGREGATE.as_posix(),
+                    "repository aggregate source is unavailable or unsafe",
+                )
+            )
+        else:
+            aggregate_lines = _shell_executable_lines(aggregate_source)
     for command, expected_owners in registered_expensive.items():
+        marker = _semantic_command_marker(command)
         actual_owners = {
             identity
             for identity, tokens in workflow_job_tokens.items()
-            if command in tokens
+            if any(
+                _executes_semantic_marker(token, marker)
+                for token in tokens
+            )
+            or (
+                identity in aggregate_callers
+                and any(
+                    _executes_semantic_marker(line, marker)
+                    for line in aggregate_lines
+                )
+            )
         }
         if actual_owners != expected_owners:
             findings.append(
@@ -1347,6 +1540,17 @@ def validate_workflows(
                 )
             )
 
+    registry_identities = tuple(
+        (action.action, action.sha) for action in contract.actions
+    )
+    if registry_identities != _ACTION_REGISTRY_BASELINE:
+        findings.append(
+            _finding(
+                "action-registry-baseline-invalid",
+                WORKFLOW_CONTRACT.as_posix(),
+                "Action registry identities differ from the code baseline",
+            )
+        )
     registry = {(action.action, action.sha): action for action in contract.actions}
     for action in contract.actions:
         registry_path = WORKFLOW_CONTRACT.as_posix()

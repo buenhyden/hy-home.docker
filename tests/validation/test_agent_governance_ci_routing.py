@@ -228,19 +228,26 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         commands = "\n".join(
             str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
         )
-        self.assertIn(TARGET_CLI_COMMAND, commands)
-        self.assertIn(
-            "tests.validation.test_target_surface_contracts",
-            commands,
-        )
+        self.assertNotIn(TARGET_CLI_COMMAND, commands)
+        self.assertNotIn("tests.validation.test_target_surface_contracts", commands)
         self.assertEqual(
-            1,
+            0,
             sum(
                 step.get("name") == "Check target surface contracts"
                 for step in repo_steps
                 if isinstance(step, dict)
             ),
         )
+        aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
+        self.assertIn(
+            'target_surface_checker="scripts/validation/'
+            'check-target-surface-contract.py"',
+            aggregate,
+        )
+        self.assertIn('python3 "$target_surface_checker"', aggregate)
+        local_qa = LOCAL_QA.read_text(encoding="utf-8")
+        self.assertIn(TARGET_CLI_COMMAND, local_qa)
+        self.assertIn(TARGET_TEST_COMMAND, local_qa)
 
     def test_ci_quality_has_exact_sixteen_job_ids(self) -> None:
         workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
@@ -844,6 +851,111 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         self.assertEqual(1, result.returncode, result.stderr)
         self.assertIn("missing required status check", result.stderr)
 
+    def test_governance_required_gate_table_mismatch_fails_closed(
+        self,
+    ) -> None:
+        program = self._stage00_github_program()
+        with self._workflow_fixture() as root:
+            governance = root / GITHUB_GOVERNANCE.relative_to(ROOT)
+            text = governance.read_text(encoding="utf-8")
+            old = "| `storybook-coverage`"
+            self.assertIn(old, text)
+            governance.write_text(
+                text.replace(old, "| `renamed-coverage-probe`", 1),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertIn(
+            "required quality gate table differs from typed workflow contract",
+            result.stderr,
+        )
+
+    def test_repository_metadata_stage00_mutations_fail_closed(self) -> None:
+        preflight = (
+            "      - name: Verify document metadata comparison base\n"
+            "        if: github.event_name == 'pull_request' || "
+            "github.event_name == 'push'\n"
+            "        shell: bash\n"
+            "        run: |\n"
+            "          set -euo pipefail\n"
+            '          git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
+            '          git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
+        )
+        metadata = (
+            "      - name: Check changed and new document metadata\n"
+            "        run: python3 scripts/validation/"
+            "check-document-metadata.py --mode check-changed\n"
+        )
+        cases = (
+            (
+                "event-binding",
+                "github.event_name == 'push' && github.event.before || ''",
+                "github.event_name == 'push' && github.sha || ''",
+                "repository metadata base binding differs from the exact contract",
+            ),
+            (
+                "preflight",
+                '          git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n',
+                "          true\n",
+                "repository metadata preflight differs from the exact contract",
+            ),
+            (
+                "ordering",
+                preflight + (
+                    "      - name: Set up Python for repository contracts\n"
+                    "        uses: actions/setup-python@"
+                    "5fda3b95a4ea91299a34e894583c3862153e4b97\n"
+                    "        with:\n"
+                    "          python-version: '3.12'\n"
+                    "      - name: Install repository contract Python "
+                    "dependencies\n"
+                    "        run: python -m pip install -r "
+                    "scripts/requirements.txt\n"
+                )
+                + metadata,
+                metadata
+                + preflight
+                + (
+                    "      - name: Set up Python for repository contracts\n"
+                    "        uses: actions/setup-python@"
+                    "5fda3b95a4ea91299a34e894583c3862153e4b97\n"
+                    "        with:\n"
+                    "          python-version: '3.12'\n"
+                    "      - name: Install repository contract Python "
+                    "dependencies\n"
+                    "        run: python -m pip install -r "
+                    "scripts/requirements.txt\n"
+                ),
+                "repository metadata steps are out of order",
+            ),
+        )
+        program = self._stage00_github_program()
+        for label, old, new, expected in cases:
+            with self.subTest(label=label), self._workflow_fixture() as root:
+                workflow = root / WORKFLOW.relative_to(ROOT)
+                text = workflow.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                workflow.write_text(
+                    text.replace(old, new, 1),
+                    encoding="utf-8",
+                )
+                result = subprocess.run(
+                    [sys.executable, "-c", program],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+
     def test_repo_memory_contract_rejects_exact_current_profile_mutation(
         self,
     ) -> None:
@@ -949,9 +1061,15 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         repo_commands = "\n".join(
             str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
         )
-        self.assertIn(
+        self.assertNotIn(
             "check-agent-governance-contract.py --mode repository --section all",
             repo_commands,
+        )
+        aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
+        self.assertRegex(
+            aggregate,
+            r"python3 scripts/validation/check-agent-governance-contract\.py \\\n"
+            r"\s+--mode repository --section all",
         )
 
         eval_steps = jobs["agent-output-eval-fixture-gate"]["steps"]
@@ -964,12 +1082,25 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )
         self.assertIn("fixtures_check=pass", eval_commands)
         self.assertIn("regressions_check=pass", eval_commands)
-        for module in (
-            "tests.validation.test_agent_governance_ci_routing",
-            "tests.validation.test_agent_output_eval_fixtures",
-        ):
-            with self.subTest(ci_module=module):
-                self.assertIn(module, repo_commands + eval_commands)
+        self.assertNotRegex(
+            aggregate,
+            r"(?m)^if ! bash scripts/hardening/check-all-hardening\.sh ",
+        )
+        self.assertNotRegex(
+            aggregate,
+            r"(?m)^if ! bash scripts/validation/"
+            r"run-agent-output-eval-fixtures\.sh ",
+        )
+        local_qa = LOCAL_QA.read_text(encoding="utf-8")
+        self.assertIn(
+            "bash scripts/validation/run-agent-output-eval-fixtures.sh "
+            "--check-fixtures --check-regressions",
+            local_qa,
+        )
+        self.assertIn(
+            "bash scripts/hardening/check-all-hardening.sh",
+            local_qa,
+        )
         self.assertEqual({"contents": "read"}, jobs["repo-contracts"]["permissions"])
         self.assertEqual(
             {"contents": "read"},
@@ -1862,6 +1993,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 ARTIFACT_CONTRACT,
                 GITHUB_OBSERVATION,
                 ROOT / "scripts/validation/github_workflow_contract.py",
+                ROOT / "scripts/validation/check-repo-contracts.sh",
             ):
                 if not source.is_file():
                     continue

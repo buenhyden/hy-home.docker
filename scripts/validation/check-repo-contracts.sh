@@ -847,7 +847,11 @@ import sys
 import yaml
 
 sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
-from github_workflow_contract import WorkflowContractError, load_workflow_contract
+from github_workflow_contract import (
+    WorkflowContractError,
+    load_workflow_contract,
+    load_workflows,
+)
 
 failures: list[str] = []
 try:
@@ -857,6 +861,7 @@ except WorkflowContractError as error:
         f".github/workflow-contract.yml: typed workflow contract is invalid ({error.code})"
     )
     required_jobs: set[str] = set()
+    required_job_order: tuple[str, ...] = ()
 else:
     required_workflows = [
         workflow
@@ -868,13 +873,125 @@ else:
             ".github/workflow-contract.yml: exactly one required-quality workflow is required"
         )
         required_jobs = set()
+        required_job_order: tuple[str, ...] = ()
     else:
-        required_jobs = set(required_workflows[0].jobs)
+        required_job_order = tuple(required_workflows[0].jobs)
+        required_jobs = set(required_job_order)
         if len(required_jobs) != 16:
             failures.append(
                 ".github/workflow-contract.yml: required-quality workflow must own exactly 16 jobs"
             )
-ci_jobs = required_jobs
+
+ci_path = ".github/workflows/ci-quality.yml"
+ci_job: dict[object, object] | None = None
+try:
+    workflow_documents = load_workflows(pathlib.Path.cwd())
+except WorkflowContractError as error:
+    failures.append(
+        f"{ci_path}: workflow document is invalid ({error.code})"
+    )
+    ci_jobs: set[str] = set()
+else:
+    matching_ci = [
+        document for document in workflow_documents if document.path == ci_path
+    ]
+    if len(matching_ci) != 1:
+        failures.append(f"{ci_path}: required workflow document is unavailable")
+        ci_jobs = set()
+    else:
+        raw_jobs = matching_ci[0].data.get("jobs")
+        if not isinstance(raw_jobs, dict) or any(
+            not isinstance(job_id, str) for job_id in raw_jobs
+        ):
+            failures.append(f"{ci_path}: required workflow jobs are invalid")
+            ci_jobs = set()
+        else:
+            ci_jobs = set(raw_jobs)
+            raw_repo_job = raw_jobs.get("repo-contracts")
+            if isinstance(raw_repo_job, dict):
+                ci_job = raw_repo_job
+            else:
+                failures.append(
+                    f"{ci_path}: repository contract job is invalid"
+                )
+if ci_jobs != required_jobs:
+    failures.append(
+        f"{ci_path}: required job IDs differ from the typed workflow contract"
+    )
+
+if ci_job is not None:
+    expected_base_binding = {
+        "TEMPLATE_GATE_BASE": (
+            "${{ github.event_name == 'pull_request' && "
+            "github.event.pull_request.base.sha || "
+            "github.event_name == 'push' && github.event.before || '' }}"
+        )
+    }
+    if ci_job.get("env") != expected_base_binding:
+        failures.append(
+            f"{ci_path}: repository metadata base binding differs from the exact contract"
+        )
+
+    expected_preflight = {
+        "name": "Verify document metadata comparison base",
+        "if": (
+            "github.event_name == 'pull_request' || "
+            "github.event_name == 'push'"
+        ),
+        "shell": "bash",
+        "run": (
+            "set -euo pipefail\n"
+            'git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
+            'git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
+        ),
+    }
+    expected_metadata = {
+        "name": "Check changed and new document metadata",
+        "run": (
+            "python3 scripts/validation/check-document-metadata.py "
+            "--mode check-changed"
+        ),
+    }
+    steps = ci_job.get("steps")
+    if not isinstance(steps, list):
+        failures.append(
+            f"{ci_path}: repository metadata steps differ from the exact contract"
+        )
+    else:
+        preflight_indices = [
+            index for index, step in enumerate(steps) if step == expected_preflight
+        ]
+        metadata_indices = [
+            index for index, step in enumerate(steps) if step == expected_metadata
+        ]
+        if len(preflight_indices) != 1:
+            failures.append(
+                f"{ci_path}: repository metadata preflight differs from the exact contract"
+            )
+        if len(metadata_indices) != 1:
+            failures.append(
+                f"{ci_path}: changed document metadata step differs from the exact contract"
+            )
+        ordered_names = (
+            "Verify document metadata comparison base",
+            "Set up Python for repository contracts",
+            "Install repository contract Python dependencies",
+            "Check changed and new document metadata",
+            "Check repository contracts",
+        )
+        actual_names = tuple(
+            step.get("name")
+            for step in steps
+            if isinstance(step, dict) and step.get("name") in ordered_names
+        )
+        if (
+            len(preflight_indices) == 1
+            and len(metadata_indices) == 1
+            and actual_names != ordered_names
+        ):
+            failures.append(
+                f"{ci_path}: repository metadata steps are out of order"
+            )
 
 
 class DuplicateKeyError(yaml.YAMLError):
@@ -938,6 +1055,32 @@ if ruleset.is_file():
             failures.append(f"{ruleset}: status check is not a CI Quality Gates job: {check}")
 else:
     failures.append("missing local branch protection proposal: .github/rulesets/main-protection.md")
+
+governance_path = pathlib.Path(
+    "docs/00.agent-governance/rules/github-governance.md"
+)
+if not governance_path.is_file():
+    failures.append(f"missing active GitHub governance surface: {governance_path}")
+else:
+    governance_text = governance_path.read_text(encoding="utf-8")
+    governance_section = re.search(
+        r"(?ms)^### Required Quality Gates\s*(.*?)(?:\n### |\Z)",
+        governance_text,
+    )
+    governance_jobs = (
+        tuple(
+            re.findall(
+                r"(?m)^\|\s*`([^`]+)`\s*\|",
+                governance_section.group(1),
+            )
+        )
+        if governance_section is not None
+        else ()
+    )
+    if governance_jobs != required_job_order:
+        failures.append(
+            f"{governance_path}: required quality gate table differs from typed workflow contract"
+        )
 
 github_index = pathlib.Path(".github/INDEX.md")
 github_readme = pathlib.Path(".github/README.md")
@@ -3025,13 +3168,6 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Infrastructure hardening hard gate"
-if ! bash scripts/hardening/check-all-hardening.sh >/tmp/check-repo-contracts-hardening.txt 2>&1; then
-  fail "infrastructure hardening hard gate failed"
-  cat /tmp/check-repo-contracts-hardening.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-hardening.txt
-
 section "Compose profile coverage snapshot"
 if ! bash scripts/operations/generate-compose-profile-service-coverage.sh --check >/tmp/check-repo-contracts-compose-profile-coverage.txt 2>&1; then
   fail "generated Compose profile coverage snapshot is stale or generator check failed"
@@ -3194,19 +3330,6 @@ elif ! grep -q 'generated provider hook parity matrix is fresh' /tmp/check-repo-
   cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
 fi
 rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
-
-section "Agent output eval fixture runner"
-if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions >/tmp/check-repo-contracts-agent-output-eval.txt 2>&1; then
-  fail "agent-output eval fixture runner catalog check failed"
-  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
-elif ! grep -q 'fixtures_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
-  fail "agent-output eval fixture runner did not print a pass marker"
-  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
-elif ! grep -q 'regressions_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
-  fail "agent-output eval fixture runner did not print a regression pass marker"
-  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-agent-output-eval.txt
 
 section "Security automation readiness snapshot"
 if ! bash scripts/validation/generate-security-automation-readiness.sh --check >/tmp/check-repo-contracts-security-readiness.txt 2>&1; then
