@@ -7,6 +7,7 @@ set -euo pipefail
 # Source the library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_PATH="${SCRIPT_DIR}/../lib/hardening-lib.sh"
+TECH_STACK_REGISTRY="${SCRIPT_DIR}/../../infra/tech-stack.versions.json"
 
 if [[ ! -f "$LIB_PATH" ]]; then
   echo "Error: Hardening library not found at $LIB_PATH"
@@ -15,6 +16,67 @@ fi
 
 # shellcheck source=../lib/hardening-lib.sh
 source "$LIB_PATH"
+
+registry_component_image() {
+  local component="$1"
+
+  python3 - "$TECH_STACK_REGISTRY" "$component" <<'PY'
+import json
+import pathlib
+import sys
+
+registry_path = pathlib.Path(sys.argv[1])
+component = sys.argv[2]
+registry = json.loads(registry_path.read_text(encoding="utf-8"))
+matches = [
+    entry
+    for entry in registry.get("entries", [])
+    if entry.get("component") == component
+]
+if len(matches) != 1:
+    raise SystemExit(
+        f"FAIL: expected exactly one {component} entry in {registry_path}"
+    )
+images = matches[0].get("images")
+if not isinstance(images, list) or len(images) != 1 or not isinstance(images[0], str):
+    raise SystemExit(
+        f"FAIL: expected exactly one {component} image in {registry_path}"
+    )
+print(images[0])
+PY
+}
+
+compose_service_image() {
+  local compose_file="$1"
+  local service="$2"
+
+  python3 - "$compose_file" "$service" <<'PY'
+import pathlib
+import re
+import sys
+
+compose_path = pathlib.Path(sys.argv[1])
+service = sys.argv[2]
+service_re = re.compile(rf"^  {re.escape(service)}:\s*(?:#.*)?$")
+next_service_re = re.compile(r"^  [A-Za-z0-9_.-]+:\s*(?:#.*)?$")
+image_re = re.compile(r"^    image:\s*['\"]?([^'\"\s#]+)")
+in_service = False
+images = []
+for line in compose_path.read_text(encoding="utf-8").splitlines():
+    if service_re.match(line):
+        in_service = True
+        continue
+    if in_service and next_service_re.match(line):
+        break
+    if in_service and (match := image_re.match(line)):
+        images.append(match.group(1))
+if len(images) != 1:
+    raise SystemExit(
+        f"FAIL: expected exactly one image for service {service} in {compose_path}"
+    )
+print(images[0])
+PY
+}
 
 usage() {
   cat <<'EOF'
@@ -69,7 +131,9 @@ check_02_auth() {
   local oauth_entrypoint="infra/02-auth/oauth2-proxy/docker-entrypoint.sh"
   local oauth_dev_entrypoint="infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh"
   local oauth_cfg="infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg"
+  local keycloak_image
 
+  check_file "$TECH_STACK_REGISTRY"
   check_file "$keycloak_compose"
   check_file "$oauth_dev_compose"
   check_file "$oauth_full_compose"
@@ -78,9 +142,10 @@ check_02_auth() {
   check_file "$oauth_entrypoint"
   check_file "$oauth_dev_entrypoint"
   check_file "$oauth_cfg"
+  keycloak_image="$(registry_component_image "Keycloak")"
 
   check_contains "$keycloak_compose" "service: template-infra-high" "keycloak compose template mismatch"
-  check_contains "$keycloak_compose" "image: quay.io/keycloak/keycloak:26.6.4-1" "keycloak image tag mismatch"
+  check_contains "$keycloak_compose" "image: ${keycloak_image}" "keycloak image tag mismatch"
   check_contains "$keycloak_compose" "KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password" "keycloak db password secret file missing"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_admin_password" "keycloak admin secret injection mismatch"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_db_password" "keycloak db secret injection mismatch"
@@ -289,12 +354,14 @@ check_11_laboratory() {
   local open_notebook_compose="infra/11-laboratory/open-notebook/docker-compose.yml"
   local portainer_compose="infra/11-laboratory/portainer/docker-compose.yml"
   local redisinsight_compose="infra/11-laboratory/redisinsight/docker-compose.yml"
+  local dozzle_image
 
   check_file "$dashboard_compose"
   check_file "$dozzle_compose"
   check_file "$open_notebook_compose"
   check_file "$portainer_compose"
   check_file "$redisinsight_compose"
+  dozzle_image="$(compose_service_image "$dozzle_compose" "dozzle")"
 
   check_contains "$dashboard_compose" "traefik.http.routers.homer.middlewares: gateway-standard-chain@file,homer-admin-ip@docker,sso-errors@file,sso-auth@file" "homer middleware chain mismatch"
   check_not_contains "$dashboard_compose" "ports:" "homer direct host ports must stay removed"
@@ -302,7 +369,7 @@ check_11_laboratory() {
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
-  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.7" "dozzle image tag mismatch"
+  check_contains "$dozzle_compose" "image: ${dozzle_image}" "dozzle image tag mismatch"
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"

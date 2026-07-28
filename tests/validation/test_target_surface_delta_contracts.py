@@ -92,7 +92,17 @@ TASK2_UPDATE_PATHS = frozenset(
         "tests/validation/test_target_surface_delta_contracts.py",
     }
 )
-EXPECTED_UPDATE_PATHS = PRE_TASK2_UPDATE_PATHS | TASK2_UPDATE_PATHS
+TASK3_UPDATE_PATHS = frozenset(
+    {
+        "infra/01-gateway/README.md",
+        "infra/tech-stack.versions.json",
+        "scripts/hardening/check-all-hardening.sh",
+        "tests/validation/test_tech_stack_version_contract.py",
+    }
+)
+EXPECTED_UPDATE_PATHS = (
+    PRE_TASK2_UPDATE_PATHS | TASK2_UPDATE_PATHS | TASK3_UPDATE_PATHS
+)
 
 
 def load_contract_module():
@@ -1134,7 +1144,7 @@ class RepositoryManifestTests(unittest.TestCase):
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
-        self.assertEqual(136, len(document.entries))
+        self.assertEqual(140, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
@@ -1148,7 +1158,7 @@ class RepositoryManifestTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            {"preserve": 90, "update": 46},
+            {"preserve": 90, "update": 50},
             {
                 disposition: sum(
                     row.disposition == disposition for row in document.entries
@@ -1161,6 +1171,28 @@ class RepositoryManifestTests(unittest.TestCase):
                 self.assertEqual("update", rows[path].disposition)
                 self.assertEqual("pending", rows[path].spec_verdict)
                 self.assertEqual("pending", rows[path].quality_verdict)
+        task3_owners = {
+            "infra/01-gateway/README.md": "infra/01-gateway/README.md",
+            "infra/tech-stack.versions.json": (
+                "scripts/operations/sync-tech-stack-versions.sh"
+            ),
+            "scripts/hardening/check-all-hardening.sh": (
+                "scripts/hardening/check-all-hardening.sh"
+            ),
+            "tests/validation/test_tech_stack_version_contract.py": (
+                "tests/validation/test_tech_stack_version_contract.py"
+            ),
+        }
+        for path in TASK3_UPDATE_PATHS:
+            with self.subTest(task3_path=path):
+                self.assertEqual("update", rows[path].disposition)
+                self.assertEqual(task3_owners[path], rows[path].canonical_owner)
+                self.assertEqual("pending", rows[path].spec_verdict)
+                self.assertEqual("pending", rows[path].quality_verdict)
+                self.assertIn(
+                    "tests/validation/test_tech_stack_version_contract.py",
+                    rows[path].tests,
+                )
         self.assertFalse(
             any(
                 row.disposition in {"migrate", "delete"}

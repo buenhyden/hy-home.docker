@@ -93,7 +93,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | --- | --- | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
-| T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | fresh implementer after Task 2 review | pending |
+| T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | implemented; review pending |
 | T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | fresh implementer after Task 3 review | pending |
 | T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | pending |
 | T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | pending |
@@ -145,6 +145,11 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-002 quality remediation gates | Task 2 documentation-surface implementation agent | Canonical delta production-manifest and failed-verdict tests passed 2/2 in 6.507 seconds; the predecessor aggregate witness passed 1/1 in 5.134 seconds; predecessor CLI and delta advisory returned zero findings. Targeted Ruff, Python compile, Task-ledger Markdown and metadata, and diff hygiene passed. The remediation changed only the lifecycle checker, its test, and this Task ledger. |
 | 2026-07-28 | T-TSDC-002 final specification review | Fresh independent specification reviewer | Exact range `78af8462..b28764a9`: C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES. |
 | 2026-07-28 | T-TSDC-002 final quality/security re-review | Fresh independent quality/security reviewer | Exact range `78af8462..b28764a9`: C0/I0/M0; APPROVED; COMMIT_READY YES. Task 2 is complete; all successor manifest row verdicts remain pending for Task 6 promotion. |
+| 2026-07-28 | T-TSDC-003 RED | Task 3 static-version implementation agent | Added the focused version contract before production edits. The first run emitted exactly six registry-to-Compose subtest failures. The bounded expansion then emitted the same six failures plus one stale independent Keycloak hardening literal failure; direct-current-document and lifecycle preserve/negative-classification tests already passed. Independent commands confirmed `changes=6` and the fail-fast hardening checker stopped at the stale Keycloak expectation. |
+| 2026-07-28 | T-TSDC-003 generated and document implementation | Task 3 static-version implementation agent | Ran the canonical version sync in write mode for Traefik, Keycloak, PostgreSQL, Prometheus, Alloy, and Ollama, then ran the canonical provenance generator. Updated exactly nine current infra READMEs, five direct-impact Stage 05 documents, and exact current-version descriptions in the repository checker. Compose and runtime declarations remained unchanged. |
+| 2026-07-28 | T-TSDC-003 hardening follow-up RED/GREEN | Controller / Task 3 static-version implementation agent | After the Keycloak repair, the full fail-fast hardening run first exposed a predecessor Dozzle literal expecting `v10.6.7` while Compose declares `v10.6.11`. The controller expanded only the already-owned hardening script and focused test. One static regression failed on the old literal, then passed after the checker resolved the Dozzle service image from Compose; the Keycloak image remains resolved from the curated registry. No free-standing current or stale Dozzle version was added. |
+| 2026-07-28 | T-TSDC-003 manifest and oracle expansion | Controller / Task 3 static-version implementation agent | Advisory validation identified exactly four new Task 3 target rows. The manifest added those four as non-destructive `update` rows and retained all verdicts as `pending`. The controller expanded ownership only to the existing repository manifest oracle after it failed `136 != 140`; the GREEN oracle asserts the exact four Task 3 paths, canonical owners, 50-update set, 90-preserve set, pending verdicts, and zero destructive disposition. The canonical summary writer regenerated the 140-row summary. |
+| 2026-07-28 | T-TSDC-003 final bounded gates | Task 3 static-version implementation agent | Focused tests passed 7/7 and the exact repository manifest oracle passed 1/1. Sync/provenance checks, all 11 hardening tiers, 13 supply-chain fixtures, successor advisory, document alignment, Ruff, Python compile, Bash syntax, ShellCheck, changed-document metadata, Markdown, and staged/unstaged diff hygiene passed. Exact scope comparison found 23 expected paths, zero unexpected paths, zero missing paths, and zero Compose files. No broad aggregate ran. |
 
 ## Verification Evidence
 
@@ -165,7 +170,7 @@ have no unresolved Critical or Important findings.
 | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
-| T-TSDC-003 | Not run — Task 2 complete; Task 3 not started | Not run — Task 2 complete; Task 3 not started | Not run — Task 2 complete; Task 3 not started | pending |
+| T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression before remediation. | Focused version/lifecycle tests passed 7/7; the exact repository manifest oracle passed 1/1; canonical sync and both generated writers completed successfully. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, and document alignment pass. Targeted static/Markdown/diff gates are recorded below; independent reviews remain pending. | implemented; review pending |
 | T-TSDC-004 | Not run — Task 3 review pending | Not run — Task 3 review pending | Not run — Task 3 review pending | pending |
 | T-TSDC-005 | Not run — Task 4 review pending | Not run — Task 4 review pending | Not run — Task 4 review pending | pending |
 | T-TSDC-006 | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | pending |
@@ -305,6 +310,80 @@ have no unresolved Critical or Important findings.
   COMMIT_READY YES. Task 2 is complete. No successor manifest row review
   verdict was promoted; all remain `pending` for Task 6.
 
+### T-TSDC-003 bounded implementation evidence
+
+- Starting commit:
+  `b1e6287360d1f44c41c2b91c93c6addf6527f847`.
+- RED evidence: the initial focused test produced six exact subtest failures:
+  Traefik `v3.7.6 -> v3.7.8`, Keycloak `26.6.4-1 -> 26.7.0-0`,
+  PostgreSQL `17.6.1.143 -> 17.6.1.150`, Prometheus
+  `v3.13.0 -> v3.13.1`, Alloy `v1.17.1 -> v1.18.0`, and Ollama
+  `0.31.1 -> 0.32.1`. The expanded focused run contained exactly those six
+  subtest failures plus one independent stale Keycloak hardening literal
+  failure. The direct-current-document map and lifecycle classification
+  contracts already passed.
+- Generator evidence: write-mode
+  `scripts/operations/sync-tech-stack-versions.sh` reported `changes=6` and
+  updated only `infra/tech-stack.versions.json`. The provenance generator
+  reported 21 images with severity counts `none:20`, `advisory:1`, `high:0`,
+  and `critical:0`. Both later check modes passed with `changes=0` and a fresh
+  generated snapshot.
+- Current-document evidence: nine infra READMEs and five direct-impact Stage
+  05 guide/policy/runbook consumers now use the curated values. PostgreSQL has
+  no listed direct current-document consumer in this task. Historical,
+  incident, migration, archive, dashboard-label, and negative-fixture text was
+  not rewritten as a version consumer.
+- Hardening evidence: Keycloak resolves its expected image from
+  `infra/tech-stack.versions.json` and retains the template, Docker Secret,
+  middleware, address, and health-check assertions. After the fail-fast
+  Keycloak blocker was removed, Tier 11 exposed a previously hidden stale
+  Dozzle literal. Controller-approved RED/GREEN removed both stale/current
+  free-standing Dozzle tags and resolves the exact `dozzle` service image from
+  its Compose file. The full 11-tier checker then passed.
+- Lifecycle classification: all 19 tracked or newly added target text paths
+  containing `legacy` or `deprecated` remain preserved: one historical, eight
+  migration, two dashboard-label, and eight negative-fixture paths. The
+  six-category policy fixture also preserves incident and archive evidence,
+  while a registered active obsolete implementation yields the exact blocking
+  classification finding. No destructive gate was satisfied, so Task 3
+  records 19 preserve classifications and zero delete/migrate action.
+- Manifest and generated-summary evidence: the four new Task 3 target rows are
+  `infra/01-gateway/README.md`, `infra/tech-stack.versions.json`,
+  `scripts/hardening/check-all-hardening.sh`, and
+  `tests/validation/test_tech_stack_version_contract.py`. The successor now
+  contains 140 rows: 90 `preserve`, 50 `update`, 0 `migrate`, and 0 `delete`;
+  all 140 specification/quality verdict pairs remain `pending`. The prior
+  exact repository oracle failed `136 != 140`, then passed after asserting the
+  exact four paths, owners, final disposition set, and pending verdicts.
+- Safety boundary: no Compose/runtime declaration, service, dependency,
+  cache, provider, remote, credential, secret identifier, or secret payload
+  changed or was inspected. The controlled wrapper, direct all-files
+  pre-commit, broad repository aggregate, live Compose commands, and remote
+  operations did not run.
+- Final bounded gates: focused version/lifecycle tests passed 7/7; the exact
+  repository manifest oracle passed 1/1; version sync reported `changes=0`;
+  provenance freshness passed; all 11 hardening tiers passed; supply-chain
+  policy passed all 13 fixtures; successor advisory returned zero findings;
+  document alignment reported `failures=0`; Ruff, Python compile, Bash syntax,
+  ShellCheck, changed-document metadata, Markdown, and staged/unstaged diff
+  checks passed. Metadata selected eight changed documents with zero
+  violations and five unchanged legacy exceptions. Markdown covered the 16
+  non-ledger changed Markdown files plus the Task ledger separately, both with
+  zero errors.
+- Exact scope evidence: 23 expected changed paths matched 23 actual paths,
+  with zero unexpected, zero missing, and zero Compose paths.
+- Generated artifact SHA-256 values:
+  `infra/tech-stack.versions.json`
+  `57006587891c7b435a639bb525c96305ac36225ffa353fb6621c4029d4714edc`;
+  provenance
+  `8230a7e8adf46836cb71490985b39060f5864ec745dfa11defc9f0673e660b62`;
+  successor manifest
+  `64d741abc3bd063f7d57758a7fedc8c245a0f8977bc3d0ae4cbc8f4d460f9f91`;
+  generated summary
+  `66791f8a0b90ecc6c89a6ec5b75f7dcd0f8671d2bfc8718a1c73103009cc50dc`.
+- Independent specification and quality/security reviews remain pending.
+  No successor manifest verdict was promoted.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -340,7 +419,7 @@ consume or create Agent authorization.
 | --- | --- | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Task 1 implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `72eef68c..43f78ad5` | approved; completed | Fresh independent reviewers found no unresolved issues. Per-row manifest verdicts remain pending for Task 6 blocking promotion. |
 | T-TSDC-002 | Task 2 documentation-surface implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `78af8462..b28764a9` | approved; completed | Fresh independent reviewers found no unresolved issues after canonical-contract remediation. All 136 manifest row verdict pairs remain pending for Task 6. |
-| T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 complete; Task 3 not started |
+| T-TSDC-003 | Task 3 static-version implementation agent | pending fresh reviewer | pending distinct reviewer | pending implementation commit | implementation complete; reviews pending | Focused and bounded aggregate gates pass; all 140 manifest verdict pairs remain pending. |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
@@ -361,7 +440,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-001 third remediation | Reject explicit failed review verdicts in advisory mode | `fix(governance): reject failed advisory verdicts` | `43f78ad5` | verdict-state RED/GREEN, focused advisory/blocking tests, production advisory/blocking, static and diff gates |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | `c63cc267` | Target 48/48, delta 30/30, metadata 225/225, lifecycle 34/34, metadata/target/advisory/alignment/current-traceability/Ruff/compile/Markdown/summary/diff gates pass; obsolete Plan cross-link path unavailable and recorded |
 | T-TSDC-002 quality remediation | Validate the sample lifecycle handoff through the canonical successor contract | `fix(governance): validate sample lifecycle handoff evidence` | `b28764a9` | Evidence RED 17/19 plus verdict RED 3/3; lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, ledger Markdown/metadata, and diff hygiene pass |
-| T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 complete; Task 3 not started |
+| T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | pending current implementation commit | focused 7/7, manifest oracle 1/1, sync/provenance, all hardening, supply-chain 13, delta advisory, alignment, and bounded static gates pass; independent reviews pending |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |

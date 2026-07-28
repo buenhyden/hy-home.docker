@@ -6,8 +6,8 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 136
-- Current tracked target paths: 477
+- Delta entries: 140
+- Current tracked target paths: 478
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
 
@@ -22,12 +22,12 @@
 | `projects` | 52 |
 | `scripts` | 55 |
 | `secrets` | 19 |
-| `tests` | 50 |
+| `tests` | 51 |
 
 ## Dispositions
 
 - `preserve`: 90
-- `update`: 46
+- `update`: 50
 - `migrate`: 0
 - `delete`: 0
 
@@ -48,6 +48,7 @@
 | `examples/sample-web-service/README.md` | `readme` | `examples` | `update` | `not-applicable` | `pending` | `pending` |
 | `examples/sample-web-service/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `examples/sample-web-service/service.md` | `typed-example` | `service` | `update` | `not-applicable` | `pending` | `pending` |
+| `infra/01-gateway/README.md` | `readme` | `infrastructure-tier` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/01-gateway/nginx/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/01-gateway/traefik/README.md` | `readme` | `infrastructure-service` | `update` | `not-applicable` | `pending` | `pending` |
 | `infra/01-gateway/traefik/docker-compose.yml` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -97,9 +98,11 @@
 | `infra/supply-chain.sample-service-policy.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/supply-chain.tool-images.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `infra/supply-chain.vulnerability-exceptions.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `infra/tech-stack.versions.json` | `native-configuration` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `projects/storybook/nextjs/package-lock.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `projects/storybook/nextjs/package.json` | `native-configuration` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/README.md` | `readme` | `scripts` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/hardening/check-all-hardening.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/provider_surface_renderer.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/rehearse-sample-service-delivery.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/generate-supply-chain-sample-service-summary.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -171,6 +174,7 @@
 | `tests/validation/test_supply_chain_policy.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_target_surface_contracts.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_target_surface_delta_contracts.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_tech_stack_version_contract.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 
 ## Evidence Boundary
 

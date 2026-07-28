@@ -300,6 +300,28 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:examples/sample-web-service/service.md
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/01-gateway/README.md
+  surface_class: readme
+  profile: infrastructure-tier
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: infra/01-gateway/README.md
+  direct_consumers:
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/01-gateway/README.md to the Compose-declared Traefik v3.7.8 static version.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-document-metadata.py
+  - scripts/validation/check-target-surface-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: infra/01-gateway/nginx/README.md
   surface_class: readme
   profile: infrastructure-service
@@ -416,7 +438,8 @@ entries:
   canonical_owner: infra/02-auth/keycloak/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/02-auth/keycloak/README.md to use the exact Overview heading while retaining the existing localized body and route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/02-auth/keycloak/README.md to use the exact Overview heading, route shared Agent rules once to both Stage 00 owners, retain local instructions, and record the Compose-declared Keycloak 26.7.0-0 image.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -426,6 +449,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -828,7 +852,8 @@ entries:
   canonical_owner: infra/06-observability/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/06-observability/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/06-observability/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions, and record Compose-declared Prometheus v3.13.1 and Alloy v1.18.0 versions.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -838,6 +863,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -872,7 +898,8 @@ entries:
   canonical_owner: infra/06-observability/alloy/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/06-observability/alloy/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/06-observability/alloy/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions and migration terminology, and record Compose-declared Alloy v1.18.0.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -882,6 +909,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -936,7 +964,8 @@ entries:
   canonical_owner: infra/06-observability/prometheus/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/06-observability/prometheus/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/06-observability/prometheus/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions, and record Compose-declared Prometheus v3.13.1.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -946,6 +975,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -958,7 +988,8 @@ entries:
   canonical_owner: infra/06-observability/pushgateway/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/06-observability/pushgateway/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/06-observability/pushgateway/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions, and record its Compose-declared Prometheus v3.13.1 dependency.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -968,6 +999,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -980,7 +1012,8 @@ entries:
   canonical_owner: infra/06-observability/pyroscope/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/06-observability/pyroscope/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/06-observability/pyroscope/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions, and record its Compose-declared Alloy v1.18.0 collector.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -990,6 +1023,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -1002,7 +1036,8 @@ entries:
   canonical_owner: infra/06-observability/tempo/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/06-observability/tempo/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/06-observability/tempo/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions, and record its Compose-declared Alloy v1.18.0 ingestion dependency.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1012,6 +1047,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -1090,7 +1126,8 @@ entries:
   canonical_owner: infra/08-ai/README.md
   direct_consumers:
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated infra/08-ai/README.md to route shared Agent rules once to both Stage 00 owners while retaining local instructions.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated infra/08-ai/README.md to route shared Agent rules once to both Stage 00 owners, retain local instructions, and record the Compose-declared Ollama 0.32.1 image.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1100,6 +1137,7 @@ entries:
   tests:
   - tests/validation/test_target_surface_contracts.py
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -1363,6 +1401,30 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:infra/supply-chain.vulnerability-exceptions.json
   spec_verdict: pending
   quality_verdict: pending
+- path: infra/tech-stack.versions.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/operations/sync-tech-stack-versions.sh
+  direct_consumers:
+  - docs/90.references/data/docker/tech-stack-version-provenance.md
+  - scripts/hardening/check-all-hardening.sh
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Canonical sync updated six curated image values to the existing Compose declarations without changing runtime files.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/operations/generate-tech-stack-version-provenance.sh
+  - scripts/operations/sync-tech-stack-versions.sh
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: projects/storybook/nextjs/package-lock.json
   surface_class: native-configuration
   profile: null
@@ -1425,6 +1487,29 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/README.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/hardening/check-all-hardening.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/hardening/check-all-hardening.sh
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  - scripts/validation/run-local-qa-gates.sh
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated the Keycloak assertion to resolve its expected image from the curated registry and the Dozzle assertion to resolve its expected image from Compose while retaining every security assertion.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/hardening/check-all-hardening.sh
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: scripts/operations/provider_surface_renderer.py
@@ -1655,13 +1740,15 @@ entries:
   - .github/workflows/ci-quality.yml
   - .pre-commit-config.yaml
   - scripts/validation/run-local-qa-gates.sh
-  finding: Task 4 will replace overlapping inline workflow checks with the focused owner.
+  - tests/validation/test_tech_stack_version_contract.py
+  finding: Updated exact current-version descriptions for Traefik, Keycloak, and Ollama; Task 4 will replace overlapping inline workflow checks with the focused owner.
   replacement: null
   secret_safety: not-applicable
   validators:
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
   - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/check-repo-contracts.sh
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
@@ -2967,7 +3054,7 @@ entries:
   direct_consumers:
   - scripts/validation/check-repo-contracts.sh
   - scripts/validation/run-local-qa-gates.sh
-  finding: Updated tests/validation/test_target_surface_delta_contracts.py to assert the exact Task 2 update set, counts, and path-specific dispositions.
+  finding: Updated tests/validation/test_target_surface_delta_contracts.py to assert the exact Task 2 and Task 3 update sets, counts, owners, pending verdicts, and path-specific dispositions.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -2979,5 +3066,24 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_target_surface_delta_contracts.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_tech_stack_version_contract.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: tests/validation/test_tech_stack_version_contract.py
+  direct_consumers: []
+  finding: Added focused registry, current-document, Keycloak and Dozzle hardening-owner, and lifecycle classification regressions for Task 3.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  - tests/validation/test_tech_stack_version_contract.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending

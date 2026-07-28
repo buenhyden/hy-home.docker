@@ -4673,15 +4673,15 @@ stage_roots = [
 ]
 
 stale_literals = {
-    "v3.6.8": "Traefik is declared as traefik:v3.7.6",
-    "v3.6.12": "Traefik is declared as traefik:v3.7.6",
-    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.6.4-1",
+    "v3.6.8": "Traefik is declared as traefik:v3.7.8",
+    "v3.6.12": "Traefik is declared as traefik:v3.7.8",
+    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.7.0-0",
     "7.14.2": "OAuth2 Proxy Dockerfile uses quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "hashicorp/vault:1.21.4": "Vault is declared as hashicorp/vault:2.0.3",
     "Confluent CP 8.1.1": "Kafka is declared as confluentinc/cp-kafka:8.3.0",
     "RabbitMQ 4.2": "RabbitMQ is declared as rabbitmq:4.3.1-management-alpine",
     "kafbat/kafka-ui:v1.4.2": "Kafbat UI is declared as kafbat/kafka-ui:v1.5.0",
-    "v0.20.0": "Ollama is declared as ollama/ollama:0.31.1",
+    "v0.20.0": "Ollama is declared as ollama/ollama:0.32.1",
     "v0.8.5-cuda": "Open WebUI is declared as ghcr.io/open-webui/open-webui:v0.10.2-cuda",
     "OLLAMA_WEB_UI_PORT": "Open WebUI compose uses OLLAMA_WEBUI_PORT",
     "docker compose -f infra/08-ai/ollama/docker-compose.yml config": "08-ai service-local compose files depend on root infra_net context; use the AI hardening check and root profile validator",
@@ -4784,8 +4784,8 @@ allowed_suffixes = {".md", ".yml", ".yaml", ".sh", ".cfg", ".Dockerfile", ""}
 auth_files = [path for path in auth_files if path.is_file() and path.suffix in allowed_suffixes]
 
 stale_literals = {
-    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.4-1",
-    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.4-1",
+    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.7.0-0",
+    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.7.0-0",
     "7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "v7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "Keycloak: `template-infra-med`": "Keycloak current compose extends template-infra-high",
@@ -4896,7 +4896,7 @@ roots = [
 ]
 
 stale_literals = {
-    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.6",
+    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.8",
     "Port 80, 443, 7687": "Traefik static entrypoints are web(80), websecure(443), and metrics(8082)",
     "| `7687` | `7687` | TCP | Neo4j Bolt": "Current gateway docs must not claim a public Neo4j Bolt gateway entrypoint",
     "cd infra/01-gateway": "Use root profile validation instead of a nonexistent tier-level compose stack",
