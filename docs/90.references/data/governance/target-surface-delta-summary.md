@@ -6,8 +6,8 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 141
-- Current tracked target paths: 478
+- Delta entries: 148
+- Current tracked target paths: 485
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
 
@@ -15,19 +15,19 @@
 
 | Root | Tracked paths |
 | --- | ---: |
-| `.github` | 16 |
+| `.github` | 17 |
 | `archive` | 1 |
 | `examples` | 9 |
 | `infra` | 275 |
 | `projects` | 52 |
-| `scripts` | 55 |
+| `scripts` | 59 |
 | `secrets` | 19 |
-| `tests` | 51 |
+| `tests` | 53 |
 
 ## Dispositions
 
-- `preserve`: 90
-- `update`: 51
+- `preserve`: 89
+- `update`: 59
 - `migrate`: 0
 - `delete`: 0
 
@@ -37,6 +37,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | `.github/INDEX.md` | `native-platform` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `.github/rulesets/main-protection.md` | `native-platform` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `.github/workflow-contract.yml` | `native-platform` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `.github/workflows/ci-quality.yml` | `native-platform` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `.github/workflows/document-corpus-lifecycle.yml` | `native-platform` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `.github/workflows/generate-changelog.yml` | `native-platform` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -106,6 +107,7 @@
 | `scripts/hardening/check-all-hardening.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/provider_surface_renderer.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/rehearse-sample-service-delivery.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/requirements-pre-commit.txt` | `native-file` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/generate-supply-chain-sample-service-summary.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/seed-grype-db-cache.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/verify-sample-service-supply-chain.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
@@ -114,15 +116,18 @@
 | `scripts/validation/check-doc-implementation-alignment.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-document-corpus-lifecycle.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-document-metadata.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-github-workflow-contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-repo-contracts.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-supply-chain-policy.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-target-surface-delta-contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/compose-core-readiness.lib.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/generate-security-automation-readiness.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/github_workflow_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/grype_db_seed.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/recommend-qa-gates.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/rehearse-postgres-logical-upgrade.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-agent-precommit-all-files.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/run-ci-precommit.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-compose-core-readiness.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-local-qa-gates.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/target_surface_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
@@ -159,17 +164,19 @@
 | `tests/fixtures/supply-chain/sample-service-sbom.subject-mismatch.cdx.json` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/fixtures/supply-chain/sample-service-sbom.valid.cdx.json` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/fixtures/supply-chain/scorecard.advisory.json` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `tests/validation/test_agent_governance_ci_routing.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_agent_governance_ci_routing.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_governance_contract.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_output_eval_fixtures.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_compose_core_readiness.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_document_corpus_lifecycle.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_document_metadata.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_github_workflow_contract.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_grype_db_seed.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_postgres_logical_upgrade_rehearsal.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_provider_native_surfaces.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_provider_surface_renderer.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_run_agent_precommit_all_files.sh` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_run_ci_precommit.sh` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_sample_service_delivery_rehearsal.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_security_automation_readiness.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_supply_chain_policy.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |

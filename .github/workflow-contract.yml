@@ -1,0 +1,383 @@
+schema_version: 1
+
+workflows:
+  .github/workflows/ci-quality.yml:
+    name: CI Quality Gates
+    classification: required-quality
+    triggers:
+      push:
+        branches: [main]
+      pull_request:
+        branches: [main]
+      workflow_dispatch: null
+    permissions:
+      contents: read
+    concurrency:
+      group: '${{ github.workflow }}-${{ github.ref }}'
+      cancel-in-progress: true
+    jobs:
+      docs-traceability:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - bash scripts/validation/check-doc-traceability.sh
+      docs-implementation-alignment:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - bash scripts/validation/check-doc-implementation-alignment.sh
+      repo-contracts:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - bash scripts/validation/check-repo-contracts.sh
+      agent-output-eval-fixture-gate:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - 'output="$(bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions)"'
+      supply-chain-fixture-policy:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v
+      dependency-vulnerability-audit:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - npm audit --audit-level=high --prefix projects/storybook/nextjs
+      git-flow-contract:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - 'if ! [[ "$PR_TITLE" =~ $title_re ]]; then'
+      compose-validation:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - bash scripts/validation/validate-docker-compose.sh
+      compose-all-profiles-validation:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - bash scripts/validation/validate-docker-compose.sh
+      infrastructure-hardening:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - bash scripts/hardening/check-all-hardening.sh
+      template-security-baseline:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - bash scripts/validation/check-template-security-baseline.sh
+      quickwin-baseline:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - bash scripts/validation/check-quickwin-baseline.sh
+      pre-commit:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 20
+        owner_commands:
+          - bash scripts/validation/run-ci-precommit.sh
+      frontend-quality:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 20
+        owner_commands:
+          - npm run build-storybook --prefix projects/storybook/nextjs
+      storybook-coverage:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 20
+        owner_commands:
+          - npm run coverage --prefix projects/storybook/nextjs
+      zizmor:
+        permissions:
+          security-events: write
+          actions: read
+          contents: read
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - uvx --from 'zizmor==1.28.0' zizmor . --format sarif . > results.sarif
+
+  .github/workflows/document-corpus-lifecycle.yml:
+    name: Document Corpus Lifecycle
+    classification: non-gating
+    triggers:
+      schedule:
+        - cron: '17 17 * * 1'
+      workflow_dispatch: null
+    permissions:
+      contents: read
+    concurrency:
+      group: 'document-corpus-lifecycle-${{ github.ref }}'
+      cancel-in-progress: true
+    jobs:
+      document-corpus-lifecycle:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 15
+        owner_commands:
+          - python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+
+  .github/workflows/generate-changelog.yml:
+    name: Release Changelog Check
+    classification: non-gating
+    triggers:
+      push:
+        tags:
+          - 'v*.*.*'
+    permissions:
+      contents: read
+    concurrency:
+      group: '${{ github.workflow }}-${{ github.ref }}'
+      cancel-in-progress: true
+    jobs:
+      changelog:
+        permissions: null
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - 'if ! grep -F -- "$RELEASE_TAG" CHANGELOG.md >/dev/null; then'
+
+  .github/workflows/greetings.yml:
+    name: Greeting
+    classification: non-gating
+    triggers:
+      pull_request:
+        branches: [main]
+        types: [opened]
+      issues:
+        types: [opened]
+    permissions: {}
+    concurrency: null
+    jobs:
+      issue-greeting:
+        permissions:
+          issues: write
+          contents: read
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - uses:actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
+      pull-request-greeting:
+        permissions:
+          issues: write
+          contents: read
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - uses:actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
+
+  .github/workflows/pr-labeler.yml:
+    name: Pull Request Labeler
+    classification: non-gating
+    triggers:
+      pull_request:
+        branches: [main]
+        types: [opened, synchronize, reopened]
+    permissions: {}
+    concurrency: null
+    jobs:
+      triage:
+        permissions:
+          contents: read
+          pull-requests: write
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - uses:actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13
+
+  .github/workflows/stale.yml:
+    name: Close Stale Issues & PRs
+    classification: non-gating
+    triggers:
+      schedule:
+        - cron: '30 1 * * *'
+    permissions: {}
+    concurrency: null
+    jobs:
+      stale:
+        permissions:
+          issues: write
+          pull-requests: write
+          contents: read
+        runs_on: ubuntu-latest
+        timeout_minutes: 10
+        owner_commands:
+          - uses:actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629
+
+  .github/workflows/tech-stack-version-sync.yml:
+    name: Tech-Stack Version Sync
+    classification: non-gating
+    triggers:
+      pull_request:
+        branches: [main]
+        paths:
+          - docker-compose.yml
+          - infra/**/docker-compose*.yml
+          - infra/tech-stack.versions.json
+    permissions:
+      contents: read
+    concurrency:
+      group: 'tech-stack-version-sync-${{ github.ref }}'
+      cancel-in-progress: true
+    jobs:
+      drift-gate:
+        permissions: {contents: read}
+        runs_on: ubuntu-latest
+        timeout_minutes: 5
+        owner_commands:
+          - bash scripts/operations/sync-tech-stack-versions.sh --check
+
+expensive_commands:
+  - id: docs-traceability
+    workflow: .github/workflows/ci-quality.yml
+    job: docs-traceability
+    command: bash scripts/validation/check-doc-traceability.sh
+  - id: docs-implementation-alignment
+    workflow: .github/workflows/ci-quality.yml
+    job: docs-implementation-alignment
+    command: bash scripts/validation/check-doc-implementation-alignment.sh
+  - id: repo-contracts
+    workflow: .github/workflows/ci-quality.yml
+    job: repo-contracts
+    command: bash scripts/validation/check-repo-contracts.sh
+  - id: agent-output-eval-fixture-gate
+    workflow: .github/workflows/ci-quality.yml
+    job: agent-output-eval-fixture-gate
+    command: 'output="$(bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions)"'
+  - id: supply-chain-fixture-policy
+    workflow: .github/workflows/ci-quality.yml
+    job: supply-chain-fixture-policy
+    command: python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v
+  - id: dependency-vulnerability-audit
+    workflow: .github/workflows/ci-quality.yml
+    job: dependency-vulnerability-audit
+    command: npm audit --audit-level=high --prefix projects/storybook/nextjs
+  - id: git-flow-contract
+    workflow: .github/workflows/ci-quality.yml
+    job: git-flow-contract
+    command: 'if ! [[ "$PR_TITLE" =~ $title_re ]]; then'
+  - id: compose-validation
+    workflow: .github/workflows/ci-quality.yml
+    job: compose-validation
+    command: bash scripts/validation/validate-docker-compose.sh
+  - id: compose-all-profiles-validation
+    workflow: .github/workflows/ci-quality.yml
+    job: compose-all-profiles-validation
+    command: bash scripts/validation/validate-docker-compose.sh
+  - id: infrastructure-hardening
+    workflow: .github/workflows/ci-quality.yml
+    job: infrastructure-hardening
+    command: bash scripts/hardening/check-all-hardening.sh
+  - id: template-security-baseline
+    workflow: .github/workflows/ci-quality.yml
+    job: template-security-baseline
+    command: bash scripts/validation/check-template-security-baseline.sh
+  - id: quickwin-baseline
+    workflow: .github/workflows/ci-quality.yml
+    job: quickwin-baseline
+    command: bash scripts/validation/check-quickwin-baseline.sh
+  - id: pre-commit
+    workflow: .github/workflows/ci-quality.yml
+    job: pre-commit
+    command: bash scripts/validation/run-ci-precommit.sh
+  - id: frontend-quality
+    workflow: .github/workflows/ci-quality.yml
+    job: frontend-quality
+    command: npm run build-storybook --prefix projects/storybook/nextjs
+  - id: storybook-coverage
+    workflow: .github/workflows/ci-quality.yml
+    job: storybook-coverage
+    command: npm run coverage --prefix projects/storybook/nextjs
+  - id: zizmor
+    workflow: .github/workflows/ci-quality.yml
+    job: zizmor
+    command: uvx --from 'zizmor==1.28.0' zizmor . --format sarif . > results.sarif
+
+actions:
+  - action: actions/checkout
+    sha: 3d3c42e5aac5ba805825da76410c181273ba90b1
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/actions/checkout/3d3c42e5aac5ba805825da76410c181273ba90b1/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/ci-quality.yml
+      - .github/workflows/document-corpus-lifecycle.yml
+      - .github/workflows/generate-changelog.yml
+      - .github/workflows/tech-stack-version-sync.yml
+    security_disposition: approved-node24
+  - action: actions/first-interaction
+    sha: 1c4688942c71f71d4f5502a26ea67c331730fa4d
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/actions/first-interaction/1c4688942c71f71d4f5502a26ea67c331730fa4d/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/greetings.yml
+    security_disposition: approved-node24
+  - action: actions/labeler
+    sha: bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/actions/labeler/bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/pr-labeler.yml
+    security_disposition: approved-node24
+  - action: actions/setup-node
+    sha: 820762786026740c76f36085b0efc47a31fe5020
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/actions/setup-node/820762786026740c76f36085b0efc47a31fe5020/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/ci-quality.yml
+    security_disposition: approved-node24
+  - action: actions/setup-python
+    sha: 5fda3b95a4ea91299a34e894583c3862153e4b97
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/actions/setup-python/5fda3b95a4ea91299a34e894583c3862153e4b97/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/ci-quality.yml
+      - .github/workflows/document-corpus-lifecycle.yml
+    security_disposition: approved-node24
+  - action: actions/stale
+    sha: 1e223db275d687790206a7acac4d1a11bd6fe629
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/actions/stale/1e223db275d687790206a7acac4d1a11bd6fe629/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/stale.yml
+    security_disposition: approved-node24
+  - action: astral-sh/setup-uv
+    sha: 11f9893b081a58869d3b5fccaea48c9e9e46f990
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/astral-sh/setup-uv/11f9893b081a58869d3b5fccaea48c9e9e46f990/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/ci-quality.yml
+    security_disposition: approved-node24
+  - action: github/codeql-action/upload-sarif
+    sha: 7188fc363630916deb702c7fdcf4e481b751f97a
+    runtime: node24
+    manifest_url: https://raw.githubusercontent.com/github/codeql-action/7188fc363630916deb702c7fdcf4e481b751f97a/upload-sarif/action.yml
+    retrieved_at: '2026-07-28'
+    consumers:
+      - .github/workflows/ci-quality.yml
+    security_disposition: approved-node24

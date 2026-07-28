@@ -94,7 +94,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | fresh implementer after Task 3 review | pending |
+| T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | Task 4 workflow/QA implementation agent | review pending |
 | T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | pending |
 | T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | pending |
 
@@ -161,6 +161,10 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-003 final remediation gates | Final Task 3 remediation implementer | Focused version/resolver tests passed 17/17; the exact manifest oracle passed 1/1; successor advisory returned zero findings; all 11 hardening tiers passed; sync reported `changes=0`; provenance was fresh; document alignment reported 674 documents, 5,659 links, 141 operations documents, and zero failures. Changed metadata selected two documents with zero violations; three Markdown inputs, Ruff, Python compile, Bash syntax, ShellCheck, and diff hygiene passed. No Compose, runtime, network, remote, dependency, or pre-commit action ran. Independent final reviews remain pending. |
 | 2026-07-29 | T-TSDC-003 final specification review | Fresh independent specification reviewer | Exact full range `b1e62873..60e0313c`: C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES. |
 | 2026-07-29 | T-TSDC-003 final quality/security review | Fresh independent quality/security reviewer | Exact full range `b1e62873..60e0313c`: C0/I0/M0; PASS; COMMIT_READY YES. Task 3 is complete; all 141 successor manifest specification/quality verdict pairs remain `pending` for Task 6. |
+| 2026-07-29 | T-TSDC-004 RED | Task 4 workflow/QA implementation agent | The CI-wrapper test first failed because `scripts/validation/run-ci-precommit.sh` did not exist. The workflow suite first produced four missing-module errors. Later bounded-reader regressions produced two failures and one error for a parent-directory symlink, a noncanonical workflow path, and a 64-byte short read; the manifest oracle failed `148 != 141`; local routing failed on the missing wrapper-test command; and the repository aggregate identified the new wrapper missing from the exact purpose-folder implementation set. |
+| 2026-07-29 | T-TSDC-004 implementation GREEN | Task 4 workflow/QA implementation agent | Added one typed workflow contract and bounded checker for seven workflows, 23 jobs, eight direct Actions, and exactly 16 required-quality job IDs. All direct Actions use registered full SHAs with locally recorded Node 24 manifest evidence. Replaced `pre-commit/action` and the redundant pre-commit Node/npm setup with setup-python, exact `pre-commit==4.6.1`, and a CI-only wrapper. Removed the overlapping inline workflow parser, retained separate Stage 00 assertions, registered tech-stack sync as non-gating automation, and routed the focused checker exactly once through the repository aggregate. |
+| 2026-07-29 | T-TSDC-004 manifest expansion | Controller / Task 4 workflow/QA implementation agent | Advisory validation identified exactly seven new Task 4 target paths. The controller expanded direct-impact ownership only to `tests/validation/test_target_surface_delta_contracts.py`; its RED oracle fixed 148 total, 89 preserve, 59 update, and zero destructive rows plus path-specific owner, consumer, and pending-verdict assertions for the seven new rows and the routing test's preserve-to-update transition. The canonical writer alone regenerated the summary; advisory and the exact oracle then passed. |
+| 2026-07-29 | T-TSDC-004 bounded gates | Task 4 workflow/QA implementation agent | Focused workflow tests passed 9/9; the fake-binary CI-wrapper test, focused CLI, delta advisory, actionlint, scoped ShellCheck, Ruff, Python compile, Bash syntax, and diff hygiene passed. Governance routing passed 33 Task 4-relevant tests and failed only the isolated predecessor/environment witness `AGC-DEPENDENCY-MISSING path=html5lib location=validation-runtime`. The repository aggregate passed the Task 4 workflow, Stage 00, QA-routing, and repaired script-usage sections; its remaining failures are separately recorded predecessor/generated-evidence limitations. No real pre-commit, network, remote, provider, runtime, service, dependency installation, cache, credential, or secret-payload action ran. Independent reviews remain pending. |
 
 ## Verification Evidence
 
@@ -182,7 +186,7 @@ have no unresolved Critical or Important findings.
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
 | T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression. Review remediations produced 17 resolver/static failures, six quoted-key failures, five global-uniqueness/Dozzle failures, and the exact `141 != 140` manifest-oracle failure. | Initial focused tests passed 7/7. Successive remediation suites passed 11/11, 16/16, and finally 17/17; the exact 141-row manifest oracle passes 1/1 with Dozzle path-specific owner, consumer, update, and pending-verdict assertions. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff gates pass. Final independent specification and quality/security reviews of `b1e62873..60e0313c` each returned C0/I0/M0 and COMMIT_READY YES; all 141 manifest verdict pairs remain pending for Task 6. | completed |
-| T-TSDC-004 | Not run — Task 4 not started | Not run — Task 4 not started | Not run — Task 4 not started | pending |
+| T-TSDC-004 | Missing wrapper; four missing-module errors; bounded reader 2 failures/1 error; `148 != 141`; missing local wrapper-test route; missing purpose-folder registration. | Workflow 9/9; fake-binary wrapper; focused CLI 7/23/8; exact manifest 148/89/59/0 and advisory; repaired script-usage section. | Actionlint, ShellCheck, Ruff, compile, Bash, and diff gates pass. Governance routing is 33/34 with only missing predecessor dependency `html5lib`; aggregate Task 4 sections pass while separately listed predecessor/generated-evidence groups remain. | review pending |
 | T-TSDC-005 | Not run — Task 4 review pending | Not run — Task 4 review pending | Not run — Task 4 review pending | pending |
 | T-TSDC-006 | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | pending |
 
@@ -443,6 +447,67 @@ have no unresolved Critical or Important findings.
   specification outcome was SPEC_COMPLIANCE YES and the quality/security
   outcome was PASS. Task 3 is approved and complete.
 
+### T-TSDC-004 bounded implementation evidence
+
+- Starting commit:
+  `6fabbf05bc2a15f7fb02ff26606d6660c5eb16d5`.
+- The machine contract registers seven tracked workflows, 23 globally unique
+  jobs, exactly one 16-job required-quality workflow, 16 semantic command
+  owners, and eight direct Action identities. Every direct Action reference
+  is a registered full SHA; all eight records contain the exact official raw
+  manifest URL, retrieval date `2026-07-28`, consumer set, Node 24 runtime,
+  and `approved-node24` disposition.
+- The duplicate-safe YAML path accepts at most 128 workflows and 2 MiB per
+  input, completes short reads, rejects symlinked files and parent
+  directories, verifies descriptor/file identity, rejects noncanonical
+  repository-relative paths, and emits value-free deterministic findings.
+  Mutation coverage rejects forbidden or widened events, branches, paths,
+  schedules, permissions, concurrency, job identities, timeouts, direct
+  interpolation, mutable or unregistered Actions, and retired Node runtimes.
+- CI retains exactly the 16 Plan job IDs. The pre-commit job no longer uses
+  `pre-commit/action`, redundant setup-node, or an npm install. It uses the
+  pinned setup-python SHA, installs only
+  `scripts/requirements-pre-commit.txt` with exact
+  `pre-commit==4.6.1`, sets `SKIP=eslint-nextjs`, and calls the dedicated
+  CI-only wrapper.
+- The CI-only wrapper requires exact `GITHUB_ACTIONS=true` and `CI=true`,
+  accepts no arguments, rejects `TASK_FILE` and `ALLOW_PREFIXES`, requires the
+  exact skip, and `exec`s only
+  `pre-commit run --all-files --show-diff-on-failure`. Its test uses a local
+  fake binary to prove exact argv, skip preservation, rejection paths, and
+  child exit 37 propagation. Neither the real command nor the controlled
+  Agent wrapper ran.
+- The repository aggregate invokes the focused workflow checker exactly once
+  and no longer contains its overlapping inline workflow parser. Separate
+  Stage 00 checks retain the four-way required-ID coupling among the workflow
+  contract, CI workflow, desired branch protection, and GitHub governance.
+  `tech-stack-version-sync.yml` is registered as non-gating remote automation
+  and remains locally inventoried without a remote execution claim.
+- Controller-approved manifest expansion added seven factual
+  non-destructive `update` rows and changed the existing governance-routing
+  test from `preserve` to `update`. The canonical summary now reports 148
+  rows: 89 `preserve`, 59 `update`, 0 `migrate`, and 0 `delete`; all 148
+  specification and quality verdict pairs remain `pending` for Task 6.
+- Final Task 4 gates pass for workflow tests 9/9, the fake-binary wrapper
+  test, focused checker `(workflows=7, jobs=23, actions=8)`, exact manifest
+  oracle, advisory delta, actionlint, scoped ShellCheck, Ruff, Python compile,
+  Bash syntax, changed Markdown plus the separately linted ledger, exact
+  20-path scope, and diff hygiene. Governance routing passed all 33 Task
+  4-relevant tests; its sole failure is the isolated validation-runtime absence
+  of `html5lib`.
+- The repository aggregate's Task 4 workflow, Stage 00, QA-routing, and
+  repaired script-usage sections pass. Non-Task 4 aggregate limitations are
+  four promoted-lifecycle consumer-evidence mismatches, the missing
+  `html5lib` validation dependency, stale LLM Wiki index/coverage, stale
+  metadata inventory, stale security-readiness output, and five references
+  to the absent Plan-prescribed
+  `scripts/governance/validate-cross-links.sh`. No substitute pass claim was
+  invented.
+- No network, remote, provider, runtime, service, dependency installation,
+  cache, credential, secret identifier, or secret payload was read or
+  mutated. Independent specification and quality/security reviews remain
+  pending.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -479,7 +544,7 @@ consume or create Agent authorization.
 | T-TSDC-001 | Task 1 implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `72eef68c..43f78ad5` | approved; completed | Fresh independent reviewers found no unresolved issues. Per-row manifest verdicts remain pending for Task 6 blocking promotion. |
 | T-TSDC-002 | Task 2 documentation-surface implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `78af8462..b28764a9` | approved; completed | Fresh independent reviewers found no unresolved issues after canonical-contract remediation. All 136 manifest row verdict pairs remain pending for Task 6. |
 | T-TSDC-003 | Task 3 static-version implementation agent / replacement remediation implementers | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; PASS; COMMIT_READY YES | `b1e62873..60e0313c` | approved; completed | Fresh independent reviewers found no unresolved issues across all four pinned implementation commits. Exact stale-absence protects all 15 mappings, global dequoted service-name uniqueness prevents ambiguity, and all 141 manifest verdict pairs remain pending for Task 6. |
-| T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 approved; Task 4 not started |
+| T-TSDC-004 | Task 4 workflow/QA implementation agent | pending fresh reviewer | pending different fresh reviewer | `6fabbf05..pending Task 4 commit` | review pending | Implementation and bounded local gates are complete. All 148 manifest verdict pairs remain pending; no remote or real pre-commit action ran. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
 | Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Final implementation not started |
@@ -503,7 +568,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-003 remediation | Harden static version assertions and Compose image resolution | `fix(infra): harden static version assertions` | `c04946e547b7a7b22923e6d7ed577408b39ef480` | resolver/static RED 17 failures; focused 11/11; sync/provenance, all hardening, supply-chain 13, delta advisory, Ruff, compile, Bash, ShellCheck, and diff gates pass; remediation review C0/I1/M1 |
 | T-TSDC-003 quoted-service remediation | Close quoted service resolver boundary and currentize Dozzle diagnostic | `fix(infra): close quoted service resolver gap` | `cce5abb6e20bffd10a09f4a2c74da3b653022a86` | quoted-key RED six failures; affected GREEN 4/4 and full focused 16/16; all hardening tiers, sync/provenance, repository static oracle, Bash, scoped ShellCheck, Ruff, compile, and diff hygiene pass; final remediation review C0/I2/M1 |
 | T-TSDC-003 final remediation | Enforce global service uniqueness and converge direct Dozzle evidence | `fix(infra): converge Dozzle static evidence` | `60e0313cad71dced1db2bb5fba554c2fc28cd235` | five-failure focused RED plus `141 != 140` oracle RED; focused 17/17, exact oracle 1/1, advisory, hardening, sync/provenance, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff hygiene pass; final independent reviews C0/I0/M0 and COMMIT_READY YES |
-| T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 approved; Task 4 not started |
+| T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | pending local commit | workflow 9/9, wrapper, CLI 7/23/8, exact manifest/advisory, actionlint, ShellCheck, Ruff, compile, Bash, diff, and Task 4 aggregate sections pass; independent reviews pending |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 

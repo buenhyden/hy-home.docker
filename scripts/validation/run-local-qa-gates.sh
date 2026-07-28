@@ -83,6 +83,9 @@ Local script-backed gates:
 - python3 scripts/validation/check-target-surface-contract.py
 - python3 -m unittest tests.validation.test_target_surface_delta_contracts -v
 - python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+- python3 -m unittest tests.validation.test_github_workflow_contract -v
+- python3 scripts/validation/check-github-workflow-contract.py
+- bash tests/validation/test_run_ci_precommit.sh
 - scripts/validation/validate-docker-compose.sh
 - scripts/hardening/check-all-hardening.sh
 - scripts/validation/check-template-security-baseline.sh
@@ -97,14 +100,16 @@ CI/local-tooling gates:
 - pre-commit job: run in GitHub Actions. Approved local all-files execution uses
   only scripts/validation/run-agent-precommit-all-files.sh from an initially clean linked worktree
   with tracked Task evidence and explicit --allow-prefix values; this local QA
-  runner never invokes that gate.
+  runner never invokes the real all-files gate and exercises the CI wrapper
+  only through its fake-binary contract test.
 - frontend-quality and storybook-coverage: run in GitHub Actions after npm ci.
 
 Remote-only gates:
 - zizmor SARIF upload with GitHub security permissions.
 - PR required-check status, branch protection, CODEOWNERS review, and merge readiness.
-- stale/greetings/pr-labeler/generate-changelog workflows are GitHub automation,
-  not local script-backed quality gates.
+- stale/greetings/pr-labeler/generate-changelog/document-corpus-lifecycle/
+  tech-stack-version-sync workflows are non-gating GitHub automation, not local
+  script-backed quality gates.
 EOF
 }
 
@@ -142,6 +147,12 @@ run_target_surface_gates() {
   run_step "Target surface delta contracts" python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 }
 
+run_github_workflow_gates() {
+  run_step "GitHub workflow contract tests" python3 -m unittest tests.validation.test_github_workflow_contract -v
+  run_step "GitHub workflow contracts" python3 scripts/validation/check-github-workflow-contract.py
+  run_step "CI-only pre-commit wrapper tests" bash tests/validation/test_run_ci_precommit.sh
+}
+
 run_generated_freshness_gates() {
   run_step "Security automation readiness freshness" bash scripts/validation/generate-security-automation-readiness.sh --check
   run_step "Audit implementation matrix freshness" bash scripts/validation/generate-audit-implementation-matrix.sh --check
@@ -170,6 +181,7 @@ run_script_backed_gates() {
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
   run_lifecycle_gates
   run_target_surface_gates
+  run_github_workflow_gates
   run_supply_chain_fixture_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
@@ -189,6 +201,7 @@ run_harness_gates() {
   run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
   run_lifecycle_gates
   run_target_surface_gates
+  run_github_workflow_gates
   run_supply_chain_fixture_gates
   run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
   run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh

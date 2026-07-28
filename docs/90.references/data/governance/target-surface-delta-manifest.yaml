@@ -19,7 +19,7 @@ entries:
   disposition: update
   canonical_owner: .github/INDEX.md
   direct_consumers: []
-  finding: Task 4 will align the GitHub navigation index with the typed workflow contract.
+  finding: Registered the typed workflow contract, focused checker, desired protection surface, and non-gating workflow taxonomy in the GitHub navigation index.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -41,7 +41,7 @@ entries:
   canonical_owner: .github/rulesets/main-protection.md
   direct_consumers:
   - .github/INDEX.md
-  finding: Task 4 will align desired branch-protection evidence with the required job set.
+  finding: Replaced shell-owned required-check identity evidence with the typed workflow contract while retaining the exact 16 required job IDs.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -55,6 +55,27 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:.github/rulesets/main-protection.md
   spec_verdict: pending
   quality_verdict: pending
+- path: .github/workflow-contract.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: .github/workflow-contract.yml
+  direct_consumers:
+  - scripts/validation/github_workflow_contract.py
+  finding: Added the machine-readable contract for exact workflow triggers, permissions, concurrency, timeouts, job identities, command ownership, and full-SHA Action evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: .github/workflows/ci-quality.yml
   surface_class: native-platform
   profile: null
@@ -63,7 +84,7 @@ entries:
   canonical_owner: .github/workflows/ci-quality.yml
   direct_consumers:
   - .github/rulesets/main-protection.md
-  finding: Task 4 will remove duplicate CI execution and replace mutable nested Action behavior.
+  finding: Replaced the mutable transitive pre-commit Action path with a pinned Python toolchain and CI-only wrapper while retaining the exact 16 required job IDs.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -173,7 +194,7 @@ entries:
   canonical_owner: .github/workflows/tech-stack-version-sync.yml
   direct_consumers:
   - .github/INDEX.md
-  finding: Task 4 will register the omitted non-gating workflow trigger and runner contract.
+  finding: Registered this workflow's exact trigger, permissions, timeout, runner, job identity, and full-SHA Action dependencies as non-gating automation.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1497,7 +1518,7 @@ entries:
   disposition: update
   canonical_owner: scripts/README.md
   direct_consumers: []
-  finding: Task 4 will align the script inventory with typed CI and QA ownership.
+  finding: Inventoried the typed workflow contract module and checker, pinned CI pre-commit dependency, CI-only wrapper, and focused regression tests with their authority boundaries.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1574,6 +1595,27 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/operations/rehearse-sample-service-delivery.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/requirements-pre-commit.txt
+  surface_class: native-file
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/requirements-pre-commit.txt
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  finding: Added the exact pre-commit 4.6.1 dependency pin consumed only by the CI pre-commit job.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: scripts/security/generate-supply-chain-sample-service-summary.sh
@@ -1752,6 +1794,28 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/check-document-metadata.py
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/validation/check-github-workflow-contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/check-github-workflow-contract.py
+  direct_consumers:
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Added the focused command-line entry point for deterministic GitHub workflow contract validation.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/validation/check-repo-contracts.sh
   surface_class: executable-script
   profile: null
@@ -1763,12 +1827,15 @@ entries:
   - .pre-commit-config.yaml
   - scripts/validation/run-local-qa-gates.sh
   - tests/validation/test_tech_stack_version_contract.py
-  finding: Updated exact current-version descriptions for Traefik, Keycloak, and Ollama; Task 4 will replace overlapping inline workflow checks with the focused owner.
+  finding: Retained prior static-version assertions, removed overlapping inline workflow parsing, and delegated workflow semantics exactly once to the focused checker while preserving separate Stage 00 routing assertions.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-github-workflow-contract.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_target_surface_delta_contracts.py
   - tests/validation/test_tech_stack_version_contract.py
   provenance:
@@ -1864,6 +1931,30 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/generate-security-automation-readiness.sh
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/validation/github_workflow_contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/github_workflow_contract.py
+  direct_consumers:
+  - scripts/validation/check-github-workflow-contract.py
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_github_workflow_contract.py
+  finding: Added the bounded duplicate-safe workflow loader and typed validator for trigger, permission, job, command-owner, and direct Action dependency contracts.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/validation/grype_db_seed.py
   surface_class: python-source
   profile: null
@@ -1948,6 +2039,28 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/run-agent-precommit-all-files.sh
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/validation/run-ci-precommit.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/run-ci-precommit.sh
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  - tests/validation/test_run_ci_precommit.sh
+  finding: Added a CI-only fail-closed wrapper that requires exact GitHub Actions markers, rejects arguments and Agent authority variables, preserves the dedicated skip, and executes the exact pinned pre-commit command.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_run_ci_precommit.sh
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/validation/run-compose-core-readiness.sh
   surface_class: executable-script
   profile: null
@@ -1977,12 +2090,15 @@ entries:
   canonical_owner: scripts/validation/run-local-qa-gates.sh
   direct_consumers:
   - scripts/validation/validate-harness.sh
-  finding: Task 4 will align local gate listing and execution with the typed CI contract.
+  finding: Added the focused workflow contract test, checker, and fake-binary CI-wrapper regression to both script-backed and harness modes while retaining remote workflow inventory boundaries.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-github-workflow-contract.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_run_ci_precommit.sh
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/run-local-qa-gates.sh
@@ -2744,15 +2860,19 @@ entries:
   surface_class: test-or-fixture
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: tests/validation/test_agent_governance_ci_routing.py
-  direct_consumers: []
-  finding: Preserve tests/validation/test_agent_governance_ci_routing.py as the tracked test oracle for its current validation boundary.
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  finding: Replaced duplicated inline workflow-parser fixtures with the focused typed validator, retained separate Stage 00 assertions, and covered local workflow and CI-wrapper test routing.
   replacement: null
   secret_safety: not-applicable
   validators:
+  - scripts/validation/check-github-workflow-contract.py
   - scripts/validation/check-target-surface-delta-contract.py
   tests:
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_github_workflow_contract.py
   - tests/validation/test_target_surface_delta_contracts.py
   provenance:
   - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_agent_governance_ci_routing.py
@@ -2873,6 +2993,27 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_document_metadata.py
   spec_verdict: pending
   quality_verdict: pending
+- path: tests/validation/test_github_workflow_contract.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: tests/validation/test_github_workflow_contract.py
+  direct_consumers:
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Added baseline, parser-boundary, diagnostic, and mutation regressions for every tracked workflow and all prohibited workflow or Action widening cases.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_github_workflow_contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: tests/validation/test_grype_db_seed.py
   surface_class: test-or-fixture
   profile: null
@@ -2976,6 +3117,26 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_run_agent_precommit_all_files.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_run_ci_precommit.sh
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: tests/validation/test_run_ci_precommit.sh
+  direct_consumers:
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Added fake-binary shell regressions for exact CI markers, argument and Agent-variable rejection, skip preservation, exact argv, and child exit propagation without running real pre-commit.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_run_ci_precommit.sh
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: tests/validation/test_sample_service_delivery_rehearsal.py

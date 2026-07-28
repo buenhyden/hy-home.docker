@@ -101,8 +101,35 @@ TASK3_UPDATE_PATHS = frozenset(
         "tests/validation/test_tech_stack_version_contract.py",
     }
 )
+TASK4_NEW_UPDATE_PATHS = frozenset(
+    {
+        ".github/workflow-contract.yml",
+        "scripts/requirements-pre-commit.txt",
+        "scripts/validation/check-github-workflow-contract.py",
+        "scripts/validation/github_workflow_contract.py",
+        "scripts/validation/run-ci-precommit.sh",
+        "tests/validation/test_github_workflow_contract.py",
+        "tests/validation/test_run_ci_precommit.sh",
+    }
+)
+TASK4_TRACKED_UPDATE_PATHS = frozenset(
+    {
+        ".github/INDEX.md",
+        ".github/rulesets/main-protection.md",
+        ".github/workflows/ci-quality.yml",
+        ".github/workflows/tech-stack-version-sync.yml",
+        "scripts/README.md",
+        "scripts/validation/check-repo-contracts.sh",
+        "scripts/validation/run-local-qa-gates.sh",
+        "tests/validation/test_agent_governance_ci_routing.py",
+    }
+)
+TASK4_UPDATE_PATHS = TASK4_NEW_UPDATE_PATHS | TASK4_TRACKED_UPDATE_PATHS
 EXPECTED_UPDATE_PATHS = (
-    PRE_TASK2_UPDATE_PATHS | TASK2_UPDATE_PATHS | TASK3_UPDATE_PATHS
+    PRE_TASK2_UPDATE_PATHS
+    | TASK2_UPDATE_PATHS
+    | TASK3_UPDATE_PATHS
+    | TASK4_UPDATE_PATHS
 )
 
 
@@ -1145,7 +1172,7 @@ class RepositoryManifestTests(unittest.TestCase):
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
-        self.assertEqual(141, len(document.entries))
+        self.assertEqual(148, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
@@ -1159,7 +1186,7 @@ class RepositoryManifestTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            {"preserve": 90, "update": 51},
+            {"preserve": 89, "update": 59},
             {
                 disposition: sum(
                     row.disposition == disposition for row in document.entries
@@ -1203,6 +1230,54 @@ class RepositoryManifestTests(unittest.TestCase):
                 "infra/11-laboratory/dozzle/README.md"
             ].direct_consumers,
         )
+        task4_owners = {path: path for path in TASK4_UPDATE_PATHS}
+        task4_consumers = {
+            ".github/workflow-contract.yml": (
+                "scripts/validation/github_workflow_contract.py",
+            ),
+            "scripts/requirements-pre-commit.txt": (
+                ".github/workflows/ci-quality.yml",
+            ),
+            "scripts/validation/check-github-workflow-contract.py": (
+                "scripts/validation/check-repo-contracts.sh",
+                "scripts/validation/run-local-qa-gates.sh",
+            ),
+            "scripts/validation/github_workflow_contract.py": (
+                "scripts/validation/check-github-workflow-contract.py",
+                "tests/validation/test_agent_governance_ci_routing.py",
+                "tests/validation/test_github_workflow_contract.py",
+            ),
+            "scripts/validation/run-ci-precommit.sh": (
+                ".github/workflows/ci-quality.yml",
+                "tests/validation/test_run_ci_precommit.sh",
+            ),
+            "tests/validation/test_github_workflow_contract.py": (
+                "scripts/validation/run-local-qa-gates.sh",
+            ),
+            "tests/validation/test_run_ci_precommit.sh": (
+                "scripts/validation/run-local-qa-gates.sh",
+            ),
+            "tests/validation/test_agent_governance_ci_routing.py": (
+                ".github/workflows/ci-quality.yml",
+            ),
+        }
+        for path in TASK4_UPDATE_PATHS:
+            with self.subTest(task4_path=path):
+                self.assertEqual("update", rows[path].disposition)
+                self.assertEqual(task4_owners[path], rows[path].canonical_owner)
+                self.assertEqual("pending", rows[path].spec_verdict)
+                self.assertEqual("pending", rows[path].quality_verdict)
+                self.assertIn(
+                    "scripts/validation/check-target-surface-delta-contract.py",
+                    rows[path].validators,
+                )
+                self.assertIn(
+                    "tests/validation/test_target_surface_delta_contracts.py",
+                    rows[path].tests,
+                )
+        for path, consumers in task4_consumers.items():
+            with self.subTest(task4_consumers=path):
+                self.assertEqual(consumers, rows[path].direct_consumers)
         self.assertFalse(
             any(
                 row.disposition in {"migrate", "delete"}

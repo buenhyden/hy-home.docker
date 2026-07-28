@@ -283,22 +283,16 @@ jobs:
     timeout-minutes: 20
     steps:
       - *checkout
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Install Storybook Next.js lint dependencies
-        run: npm ci --prefix projects/storybook/nextjs
+      - name: Install pinned pre-commit
+        run: python -m pip install -r scripts/requirements-pre-commit.txt
       - name: Run pre-commit hooks
-        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd
         env:
           SKIP: eslint-nextjs
+        run: bash scripts/validation/run-ci-precommit.sh
 
   # ── Frontend Build and Typecheck ───────────────────────────
   frontend-quality:

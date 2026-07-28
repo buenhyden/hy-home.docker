@@ -831,102 +831,12 @@ PY
   failures=$((failures + 1))
 fi
 
-section "GitHub Actions YAML and duplicate workflow steps"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import collections
-import pathlib
-import re
-import sys
-
-try:
-    import yaml
-except Exception as exc:
-    print(f"FAIL: PyYAML is required for GitHub Actions YAML parsing: {exc}", file=sys.stderr)
-    sys.exit(1)
-
-failures = 0
-workflow_files = sorted(
-    list(pathlib.Path(".github/workflows").glob("*.yml"))
-    + list(pathlib.Path(".github/workflows").glob("*.yaml"))
-)
-yaml_files = sorted(
-    list(pathlib.Path(".github").rglob("*.yml"))
-    + list(pathlib.Path(".github").rglob("*.yaml"))
-)
-
-for path in yaml_files:
-    try:
-        yaml.safe_load(path.read_text())
-    except Exception as exc:
-        print(f"FAIL: YAML parse failed: {path}: {exc}", file=sys.stderr)
-        failures += 1
-
-for path in workflow_files:
-    text = path.read_text()
-    step_names = re.findall(r"(?m)^\s*-\s+name:\s*(.+)$", text)
-    duplicate_steps = [(name, count) for name, count in collections.Counter(step_names).items() if count > 1]
-    if duplicate_steps:
-        print(f"FAIL: duplicate workflow step names in {path}: {duplicate_steps}", file=sys.stderr)
-        failures += 1
-
-    lines = text.splitlines()
-    for index, line in enumerate(lines):
-        stripped = line.lstrip()
-        if not re.match(r"^-\s+", stripped):
-            continue
-        if re.match(r"^-\s+\*[A-Za-z0-9_-]+\s*$", stripped):
-            continue
-
-        indent = len(line) - len(stripped)
-        block = [line]
-        for next_line in lines[index + 1 :]:
-            next_stripped = next_line.lstrip()
-            next_indent = len(next_line) - len(next_stripped)
-            if next_stripped and next_indent <= indent and re.match(r"^-\s+", next_stripped):
-                break
-            if next_stripped and next_indent < indent:
-                break
-            block.append(next_line)
-
-        block_text = "\n".join(block)
-        has_uses = bool(
-            re.search(r"(?m)^\s*uses:\s*", block_text)
-            or re.search(r"(?m)^\s*-\s+(?:&[A-Za-z0-9_-]+\s+)?uses:\s*", block_text)
-        )
-        has_name = bool(
-            re.search(r"(?m)^\s*name:\s*\S", block_text)
-            or re.search(r"(?m)^\s*-\s+(?:&[A-Za-z0-9_-]+\s+)?name:\s*\S", block_text)
-        )
-        if has_uses and not has_name:
-            print(f"FAIL: unnamed action step in {path}:{index + 1}", file=sys.stderr)
-            failures += 1
-
-    in_jobs = False
-    job_ids: list[str] = []
-    for line in text.splitlines():
-        if re.match(r"^jobs:\s*$", line):
-            in_jobs = True
-            continue
-        if in_jobs and re.match(r"^[A-Za-z0-9_-]+:", line):
-            in_jobs = False
-        if in_jobs:
-            match = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
-            if match:
-                job_ids.append(match.group(1))
-    duplicate_jobs = [(name, count) for name, count in collections.Counter(job_ids).items() if count > 1]
-    if duplicate_jobs:
-        print(f"FAIL: duplicate workflow job ids in {path}: {duplicate_jobs}", file=sys.stderr)
-        failures += 1
-
-if failures:
-    sys.exit(1)
-PY
+section "GitHub workflow contract"
+if ! python3 scripts/validation/check-github-workflow-contract.py; then
   failures=$((failures + 1))
 fi
 
-section "GitHub workflow security contracts"
+section "Stage 00 GitHub routing contracts"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
@@ -934,24 +844,37 @@ import pathlib
 import re
 import sys
 
-try:
-    import yaml
-except Exception as exc:
-    print(f"FAIL: PyYAML is required for GitHub workflow contract checks: {exc}", file=sys.stderr)
-    sys.exit(1)
+import yaml
+
+sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
+from github_workflow_contract import WorkflowContractError, load_workflow_contract
 
 failures: list[str] = []
-workflow_files = sorted(
-    list(pathlib.Path(".github/workflows").glob("*.yml"))
-    + list(pathlib.Path(".github/workflows").glob("*.yaml"))
-)
-sha_re = re.compile(r"^[0-9a-f]{40}$")
-workflow_documents: dict[pathlib.Path, dict[object, object]] = {}
-workflow_purposes: dict[str, pathlib.Path] = {}
-workflow_job_owners: dict[str, pathlib.Path] = {}
-untrusted_run_re = re.compile(
-    r"\$\{\{\s*github\.(?:event(?:\.|_)|head_ref\b|ref_name\b|ref\b)"
-)
+try:
+    workflow_contract = load_workflow_contract(pathlib.Path.cwd())
+except WorkflowContractError as error:
+    failures.append(
+        f".github/workflow-contract.yml: typed workflow contract is invalid ({error.code})"
+    )
+    required_jobs: set[str] = set()
+else:
+    required_workflows = [
+        workflow
+        for workflow in workflow_contract.workflows
+        if workflow.classification == "required-quality"
+    ]
+    if len(required_workflows) != 1:
+        failures.append(
+            ".github/workflow-contract.yml: exactly one required-quality workflow is required"
+        )
+        required_jobs = set()
+    else:
+        required_jobs = set(required_workflows[0].jobs)
+        if len(required_jobs) != 16:
+            failures.append(
+                ".github/workflow-contract.yml: required-quality workflow must own exactly 16 jobs"
+            )
+ci_jobs = required_jobs
 
 
 class DuplicateKeyError(yaml.YAMLError):
@@ -989,311 +912,6 @@ UniqueKeyLoader.add_constructor(
     yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
     construct_unique_mapping,
 )
-
-
-def load_workflow(path: pathlib.Path, text: str) -> dict[object, object] | None:
-    try:
-        data = yaml.load(text, Loader=UniqueKeyLoader)
-    except DuplicateKeyError:
-        failures.append(f"{path}: duplicate YAML mapping key")
-        return None
-    except yaml.YAMLError:
-        failures.append(f"{path}: invalid workflow YAML")
-        return None
-    if not isinstance(data, dict):
-        failures.append(f"{path}: workflow root must be a mapping")
-        return None
-    return data
-
-for path in workflow_files:
-    text = path.read_text()
-    data = load_workflow(path, text)
-    if data is None:
-        continue
-    workflow_documents[path] = data
-    purpose = data.get("name")
-    if not isinstance(purpose, str) or not purpose.strip():
-        failures.append(f"{path}: workflow purpose must be a non-empty name")
-    else:
-        normalized_purpose = " ".join(purpose.split()).casefold()
-        previous = workflow_purposes.get(normalized_purpose)
-        if previous is not None:
-            failures.append(
-                f"{path}: duplicate workflow purpose conflicts with another tracked workflow"
-            )
-        else:
-            workflow_purposes[normalized_purpose] = path
-    jobs = data.get("jobs") or {}
-    if not isinstance(jobs, dict):
-        failures.append(f"{path}: workflow jobs must be a mapping")
-        jobs = {}
-    for job_id, job in jobs.items():
-        if not isinstance(job_id, str):
-            failures.append(f"{path}: workflow job id must be a string")
-            continue
-        previous = workflow_job_owners.get(job_id)
-        if previous is not None:
-            failures.append(
-                f"{path}: duplicate workflow job id across files: {job_id}"
-            )
-        else:
-            workflow_job_owners[job_id] = path
-        if not isinstance(job, dict):
-            failures.append(f"{path}: job {job_id!r} must be a mapping")
-            continue
-        timeout = job.get("timeout-minutes")
-        if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 30:
-            failures.append(
-                f"{path}: job {job_id!r} timeout-minutes must use a bounded integer"
-            )
-        for step in job.get("steps") or []:
-            if not isinstance(step, dict):
-                continue
-            run = step.get("run")
-            if isinstance(run, str) and untrusted_run_re.search(run):
-                failures.append(
-                    f"{path}: job {job_id!r} run step uses an untrusted GitHub context directly"
-                )
-    top_permissions = data.get("permissions")
-
-    if top_permissions is None:
-        failures.append(f"{path}: workflow is missing top-level permissions")
-    if "pull_request_target:" in text:
-        failures.append(f"{path}: pull_request_target is not allowed")
-    if re.search(r"(?m)^\s*contents:\s*write\s*(#.*)?$", text):
-        failures.append(f"{path}: contents: write is not allowed")
-    if "git push origin main" in text:
-        failures.append(f"{path}: direct push to main is not allowed")
-    raw_upload_artifact = "actions/upload-artifact@" in text
-    if raw_upload_artifact:
-        failures.append(f"{path}: artifact upload is forbidden")
-
-    for line_no, line in enumerate(text.splitlines(), start=1):
-        match = re.match(r"^\s*uses:\s*([^#\s]+)", line)
-        if not match:
-            continue
-        action = match.group(1).strip("'\"")
-        if (
-            action.casefold().startswith("actions/upload-artifact@")
-            and not raw_upload_artifact
-        ):
-            failures.append(f"{path}: artifact upload is forbidden")
-            continue
-        if action.startswith("./"):
-            continue
-        if "@" not in action:
-            failures.append(f"{path}:{line_no}: action reference is missing a pinned ref: {action}")
-            continue
-        ref = action.rsplit("@", 1)[1]
-        if not sha_re.fullmatch(ref):
-            failures.append(f"{path}:{line_no}: action reference must use a full commit SHA: {action}")
-
-    if top_permissions is None:
-        for job_id, job in jobs.items():
-            if isinstance(job, dict) and "permissions" not in job:
-                failures.append(f"{path}: job {job_id!r} is missing explicit permissions")
-
-ci_quality = pathlib.Path(".github/workflows/ci-quality.yml")
-# COUPLING CONSTRAINT: required_jobs must stay in sync with:
-#   (1) job IDs in .github/workflows/ci-quality.yml
-#   (2) Required Status Checks in .github/rulesets/main-protection.md
-#   (3) CI/CD Job Taxonomy in docs/00.agent-governance/rules/github-governance.md
-# When adding a new CI job: update all three locations simultaneously.
-# GitHub-native-only jobs (greetings, stale, pr-labeler, generate-changelog)
-# must NOT be added here — they are not script-backed QA gates.
-required_jobs = {
-    "docs-traceability",
-    "docs-implementation-alignment",
-    "repo-contracts",
-    "agent-output-eval-fixture-gate",
-    "supply-chain-fixture-policy",
-    "dependency-vulnerability-audit",
-    "git-flow-contract",
-    "compose-validation",
-    "compose-all-profiles-validation",
-    "infrastructure-hardening",
-    "template-security-baseline",
-    "quickwin-baseline",
-    "pre-commit",
-    "frontend-quality",
-    "zizmor",
-    "storybook-coverage",
-}
-ci_jobs: set[str] = set()
-if ci_quality in workflow_documents:
-    data = workflow_documents[ci_quality]
-    ci_text = ci_quality.read_text()
-    raw_jobs = data.get("jobs") or {}
-    jobs = raw_jobs if isinstance(raw_jobs, dict) else {}
-    ci_jobs = set(jobs.keys())
-    expected_top_permissions = {"contents": "read"}
-    expected_concurrency = {
-        "group": "${{ github.workflow }}-${{ github.ref }}",
-        "cancel-in-progress": True,
-    }
-    if data.get("permissions") != expected_top_permissions:
-        failures.append(f"{ci_quality}: top-level permissions must match read-only quality policy")
-    if data.get("concurrency") != expected_concurrency:
-        failures.append(f"{ci_quality}: concurrency must match the stable quality policy")
-    missing_jobs = sorted(required_jobs - ci_jobs)
-    for job_id in missing_jobs:
-        failures.append(f"{ci_quality}: missing required QA/CI job: {job_id}")
-    unexpected_jobs = sorted(ci_jobs - required_jobs)
-    for job_id in unexpected_jobs:
-        failures.append(f"{ci_quality}: unexpected QA/CI job outside the ruleset contract: {job_id}")
-    expected_timeouts = {
-        "docs-traceability": 5,
-        "docs-implementation-alignment": 5,
-        "repo-contracts": 10,
-        "agent-output-eval-fixture-gate": 5,
-        "supply-chain-fixture-policy": 5,
-        "dependency-vulnerability-audit": 10,
-        "git-flow-contract": 5,
-        "compose-validation": 10,
-        "compose-all-profiles-validation": 10,
-        "infrastructure-hardening": 10,
-        "template-security-baseline": 10,
-        "quickwin-baseline": 10,
-        "pre-commit": 20,
-        "frontend-quality": 20,
-        "storybook-coverage": 20,
-        "zizmor": 10,
-    }
-    read_only_permissions = {"contents": "read"}
-    zizmor_permissions = {
-        "security-events": "write",
-        "actions": "read",
-        "contents": "read",
-    }
-    for job_id, job in jobs.items():
-        if not isinstance(job, dict):
-            failures.append(f"{ci_quality}: job {job_id!r} must be a mapping")
-            continue
-        expected_permissions = (
-            zizmor_permissions if job_id == "zizmor" else read_only_permissions
-        )
-        if job.get("permissions") != expected_permissions:
-            failures.append(
-                f"{ci_quality}: job {job_id!r} permissions must match the approved policy"
-            )
-        if job.get("timeout-minutes") != expected_timeouts.get(job_id):
-            failures.append(
-                f"{ci_quality}: job {job_id!r} timeout-minutes must equal the approved bound"
-            )
-    operational_readiness_test_command = "python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v"
-    supply_chain_job = jobs.get("supply-chain-fixture-policy")
-    supply_chain_steps = (
-        supply_chain_job.get("steps") or []
-        if isinstance(supply_chain_job, dict)
-        else []
-    )
-    focused_regression_steps = [
-        step
-        for step in supply_chain_steps
-        if isinstance(step, dict)
-        and step.get("name") == "Run focused operational readiness regressions"
-        and step.get("run") == operational_readiness_test_command
-    ]
-    if len(focused_regression_steps) != 1:
-        failures.append(
-            f"{ci_quality}: supply-chain focused regression step must match the approved command exactly once"
-        )
-    expected_zizmor_command = (
-        "uvx --from 'zizmor==1.28.0' "
-        "zizmor . --format sarif . > results.sarif"
-    )
-    zizmor_job = jobs.get("zizmor")
-    zizmor_steps = (
-        zizmor_job.get("steps") or []
-        if isinstance(zizmor_job, dict)
-        else []
-    )
-    zizmor_commands = [
-        step.get("run")
-        for step in zizmor_steps
-        if isinstance(step, dict)
-        and isinstance(step.get("run"), str)
-        and "zizmor" in step.get("run", "")
-    ]
-    if zizmor_commands != [expected_zizmor_command]:
-        failures.append(f"{ci_quality}: unpinned dynamic tool package")
-    zizmor_run_steps = [
-        step
-        for step in zizmor_steps
-        if isinstance(step, dict) and step.get("run") == expected_zizmor_command
-    ]
-    if len(zizmor_run_steps) != 1 or "env" in zizmor_run_steps[0]:
-        failures.append(f"{ci_quality}: zizmor credential environment is forbidden")
-    for literal in [
-        "Publish QA gate recommendations",
-        "GITHUB_STEP_SUMMARY",
-        "scripts/validation/recommend-qa-gates.sh --base",
-    ]:
-        if literal not in ci_text:
-            failures.append(f"{ci_quality}: missing QA recommendation summary literal: {literal}")
-
-    repo_contracts = jobs.get("repo-contracts") or {}
-    repo_contract_steps = repo_contracts.get("steps") or []
-    expected_base_step = {
-        "name": "Verify document metadata comparison base",
-        "if": "github.event_name == 'pull_request' || github.event_name == 'push'",
-        "shell": "bash",
-        "run": (
-            "set -euo pipefail\n"
-            'git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
-            'git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
-        ),
-    }
-    base_steps = [
-        (index, step)
-        for index, step in enumerate(repo_contract_steps)
-        if isinstance(step, dict) and step.get("name") == "Verify document metadata comparison base"
-    ]
-    if base_steps != [(1, expected_base_step)]:
-        failures.append(
-            f"{ci_quality}: repo-contracts must fail closed on an unreachable PR/push metadata base"
-        )
-    metadata_steps = [
-        (index, step)
-        for index, step in enumerate(repo_contract_steps)
-        if isinstance(step, dict) and step.get("name") == "Check changed and new document metadata"
-    ]
-    expected_metadata_step = {
-        "name": "Check changed and new document metadata",
-        "run": "python3 scripts/validation/check-document-metadata.py --mode check-changed",
-    }
-    if len(metadata_steps) != 1:
-        failures.append(
-            f"{ci_quality}: repo-contracts must contain exactly one changed/new document metadata step"
-        )
-    else:
-        metadata_index, metadata_step = metadata_steps[0]
-        if metadata_step != expected_metadata_step:
-            failures.append(
-                f"{ci_quality}: repo-contracts changed/new document metadata step must match the approved command exactly"
-            )
-        previous_name = (
-            repo_contract_steps[metadata_index - 1].get("name")
-            if metadata_index > 0 and isinstance(repo_contract_steps[metadata_index - 1], dict)
-            else None
-        )
-        if previous_name != "Install repository contract Python dependencies":
-            failures.append(
-                f"{ci_quality}: changed/new document metadata step must follow dependency installation"
-            )
-
-    template_gate_base = (repo_contracts.get("env") or {}).get("TEMPLATE_GATE_BASE")
-    expected_template_gate_base = (
-        "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || "
-        "github.event_name == 'push' && github.event.before || '' }}"
-    )
-    if template_gate_base != expected_template_gate_base:
-        failures.append(
-            f"{ci_quality}: repo-contracts must bind TEMPLATE_GATE_BASE to the PR base or push-before SHA"
-        )
-else:
-    failures.append("missing required workflow: .github/workflows/ci-quality.yml")
-
 ruleset = pathlib.Path(".github/rulesets/main-protection.md")
 if ruleset.is_file():
     text = ruleset.read_text()
@@ -1601,7 +1219,7 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Document corpus lifecycle workflow and QA routing contract"
+section "Document corpus lifecycle QA routing contract"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
@@ -1613,130 +1231,7 @@ import sys
 import yaml
 
 failures: list[str] = []
-workflow_path = pathlib.Path(".github/workflows/document-corpus-lifecycle.yml")
-checkout_sha = "3d3c42e5aac5ba805825da76410c181273ba90b1"
-setup_python_sha = "5fda3b95a4ea91299a34e894583c3862153e4b97"
 lifecycle_command = "python3 scripts/validation/check-document-corpus-lifecycle.py"
-
-expected_workflow = {
-    "name": "Document Corpus Lifecycle",
-    "on": {
-        "schedule": [{"cron": "17 17 * * 1"}],
-        "workflow_dispatch": None,
-    },
-    "permissions": {"contents": "read"},
-    "concurrency": {
-        "group": "document-corpus-lifecycle-${{ github.ref }}",
-        "cancel-in-progress": True,
-    },
-    "jobs": {
-        "document-corpus-lifecycle": {
-            "permissions": {"contents": "read"},
-            "runs-on": "ubuntu-latest",
-            "timeout-minutes": 15,
-            "steps": [
-                {
-                    "name": "Checkout repository",
-                    "uses": f"actions/checkout@{checkout_sha}",
-                    "with": {
-                        "persist-credentials": False,
-                        "fetch-depth": 0,
-                    },
-                },
-                {
-                    "name": "Set up Python",
-                    "uses": f"actions/setup-python@{setup_python_sha}",
-                    "with": {"python-version": "3.12"},
-                },
-                {
-                    "name": "Install repository contract Python dependencies",
-                    "run": "python -m pip install -r scripts/requirements.txt",
-                },
-                {
-                    "name": "Check lifecycle contract",
-                    "run": f"{lifecycle_command} --mode check-contract",
-                },
-                {
-                    "name": "Check promoted lifecycle waves",
-                    "run": f"{lifecycle_command} --mode check-promoted",
-                },
-                {
-                    "name": "Check impacted lifecycle records",
-                    "shell": "bash",
-                    "run": (
-                        "set -euo pipefail\n"
-                        "if git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then\n"
-                        f"  {lifecycle_command} --mode check-impacted --base-ref HEAD~1\n"
-                        "else\n"
-                        '  echo "SKIP: HEAD~1 is unavailable; no comparison base exists"\n'
-                        "fi\n"
-                    ),
-                },
-                {
-                    "name": "Report full corpus lifecycle debt",
-                    "run": f"{lifecycle_command} --mode report-full",
-                },
-                {
-                    "name": "Report duplicate candidates",
-                    "shell": "bash",
-                    "run": (
-                        "set -euo pipefail\n"
-                        'report_path="${RUNNER_TEMP}/document-corpus-lifecycle-duplicates.md"\n'
-                        f"{lifecycle_command} --mode report-duplicates --output \"$report_path\"\n"
-                        'cat -- "$report_path"\n'
-                    ),
-                },
-            ],
-        },
-    },
-}
-
-if not workflow_path.is_file():
-    failures.append(f"missing tracked lifecycle workflow: {workflow_path}")
-else:
-    workflow_text = workflow_path.read_text(encoding="utf-8")
-    try:
-        workflow = yaml.safe_load(workflow_text) or {}
-    except yaml.YAMLError as exc:
-        failures.append(f"{workflow_path}: YAML parse failed: {exc}")
-        workflow = {}
-
-    # PyYAML 1.1 resolves the unquoted Actions key `on` as boolean true.
-    if True in workflow and "on" not in workflow:
-        workflow["on"] = workflow.pop(True)
-
-    if workflow != expected_workflow:
-        failures.append(
-            f"{workflow_path}: workflow must match the approved read-only lifecycle contract exactly"
-        )
-
-    forbidden_literals = {
-        "pull_request_target": "pull_request_target is forbidden",
-        "continue-on-error": "continue-on-error is forbidden",
-        "${{ secrets.": "secret interpolation is forbidden",
-        "actions/upload-artifact@": "artifact upload is forbidden",
-    }
-    for literal, reason in forbidden_literals.items():
-        if literal in workflow_text:
-            failures.append(f"{workflow_path}: {reason}")
-
-    if re.search(r"(?m)^\s*(?:actions|checks|contents|deployments|id-token|issues|packages|pages|pull-requests|security-events|statuses):\s*write\b", workflow_text):
-        failures.append(f"{workflow_path}: write permission is forbidden")
-    if re.search(r"(?m)^\s*(?:deployment|environment|release):\s*", workflow_text):
-        failures.append(f"{workflow_path}: deployment, environment, and release keys are forbidden")
-
-    remote_mutation_re = re.compile(
-        r"(?im)(?:"
-        r"\bgit\s+push\b|"
-        r"\bgh\s+(?:api\b[^\n]*(?:--method|-X)\s*(?:POST|PUT|PATCH|DELETE)|"
-        r"pr\s+(?:create|merge)|release\s+create|workflow\s+run)|"
-        r"\bcurl\b[^\n]*(?:-X|--request)\s*(?:POST|PUT|PATCH|DELETE)|"
-        r"\bdocker\s+push\b|\bnpm\s+publish\b"
-        r")"
-    )
-    if remote_mutation_re.search(workflow_text):
-        failures.append(f"{workflow_path}: remote mutation command is forbidden")
-
 pre_commit_path = pathlib.Path(".pre-commit-config.yaml")
 if not pre_commit_path.is_file():
     failures.append(f"missing pre-commit configuration: {pre_commit_path}")
@@ -1784,8 +1279,13 @@ else:
             "projects/storybook/README.md",
             "secrets/SENSITIVE_ENV_VARS.md.example",
             "scripts/validation/check-target-surface-delta-contract.py",
+            "scripts/validation/check-github-workflow-contract.py",
+            "scripts/validation/github_workflow_contract.py",
+            "scripts/validation/run-ci-precommit.sh",
             "scripts/validation/target_surface_delta_contract.py",
             "scripts/validation/target_surface_contract.py",
+            "tests/validation/test_github_workflow_contract.py",
+            "tests/validation/test_run_ci_precommit.sh",
             "tests/validation/test_target_surface_delta_contracts.py",
             "tests/validation/test_target_surface_contracts.py",
         )
@@ -1806,6 +1306,11 @@ lifecycle_gate_commands = (
     "python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v",
     f"{lifecycle_command} --mode check-contract",
     f"{lifecycle_command} --mode check-promoted",
+)
+workflow_gate_commands = (
+    "python3 -m unittest tests.validation.test_github_workflow_contract -v",
+    "python3 scripts/validation/check-github-workflow-contract.py",
+    "bash tests/validation/test_run_ci_precommit.sh",
 )
 generated_freshness_commands = (
     "bash scripts/validation/generate-security-automation-readiness.sh --check",
@@ -1858,7 +1363,7 @@ if not local_runner.is_file():
     failures.append(f"missing local QA owner: {local_runner}")
 else:
     local_runner_text = local_runner.read_text(encoding="utf-8")
-    for command in lifecycle_gate_commands:
+    for command in (*lifecycle_gate_commands, *workflow_gate_commands):
         if command not in local_runner_text:
             failures.append(f"{local_runner}: missing lifecycle gate: {command}")
 
@@ -1937,8 +1442,13 @@ else:
     for fragment in (
         "scripts/validation/check-document-corpus-lifecycle.py",
         "scripts/validation/check-target-surface-delta-contract.py",
+        "scripts/validation/check-github-workflow-contract.py",
+        "scripts/validation/github_workflow_contract.py",
+        "scripts/validation/run-ci-precommit.sh",
         "scripts/validation/target_surface_delta_contract.py",
         "tests/validation/test_document_corpus_lifecycle.py",
+        "tests/validation/test_github_workflow_contract.py",
+        "tests/validation/test_run_ci_precommit.sh",
         "tests/validation/test_target_surface_delta_contracts.py",
     ):
         if fragment not in scripts_readme_text:
@@ -4424,6 +3934,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/report-provider-hook-parity.sh"),
     pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"),
     pathlib.Path("scripts/validation/run-agent-precommit-all-files.sh"),
+    pathlib.Path("scripts/validation/run-ci-precommit.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/validation/rehearse-postgres-logical-upgrade.sh"),
     pathlib.Path("scripts/security/generate-supply-chain-sample-service-summary.sh"),

@@ -30,8 +30,9 @@ itself.
 ## Required Status Checks
 
 Use the CI Quality Gates workflow job names as required checks:
-`scripts/validation/check-repo-contracts.sh` enforces this list against
-`.github/workflows/ci-quality.yml`.
+`.github/workflow-contract.yml` owns their exact machine identity, and
+`scripts/validation/check-repo-contracts.sh` retains the Stage 00 desired-state
+comparison through the focused workflow checker.
 
 - `docs-traceability`
 - `docs-implementation-alignment`

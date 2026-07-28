@@ -47,6 +47,10 @@ Repo-local stricter rules always override this document; never weaken them on th
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
 - Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a WARN finding.
 - Pin actions to a specific commit SHA or a digest-verified tag, not a floating branch or `@latest`.
+- `.github/workflow-contract.yml` records the locally verified manifest URL,
+  retrieval date, runtime, approved consumers, and security disposition for
+  every direct external Action. The focused checker rejects unregistered
+  Actions and Node 20 runtime evidence.
 - Secrets must never appear in log output (`echo $SECRET`, `run: env`, etc.). Flag any such pattern as BLOCK.
 - Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — flag as BLOCK.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
@@ -198,13 +202,22 @@ runner.
 | `pr-labeler.yml`         | apply PR labels            |
 | `generate-changelog.yml` | generate release changelog |
 | `document-corpus-lifecycle.yml` | report read-only scheduled/manual lifecycle debt and duplicate candidates |
+| `tech-stack-version-sync.yml` | check curated version-registry drift for governed Compose/version changes |
 
-**Coupling constraint:** when adding, removing, or renaming a required job in
-`ci-quality.yml`, update all three places together:
+The `pre-commit` job installs the exact version from
+`scripts/requirements-pre-commit.txt` and calls
+`scripts/validation/run-ci-precommit.sh` with `SKIP=eslint-nextjs`. That
+CI-only entry point requires GitHub Actions and CI markers and grants no Agent
+authorization. Agent all-files execution remains limited to the separately
+approved controlled wrapper.
 
-1. `required_jobs` in `scripts/validation/check-repo-contracts.sh`
-2. `.github/rulesets/main-protection.md` Required Status Checks
-3. this section's Required Quality Gates table
+**Coupling constraint:** when adding, removing, or renaming a required job,
+update all four places together:
+
+1. `.github/workflow-contract.yml`
+2. `.github/workflows/ci-quality.yml`
+3. `.github/rulesets/main-protection.md` Required Status Checks
+4. this section's Required Quality Gates table
 
 ## Related Documents
 

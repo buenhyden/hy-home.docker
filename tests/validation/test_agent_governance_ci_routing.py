@@ -458,11 +458,27 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             "Run focused operational readiness regressions",
             matching[0].get("name"),
         )
-        contract = REPO_CONTRACT.read_text(encoding="utf-8")
-        self.assertIn(OPERATIONAL_READINESS_TEST_COMMAND, contract)
-        self.assertIn(
-            "supply-chain focused regression step must match",
-            contract,
+        contract = yaml.safe_load(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        command_owners = contract["expensive_commands"]
+        self.assertEqual(
+            1,
+            sum(
+                owner["job"] == "supply-chain-fixture-policy"
+                and owner["command"] == OPERATIONAL_READINESS_TEST_COMMAND
+                for owner in command_owners
+            ),
+        )
+        self.assertEqual(
+            1,
+            len(
+                re.findall(
+                    r"(?m)^if ! python3 scripts/validation/"
+                    r"check-github-workflow-contract\.py; then$",
+                    REPO_CONTRACT.read_text(encoding="utf-8"),
+                )
+            ),
         )
         governance_text = GITHUB_GOVERNANCE.read_text(encoding="utf-8")
         governance_row = re.search(
@@ -496,7 +512,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             )
         self.assertEqual(1, result.returncode, result.stderr)
         self.assertIn(
-            "supply-chain focused regression step must match",
+            "semantic owner command must occur exactly once",
             result.stderr,
         )
 
@@ -506,43 +522,43 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "permissions",
                 "repo-contracts:\n    permissions:\n      contents: read",
                 "repo-contracts:\n    permissions:\n      contents: read\n      issues: read",
-                "permissions must match",
+                "permissions differ from the contract",
             ),
             (
                 "concurrency",
                 "cancel-in-progress: true",
                 "cancel-in-progress: false",
-                "concurrency must match",
+                "concurrency differs from the contract",
             ),
             (
                 "timeout",
                 "repo-contracts:\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest\n    timeout-minutes: 10",
                 "repo-contracts:\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest",
-                "timeout-minutes must equal",
+                "timeout differs from the contract",
             ),
             (
                 "action-pin",
                 "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
                 "actions/checkout@v4",
-                "full commit SHA",
+                "not a full SHA",
             ),
             (
                 "unsafe-trigger",
                 "  pull_request:\n    branches: [main]",
                 "  pull_request_target:\n    branches: [main]",
-                "pull_request_target is not allowed",
+                "forbidden event is configured",
             ),
             (
                 "untrusted-run-input",
                 "run: bash scripts/validation/check-repo-contracts.sh",
                 "run: bash scripts/validation/check-repo-contracts.sh '${{ github.event.pull_request.title }}'",
-                "untrusted GitHub context",
+                "interpolates an Actions expression directly in run",
             ),
             (
                 "untrusted-direct-ref",
                 "run: bash scripts/validation/check-repo-contracts.sh",
                 "run: bash scripts/validation/check-repo-contracts.sh '${{ github.ref }}'",
-                "untrusted GitHub context",
+                "interpolates an Actions expression directly in run",
             ),
             (
                 "zizmor-credential-env",
@@ -556,31 +572,31 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     "        env:\n"
                     "          AUTH_CONTEXT: synthetic-value"
                 ),
-                "zizmor credential environment is forbidden",
+                "zizmor must not receive a credential environment",
             ),
             (
                 "stable-job-name",
                 "  repo-contracts:\n",
                 "  target-repo-contracts:\n",
-                "missing required QA/CI job: repo-contracts",
+                "job IDs differ from the contract",
             ),
             (
                 "artifact-upload",
                 "      - name: Check docs traceability sync",
                 "      - name: Forbidden artifact upload\n        uses: actions/upload-artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
-                "artifact upload is forbidden",
+                "artifact upload is outside the approved workflow contract",
             ),
             (
                 "artifact-upload-mixed-owner-case",
                 "      - name: Check docs traceability sync",
                 "      - name: Forbidden artifact upload\n        uses: Actions/upload-artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
-                "artifact upload is forbidden",
+                "artifact upload is outside the approved workflow contract",
             ),
             (
                 "artifact-upload-mixed-action-case",
                 "      - name: Check docs traceability sync",
                 "      - name: Forbidden artifact upload\n        uses: actions/Upload-Artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
-                "artifact upload is forbidden",
+                "artifact upload is outside the approved workflow contract",
             ),
         )
         program = self._workflow_security_program()
@@ -621,7 +637,8 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 text=True,
                 check=False,
             )
-            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(1, result.returncode, result.stderr)
+            self.assertIn("semantic owner command must occur exactly once", result.stderr)
 
         safe_actions = (
             "actions/download-artifact@0000000000000000000000000000000000000000",
@@ -647,7 +664,8 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     text=True,
                     check=False,
                 )
-                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn("direct Action reference is not registered", result.stderr)
 
     def test_ci_quality_duplicate_yaml_keys_fail_closed(self) -> None:
         sentinel = "duplicate-workflow-secret-sentinel"
@@ -717,7 +735,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     "    timeout-minutes: 5\n"
                     "    steps: []\n"
                 ),
-                "duplicate workflow purpose",
+                "workflow name is duplicated",
             ),
             (
                 "cross-file-job-id",
@@ -736,7 +754,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     "    timeout-minutes: 5\n"
                     "    steps: []\n"
                 ),
-                "duplicate workflow job id across files",
+                "job identity is duplicated across workflows",
             ),
         )
         program = self._workflow_security_program()
@@ -790,7 +808,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "stale active remote-state claim",
             ),
         )
-        program = self._workflow_security_program()
+        program = self._stage00_github_program()
         for label, relative, old, new, expected in cases:
             with self.subTest(label=label), self._workflow_fixture() as root:
                 target = root / relative
@@ -809,7 +827,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertNotIn(sentinel, result.stderr)
 
     def test_ruleset_required_check_mismatch_fails_closed(self) -> None:
-        program = self._workflow_security_program()
+        program = self._stage00_github_program()
         with self._workflow_fixture() as root:
             ruleset = root / MAIN_PROTECTION.relative_to(ROOT)
             text = ruleset.read_text(encoding="utf-8")
@@ -1013,6 +1031,10 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertIn(fragment, result.stdout)
         self.assertNotIn("locally use pre-commit", result.stdout)
         self.assertNotIn("pre-commit run --all-files", result.stdout)
+        self.assertIn(
+            "- bash tests/validation/test_run_ci_precommit.sh",
+            result.stdout,
+        )
 
     def test_semantic_local_qa_bypass_guard_is_selector_coupled(self) -> None:
         for path in (
@@ -1745,8 +1767,18 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
 
     @staticmethod
     def _workflow_security_program() -> str:
+        module_root = ROOT / "scripts/validation"
+        return (
+            "import pathlib, sys\n"
+            f"sys.path.insert(0, {str(module_root)!r})\n"
+            "from github_workflow_contract import main\n"
+            "raise SystemExit(main(['--root', str(pathlib.Path.cwd())]))\n"
+        )
+
+    @staticmethod
+    def _stage00_github_program() -> str:
         return AgentGovernanceRoutingTests._repo_python_program(
-            "GitHub workflow security contracts"
+            "Stage 00 GitHub routing contracts"
         )
 
     @staticmethod
@@ -1829,6 +1861,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 GITHUB_GOVERNANCE,
                 ARTIFACT_CONTRACT,
                 GITHUB_OBSERVATION,
+                ROOT / "scripts/validation/github_workflow_contract.py",
             ):
                 if not source.is_file():
                     continue
