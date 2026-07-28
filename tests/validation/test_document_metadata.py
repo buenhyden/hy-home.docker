@@ -473,6 +473,8 @@ class ProfileSchemaTests(unittest.TestCase):
                     "scripts/validation/check-document-corpus-lifecycle.py",
                 "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
+                "docs/90.references/data/governance/target-surface-delta-summary.md":
+                    "scripts/validation/check-target-surface-delta-contract.py",
             },
             profiles["common"]["generated_outputs"],
         )

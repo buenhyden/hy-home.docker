@@ -81,6 +81,8 @@ Local script-backed gates:
 - bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
 - python3 -m unittest tests.validation.test_target_surface_contracts -v
 - python3 scripts/validation/check-target-surface-contract.py
+- python3 -m unittest tests.validation.test_target_surface_delta_contracts -v
+- python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 - scripts/validation/validate-docker-compose.sh
 - scripts/hardening/check-all-hardening.sh
 - scripts/validation/check-template-security-baseline.sh
@@ -136,6 +138,8 @@ run_lifecycle_gates() {
 run_target_surface_gates() {
   run_step "Target surface contract tests" python3 -m unittest tests.validation.test_target_surface_contracts -v
   run_step "Target surface contracts" python3 scripts/validation/check-target-surface-contract.py
+  run_step "Target surface delta contract tests" python3 -m unittest tests.validation.test_target_surface_delta_contracts -v
+  run_step "Target surface delta contracts" python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 }
 
 run_generated_freshness_gates() {

@@ -91,7 +91,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 
 | Task ID | Description | Type | Requirements | Validation owner | Implementation owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh implementer after Plan approval | pending |
+| T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | implementation_complete_review_pending |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | fresh implementer after Task 1 review | pending |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | fresh implementer after Task 2 review | pending |
 | T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | fresh implementer after Task 3 review | pending |
@@ -114,6 +114,9 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | Spec | Controller | Wrote and committed Spec 135 as `e828745a`; scoped metadata, Markdown, alignment, and diff checks passed. User approved continuing from the Spec. |
 | 2026-07-28 | Plan/Task draft | Controller | Activated the approved Spec and drafted this six-task TDD/Subagent-Driven Plan and evidence ledger. Implementation remains pending exact Plan approval. |
 | 2026-07-28 | Execution approval | User / Controller | User approved the exact Plan and Task ledger. Plan and Task transitioned to `active`; remote/runtime mutation and the controlled all-files wrapper remain separately gated. |
+| 2026-07-28 | T-TSDC-001 RED | Task 1 implementation agent | Added 13 focused tests before implementation. The first run produced 1 passing predecessor-integrity test and 12 expected missing-module errors. No product implementation existed. |
+| 2026-07-28 | T-TSDC-001 implementation | Task 1 implementation agent | Added the duplicate-safe, size-bounded, no-follow successor parser, exact dataclasses, Git-delta union, whole-target inventory, advisory evidence gates, create-only bootstrap, deterministic summary, thin CLI, repository-contract/local-QA routing, and registered generated owner. The manifest computes 105 rows: 96 preserve, 9 update, 0 migrate/delete, and 105 pending review pairs. |
+| 2026-07-28 | T-TSDC-001 direct-impact expansion | Controller / Task 1 implementation agent | The generated-output registry exposed one stale exact oracle outside the initial file list. The controller explicitly expanded ownership only to `tests/validation/test_document_metadata.py`; the exact new summary-to-checker pair was added without unrelated refactoring. |
 
 ## Verification Evidence
 
@@ -132,12 +135,47 @@ have no unresolved Critical or Important findings.
 
 | Task | RED evidence | GREEN evidence | Aggregate evidence | Result |
 | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Not run — Plan approval pending | Not run — Plan approval pending | Not run — Plan approval pending | pending |
+| T-TSDC-001 | Initial focused run: 13 tests, 1 pass and 12 expected missing-module errors | Focused successor suite 15/15; advisory CLI and summary freshness pass; exact metadata generated-owner oracle passes | Predecessor target suite 40/40; metadata contracts 0 violations; Bash syntax and Ruff pass. Repository contracts retain 11 pre-existing or later-task groups with no Task 1 routing omission. | implementation_complete_review_pending |
 | T-TSDC-002 | Not run — Task 1 review pending | Not run — Task 1 review pending | Not run — Task 1 review pending | pending |
 | T-TSDC-003 | Not run — Task 2 review pending | Not run — Task 2 review pending | Not run — Task 2 review pending | pending |
 | T-TSDC-004 | Not run — Task 3 review pending | Not run — Task 3 review pending | Not run — Task 3 review pending | pending |
 | T-TSDC-005 | Not run — Task 4 review pending | Not run — Task 4 review pending | Not run — Task 4 review pending | pending |
 | T-TSDC-006 | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | pending |
+
+### T-TSDC-001 bounded implementation evidence
+
+- Starting commit:
+  `72eef68cd0691a84e8ce80548f205de4fe964238`.
+- Fixed provenance:
+  predecessor closure `63039b5b0b20c99a10aae7162627afefcd7a1d8b`;
+  implementation base `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`.
+- Coverage: the successor manifest contains exactly the 105 computed target
+  paths in the predecessor-to-`HEAD` plus staged, unstaged, and untracked
+  union. The current tracked target inventory is 477 after staging. The three
+  Task 1 paths beyond the activation delta are the library, thin CLI, and
+  focused test.
+- Classification: 96 `preserve`, 9 `update`, 0 `migrate`, and 0 `delete`.
+  Native paths own themselves unless a repository generator, lockfile source,
+  or fixture test is the more truthful owner; 66 rows name direct repository
+  consumers. No row uses Spec 135 as a generic owner.
+- Safety: secret rows are `path-only`; findings, summary, and diagnostics
+  contain paths and typed states only. No secret payload, raw log, workflow
+  log, credential, or runtime value was read or persisted.
+- Predecessor integrity: the predecessor manifest and summary are byte-equal
+  to the fixed closure. Spec 133 Spec/Plan/Task are byte-equal to the Task
+  start, and the authorized closure witness between the fixed commits matches
+  its exact digest.
+- Final document gates selected 3 changed Markdown files with 0 metadata
+  violations and linted the same 3 literal paths with 0 Markdown errors.
+  Python compile, Ruff, Bash syntax, staged/unstaged diff hygiene, the
+  generated-owner oracle, and both successor advisory passes are green.
+- Aggregate limitation: `check-repo-contracts.sh` completed with 11 known
+  predecessor/environment or later-task groups: promoted-manifest consumer
+  drift already present at Task start, unavailable `html5lib`, generated
+  LLM/metadata/provenance drift, the planned Keycloak/static-version drift,
+  and Plan references to Task 4/6 scripts that do not exist yet. The initial
+  Task 1 script-inventory omission was corrected before the second run.
+- No controlled Agent wrapper or direct all-files pre-commit command ran.
 
 ### Current evidence boundaries
 
@@ -172,7 +210,7 @@ consume or create Agent authorization.
 
 | Task | Implementer | Specification reviewer | Quality/security reviewer | Exact range | Verdict | Findings |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-TSDC-001 | pending | pending | pending | not available | pending | Plan approval pending |
+| T-TSDC-001 | Task 1 implementation agent | pending distinct reviewer | pending distinct reviewer | starts at `72eef68c`; head is this logical commit | implementation complete; review pending | No implementation finding remains; independent gates have not run. |
 | T-TSDC-002 | pending | pending | pending | not available | pending | Task 1 review pending |
 | T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 review pending |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
@@ -189,7 +227,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- | --- |
 | Planning specification | Define successor convergence design | `docs(spec): define target surface delta convergence` | `e828745a` | metadata, Markdown, alignment, diff hygiene passed |
 | Planning activation | Activate Spec and define Plan/Task | `docs(plan): define target surface delta execution` | `a2ba9eb4` | metadata 3/0, Markdown 3/0, traceability 46/0, alignment 674/5,658/141/0, diff hygiene passed |
-| T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | not started | Plan approval pending |
+| T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | this logical commit | focused 15/15, predecessor 40/40, metadata 0 violations, advisory CLI, Ruff, Bash syntax, and diff hygiene pass; aggregate limitations recorded |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | not started | Task 1 review pending |
 | T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |

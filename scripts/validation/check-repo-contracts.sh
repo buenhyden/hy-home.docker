@@ -81,12 +81,23 @@ section "Target surface convergence contracts"
 target_surface_checker="scripts/validation/check-target-surface-contract.py"
 target_surface_library="scripts/validation/target_surface_contract.py"
 target_surface_tests="tests/validation/test_target_surface_contracts.py"
+target_surface_delta_checker="scripts/validation/check-target-surface-delta-contract.py"
+target_surface_delta_library="scripts/validation/target_surface_delta_contract.py"
+target_surface_delta_tests="tests/validation/test_target_surface_delta_contracts.py"
 
 [[ -f "$target_surface_checker" ]] || fail "missing target surface checker: $target_surface_checker"
 [[ -f "$target_surface_library" ]] || fail "missing target surface library: $target_surface_library"
 [[ -f "$target_surface_tests" ]] || fail "missing target surface tests: $target_surface_tests"
+[[ -f "$target_surface_delta_checker" ]] || fail "missing target surface delta checker: $target_surface_delta_checker"
+[[ -f "$target_surface_delta_library" ]] || fail "missing target surface delta library: $target_surface_delta_library"
+[[ -f "$target_surface_delta_tests" ]] || fail "missing target surface delta tests: $target_surface_delta_tests"
 if [[ -f "$target_surface_checker" && -f "$target_surface_library" ]]; then
   if ! python3 "$target_surface_checker"; then
+    failures=$((failures + 1))
+  fi
+fi
+if [[ -f "$target_surface_delta_checker" && -f "$target_surface_delta_library" ]]; then
+  if ! python3 "$target_surface_delta_checker" --mode advisory; then
     failures=$((failures + 1))
   fi
 fi
@@ -1772,7 +1783,10 @@ else:
             "examples/sample-web-service/service.md",
             "projects/storybook/README.md",
             "secrets/SENSITIVE_ENV_VARS.md.example",
+            "scripts/validation/check-target-surface-delta-contract.py",
+            "scripts/validation/target_surface_delta_contract.py",
             "scripts/validation/target_surface_contract.py",
+            "tests/validation/test_target_surface_delta_contracts.py",
             "tests/validation/test_target_surface_contracts.py",
         )
         for routed_path in routed_paths:
@@ -1922,7 +1936,10 @@ else:
     scripts_readme_text = scripts_readme.read_text(encoding="utf-8")
     for fragment in (
         "scripts/validation/check-document-corpus-lifecycle.py",
+        "scripts/validation/check-target-surface-delta-contract.py",
+        "scripts/validation/target_surface_delta_contract.py",
         "tests/validation/test_document_corpus_lifecycle.py",
+        "tests/validation/test_target_surface_delta_contracts.py",
     ):
         if fragment not in scripts_readme_text:
             failures.append(f"{scripts_readme}: missing lifecycle inventory fragment: {fragment}")

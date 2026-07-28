@@ -1,0 +1,2290 @@
+schema_version: 1
+predecessor_closure: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+implementation_base: 19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+enforcement: advisory
+target_roots:
+- .github
+- archive
+- examples
+- infra
+- projects
+- scripts
+- secrets
+- tests
+entries:
+- path: .github/INDEX.md
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: .github/INDEX.md
+  direct_consumers: []
+  finding: Task 4 will align the GitHub navigation index with the typed workflow contract.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/INDEX.md
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/INDEX.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/rulesets/main-protection.md
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: .github/rulesets/main-protection.md
+  direct_consumers:
+  - .github/INDEX.md
+  finding: Task 4 will align desired branch-protection evidence with the required job set.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/rulesets/main-protection.md
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/rulesets/main-protection.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/workflows/ci-quality.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: .github/workflows/ci-quality.yml
+  direct_consumers:
+  - .github/rulesets/main-protection.md
+  finding: Task 4 will remove duplicate CI execution and replace mutable nested Action behavior.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/workflows/ci-quality.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/workflows/ci-quality.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/workflows/document-corpus-lifecycle.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: .github/workflows/document-corpus-lifecycle.yml
+  direct_consumers:
+  - .github/INDEX.md
+  finding: Retain this GitHub-native workflow until its registered owner changes it.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/workflows/document-corpus-lifecycle.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/workflows/document-corpus-lifecycle.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/workflows/generate-changelog.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: .github/workflows/generate-changelog.yml
+  direct_consumers:
+  - .github/INDEX.md
+  finding: Retain this GitHub-native workflow until its registered owner changes it.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/workflows/generate-changelog.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/workflows/generate-changelog.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/workflows/pr-labeler.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: .github/workflows/pr-labeler.yml
+  direct_consumers:
+  - .github/INDEX.md
+  finding: Retain this GitHub-native workflow until its registered owner changes it.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/workflows/pr-labeler.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/workflows/pr-labeler.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/workflows/stale.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: .github/workflows/stale.yml
+  direct_consumers:
+  - .github/INDEX.md
+  finding: Retain this GitHub-native workflow until its registered owner changes it.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/workflows/stale.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/workflows/stale.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: .github/workflows/tech-stack-version-sync.yml
+  surface_class: native-platform
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: .github/workflows/tech-stack-version-sync.yml
+  direct_consumers:
+  - .github/INDEX.md
+  finding: Task 4 will register the omitted non-gating workflow trigger and runner contract.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:.github/workflows/tech-stack-version-sync.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes .github/workflows/tech-stack-version-sync.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: examples/sample-web-service/.dockerignore
+  surface_class: native-file
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: examples/sample-web-service/.dockerignore
+  direct_consumers:
+  - examples/sample-web-service/Dockerfile
+  finding: Retain this bounded example implementation surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:examples/sample-web-service/.dockerignore
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes examples/sample-web-service/.dockerignore
+  spec_verdict: pending
+  quality_verdict: pending
+- path: examples/sample-web-service/Dockerfile
+  surface_class: native-file
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: examples/sample-web-service/Dockerfile
+  direct_consumers:
+  - examples/sample-web-service/docker-compose.yml
+  finding: Retain this bounded example implementation surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:examples/sample-web-service/Dockerfile
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes examples/sample-web-service/Dockerfile
+  spec_verdict: pending
+  quality_verdict: pending
+- path: examples/sample-web-service/README.md
+  surface_class: readme
+  profile: examples
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: examples/sample-web-service/README.md
+  direct_consumers: []
+  finding: Task 2 will normalize this bounded example through the examples README profile.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:examples/sample-web-service/README.md
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes examples/sample-web-service/README.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: examples/sample-web-service/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: examples/sample-web-service/docker-compose.yml
+  direct_consumers:
+  - examples/sample-web-service/service.md
+  finding: Retain this bounded example implementation surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:examples/sample-web-service/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes examples/sample-web-service/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: examples/sample-web-service/service.md
+  surface_class: typed-example
+  profile: service
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: examples/sample-web-service/service.md
+  direct_consumers:
+  - examples/sample-web-service/README.md
+  finding: Task 2 will resolve typed example parentage without creating an active SDLC chain.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:examples/sample-web-service/service.md
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes examples/sample-web-service/service.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/01-gateway/traefik/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/01-gateway/traefik/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/01-gateway/traefik/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/01-gateway/traefik/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/02-auth/keycloak/Dockerfile
+  surface_class: native-file
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/02-auth/keycloak/Dockerfile
+  direct_consumers: []
+  finding: Retain this current native target surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/02-auth/keycloak/Dockerfile
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/02-auth/keycloak/Dockerfile
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/02-auth/keycloak/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/02-auth/keycloak/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/02-auth/keycloak/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/02-auth/keycloak/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/analytics/influxdb/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/04-data/analytics/influxdb/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/04-data/analytics/influxdb/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/04-data/analytics/influxdb/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/operational/mng-db/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/04-data/operational/mng-db/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/04-data/operational/mng-db/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/04-data/operational/mng-db/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/operational/supabase/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/04-data/operational/supabase/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/04-data/operational/supabase/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/04-data/operational/supabase/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/04-data/relational/postgresql-cluster/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/04-data/relational/postgresql-cluster/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/04-data/relational/postgresql-cluster/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/04-data/relational/postgresql-cluster/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/docker-compose.dev.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/06-observability/docker-compose.dev.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/06-observability/docker-compose.dev.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/06-observability/docker-compose.dev.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/06-observability/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/06-observability/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/06-observability/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/06-observability/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/08-ai/ollama/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/08-ai/ollama/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/08-ai/ollama/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/08-ai/ollama/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/09-tooling/locust/Dockerfile
+  surface_class: native-file
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/09-tooling/locust/Dockerfile
+  direct_consumers: []
+  finding: Retain this current native target surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/09-tooling/locust/Dockerfile
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/09-tooling/locust/Dockerfile
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/09-tooling/terraform/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/09-tooling/terraform/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/09-tooling/terraform/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/09-tooling/terraform/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/09-tooling/terrakube/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/09-tooling/terrakube/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/09-tooling/terrakube/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/09-tooling/terrakube/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/11-laboratory/dozzle/docker-compose.yml
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/11-laboratory/dozzle/docker-compose.yml
+  direct_consumers:
+  - docker-compose.yml
+  finding: Retain this Compose declaration; this task does not mutate runtime services.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/11-laboratory/dozzle/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/11-laboratory/dozzle/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/supply-chain.cosign-offline-signing-config.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/supply-chain.cosign-offline-signing-config.json
+  direct_consumers:
+  - scripts/validation/check-supply-chain-policy.py
+  finding: Retain this value-free supply-chain policy or trust fixture.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/supply-chain.cosign-offline-signing-config.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/supply-chain.cosign-offline-signing-config.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/supply-chain.cosign-offline-trusted-root.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/supply-chain.cosign-offline-trusted-root.json
+  direct_consumers:
+  - scripts/validation/check-supply-chain-policy.py
+  finding: Retain this value-free supply-chain policy or trust fixture.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/supply-chain.cosign-offline-trusted-root.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/supply-chain.cosign-offline-trusted-root.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/supply-chain.sample-service-policy.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/supply-chain.sample-service-policy.json
+  direct_consumers:
+  - scripts/validation/check-supply-chain-policy.py
+  finding: Retain this value-free supply-chain policy or trust fixture.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/supply-chain.sample-service-policy.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/supply-chain.sample-service-policy.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/supply-chain.tool-images.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/supply-chain.tool-images.json
+  direct_consumers:
+  - scripts/validation/check-supply-chain-policy.py
+  finding: Retain this value-free supply-chain policy or trust fixture.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/supply-chain.tool-images.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/supply-chain.tool-images.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: infra/supply-chain.vulnerability-exceptions.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: infra/supply-chain.vulnerability-exceptions.json
+  direct_consumers:
+  - scripts/validation/check-supply-chain-policy.py
+  finding: Retain this value-free supply-chain policy or trust fixture.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:infra/supply-chain.vulnerability-exceptions.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes infra/supply-chain.vulnerability-exceptions.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: projects/storybook/nextjs/package-lock.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: projects/storybook/nextjs/package.json
+  direct_consumers:
+  - projects/storybook/nextjs/package.json
+  finding: Retain this project-native dependency or source surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:projects/storybook/nextjs/package-lock.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes projects/storybook/nextjs/package-lock.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: projects/storybook/nextjs/package.json
+  surface_class: native-configuration
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: projects/storybook/nextjs/package.json
+  direct_consumers: []
+  finding: Retain this project-native dependency or source surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:projects/storybook/nextjs/package.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes projects/storybook/nextjs/package.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/README.md
+  surface_class: readme
+  profile: scripts
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/README.md
+  direct_consumers: []
+  finding: Task 4 will align the script inventory with typed CI and QA ownership.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/README.md
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/README.md
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/operations/provider_surface_renderer.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/operations/provider_surface_renderer.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/operations/provider_surface_renderer.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/operations/provider_surface_renderer.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/operations/rehearse-sample-service-delivery.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/operations/rehearse-sample-service-delivery.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/operations/rehearse-sample-service-delivery.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/operations/rehearse-sample-service-delivery.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/security/generate-supply-chain-sample-service-summary.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/security/generate-supply-chain-sample-service-summary.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/security/generate-supply-chain-sample-service-summary.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/security/generate-supply-chain-sample-service-summary.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/security/seed-grype-db-cache.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/security/seed-grype-db-cache.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/security/seed-grype-db-cache.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/security/seed-grype-db-cache.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/security/verify-sample-service-supply-chain.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/security/verify-sample-service-supply-chain.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/security/verify-sample-service-supply-chain.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/security/verify-sample-service-supply-chain.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/agent_governance_contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/agent_governance_contract.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/agent_governance_contract.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/agent_governance_contract.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/agent_output_eval.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/agent_output_eval.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/agent_output_eval.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/agent_output_eval.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/check-doc-implementation-alignment.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/check-doc-implementation-alignment.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/check-doc-implementation-alignment.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/check-doc-implementation-alignment.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/check-document-corpus-lifecycle.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/check-document-corpus-lifecycle.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/check-document-corpus-lifecycle.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/check-document-corpus-lifecycle.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/check-document-metadata.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/check-document-metadata.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/check-document-metadata.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/check-document-metadata.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/check-repo-contracts.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/check-repo-contracts.sh
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  - .pre-commit-config.yaml
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Task 4 will replace overlapping inline workflow checks with the focused owner.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/check-repo-contracts.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/check-repo-contracts.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/check-supply-chain-policy.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/check-supply-chain-policy.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/check-supply-chain-policy.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/check-supply-chain-policy.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/check-target-surface-delta-contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/target_surface_delta_contract.py
+  direct_consumers:
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/check-target-surface-delta-contract.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/check-target-surface-delta-contract.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/compose-core-readiness.lib.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/compose-core-readiness.lib.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/compose-core-readiness.lib.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/compose-core-readiness.lib.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/generate-security-automation-readiness.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/generate-security-automation-readiness.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/generate-security-automation-readiness.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/generate-security-automation-readiness.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/grype_db_seed.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/grype_db_seed.py
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/grype_db_seed.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/grype_db_seed.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/recommend-qa-gates.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/recommend-qa-gates.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/recommend-qa-gates.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/recommend-qa-gates.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/rehearse-postgres-logical-upgrade.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/rehearse-postgres-logical-upgrade.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/rehearse-postgres-logical-upgrade.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/rehearse-postgres-logical-upgrade.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/run-agent-precommit-all-files.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/run-agent-precommit-all-files.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/run-agent-precommit-all-files.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/run-agent-precommit-all-files.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/run-compose-core-readiness.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/run-compose-core-readiness.sh
+  direct_consumers: []
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/run-compose-core-readiness.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/run-compose-core-readiness.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/run-local-qa-gates.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/run-local-qa-gates.sh
+  direct_consumers:
+  - .github/workflows/ci-quality.yml
+  finding: Task 4 will align local gate listing and execution with the typed CI contract.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/run-local-qa-gates.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/run-local-qa-gates.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/target_surface_delta_contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: scripts/validation/target_surface_delta_contract.py
+  direct_consumers:
+  - scripts/validation/check-target-surface-delta-contract.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  finding: Retain this implemented validation or operations support surface.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:scripts/validation/target_surface_delta_contract.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes scripts/validation/target_surface_delta_contract.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_compose_core_readiness.py
+  direct_consumers:
+  - tests/validation/test_compose_core_readiness.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/compose-core-readiness/env.runtime.example
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_compose_core_readiness.py
+  direct_consumers:
+  - tests/validation/test_compose_core_readiness.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/compose-core-readiness/env.runtime.example
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/compose-core-readiness/env.runtime.example
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/docker-compose.yml
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/docker-compose.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/docker-compose.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/sql/001_schema_and_seed.sql
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/sql/001_schema_and_seed.sql
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/sql/001_schema_and_seed.sql
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/sql/010_integrity_oracle.sql
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/sql/010_integrity_oracle.sql
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/sql/010_integrity_oracle.sql
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/sql/020_negative_partial_state.sql
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/sql/020_negative_partial_state.sql
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/sql/020_negative_partial_state.sql
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/topology/bad-target-major.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/topology/bad-target-major.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/topology/bad-target-major.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/topology/fixed-network.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/topology/fixed-network.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/topology/fixed-network.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/topology/long-form-bind.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/topology/long-form-bind.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/topology/long-form-bind.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/topology/privileged-host.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/topology/privileged-host.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/topology/privileged-host.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/topology/removed-healthcheck.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/topology/removed-healthcheck.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/topology/removed-healthcheck.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/postgres-logical-upgrade/topology/wrong-password.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/postgres-logical-upgrade/topology/wrong-password.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/postgres-logical-upgrade/topology/wrong-password.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/sample-service-delivery/compose.delivery.override.yml
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/sample-service-delivery/compose.delivery.override.yml
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/sample-service-delivery/compose.delivery.override.yml
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/sample-service-delivery/spec126-verdict.candidate.digest-mismatch.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/sample-service-delivery/spec126-verdict.candidate.digest-mismatch.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/sample-service-delivery/spec126-verdict.candidate.digest-mismatch.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/sample-service-delivery/spec126-verdict.candidate.rejected.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/sample-service-delivery/spec126-verdict.candidate.rejected.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/sample-service-delivery/spec126-verdict.candidate.rejected.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/sample-service-delivery/verification-verdict.pair.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers:
+  - tests/validation/test_sample_service_delivery_rehearsal.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/sample-service-delivery/verification-verdict.pair.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/sample-service-delivery/verification-verdict.pair.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/cosign.verify.tampered.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/cosign.verify.tampered.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/cosign.verify.tampered.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/cosign.verify.valid.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/cosign.verify.valid.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/cosign.verify.valid.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/cosign.verify.wrong-subject.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/cosign.verify.wrong-subject.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/cosign.verify.wrong-subject.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/grype.clean.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/grype.clean.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/grype.clean.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/grype.expired-exception.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/grype.expired-exception.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/grype.expired-exception.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/grype.high-with-valid-exception.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/grype.high-with-valid-exception.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/grype.high-with-valid-exception.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/grype.high-without-exception.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/grype.high-without-exception.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/grype.high-without-exception.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/grype.valid-exception-then-critical.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/grype.valid-exception-then-critical.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/grype.valid-exception-then-critical.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/provenance.subject-mismatch.intoto.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/provenance.subject-mismatch.intoto.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/provenance.subject-mismatch.intoto.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/provenance.valid.intoto.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/provenance.valid.intoto.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/provenance.valid.intoto.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/sample-service-sbom.subject-mismatch.cdx.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/sample-service-sbom.subject-mismatch.cdx.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/sample-service-sbom.subject-mismatch.cdx.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/sample-service-sbom.valid.cdx.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/sample-service-sbom.valid.cdx.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/sample-service-sbom.valid.cdx.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/fixtures/supply-chain/scorecard.advisory.json
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers:
+  - tests/validation/test_supply_chain_policy.py
+  finding: Retain this value-free fixture as focused regression evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/fixtures/supply-chain/scorecard.advisory.json
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/fixtures/supply-chain/scorecard.advisory.json
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_agent_governance_ci_routing.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_agent_governance_ci_routing.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_agent_governance_ci_routing.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_agent_governance_ci_routing.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_agent_governance_contract.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_agent_governance_contract.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_agent_governance_contract.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_agent_governance_contract.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_agent_output_eval_fixtures.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_agent_output_eval_fixtures.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_agent_output_eval_fixtures.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_agent_output_eval_fixtures.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_compose_core_readiness.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_compose_core_readiness.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_compose_core_readiness.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_compose_core_readiness.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_document_corpus_lifecycle.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_document_corpus_lifecycle.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_document_corpus_lifecycle.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_document_corpus_lifecycle.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_document_metadata.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_document_metadata.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_document_metadata.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_document_metadata.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_grype_db_seed.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_grype_db_seed.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_grype_db_seed.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_grype_db_seed.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_postgres_logical_upgrade_rehearsal.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_provider_native_surfaces.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_provider_native_surfaces.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_provider_native_surfaces.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_provider_native_surfaces.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_provider_surface_renderer.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_provider_surface_renderer.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_provider_surface_renderer.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_provider_surface_renderer.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_run_agent_precommit_all_files.sh
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_run_agent_precommit_all_files.sh
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_run_agent_precommit_all_files.sh
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_run_agent_precommit_all_files.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_sample_service_delivery_rehearsal.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_sample_service_delivery_rehearsal.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_sample_service_delivery_rehearsal.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_sample_service_delivery_rehearsal.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_security_automation_readiness.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_security_automation_readiness.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_security_automation_readiness.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_security_automation_readiness.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_supply_chain_policy.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_supply_chain_policy.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_supply_chain_policy.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_supply_chain_policy.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_target_surface_contracts.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_target_surface_contracts.py
+  direct_consumers: []
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_target_surface_contracts.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_target_surface_contracts.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_target_surface_delta_contracts.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: preserve
+  canonical_owner: tests/validation/test_target_surface_delta_contracts.py
+  direct_consumers:
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/run-local-qa-gates.sh
+  finding: Retain this focused test as post-predecessor contract evidence.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance:
+  - git:63039b5b0b20c99a10aae7162627afefcd7a1d8b..HEAD:tests/validation/test_target_surface_delta_contracts.py
+  - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
+  rollback:
+  - revert the logical commit that changes tests/validation/test_target_surface_delta_contracts.py
+  spec_verdict: pending
+  quality_verdict: pending
