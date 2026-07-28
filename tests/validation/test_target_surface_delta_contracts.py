@@ -674,7 +674,7 @@ class FailClosedInputTests(unittest.TestCase):
                 valid_row(path, changed_since=fixture.predecessor)
                 for path in fixture.changed_paths
             ]
-            rows[0]["surface_class"] = "PASSWORD=SUPER_SECRET_SURFACE"
+            rows[0]["surface_class"] = "unregistered-surface-class"
             fixture.write_manifest(
                 valid_document(
                     fixture.predecessor,
@@ -692,7 +692,7 @@ class FailClosedInputTests(unittest.TestCase):
                 "delta-surface-class-invalid",
                 {finding.code for finding in findings},
             )
-            self.assertNotIn("SUPER_SECRET_SURFACE", repr(findings))
+            self.assertNotIn("unregistered-surface-class", repr(findings))
 
             stderr = io.StringIO()
             with contextlib.redirect_stderr(stderr):
@@ -705,7 +705,7 @@ class FailClosedInputTests(unittest.TestCase):
                 )
             self.assertEqual(1, result)
             self.assertEqual("sentinel\n", summary.read_text(encoding="utf-8"))
-            self.assertNotIn("SUPER_SECRET_SURFACE", stderr.getvalue())
+            self.assertNotIn("unregistered-surface-class", stderr.getvalue())
 
     def test_readme_registry_missing_or_invalid_is_one_value_free_finding(self) -> None:
         contract = load_contract_module()
@@ -763,6 +763,138 @@ class FailClosedInputTests(unittest.TestCase):
                     self.assertEqual(1, len(registry_findings))
                     self.assertEqual(registry_findings, list(findings))
                     self.assertNotIn("PASSWORD=SECRET", repr(findings))
+
+    def test_secret_like_values_are_rejected_before_diagnostics_or_summary(
+        self,
+    ) -> None:
+        contract = load_contract_module()
+        row_mutations = {
+            "path": "infra/PASSWORD=SUPER_SECRET_PATH",
+            "surface_class": "api_key=SUPER_SECRET_CLASS",
+            "profile": "access_token=SUPER_SECRET_PROFILE",
+            "changed_since": "client_secret=SUPER_SECRET_BASELINE",
+            "disposition": "authorization: Bearer SUPER_SECRET_MODE",
+            "canonical_owner": "infra/token=SUPER_SECRET_OWNER",
+            "finding": "PASSWORD=SUPER_SECRET_RATIONALE",
+            "replacement": "infra/password=SUPER_SECRET_REPLACEMENT",
+            "secret_safety": "credential=SUPER_SECRET_SAFETY",
+            "spec_verdict": "AK" + "IA" + "ABCDEFGHIJKLMNOP",
+            "quality_verdict": "xoxb-SUPER_SECRET_QUALITY_1234567890",
+        }
+        list_mutations = {
+            "direct_consumers": "projects/sk-proj-SUPER_SECRET_CONSUMER_123456",
+            "validators": (
+                "scripts/validation/"
+                "eyJhbGciOiJIUzI1NiJ9.SUPER_SECRET_VALIDATOR.signature"
+            ),
+            "tests": "tests/-----BEGIN PRIVATE KEY-----",
+            "provenance": "ghp_SUPER_SECRET_PROVENANCE_1234567890123456",
+            "rollback": "Bearer SUPER_SECRET_ROLLBACK_1234567890",
+        }
+        top_mutations = {
+            "predecessor_closure": "PASSWORD=SUPER_SECRET_PREDECESSOR",
+            "implementation_base": (
+                "ghp_SUPER_SECRET_IMPLEMENTATION_1234567890123456"
+            ),
+            "enforcement": "Bearer SUPER_SECRET_ENFORCEMENT_1234567890",
+            "target_roots": ["infra/token=SUPER_SECRET_ROOT"],
+        }
+
+        with TemporaryDeltaRepository() as fixture:
+            cases: list[tuple[str, str, object]] = []
+            cases.extend(
+                (field, payload, ("row", field))
+                for field, payload in row_mutations.items()
+            )
+            cases.extend(
+                (field, payload, ("list", field))
+                for field, payload in list_mutations.items()
+            )
+            cases.extend(
+                (
+                    field,
+                    (
+                        value
+                        if isinstance(value, str)
+                        else "infra/token=SUPER_SECRET_ROOT"
+                    ),
+                    ("top", field, value),
+                )
+                for field, value in top_mutations.items()
+            )
+            for field, payload, mutation in cases:
+                with self.subTest(field=field):
+                    rows = [
+                        valid_row(path, changed_since=fixture.predecessor)
+                        for path in fixture.changed_paths
+                    ]
+                    document = valid_document(
+                        fixture.predecessor,
+                        fixture.implementation_base,
+                        rows,
+                    )
+                    mutation_kind = mutation[0]
+                    if mutation_kind == "row":
+                        rows[0][mutation[1]] = payload
+                    elif mutation_kind == "list":
+                        rows[0][mutation[1]] = [payload]
+                    else:
+                        document[mutation[1]] = mutation[2]
+                    fixture.write_manifest(document)
+                    summary = fixture.root / contract.DELTA_SUMMARY
+                    summary.parent.mkdir(parents=True, exist_ok=True)
+                    summary.write_text("sentinel\n", encoding="utf-8")
+
+                    with self.assertRaises(contract.ContractInputError) as caught:
+                        contract.load_delta_manifest(fixture.root)
+                    self.assertNotIn(payload, str(caught.exception))
+
+                    stderr = io.StringIO()
+                    with contextlib.redirect_stderr(stderr):
+                        result = contract.main(
+                            [
+                                "--root",
+                                str(fixture.root),
+                                "--write-summary",
+                            ]
+                        )
+                    self.assertEqual(2, result)
+                    self.assertEqual(
+                        "sentinel\n",
+                        summary.read_text(encoding="utf-8"),
+                    )
+                    self.assertNotIn(payload, stderr.getvalue())
+
+    def test_full_commit_hash_and_path_bound_evidence_are_not_secret_like(
+        self,
+    ) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            rows = [
+                valid_row(path, changed_since=fixture.predecessor)
+                for path in fixture.changed_paths
+            ]
+            rows[0]["provenance"] = [
+                (
+                    f"git:{fixture.predecessor}..{fixture.implementation_base}:"
+                    f"{rows[0]['path']}"
+                )
+            ]
+            rows[0]["rollback"] = [
+                f"git-revert:{fixture.implementation_base}:{rows[0]['path']}"
+            ]
+            fixture.write_manifest(
+                valid_document(
+                    fixture.predecessor,
+                    fixture.implementation_base,
+                    rows,
+                )
+            )
+            document = contract.load_delta_manifest(fixture.root)
+            self.assertEqual(
+                (),
+                contract.validate_delta_manifest(fixture.root, document),
+            )
 
 
 class SecretSafetyTests(unittest.TestCase):
@@ -1145,6 +1277,105 @@ class CommandLineTests(unittest.TestCase):
                 )
             self.assertEqual(1, result)
             self.assertIn("delta-spec-verdict-not-pass", stderr.getvalue())
+
+    def test_advisory_tolerates_only_pending_review_not_contract_findings(
+        self,
+    ) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            rows = [
+                valid_row(path, changed_since=fixture.predecessor)
+                for path in fixture.changed_paths
+            ]
+            document = valid_document(
+                fixture.predecessor,
+                fixture.implementation_base,
+                rows,
+            )
+            fixture.write_manifest(document)
+            self.assertEqual(
+                0,
+                contract.main(
+                    ["--root", str(fixture.root), "--write-summary"]
+                ),
+            )
+            self.assertEqual(
+                0,
+                contract.main(
+                    ["--root", str(fixture.root), "--mode", "advisory"]
+                ),
+            )
+
+            document["entries"] = rows[1:]
+            fixture.write_manifest(document)
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = contract.main(
+                    ["--root", str(fixture.root), "--mode", "advisory"]
+                )
+            self.assertEqual(1, result)
+            self.assertIn("delta-coverage-missing", stderr.getvalue())
+
+            document["entries"] = rows
+            fixture.write_manifest(document)
+            registry = fixture.root / contract.PROFILE_REGISTRY
+            registry.write_text("readme_profiles: []\n", encoding="utf-8")
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = contract.main(
+                    ["--root", str(fixture.root), "--mode", "advisory"]
+                )
+            self.assertEqual(1, result)
+            self.assertIn("delta-readme-registry-invalid", stderr.getvalue())
+
+    def test_bootstrap_creates_only_through_no_follow_repository_parents(
+        self,
+    ) -> None:
+        contract = load_contract_module()
+        with TemporaryDeltaRepository() as fixture:
+            result = contract.main(
+                [
+                    "--root",
+                    str(fixture.root),
+                    "--bootstrap",
+                    "--predecessor-commit",
+                    fixture.predecessor,
+                    "--implementation-base-commit",
+                    fixture.implementation_base,
+                ]
+            )
+            manifest = fixture.root / contract.DELTA_MANIFEST
+            self.assertEqual(0, result)
+            self.assertTrue(manifest.is_file())
+            self.assertFalse(manifest.is_symlink())
+            contract.load_delta_manifest(fixture.root)
+
+        with (
+            TemporaryDeltaRepository() as fixture,
+            tempfile.TemporaryDirectory() as outside_directory,
+        ):
+            outside = pathlib.Path(outside_directory)
+            governance = fixture.root / contract.DELTA_MANIFEST.parent
+            governance.parent.mkdir(parents=True, exist_ok=True)
+            governance.symlink_to(outside, target_is_directory=True)
+            outside_manifest = outside / contract.DELTA_MANIFEST.name
+
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = contract.main(
+                    [
+                        "--root",
+                        str(fixture.root),
+                        "--bootstrap",
+                        "--predecessor-commit",
+                        fixture.predecessor,
+                        "--implementation-base-commit",
+                        fixture.implementation_base,
+                    ]
+                )
+            self.assertEqual(2, result)
+            self.assertFalse(outside_manifest.exists())
+            self.assertIn("delta-bootstrap-refused", stderr.getvalue())
 
 
 if __name__ == "__main__":

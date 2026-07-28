@@ -43,6 +43,33 @@ SCHEMA_VERSION: Final = 1
 MAX_CONTRACT_FILE_BYTES: Final = 2 * 1_048_576
 FULL_SHA_RE: Final = re.compile(r"^[0-9a-f]{40}$")
 README_PROFILE_NAME_RE: Final = re.compile(r"^[a-z][a-z0-9-]{0,63}$")
+SECRET_ASSIGNMENT_RE: Final = re.compile(
+    r"(?i)(?:^|[^a-z0-9])"
+    r"(?:access[_-]?key|api[_-]?key|authorization|client[_-]?secret|"
+    r"credential|password|passwd|private[_-]?key|pwd|secret|token)"
+    r"\s*[:=]\s*\S+"
+)
+BEARER_RE: Final = re.compile(r"(?i)(?:^|\s)bearer\s+\S{8,}")
+JWT_RE: Final = re.compile(
+    r"(?:^|[^A-Za-z0-9_-])"
+    r"eyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}"
+)
+PRIVATE_KEY_RE: Final = re.compile(
+    r"-----BEGIN (?:[A-Z0-9]+ )*PRIVATE KEY-----"
+)
+TOKEN_PREFIX_RE: Final = re.compile(
+    r"(?i)(?:^|[^A-Za-z0-9])(?:"
+    r"AKIA[A-Z0-9]{16}|"
+    r"gh[pousr]_[A-Za-z0-9_-]{20,}|"
+    r"sk-(?:proj-)?[A-Za-z0-9_-]{16,}|"
+    r"xox[baprs]-[A-Za-z0-9_-]{10,}"
+    r")"
+)
+CREDENTIAL_URI_RE: Final = re.compile(r"://[^/\s:@]+:[^/\s@]+@")
+UNSAFE_LABEL_RE: Final = re.compile(
+    r"(?i)^(?:api[_-]?key|authorization|credential|password|passwd|"
+    r"private[_-]?key|pwd|secret|token)$"
+)
 DISPOSITIONS: Final = frozenset({"preserve", "update", "migrate", "delete"})
 REVIEW_VERDICTS: Final = frozenset({"pending", "pass", "fail"})
 SECRET_SAFETY_VALUES: Final = frozenset({"not-applicable", "path-only"})
@@ -224,6 +251,18 @@ def _safe_load_unique(source: str) -> object:
     return yaml.load(source, Loader=_UniqueKeyLoader)
 
 
+def _contains_secret_like(value: str) -> bool:
+    return (
+        SECRET_ASSIGNMENT_RE.search(value) is not None
+        or BEARER_RE.search(value) is not None
+        or JWT_RE.search(value) is not None
+        or PRIVATE_KEY_RE.search(value) is not None
+        or TOKEN_PREFIX_RE.search(value) is not None
+        or CREDENTIAL_URI_RE.search(value) is not None
+        or UNSAFE_LABEL_RE.fullmatch(value.strip()) is not None
+    )
+
+
 def _canonical_relative(value: object) -> str:
     if (
         not isinstance(value, str)
@@ -233,6 +272,7 @@ def _canonical_relative(value: object) -> str:
         or "|" in value
         or "`" in value
         or any(ord(character) < 32 or ord(character) == 127 for character in value)
+        or _contains_secret_like(value)
     ):
         raise ContractInputError
     path = pathlib.PurePosixPath(value)
@@ -248,7 +288,10 @@ def _safe_label(value: object) -> str:
         not isinstance(value, str)
         or not value
         or len(value.encode("utf-8")) > 1_024
-        or any(character in value for character in ("\0", "\r", "\n"))
+        or "|" in value
+        or "`" in value
+        or any(ord(character) < 32 or ord(character) == 127 for character in value)
+        or _contains_secret_like(value)
     ):
         raise ContractInputError
     return value
@@ -1223,23 +1266,104 @@ def _document_mapping(document: DeltaManifestDocument) -> dict[str, object]:
     }
 
 
-def _write_new_file(path: pathlib.Path, payload: bytes) -> None:
+def _write_new_repo_file(
+    root: pathlib.Path,
+    relative: str,
+    payload: bytes,
+) -> None:
+    canonical = _canonical_relative(relative)
+    if len(payload) > MAX_CONTRACT_FILE_BYTES:
+        raise ContractInputError
     try:
-        file_descriptor = os.open(
-            path,
-            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
-            0o644,
+        root_descriptor = os.open(
+            root,
+            os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
         )
     except OSError:
         raise ContractInputError from None
+    descriptors = [root_descriptor]
+    directory_links: list[tuple[int, str, tuple[int, int, int]]] = []
     try:
+        parts = pathlib.PurePosixPath(canonical).parts
+        for component in parts[:-1]:
+            parent_descriptor = descriptors[-1]
+            try:
+                directory_descriptor = os.open(
+                    component,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=parent_descriptor,
+                )
+            except FileNotFoundError:
+                os.mkdir(component, 0o755, dir_fd=parent_descriptor)
+                directory_descriptor = os.open(
+                    component,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                    dir_fd=parent_descriptor,
+                )
+            descriptors.append(directory_descriptor)
+            opened = os.fstat(directory_descriptor)
+            linked = os.stat(
+                component,
+                dir_fd=parent_descriptor,
+                follow_symlinks=False,
+            )
+            identity = (opened.st_dev, opened.st_ino, opened.st_mode)
+            if (
+                not stat.S_ISDIR(opened.st_mode)
+                or identity != (linked.st_dev, linked.st_ino, linked.st_mode)
+            ):
+                raise ContractInputError
+            directory_links.append(
+                (parent_descriptor, component, identity)
+            )
+
+        parent_descriptor = descriptors[-1]
+        file_descriptor = os.open(
+            parts[-1],
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o644,
+            dir_fd=parent_descriptor,
+        )
+        descriptors.append(file_descriptor)
+        opened = os.fstat(file_descriptor)
+        if not stat.S_ISREG(opened.st_mode):
+            raise ContractInputError
         offset = 0
         while offset < len(payload):
-            offset += os.write(file_descriptor, payload[offset:])
+            written = os.write(file_descriptor, payload[offset:])
+            if written <= 0:
+                raise ContractInputError
+            offset += written
+        os.fsync(file_descriptor)
+        final = os.fstat(file_descriptor)
+        linked = os.stat(
+            parts[-1],
+            dir_fd=parent_descriptor,
+            follow_symlinks=False,
+        )
+        file_identity = (opened.st_dev, opened.st_ino, opened.st_mode)
+        if (
+            file_identity != (final.st_dev, final.st_ino, final.st_mode)
+            or file_identity != (linked.st_dev, linked.st_ino, linked.st_mode)
+            or final.st_size != len(payload)
+        ):
+            raise ContractInputError
+        for parent, component, identity in directory_links:
+            linked = os.stat(
+                component,
+                dir_fd=parent,
+                follow_symlinks=False,
+            )
+            if identity != (linked.st_dev, linked.st_ino, linked.st_mode):
+                raise ContractInputError
     except OSError:
         raise ContractInputError from None
     finally:
-        os.close(file_descriptor)
+        for descriptor in reversed(descriptors):
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
 
 def bootstrap_delta_manifest(
@@ -1257,8 +1381,6 @@ def bootstrap_delta_manifest(
     except ValueError:
         raise ContractInputError from None
     _canonical_relative(relative)
-    if os.path.lexists(candidate):
-        raise ContractInputError
     if (
         not _commit_exists(repo_root, predecessor_commit)
         or not _commit_exists(repo_root, implementation_base_commit)
@@ -1302,8 +1424,7 @@ def bootstrap_delta_manifest(
     ).encode("utf-8")
     if len(payload) > MAX_CONTRACT_FILE_BYTES:
         raise ContractInputError
-    candidate.parent.mkdir(parents=True, exist_ok=True)
-    _write_new_file(candidate, payload)
+    _write_new_repo_file(repo_root, relative, payload)
 
 
 def render_delta_summary(
@@ -1535,12 +1656,14 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         document = load_delta_manifest(root)
-        findings = list(validate_delta_manifest(root, document))
+        contract_findings = list(validate_delta_manifest(root, document))
         blocking = (
             document.enforcement == "blocking" or arguments.mode == "blocking"
         )
-        if blocking:
-            findings.extend(_blocking_review_findings(document))
+        review_findings = (
+            list(_blocking_review_findings(document)) if blocking else []
+        )
+        findings = contract_findings + review_findings
         if arguments.write_summary and findings:
             for finding in sorted(set(findings)):
                 print(
@@ -1555,6 +1678,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             freshness = _summary_finding(root, summary)
             if freshness is not None:
+                contract_findings.append(freshness)
                 findings.append(freshness)
     except ContractInputError:
         print(
@@ -1569,7 +1693,7 @@ def main(argv: list[str] | None = None) -> int:
             f"{finding.code}: {finding.path}: {finding.message}",
             file=sys.stderr,
         )
-    return 1 if blocking and findings else 0
+    return 1 if contract_findings or review_findings else 0
 
 
 if __name__ == "__main__":

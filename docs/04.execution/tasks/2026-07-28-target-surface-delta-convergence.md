@@ -121,6 +121,10 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-001 quality/security review | Distinct quality/security reviewer | Reported C0/I1/M2: summary overwrite lacked descriptor-relative no-follow and race-safe replacement checks; untracked coverage was not isolated from staged/unstaged coverage; and canonical paths admitted control or Markdown-injection characters. Review remains unresolved pending remediation re-review. |
 | 2026-07-28 | T-TSDC-001 remediation RED | Task 1 implementation agent | Added focused regressions before remediation. The combined C/I run emitted 12 failing markers; isolated witnesses included one missing `delta-surface-class-invalid`, four registry fail-closed cascade failures, one unsafe profile-name failure, and 98 path-specific rationale/consumer-proof failures against the old manifest. |
 | 2026-07-28 | T-TSDC-001 remediation GREEN | Task 1 implementation agent | Closed surface classes, effective blocking review gates, one-finding README registry failure, typed disposition/evidence rules, tracked regular-file evidence checks, descriptor-relative summary overwrite, explicit untracked coverage, injection-safe canonical paths, factual preserve rationales, and proven consumer mappings. Intermediate focused suites passed 6/6 and 5/5; final successor and predecessor suites passed 25/25 and 40/40. |
+| 2026-07-28 | T-TSDC-001 second fresh re-review | Fresh specification and quality/security reviewers | Reported combined C0/I3/M0: advisory mode returned success for structural contract findings; free-form manifest fields admitted secret-like payloads before summary/diagnostic gating; and bootstrap parent creation could traverse a symlink outside the repository. Reviews remain unresolved pending the second remediation re-review. |
+| 2026-07-28 | T-TSDC-001 second remediation RED | Task 1 implementation agent | The advisory structural mutation failed 1/1 because a missing row returned 0 instead of 1 while valid pending review remained advisory-safe. The secret-like matrix failed all 20 adversarial fields while the safe full-SHA witness passed. The symlink-parent bootstrap witness returned 0 instead of 2 and created the outside file. |
+| 2026-07-28 | T-TSDC-001 second remediation GREEN | Task 1 implementation agent | Separated structural contract findings from blocking-only review findings; added conservative value-free parsing across path, label, list, and top-level fields; and replaced lexical bootstrap creation with bounded descriptor-relative no-follow traversal, creation, identity checks, and exclusive regular-file write. Focused advisory/blocking, secret/safe-evidence, and bootstrap suites passed 2/2, 3/3, and 2/2. |
+| 2026-07-28 | T-TSDC-001 second remediation final gates | Task 1 implementation agent | After aligning the prior unknown-surface test with the new pre-diagnostic secret rejection, the exact affected set passed 4/4. Production advisory returned 0; blocking returned 1 with 105 specification and 105 quality pending findings. Ruff, Python compile, changed metadata 1/0, Markdown stdin 1/0, and diff hygiene passed. A longer successor run was stopped after exposing that superseded test expectation and was not repeated after the exact affected set passed. |
 
 ## Verification Evidence
 
@@ -169,6 +173,10 @@ have no unresolved Critical or Important findings.
   quality/security review reported C0/I1/M2. The implementation addresses each
   reported finding, but neither review is marked approved until the distinct
   reviewers re-review the remediation commit.
+- Second re-review state: fresh re-review reported combined C0/I3/M0 for
+  advisory structural outcomes, secret-like free-form values, and bootstrap
+  parent traversal. Focused RED/GREEN evidence is recorded above, but the
+  reviews remain not approved until the second remediation commit is reviewed.
 - Remediation final gates: successor tests passed 25/25 in 95.838 seconds and
   predecessor tests passed 40/40 in 99.790 seconds. The metadata generated-owner
   oracle passed 1/1; changed metadata selected one document with zero
@@ -230,7 +238,7 @@ consume or create Agent authorization.
 
 | Task | Implementer | Specification reviewer | Quality/security reviewer | Exact range | Verdict | Findings |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Task 1 implementation agent | C0/I4/M2 reported; remediation re-review pending | C0/I1/M2 reported; remediation re-review pending | `1671e9be..` remediation commit | implementation remediated; reviews not approved | Surface class, blocking verdict, registry, destructive semantics, validator assertion, factual classification, safe overwrite, untracked coverage, and path-injection findings have implementation evidence but await distinct reviewer confirmation. |
+| T-TSDC-001 | Task 1 implementation agent | First C0/I4/M2 plus second combined C0/I3/M0 reported; second remediation re-review pending | First C0/I1/M2 plus second combined C0/I3/M0 reported; second remediation re-review pending | `72e452d0..` second remediation commit | implementation remediated; reviews not approved | The first finding set and the second advisory, secret-like-value, and bootstrap-parent findings have implementation evidence but await distinct reviewer confirmation. |
 | T-TSDC-002 | pending | pending | pending | not available | pending | Task 1 review pending |
 | T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 review pending |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
@@ -248,7 +256,8 @@ finding and must not be silently accepted as independent review evidence.
 | Planning specification | Define successor convergence design | `docs(spec): define target surface delta convergence` | `e828745a` | metadata, Markdown, alignment, diff hygiene passed |
 | Planning activation | Activate Spec and define Plan/Task | `docs(plan): define target surface delta execution` | `a2ba9eb4` | metadata 3/0, Markdown 3/0, traceability 46/0, alignment 674/5,658/141/0, diff hygiene passed |
 | T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | `1671e9be` | focused 15/15, predecessor 40/40, metadata 0 violations, advisory CLI, Ruff, Bash syntax, and diff hygiene pass; aggregate limitations recorded |
-| T-TSDC-001 remediation | Harden successor evidence contract after two reviews | `fix(governance): harden target delta evidence` | this logical commit | remediation RED/GREEN, successor/predecessor/metadata, advisory/blocking, summary, static QA, and diff hygiene |
+| T-TSDC-001 remediation | Harden successor evidence contract after two reviews | `fix(governance): harden target delta evidence` | `72e452d0` | remediation RED/GREEN, successor/predecessor/metadata, advisory/blocking, summary, static QA, and diff hygiene |
+| T-TSDC-001 second remediation | Close fresh fail-closed review gaps | `fix(governance): close target delta fail-closed gaps` | this logical commit | advisory structural RED/GREEN, secret-like field matrix, no-follow bootstrap, successor/static/metadata/diff gates |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | not started | Task 1 review pending |
 | T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |
