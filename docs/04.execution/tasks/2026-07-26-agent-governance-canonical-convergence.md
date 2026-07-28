@@ -59,8 +59,11 @@ configuration, credentials, and remote GitHub state remain out of scope.
 - User subsequently required a README-purpose GitHub entry document with a
   filename other than `README.md`; Task 5 now owns navigation-only
   `.github/INDEX.md` and explicitly forbids `.github/README.md`.
-- No approval exists yet for the controlled all-files wrapper, push, remote
-  merge, workflow dispatch, provider live call, or remote control-plane change.
+- The user approved the exact Plan-listed controlled all-files wrapper command
+  on 2026-07-28. That one-attempt approval was consumed by the failed execution
+  recorded below; it does not authorize a retry.
+- No approval exists for push, remote merge, workflow dispatch, provider live
+  call, remote control-plane change, or a second controlled-wrapper attempt.
 
 Rollback is task-commit revert plus exact Git provenance for deleted historical
 surfaces. No rollback command may discard unrelated user changes.
@@ -74,7 +77,7 @@ surfaces. No rollback command may discard unrelated user changes.
 | T-AGCC-003 | Establish shared bounded project memory | governance/docs | AGCC-001–002, 007 | Task 3 | import parity, bounds, secret/stale checks | `/root/task3_shared_memory` | completed |
 | T-AGCC-004 | Add functions and type harness, loop, and evals | harness/code | AGCC-008–010 | Task 4 | 14/24, 8 layers/states, 11/16 evals | `/root/task4_harness_loops_evals` | completed |
 | T-AGCC-005 | Reconcile local Actions/QA, GitHub index, and remote observation | CI/security | AGCC-012–014 | Task 5 | navigation-only index, 16 jobs, zizmor pin, remote inventory | `/root/task5_ci_github_convergence` | completed |
-| T-AGCC-006 | Refresh canonical evidence and close branch | docs/QA | AGCC-014–016 | Task 6 | audit 11/161, direct-impact drift 0, aggregate QA, branch reviews | `/root/task6_canonical_evidence_refresh` | in_progress |
+| T-AGCC-006 | Refresh canonical evidence and close branch | docs/QA | AGCC-014–016 | Task 6 | audit 11/161, direct-impact drift 0, aggregate QA, branch reviews | `/root/task6_canonical_evidence_refresh` | blocked |
 
 ## Work Log
 
@@ -120,6 +123,8 @@ surfaces. No rollback command may discard unrelated user changes.
 | 2026-07-27 | T-AGCC-006 implementation validation | Controller | Focused audit tests passed 39/39; semantic freshness passed 11 assertions; criterion coverage remained exactly 11 reports, 161 unique ten-column rows, and status distribution 77 Implemented / 60 Partial / 13 Missing / 2 Not Applicable / 9 Needs Revalidation. All five registered owners were regenerated and immediately fresh; only the audit implementation matrix changed bytes. The dependency-locked repository checker passed section `all` with zero failures; provider sync reported three providers and zero drift; hook parity, 11/16 eval, traceability 46/0, alignment 671 documents / 5,598 links / 141 operations documents / 0 failures, repository contracts, generated LLM/security owners, metadata inventory 934 records, semantic stale-fact scans, diff hygiene, and exact 26-path scoped pre-commit passed. Bare-shell aggregate execution failed closed on missing `html5lib`; its dependency-locked rerun passed and is the recorded result. Independent Task 6 reviews remain pending. |
 | 2026-07-27 | T-AGCC-006 specification review and remediation | `/root/task6_spec_reviewer_final` / Controller / `/root/task6_spec_fast` | Initial review of `371ffc6d..2db2f366` returned C0/I1/M0 because the Plan's provenance section called the feature-base 14/22 and 8/10 observations current. Commit `39e2e254216365398d26b69a3c30df82537fa05b` preserves those values as explicitly time-bounded activation baseline and separately states current 14/24 and 11/16. Read-only re-review of the original range plus remediation returned C0/I0/M0, `SPEC_COMPLIANCE: APPROVED`, and `READY_FOR_TASK6_CLOSURE: YES`. |
 | 2026-07-27 | T-AGCC-006 quality/security review | `/root/task6_quality_security_reviewer_final` | Read-only review of `371ffc6d..2db2f366` returned C0/I0/M0, `QUALITY_SECURITY: APPROVED`, and `READY_FOR_TASK6_CLOSURE: YES`. The reviewer confirmed no deletion or runtime/infra/deploy/provider-live scope, honest 11/161 and 77/60/13/2/9 audit evidence, fresh generated matrix and semantic assertions, dependency-locked repository contracts, dated/unverified remote state, provider catalog/runtime separation, and no secret value or raw-log retention. The later `39e2e254` change only clarifies baseline/current Plan wording and was independently specification re-reviewed. |
+| 2026-07-28 | Controlled all-files gate | User / Controller | The user approved the exact Plan-listed wrapper command for one run from clean committed checkpoint `84a6dbab598360c24d9c9056a0f1d8c5f3a2be41`. The wrapper reported `hook_result=failed hook_exit=3` and `snapshot_result=passed`; before, after, changed, and unexpected Git-visible non-ignored path counts were all zero and every path set was `(none)`. The wrapper intentionally retained no raw hook output, so no hook identity or root cause is claimed. The typed `approved-all-files-gate` loop requires `record_and_stop` after its single failed attempt; no retry, whole-branch closure review, lifecycle transition, cleanup, or scope expansion followed. |
+| 2026-07-28 | Wrapper evidence synchronization | Controller | Explicit-base metadata selected the two changed documents with 0 violations, legacy exceptions, or transition overrides; traceability passed 46/0; implementation alignment passed 671 documents, 5,598 links, 141 operations documents, and 0 failures; diff hygiene passed. The four current-memory regressions were environment-blocked rather than product-failed: offline `uv` could not resolve cached `pyyaml`, and bare Python failed closed on missing `html5lib`. No dependency was installed and no pass is claimed for those four tests at this checkpoint. |
 
 Implementation rows are appended only after the responsible agent finishes a
 logical unit. Review rows identify the exact reviewed commit range and finding
@@ -134,23 +139,44 @@ disposition.
 | T-AGCC-003 | Four Plan-named tests → expected `FAILED (failures=2, errors=2)` before implementation because the profile/file/root route and validator interface were absent. Active-consumer convergence → expected `FAILED (failures=13)` before the exact 11 additional consumers were remediated. Pre-read bound remediation → one expected failure, `32768 != 2097152`. | Focused `Task3SharedProjectMemoryTests` → 4/4 `OK`, including root parity, 13 bounded direct consumers, pre-read byte cap, value-free oversized rejection, forbidden material, inactive/missing Task, non-ancestor commit, and no wall-clock stale heuristic. | Final dependency-locked contract module → 151/151 `OK`; current repository harness → `failures=0`; traceability → 46/0; alignment → 671 documents / 5,598 links / 141 operations documents / 0 failures; changed metadata 19/0; exact 25-path scoped pre-commit and diff hygiene passed. Specification C0/I0/M1 APPROVED with its Minor closed; quality/security C0/I0/M0 APPROVED. | completed |
 | T-AGCC-004 | Nine-test cross-module slice before production changes → expected `FAILED (failures=4, errors=10)` for 22/24 function cardinality, missing function documents/projections, missing layers/states, and 8/11 plus 10/16 evaluator cardinality. Controller full locked module → 156 tests with one inventory failure, `112 != 114`. | Final nine-test slice → 9/9 `OK`; exact Task 4 contract classes → 5/5 `OK`; renderer → 21/21 `OK`; evaluator → 38/38 `OK`; wrapper → 11/11 fixtures and 16/16 regressions. The renamed inventory test plus both Task 4 classes passed 6/6, including 114 artifacts and explicit inclusion of both new canonical function paths. | Final dependency-locked contract module → 156/156 `OK`; contract checker → `PASS contracts=3 agents=14 functions=24 providers=3 failures=0`; repository all → 0 failures; renderer drift → 0; metadata changed → 0 violations; traceability → 46/0; alignment → 671 documents / 5,598 links / 141 operations documents / 0 failures; Ruff, byte-compilation, `git diff --check`, and exact 20-path scoped pre-commit passed. Specification C0/I0/M1 APPROVED with its sole bookkeeping Minor closed; quality/security C0/I0/M0, `QUALITY_SECURITY: APPROVED`. | completed |
 | T-AGCC-005 | Focused ten-test interface slice before implementation → expected `FAILED (failures=8)` for the unpinned tool, absent navigation/observation, stale remote-state claims, and accepted cross-file purpose/job collisions. Security RED: the initially specified exact 1.27.0 package emitted the `GHSA-f42p-wjw5-97qh` yanked advisory, so its result was rejected and temporary output removed. Memory-checker RED reproduced 21 stale literal/note-shape diagnostics. | After controller amendment `deb46df8`, the focused interface slice → 10/10 `OK`; exact zizmor 1.28.0 version and offline SARIF → 0 results. Memory regression → 1/1 `OK`; final routing module → 34/34 `OK`; direct dependency-locked checker → `failures=0`, including value-free `ContractLoadError` mutation coverage. | Shared-index harness passed lifecycle 118/118, target-surface 40/40, typed repository 0, promoted manifests 0, and final repository contracts 0. Generated owners were fresh; metadata selected 10/0; traceability 46/0; alignment 671/5,598/141/0; exact actionlint, diff hygiene, and 16-path scoped pre-commit passed. Supporting baseline commit `297d1674` was independently reviewed C0/I0/M0 and remains separate from the Task 5 candidate. Specification C0/I0/M1 APPROVED with its bookkeeping Minor closed; quality/security C0/I0/M0 APPROVED. | completed |
-| T-AGCC-006 | Direct-impact test failed before remediation for the old Codex alias/lifecycle and 8/10 postflight values; canonical stale scans found the displaced 22-function, seven-intake, 8/10-eval, and 15-local-job summaries. Post-refresh aggregate RED was `114 != 113` for canonical artifact inventory after the approved T-AGCC-005 deletion/noncanonical-index replacement. Specification review found one baseline/current wording conflict in the Plan. | Direct-impact focused test → 1/1 `OK`; inventory remediation focused test → 1/1 `OK`; focused audit modules → 39/39 `OK`; semantic freshness → 11/11; audit coverage → 11 reports / 161 unique ten-column rows. Plan remediation explicitly separates activation 14/22 and 8/10 from current 14/24 and 11/16. | Post-fix dependency-locked seven-module aggregate → 312/312 `OK`; repository all → 0; provider drift → 0; eval → 11/11 and 16/16; traceability 46/0; alignment 671/5,598/141/0; repository contracts, all registered generated-owner checks, and exact 26-path scoped pre-commit passed. Final Task reviews are specification C0/I0/M0 and quality/security C0/I0/M0, both ready for closure. | task_review_approved_wrapper_pending |
+| T-AGCC-006 | Direct-impact test failed before remediation for the old Codex alias/lifecycle and 8/10 postflight values; canonical stale scans found the displaced 22-function, seven-intake, 8/10-eval, and 15-local-job summaries. Post-refresh aggregate RED was `114 != 113` for canonical artifact inventory after the approved T-AGCC-005 deletion/noncanonical-index replacement. Specification review found one baseline/current wording conflict in the Plan. | Direct-impact focused test → 1/1 `OK`; inventory remediation focused test → 1/1 `OK`; focused audit modules → 39/39 `OK`; semantic freshness → 11/11; audit coverage → 11 reports / 161 unique ten-column rows. Plan remediation explicitly separates activation 14/22 and 8/10 from current 14/24 and 11/16. | Post-fix dependency-locked seven-module aggregate → 312/312 `OK`; repository all → 0; provider drift → 0; eval → 11/11 and 16/16; traceability 46/0; alignment 671/5,598/141/0; repository contracts, all registered generated-owner checks, and exact 26-path scoped pre-commit passed. Final Task reviews are specification C0/I0/M0 and quality/security C0/I0/M0. The separately approved all-files wrapper then failed with exit 3, passed its snapshot, observed no Git-visible path changes, and consumed the loop's single attempt. | wrapper_failed_record_and_stop |
 
 Environment-blocked checks retain their exact missing dependency or capability
 and rerun route. They are never recorded as product pass or failure.
 
 ## Controlled Agent Pre-commit Evidence
 
+The user approved this exact one-attempt command on 2026-07-28:
+
+```bash
+bash scripts/validation/run-agent-precommit-all-files.sh \
+  --task docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md \
+  --allow-prefix AGENTS.md \
+  --allow-prefix CLAUDE.md \
+  --allow-prefix GEMINI.md \
+  --allow-prefix .agents \
+  --allow-prefix .claude \
+  --allow-prefix .codex \
+  --allow-prefix .gemini \
+  --allow-prefix .github \
+  --allow-prefix docs/00.agent-governance \
+  --allow-prefix docs/03.specs/134-agent-governance-canonical-convergence \
+  --allow-prefix docs/04.execution \
+  --allow-prefix docs/90.references \
+  --allow-prefix scripts \
+  --allow-prefix tests
+```
+
 | Field | Current evidence |
 | --- | --- |
-| Command | `not_run` |
-| Approval | `not_approved_for_run` |
-| Allowed prefixes | Plan Task 6 exact list; inactive until per-run approval |
-| Exit status | `not_run` |
-| Snapshot result | `not_run` |
-| Observation boundary | Git-visible non-ignored paths only |
-| Before/after/changed/unexpected path sets | `not_run` |
-| Disposition | Direct `pre-commit run --all-files` remains prohibited |
+| Approval | Exact user approval received and consumed for the single 2026-07-28 run |
+| Allowed prefixes | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.agents`, `.claude`, `.codex`, `.gemini`, `.github`, `docs/00.agent-governance`, `docs/03.specs/134-agent-governance-canonical-convergence`, `docs/04.execution`, `docs/90.references`, `scripts`, `tests` |
+| Exit status | wrapper exit `3`; `hook_result=failed hook_exit=3` |
+| Snapshot result | `snapshot_result=passed` |
+| Observation boundary | `observation=git-visible-non-ignored-repository-status`; ignored or outside-repository writes and process/filesystem sandboxing are not claimed |
+| Counts | `before_count=0 after_count=0 changed_count=0 unexpected_count=0` |
+| Before/after/changed/unexpected path sets | before `(none)`; after `(none)`; changed `(none)`; unexpected `(none)` |
+| Disposition | **FAIL / RECORD AND STOP.** The raw hook output was intentionally not retained, no hook identity or root cause is inferred, and no Git-visible non-ignored path changed. Direct `pre-commit run` remains prohibited. A second wrapper attempt requires a new exact approval and an explicit bounded remediation/override record. |
 
 ## Review Evidence
 
@@ -161,7 +187,7 @@ and rerun route. They are never recorded as product pass or failure.
 | T-AGCC-003 | `/root/task3_shared_memory` | `/root/task3_spec_review` | `/root/task3_quality_security_review` | `cc7f515a..a56234ee` | approved | specification C0/I0/M1 APPROVED with sole missing-commit Minor closed; quality/security C0/I0/M0, `QUALITY_SECURITY: APPROVED` |
 | T-AGCC-004 | `/root/task4_harness_loops_evals` | `/root/task4_spec_review` | `/root/task4_quality_security_review` | `b2e090bd..c45e2925` | approved | specification C0/I0/M1 APPROVED with sole working-tree/not-committed bookkeeping Minor closed; quality/security C0/I0/M0, `QUALITY_SECURITY: APPROVED`; adversarial boundaries reviewed |
 | T-AGCC-005 | `/root/task5_ci_github_convergence` | `/root/task5_spec_review` | `/root/task5_quality_security_review` | `9bdbd903..b993beb2` | approved | specification C0/I0/M1 APPROVED with the sole implementation-SHA bookkeeping Minor closed here; quality/security C0/I0/M0 APPROVED and ready for closure |
-| T-AGCC-006 | `/root/task6_canonical_evidence_refresh` / Controller | `/root/task6_spec_reviewer_final` + `/root/task6_spec_fast` | `/root/task6_quality_security_reviewer_final` | specification `371ffc6d..39e2e254`; quality/security `371ffc6d..2db2f366` | approved | initial specification C0/I1/M0 remediated in `39e2e254`, re-review C0/I0/M0 APPROVED; quality/security C0/I0/M0 APPROVED; controlled all-files wrapper remains separately approval-bound |
+| T-AGCC-006 | `/root/task6_canonical_evidence_refresh` / Controller | `/root/task6_spec_reviewer_final` + `/root/task6_spec_fast` | `/root/task6_quality_security_reviewer_final` | specification `371ffc6d..39e2e254`; quality/security `371ffc6d..2db2f366` | blocked_after_review | initial specification C0/I1/M0 remediated in `39e2e254`, re-review C0/I0/M0 APPROVED; quality/security C0/I0/M0 APPROVED; the later controlled all-files attempt failed with exit 3 and stopped closure |
 | Whole branch | not_applicable | not_assigned | not_assigned | `e65bb18f..HEAD` | not_reviewed | not_reviewed |
 
 ## Commit Ledger
@@ -199,8 +225,8 @@ when required.
 | Provider live acceptance, entitlement, quality/cost/latency comparison | deferred | requires separate runtime, privacy, cost, and external-action approval | future provider-evaluation spec |
 | Remote ruleset, protection, required-check, environment, secret, and variable verification | unverified | GitHub authentication unavailable; remote is read-only | Stage 90 observation plus future approved GitHub task |
 | Runtime, Compose, infrastructure, deployment, and release changes | deferred | explicitly outside Spec 134 | existing runtime readiness specs |
-| Dependency-locked validator/renderer | resolved | the locked offline `uv --with-requirements scripts/requirements.txt` environment ran all 191 Task 2 aggregate tests and both drift checks successfully; bare system Python still fails closed on missing `html5lib` | retain the dependency-locked invocation for subsequent tasks |
-| Controlled all-files wrapper | not_approved_for_run | requires separate exact user approval and clean committed candidate | T-AGCC-006 |
+| Dependency-locked validator/renderer | previously_resolved_currently_unavailable | earlier locked runs completed the recorded aggregate evidence; at this wrapper-evidence checkpoint offline `uv` lacked cached `pyyaml` and bare Python lacked `html5lib` | rerun in the canonical dependency-locked environment before any resumed closure claim |
+| Controlled all-files wrapper | failed_record_and_stop | the exact one-attempt approval was consumed; hook exit 3, snapshot pass, and empty observed path sets do not establish a hook pass or root cause | future bounded QA diagnosis/remediation with a new exact retry approval if requested |
 | Push/remote merge/remote branch cleanup | not_approved | requires separate finish action approval | finishing-a-development-branch handoff |
 
 ## Related Documents
