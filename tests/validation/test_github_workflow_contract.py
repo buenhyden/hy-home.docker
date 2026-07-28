@@ -365,6 +365,97 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.assertEqual(expected, raised.exception.code)
                 self.assertNotIn("private-sentinel", raised.exception.message)
 
+    def test_mixed_yaml_on_spellings_are_rejected_as_ambiguous(self) -> None:
+        matching_trigger = (
+            "on:\n"
+            "  push:\n"
+            "    branches: [main]\n"
+            "  pull_request:\n"
+            "    branches: [main]\n"
+            "  workflow_dispatch:\n"
+        )
+        malicious_trigger = (
+            "  pull_request_target:\n"
+            "    types: [private-trigger-sentinel]\n"
+        )
+        cases = (
+            (
+                "quoted-matching-first",
+                matching_trigger.replace("on:\n", "'on':\n", 1)
+                + "on:\n"
+                + malicious_trigger,
+            ),
+            (
+                "unquoted-matching-first",
+                matching_trigger
+                + "'on':\n"
+                + malicious_trigger,
+            ),
+        )
+        for label, replacement in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                self.assertIn(matching_trigger, text)
+                workflow.write_text(
+                    text.replace(matching_trigger, replacement, 1),
+                    encoding="utf-8",
+                )
+                with self.assertRaises(
+                    self.module.WorkflowContractError
+                ) as raised:
+                    self.module.load_workflows(root)
+                self.assertEqual(
+                    "workflow-trigger-key-ambiguous",
+                    raised.exception.code,
+                )
+                self.assertNotIn(
+                    "private-trigger-sentinel",
+                    raised.exception.message,
+                )
+
+    def test_trigger_key_parser_preserves_normal_and_rejects_quoted_duplicate(
+        self,
+    ) -> None:
+        workflows = self.module.load_workflows(ROOT)
+        ci = next(
+            workflow
+            for workflow in workflows
+            if workflow.path == ".github/workflows/ci-quality.yml"
+        )
+        self.assertIn("on", ci.data)
+        self.assertFalse(
+            any(type(key) is bool and key is True for key in ci.data)
+        )
+        unrelated_value = object()
+        normalized: dict[object, object] = {
+            True: {"workflow_dispatch": None},
+            False: unrelated_value,
+            "unrelated-boolean-value": True,
+        }
+        self.module._normalize_workflow_trigger_key(
+            normalized,
+            path=".github/workflows/example.yml",
+        )
+        self.assertEqual({"workflow_dispatch": None}, normalized["on"])
+        self.assertIs(unrelated_value, normalized[False])
+        self.assertIs(True, normalized["unrelated-boolean-value"])
+
+        with self.workflow_fixture() as root:
+            workflow = root / ".github/workflows/ci-quality.yml"
+            text = workflow.read_text(encoding="utf-8")
+            workflow.write_text(
+                text.replace(
+                    "on:\n",
+                    "'on':\n  workflow_dispatch:\n'on':\n",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(self.module.WorkflowContractError) as raised:
+                self.module.load_workflows(root)
+        self.assertEqual("yaml-duplicate-key", raised.exception.code)
+
     def test_bounded_reader_completes_short_regular_file_reads(self) -> None:
         real_read = self.module.os.read
 

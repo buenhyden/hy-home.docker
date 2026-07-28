@@ -288,6 +288,30 @@ def _read_bounded_yaml(
     return text, loaded
 
 
+def _normalize_workflow_trigger_key(
+    data: dict[object, object],
+    *,
+    path: str,
+) -> None:
+    has_string_on = any(
+        type(key) is str and key == "on"
+        for key in data
+    )
+    boolean_on_keys = tuple(
+        key
+        for key in data
+        if type(key) is bool and key is True
+    )
+    if has_string_on and boolean_on_keys:
+        raise WorkflowContractError(
+            "workflow-trigger-key-ambiguous",
+            path,
+            "workflow trigger key has ambiguous YAML forms",
+        )
+    if boolean_on_keys:
+        data["on"] = data.pop(boolean_on_keys[0])
+
+
 def load_workflows(root: pathlib.Path) -> tuple[WorkflowDocument, ...]:
     _assert_safe_parent_directories(
         root,
@@ -312,8 +336,10 @@ def load_workflows(root: pathlib.Path) -> tuple[WorkflowDocument, ...]:
     for path in candidates:
         relative = pathlib.PurePosixPath(path.relative_to(root).as_posix())
         text, data = _read_bounded_yaml(root, relative)
-        if True in data and "on" not in data:
-            data["on"] = data.pop(True)
+        _normalize_workflow_trigger_key(
+            data,
+            path=relative.as_posix(),
+        )
         documents.append(
             WorkflowDocument(path=relative.as_posix(), text=text, data=data)
         )
