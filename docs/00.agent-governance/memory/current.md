@@ -12,7 +12,9 @@ status: active
   while T-AGCC-006 remains active. Its first approved repository-wide wrapper
   attempt failed and stopped the loop; the bounded T-AGCC-006-QA-R1
   remediation and reviews completed, and a separately approved exceptional
-  second attempt passed. Whole-branch reviews are next.
+  second attempt passed. A later controller execution at the evidence HEAD
+  returned a conflicting wrapper failure, so whole-branch reviews are paused
+  until that discrepancy is reviewed or remediated.
 
 ## Approved decisions
 
@@ -27,6 +29,10 @@ status: active
 - The user separately approved one exceptional second wrapper attempt from
   clean commit `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`; the passing
   execution consumed that approval. No further wrapper run is authorized.
+- A subsequent controller execution of the same wrapper at commit
+  `6c6a153058fb7d1511d57fd90b0f3f18555a1540` returned a failure. It is
+  recorded as post-pass discrepancy evidence, not as closure evidence, and
+  does not authorize another wrapper run.
 
 ## Active boundary
 
@@ -35,14 +41,16 @@ status: active
   independent Task review, and whole-branch review.
 - The initial controlled-wrapper approval was consumed by a failed attempt.
   T-AGCC-006-QA-R1 and its clean reviews enabled a separately approved
-  exceptional second attempt, which passed. Remote mutation, live provider
-  calls, runtime changes, Compose, infrastructure, deployment, release, and
-  any further wrapper run remain separately gated or outside this task.
+  exceptional second attempt, which passed. A later post-pass discrepancy
+  execution failed with no Git-visible path changes. Remote mutation, live
+  provider calls, runtime changes, Compose, infrastructure, deployment,
+  release, and any further wrapper run remain separately gated or outside this
+  task.
 
 ## Verified state
 
-- Verified commit: `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`
-- Verified at: `2026-07-28T13:27:40+09:00`
+- Verified commit: `6c6a153058fb7d1511d57fd90b0f3f18555a1540`
+- Verified at: `2026-07-28T13:31:02+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -72,12 +80,18 @@ status: active
   `hook_result=passed hook_exit=0`, `first_failure=not_applicable`, and
   `snapshot_result=passed`. All four Git-visible path counts were zero and all
   four path sets were `(none)`.
+- From commit `6c6a153058fb7d1511d57fd90b0f3f18555a1540`, a later
+  controller execution of the same wrapper returned exit 3 with
+  `hook_result=failed hook_exit=3`, `first_failure=unavailable`, and
+  `snapshot_result=passed`. All four Git-visible path counts were zero and all
+  four path sets were `(none)`. No raw hook output was persisted, and no hook
+  identity or root cause is claimed.
 
 ## Blockers and unverified facts
 
-- Fresh whole-branch correctness and security reviews remain required before
-  lifecycle closure. Any Critical or Important finding must be remediated and
-  re-reviewed.
+- The post-pass wrapper discrepancy blocks lifecycle closure. Fresh
+  whole-branch correctness and security reviews must not be used as closure
+  evidence until the discrepancy is independently reviewed or remediated.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
   bitwise combination of hook exits; no root cause is claimed.
@@ -95,7 +109,7 @@ status: active
 
 ## Next handoff
 
-- Dispatch fresh whole-branch correctness and security reviewers for
-  `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD`, remediate and re-review
-  every Critical or Important finding, then perform lifecycle closure and
-  final gates.
+- Review the post-pass wrapper discrepancy from
+  `6c6a153058fb7d1511d57fd90b0f3f18555a1540`, determine whether a non-wrapper
+  remediation is available, and obtain explicit approval before any further
+  wrapper execution. Whole-branch reviews and lifecycle closure remain paused.
