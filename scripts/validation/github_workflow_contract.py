@@ -87,6 +87,117 @@ class WorkflowContract:
     actions: tuple[ActionDependency, ...]
 
 
+PermissionItems = tuple[tuple[str, str], ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _WorkflowPermissionBaseline:
+    top_level: PermissionItems
+    jobs: tuple[tuple[str, PermissionItems | None], ...]
+
+
+_CONTENTS_READ: Final[PermissionItems] = (("contents", "read"),)
+_ZIZMOR_PERMISSIONS: Final[PermissionItems] = (
+    ("actions", "read"),
+    ("contents", "read"),
+    ("security-events", "write"),
+)
+_CI_READ_ONLY_JOBS: Final = (
+    "docs-traceability",
+    "docs-implementation-alignment",
+    "repo-contracts",
+    "agent-output-eval-fixture-gate",
+    "supply-chain-fixture-policy",
+    "dependency-vulnerability-audit",
+    "git-flow-contract",
+    "compose-validation",
+    "compose-all-profiles-validation",
+    "infrastructure-hardening",
+    "template-security-baseline",
+    "quickwin-baseline",
+    "pre-commit",
+    "frontend-quality",
+    "storybook-coverage",
+)
+_WORKFLOW_PERMISSION_BASELINES: Final = (
+    (
+        ".github/workflows/ci-quality.yml",
+        _WorkflowPermissionBaseline(
+            top_level=_CONTENTS_READ,
+            jobs=tuple(
+                (job_id, _CONTENTS_READ) for job_id in _CI_READ_ONLY_JOBS
+            )
+            + (("zizmor", _ZIZMOR_PERMISSIONS),),
+        ),
+    ),
+    (
+        ".github/workflows/document-corpus-lifecycle.yml",
+        _WorkflowPermissionBaseline(
+            top_level=_CONTENTS_READ,
+            jobs=(("document-corpus-lifecycle", _CONTENTS_READ),),
+        ),
+    ),
+    (
+        ".github/workflows/generate-changelog.yml",
+        _WorkflowPermissionBaseline(
+            top_level=_CONTENTS_READ,
+            jobs=(("changelog", None),),
+        ),
+    ),
+    (
+        ".github/workflows/greetings.yml",
+        _WorkflowPermissionBaseline(
+            top_level=(),
+            jobs=(
+                (
+                    "issue-greeting",
+                    (("contents", "read"), ("issues", "write")),
+                ),
+                (
+                    "pull-request-greeting",
+                    (("contents", "read"), ("issues", "write")),
+                ),
+            ),
+        ),
+    ),
+    (
+        ".github/workflows/pr-labeler.yml",
+        _WorkflowPermissionBaseline(
+            top_level=(),
+            jobs=(
+                (
+                    "triage",
+                    (("contents", "read"), ("pull-requests", "write")),
+                ),
+            ),
+        ),
+    ),
+    (
+        ".github/workflows/stale.yml",
+        _WorkflowPermissionBaseline(
+            top_level=(),
+            jobs=(
+                (
+                    "stale",
+                    (
+                        ("contents", "read"),
+                        ("issues", "write"),
+                        ("pull-requests", "write"),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    (
+        ".github/workflows/tech-stack-version-sync.yml",
+        _WorkflowPermissionBaseline(
+            top_level=_CONTENTS_READ,
+            jobs=(("drift-gate", _CONTENTS_READ),),
+        ),
+    ),
+)
+
+
 class WorkflowContractError(ValueError):
     def __init__(self, code: str, path: str, message: str) -> None:
         super().__init__(message)
@@ -860,6 +971,79 @@ def _finding(code: str, path: str, message: str) -> WorkflowFinding:
     return WorkflowFinding(code=code, path=path, message=message)
 
 
+def _permission_baseline_findings(
+    documents_by_path: dict[str, WorkflowDocument],
+    specs_by_path: dict[str, WorkflowSpec],
+) -> tuple[WorkflowFinding, ...]:
+    findings: list[WorkflowFinding] = []
+    baselines_by_path = dict(_WORKFLOW_PERMISSION_BASELINES)
+    baseline_paths = set(baselines_by_path)
+    if (
+        set(documents_by_path) != baseline_paths
+        or set(specs_by_path) != baseline_paths
+    ):
+        findings.append(
+            _finding(
+                "workflow-permission-baseline-invalid",
+                WORKFLOW_CONTRACT.as_posix(),
+                "workflow permission ownership differs from the code baseline",
+            )
+        )
+
+    for path in sorted(
+        baseline_paths & set(documents_by_path) & set(specs_by_path)
+    ):
+        baseline = baselines_by_path[path]
+        document = documents_by_path[path]
+        spec = specs_by_path[path]
+        expected_top_level = dict(baseline.top_level)
+        baseline_valid = (
+            spec.permissions == expected_top_level
+            and "permissions" in document.data
+            and document.data["permissions"] == expected_top_level
+        )
+
+        expected_jobs = dict(baseline.jobs)
+        raw_jobs = document.data.get("jobs")
+        if (
+            set(spec.jobs) != set(expected_jobs)
+            or not isinstance(raw_jobs, dict)
+            or set(raw_jobs) != set(expected_jobs)
+        ):
+            baseline_valid = False
+        else:
+            for job_id, permission_items in expected_jobs.items():
+                raw_job = raw_jobs.get(job_id)
+                contract_job = spec.jobs.get(job_id)
+                if not isinstance(raw_job, dict) or contract_job is None:
+                    baseline_valid = False
+                    continue
+                if permission_items is None:
+                    if (
+                        contract_job.permissions is not None
+                        or "permissions" in raw_job
+                    ):
+                        baseline_valid = False
+                    continue
+                expected_permissions = dict(permission_items)
+                if (
+                    contract_job.permissions != expected_permissions
+                    or "permissions" not in raw_job
+                    or raw_job["permissions"] != expected_permissions
+                ):
+                    baseline_valid = False
+
+        if not baseline_valid:
+            findings.append(
+                _finding(
+                    "workflow-permission-baseline-invalid",
+                    path,
+                    "workflow permissions differ from the code baseline",
+                )
+            )
+    return tuple(findings)
+
+
 def validate_workflows(
     root: pathlib.Path,
     contract: WorkflowContract,
@@ -871,6 +1055,9 @@ def validate_workflows(
         return (_finding(error.code, error.path, error.message),)
     documents_by_path = {document.path: document for document in documents}
     specs_by_path = {spec.path: spec for spec in contract.workflows}
+    findings.extend(
+        _permission_baseline_findings(documents_by_path, specs_by_path)
+    )
     for path in sorted(set(specs_by_path) - set(documents_by_path)):
         findings.append(
             _finding("workflow-missing", path, "registered workflow is missing")

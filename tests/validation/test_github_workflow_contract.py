@@ -325,6 +325,421 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "\n".join(finding.message for finding in findings),
                 )
 
+    def test_required_permission_contract_co_mutations_fail_baseline(
+        self,
+    ) -> None:
+        required_job_workflow = (
+            "  docs-traceability:\n"
+            "    permissions:\n"
+            "      contents: read\n"
+        )
+        required_job_contract = (
+            "      docs-traceability:\n"
+            "        permissions: {contents: read}\n"
+        )
+        cases = [
+            (
+                "top-contents-write",
+                "permissions:\n  contents: read\n\nconcurrency:\n",
+                "permissions:\n  contents: write\n\nconcurrency:\n",
+                (
+                    "    permissions:\n"
+                    "      contents: read\n"
+                    "    concurrency:\n"
+                ),
+                (
+                    "    permissions:\n"
+                    "      contents: write\n"
+                    "    concurrency:\n"
+                ),
+            ),
+            (
+                "job-contents-write",
+                required_job_workflow,
+                required_job_workflow.replace("contents: read", "contents: write"),
+                required_job_contract,
+                required_job_contract.replace(
+                    "contents: read",
+                    "contents: write",
+                ),
+            ),
+        ]
+        for scope in ("packages", "id-token", "issues", "pull-requests"):
+            cases.append(
+                (
+                    f"job-{scope}-write",
+                    required_job_workflow,
+                    required_job_workflow.replace(
+                        "      contents: read\n",
+                        f"      contents: read\n      {scope}: write\n",
+                    ),
+                    required_job_contract,
+                    required_job_contract.replace(
+                        "{contents: read}",
+                        f"{{contents: read, {scope}: write}}",
+                    ),
+                )
+            )
+        cases.append(
+            (
+                "zizmor-extra-write",
+                (
+                    "    permissions:\n"
+                    "      security-events: write\n"
+                    "      actions: read\n"
+                    "      contents: read\n"
+                ),
+                (
+                    "    permissions:\n"
+                    "      security-events: write\n"
+                    "      actions: read\n"
+                    "      contents: read\n"
+                    "      packages: write\n"
+                ),
+                (
+                    "      zizmor:\n"
+                    "        permissions:\n"
+                    "          security-events: write\n"
+                    "          actions: read\n"
+                    "          contents: read\n"
+                ),
+                (
+                    "      zizmor:\n"
+                    "        permissions:\n"
+                    "          security-events: write\n"
+                    "          actions: read\n"
+                    "          contents: read\n"
+                    "          packages: write\n"
+                ),
+            )
+        )
+
+        for (
+            label,
+            workflow_old,
+            workflow_new,
+            contract_old,
+            contract_new,
+        ) in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                workflow_text = workflow.read_text(encoding="utf-8")
+                contract_path = root / ".github/workflow-contract.yml"
+                contract_text = contract_path.read_text(encoding="utf-8")
+                self.assertIn(workflow_old, workflow_text)
+                self.assertIn(contract_old, contract_text)
+                workflow.write_text(
+                    workflow_text.replace(workflow_old, workflow_new, 1),
+                    encoding="utf-8",
+                )
+                contract_path.write_text(
+                    contract_text.replace(contract_old, contract_new, 1),
+                    encoding="utf-8",
+                )
+                contract = self.module.load_workflow_contract(root)
+                findings = self.module.validate_workflows(root, contract)
+                self.assertIn(
+                    "workflow-permission-baseline-invalid",
+                    {finding.code for finding in findings},
+                )
+
+    def test_non_gating_permissions_have_exact_workflow_and_job_owners(
+        self,
+    ) -> None:
+        expected = {
+            ".github/workflows/document-corpus-lifecycle.yml": (
+                {"contents": "read"},
+                {"document-corpus-lifecycle": {"contents": "read"}},
+            ),
+            ".github/workflows/generate-changelog.yml": (
+                {"contents": "read"},
+                {"changelog": None},
+            ),
+            ".github/workflows/greetings.yml": (
+                {},
+                {
+                    "issue-greeting": {
+                        "contents": "read",
+                        "issues": "write",
+                    },
+                    "pull-request-greeting": {
+                        "contents": "read",
+                        "issues": "write",
+                    },
+                },
+            ),
+            ".github/workflows/pr-labeler.yml": (
+                {},
+                {
+                    "triage": {
+                        "contents": "read",
+                        "pull-requests": "write",
+                    }
+                },
+            ),
+            ".github/workflows/stale.yml": (
+                {},
+                {
+                    "stale": {
+                        "contents": "read",
+                        "issues": "write",
+                        "pull-requests": "write",
+                    }
+                },
+            ),
+            ".github/workflows/tech-stack-version-sync.yml": (
+                {"contents": "read"},
+                {"drift-gate": {"contents": "read"}},
+            ),
+        }
+        contract = {
+            workflow.path: workflow
+            for workflow in self.module.load_workflow_contract(ROOT).workflows
+        }
+        documents = {
+            workflow.path: workflow
+            for workflow in self.module.load_workflows(ROOT)
+        }
+        actual_write_owners: set[tuple[str, str, str]] = set()
+        for path, (top_level, jobs) in expected.items():
+            with self.subTest(path=path):
+                self.assertEqual(top_level, contract[path].permissions)
+                self.assertEqual(top_level, documents[path].data["permissions"])
+                self.assertEqual(set(jobs), set(contract[path].jobs))
+                raw_jobs = documents[path].data["jobs"]
+                self.assertEqual(set(jobs), set(raw_jobs))
+                for job_id, permissions in jobs.items():
+                    self.assertEqual(
+                        permissions,
+                        contract[path].jobs[job_id].permissions,
+                    )
+                    if permissions is None:
+                        self.assertNotIn("permissions", raw_jobs[job_id])
+                        continue
+                    self.assertIn("permissions", raw_jobs[job_id])
+                    self.assertEqual(
+                        permissions,
+                        raw_jobs[job_id]["permissions"],
+                    )
+                    actual_write_owners.update(
+                        (path, job_id, scope)
+                        for scope, access in permissions.items()
+                        if access == "write"
+                    )
+        self.assertEqual(
+            {
+                (
+                    ".github/workflows/greetings.yml",
+                    "issue-greeting",
+                    "issues",
+                ),
+                (
+                    ".github/workflows/greetings.yml",
+                    "pull-request-greeting",
+                    "issues",
+                ),
+                (
+                    ".github/workflows/pr-labeler.yml",
+                    "triage",
+                    "pull-requests",
+                ),
+                (".github/workflows/stale.yml", "stale", "issues"),
+                (
+                    ".github/workflows/stale.yml",
+                    "stale",
+                    "pull-requests",
+                ),
+            },
+            actual_write_owners,
+        )
+
+    def test_non_gating_permission_co_mutations_fail_baseline(self) -> None:
+        cases = (
+            (
+                "document-corpus-lifecycle",
+                ".github/workflows/document-corpus-lifecycle.yml",
+                "      contents: read\n",
+                "      contents: read\n      issues: write\n",
+                "        permissions: {contents: read}\n",
+                "        permissions: {contents: read, issues: write}\n",
+            ),
+            (
+                "generate-changelog",
+                ".github/workflows/generate-changelog.yml",
+                (
+                    "  changelog:\n"
+                    "    name: Verify changelog contains release tag\n"
+                    "    runs-on: ubuntu-latest\n"
+                ),
+                (
+                    "  changelog:\n"
+                    "    name: Verify changelog contains release tag\n"
+                    "    permissions:\n"
+                    "      issues: write\n"
+                    "    runs-on: ubuntu-latest\n"
+                ),
+                "      changelog:\n        permissions: null\n",
+                (
+                    "      changelog:\n"
+                    "        permissions: {issues: write}\n"
+                ),
+            ),
+            (
+                "greetings",
+                ".github/workflows/greetings.yml",
+                (
+                    "  issue-greeting:\n"
+                    "    if: github.event_name == 'issues'\n"
+                    "    permissions:\n"
+                    "      issues: write\n"
+                    "      contents: read\n"
+                ),
+                (
+                    "  issue-greeting:\n"
+                    "    if: github.event_name == 'issues'\n"
+                    "    permissions:\n"
+                    "      issues: write\n"
+                    "      pull-requests: write\n"
+                    "      contents: read\n"
+                ),
+                (
+                    "      issue-greeting:\n"
+                    "        permissions:\n"
+                    "          issues: write\n"
+                    "          contents: read\n"
+                ),
+                (
+                    "      issue-greeting:\n"
+                    "        permissions:\n"
+                    "          issues: write\n"
+                    "          pull-requests: write\n"
+                    "          contents: read\n"
+                ),
+            ),
+            (
+                "pr-labeler",
+                ".github/workflows/pr-labeler.yml",
+                (
+                    "    permissions:\n"
+                    "      contents: read\n"
+                    "      pull-requests: write\n"
+                ),
+                (
+                    "    permissions:\n"
+                    "      contents: read\n"
+                    "      pull-requests: write\n"
+                    "      issues: write\n"
+                ),
+                (
+                    "      triage:\n"
+                    "        permissions:\n"
+                    "          contents: read\n"
+                    "          pull-requests: write\n"
+                ),
+                (
+                    "      triage:\n"
+                    "        permissions:\n"
+                    "          contents: read\n"
+                    "          pull-requests: write\n"
+                    "          issues: write\n"
+                ),
+            ),
+            (
+                "stale",
+                ".github/workflows/stale.yml",
+                (
+                    "    permissions:\n"
+                    "      issues: write\n"
+                    "      pull-requests: write\n"
+                    "      contents: read\n"
+                ),
+                (
+                    "    permissions:\n"
+                    "      issues: write\n"
+                    "      pull-requests: write\n"
+                    "      contents: read\n"
+                    "      actions: write\n"
+                ),
+                (
+                    "      stale:\n"
+                    "        permissions:\n"
+                    "          issues: write\n"
+                    "          pull-requests: write\n"
+                    "          contents: read\n"
+                ),
+                (
+                    "      stale:\n"
+                    "        permissions:\n"
+                    "          issues: write\n"
+                    "          pull-requests: write\n"
+                    "          contents: read\n"
+                    "          actions: write\n"
+                ),
+            ),
+            (
+                "tech-stack-version-sync",
+                ".github/workflows/tech-stack-version-sync.yml",
+                (
+                    "  drift-gate:\n"
+                    "    permissions:\n"
+                    "      contents: read\n"
+                ),
+                (
+                    "  drift-gate:\n"
+                    "    permissions:\n"
+                    "      contents: read\n"
+                    "      pull-requests: write\n"
+                ),
+                (
+                    "      drift-gate:\n"
+                    "        permissions: {contents: read}\n"
+                ),
+                (
+                    "      drift-gate:\n"
+                    "        permissions: {contents: read, pull-requests: write}\n"
+                ),
+            ),
+        )
+
+        for (
+            label,
+            relative,
+            workflow_old,
+            workflow_new,
+            contract_old,
+            contract_new,
+        ) in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / relative
+                workflow_text = workflow.read_text(encoding="utf-8")
+                contract_path = root / ".github/workflow-contract.yml"
+                contract_text = contract_path.read_text(encoding="utf-8")
+                self.assertIn(workflow_old, workflow_text)
+                self.assertIn(contract_old, contract_text)
+                workflow.write_text(
+                    workflow_text.replace(workflow_old, workflow_new, 1),
+                    encoding="utf-8",
+                )
+                contract_path.write_text(
+                    contract_text.replace(contract_old, contract_new, 1),
+                    encoding="utf-8",
+                )
+                findings = self.module.validate_workflows(
+                    root,
+                    self.module.load_workflow_contract(root),
+                )
+                baseline_findings = [
+                    finding
+                    for finding in findings
+                    if finding.code
+                    == "workflow-permission-baseline-invalid"
+                ]
+                self.assertTrue(baseline_findings)
+                self.assertEqual(
+                    {"workflow permissions differ from the code baseline"},
+                    {finding.message for finding in baseline_findings},
+                )
+
     def test_yaml_parser_fails_closed_on_duplicate_unsafe_and_bounded_inputs(
         self,
     ) -> None:
