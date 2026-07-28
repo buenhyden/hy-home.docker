@@ -1144,9 +1144,10 @@ be ignored.
   only after both whole-branch reviewers authorize closure.
 - [ ] Run post-lifecycle metadata, traceability, alignment, generated-owner,
   repository-contract, and diff-hygiene checks.
-- [ ] Present local branch completion options through
-  `superpowers:finishing-a-development-branch`; do not push or merge unless the
-  user separately requests it.
+- [x] Present local branch completion options through
+  `superpowers:finishing-a-development-branch`; the user selected option 1 and
+  the feature branch was merged into local `main`. No push or remote mutation
+  was performed.
 
 ## Verification Plan
 

@@ -8,20 +8,14 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-- T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
-  while T-AGCC-006 remains active. Its first approved repository-wide wrapper
-  attempt failed and stopped the loop; the bounded T-AGCC-006-QA-R1
-  remediation and reviews completed, and a separately approved exceptional
-  second attempt passed. A later unauthorized execution by the assigned
-  read-only correctness reviewer returned a conflicting wrapper failure. The
-  independently reviewed T-AGCC-006-QA-D2 route then received one exact
-  recovery approval from clean `041262274f8965beacbcf02b9e28a665558600b4`;
-  the recovery and evidence commit passed. Entirely fresh whole-branch reviews
-  found one shared evidence-synchronization blocker; commits `8fbb951b` and
-  `b82dd57` closed it and the residual handoff finding. Final correctness and
-  security delta reviews are both C0/I0/M0 and authorize closure. T-AGCC-006
-  remains active through branch disposition to satisfy the current-memory
-  contract.
+- T-AGCC-001 through T-AGCC-005 are complete. T-AGCC-006 implementation and
+  independent review are complete, and the user selected local merge option 1.
+  Feature checkpoint `c4dd5ca6` merged without conflict into local `main` as
+  `5e093df721a513b2977f54d5513ad479f31d3175`; follow-up commit
+  `0d7fd8ac92f4b3419fa484dc95698a61ebd12988` aligned the action-pin test
+  oracles after independent C0/I0/M0 review. T-AGCC-006 remains active because
+  current-memory validation requires an active current Task and no successor
+  Task or approved terminal/idle memory state exists.
 
 ## Approved decisions
 
@@ -60,16 +54,16 @@ status: active
   consumed and commit `0086ebfa763969aee8d489384ab097f7045b9694`
   records the sanitized result. Evidence remediation `8fbb951b`, handoff
   remediation `b82dd57`, and both final read-only delta reviews are complete.
-  Only final post-review validation, branch disposition, and the corresponding
-  lifecycle transition may proceed. Remote mutation, live provider calls,
-  runtime changes, Compose, infrastructure, deployment, release, and any
-  further wrapper or direct `pre-commit` run remain separately gated or
-  outside this task.
+  Final post-review validation and local branch disposition are complete.
+  Lifecycle completion is paused at the current-memory terminal-state boundary.
+  Remote mutation, push, live provider calls, runtime changes, Compose,
+  infrastructure, deployment, release, and any further wrapper or direct
+  `pre-commit` run remain separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `b82dd57ed7e09a89260f17f36e2d0570c5dc8860`
-- Verified at: `2026-07-28T14:37:18+09:00`
+- Verified commit: `0d7fd8ac92f4b3419fa484dc95698a61ebd12988`
+- Verified at: `2026-07-28T16:00:57+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -136,12 +130,27 @@ status: active
   correctness C0/I0/M0 and security C0/I0/M0; both reviewers authorized
   lifecycle closure. The correctness Minor about typed domain-memory taxonomy
   remains outside Spec 134's bounded shared-current-memory requirement.
+- Local merge commit `5e093df721a513b2977f54d5513ad479f31d3175`
+  preserved the current `main` action SHA updates and the feature branch's
+  zizmor 1.28 pin and unnecessary environment-entry removal without conflict.
+  No push or remote mutation occurred.
+- The first post-merge 312-test aggregate exposed one stale hardcoded checkout
+  pin oracle. Commit `0d7fd8ac92f4b3419fa484dc95698a61ebd12988`
+  aligned the test oracle after C0/I0/M0 review; the final isolated `TMPDIR`
+  aggregate passed 312/312.
+- Post-merge agent-governance repository, provider-drift, hook-parity,
+  metadata, traceability, alignment, actionlint, generated-owner, and canonical
+  audit gates pass. The clean detached-main full repository check has exactly
+  three predecessor Dependabot runtime-drift failures for current Compose and
+  technology-stack facts; root-checkout private environment diagnostics are
+  absent there and are not a Spec 134 regression.
 
 ## Blockers and unverified facts
 
-- No Critical or Important review blocker remains. Spec, Plan, and Task stay
-  `active` until branch disposition because the current-memory contract
-  requires the current Task to be `draft` or `active`.
+- No Critical or Important Spec 134 review blocker remains. Spec, Plan, and
+  Task stay `active` after local merge because the current-memory contract
+  requires the current Task to be `draft` or `active`; no approved successor
+  or terminal/idle current-memory state exists.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
   bitwise combination of hook exits; no root cause is claimed.
@@ -150,9 +159,15 @@ status: active
   notes currently provide targeted retrieval through `Applies To`, tags, and
   retrieval keywords; a stronger lifecycle is deferred to a future Stage 03
   memory-governance specification.
+- The clean detached-main full repository check reports three predecessor
+  runtime-drift findings: the expected Keycloak hardening tag, stale
+  tech-stack provenance, and version drift for Traefik, Keycloak, PostgreSQL,
+  Prometheus, Alloy, and Ollama. Root-checkout private environment diagnostics
+  are absent in the clean checkout. Runtime, Compose, infrastructure, and
+  private environment remediation require a separate approved task.
 - Provider acceptance/entitlement, live comparative evaluation, and
   authenticated remote GitHub enforcement remain explicitly unverified.
-- Remote work remains read-only; remote mutation, live provider calls, and
+- Local merge is complete. Push, remote mutation, live provider calls, and
   runtime changes are not authorized.
 
 ## Evidence links
@@ -164,8 +179,7 @@ status: active
 
 ## Next handoff
 
-- Run final post-review validation without the wrapper or direct `pre-commit`,
-  then present the local finishing-branch choices. Keep the current Task ledger
-  active until branch disposition and apply the corresponding lifecycle
-  transition only after that choice. Do not push or merge without the user's
-  separate choice.
+- Keep the merged result on local `main`; do not push. Before lifecycle
+  completion, obtain separate approval for either a successor active Task or a
+  terminal/idle and typed-domain memory-governance specification. Route the
+  predecessor runtime/Compose drift through a separate approved runtime task.
