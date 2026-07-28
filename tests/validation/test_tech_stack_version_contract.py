@@ -4,6 +4,7 @@ import json
 import pathlib
 import re
 import subprocess
+import tempfile
 import unittest
 
 
@@ -18,6 +19,13 @@ DRIFT_COMPONENTS = (
     "Alloy",
     "Ollama",
 )
+STALE_IMAGES = {
+    "Traefik": "traefik:v3.7.6",
+    "Keycloak": "quay.io/keycloak/keycloak:26.6.4-1",
+    "Prometheus": "prom/prometheus:v3.13.0",
+    "Alloy": "grafana/alloy:v1.17.1",
+    "Ollama": "ollama/ollama:0.31.1",
+}
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
 LIFECYCLE_TERM_RE = re.compile(r"\b(?:legacy|deprecated)\b", re.IGNORECASE)
@@ -122,11 +130,55 @@ def lifecycle_classification_findings(
     return tuple(findings)
 
 
+def direct_current_document_version_findings(
+    text: str,
+    *,
+    current: str,
+    stale: str,
+) -> tuple[str, ...]:
+    findings: list[str] = []
+    if current not in text:
+        findings.append("current version absent")
+    if stale in text:
+        findings.append("stale version present")
+    return tuple(findings)
+
+
 class TechStackVersionContractTests(unittest.TestCase):
     @staticmethod
     def registry_entries() -> dict[str, dict[str, object]]:
         registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
         return {entry["component"]: entry for entry in registry["entries"]}
+
+    @staticmethod
+    def run_compose_image_resolver_path(
+        compose_path: pathlib.Path,
+        service: str = "target",
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                "bash",
+                str(HARDENING_CHECKER),
+                "--resolve-compose-service-image",
+                str(compose_path),
+                service,
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+    @classmethod
+    def run_compose_image_resolver(
+        cls,
+        compose_text: str,
+        service: str = "target",
+    ) -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            compose_path = pathlib.Path(temporary_directory) / "compose.yml"
+            compose_path.write_text(compose_text, encoding="utf-8")
+            return cls.run_compose_image_resolver_path(compose_path, service)
 
     def test_registry_matches_compose_image_declarations(self) -> None:
         entries = {
@@ -172,25 +224,199 @@ class TechStackVersionContractTests(unittest.TestCase):
                     expected = (
                         image if representation == "image" else image.rsplit(":", 1)[1]
                     )
-                    self.assertIn(expected, text)
+                    stale_image = STALE_IMAGES[component]
+                    stale = (
+                        stale_image
+                        if representation == "image"
+                        else stale_image.rsplit(":", 1)[1]
+                    )
+                    self.assertEqual(
+                        (),
+                        direct_current_document_version_findings(
+                            text,
+                            current=expected,
+                            stale=stale,
+                        ),
+                    )
+
+    def test_direct_current_document_rejects_stale_and_current_versions(
+        self,
+    ) -> None:
+        self.assertEqual(
+            ("stale version present",),
+            direct_current_document_version_findings(
+                "canonical:v2\nstale:v1\n",
+                current="canonical:v2",
+                stale="stale:v1",
+            ),
+        )
 
     def test_hardening_checker_has_no_independent_stale_keycloak_literal(self) -> None:
         text = HARDENING_CHECKER.read_text(encoding="utf-8")
         self.assertNotIn("quay.io/keycloak/keycloak:26.6.4-1", text)
         self.assertIn("infra/tech-stack.versions.json", text)
+        self.assertIn(
+            (
+                'keycloak_compose_image="$(compose_service_image '
+                '"$keycloak_compose" "keycloak")"'
+            ),
+            text,
+        )
+        self.assertIn(
+            '[[ "$keycloak_compose_image" != "$keycloak_image" ]]',
+            text,
+        )
+        self.assertNotIn(
+            'check_contains "$keycloak_compose" "image: ${keycloak_image}"',
+            text,
+        )
 
     def test_hardening_checker_derives_dozzle_image_from_compose(self) -> None:
         text = HARDENING_CHECKER.read_text(encoding="utf-8")
         self.assertNotIn("image: amir20/dozzle:v10.6.7", text)
         self.assertNotIn("image: amir20/dozzle:v10.6.11", text)
         self.assertIn(
-            'dozzle_image="$(compose_service_image "$dozzle_compose" "dozzle")"',
+            'compose_service_image "$dozzle_compose" "dozzle" >/dev/null',
             text,
         )
-        self.assertIn(
+        self.assertNotIn(
             'check_contains "$dozzle_compose" "image: ${dozzle_image}"',
             text,
         )
+
+    def test_compose_image_resolver_accepts_exact_safe_scalars(self) -> None:
+        expected = "registry.example.test/team/app:1.2.3"
+        for label, scalar in (
+            ("unquoted", expected),
+            ("single-quoted", f"'{expected}'"),
+            ("double-quoted", f'"{expected}"'),
+        ):
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    f"services:\n  target:\n    image: {scalar}\n"
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(f"{expected}\n", result.stdout)
+                self.assertEqual("", result.stderr)
+
+    def test_compose_image_resolver_rejects_ambiguous_or_unsafe_yaml(
+        self,
+    ) -> None:
+        payload_marker = "PAYLOAD_SHOULD_NOT_BE_ECHOED"
+        invalid_fixtures = {
+            "duplicate-top-level-services": (
+                "services:\n"
+                "  target:\n"
+                "    image: registry.example.test/team/app:1\n"
+                "services:\n"
+                "  other:\n"
+                "    image: registry.example.test/team/other:1\n"
+            ),
+            "duplicate-target-service": (
+                "services:\n"
+                "  target:\n"
+                "    image: registry.example.test/team/app:1\n"
+                "  target:\n"
+                "    image: registry.example.test/team/app:2\n"
+            ),
+            "duplicate-image": (
+                "services:\n"
+                "  target:\n"
+                "    image: registry.example.test/team/app:1\n"
+                "    image: registry.example.test/team/app:2\n"
+            ),
+            "missing-image": "services:\n  target:\n    restart: unless-stopped\n",
+            "malformed-trailing-token": (
+                "services:\n"
+                "  target:\n"
+                "    image: registry.example.test/team/app:1 trailing\n"
+            ),
+            "mapping-image": (
+                "services:\n"
+                "  target:\n"
+                "    image: {repository: registry.example.test/team/app, tag: 1}\n"
+            ),
+            "list-image": (
+                "services:\n"
+                "  target:\n"
+                "    image:\n"
+                "      - registry.example.test/team/app:1\n"
+            ),
+            "explicit-list-image": (
+                "services:\n"
+                "  target:\n"
+                "    image: [registry.example.test/team/app:1]\n"
+            ),
+            "non-scalar-image": "services:\n  target:\n    image: null\n",
+            "unsafe-image": (
+                "services:\n"
+                "  target:\n"
+                f"    image: registry.example.test/team/app:1;{payload_marker}\n"
+            ),
+            "unsafe-quoted-image": (
+                "services:\n"
+                "  target:\n"
+                f'    image: "registry.example.test/team/app:1$({payload_marker})"\n'
+            ),
+            "unterminated-single-quote": (
+                "services:\n"
+                "  target:\n"
+                "    image: 'registry.example.test/team/app:1\n"
+            ),
+            "unterminated-double-quote": (
+                "services:\n"
+                "  target:\n"
+                '    image: "registry.example.test/team/app:1\n'
+            ),
+        }
+        for label, compose_text in invalid_fixtures.items():
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(compose_text)
+                self.assertEqual(2, result.returncode)
+                self.assertEqual("", result.stdout)
+                self.assertEqual(
+                    "FAIL: invalid compose service image contract\n",
+                    result.stderr,
+                )
+                self.assertNotIn(
+                    payload_marker,
+                    result.stdout + result.stderr,
+                )
+
+    def test_compose_image_resolver_rejects_unsafe_file_types_and_size(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_root = pathlib.Path(temporary_directory)
+            regular_path = temporary_root / "regular.yml"
+            regular_path.write_text(
+                (
+                    "services:\n"
+                    "  target:\n"
+                    "    image: registry.example.test/team/app:1\n"
+                ),
+                encoding="utf-8",
+            )
+            symlink_path = temporary_root / "symlink.yml"
+            symlink_path.symlink_to(regular_path)
+            directory_path = temporary_root / "directory"
+            directory_path.mkdir()
+            oversized_path = temporary_root / "oversized.yml"
+            oversized_path.write_bytes(b"#" * (1024 * 1024 + 1))
+
+            for label, fixture_path in (
+                ("symlink", symlink_path),
+                ("directory", directory_path),
+                ("oversized", oversized_path),
+            ):
+                with self.subTest(label=label):
+                    result = self.run_compose_image_resolver_path(fixture_path)
+                    self.assertEqual(2, result.returncode)
+                    self.assertEqual("", result.stdout)
+                    self.assertEqual(
+                        "FAIL: invalid compose service image contract\n",
+                        result.stderr,
+                    )
 
     def test_lifecycle_terms_have_registered_preserve_contexts(self) -> None:
         tracked = subprocess.run(

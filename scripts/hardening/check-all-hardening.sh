@@ -51,31 +51,163 @@ compose_service_image() {
   local service="$2"
 
   python3 - "$compose_file" "$service" <<'PY'
-import pathlib
+import os
 import re
+import stat
 import sys
 
-compose_path = pathlib.Path(sys.argv[1])
+MAX_COMPOSE_BYTES = 1024 * 1024
+FAILURE = "FAIL: invalid compose service image contract"
+SERVICE_NAME_RE = re.compile(r"[A-Za-z0-9_.-]+\Z")
+IMAGE_RE = re.compile(
+    r"(?=.{1,255}\Z)"
+    r"(?:[a-z0-9]+(?:[._-][a-z0-9]+)*(?::[0-9]{1,5})?/)*"
+    r"[a-z0-9]+(?:[._-][a-z0-9]+)*"
+    r"(?::[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}|@sha256:[0-9a-f]{64})?"
+    r"\Z"
+)
+
+
+def reject() -> None:
+    print(FAILURE, file=sys.stderr)
+    raise SystemExit(2)
+
+
+compose_path = sys.argv[1]
 service = sys.argv[2]
-service_re = re.compile(rf"^  {re.escape(service)}:\s*(?:#.*)?$")
-next_service_re = re.compile(r"^  [A-Za-z0-9_.-]+:\s*(?:#.*)?$")
-image_re = re.compile(r"^    image:\s*['\"]?([^'\"\s#]+)")
-in_service = False
-images = []
-for line in compose_path.read_text(encoding="utf-8").splitlines():
-    if service_re.match(line):
-        in_service = True
+if not SERVICE_NAME_RE.fullmatch(service):
+    reject()
+
+flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+try:
+    descriptor = os.open(compose_path, flags)
+except OSError:
+    reject()
+
+try:
+    metadata = os.fstat(descriptor)
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_size > MAX_COMPOSE_BYTES:
+        reject()
+    payload = bytearray()
+    while len(payload) <= MAX_COMPOSE_BYTES:
+        chunk = os.read(
+            descriptor,
+            min(65536, MAX_COMPOSE_BYTES + 1 - len(payload)),
+        )
+        if not chunk:
+            break
+        payload.extend(chunk)
+    if len(payload) > MAX_COMPOSE_BYTES or b"\0" in payload:
+        reject()
+finally:
+    os.close(descriptor)
+
+try:
+    lines = bytes(payload).decode("utf-8").splitlines()
+except UnicodeDecodeError:
+    reject()
+
+top_level_services_re = re.compile(
+    r"""^(?:services|'services'|"services")[ \t]*:"""
+)
+exact_services_re = re.compile(r"^services:[ \t]*(?:#.*)?$")
+services_keys = [
+    index
+    for index, line in enumerate(lines)
+    if top_level_services_re.match(line)
+]
+if len(services_keys) != 1:
+    reject()
+services_index = services_keys[0]
+if not exact_services_re.fullmatch(lines[services_index]):
+    reject()
+
+services_end = len(lines)
+for index in range(services_index + 1, len(lines)):
+    line = lines[index]
+    if not line.strip() or line.lstrip().startswith("#"):
         continue
-    if in_service and next_service_re.match(line):
+    if not line.startswith(" "):
+        services_end = index
         break
-    if in_service and (match := image_re.match(line)):
-        images.append(match.group(1))
-if len(images) != 1:
-    raise SystemExit(
-        f"FAIL: expected exactly one image for service {service} in {compose_path}"
-    )
-print(images[0])
+
+target_key_re = re.compile(
+    rf"""^  (?:{re.escape(service)}|'{re.escape(service)}'|"{re.escape(service)}")[ \t]*:"""
+)
+exact_target_re = re.compile(
+    rf"^  {re.escape(service)}:[ \t]*(?:#.*)?$"
+)
+target_keys = [
+    index
+    for index in range(services_index + 1, services_end)
+    if target_key_re.match(lines[index])
+]
+if len(target_keys) != 1:
+    reject()
+target_index = target_keys[0]
+if not exact_target_re.fullmatch(lines[target_index]):
+    reject()
+
+next_service_re = re.compile(r"^  [A-Za-z0-9_.-]+:[ \t]*(?:#.*)?$")
+target_end = services_end
+for index in range(target_index + 1, services_end):
+    if next_service_re.fullmatch(lines[index]):
+        target_end = index
+        break
+
+image_key_re = re.compile(r"""^    (?:image|'image'|"image")[ \t]*:""")
+exact_image_re = re.compile(r"^    image:(.*)$")
+image_keys = [
+    index
+    for index in range(target_index + 1, target_end)
+    if image_key_re.match(lines[index])
+]
+if len(image_keys) != 1:
+    reject()
+image_match = exact_image_re.fullmatch(lines[image_keys[0]])
+if image_match is None:
+    reject()
+
+scalar = image_match.group(1).lstrip(" ")
+if not scalar or scalar.startswith("#"):
+    reject()
+quoted = scalar[0] in {"'", '"'}
+if quoted:
+    quote = scalar[0]
+    closing_index = scalar.find(quote, 1)
+    if closing_index == -1:
+        reject()
+    image = scalar[1:closing_index]
+    trailer = scalar[closing_index + 1 :]
+    if not re.fullmatch(r"[ \t]*(?:#.*)?", trailer):
+        reject()
+else:
+    scalar_match = re.fullmatch(r"([^ \t#]+)[ \t]*(?:#.*)?", scalar)
+    if scalar_match is None:
+        reject()
+    image = scalar_match.group(1)
+    if (
+        image.lower() in {"null", "true", "false"}
+        or image == "~"
+        or re.fullmatch(
+            r"[-+]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)",
+            image,
+        )
+    ):
+        reject()
+
+if not IMAGE_RE.fullmatch(image):
+    reject()
+print(image)
 PY
+}
+
+resolve_compose_service_image_cli() {
+  if [[ "$#" -ne 2 ]]; then
+    echo "FAIL: invalid compose service image contract" >&2
+    return 2
+  fi
+  compose_service_image "$1" "$2"
 }
 
 usage() {
@@ -132,6 +264,7 @@ check_02_auth() {
   local oauth_dev_entrypoint="infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh"
   local oauth_cfg="infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg"
   local keycloak_image
+  local keycloak_compose_image
 
   check_file "$TECH_STACK_REGISTRY"
   check_file "$keycloak_compose"
@@ -143,9 +276,12 @@ check_02_auth() {
   check_file "$oauth_dev_entrypoint"
   check_file "$oauth_cfg"
   keycloak_image="$(registry_component_image "Keycloak")"
+  keycloak_compose_image="$(compose_service_image "$keycloak_compose" "keycloak")"
 
   check_contains "$keycloak_compose" "service: template-infra-high" "keycloak compose template mismatch"
-  check_contains "$keycloak_compose" "image: ${keycloak_image}" "keycloak image tag mismatch"
+  if [[ "$keycloak_compose_image" != "$keycloak_image" ]]; then
+    fail "keycloak image tag mismatch"
+  fi
   check_contains "$keycloak_compose" "KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password" "keycloak db password secret file missing"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_admin_password" "keycloak admin secret injection mismatch"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_db_password" "keycloak db secret injection mismatch"
@@ -354,14 +490,13 @@ check_11_laboratory() {
   local open_notebook_compose="infra/11-laboratory/open-notebook/docker-compose.yml"
   local portainer_compose="infra/11-laboratory/portainer/docker-compose.yml"
   local redisinsight_compose="infra/11-laboratory/redisinsight/docker-compose.yml"
-  local dozzle_image
 
   check_file "$dashboard_compose"
   check_file "$dozzle_compose"
   check_file "$open_notebook_compose"
   check_file "$portainer_compose"
   check_file "$redisinsight_compose"
-  dozzle_image="$(compose_service_image "$dozzle_compose" "dozzle")"
+  compose_service_image "$dozzle_compose" "dozzle" >/dev/null
 
   check_contains "$dashboard_compose" "traefik.http.routers.homer.middlewares: gateway-standard-chain@file,homer-admin-ip@docker,sso-errors@file,sso-auth@file" "homer middleware chain mismatch"
   check_not_contains "$dashboard_compose" "ports:" "homer direct host ports must stay removed"
@@ -369,7 +504,6 @@ check_11_laboratory() {
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
-  check_contains "$dozzle_compose" "image: ${dozzle_image}" "dozzle image tag mismatch"
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"
@@ -448,6 +582,12 @@ run_tier() {
 
 main() {
   local exit_code=0
+
+  if [[ "${1:-}" == "--resolve-compose-service-image" ]]; then
+    shift
+    resolve_compose_service_image_cli "$@"
+    return
+  fi
 
   if [[ "$#" -eq 0 ]]; then
     run_tier 01-gateway
