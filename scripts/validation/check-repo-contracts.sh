@@ -1603,8 +1603,8 @@ import yaml
 
 failures: list[str] = []
 workflow_path = pathlib.Path(".github/workflows/document-corpus-lifecycle.yml")
-checkout_sha = "9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0"
-setup_python_sha = "ece7cb06caefa5fff74198d8649806c4678c61a1"
+checkout_sha = "3d3c42e5aac5ba805825da76410c181273ba90b1"
+setup_python_sha = "5fda3b95a4ea91299a34e894583c3862153e4b97"
 lifecycle_command = "python3 scripts/validation/check-document-corpus-lifecycle.py"
 
 expected_workflow = {
