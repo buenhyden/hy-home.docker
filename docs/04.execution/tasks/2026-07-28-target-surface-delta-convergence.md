@@ -91,7 +91,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 
 | Task ID | Description | Type | Requirements | Validation owner | Implementation owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | implementation_complete_review_pending |
+| T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | fresh implementer after Task 1 review | pending |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | fresh implementer after Task 2 review | pending |
 | T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | fresh implementer after Task 3 review | pending |
@@ -129,6 +129,8 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-001 third remediation RED | Task 1 implementation agent | A bounded CLI fixture preserved pending advisory success and pending blocking failure, then supplied matching summaries for independent specification and quality `fail` mutations. Both subcases returned advisory 0 instead of 1: one test emitted two expected failures in 4.020 seconds. |
 | 2026-07-28 | T-TSDC-001 third remediation GREEN | Task 1 implementation agent | Introduced explicit pending, passing, and failed verdict semantics. Failed specification and quality verdicts now emit distinct value-free contract findings in advisory and blocking modes, while pending remains advisory-safe and blocking-unsafe. The focused regression passed 1/1 in 4.989 seconds. |
 | 2026-07-28 | T-TSDC-001 third remediation final gates | Task 1 implementation agent | The three affected CLI regressions passed 3/3 in 13.526 seconds; after making failed-field findings independent of a peer verdict's validity, the focused regression re-passed 1/1 in 4.485 seconds. Production advisory returned 0; production blocking returned 1 with exactly 105 specification and 105 quality pending findings and no other codes. Ruff, Python compile, one-file Markdown stdin lint, and diff hygiene passed. No broad suite or all-files pre-commit command ran. |
+| 2026-07-28 | T-TSDC-001 final specification re-review | Fresh independent specification reviewer | Exact range `72eef68c..43f78ad5`: C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES. |
+| 2026-07-28 | T-TSDC-001 final quality/security re-review | Fresh independent quality/security reviewer | Exact range `72eef68c..43f78ad5`: C0/I0/M0; APPROVED; COMMIT_READY YES. Task 1 is complete; per-row manifest verdicts remain pending for Task 6 blocking promotion. |
 
 ## Verification Evidence
 
@@ -147,7 +149,7 @@ have no unresolved Critical or Important findings.
 
 | Task | RED evidence | GREEN evidence | Aggregate evidence | Result |
 | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Broad known-failing aggregate was not repeated. | implementation_complete_review_pending |
+| T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Not run — Task 1 review pending | Not run — Task 1 review pending | Not run — Task 1 review pending | pending |
 | T-TSDC-003 | Not run — Task 2 review pending | Not run — Task 2 review pending | Not run — Task 2 review pending | pending |
 | T-TSDC-004 | Not run — Task 3 review pending | Not run — Task 3 review pending | Not run — Task 3 review pending | pending |
@@ -246,7 +248,7 @@ consume or create Agent authorization.
 
 | Task | Implementer | Specification reviewer | Quality/security reviewer | Exact range | Verdict | Findings |
 | --- | --- | --- | --- | --- | --- | --- |
-| T-TSDC-001 | Task 1 implementation agent | First C0/I4/M2, second combined C0/I3/M0, and third focused C0/I1/M0 reported; third remediation re-review pending | First C0/I1/M2 plus second combined C0/I3/M0 reported; third remediation re-review pending | `25f4c52a..` third remediation commit | implementation remediated; reviews not approved | The first and second finding sets plus the third failed-verdict advisory finding have implementation evidence but await distinct reviewer confirmation. |
+| T-TSDC-001 | Task 1 implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `72eef68c..43f78ad5` | approved; completed | Fresh independent reviewers found no unresolved issues. Per-row manifest verdicts remain pending for Task 6 blocking promotion. |
 | T-TSDC-002 | pending | pending | pending | not available | pending | Task 1 review pending |
 | T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 review pending |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
@@ -266,7 +268,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | `1671e9be` | focused 15/15, predecessor 40/40, metadata 0 violations, advisory CLI, Ruff, Bash syntax, and diff hygiene pass; aggregate limitations recorded |
 | T-TSDC-001 remediation | Harden successor evidence contract after two reviews | `fix(governance): harden target delta evidence` | `72e452d0` | remediation RED/GREEN, successor/predecessor/metadata, advisory/blocking, summary, static QA, and diff hygiene |
 | T-TSDC-001 second remediation | Close fresh fail-closed review gaps | `fix(governance): close target delta fail-closed gaps` | `25f4c52a` | advisory structural RED/GREEN, secret-like field matrix, no-follow bootstrap, successor/static/metadata/diff gates |
-| T-TSDC-001 third remediation | Reject explicit failed review verdicts in advisory mode | `fix(governance): reject failed advisory verdicts` | this logical commit | verdict-state RED/GREEN, focused advisory/blocking tests, production advisory/blocking, static and diff gates |
+| T-TSDC-001 third remediation | Reject explicit failed review verdicts in advisory mode | `fix(governance): reject failed advisory verdicts` | `43f78ad5` | verdict-state RED/GREEN, focused advisory/blocking tests, production advisory/blocking, static and diff gates |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | not started | Task 1 review pending |
 | T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |
