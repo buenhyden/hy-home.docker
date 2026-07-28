@@ -11,6 +11,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
+REPOSITORY_CHECKER = ROOT / "scripts/validation/check-repo-contracts.sh"
 DRIFT_COMPONENTS = (
     "Traefik",
     "Keycloak",
@@ -284,6 +285,19 @@ class TechStackVersionContractTests(unittest.TestCase):
             text,
         )
 
+    def test_repository_checker_dozzle_diagnostic_uses_compose_version(
+        self,
+    ) -> None:
+        text = REPOSITORY_CHECKER.read_text(encoding="utf-8")
+        self.assertNotIn(
+            "Dozzle is declared as amir20/dozzle:v10.6.6",
+            text,
+        )
+        self.assertIn(
+            "Dozzle is declared as amir20/dozzle:v10.6.11",
+            text,
+        )
+
     def test_compose_image_resolver_accepts_exact_safe_scalars(self) -> None:
         expected = "registry.example.test/team/app:1.2.3"
         for label, scalar in (
@@ -298,6 +312,95 @@ class TechStackVersionContractTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertEqual(f"{expected}\n", result.stdout)
                 self.assertEqual("", result.stderr)
+
+    def test_compose_image_resolver_accepts_quoted_service_keys(self) -> None:
+        expected = "registry.example.test/team/app:1.2.3"
+        for label, service_key in (
+            ("single-quoted", "'target'"),
+            ("double-quoted", '"target"'),
+        ):
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    f"services:\n  {service_key}:\n    image: {expected}\n"
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(f"{expected}\n", result.stdout)
+                self.assertEqual("", result.stderr)
+
+    def test_compose_image_resolver_stops_at_quoted_sibling_service(
+        self,
+    ) -> None:
+        expected = "registry.example.test/team/app:1.2.3"
+        for label, sibling_key in (
+            ("single-quoted", "'other'"),
+            ("double-quoted", '"other"'),
+        ):
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    (
+                        "services:\n"
+                        "  target:\n"
+                        f"    image: {expected}\n"
+                        f"  {sibling_key}:\n"
+                        "    image: registry.example.test/team/other:9\n"
+                    )
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(f"{expected}\n", result.stdout)
+                self.assertEqual("", result.stderr)
+
+    def test_compose_image_resolver_rejects_quoted_sibling_image_theft(
+        self,
+    ) -> None:
+        for label, sibling_key in (
+            ("single-quoted", "'other'"),
+            ("double-quoted", '"other"'),
+        ):
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    (
+                        "services:\n"
+                        "  target:\n"
+                        "    restart: unless-stopped\n"
+                        f"  {sibling_key}:\n"
+                        "    image: registry.example.test/team/other:9\n"
+                    )
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertEqual("", result.stdout)
+                self.assertEqual(
+                    "FAIL: invalid compose service image contract\n",
+                    result.stderr,
+                )
+
+    def test_compose_image_resolver_rejects_duplicate_quoted_target_keys(
+        self,
+    ) -> None:
+        duplicate_pairs = (
+            ("unquoted-single", "target", "'target'"),
+            ("unquoted-double", "target", '"target"'),
+            ("single-unquoted", "'target'", "target"),
+            ("double-unquoted", '"target"', "target"),
+            ("single-double", "'target'", '"target"'),
+            ("double-single", '"target"', "'target'"),
+        )
+        for label, first_key, second_key in duplicate_pairs:
+            with self.subTest(label=label):
+                result = self.run_compose_image_resolver(
+                    (
+                        "services:\n"
+                        f"  {first_key}:\n"
+                        "    image: registry.example.test/team/app:1\n"
+                        f"  {second_key}:\n"
+                        "    image: registry.example.test/team/app:2\n"
+                    )
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertEqual("", result.stdout)
+                self.assertEqual(
+                    "FAIL: invalid compose service image contract\n",
+                    result.stderr,
+                )
 
     def test_compose_image_resolver_rejects_ambiguous_or_unsafe_yaml(
         self,

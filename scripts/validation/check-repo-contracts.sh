@@ -4731,7 +4731,7 @@ stale_literals = {
     "Pyroscope (v1.18.1)": "Pyroscope is declared as grafana/pyroscope:2.1.0",
     "v1.17-unprivileged": "Qdrant is declared as qdrant/qdrant:v1.18.1-unprivileged",
     "neo4j:5.26.23-community": "Neo4j is declared as neo4j:5.26.26-community",
-    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.6",
+    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.11",
     "PostgreSQL (v16+)": "PostgreSQL services are currently PostgreSQL 17/18 family images",
     "InfluxDB 2.x 채택": "InfluxDB 3 Core is the sole current analytics time-series compose",
     "OpenSearch 2.x 채택": "OpenSearch 3.x is the current analytics implementation family",

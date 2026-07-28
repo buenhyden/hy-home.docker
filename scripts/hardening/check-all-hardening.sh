@@ -59,6 +59,11 @@ import sys
 MAX_COMPOSE_BYTES = 1024 * 1024
 FAILURE = "FAIL: invalid compose service image contract"
 SERVICE_NAME_RE = re.compile(r"[A-Za-z0-9_.-]+\Z")
+SERVICE_KEY_RE = re.compile(
+    r"""^  (?:(?P<plain>[A-Za-z0-9_.-]+)|"""
+    r"""'(?P<single>[A-Za-z0-9_.-]+)'|"""
+    r'''"(?P<double>[A-Za-z0-9_.-]+)")[ \t]*:[ \t]*(?:#.*)?$'''
+)
 IMAGE_RE = re.compile(
     r"(?=.{1,255}\Z)"
     r"(?:[a-z0-9]+(?:[._-][a-z0-9]+)*(?::[0-9]{1,5})?/)*"
@@ -71,6 +76,19 @@ IMAGE_RE = re.compile(
 def reject() -> None:
     print(FAILURE, file=sys.stderr)
     raise SystemExit(2)
+
+
+def service_key(line):
+    if not line.strip() or line.lstrip().startswith("#"):
+        return None
+    if line.startswith("    "):
+        return None
+    if not line.startswith("  "):
+        reject()
+    match = SERVICE_KEY_RE.fullmatch(line)
+    if match is None:
+        reject()
+    return next(value for value in match.groupdict().values() if value is not None)
 
 
 compose_path = sys.argv[1]
@@ -131,27 +149,19 @@ for index in range(services_index + 1, len(lines)):
         services_end = index
         break
 
-target_key_re = re.compile(
-    rf"""^  (?:{re.escape(service)}|'{re.escape(service)}'|"{re.escape(service)}")[ \t]*:"""
-)
-exact_target_re = re.compile(
-    rf"^  {re.escape(service)}:[ \t]*(?:#.*)?$"
-)
-target_keys = [
-    index
+service_keys = [
+    (index, key)
     for index in range(services_index + 1, services_end)
-    if target_key_re.match(lines[index])
+    if (key := service_key(lines[index])) is not None
 ]
+target_keys = [index for index, key in service_keys if key == service]
 if len(target_keys) != 1:
     reject()
 target_index = target_keys[0]
-if not exact_target_re.fullmatch(lines[target_index]):
-    reject()
 
-next_service_re = re.compile(r"^  [A-Za-z0-9_.-]+:[ \t]*(?:#.*)?$")
 target_end = services_end
-for index in range(target_index + 1, services_end):
-    if next_service_re.fullmatch(lines[index]):
+for index, _key in service_keys:
+    if index > target_index:
         target_end = index
         break
 
