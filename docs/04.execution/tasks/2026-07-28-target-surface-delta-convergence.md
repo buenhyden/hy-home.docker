@@ -92,7 +92,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | Task ID | Description | Type | Requirements | Validation owner | Implementation owner | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
-| T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | implementation complete; reviews pending |
+| T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | fresh implementer after Task 2 review | pending |
 | T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | fresh implementer after Task 3 review | pending |
 | T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | pending |
@@ -143,6 +143,8 @@ have no unresolved Critical or Important findings.
 | 2026-07-28 | T-TSDC-002 quality remediation RED | Task 2 documentation-surface implementation agent | Added one bounded 19-subcase rejection matrix before production changes. Seventeen cases failed in 23.101 seconds for explicit failed verdicts, false top-level witnesses, missing or wrong row evidence, extra destructive update evidence, and malformed top-level keys; the old exact-key check already rejected the two row-key mutations. A separate Task 6 compatibility witness then failed all three `pass/pass`, `pass/pending`, and `pending/pass` cases in 9.730 seconds. |
 | 2026-07-28 | T-TSDC-002 quality remediation GREEN | Task 2 documentation-surface implementation agent | Removed the duplicate partial successor parser and delegated bounded no-follow loading, duplicate-key rejection, full document parsing, and advisory structural validation to `target_surface_delta_contract.py`. The local predicate now checks only the immutable predecessor row plus the exact sample handoff evidence, accepts each review verdict only in `{pending, pass}`, and rejects canonical failed-review findings. The 19-subcase matrix passed in 44.178 seconds; the verdict matrix plus rejection matrix passed 2/2 in 52.765 seconds; and the final existing-five plus new-two lifecycle bundle passed 7/7 in 90.381 seconds. |
 | 2026-07-28 | T-TSDC-002 quality remediation gates | Task 2 documentation-surface implementation agent | Canonical delta production-manifest and failed-verdict tests passed 2/2 in 6.507 seconds; the predecessor aggregate witness passed 1/1 in 5.134 seconds; predecessor CLI and delta advisory returned zero findings. Targeted Ruff, Python compile, Task-ledger Markdown and metadata, and diff hygiene passed. The remediation changed only the lifecycle checker, its test, and this Task ledger. |
+| 2026-07-28 | T-TSDC-002 final specification review | Fresh independent specification reviewer | Exact range `78af8462..b28764a9`: C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES. |
+| 2026-07-28 | T-TSDC-002 final quality/security re-review | Fresh independent quality/security reviewer | Exact range `78af8462..b28764a9`: C0/I0/M0; APPROVED; COMMIT_READY YES. Task 2 is complete; all successor manifest row verdicts remain pending for Task 6 promotion. |
 
 ## Verification Evidence
 
@@ -162,8 +164,8 @@ have no unresolved Critical or Important findings.
 | Task | RED evidence | GREEN evidence | Aggregate evidence | Result |
 | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
-| T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed; the obsolete Plan cross-link path remains recorded as unavailable. | remediation complete; reviews pending |
-| T-TSDC-003 | Not run — Task 2 review pending | Not run — Task 2 review pending | Not run — Task 2 review pending | pending |
+| T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
+| T-TSDC-003 | Not run — Task 2 complete; Task 3 not started | Not run — Task 2 complete; Task 3 not started | Not run — Task 2 complete; Task 3 not started | pending |
 | T-TSDC-004 | Not run — Task 3 review pending | Not run — Task 3 review pending | Not run — Task 3 review pending | pending |
 | T-TSDC-005 | Not run — Task 4 review pending | Not run — Task 4 review pending | Not run — Task 4 review pending | pending |
 | T-TSDC-006 | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | pending |
@@ -297,10 +299,11 @@ have no unresolved Critical or Important findings.
 - The quality remediation scope contains exactly three files: the lifecycle
   checker, its focused test, and this Task ledger. No successor manifest row
   or review verdict changed.
-- The Task 2 quality/security review reported C0/I1/M0. Its remediation is
-  implemented and locally green, but independent specification review and
-  quality/security re-review remain pending. No row review verdict was
-  promoted.
+- Final independent reviews of exact range `78af8462..b28764a9` returned
+  C0/I0/M0 twice. The specification reviewer reported SPEC_COMPLIANCE YES and
+  COMMIT_READY YES; the quality/security reviewer reported APPROVED and
+  COMMIT_READY YES. Task 2 is complete. No successor manifest row review
+  verdict was promoted; all remain `pending` for Task 6.
 
 ### Current evidence boundaries
 
@@ -336,8 +339,8 @@ consume or create Agent authorization.
 | Task | Implementer | Specification reviewer | Quality/security reviewer | Exact range | Verdict | Findings |
 | --- | --- | --- | --- | --- | --- | --- |
 | T-TSDC-001 | Task 1 implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `72eef68c..43f78ad5` | approved; completed | Fresh independent reviewers found no unresolved issues. Per-row manifest verdicts remain pending for Task 6 blocking promotion. |
-| T-TSDC-002 | Task 2 documentation-surface implementation agent | pending fresh reviewer | C0/I1/M0; remediation requires re-review | `78af8462..c63cc267`; remediation commit pending | pending | Quality review found the partial successor-evidence waiver. Canonical-contract remediation is locally green; specification review and quality/security re-review remain pending. All 136 manifest row verdict pairs remain pending. |
-| T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 review pending |
+| T-TSDC-002 | Task 2 documentation-surface implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `78af8462..b28764a9` | approved; completed | Fresh independent reviewers found no unresolved issues after canonical-contract remediation. All 136 manifest row verdict pairs remain pending for Task 6. |
+| T-TSDC-003 | pending | pending | pending | not available | pending | Task 2 complete; Task 3 not started |
 | T-TSDC-004 | pending | pending | pending | not available | pending | Task 3 review pending |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
@@ -357,8 +360,8 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-001 second remediation | Close fresh fail-closed review gaps | `fix(governance): close target delta fail-closed gaps` | `25f4c52a` | advisory structural RED/GREEN, secret-like field matrix, no-follow bootstrap, successor/static/metadata/diff gates |
 | T-TSDC-001 third remediation | Reject explicit failed review verdicts in advisory mode | `fix(governance): reject failed advisory verdicts` | `43f78ad5` | verdict-state RED/GREEN, focused advisory/blocking tests, production advisory/blocking, static and diff gates |
 | T-TSDC-002 | Document surface convergence | `docs(governance): converge target documentation surfaces` | `c63cc267` | Target 48/48, delta 30/30, metadata 225/225, lifecycle 34/34, metadata/target/advisory/alignment/current-traceability/Ruff/compile/Markdown/summary/diff gates pass; obsolete Plan cross-link path unavailable and recorded |
-| T-TSDC-002 quality remediation | Validate the sample lifecycle handoff through the canonical successor contract | `fix(governance): validate sample lifecycle handoff evidence` | this logical commit; identity reported in handoff | Evidence RED 17/19 plus verdict RED 3/3; lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, ledger Markdown/metadata, and diff hygiene pass |
-| T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 review pending |
+| T-TSDC-002 quality remediation | Validate the sample lifecycle handoff through the canonical successor contract | `fix(governance): validate sample lifecycle handoff evidence` | `b28764a9` | Evidence RED 17/19 plus verdict RED 3/3; lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, ledger Markdown/metadata, and diff hygiene pass |
+| T-TSDC-003 | Static version/lifecycle reconciliation | `fix(infra): reconcile static version and lifecycle drift` | not started | Task 2 complete; Task 3 not started |
 | T-TSDC-004 | Workflow and QA ownership | `ci(governance): type workflow and qa ownership` | not started | Task 3 review pending |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
