@@ -17,8 +17,11 @@ status: active
   independently reviewed T-AGCC-006-QA-D2 route then received one exact
   recovery approval from clean `041262274f8965beacbcf02b9e28a665558600b4`;
   the recovery and evidence commit passed. Entirely fresh whole-branch reviews
-  found one shared evidence-synchronization blocker, now under bounded
-  remediation.
+  found one shared evidence-synchronization blocker; commits `8fbb951b` and
+  `b82dd57` closed it and the residual handoff finding. Final correctness and
+  security delta reviews are both C0/I0/M0 and authorize closure. T-AGCC-006
+  remains active through branch disposition to satisfy the current-memory
+  contract.
 
 ## Approved decisions
 
@@ -55,16 +58,18 @@ status: active
   execution failed with no Git-visible path changes. T-AGCC-006-QA-D2's one
   separately approved recovery passed from clean `04126227`; its approval is
   consumed and commit `0086ebfa763969aee8d489384ab097f7045b9694`
-  records the sanitized result. Only the evidence-sync remediation, read-only
-  delta re-reviews, and lifecycle closure may proceed. Remote mutation, live
-  provider calls, runtime changes, Compose, infrastructure, deployment,
-  release, and any further wrapper or direct `pre-commit` run remain
-  separately gated or outside this task.
+  records the sanitized result. Evidence remediation `8fbb951b`, handoff
+  remediation `b82dd57`, and both final read-only delta reviews are complete.
+  Only final post-review validation, branch disposition, and the corresponding
+  lifecycle transition may proceed. Remote mutation, live provider calls,
+  runtime changes, Compose, infrastructure, deployment, release, and any
+  further wrapper or direct `pre-commit` run remain separately gated or
+  outside this task.
 
 ## Verified state
 
-- Verified commit: `8fbb951b4e616613fa89fde415f0a9a4931c14d8`
-- Verified at: `2026-07-28T14:28:35+09:00`
+- Verified commit: `b82dd57ed7e09a89260f17f36e2d0570c5dc8860`
+- Verified at: `2026-07-28T14:37:18+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -121,17 +126,22 @@ status: active
 - Commit `0086ebfa763969aee8d489384ab097f7045b9694` records that sanitized
   recovery evidence. Fresh whole-branch correctness review returned C0/I2/M1
   and fresh security review returned C0/I1/M0. Their shared blocking root
-  cause is this commit's missing Task-ledger row plus this record's stale
-  verified commit and completed-step handoff. The correctness Minor notes that
-  typed domain-memory taxonomy and lifecycle enforcement are outside Spec
-  134's bounded shared-current-memory requirement.
+  cause was this commit's missing Task-ledger row plus this record's stale
+  verified commit and completed-step handoff.
+- Commit `8fbb951b4e616613fa89fde415f0a9a4931c14d8` synchronized recovery and
+  initial review evidence. Read-only review of `0086ebfa..8fbb951b` returned
+  security C0/I0/M0 and correctness C0/I1/M0 for one residual stale handoff.
+- Commit `b82dd57ed7e09a89260f17f36e2d0570c5dc8860` closed the residual
+  handoff finding. Final read-only review of `8fbb951b..b82dd57` returned
+  correctness C0/I0/M0 and security C0/I0/M0; both reviewers authorized
+  lifecycle closure. The correctness Minor about typed domain-memory taxonomy
+  remains outside Spec 134's bounded shared-current-memory requirement.
 
 ## Blockers and unverified facts
 
-- Lifecycle closure remains blocked until the bounded evidence-sync
-  remediation passes validation and both fresh whole-branch reviewers close
-  their Important findings by read-only delta re-review. They must not run the
-  wrapper or `pre-commit`.
+- No Critical or Important review blocker remains. Spec, Plan, and Task stay
+  `active` until branch disposition because the current-memory contract
+  requires the current Task to be `draft` or `active`.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
   bitwise combination of hook exits; no root cause is claimed.
@@ -154,7 +164,8 @@ status: active
 
 ## Next handoff
 
-- Complete the pending read-only correctness delta re-review. Once both fresh
-  whole-branch reviewers have closed every Critical and Important finding,
-  proceed directly to the approved lifecycle-closure transition and its
-  post-transition validation. Do not run the wrapper or `pre-commit` again.
+- Run final post-review validation without the wrapper or direct `pre-commit`,
+  then present the local finishing-branch choices. Keep the current Task ledger
+  active until branch disposition and apply the corresponding lifecycle
+  transition only after that choice. Do not push or merge without the user's
+  separate choice.

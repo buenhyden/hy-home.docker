@@ -995,7 +995,7 @@ git diff --check
   a pass.
 - [ ] Update Task evidence and commit
   `docs(governance): close canonical convergence evidence`.
-- [ ] Dispatch fresh Task 6 specification and quality reviewers; remediate and
+- [x] Dispatch fresh Task 6 specification and quality reviewers; remediate and
   re-review C/I findings.
 - [ ] Ask the user for explicit approval for the exact controlled all-files
   wrapper run. Do not infer approval from this Plan.
@@ -1120,26 +1120,26 @@ be ignored.
 - [ ] Correct the committed discrepancy evidence to attribute the unauthorized
   execution to `/root/whole_branch_correctness_review`, not the Controller,
   while preserving its exact sanitized result and commit provenance.
-- [ ] Record the disqualified correctness review, the whole-branch security
+- [x] Record the disqualified correctness review, the whole-branch security
   C0/I1 result, the `b493aa32` remediation, and its independent C0/I0 re-review.
 - [ ] Validate the Plan/Task/current-memory update with an explicit-base
   metadata check, traceability, implementation alignment, and diff hygiene.
-- [ ] Obtain a fresh independent read-only review of this discrepancy plan.
+- [x] Obtain a fresh independent read-only review of this discrepancy plan.
 - [ ] Do not run the wrapper or `pre-commit` while preparing or reviewing this
   disposition.
 - [ ] After a clean committed checkpoint and clean plan review, ask the user
   for a new exact approval for one recovery wrapper attempt. The approval must
   name the checkpoint and exact existing command and must acknowledge the
   unauthorized intervening attempt.
-- [ ] If the recovery attempt passes, record its exact sanitized evidence and
+- [x] If the recovery attempt passes, record its exact sanitized evidence and
   dispatch entirely fresh whole-branch correctness and security reviewers over
   the then-current range. If it fails, record and stop; do not request or infer
   another run in this task.
 
-- [ ] Dispatch a fresh whole-branch correctness reviewer and a separate fresh
+- [x] Dispatch a fresh whole-branch correctness reviewer and a separate fresh
   whole-branch security reviewer for
   `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD`.
-- [ ] Remediate and re-review every Critical or Important finding.
+- [x] Remediate and re-review every Critical or Important finding.
 - [ ] Transition Spec, Plan, Task, memory current state, and Stage 03/04 indexes
   only after both whole-branch reviewers authorize closure.
 - [ ] Run post-lifecycle metadata, traceability, alignment, generated-owner,
