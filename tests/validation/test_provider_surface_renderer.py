@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import pathlib
 import re
@@ -11,6 +12,8 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+
+import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -41,6 +44,14 @@ def copy_stage00(root: pathlib.Path) -> None:
     spec_target = root / spec_source.relative_to(ROOT)
     spec_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec_source, spec_target)
+    ledger_source = (
+        ROOT
+        / "docs/90.references/data/governance/"
+        "agent-governance-retirement-ledger.yaml"
+    )
+    ledger_target = root / ledger_source.relative_to(ROOT)
+    ledger_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ledger_source, ledger_target)
 
 
 def generated_surface(function_id: str = "retired") -> str:
@@ -57,11 +68,142 @@ def generated_surface(function_id: str = "retired") -> str:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_provider_selections_render_exact_models_and_native_controls(self) -> None:
+        renderer = load_renderer()
+        provider_contract = yaml.safe_load(
+            (
+                ROOT
+                / "docs/00.agent-governance/contracts/provider-models.yaml"
+            ).read_text(encoding="utf-8")
+        )
+        selections = renderer._provider_selections(provider_contract)
+        expected = {
+            ("adversarial-review", "claude"): (
+                "claude-opus-5",
+                "effort",
+                "high",
+            ),
+            ("adversarial-review", "codex"): (
+                "gpt-5.6-sol",
+                "model_reasoning_effort",
+                "xhigh",
+            ),
+            ("adversarial-review", "gemini"): (
+                "gemini-3.6-flash",
+                "thinking_level",
+                "high",
+            ),
+            ("complex-implementation", "claude"): (
+                "claude-sonnet-5",
+                "effort",
+                "high",
+            ),
+            ("complex-implementation", "codex"): (
+                "gpt-5.6-sol",
+                "model_reasoning_effort",
+                "high",
+            ),
+            ("complex-implementation", "gemini"): (
+                "gemini-3.6-flash",
+                "thinking_level",
+                "high",
+            ),
+            ("evidence-research", "claude"): (
+                "claude-sonnet-5",
+                "effort",
+                "low",
+            ),
+            ("evidence-research", "codex"): (
+                "gpt-5.6-terra",
+                "model_reasoning_effort",
+                "medium",
+            ),
+            ("evidence-research", "gemini"): (
+                "gemini-3.5-flash-lite",
+                "thinking_level",
+                "medium",
+            ),
+            ("long-horizon-supervision", "claude"): (
+                "claude-opus-5",
+                "effort",
+                "xhigh",
+            ),
+            ("long-horizon-supervision", "codex"): (
+                "gpt-5.6-sol",
+                "model_reasoning_effort",
+                "xhigh",
+            ),
+            ("long-horizon-supervision", "gemini"): (
+                "gemini-3.6-flash",
+                "thinking_level",
+                "high",
+            ),
+            ("routine-validation", "claude"): (
+                "claude-haiku-4-5-20251001",
+                "effort",
+                None,
+            ),
+            ("routine-validation", "codex"): (
+                "gpt-5.6-terra",
+                "model_reasoning_effort",
+                "low",
+            ),
+            ("routine-validation", "gemini"): (
+                "gemini-3.5-flash-lite",
+                "thinking_level",
+                "minimal",
+            ),
+        }
+        self.assertEqual(set(expected), set(selections))
+        for key, expected_values in expected.items():
+            with self.subTest(selection=key):
+                selection = selections[key]
+                self.assertIsInstance(selection, renderer.ProviderSelection)
+                self.assertEqual(expected_values[0], selection.model_id)
+                self.assertEqual(expected_values[1], selection.control_kind)
+                self.assertEqual(expected_values[2], selection.control_value)
+
+        projection = renderer.expected_native_projection(ROOT)
+        catalog = renderer.load_catalog(ROOT)
+        for agent in catalog.agents:
+            with self.subTest(agent=agent.agent_id):
+                claude = yaml.safe_load(
+                    projection[
+                        pathlib.Path(f".claude/agents/{agent.agent_id}.md")
+                    ]
+                    .decode()
+                    .split("---\n", 2)[1]
+                )
+                codex = projection[
+                    pathlib.Path(f".codex/agents/{agent.agent_id}.toml")
+                ].decode()
+                gemini = yaml.safe_load(
+                    projection[
+                        pathlib.Path(f".gemini/agents/{agent.agent_id}.md")
+                    ]
+                    .decode()
+                    .split("---\n", 2)[1]
+                )
+                self.assertEqual(
+                    selections[(agent.work_profile, "claude")].model_id,
+                    claude["model"],
+                )
+                self.assertIn(
+                    json.dumps(
+                        selections[(agent.work_profile, "codex")].model_id
+                    ),
+                    codex,
+                )
+                self.assertEqual(
+                    selections[(agent.work_profile, "gemini")].model_id,
+                    gemini["model"],
+                )
+
     def test_catalog_load_and_render_are_deterministic_stage00_only(self) -> None:
         renderer = load_renderer()
         catalog = renderer.load_catalog(ROOT)
         self.assertEqual(14, len(catalog.agents))
-        self.assertEqual(22, len(catalog.functions))
+        self.assertEqual(24, len(catalog.functions))
         self.assertEqual(
             sorted(record.agent_id for record in catalog.agents),
             [record.agent_id for record in catalog.agents],
@@ -139,10 +281,10 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             self.assertFalse((root / ".codex/skills").exists())
             self.assertFalse(managed_stale.exists())
             self.assertEqual(
-                22, len(list((root / ".claude/skills").glob("*/SKILL.md")))
+                24, len(list((root / ".claude/skills").glob("*/SKILL.md")))
             )
             self.assertEqual(
-                22, len(list((root / ".agents/skills").glob("*/SKILL.md")))
+                24, len(list((root / ".agents/skills").glob("*/SKILL.md")))
             )
 
             snapshot = {
@@ -364,7 +506,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         checked = 0
         for provider in ("claude", "agents-md"):
             projection = renderer.expected_projection(ROOT, provider)
-            self.assertEqual(22, len(projection))
+            self.assertEqual(24, len(projection))
             for output_path, content in projection.items():
                 checked += 1
                 for match in inline_link.finditer(content):
@@ -378,7 +520,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                         f"broken projection link: {output_path} -> {target}",
                     )
                     self.assertTrue(resolved.is_relative_to(ROOT.resolve()))
-        self.assertEqual(44, checked)
+        self.assertEqual(48, checked)
 
     def test_link_rebasing_preserves_external_absolute_and_anchor_targets(self) -> None:
         renderer = load_renderer()

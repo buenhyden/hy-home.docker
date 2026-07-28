@@ -13,6 +13,7 @@ import pathlib
 import re
 import secrets
 import stat
+import subprocess
 import sys
 import tomllib
 from collections.abc import Iterator, Mapping, Sequence
@@ -49,9 +50,24 @@ CONTRACT_RELATIVE_PATHS = MappingProxyType(
         ),
     }
 )
+RETIREMENT_LEDGER_PATH = pathlib.PurePosixPath(
+    "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+)
+CURRENT_MEMORY_PATH = "docs/00.agent-governance/memory/current.md"
+CURRENT_MEMORY_MAX_BYTES = 32 * 1024
+CURRENT_MEMORY_MAX_LINES = 400
+CURRENT_MEMORY_SECTIONS = (
+    "Current objective",
+    "Approved decisions",
+    "Active boundary",
+    "Verified state",
+    "Blockers and unverified facts",
+    "Evidence links",
+    "Next handoff",
+)
 
 EXPECTED_AGENT_COUNT = 14
-EXPECTED_FUNCTION_COUNT = 22
+EXPECTED_FUNCTION_COUNT = 24
 EXPECTED_PROVIDER_COUNT = 3
 MAX_BRACE_GROUPS = 64
 MAX_EXPANDED_PATHS = 1024
@@ -60,6 +76,30 @@ MAX_REPOSITORY_TEXT_BYTES = 2 * 1_048_576
 MAX_QA_GUIDANCE_BYTES = 256 * 1_024
 MAX_QA_GUIDANCE_CLAUSES = 256
 MAX_QA_GUIDANCE_CLAUSE_CHARS = 2_048
+_CURRENT_MEMORY_LABELS = ("Current task", "Verified commit", "Verified at")
+_CURRENT_MEMORY_TASK_PREFIX = "docs/04.execution/tasks/"
+_CURRENT_MEMORY_FORBIDDEN_PATTERNS = (
+    re.compile(r"(?im)^\s*(?:`{3,}|~{3,})"),
+    re.compile(r"(?i)\b(?:credential|credentials|token|tokens|secret|secrets)\b"),
+    re.compile(
+        r"(?i)(?:^|[\s`])(?:~?/)?(?:\.config/)?"
+        r"auth(?:entication|orization)?\.(?:json|toml|ya?ml)(?=$|[\s`])|"
+        r"\bauth(?:entication|orization)? files?\b"
+    ),
+    re.compile(r"(?i)\.(?:bash|zsh|fish)_history\b|\bshell history\b"),
+    re.compile(
+        r"(?i)\bprovider-global state\b|\bglobal provider state\b|"
+        r"\bprivate provider (?:memory|state)\b|~/\.(?:claude|codex|gemini)\b"
+    ),
+    re.compile(
+        r"(?i)\bpolicy body\b|"
+        r"\b(?:must|shall|always|never|required|forbidden|prohibited)\b"
+    ),
+    re.compile(
+        r"(?im)^\s*(?:[$>]\s+|(?:command|stdout|stderr|traceback|command log|"
+        r"raw output|exit code)\s*:)"
+    ),
+)
 _PRECOMMIT_OPTION_NAME = r"--?[a-z0-9][\w-]*"
 _PRECOMMIT_OPTION_VALUE = r"[^\s,;]+"
 _PRECOMMIT_OPTION = (
@@ -243,7 +283,6 @@ CATALOG_TOP_FIELDS = COMMON_TOP_FIELDS | {
     "permissions",
     "agents",
     "functions",
-    "role_transfers",
     "capability_intake",
     "evaluation",
 }
@@ -254,9 +293,9 @@ PROVIDER_TOP_FIELDS = {
     "providers",
     "compatibility_surfaces",
     "work_profiles",
-    "fallback_approvals",
-    "cutoff_evidence",
     "models",
+    "harness_layers",
+    "workflow_states",
     "harness_loops",
     "semantic_events",
 }
@@ -341,20 +380,15 @@ FUNCTION_FIELDS = {
     "gates",
     "provider_projections",
 }
-ROLE_TRANSFER_FIELDS = {
-    "retired_agent_id",
-    "status",
-    "successor_agent_ids",
-    "successor_function_ids",
-    "rationale",
-}
 CAPABILITY_INTAKE_FIELDS = {
     "capability_id",
     "source",
     "source_url",
+    "source_retrieved_at",
     "decision",
     "owner_agent",
     "evaluation_function",
+    "rationale",
 }
 EVALUATION_FIELDS = {
     "owner_agent",
@@ -394,53 +428,69 @@ COMPATIBILITY_FIELDS = {
 WORK_PROFILE_FIELDS = {"profile_id", "description", "defaults"}
 WORK_PROFILE_DEFAULT_REASONING_FIELDS = {"provider", "model_id", "reasoning"}
 WORK_PROFILE_DEFAULT_CLAUDE_FIELDS = {"provider", "model_id", "effort"}
-FALLBACK_APPROVAL_FIELDS = {
-    "approval_id",
-    "provider",
-    "source_model_id",
-    "target_model_id",
-    "work_profiles",
-    "reference",
+RETIREMENT_LEDGER_TOP_FIELDS = {
+    "schema_version",
+    "authority",
+    "baseline_commit",
+    "records",
 }
-CUTOFF_EVIDENCE_FIELDS = {
-    "evidence_id",
-    "provider",
+RETIREMENT_RECORD_COMMON_FIELDS = {
+    "record_id",
+    "record_kind",
+    "former_id",
+    "replacement_ids",
+    "rationale",
     "source_url",
-    "published_at",
-    "observed_at",
+    "source_retrieved_at",
+    "source_commit",
+    "source_path",
+    "source_blob",
+}
+RETIRED_ROLE_RECORD_FIELDS = RETIREMENT_RECORD_COMMON_FIELDS | {
+    "former_status",
+    "replacement_function_ids",
+    "retired_at",
+}
+RETIRED_MODEL_RECORD_FIELDS = RETIREMENT_RECORD_COMMON_FIELDS | {
+    "provider",
+    "former_provider_status",
+    "former_normalized_status",
+    "former_repository_default_eligible",
+    "deprecated_at",
+    "shutdown_at",
+}
+SUPERSEDED_MODEL_RECORD_FIELDS = RETIREMENT_RECORD_COMMON_FIELDS | {
+    "provider",
+    "former_provider_status",
+    "former_normalized_status",
+    "former_repository_default_eligible",
+    "superseded_at",
 }
 MODEL_COMMON_FIELDS = {
     "provider",
     "model_id",
-    "canonical_model_id",
-    "provider_status",
-    "normalized_status",
-    "repository_default_eligible",
-    "entitlement",
+    "provider_lifecycle",
+    "repository_disposition",
     "runtime_acceptance",
-    "work_profiles",
-    "agent_coding_fit",
-    "task_characteristics",
-    "fallback",
-    "fallback_policy",
-    "fallback_approval",
-    "cutoff_evidence_status",
-    "cutoff_evidence_id",
-    "checked_at",
-    "source_url",
-}
-MODEL_REASONING_FIELDS = MODEL_COMMON_FIELDS | {
+    "entitlement",
+    "repository_default_eligible",
+    "runtime_activation_eligible",
     "reasoning_control_kind",
     "supported_reasoning_controls",
     "repository_reasoning_controls",
+    "native_model_field",
+    "native_reasoning_field",
+    "work_profiles",
+    "agent_coding_fit",
+    "task_characteristics",
+    "source_url",
+    "task_fit_source_url",
+    "reasoning_source_url",
+    "native_schema_source_url",
+    "source_retrieved_at",
 }
-MODEL_CLAUDE_FIELDS = MODEL_COMMON_FIELDS | {
-    "thinking_control_kind",
-    "supported_thinking_controls",
-    "repository_thinking_controls",
-    "supported_effort_controls",
-    "repository_effort_controls",
-}
+MODEL_REASONING_FIELDS = MODEL_COMMON_FIELDS
+MODEL_CLAUDE_FIELDS = MODEL_COMMON_FIELDS
 EVENT_FIELDS = {"event_id", "required", "provider_bindings"}
 HARNESS_LOOP_FIELDS = {
     "event_id",
@@ -448,6 +498,7 @@ HARNESS_LOOP_FIELDS = {
     "reviewer_agent",
     "permission_profile",
     "allowed_tools",
+    "workflow_states",
     "max_attempts",
     "stop_condition",
     "on_failure",
@@ -456,6 +507,28 @@ HARNESS_LOOP_FIELDS = {
     "capability_status",
     "adoption_status",
     "runtime_depth",
+}
+HARNESS_LAYER_FIELDS = {
+    "layer_id",
+    "owner_agent",
+    "required_inputs",
+    "mutation_authority",
+    "gates",
+    "failure_return",
+    "evidence_fields",
+    "handoff_target",
+}
+WORKFLOW_STATE_FIELDS = {
+    "state_id",
+    "owner_agent",
+    "required_inputs",
+    "mutation_authority",
+    "entry_condition",
+    "exit_gate",
+    "max_attempts",
+    "failure_return",
+    "evidence_fields",
+    "handoff_target",
 }
 EVENT_BINDING_FIELDS = {
     "provider",
@@ -477,30 +550,24 @@ PROVIDER_ADOPTION_STATES = {
     "partial",
     "planned",
 }
-MODEL_STATES = {
-    "active",
-    "current",
-    "deprecated",
-    "generally-available",
-    "limited-availability",
-    "listed",
-    "preview",
-    "stable",
+MODEL_LIFECYCLE_STATES = {"limited_availability", "preview", "stable"}
+REPOSITORY_DISPOSITION_STATES = {"candidate", "catalog_only", "default"}
+ENTITLEMENT_STATES = {
+    "available",
+    "needs_revalidation",
+    "not_applicable",
+    "unavailable",
 }
-NORMALIZED_MODEL_STATES = {
-    "current",
-    "deprecated",
-    "limited",
-    "preview",
-    "stable",
-    "unclassified-listed",
+RUNTIME_ACCEPTANCE_STATES = {
+    "accepted",
+    "needs_revalidation",
+    "rejected",
+    "unavailable",
 }
-ENTITLEMENT_STATES = {"available", "needs_revalidation", "unavailable"}
-RUNTIME_ACCEPTANCE_STATES = {"accepted", "needs_revalidation", "rejected"}
 AGENT_CATEGORIES = {"implementation-operations", "review-evaluation", "supervisor"}
 AGENT_TIERS = {"supervisor", "worker"}
-AGENT_STATUSES = {"active", "retired"}
-CAPABILITY_DECISIONS = {"adopt", "defer", "merge", "reject"}
+AGENT_STATUSES = {"active"}
+CAPABILITY_DECISIONS = {"defer", "merge", "reject"}
 TIMEOUT_UNITS = {"milliseconds", "seconds"}
 LOCAL_CLI_OBSERVATIONS = {"observed", "unavailable"}
 REASONING_CONTROL_KINDS = {
@@ -512,6 +579,7 @@ REASONING_CONTROL_KINDS = {
     "reasoning-effort",
     "thinking-level",
     "unverified",
+    "unsupported",
 }
 AGENT_CODING_FITS = {"bounded", "exceptional", "historical", "strong"}
 CUTOFF_EVIDENCE_STATES = {"historical-state-unverified", "verified-before-cutoff"}
@@ -555,6 +623,14 @@ EXPECTED_HARNESS_LOOPS = MappingProxyType(
         "independent-review-loop": (2, "critical_and_important_zero", "escalate"),
     }
 )
+EXPECTED_HARNESS_LOOP_STATES = MappingProxyType(
+    {
+        "approved-all-files-gate": ("validate", "evidence"),
+        "bounded-implementation-loop": ("implement", "validate"),
+        "context-bootstrap": ("discover",),
+        "independent-review-loop": ("implement", "independent-review"),
+    }
+)
 SANITIZED_EVIDENCE_FIELDS = (
     "command",
     "result",
@@ -569,15 +645,498 @@ PROHIBITED_EVIDENCE_FIELDS = (
     "shell_history",
     "tokens",
 )
-FALLBACK_APPROVAL_REFERENCE = (
-    "docs/03.specs/132-agent-governance-harness-convergence/"
-    "spec.md#approved-fallback-edges"
+MUTATION_AUTHORITIES = {"read-only", "workspace-write"}
+EXPECTED_HARNESS_LAYER_IDS = (
+    "canonical-contract",
+    "role-function-routing",
+    "permission-mutation-boundary",
+    "provider-model-reasoning-policy",
+    "semantic-event-hooks",
+    "controlled-qa-validation",
+    "tracked-ci",
+    "sanitized-evidence-handoff",
 )
-PROVIDER_OFFICIAL_EVIDENCE_HOSTS = MappingProxyType(
+EXPECTED_HARNESS_LAYER_SEMANTICS = MappingProxyType(
     {
-        "claude": frozenset({"platform.claude.com"}),
-        "codex": frozenset({"developers.openai.com", "learn.chatgpt.com"}),
-        "gemini": frozenset({"ai.google.dev"}),
+        "canonical-contract": (
+            "rules-engineer",
+            "workspace-write",
+            "design/plan",
+            "design/plan",
+        ),
+        "role-function-routing": (
+            "workflow-supervisor",
+            "read-only",
+            "discover",
+            "discover",
+        ),
+        "permission-mutation-boundary": (
+            "rules-engineer",
+            "read-only",
+            "approval",
+            "approval",
+        ),
+        "provider-model-reasoning-policy": (
+            "eval-engineer",
+            "read-only",
+            "design/plan",
+            "design/plan",
+        ),
+        "semantic-event-hooks": (
+            "hook-developer",
+            "workspace-write",
+            "implement",
+            "implement",
+        ),
+        "controlled-qa-validation": (
+            "qa-engineer",
+            "workspace-write",
+            "implement",
+            "validate",
+        ),
+        "tracked-ci": (
+            "ci-cd-engineer",
+            "workspace-write",
+            "implement",
+            "validate",
+        ),
+        "sanitized-evidence-handoff": (
+            "eval-engineer",
+            "workspace-write",
+            "evidence",
+            "handoff",
+        ),
+    }
+)
+EXPECTED_WORKFLOW_STATE_IDS = (
+    "discover",
+    "design/plan",
+    "approval",
+    "implement",
+    "validate",
+    "independent-review",
+    "evidence",
+    "handoff",
+)
+EXPECTED_WORKFLOW_STATE_SEMANTICS = MappingProxyType(
+    {
+        "discover": (
+            "workflow-supervisor",
+            "read-only",
+            "objective-and-boundary-known",
+            "scope-and-canonical-owners-identified",
+            1,
+            "stop",
+            "design/plan",
+        ),
+        "design/plan": (
+            "workflow-supervisor",
+            "workspace-write",
+            "discovery-evidence-complete",
+            "implementation-ready-plan",
+            2,
+            "design/plan",
+            "approval",
+        ),
+        "approval": (
+            "rules-engineer",
+            "read-only",
+            "plan-and-protected-boundaries-explicit",
+            "authority-confirmed",
+            1,
+            "approval",
+            "implement",
+        ),
+        "implement": (
+            "workflow-supervisor",
+            "workspace-write",
+            "required-approval-recorded",
+            "scoped-change-complete",
+            2,
+            "stop",
+            "validate",
+        ),
+        "validate": (
+            "qa-engineer",
+            "workspace-write",
+            "implementation-attempt-complete",
+            "focused-and-aggregate-gates-pass",
+            1,
+            "implement",
+            "independent-review",
+        ),
+        "independent-review": (
+            "code-reviewer",
+            "read-only",
+            "validation-gates-pass",
+            "critical-and-important-zero",
+            2,
+            "implement",
+            "evidence",
+        ),
+        "evidence": (
+            "eval-engineer",
+            "workspace-write",
+            "independent-review-approved",
+            "task-evidence-complete",
+            1,
+            "independent-review",
+            "handoff",
+        ),
+        "handoff": (
+            "workflow-supervisor",
+            "read-only",
+            "evidence-record-sanitized",
+            "next-owner-accepts-handoff",
+            1,
+            "evidence",
+            "complete",
+        ),
+    }
+)
+EXPECTED_CAPABILITY_INTAKE = MappingProxyType(
+    {
+        "code-review": ("merge", "code-reviewer", "code-review-dimensions"),
+        "devops-automation": ("merge", "ci-cd-engineer", "ci-cd-patterns"),
+        "incident-and-sre": (
+            "merge",
+            "incident-responder",
+            "incident-response",
+        ),
+        "knowledge-stewardship": (
+            "merge",
+            "doc-writer",
+            "project-memory-stewardship",
+        ),
+        "multi-agent-architecture": (
+            "merge",
+            "workflow-supervisor",
+            "task-breakdown-agent",
+        ),
+        "product-discovery": (
+            "defer",
+            "workflow-supervisor",
+            "workspace-audit-revalidation",
+        ),
+        "provider-model-qa": (
+            "merge",
+            "eval-engineer",
+            "provider-model-evaluation",
+        ),
+        "reality-checking": (
+            "merge",
+            "eval-engineer",
+            "workspace-audit-revalidation",
+        ),
+        "technical-writing": (
+            "merge",
+            "doc-writer",
+            "knowledge-map-agent",
+        ),
+    }
+)
+EXPECTED_WORK_PROFILE_DEFAULTS = MappingProxyType(
+    {
+        ("adversarial-review", "claude"): ("claude-opus-5", "high"),
+        ("adversarial-review", "codex"): ("gpt-5.6-sol", "xhigh"),
+        ("adversarial-review", "gemini"): ("gemini-3.6-flash", "high"),
+        ("complex-implementation", "claude"): ("claude-sonnet-5", "high"),
+        ("complex-implementation", "codex"): ("gpt-5.6-sol", "high"),
+        ("complex-implementation", "gemini"): ("gemini-3.6-flash", "high"),
+        ("evidence-research", "claude"): ("claude-sonnet-5", "low"),
+        ("evidence-research", "codex"): ("gpt-5.6-terra", "medium"),
+        (
+            "evidence-research",
+            "gemini",
+        ): ("gemini-3.5-flash-lite", "medium"),
+        (
+            "long-horizon-supervision",
+            "claude",
+        ): ("claude-opus-5", "xhigh"),
+        (
+            "long-horizon-supervision",
+            "codex",
+        ): ("gpt-5.6-sol", "xhigh"),
+        (
+            "long-horizon-supervision",
+            "gemini",
+        ): ("gemini-3.6-flash", "high"),
+        (
+            "routine-validation",
+            "claude",
+        ): ("claude-haiku-4-5-20251001", None),
+        ("routine-validation", "codex"): ("gpt-5.6-terra", "low"),
+        (
+            "routine-validation",
+            "gemini",
+        ): ("gemini-3.5-flash-lite", "minimal"),
+    }
+)
+EXPECTED_ROLE_WORK_PROFILES = MappingProxyType(
+    {
+        "ci-cd-engineer": "complex-implementation",
+        "code-reviewer": "adversarial-review",
+        "doc-writer": "evidence-research",
+        "drift-detector": "routine-validation",
+        "eval-engineer": "adversarial-review",
+        "hook-developer": "complex-implementation",
+        "iac-reviewer": "adversarial-review",
+        "incident-responder": "complex-implementation",
+        "infra-implementer": "complex-implementation",
+        "qa-engineer": "complex-implementation",
+        "rules-engineer": "adversarial-review",
+        "security-auditor": "adversarial-review",
+        "skill-creator": "complex-implementation",
+        "workflow-supervisor": "long-horizon-supervision",
+    }
+)
+EXPECTED_PROVIDER_MODEL_CATALOG = MappingProxyType(
+    {
+        ("claude", "claude-fable-5"): ("stable", "candidate", False),
+        (
+            "claude",
+            "claude-haiku-4-5-20251001",
+        ): ("stable", "default", True),
+        (
+            "claude",
+            "claude-mythos-5",
+        ): ("limited_availability", "catalog_only", False),
+        ("claude", "claude-opus-5"): ("stable", "default", True),
+        ("claude", "claude-sonnet-5"): ("stable", "default", True),
+        (
+            "codex",
+            "gpt-5.3-codex-spark",
+        ): ("preview", "catalog_only", False),
+        ("codex", "gpt-5.6-luna"): ("stable", "catalog_only", False),
+        ("codex", "gpt-5.6-sol"): ("stable", "default", True),
+        ("codex", "gpt-5.6-terra"): ("stable", "default", True),
+        (
+            "gemini",
+            "gemini-3.5-flash-lite",
+        ): ("stable", "default", True),
+        ("gemini", "gemini-3.6-flash"): ("stable", "default", True),
+    }
+)
+RETIREMENT_BASELINE_COMMIT = "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee"
+RETIREMENT_SOURCE_BLOBS = MappingProxyType(
+    {
+        "deprecated-model": "58ee9b29cb0e519a34ff919e1e29791171c458a4",
+        "retired-role": "9f6a0fba4df6d37ab5f1a3390dc57d0dd99e8034",
+        "superseded-model": "a376b9d76263c3c2c42fbcb480af1791c1ec7a6f",
+    }
+)
+RETIREMENT_SOURCE_COMMITS = MappingProxyType(
+    {
+        "deprecated-model": RETIREMENT_BASELINE_COMMIT,
+        "retired-role": RETIREMENT_BASELINE_COMMIT,
+        "superseded-model": "2a8a3af24b7e4b98d9f9a0dfba5c7f938af1ae82",
+    }
+)
+RETIREMENT_SOURCE_PATHS = MappingProxyType(
+    {
+        "deprecated-model": CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+        "retired-role": CONTRACT_RELATIVE_PATHS["catalog"].as_posix(),
+        "superseded-model": CONTRACT_RELATIVE_PATHS["providers"].as_posix(),
+    }
+)
+RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
+    {
+        "model:claude:claude-opus-4-1-20250805": MappingProxyType(
+            {
+                "record_kind": "deprecated-model",
+                "former_id": "claude-opus-4-1-20250805",
+                "provider": "claude",
+                "former_provider_status": "deprecated",
+                "former_normalized_status": "deprecated",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("claude-opus-4-8",),
+                "deprecated_at": "2026-06-05",
+                "shutdown_at": "2026-08-05",
+                "rationale": (
+                    "The deprecated model is migration-only and cannot remain "
+                    "in the active provider contract."
+                ),
+                "source_url": (
+                    "https://platform.claude.com/docs/en/about-claude/"
+                    "model-deprecations"
+                ),
+                "source_retrieved_at": "2026-07-16T01:17:36+09:00",
+            }
+        ),
+        "model:claude:claude-opus-4-8": MappingProxyType(
+            {
+                "record_kind": "superseded-model",
+                "former_id": "claude-opus-4-8",
+                "provider": "claude",
+                "former_provider_status": "active",
+                "former_normalized_status": "stable",
+                "former_repository_default_eligible": True,
+                "replacement_ids": ("claude-opus-5",),
+                "superseded_at": "2026-07-26",
+                "rationale": (
+                    "The current Opus generation replaces the former "
+                    "configured supervision default."
+                ),
+                "source_url": (
+                    "https://platform.claude.com/docs/en/about-claude/models/"
+                    "overview"
+                ),
+                "source_retrieved_at": "2026-07-26T20:08:18+09:00",
+            }
+        ),
+        "model:codex:gpt-5.2-codex": MappingProxyType(
+            {
+                "record_kind": "deprecated-model",
+                "former_id": "gpt-5.2-codex",
+                "provider": "codex",
+                "former_provider_status": "deprecated",
+                "former_normalized_status": "deprecated",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("gpt-5.6-terra",),
+                "deprecated_at": "2026-04-22",
+                "shutdown_at": "2026-07-23",
+                "rationale": (
+                    "The deprecated coding model reached shutdown and cannot "
+                    "remain in the active provider contract."
+                ),
+                "source_url": (
+                    "https://developers.openai.com/api/docs/models/"
+                    "gpt-5.2-codex"
+                ),
+                "source_retrieved_at": "2026-07-16T01:17:36+09:00",
+            }
+        ),
+        "model:codex:gpt-5.6": MappingProxyType(
+            {
+                "record_kind": "superseded-model",
+                "former_id": "gpt-5.6",
+                "provider": "codex",
+                "former_provider_status": "listed",
+                "former_normalized_status": "unclassified-listed",
+                "former_repository_default_eligible": True,
+                "replacement_ids": ("gpt-5.6-sol",),
+                "superseded_at": "2026-07-26",
+                "rationale": (
+                    "The exact Sol model ID replaces the former alias-shaped "
+                    "configured catalog record."
+                ),
+                "source_url": "https://developers.openai.com/api/docs/models",
+                "source_retrieved_at": "2026-07-26T20:08:18+09:00",
+            }
+        ),
+        "model:gemini:gemini-3.1-flash-lite": MappingProxyType(
+            {
+                "record_kind": "superseded-model",
+                "former_id": "gemini-3.1-flash-lite",
+                "provider": "gemini",
+                "former_provider_status": "stable",
+                "former_normalized_status": "stable",
+                "former_repository_default_eligible": True,
+                "replacement_ids": ("gemini-3.5-flash-lite",),
+                "superseded_at": "2026-07-26",
+                "rationale": (
+                    "The current Flash-Lite generation replaces the former "
+                    "high-volume configured default."
+                ),
+                "source_url": "https://ai.google.dev/gemini-api/docs/latest-model",
+                "source_retrieved_at": "2026-07-26T20:08:18+09:00",
+            }
+        ),
+        "model:gemini:gemini-3.1-flash-lite-preview": MappingProxyType(
+            {
+                "record_kind": "deprecated-model",
+                "former_id": "gemini-3.1-flash-lite-preview",
+                "provider": "gemini",
+                "former_provider_status": "deprecated",
+                "former_normalized_status": "deprecated",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("gemini-3.1-flash-lite",),
+                "deprecated_at": None,
+                "shutdown_at": "2026-05-25",
+                "rationale": (
+                    "The shut-down preview is historical and its stable "
+                    "replacement owns active use."
+                ),
+                "source_url": (
+                    "https://ai.google.dev/gemini-api/docs/deprecations"
+                ),
+                "source_retrieved_at": "2026-07-16T01:17:36+09:00",
+            }
+        ),
+        "model:gemini:gemini-3.1-pro-preview": MappingProxyType(
+            {
+                "record_kind": "superseded-model",
+                "former_id": "gemini-3.1-pro-preview",
+                "provider": "gemini",
+                "former_provider_status": "preview",
+                "former_normalized_status": "preview",
+                "former_repository_default_eligible": False,
+                "replacement_ids": ("gemini-3.6-flash",),
+                "superseded_at": "2026-07-26",
+                "rationale": (
+                    "The current stable agentic Flash model replaces the "
+                    "former preview catalog record."
+                ),
+                "source_url": "https://ai.google.dev/gemini-api/docs/latest-model",
+                "source_retrieved_at": "2026-07-26T20:08:18+09:00",
+            }
+        ),
+        "model:gemini:gemini-3.5-flash": MappingProxyType(
+            {
+                "record_kind": "superseded-model",
+                "former_id": "gemini-3.5-flash",
+                "provider": "gemini",
+                "former_provider_status": "stable",
+                "former_normalized_status": "stable",
+                "former_repository_default_eligible": True,
+                "replacement_ids": ("gemini-3.6-flash",),
+                "superseded_at": "2026-07-26",
+                "rationale": (
+                    "Gemini 3.6 Flash replaces the former configured "
+                    "complex-work default."
+                ),
+                "source_url": "https://ai.google.dev/gemini-api/docs/latest-model",
+                "source_retrieved_at": "2026-07-26T20:08:18+09:00",
+            }
+        ),
+        "role:style-enforcer": MappingProxyType(
+            {
+                "record_kind": "retired-role",
+                "former_id": "style-enforcer",
+                "former_status": "retired",
+                "replacement_ids": ("qa-engineer", "rules-engineer"),
+                "replacement_function_ids": ("style-validation",),
+                "retired_at": "2026-07-15",
+                "rationale": (
+                    "QA owns deterministic style validation while rules "
+                    "governance owns policy review."
+                ),
+                "source_url": (
+                    "docs/03.specs/132-agent-governance-harness-convergence/"
+                    "spec.md"
+                ),
+                "source_retrieved_at": "2026-07-15T10:00:00+09:00",
+            }
+        ),
+        "role:wiki-curator": MappingProxyType(
+            {
+                "record_kind": "retired-role",
+                "former_id": "wiki-curator",
+                "former_status": "retired",
+                "replacement_ids": ("doc-writer",),
+                "replacement_function_ids": ("knowledge-map-agent",),
+                "retired_at": "2026-07-15",
+                "rationale": (
+                    "Documentation ownership and the knowledge-map function "
+                    "replace the standalone identity."
+                ),
+                "source_url": (
+                    "docs/03.specs/132-agent-governance-harness-convergence/"
+                    "spec.md"
+                ),
+                "source_retrieved_at": "2026-07-15T10:00:00+09:00",
+            }
+        ),
     }
 )
 EXPECTED_REPOSITORY_HOOK_MODES = MappingProxyType(
@@ -1992,6 +2551,16 @@ def _validate_catalog_contract(
 ) -> None:
     path = CONTRACT_RELATIVE_PATHS["catalog"].as_posix()
     source = path
+    if "role_transfers" in document:
+        _add(
+            findings,
+            "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+            path,
+            "role_transfers",
+            "historical-state-in-stage-90",
+            "historical-state-in-active-contract",
+            source,
+        )
     _check_common(document, CATALOG_TOP_FIELDS, path, findings)
     projections = (
         _check_string_list(
@@ -2105,8 +2674,19 @@ def _validate_catalog_contract(
                 findings,
                 source,
             )
+            status = entry.get("status")
+            if status == "retired":
+                _add(
+                    findings,
+                    "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+                    path,
+                    f"{location}.status",
+                    "active-status-only",
+                    "historical-status-in-active-contract",
+                    source,
+                )
             _check_enum(
-                entry.get("status"),
+                status,
                 AGENT_STATUSES,
                 path,
                 f"{location}.status",
@@ -2203,8 +2783,19 @@ def _validate_catalog_contract(
                 function_ids.append(str(function_id))
             if not _is_registered_string(entry.get("scope"), scopes):
                 _unknown_reference(findings, path, f"{location}.scope", source)
+            status = entry.get("status")
+            if status == "retired":
+                _add(
+                    findings,
+                    "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+                    path,
+                    f"{location}.status",
+                    "active-status-only",
+                    "historical-status-in-active-contract",
+                    source,
+                )
             _check_enum(
-                entry.get("status"),
+                status,
                 AGENT_STATUSES,
                 path,
                 f"{location}.status",
@@ -2323,7 +2914,10 @@ def _validate_catalog_contract(
                     "evaluation-path-mismatch",
                     source,
                 )
-        for field, expected_count in (("fixture_count", 8), ("regression_count", 10)):
+        for field, expected_count in (
+            ("fixture_count", 11),
+            ("regression_count", 16),
+        ):
             actual = evaluation.get(field)
             if isinstance(actual, bool) or actual != expected_count:
                 _add(
@@ -2394,6 +2988,9 @@ def _validate_catalog_contract(
             "AOE-DOC-001",
             "AOE-HOOK-001",
             "AOE-INFRA-001",
+            "AOE-LOOP-001",
+            "AOE-MEMORY-001",
+            "AOE-MODEL-001",
             "AOE-PROVIDER-001",
             "AOE-ROLE-001",
             "AOE-ROUTING-001",
@@ -2467,82 +3064,11 @@ def _validate_catalog_contract(
                 source,
             )
 
-    transfers = _as_sequence(
-        document.get("role_transfers"), path, "role_transfers", findings, source
-    )
-    transfer_ids: list[str] = []
-    if transfers is not None:
-        for index, raw in enumerate(transfers):
-            location = f"role_transfers[{index}]"
-            entry = _check_fields(
-                raw, ROLE_TRANSFER_FIELDS, path, location, findings, source
-            )
-            if entry is None:
-                continue
-            retired = entry.get("retired_agent_id")
-            if _check_string(
-                retired, path, f"{location}.retired_agent_id", findings, source
-            ):
-                transfer_ids.append(str(retired))
-                if retired in agent_set:
-                    _add(
-                        findings,
-                        "AGC-CATALOG-RETIRED-ACTIVE",
-                        path,
-                        f"{location}.retired_agent_id",
-                        "retired-id-absent-from-active-catalog",
-                        "retired-id-active",
-                        source,
-                    )
-            _check_enum(
-                entry.get("status"),
-                {"retired"},
-                path,
-                f"{location}.status",
-                findings,
-                source,
-            )
-            successors = (
-                _check_string_list(
-                    entry.get("successor_agent_ids"),
-                    path,
-                    f"{location}.successor_agent_ids",
-                    findings,
-                    source,
-                    require_sorted=True,
-                )
-                or ()
-            )
-            successor_functions = (
-                _check_string_list(
-                    entry.get("successor_function_ids"),
-                    path,
-                    f"{location}.successor_function_ids",
-                    findings,
-                    source,
-                    require_sorted=True,
-                )
-                or ()
-            )
-            for successor in successors:
-                if successor not in agent_set:
-                    _unknown_reference(
-                        findings, path, f"{location}.successor_agent_ids", source
-                    )
-            for function_id in successor_functions:
-                if function_id not in function_set:
-                    _unknown_reference(
-                        findings, path, f"{location}.successor_function_ids", source
-                    )
-            _check_string(
-                entry.get("rationale"), path, f"{location}.rationale", findings, source
-            )
-    _check_sorted_unique_ids(transfer_ids, path, "role_transfers", findings, source)
-
     intake = _as_sequence(
         document.get("capability_intake"), path, "capability_intake", findings, source
     )
     intake_ids: list[str] = []
+    observed_intake: dict[str, tuple[object, object, object]] = {}
     if intake is not None:
         for index, raw in enumerate(intake):
             location = f"capability_intake[{index}]"
@@ -2566,6 +3092,20 @@ def _validate_catalog_contract(
                 findings,
                 source,
             )
+            _check_string(
+                entry.get("source_retrieved_at"),
+                path,
+                f"{location}.source_retrieved_at",
+                findings,
+                source,
+            )
+            _check_string(
+                entry.get("rationale"),
+                path,
+                f"{location}.rationale",
+                findings,
+                source,
+            )
             _check_enum(
                 entry.get("decision"),
                 CAPABILITY_DECISIONS,
@@ -2582,7 +3122,38 @@ def _validate_catalog_contract(
                 _unknown_reference(
                     findings, path, f"{location}.evaluation_function", source
                 )
+            if isinstance(capability_id, str):
+                observed_intake[capability_id] = (
+                    entry.get("decision"),
+                    entry.get("owner_agent"),
+                    entry.get("evaluation_function"),
+                )
+            if (
+                entry.get("source") != "agency-agents"
+                or entry.get("source_url")
+                != "https://github.com/msitarzewski/agency-agents"
+                or entry.get("source_retrieved_at") != "2026-07-26"
+            ):
+                _add(
+                    findings,
+                    "AGC-CAPABILITY-SOURCE-CONTRACT",
+                    path,
+                    location,
+                    "dated-primary-source-comparison",
+                    "capability-source-mismatch",
+                    source,
+                )
     _check_sorted_unique_ids(intake_ids, path, "capability_intake", findings, source)
+    if observed_intake != dict(EXPECTED_CAPABILITY_INTAKE):
+        _add(
+            findings,
+            "AGC-CAPABILITY-INTAKE-CONTRACT",
+            path,
+            "capability_intake",
+            "exact-approved-capability-decisions",
+            "capability-decision-set-mismatch",
+            source,
+        )
 
     work_profile_ids = {
         entry.get("profile_id")
@@ -2597,6 +3168,23 @@ def _validate_catalog_contract(
                 _unknown_reference(
                     findings, path, f"agents[{index}].work_profile", source
                 )
+        observed_role_profiles = {
+            str(raw.get("agent_id")): str(raw.get("work_profile"))
+            for raw in agents
+            if isinstance(raw, Mapping)
+            and isinstance(raw.get("agent_id"), str)
+            and isinstance(raw.get("work_profile"), str)
+        }
+        if observed_role_profiles != dict(EXPECTED_ROLE_WORK_PROFILES):
+            _add(
+                findings,
+                "AGC-CATALOG-WORK-PROFILE-CONTRACT",
+                path,
+                "agents",
+                "exact-approved-role-work-profiles",
+                "role-work-profile-mismatch",
+                source,
+            )
 
     path_authorities = _sequence_or_empty(artifact_document.get("path_authority"))
     if path_authorities:
@@ -2657,6 +3245,305 @@ def _unknown_reference(
         "unknown-reference",
         source,
     )
+
+
+def _validate_harness_layers(
+    layers: Sequence[Mapping[str, object]], agent_ids: frozenset[str]
+) -> list[Finding]:
+    """Validate the eight control-plane layers without exposing field values."""
+
+    path = CONTRACT_RELATIVE_PATHS["providers"].as_posix()
+    source = path
+    findings: list[Finding] = []
+    observed_ids: list[str] = []
+    state_references = frozenset(EXPECTED_WORKFLOW_STATE_IDS)
+    for index, raw in enumerate(layers):
+        location = f"harness_layers[{index}]"
+        if not isinstance(raw, Mapping):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-SCHEMA",
+                path,
+                location,
+                "exact-harness-layer-fields",
+                "non-mapping-layer",
+                source,
+            )
+            continue
+        keys = {str(key) for key in raw}
+        if keys != HARNESS_LAYER_FIELDS:
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-SCHEMA",
+                path,
+                location,
+                "exact-harness-layer-fields",
+                "harness-layer-field-mismatch",
+                source,
+            )
+        layer_id = raw.get("layer_id")
+        if _check_string(
+            layer_id, path, f"{location}.layer_id", findings, source
+        ):
+            observed_ids.append(str(layer_id))
+        owner = raw.get("owner_agent")
+        if not _is_registered_string(owner, agent_ids):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-OWNER",
+                path,
+                f"{location}.owner_agent",
+                "registered-agent-owner",
+                "unknown-layer-owner",
+                source,
+            )
+        for field in ("required_inputs", "gates"):
+            _check_string_list(
+                raw.get(field),
+                path,
+                f"{location}.{field}",
+                findings,
+                source,
+                require_sorted=True,
+            )
+        _check_enum(
+            raw.get("mutation_authority"),
+            MUTATION_AUTHORITIES,
+            path,
+            f"{location}.mutation_authority",
+            findings,
+            source,
+        )
+        failure_return = raw.get("failure_return")
+        handoff_target = raw.get("handoff_target")
+        if not _is_registered_string(
+            failure_return, state_references | {"stop"}
+        ):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-REFERENCE",
+                path,
+                f"{location}.failure_return",
+                "workflow-state-or-stop",
+                "unknown-layer-failure-return",
+                source,
+            )
+        if not _is_registered_string(
+            handoff_target, state_references | {"complete"}
+        ):
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-REFERENCE",
+                path,
+                f"{location}.handoff_target",
+                "workflow-state-or-complete",
+                "unknown-layer-handoff",
+                source,
+            )
+        evidence_fields = _check_string_list(
+            raw.get("evidence_fields"),
+            path,
+            f"{location}.evidence_fields",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        if tuple(evidence_fields or ()) != SANITIZED_EVIDENCE_FIELDS:
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-EVIDENCE",
+                path,
+                f"{location}.evidence_fields",
+                "exact-sanitized-evidence-fields",
+                "layer-evidence-field-mismatch",
+                source,
+            )
+        expected = EXPECTED_HARNESS_LAYER_SEMANTICS.get(str(layer_id))
+        actual = (
+            owner,
+            raw.get("mutation_authority"),
+            failure_return,
+            handoff_target,
+        )
+        if expected is None or actual != expected:
+            _add(
+                findings,
+                "AGC-HARNESS-LAYER-SEMANTICS",
+                path,
+                location,
+                "registered-layer-semantics",
+                "layer-semantics-mismatch",
+                source,
+            )
+    if tuple(observed_ids) != EXPECTED_HARNESS_LAYER_IDS:
+        _add(
+            findings,
+            "AGC-HARNESS-LAYER-ORDER",
+            path,
+            "harness_layers",
+            "exact-eight-layer-order",
+            "layer-order-or-cardinality-mismatch",
+            source,
+        )
+    return sorted(findings, key=finding_sort_key)
+
+
+def _validate_workflow_states(
+    states: Sequence[Mapping[str, object]], agent_ids: frozenset[str]
+) -> list[Finding]:
+    """Validate the sole discover-to-handoff lifecycle value-free."""
+
+    path = CONTRACT_RELATIVE_PATHS["providers"].as_posix()
+    source = path
+    findings: list[Finding] = []
+    observed_ids: list[str] = []
+    state_references = frozenset(EXPECTED_WORKFLOW_STATE_IDS)
+    for index, raw in enumerate(states):
+        location = f"workflow_states[{index}]"
+        if not isinstance(raw, Mapping):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-SCHEMA",
+                path,
+                location,
+                "exact-workflow-state-fields",
+                "non-mapping-state",
+                source,
+            )
+            continue
+        keys = {str(key) for key in raw}
+        if keys != WORKFLOW_STATE_FIELDS:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-SCHEMA",
+                path,
+                location,
+                "exact-workflow-state-fields",
+                "workflow-state-field-mismatch",
+                source,
+            )
+        state_id = raw.get("state_id")
+        if _check_string(
+            state_id, path, f"{location}.state_id", findings, source
+        ):
+            observed_ids.append(str(state_id))
+        owner = raw.get("owner_agent")
+        if not _is_registered_string(owner, agent_ids):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-OWNER",
+                path,
+                f"{location}.owner_agent",
+                "registered-agent-owner",
+                "unknown-state-owner",
+                source,
+            )
+        _check_string_list(
+            raw.get("required_inputs"),
+            path,
+            f"{location}.required_inputs",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        _check_enum(
+            raw.get("mutation_authority"),
+            MUTATION_AUTHORITIES,
+            path,
+            f"{location}.mutation_authority",
+            findings,
+            source,
+        )
+        for field in ("entry_condition", "exit_gate"):
+            _check_string(
+                raw.get(field), path, f"{location}.{field}", findings, source
+            )
+        attempts = raw.get("max_attempts")
+        if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts <= 0:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-ATTEMPT-BOUND",
+                path,
+                f"{location}.max_attempts",
+                "positive-bounded-attempt-count",
+                "invalid-state-attempt-bound",
+                source,
+            )
+        failure_return = raw.get("failure_return")
+        handoff_target = raw.get("handoff_target")
+        if not _is_registered_string(
+            failure_return, state_references | {"stop"}
+        ):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-REFERENCE",
+                path,
+                f"{location}.failure_return",
+                "workflow-state-or-stop",
+                "unknown-state-failure-return",
+                source,
+            )
+        if not _is_registered_string(
+            handoff_target, state_references | {"complete"}
+        ):
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-REFERENCE",
+                path,
+                f"{location}.handoff_target",
+                "workflow-state-or-complete",
+                "unknown-state-handoff",
+                source,
+            )
+        evidence_fields = _check_string_list(
+            raw.get("evidence_fields"),
+            path,
+            f"{location}.evidence_fields",
+            findings,
+            source,
+            require_sorted=True,
+        )
+        if tuple(evidence_fields or ()) != SANITIZED_EVIDENCE_FIELDS:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-EVIDENCE",
+                path,
+                f"{location}.evidence_fields",
+                "exact-sanitized-evidence-fields",
+                "state-evidence-field-mismatch",
+                source,
+            )
+        expected = EXPECTED_WORKFLOW_STATE_SEMANTICS.get(str(state_id))
+        actual = (
+            owner,
+            raw.get("mutation_authority"),
+            raw.get("entry_condition"),
+            raw.get("exit_gate"),
+            attempts,
+            failure_return,
+            handoff_target,
+        )
+        if expected is None or actual != expected:
+            _add(
+                findings,
+                "AGC-WORKFLOW-STATE-SEMANTICS",
+                path,
+                location,
+                "registered-workflow-state-semantics",
+                "workflow-state-semantics-mismatch",
+                source,
+            )
+    if tuple(observed_ids) != EXPECTED_WORKFLOW_STATE_IDS:
+        _add(
+            findings,
+            "AGC-WORKFLOW-STATE-ORDER",
+            path,
+            "workflow_states",
+            "discover-to-handoff-order",
+            "state-order-or-cardinality-mismatch",
+            source,
+        )
+    return sorted(findings, key=finding_sort_key)
 
 
 def _validate_provider_contract(
@@ -2959,214 +3846,27 @@ def _validate_provider_contract(
                 )
     _check_sorted_unique_ids(profile_ids, path, "work_profiles", findings, source)
     profile_set = set(profile_ids)
-
-    approvals = _as_sequence(
-        document.get("fallback_approvals"),
-        path,
-        "fallback_approvals",
-        findings,
-        source,
-    )
-    approval_ids: list[str] = []
-    approval_entries: dict[str, Mapping[str, object]] = {}
-    if approvals is not None:
-        for index, raw in enumerate(approvals):
-            location = f"fallback_approvals[{index}]"
-            entry = _check_fields(
-                raw,
-                FALLBACK_APPROVAL_FIELDS,
-                path,
-                location,
-                findings,
-                source,
-            )
-            if entry is None:
-                continue
-            approval_id = entry.get("approval_id")
-            provider = entry.get("provider")
-            source_model = entry.get("source_model_id")
-            target_model = entry.get("target_model_id")
-            reference = entry.get("reference")
-            if _check_string(
-                approval_id,
-                path,
-                f"{location}.approval_id",
-                findings,
-                source,
-            ):
-                approval_ids.append(str(approval_id))
-                approval_entries[str(approval_id)] = entry
-            if not _is_registered_string(provider, provider_set):
-                _unknown_reference(findings, path, f"{location}.provider", source)
-            _check_string(
-                source_model,
-                path,
-                f"{location}.source_model_id",
-                findings,
-                source,
-            )
-            _check_string(
-                target_model,
-                path,
-                f"{location}.target_model_id",
-                findings,
-                source,
-            )
-            approval_profiles = (
-                _check_string_list(
-                    entry.get("work_profiles"),
-                    path,
-                    f"{location}.work_profiles",
-                    findings,
-                    source,
-                    allow_empty=True,
-                    require_sorted=True,
-                )
-                or ()
-            )
-            for approval_profile in approval_profiles:
-                if approval_profile not in profile_set:
-                    _unknown_reference(
-                        findings, path, f"{location}.work_profiles", source
-                    )
-            _check_string(
-                reference,
-                path,
-                f"{location}.reference",
-                findings,
-                source,
-            )
-            reference_valid = reference == FALLBACK_APPROVAL_REFERENCE
-            if reference_valid:
-                reference_path, _anchor = FALLBACK_APPROVAL_REFERENCE.split("#", 1)
-                try:
-                    reference_text = _read_root_confined_regular_text(
-                        root, pathlib.PurePosixPath(reference_path)
-                    )
-                except (FileNotFoundError, OSError, UnicodeError, _UnsafeRootFileError):
-                    reference_valid = False
-                else:
-                    reference_valid = bool(
-                        re.search(
-                            r"(?m)^### Approved Fallback Edges\s*$", reference_text
-                        )
-                    )
-            if not reference_valid:
-                _add(
-                    findings,
-                    "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
-                    path,
-                    f"{location}.reference",
-                    "resolvable-approved-fallback-edge-authority",
-                    "missing-or-wrong-fallback-authority",
-                    source,
-                )
-    _check_sorted_unique_ids(approval_ids, path, "fallback_approvals", findings, source)
-
-    evidence = _as_sequence(
-        document.get("cutoff_evidence"),
-        path,
-        "cutoff_evidence",
-        findings,
-        source,
-    )
-    evidence_ids: list[str] = []
-    evidence_entries: dict[str, Mapping[str, object]] = {}
-    if evidence is not None:
-        for index, raw in enumerate(evidence):
-            location = f"cutoff_evidence[{index}]"
-            entry = _check_fields(
-                raw,
-                CUTOFF_EVIDENCE_FIELDS,
-                path,
-                location,
-                findings,
-                source,
-            )
-            if entry is None:
-                continue
-            evidence_id = entry.get("evidence_id")
-            provider = entry.get("provider")
-            source_url = entry.get("source_url")
-            published_at = entry.get("published_at")
-            observed_at = entry.get("observed_at")
-            if _check_string(
-                evidence_id,
-                path,
-                f"{location}.evidence_id",
-                findings,
-                source,
-            ):
-                evidence_ids.append(str(evidence_id))
-                evidence_entries[str(evidence_id)] = entry
-            if not _is_registered_string(provider, provider_set):
-                _unknown_reference(findings, path, f"{location}.provider", source)
-            source_valid = _check_source_url(
-                source_url,
-                path,
-                f"{location}.source_url",
-                findings,
-                source,
-            )
-            if source_valid:
-                hostname = (urlparse(str(source_url)).hostname or "").lower()
-                allowed_hosts = PROVIDER_OFFICIAL_EVIDENCE_HOSTS.get(str(provider), ())
-                if hostname not in allowed_hosts:
-                    _add(
-                        findings,
-                        "AGC-MODEL-CUTOFF-EVIDENCE-SOURCE",
-                        path,
-                        f"{location}.source_url",
-                        "provider-allowlisted-official-domain",
-                        "unofficial-evidence-domain",
-                        source,
-                    )
-            _check_checked_at(
-                published_at,
-                path,
-                f"{location}.published_at",
-                findings,
-                source,
-            )
-            _check_checked_at(
-                observed_at,
-                path,
-                f"{location}.observed_at",
-                findings,
-                source,
-            )
-            try:
-                published = dt.datetime.fromisoformat(str(published_at))
-                observed = dt.datetime.fromisoformat(str(observed_at))
-            except ValueError:
-                published = None
-                observed = None
-            if (
-                published is None
-                or observed is None
-                or cutoff_at is None
-                or published.tzinfo is None
-                or observed.tzinfo is None
-                or cutoff_at.tzinfo is None
-                or published > cutoff_at
-                or observed_at != document.get("retrieved_at")
-            ):
-                _add(
-                    findings,
-                    "AGC-MODEL-CUTOFF-EVIDENCE-DATE",
-                    path,
-                    location,
-                    "published-at-or-before-cutoff-and-observed-at-retrieval",
-                    "unbound-or-backdated-evidence-time",
-                    source,
-                )
-    _check_sorted_unique_ids(evidence_ids, path, "cutoff_evidence", findings, source)
+    observed_profile_defaults = {
+        (profile_id, provider): (
+            model_id,
+            effort if provider == "claude" else reasoning,
+        )
+        for profile_id, provider, model_id, reasoning, effort in profile_defaults
+    }
+    if observed_profile_defaults != dict(EXPECTED_WORK_PROFILE_DEFAULTS):
+        _add(
+            findings,
+            "AGC-MODEL-WORK-PROFILE-CONTRACT",
+            path,
+            "work_profiles",
+            "exact-approved-work-profile-defaults",
+            "work-profile-default-mismatch",
+            source,
+        )
 
     models = _as_sequence(document.get("models"), path, "models", findings, source)
     model_keys: list[tuple[str, str]] = []
     model_entries: dict[tuple[str, str], Mapping[str, object]] = {}
-    referenced_approval_ids: set[str] = set()
-    referenced_evidence_ids: set[str] = set()
     if models is not None:
         for index, raw in enumerate(models):
             location = f"models[{index}]"
@@ -3180,6 +3880,28 @@ def _validate_provider_contract(
                 continue
             provider = entry.get("provider")
             model_id = entry.get("model_id")
+            historical_field = next(
+                (
+                    field
+                    for field in (
+                        "provider_lifecycle",
+                        "provider_status",
+                        "normalized_status",
+                    )
+                    if entry.get(field) in {"deprecated", "retired"}
+                ),
+                None,
+            )
+            if historical_field is not None:
+                _add(
+                    findings,
+                    "AGC-MODEL-HISTORICAL-STATE-ACTIVE",
+                    path,
+                    f"{location}.{historical_field}",
+                    "active-model-lifecycle-only",
+                    "historical-lifecycle-in-active-contract",
+                    source,
+                )
             if not _is_registered_string(provider, provider_set):
                 _unknown_reference(findings, path, f"{location}.provider", source)
             if _check_string(model_id, path, f"{location}.model_id", findings, source):
@@ -3194,9 +3916,9 @@ def _validate_provider_contract(
                         source,
                     )
             _check_string(
-                entry.get("canonical_model_id"),
+                entry.get("native_model_field"),
                 path,
-                f"{location}.canonical_model_id",
+                f"{location}.native_model_field",
                 findings,
                 source,
             )
@@ -3204,49 +3926,25 @@ def _validate_provider_contract(
                 key = (provider, model_id)
                 model_keys.append(key)
                 model_entries[key] = entry
-            status_valid = _check_enum(
-                entry.get("provider_status"),
-                MODEL_STATES,
+            lifecycle_valid = _check_enum(
+                entry.get("provider_lifecycle"),
+                MODEL_LIFECYCLE_STATES,
                 path,
-                f"{location}.provider_status",
+                f"{location}.provider_lifecycle",
                 findings,
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
-            normalized_status = entry.get("normalized_status")
-            normalized_valid = _check_enum(
-                normalized_status,
-                NORMALIZED_MODEL_STATES,
+            disposition = entry.get("repository_disposition")
+            disposition_valid = _check_enum(
+                disposition,
+                REPOSITORY_DISPOSITION_STATES,
                 path,
-                f"{location}.normalized_status",
+                f"{location}.repository_disposition",
                 findings,
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
-            expected_normalized = {
-                "active": "stable",
-                "current": "stable",
-                "deprecated": "deprecated",
-                "generally-available": "stable",
-                "limited-availability": "limited",
-                "listed": "unclassified-listed",
-                "preview": "preview",
-                "stable": "stable",
-            }.get(entry.get("provider_status"))
-            if (
-                status_valid
-                and normalized_valid
-                and normalized_status != expected_normalized
-            ):
-                _add(
-                    findings,
-                    "AGC-MODEL-STATUS-NORMALIZATION",
-                    path,
-                    f"{location}.normalized_status",
-                    "evidence-backed-normalization",
-                    "status-normalization-mismatch",
-                    source,
-                )
             eligible = entry.get("repository_default_eligible")
             _check_bool(
                 eligible,
@@ -3256,22 +3954,21 @@ def _validate_provider_contract(
                 source,
             )
             if (
-                normalized_valid
+                lifecycle_valid
+                and disposition_valid
                 and eligible is True
-                and normalized_status
-                not in {
-                    "current",
-                    "stable",
-                    "unclassified-listed",
-                }
+                and (
+                    entry.get("provider_lifecycle") != "stable"
+                    or disposition != "default"
+                )
             ):
                 _add(
                     findings,
                     "AGC-MODEL-INELIGIBLE-STATUS",
                     path,
                     f"{location}.repository_default_eligible",
-                    "current-or-stable-model-only",
-                    "ineligible-normalized-status",
+                    "stable-default-model-only",
+                    "ineligible-lifecycle-or-disposition",
                     source,
                 )
             _check_enum(
@@ -3292,93 +3989,82 @@ def _validate_provider_contract(
                 source,
                 code="AGC-PROVIDER-INVALID-STATE",
             )
-            if provider == "claude":
-                _check_enum(
-                    entry.get("thinking_control_kind"),
-                    REASONING_CONTROL_KINDS,
+            activation_eligible = entry.get("runtime_activation_eligible")
+            _check_bool(
+                activation_eligible,
+                path,
+                f"{location}.runtime_activation_eligible",
+                findings,
+                source,
+            )
+            expected_activation = (
+                eligible is True
+                and entry.get("runtime_acceptance") == "accepted"
+                and entry.get("entitlement") in {"available", "not_applicable"}
+            )
+            if isinstance(activation_eligible, bool) and (
+                activation_eligible != expected_activation
+            ):
+                _add(
+                    findings,
+                    "AGC-MODEL-ACTIVATION-ELIGIBILITY",
                     path,
-                    f"{location}.thinking_control_kind",
+                    f"{location}.runtime_activation_eligible",
+                    "derived-runtime-and-entitlement-eligibility",
+                    "activation-eligibility-mismatch",
+                    source,
+                )
+            _check_enum(
+                entry.get("reasoning_control_kind"),
+                REASONING_CONTROL_KINDS,
+                path,
+                f"{location}.reasoning_control_kind",
+                findings,
+                source,
+            )
+            supported_controls = (
+                _check_string_list(
+                    entry.get("supported_reasoning_controls"),
+                    path,
+                    f"{location}.supported_reasoning_controls",
+                    findings,
+                    source,
+                    require_sorted=True,
+                    allow_empty=True,
+                )
+                or ()
+            )
+            repository_controls = (
+                _check_string_list(
+                    entry.get("repository_reasoning_controls"),
+                    path,
+                    f"{location}.repository_reasoning_controls",
+                    findings,
+                    source,
+                    require_sorted=True,
+                    allow_empty=True,
+                )
+                or ()
+            )
+            if not set(repository_controls).issubset(supported_controls):
+                _add(
+                    findings,
+                    "AGC-MODEL-REASONING-POLICY",
+                    path,
+                    f"{location}.repository_reasoning_controls",
+                    "subset-of-provider-supported-controls",
+                    "unsupported-repository-control",
+                    source,
+                )
+            native_reasoning_field = entry.get("native_reasoning_field")
+            if native_reasoning_field is not None:
+                _check_string(
+                    native_reasoning_field,
+                    path,
+                    f"{location}.native_reasoning_field",
                     findings,
                     source,
                 )
-                for prefix in ("thinking", "effort"):
-                    supported_controls = (
-                        _check_string_list(
-                            entry.get(f"supported_{prefix}_controls"),
-                            path,
-                            f"{location}.supported_{prefix}_controls",
-                            findings,
-                            source,
-                            require_sorted=True,
-                            allow_empty=True,
-                        )
-                        or ()
-                    )
-                    repository_controls = (
-                        _check_string_list(
-                            entry.get(f"repository_{prefix}_controls"),
-                            path,
-                            f"{location}.repository_{prefix}_controls",
-                            findings,
-                            source,
-                            require_sorted=True,
-                            allow_empty=True,
-                        )
-                        or ()
-                    )
-                    if not set(repository_controls).issubset(supported_controls):
-                        _add(
-                            findings,
-                            "AGC-MODEL-REASONING-POLICY",
-                            path,
-                            f"{location}.repository_{prefix}_controls",
-                            "subset-of-provider-supported-controls",
-                            "unsupported-repository-control",
-                            source,
-                        )
-            else:
-                _check_enum(
-                    entry.get("reasoning_control_kind"),
-                    REASONING_CONTROL_KINDS,
-                    path,
-                    f"{location}.reasoning_control_kind",
-                    findings,
-                    source,
-                )
-                supported_controls = (
-                    _check_string_list(
-                        entry.get("supported_reasoning_controls"),
-                        path,
-                        f"{location}.supported_reasoning_controls",
-                        findings,
-                        source,
-                        require_sorted=True,
-                        allow_empty=True,
-                    )
-                    or ()
-                )
-                repository_controls = (
-                    _check_string_list(
-                        entry.get("repository_reasoning_controls"),
-                        path,
-                        f"{location}.repository_reasoning_controls",
-                        findings,
-                        source,
-                        require_sorted=True,
-                        allow_empty=True,
-                    )
-                    or ()
-                )
-                if not set(repository_controls).issubset(supported_controls):
-                    _add(
-                        findings,
-                        "AGC-MODEL-REASONING-POLICY",
-                        path,
-                        f"{location}.repository_reasoning_controls",
-                        "subset-of-provider-supported-controls",
-                        "unsupported-repository-control",
-                        source,
-                    )
             profiles = (
                 _check_string_list(
                     entry.get("work_profiles"),
@@ -3412,142 +4098,34 @@ def _validate_provider_contract(
                 source,
                 require_sorted=True,
             )
-            _check_string(
-                entry.get("fallback"), path, f"{location}.fallback", findings, source
-            )
-            _check_enum(
-                entry.get("fallback_policy"),
-                FALLBACK_POLICIES,
-                path,
-                f"{location}.fallback_policy",
-                findings,
-                source,
-            )
-            approval = entry.get("fallback_approval")
-            if entry.get("fallback_policy") == "approved-degraded":
-                _check_string(
-                    approval,
-                    path,
-                    f"{location}.fallback_approval",
-                    findings,
-                    source,
-                )
-                approval_entry = approval_entries.get(str(approval))
-                if approval_entry is None:
-                    _add(
-                        findings,
-                        "AGC-MODEL-FALLBACK-APPROVAL-REFERENCE",
-                        path,
-                        f"{location}.fallback_approval",
-                        "registered-fallback-approval",
-                        "missing-fallback-approval",
-                        source,
-                    )
-                else:
-                    referenced_approval_ids.add(str(approval))
-                    expected_profiles = tuple(
-                        item
-                        for item in _sequence_or_empty(entry.get("work_profiles"))
-                        if isinstance(item, str)
-                    )
-                    approval_profiles = tuple(
-                        item
-                        for item in _sequence_or_empty(
-                            approval_entry.get("work_profiles")
-                        )
-                        if isinstance(item, str)
-                    )
-                    if (
-                        approval_entry.get("provider") != provider
-                        or approval_entry.get("source_model_id") != model_id
-                        or approval_entry.get("target_model_id")
-                        != entry.get("fallback")
-                        or approval_profiles != expected_profiles
-                    ):
-                        _add(
-                            findings,
-                            "AGC-MODEL-FALLBACK-APPROVAL-EDGE",
-                            path,
-                            f"{location}.fallback_approval",
-                            "exact-provider-source-target-profile-edge",
-                            "fallback-approval-edge-mismatch",
-                            source,
-                        )
-            elif approval is not None:
-                _add(
-                    findings,
-                    "AGC-MODEL-FALLBACK-POLICY",
-                    path,
-                    f"{location}.fallback_approval",
-                    "null-for-same-profile",
-                    "unexpected-fallback-approval",
-                    source,
-                )
-            _check_enum(
-                entry.get("cutoff_evidence_status"),
-                CUTOFF_EVIDENCE_STATES,
-                path,
-                f"{location}.cutoff_evidence_status",
-                findings,
-                source,
-            )
-            evidence_id = entry.get("cutoff_evidence_id")
             _check_checked_at(
-                entry.get("checked_at"),
+                entry.get("source_retrieved_at"),
                 path,
-                f"{location}.checked_at",
+                f"{location}.source_retrieved_at",
                 findings,
                 source,
             )
-            _check_source_url(
-                entry.get("source_url"),
-                path,
-                f"{location}.source_url",
-                findings,
-                source,
-            )
-            if entry.get("checked_at") != document.get("retrieved_at"):
+            for source_field in (
+                "source_url",
+                "task_fit_source_url",
+                "reasoning_source_url",
+                "native_schema_source_url",
+            ):
+                _check_source_url(
+                    entry.get(source_field),
+                    path,
+                    f"{location}.{source_field}",
+                    findings,
+                    source,
+                )
+            if entry.get("source_retrieved_at") != document.get("retrieved_at"):
                 _add(
                     findings,
                     "AGC-SOURCE-OBSERVATION-ORDER",
                     path,
-                    f"{location}.checked_at",
+                    f"{location}.source_retrieved_at",
                     "equal-to-retrieved-at",
                     "model-observation-time-mismatch",
-                    source,
-                )
-            if entry.get("cutoff_evidence_status") == "verified-before-cutoff":
-                evidence_entry = evidence_entries.get(str(evidence_id))
-                if not isinstance(evidence_id, str) or evidence_entry is None:
-                    _add(
-                        findings,
-                        "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
-                        path,
-                        f"{location}.cutoff_evidence_id",
-                        "registered-dated-official-evidence",
-                        "missing-cutoff-evidence-reference",
-                        source,
-                    )
-                else:
-                    referenced_evidence_ids.add(evidence_id)
-                    if evidence_entry.get("provider") != provider:
-                        _add(
-                            findings,
-                            "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
-                            path,
-                            f"{location}.cutoff_evidence_id",
-                            "same-provider-evidence-reference",
-                            "provider-evidence-mismatch",
-                            source,
-                        )
-            elif evidence_id is not None:
-                _add(
-                    findings,
-                    "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
-                    path,
-                    f"{location}.cutoff_evidence_id",
-                    "null-for-unverified-historical-state",
-                    "unverified-model-has-evidence-reference",
                     source,
                 )
     if len(model_keys) != len(set(model_keys)):
@@ -3570,78 +4148,24 @@ def _validate_provider_contract(
             "non-provider-model-order",
             source,
         )
-    for approval_id in sorted(set(approval_entries) - referenced_approval_ids):
+    observed_model_catalog = {
+        key: (
+            entry.get("provider_lifecycle"),
+            entry.get("repository_disposition"),
+            entry.get("repository_default_eligible"),
+        )
+        for key, entry in model_entries.items()
+    }
+    if observed_model_catalog != dict(EXPECTED_PROVIDER_MODEL_CATALOG):
         _add(
             findings,
-            "AGC-MODEL-FALLBACK-APPROVAL-EDGE",
+            "AGC-MODEL-CATALOG-CONTRACT",
             path,
-            "fallback_approvals",
-            "one-model-edge-per-approval",
-            "unreferenced-fallback-approval",
+            "models",
+            "exact-approved-current-model-catalog",
+            "current-model-catalog-mismatch",
             source,
         )
-    for evidence_id in sorted(set(evidence_entries) - referenced_evidence_ids):
-        _add(
-            findings,
-            "AGC-MODEL-CUTOFF-EVIDENCE-REFERENCE",
-            path,
-            "cutoff_evidence",
-            "referenced-model-evidence",
-            "unreferenced-cutoff-evidence",
-            source,
-        )
-    for key, entry in model_entries.items():
-        fallback_key = (key[0], str(entry.get("fallback")))
-        fallback = model_entries.get(fallback_key)
-        if fallback is None:
-            _unknown_reference(
-                findings, path, f"models.{key[0]}.{key[1]}.fallback", source
-            )
-        elif fallback.get("repository_default_eligible") is not True:
-            _add(
-                findings,
-                "AGC-MODEL-INELIGIBLE-FALLBACK",
-                path,
-                f"models.{key[0]}.{key[1]}.fallback",
-                "eligible-same-provider-fallback",
-                "ineligible-fallback",
-                source,
-            )
-        else:
-            source_profiles = {
-                item
-                for item in _sequence_or_empty(entry.get("work_profiles"))
-                if isinstance(item, str)
-            }
-            fallback_profiles = {
-                item
-                for item in _sequence_or_empty(fallback.get("work_profiles"))
-                if isinstance(item, str)
-            }
-            same_profile = bool(source_profiles) and source_profiles.issubset(
-                fallback_profiles
-            )
-            policy = entry.get("fallback_policy")
-            if same_profile and policy != "same-profile":
-                _add(
-                    findings,
-                    "AGC-MODEL-FALLBACK-POLICY",
-                    path,
-                    f"models.{key[0]}.{key[1]}.fallback_policy",
-                    "same-profile-policy",
-                    "unnecessary-degradation-policy",
-                    source,
-                )
-            if not same_profile and policy != "approved-degraded":
-                _add(
-                    findings,
-                    "AGC-MODEL-FALLBACK-POLICY",
-                    path,
-                    f"models.{key[0]}.{key[1]}.fallback_policy",
-                    "approved-degraded-policy",
-                    "unapproved-profile-degradation",
-                    source,
-                )
     for profile_id, provider, model_id, reasoning, effort in profile_defaults:
         model = model_entries.get((provider, model_id))
         if model is None:
@@ -3662,30 +4186,18 @@ def _validate_provider_contract(
                 "ineligible-default-model",
                 source,
             )
-        if provider == "claude":
-            efforts = _sequence_or_empty(model.get("repository_effort_controls"))
-            if effort is not None and effort not in efforts:
-                _add(
-                    findings,
-                    "AGC-MODEL-REASONING-MISMATCH",
-                    path,
-                    f"work_profiles.{profile_id}.defaults.{provider}",
-                    "model-supported-native-agent-effort",
-                    "unsupported-native-agent-effort",
-                    source,
-                )
-        else:
-            controls = _sequence_or_empty(model.get("repository_reasoning_controls"))
-            if reasoning not in controls:
-                _add(
-                    findings,
-                    "AGC-MODEL-REASONING-MISMATCH",
-                    path,
-                    f"work_profiles.{profile_id}.defaults.{provider}.reasoning",
-                    "model-supported-reasoning",
-                    "unsupported-reasoning",
-                    source,
-                )
+        control = effort if provider == "claude" else reasoning
+        controls = _sequence_or_empty(model.get("repository_reasoning_controls"))
+        if control is not None and control not in controls:
+            _add(
+                findings,
+                "AGC-MODEL-REASONING-MISMATCH",
+                path,
+                f"work_profiles.{profile_id}.defaults.{provider}",
+                "model-supported-native-control",
+                "unsupported-native-control",
+                source,
+            )
         profiles = _sequence_or_empty(model.get("work_profiles"))
         if profile_id not in profiles:
             _add(
@@ -3754,6 +4266,32 @@ def _validate_provider_contract(
                 )
                 or ()
             )
+            workflow_states = (
+                _check_string_list(
+                    entry.get("workflow_states"),
+                    path,
+                    f"{location}.workflow_states",
+                    findings,
+                    source,
+                )
+                or ()
+            )
+            expected_workflow_states = EXPECTED_HARNESS_LOOP_STATES.get(
+                str(event_id)
+            )
+            if (
+                expected_workflow_states is None
+                or workflow_states != expected_workflow_states
+            ):
+                _add(
+                    findings,
+                    "AGC-LOOP-WORKFLOW-STATE",
+                    path,
+                    f"{location}.workflow_states",
+                    "registered-applicable-workflow-states",
+                    "loop-workflow-state-mismatch",
+                    source,
+                )
             if not set(allowed_tools).issubset(
                 LOOP_PERMISSION_TOOLS.get(str(permission), frozenset())
             ):
@@ -4137,6 +4675,429 @@ def _validate_provider_contract(
     _check_sorted_unique_ids(event_ids, path, "semantic_events", findings, source)
 
 
+def validate_retirement_ledger(
+    root: pathlib.Path, bundle: ContractBundle
+) -> list[Finding]:
+    """Validate bounded Stage 90 history against the active contract bundle."""
+
+    path = RETIREMENT_LEDGER_PATH.as_posix()
+    source = path
+    findings: list[Finding] = []
+    try:
+        document = _load_yaml(root, RETIREMENT_LEDGER_PATH)
+    except ContractLoadError as error:
+        return [
+            Finding(
+                error.code,
+                error.path,
+                error.location,
+                "readable-retirement-ledger",
+                "retirement-ledger-load-failed",
+                source,
+            )
+        ]
+
+    _check_fields(
+        document,
+        RETIREMENT_LEDGER_TOP_FIELDS,
+        path,
+        "root",
+        findings,
+        source,
+    )
+    if document.get("schema_version") != 1:
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-SCHEMA",
+            path,
+            "schema_version",
+            "schema-version-1",
+            "unsupported-schema-version",
+            source,
+        )
+    if document.get("authority") != "historical-evidence":
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-AUTHORITY",
+            path,
+            "authority",
+            "historical-evidence",
+            "wrong-ledger-authority",
+            source,
+        )
+    if document.get("baseline_commit") != RETIREMENT_BASELINE_COMMIT:
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-PROVENANCE",
+            path,
+            "baseline_commit",
+            "exact-approved-baseline-commit",
+            "baseline-commit-mismatch",
+            source,
+        )
+
+    active_agents = {
+        str(entry.get("agent_id"))
+        for entry in _sequence_or_empty(bundle.catalog.get("agents"))
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("agent_id"))
+    }
+    active_functions = {
+        str(entry.get("function_id"))
+        for entry in _sequence_or_empty(bundle.catalog.get("functions"))
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("function_id"))
+    }
+    active_providers = {
+        str(entry.get("provider_id"))
+        for entry in _sequence_or_empty(bundle.providers.get("providers"))
+        if isinstance(entry, Mapping) and _is_nonempty_string(entry.get("provider_id"))
+    }
+    active_models = {
+        (str(entry.get("provider")), str(entry.get("model_id")))
+        for entry in _sequence_or_empty(bundle.providers.get("models"))
+        if isinstance(entry, Mapping)
+        and _is_nonempty_string(entry.get("provider"))
+        and _is_nonempty_string(entry.get("model_id"))
+    }
+    expected_record_ids = set(RETIREMENT_APPROVED_RECORD_FACTS)
+
+    def check_date(value: object, location: str, *, allow_null: bool = False) -> bool:
+        if allow_null and value is None:
+            return True
+        try:
+            parsed = dt.date.fromisoformat(str(value))
+        except ValueError:
+            parsed = None
+        if parsed is not None and isinstance(value, str):
+            return True
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-DATE",
+            path,
+            location,
+            "iso-date" if not allow_null else "iso-date-or-null",
+            "invalid-retirement-date",
+            source,
+        )
+        return False
+
+    records = _as_sequence(
+        document.get("records"), path, "records", findings, source
+    )
+    superseded_models = {
+        (str(raw.get("provider")), str(raw.get("former_id")))
+        for raw in records or ()
+        if isinstance(raw, Mapping)
+        and raw.get("record_kind") == "superseded-model"
+        and _is_nonempty_string(raw.get("provider"))
+        and _is_nonempty_string(raw.get("former_id"))
+    }
+    record_ids: list[str] = []
+    if records is not None:
+        for index, raw in enumerate(records):
+            location = f"records[{index}]"
+            kind = raw.get("record_kind") if isinstance(raw, Mapping) else None
+            expected_fields = (
+                RETIRED_ROLE_RECORD_FIELDS
+                if kind == "retired-role"
+                else RETIRED_MODEL_RECORD_FIELDS
+                if kind == "deprecated-model"
+                else SUPERSEDED_MODEL_RECORD_FIELDS
+                if kind == "superseded-model"
+                else RETIREMENT_RECORD_COMMON_FIELDS
+            )
+            entry = _check_fields(
+                raw, expected_fields, path, location, findings, source
+            )
+            if entry is None:
+                continue
+            _check_enum(
+                kind,
+                {"deprecated-model", "retired-role", "superseded-model"},
+                path,
+                f"{location}.record_kind",
+                findings,
+                source,
+                code="AGC-RETIREMENT-LEDGER-KIND",
+            )
+            record_id = entry.get("record_id")
+            former_id = entry.get("former_id")
+            if _check_string(
+                record_id, path, f"{location}.record_id", findings, source
+            ):
+                record_ids.append(str(record_id))
+            _check_string(
+                former_id, path, f"{location}.former_id", findings, source
+            )
+            replacements = (
+                _check_string_list(
+                    entry.get("replacement_ids"),
+                    path,
+                    f"{location}.replacement_ids",
+                    findings,
+                    source,
+                    require_sorted=True,
+                )
+                or ()
+            )
+            _check_string(
+                entry.get("rationale"),
+                path,
+                f"{location}.rationale",
+                findings,
+                source,
+            )
+            _check_string(
+                entry.get("source_url"),
+                path,
+                f"{location}.source_url",
+                findings,
+                source,
+            )
+            _check_checked_at(
+                entry.get("source_retrieved_at"),
+                path,
+                f"{location}.source_retrieved_at",
+                findings,
+                source,
+            )
+            for field in ("source_commit", "source_path", "source_blob"):
+                _check_string(
+                    entry.get(field),
+                    path,
+                    f"{location}.{field}",
+                    findings,
+                    source,
+                )
+            expected_blob = RETIREMENT_SOURCE_BLOBS.get(str(kind))
+            expected_commit = RETIREMENT_SOURCE_COMMITS.get(str(kind))
+            expected_path = RETIREMENT_SOURCE_PATHS.get(str(kind))
+            if (
+                entry.get("source_commit") != expected_commit
+                or entry.get("source_blob") != expected_blob
+                or entry.get("source_path") != expected_path
+            ):
+                _add(
+                    findings,
+                    "AGC-RETIREMENT-LEDGER-PROVENANCE",
+                    path,
+                    location,
+                    "exact-baseline-commit-path-blob",
+                    "record-provenance-mismatch",
+                    source,
+                )
+
+            approved_facts = RETIREMENT_APPROVED_RECORD_FACTS.get(str(record_id))
+            if approved_facts is not None:
+                for field in sorted(approved_facts):
+                    approved_value = approved_facts[field]
+                    observed_value = entry.get(field)
+                    if (
+                        isinstance(approved_value, tuple)
+                        and isinstance(observed_value, Sequence)
+                        and not isinstance(
+                            observed_value, (str, bytes, bytearray)
+                        )
+                    ):
+                        observed_value = tuple(observed_value)
+                    if observed_value != approved_value:
+                        _add(
+                            findings,
+                            "AGC-RETIREMENT-LEDGER-FACT-MISMATCH",
+                            path,
+                            f"{location}.{field}",
+                            "exact-approved-record-fact",
+                            "approved-record-fact-mismatch",
+                            source,
+                        )
+
+            if kind == "retired-role":
+                if record_id != f"role:{former_id}":
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-IDENTITY",
+                        path,
+                        f"{location}.record_id",
+                        "role-record-id-matches-former-id",
+                        "role-record-id-mismatch",
+                        source,
+                    )
+                if entry.get("former_status") != "retired":
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-STATE",
+                        path,
+                        f"{location}.former_status",
+                        "retired",
+                        "wrong-former-role-state",
+                        source,
+                    )
+                check_date(entry.get("retired_at"), f"{location}.retired_at")
+                replacement_functions = (
+                    _check_string_list(
+                        entry.get("replacement_function_ids"),
+                        path,
+                        f"{location}.replacement_function_ids",
+                        findings,
+                        source,
+                        require_sorted=True,
+                    )
+                    or ()
+                )
+                if isinstance(former_id, str) and former_id in active_agents:
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-ACTIVE-CONFLICT",
+                        path,
+                        f"{location}.former_id",
+                        "retired-role-absent-from-active-catalog",
+                        "retired-role-still-active",
+                        source,
+                    )
+                for replacement in replacements:
+                    if replacement not in active_agents:
+                        _unknown_reference(
+                            findings, path, f"{location}.replacement_ids", source
+                        )
+                for function_id in replacement_functions:
+                    if function_id not in active_functions:
+                        _unknown_reference(
+                            findings,
+                            path,
+                            f"{location}.replacement_function_ids",
+                            source,
+                        )
+            elif kind in {"deprecated-model", "superseded-model"}:
+                provider = entry.get("provider")
+                if not _is_registered_string(provider, active_providers):
+                    _unknown_reference(
+                        findings, path, f"{location}.provider", source
+                    )
+                if record_id != f"model:{provider}:{former_id}":
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-IDENTITY",
+                        path,
+                        f"{location}.record_id",
+                        "model-record-id-matches-provider-and-former-id",
+                        "model-record-id-mismatch",
+                        source,
+                    )
+                if kind == "deprecated-model":
+                    for field in (
+                        "former_provider_status",
+                        "former_normalized_status",
+                    ):
+                        if entry.get(field) != "deprecated":
+                            _add(
+                                findings,
+                                "AGC-RETIREMENT-LEDGER-STATE",
+                                path,
+                                f"{location}.{field}",
+                                "deprecated",
+                                "wrong-former-model-state",
+                                source,
+                            )
+                    if entry.get("former_repository_default_eligible") is not False:
+                        _add(
+                            findings,
+                            "AGC-RETIREMENT-LEDGER-STATE",
+                            path,
+                            f"{location}.former_repository_default_eligible",
+                            "false",
+                            "retired-model-was-default-eligible",
+                            source,
+                        )
+                    deprecated_valid = check_date(
+                        entry.get("deprecated_at"),
+                        f"{location}.deprecated_at",
+                        allow_null=True,
+                    )
+                    shutdown_valid = check_date(
+                        entry.get("shutdown_at"),
+                        f"{location}.shutdown_at",
+                        allow_null=True,
+                    )
+                    if (
+                        deprecated_valid
+                        and shutdown_valid
+                        and entry.get("deprecated_at") is None
+                        and entry.get("shutdown_at") is None
+                    ):
+                        _add(
+                            findings,
+                            "AGC-RETIREMENT-LEDGER-DATE",
+                            path,
+                            location,
+                            "deprecation-or-shutdown-date",
+                            "missing-retirement-date",
+                            source,
+                        )
+                else:
+                    _check_string(
+                        entry.get("former_provider_status"),
+                        path,
+                        f"{location}.former_provider_status",
+                        findings,
+                        source,
+                    )
+                    _check_string(
+                        entry.get("former_normalized_status"),
+                        path,
+                        f"{location}.former_normalized_status",
+                        findings,
+                        source,
+                    )
+                    _check_bool(
+                        entry.get("former_repository_default_eligible"),
+                        path,
+                        f"{location}.former_repository_default_eligible",
+                        findings,
+                        source,
+                    )
+                    check_date(
+                        entry.get("superseded_at"),
+                        f"{location}.superseded_at",
+                    )
+                if (
+                    isinstance(provider, str)
+                    and isinstance(former_id, str)
+                    and (provider, former_id) in active_models
+                ):
+                    _add(
+                        findings,
+                        "AGC-RETIREMENT-LEDGER-ACTIVE-CONFLICT",
+                        path,
+                        f"{location}.former_id",
+                        "retired-model-absent-from-active-contract",
+                        "retired-model-still-active",
+                        source,
+                    )
+                for replacement in replacements:
+                    if not isinstance(provider, str) or (
+                        provider,
+                        replacement,
+                    ) not in active_models and (
+                        provider,
+                        replacement,
+                    ) not in superseded_models:
+                        _unknown_reference(
+                            findings, path, f"{location}.replacement_ids", source
+                        )
+
+    _check_sorted_unique_ids(record_ids, path, "records", findings, source)
+    if set(record_ids) != expected_record_ids:
+        _add(
+            findings,
+            "AGC-RETIREMENT-LEDGER-CARDINALITY",
+            path,
+            "records",
+            "exact-approved-retirement-record-set",
+            "retirement-record-set-mismatch",
+            source,
+        )
+    return sorted(findings, key=finding_sort_key)
+
+
 def validate_contract_bundle(
     root: pathlib.Path, bundle: ContractBundle
 ) -> list[Finding]:
@@ -4148,6 +5109,24 @@ def validate_contract_bundle(
     _validate_catalog_contract(
         bundle.catalog, bundle.providers, bundle.artifacts, findings
     )
+    agent_ids = frozenset(
+        str(entry.get("agent_id"))
+        for entry in _sequence_or_empty(bundle.catalog.get("agents"))
+        if isinstance(entry, Mapping) and isinstance(entry.get("agent_id"), str)
+    )
+    findings.extend(
+        _validate_harness_layers(
+            _sequence_or_empty(bundle.providers.get("harness_layers")),
+            agent_ids,
+        )
+    )
+    findings.extend(
+        _validate_workflow_states(
+            _sequence_or_empty(bundle.providers.get("workflow_states")),
+            agent_ids,
+        )
+    )
+    findings.extend(validate_retirement_ledger(root, bundle))
     return sorted(findings, key=finding_sort_key)
 
 
@@ -4756,6 +5735,232 @@ def _section_names(text: str) -> tuple[str, ...]:
     return tuple(headings)
 
 
+def _current_memory_label_values(text: str, label: str) -> tuple[str, ...]:
+    pattern = re.compile(
+        rf"^-\s+{re.escape(label)}:\s+`([^`\r\n]+)`\s*$",
+        re.MULTILINE,
+    )
+    return tuple(match.group(1) for match in pattern.finditer(text))
+
+
+def _git_commit_is_ancestor(root: pathlib.Path, commit: str) -> bool:
+    try:
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+            cwd=root,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
+
+
+def _validate_current_memory(
+    root: pathlib.Path, bundle: ContractBundle
+) -> list[Finding]:
+    """Validate the bounded advisory current-state record without value output."""
+
+    findings: list[Finding] = []
+    source = "agent-governance-artifacts"
+    profiles = [
+        entry
+        for entry in _sequence_or_empty(bundle.artifacts.get("artifacts"))
+        if isinstance(entry, Mapping)
+        and entry.get("profile_id") == "governance-current-memory"
+    ]
+    if (
+        len(profiles) != 1
+        or profiles[0].get("path_pattern") != CURRENT_MEMORY_PATH
+        or profiles[0].get("artifact_type") != "governance-current-memory"
+        or profiles[0].get("repository_section") != "harness"
+        or profiles[0].get("canonical") is not True
+        or tuple(_sequence_or_empty(profiles[0].get("required_sections")))
+        != CURRENT_MEMORY_SECTIONS
+    ):
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "profile",
+            "one-registered-current-memory-profile",
+            "profile-contract-mismatch",
+            source,
+        )
+
+    try:
+        text = _read_root_confined_regular_text(
+            root,
+            pathlib.PurePosixPath(CURRENT_MEMORY_PATH),
+            max_bytes=CURRENT_MEMORY_MAX_BYTES,
+        )
+    except (FileNotFoundError, OSError, UnicodeError, _UnsafeRootFileError):
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "file",
+            "bounded-readable-current-memory",
+            "current-memory-unavailable",
+            source,
+        )
+        return sorted(findings, key=finding_sort_key)
+
+    if len(text.encode("utf-8")) > CURRENT_MEMORY_MAX_BYTES:
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "bytes",
+            "at-most-32768-bytes",
+            "byte-bound-exceeded",
+            source,
+        )
+    if len(text.splitlines()) > CURRENT_MEMORY_MAX_LINES:
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "lines",
+            "at-most-400-lines",
+            "line-bound-exceeded",
+            source,
+        )
+    if _section_names(text) != CURRENT_MEMORY_SECTIONS:
+        _add(
+            findings,
+            "AGC-MEMORY-BOUNDS",
+            CURRENT_MEMORY_PATH,
+            "sections",
+            "exact-ordered-seven-section-envelope",
+            "section-envelope-mismatch",
+            source,
+        )
+
+    body = _markdown_body(text)
+    if any(pattern.search(body) for pattern in _CURRENT_MEMORY_FORBIDDEN_PATTERNS):
+        _add(
+            findings,
+            "AGC-MEMORY-FORBIDDEN-MATERIAL",
+            CURRENT_MEMORY_PATH,
+            "content",
+            "advisory-value-free-current-state",
+            "forbidden-material-present",
+            source,
+        )
+
+    labels = {
+        label: _current_memory_label_values(body, label)
+        for label in _CURRENT_MEMORY_LABELS
+    }
+    for label, values in labels.items():
+        if len(values) != 1:
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                f"label.{label.lower().replace(' ', '-')}",
+                "exactly-one-value-free-label",
+                "label-cardinality-mismatch",
+                source,
+            )
+
+    task_values = labels["Current task"]
+    if len(task_values) == 1:
+        task_path = task_values[0]
+        if (
+            not _is_safe_repo_path(task_path)
+            or not task_path.startswith(_CURRENT_MEMORY_TASK_PREFIX)
+            or not task_path.endswith(".md")
+        ):
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                "label.current-task",
+                "safe-stage04-task-path",
+                "invalid-task-reference",
+                source,
+            )
+        else:
+            try:
+                task_text = _read_root_confined_regular_text(
+                    root,
+                    pathlib.PurePosixPath(task_path),
+                    max_bytes=MAX_REPOSITORY_TEXT_BYTES,
+                )
+                _, task_metadata = _frontmatter(task_text)
+            except (
+                FileNotFoundError,
+                OSError,
+                UnicodeError,
+                _UnsafeRootFileError,
+            ):
+                task_metadata = None
+            if not isinstance(task_metadata, Mapping) or task_metadata.get(
+                "status"
+            ) not in {"draft", "active"}:
+                _add(
+                    findings,
+                    "AGC-MEMORY-STALE-STATE",
+                    CURRENT_MEMORY_PATH,
+                    "label.current-task",
+                    "existing-draft-or-active-task",
+                    "task-state-stale",
+                    source,
+                )
+
+    commit_values = labels["Verified commit"]
+    if len(commit_values) == 1:
+        verified_commit = commit_values[0]
+        if re.fullmatch(r"[0-9a-f]{40}", verified_commit) is None:
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                "label.verified-commit",
+                "full-lowercase-git-commit",
+                "invalid-commit-label",
+                source,
+            )
+        elif not _git_commit_is_ancestor(root, verified_commit):
+            _add(
+                findings,
+                "AGC-MEMORY-STALE-STATE",
+                CURRENT_MEMORY_PATH,
+                "label.verified-commit",
+                "commit-resolving-to-head-ancestor",
+                "verified-commit-stale",
+                source,
+            )
+
+    verified_at_values = labels["Verified at"]
+    if len(verified_at_values) == 1:
+        try:
+            verified_at = dt.datetime.fromisoformat(verified_at_values[0])
+        except ValueError:
+            verified_at = None
+        if (
+            verified_at is None
+            or verified_at.tzinfo is None
+            or verified_at.utcoffset() is None
+        ):
+            _add(
+                findings,
+                "AGC-MEMORY-BOUNDS",
+                CURRENT_MEMORY_PATH,
+                "label.verified-at",
+                "timezone-aware-iso8601-value",
+                "invalid-verification-time",
+                source,
+            )
+
+    return sorted(findings, key=finding_sort_key)
+
+
 def _readme_policy_prose(text: str) -> str:
     """Return normalized natural-language README prose for policy-topic scans."""
 
@@ -5357,6 +6562,29 @@ def _validate_provider_native_surfaces(
         for entry in _sequence_or_empty(bundle.providers.get("providers"))
         if isinstance(entry, Mapping) and isinstance(entry.get("provider_id"), str)
     }
+    expected_gemini_overrides: list[dict[str, object]] = []
+    for agent in _sequence_or_empty(bundle.catalog.get("agents")):
+        if not isinstance(agent, Mapping):
+            continue
+        agent_id = agent.get("agent_id")
+        profile = agent.get("work_profile")
+        if not isinstance(agent_id, str) or not isinstance(profile, str):
+            continue
+        selection = defaults.get((profile, "gemini"))
+        if selection is None or selection[1] is None:
+            continue
+        expected_gemini_overrides.append(
+            {
+                "match": {"overrideScope": agent_id},
+                "modelConfig": {
+                    "generateContentConfig": {
+                        "thinkingConfig": {
+                            "thinkingLevel": selection[1].upper(),
+                        }
+                    }
+                },
+            }
+        )
     event_bindings: dict[str, dict[str, Mapping[str, object]]] = {}
     for event in _sequence_or_empty(bundle.providers.get("semantic_events")):
         if not isinstance(event, Mapping) or not isinstance(event.get("event_id"), str):
@@ -5391,7 +6619,7 @@ def _validate_provider_native_surfaces(
                 "permissions",
             },
             "codex": {"hooks"},
-            "gemini": {"hooks", "security"},
+            "gemini": {"hooks", "modelConfigs", "security"},
         }
         if (
             not isinstance(config, Mapping)
@@ -5399,6 +6627,17 @@ def _validate_provider_native_surfaces(
         ):
             _provider_native_schema_finding(
                 findings, config_path, "json", "invalid-top-level-keys"
+            )
+        if provider == "gemini" and (
+            not isinstance(config, Mapping)
+            or config.get("modelConfigs")
+            != {"overrides": expected_gemini_overrides}
+        ):
+            _provider_native_schema_finding(
+                findings,
+                config_path,
+                "modelConfigs",
+                "invalid-scoped-model-configs",
             )
         hooks = config.get("hooks") if isinstance(config, Mapping) else None
         if not isinstance(hooks, Mapping):
@@ -5977,6 +7216,7 @@ def validate_repository(
     if section in {"all", "harness"}:
         _validate_root_shims(reader, bundle.artifacts, findings)
         _validate_readme_profiles(reader, bundle.artifacts, findings)
+        findings.extend(_validate_current_memory(root, bundle))
         _validate_harness_semantic_surfaces(reader, bundle, findings)
         harness = root / "docs/00.agent-governance/harness-implementation-map.md"
         if not harness.is_file():

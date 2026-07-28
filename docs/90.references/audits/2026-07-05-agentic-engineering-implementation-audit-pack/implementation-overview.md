@@ -6,7 +6,7 @@ parent_ids:
   - spec:123-agentic-engineering-audit-remediation
   - task:2026-07-11-agentic-engineering-audit-remediation
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:overview]
-reviewed_at: 2026-07-22
+reviewed_at: 2026-07-27
 review_cycle: per-remediation-task
 ---
 
@@ -93,14 +93,15 @@ controlled agent all-files wrapper. The full historical metadata inventory and
 README migration remain advisory rather than corpus-wide blocking.
 
 Provider synchronization, lifecycle semantics, hook-parity generation, the
-existing CI metadata step, and exact `8/8` fixture plus `10/10` regression
-scoring are current tracked
-evidence. The 2026-07-12 read-only GitHub observation narrows remote
-configuration uncertainty, but does not supply recent check-run evidence or
-authorize enforcement mutation. Native provider acceptance, live comparative
-model scoring, live execution, and model entitlement
-remain Partial or Needs Revalidation as appropriate. The model catalog remains fixed
-at 2026-07-10 10:00 KST and no model policy is changed by this audit.
+existing CI metadata step, and exact `11/11` fixture plus `16/16` regression
+scoring are current tracked evidence. The bounded
+`2026-07-26T18:22:32+09:00` GitHub observation records public repository/run
+metadata, including 15 observed jobs and a failed run with unverified root
+cause, but it cannot read authenticated enforcement state or authorize
+mutation. Native provider acceptance, live comparative model scoring, live
+execution, and model entitlement remain Partial or Needs Revalidation as
+appropriate. The model catalog remains fixed at 2026-07-10 10:00 KST and no
+model policy is changed by this audit.
 
 The bounded target-surface reconciliation observed on 2026-07-19 does not alter
 the 161-row criterion distribution. It records distinct root content and Stage
@@ -117,7 +118,7 @@ ten-field schema, vocabularies, ID uniqueness, exact per-report counts, and all
 15 overview categories. Historical Task 4-6 baseline facts remain dated context,
 not current implementation state.
 
-## Bounded Revalidation (2026-07-22)
+## Bounded Revalidation (through 2026-07-27)
 
 The 2026-07-12 criterion distribution and the 2026-07-19 observations above
 remain a historical audit baseline. The following narrower state is current:
@@ -142,6 +143,15 @@ broad supply-chain coverage, deployment success, or a formal framework claim.
 Exact commands, project identities, digests, review outcomes, and commit
 identities remain owned by the linked Stage 04 task records.
 
+The 2026-07-27 canonical-evidence refresh reconciles the current Stage 00
+cardinalities and official source observations without changing any criterion
+state: 14 roles, 24 functions, five exact profiles, 11 model records, eight
+harness layers, eight ordered workflow states, nine capability-intake rows,
+11 fixtures, and 16 regressions. The provider contract facts retain
+`2026-07-26T20:08:18+09:00`; external revalidation is separately timestamped
+`2026-07-27T02:33:54+09:00`. The model policy has no active fallback graph or
+implicit substitution.
+
 ## Implementation Status Matrix
 
 | Category | Status | Evidence | Summary |
@@ -153,14 +163,14 @@ identities remain owned by the linked Stage 04 task records.
 | Gemini provider harness/loop | Partial | [Provider audit](./provider-harness-loop-implementation.md), `.gemini/`, `.agents/` | Fourteen native Gemini agents, settings, and hook wrappers are generated separately from the shared `.agents` compatibility surface; live acceptance/interception remains unproved. |
 | Common provider-neutral rules/environment | Partial | [Workspace rules audit](./workspace-rules-environment-implementation.md) | Authority, catalog parity, skills, and validation are strong; live/global environment facts and measured evidence closure remain incomplete. |
 | Agent instructions, catalogs, vibe coding, and model routing | Partial | [Instruction/catalog/model audit](./agent-instructions-catalog-vibe-models.md) | Sixteen AIV, seven AIC, and seven AMS rows cover authority, safe iteration, catalog add/merge/reject, exact literals, cutoff integrity, and eval gaps without importing identities or changing policy. |
-| Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, `.gemini/`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Local scripts, CI gates, generated native adapters/hooks, exact `8/8` plus `10/10` semantic evaluation, indexes, sync checks, and the controlled pre-commit wrapper exist; live provider execution, remote enforcement, and CD remain partial or missing. |
+| Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, `.gemini/`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Local scripts, CI gates, generated native adapters/hooks, exact `11/11` plus `16/16` semantic evaluation, indexes, sync checks, and the controlled pre-commit wrapper exist; live provider execution, remote enforcement, and CD remain partial or missing. |
 | Spec-driven SDLC | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage taxonomy, document roles, type-specific numbering, templates, broad traceability, and typed direct-parent/transition checks are validator-backed for the migrated active chain and changed/new documents. The full historical corpus remains advisory, so retroactive parent and lifecycle history is incomplete. |
 | Frontmatter, templates, and README profiles | Partially Implemented | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml), `scripts/validation/check-document-metadata.py` | Typed profiles, stable IDs, direct relations, deterministic serialization, freshness fields, transitions, template instantiation, and exact-one README profile classification are implemented. The historical inventory remains advisory, and the 37 status-bearing README baseline awaits the next migration wave. |
 | Release communication and records | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Release index](../../../05.operations/releases/README.md), [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md), `CHANGELOG.md`, `.github/workflows/generate-changelog.yml` | A distinct Release profile, checker route, copyable template, selection route, and Stage 05 index now exist beside manual readiness and tag-string changelog verification. `CHANGELOG.md` has no released entry, and no Release event record, GitHub Release, artifact, or CD deployment evidence exists. |
 | Docker Compose / infrastructure | Partial | [Compose/infrastructure/operations readiness](./compose-infrastructure-operations-readiness.md), [Compose coverage](../../data/docker/compose-profile-service-coverage.md) | Inventory, static render, hardening, and tracked version provenance are strong. Startup, observed health, migration, and promotion are missing; recovery, upgrade, backup/restore, and rollback have procedure evidence without current rehearsal. |
-| CI/CD | Partial | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.github/workflows/ci-quality.yml` | Seven workflows define 22 jobs and `ci-quality.yml` defines 15 quality jobs. The 2026-07-12 read-only observation found classic `main` protection with 12 required contexts, three locally contracted contexts absent remotely, zero rulesets, and zero environments. No tracked promotion, deployment, Release asset, or automated rollback job exists, so CI must not be labeled complete CD. |
+| CI/CD | Partial | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.github/workflows/ci-quality.yml`, [GitHub Actions observation](../../data/governance/github-actions-control-plane-observation.yaml) | Seven workflows define 23 jobs and `ci-quality.yml` defines 16 quality jobs. The latest public remote observation saw 15 jobs in failed run `29777690571`, with root cause and authenticated ruleset/branch-protection/environment state unverified. No tracked promotion, deployment, Release asset, or automated rollback job exists, so CI must not be labeled complete CD. |
 | QA, formatting, linting, syntax | Partially Implemented | [SDLC quality audit](./sdlc-quality-formatting-implementation.md), `.pre-commit-config.yaml`, [controlled wrapper](../../../../scripts/validation/run-agent-precommit-all-files.sh) | Sixteen QAF rows separate local, CI, and remote evidence; formatting/linting/type/test coverage remains surface-specific, while the controlled wrapper is implemented and verified by its 29-case fake-hook suite. Its observation boundary is Git-visible, non-ignored repository paths only. |
-| Security | Partially Implemented | [security maturity audit](./security-framework-maturity.md), [security readiness](../../data/security/security-automation-readiness.md) | Disclosure, approvals, workflow controls, secret scanning, Dependabot, and one scoped npm vulnerability gate exist. Dated read-only classic protection evidence exists, but recent runs and complete local/remote context parity do not. Broader SCA/container scanning, SBOM, provenance/attestation, signing/verification, and Scorecard are missing. |
+| Security | Partially Implemented | [security maturity audit](./security-framework-maturity.md), [security readiness](../../data/security/security-automation-readiness.md) | Disclosure, approvals, workflow controls, secret scanning, Dependabot, patched `zizmor==1.28.0`, and one scoped npm vulnerability gate exist. A public failed-run observation exists, but its root cause and authenticated enforcement/CODEOWNERS state remain unverified. Broader SCA/container scanning, SBOM, provenance/attestation, signing/verification, and Scorecard are missing. |
 
 ## Findings
 
@@ -181,13 +191,13 @@ identities remain owned by the linked Stage 04 task records.
   live sandbox/network/MCP facts, exact entitlement, and
   task-fit evaluation remain conservative Partial or Needs Revalidation states.
 
-### Remote Evidence Classes as of 2026-07-12
+### Remote Evidence Classes as of 2026-07-26
 
 | Evidence class | Current evidence | Boundary |
 | --- | --- | --- |
-| Tracked definitions | The local CI/protection contract names 15 contexts. | Definitions do not prove execution or remote enforcement. |
-| Observed remote configuration | Classic `main` protection is enabled with 12 required contexts; repository rulesets are `0`; environments are `0`. | `docs-implementation-alignment`, `agent-output-eval-fixture-gate`, and `dependency-vulnerability-audit` are absent from the remote required set. |
-| Recent execution | No recent check-run or deployment-run evidence was collected for this reconciliation. | Required configuration is not a green-run claim. |
+| Tracked definitions | The local quality workflow names 16 jobs. | Definitions do not prove execution or remote enforcement. |
+| Observed public metadata | Remote default commit `a897978f`, failed run `29777690571`, 15 observed jobs, and three GitHub-managed workflows were recorded read-only. | Public metadata does not establish failure root cause, required-check enforcement, CODEOWNERS application, or deployment state. |
+| Authenticated control plane | Rulesets, classic branch protection, environments, secrets, and variables are `unverified`. | Absence of authenticated readback must not be rewritten as zero or disabled. |
 | Enforcement mutation | No remote protection, ruleset, environment, workflow, or repository setting was changed. | Later synchronization remains separately approval-gated. |
 
 ## Gap / Follow-up
@@ -216,8 +226,8 @@ through repo contracts, LLM Wiki safe-path
 coverage is grouped by source bucket/category in Stage 90 data, tech-stack
 version source provenance is generated from the registry and listed Compose
 declarations, provider hook parity is generated with native Gemini settings and
-hook wrappers, and agent-output evaluation requires exact `8/8` fixture and
-`10/10` synthetic-regression markers in local and CI routes. The Storybook Next.js dependency surface has a high
+hook wrappers, and agent-output evaluation requires exact `11/11` fixture and
+`16/16` synthetic-regression markers in local and CI routes. The Storybook Next.js dependency surface has a high
 severity npm audit gate, and security automation readiness is generated from
 tracked workflow/script surfaces.
 

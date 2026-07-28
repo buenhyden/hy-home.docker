@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:quality-ci-formatting
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-16
+reviewed_at: 2026-07-27
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md -->
@@ -15,7 +15,7 @@ review_cycle: on-source-change
 This reference compares primary quality and delivery guidance with the tracked
 local, CI, and remote evidence surfaces in `hy-home.docker`. It inventories the
 actual job and gate definitions at baseline
-`cf8790ca98ad395bb58c127ea41b1d0d02455f0e`; generated Graphify data is
+`ab3a047511c2bf9b5a95ebac737f3ebdb5589384`; generated Graphify data is
 navigation-only because its report was built from older commit `30df271a`.
 
 ## Purpose
@@ -68,8 +68,10 @@ this file owns only the concrete QA evidence-surface inventory.
   release candidate through named environments and records deployment outcome;
   build or tag verification alone is not CD.
 - **Remote-only / unknown** means the tracked repository cannot establish
-  current remote enforcement. The historical proposal records a read-only
-  2026-07-04 observation, but this task did not re-query remote state.
+  current authenticated enforcement. The latest bounded observation at
+  `2026-07-26T18:22:32+09:00` contains public repository/run metadata only;
+  authenticated rulesets, branch protection, environments, secrets, and
+  variables remain unverified.
 - **Required checks** are remote branch/ruleset configuration that names check
   contexts; a matching local command, workflow file, or successful historical
   run does not prove the requirement is currently enforced.
@@ -80,11 +82,12 @@ this file owns only the concrete QA evidence-surface inventory.
 ## Tracked Inventory
 
 The seven files under [`.github/workflows/`](../../../../.github/workflows/) define
-**22 job IDs**: 15 in `ci-quality.yml` and seven in the other six workflows.
-The quality workflow's 15 IDs are:
+**23 job IDs**: 16 in `ci-quality.yml` and seven in the other six workflows.
+The quality workflow's 16 IDs are:
 
 `docs-traceability`, `docs-implementation-alignment`, `repo-contracts`,
-`agent-output-eval-fixture-gate`, `dependency-vulnerability-audit`,
+`agent-output-eval-fixture-gate`, `supply-chain-fixture-policy`,
+`dependency-vulnerability-audit`,
 `git-flow-contract`, `compose-validation`,
 `compose-all-profiles-validation`, `infrastructure-hardening`,
 `template-security-baseline`, `quickwin-baseline`, `pre-commit`,
@@ -132,19 +135,19 @@ remote-only responsibilities; it is not a full CI replica.
 | Docs traceability | Check execution/operations links | [`check-doc-traceability.sh`](../../../../scripts/validation/check-doc-traceability.sh) | `docs-traceability` | traceability | Blocks local runner or CI job | No external source defines the repository taxonomy | Owner: [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md). |
 | Docs implementation alignment | Compare active docs with tracked implementation surfaces | [`check-doc-implementation-alignment.sh`](../../../../scripts/validation/check-doc-implementation-alignment.sh) | `docs-implementation-alignment` | traceability | Blocks local runner or CI job | External sources do not prove repo-local current truth | Owner: [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md). |
 | Repository contracts | Validate taxonomy, templates, workflow/job coupling, generated references, and implementation drift | [`check-repo-contracts.sh`](../../../../scripts/validation/check-repo-contracts.sh) | `repo-contracts` | contract/security | Blocks local runner or CI job | GitHub syntax supports job structure, not repository-specific contracts | Owner: [`check-repo-contracts.sh`](../../../../scripts/validation/check-repo-contracts.sh). |
-| Agent-output eval fixtures | Validate and score eight exact synthetic fixtures plus ten deterministic regressions | [`run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) | `agent-output-eval-fixture-gate` | test/eval | CI/local routing requires exact fixture and regression pass markers | No fixed external source defines repository fixture semantics | This gates bounded repository semantics, not live model quality. Owner: [eval fixture runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh). |
+| Agent-output eval fixtures | Validate and score 11 exact synthetic fixtures plus 16 deterministic regressions | [`run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`](../../../../scripts/validation/run-agent-output-eval-fixtures.sh) | `agent-output-eval-fixture-gate` | test/eval | CI/local routing requires exact fixture and regression pass markers | No fixed external source defines repository fixture semantics | This gates bounded repository semantics, not live model quality. Owner: [eval fixture runner](../../../../scripts/validation/run-agent-output-eval-fixtures.sh). |
 | Dependency vulnerability audit | Fail on high-severity Storybook Next.js dependency findings | `npm audit --audit-level=high --prefix projects/storybook/nextjs` | `dependency-vulnerability-audit` | security | Dedicated CI job blocks on threshold | GitHub secure-use is complementary, not npm policy | Scope is one project/package lock. Owner: [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml). |
 | Provider drift | Compare generated Codex/Gemini projections with canonical sources | [`sync-provider-surfaces.sh`](../../../../scripts/operations/sync-provider-surfaces.sh) verify mode | `repo-contracts` supplies broader catalog parity, not the exact command | drift | Blocks the local runner on detected drift | No fixed external source defines provider projection policy | Verification does not prove provider runtime acceptance. Owner: [provider adapter model](../../../00.agent-governance/providers/agents-md.md). |
 | Generated-data freshness | Check Wiki index and generated contract snapshots | [`generate-llm-wiki-index.sh --check`](../../../../scripts/knowledge/generate-llm-wiki-index.sh); generators checked inside repo contracts | `repo-contracts` | freshness | Blocks local runner/repo-contracts when stale | External sources do not define generated artifact ownership | Never hand-edit generated data; run its canonical generator. Owner: [QA scope](../../../00.agent-governance/scopes/qa.md). |
-| Workflow security scan | Analyze Actions and upload SARIF | No equivalent local runner step | `zizmor` | security | GitHub job blocks when run; SARIF upload needs remote permissions | GitHub secure use supports SHA pinning, least privilege, and injection caution | Correct job ID is `zizmor`, not the obsolete variant. Owner: [GitHub governance](../../../00.agent-governance/rules/github-governance.md). |
-| Remote branch protection | Require remote checks/reviews before merge | No local command can prove enforcement | Remote GitHub settings | remote enforcement | Unknown for 2026-07-11; no current remote query was performed | Actions syntax says required skipped checks can remain pending, but does not prove configuration | Treat as remote-only/unknown until directly reverified. Owner: [GitHub governance](../../../00.agent-governance/rules/github-governance.md). |
+| Workflow security scan | Analyze Actions and upload SARIF | No equivalent local runner step | `zizmor` | security | GitHub job blocks when run; SARIF upload needs remote permissions | GitHub secure use supports SHA pinning, least privilege, and injection caution | The tracked command pins patched `zizmor==1.28.0`; advisory GHSA-f42p-wjw5-97qh affects only 1.27.0. Owner: [GitHub governance](../../../00.agent-governance/rules/github-governance.md). |
+| Remote branch protection | Require remote checks/reviews before merge | No local command can prove enforcement | Remote GitHub settings | remote enforcement | The 2026-07-26 public observation cannot read authenticated control-plane state | Rulesets can enforce branch/tag interaction, but documentation and public run metadata do not prove configuration | Treat rulesets, branch protection, environments, secrets, and variables as unverified until authenticated readback is separately authorized. Owner: [GitHub governance](../../../00.agent-governance/rules/github-governance.md). |
 
 ## Workspace Comparison and Ownership
 
 | Category | Current state | Primary comparison | Status | Gap | Recommendation | Canonical owner | Evidence | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | QA and evidence classes | Tracked gates distinguish format, lint, syntax, type, test, build, coverage, security, traceability, eval, and freshness evidence. | pre-commit supports hook orchestration; GitHub Actions supports jobs/steps. | Implemented | Applicability still varies by changed surface. | Record named commands/jobs and N/A rationale rather than “all QA.” | `docs/00.agent-governance/scopes/qa.md` | Matrix above; tracked runner/workflow/config | High |
-| CI feedback | Seven workflows define 22 jobs; `ci-quality.yml` defines 15 independent quality jobs and none declares a deployment environment. | GitHub workflow syntax defines event triggers, jobs, steps, permissions, and dependencies. | Partially Implemented | Tracked definitions do not prove successful runs or current required-check enforcement. | Report exact job results separately from remote enforcement. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml` | High |
+| CI feedback | Seven workflows define 23 jobs; `ci-quality.yml` defines 16 independent quality jobs and none declares a deployment environment. The latest public remote run observation contains 15 jobs and a failure with unverified root cause. | GitHub workflow syntax and monitoring docs define jobs, logs, and run views; rulesets remain a separate control plane. | Partially Implemented | Tracked definitions do not prove successful runs or current required-check enforcement; public metadata cannot explain the observed failure. | Report exact tracked jobs, observed run metadata, and authenticated enforcement as separate evidence classes. | `docs/00.agent-governance/rules/github-governance.md` | `.github/workflows/*.yml`; GitHub Actions control-plane observation | High |
 | CD / promotion | No tracked workflow deploys an application or infrastructure target, references a GitHub environment, promotes across environments, or performs rollback. | GitHub environments support reviewer/custom protection rules, branch restrictions, environment secrets, and deployment history. | Missing | Green CI/build/tag checks can be mislabeled as deployment readiness. | Define promotion, approval, deployment record, verification, and rollback in a later Stage 03/04 delivery contract. | `docs/03.specs/README.md` | Workflow scan plus Stage 05 release runbook | High |
 | Release record | `CHANGELOG.md`, a manual release-management runbook, and a tag-triggered changelog coverage check exist; the workflow does not create release notes or assets. | GitHub Releases bind a tagged iteration to release notes and optional downloadable assets. | Partially Implemented | Tag-string coverage is not a complete release record or artifact integrity statement. | Preserve the manual readiness boundary and define release artifact/record ownership with future CD work. | `docs/05.operations/runbooks/00-workspace/release-management.md` | `CHANGELOG.md`; `.github/workflows/generate-changelog.yml` | High |
 | Pre-commit semantics | The config defines 24 hook IDs; hooks are stage/file filtered, and CI runs the suite with `eslint-nextjs` skipped in favor of its dedicated job. Direct agent all-files execution is prohibited; the implemented wrapper requires an initially clean linked worktree, tracked Task evidence, explicit allowed prefixes, a Git-visible snapshot comparison, and sanitized results. | pre-commit documents staged-file default execution, `--all-files`, explicit stages, file selection, and CI use. | Implemented | Hook count is not equivalent to executed coverage for every change or stage; wrapper observation excludes ignored/outside paths. | Use the controlled wrapper only at the approved QA stage and record markers/path sets rather than raw logs. | `.pre-commit-config.yaml` and wrapper | Config, wrapper tests, CI workflow | High within the bounded observation contract |
@@ -173,8 +176,8 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 
 - Cite the exact script, hook ID, or workflow job for every QA claim.
 - Record `zizmor` as GitHub-only SARIF evidence.
-- Record the local runner by mode: 12 gates for default, `--script-backed`, and
-  `--all-profiles`; 8 for `--harness`; and 0 for `--list`, whose one recommender
+- Record the local runner by mode: 20 gates for default, `--script-backed`, and
+  `--all-profiles`; 18 for `--harness`; and 0 for `--list`, whose one recommender
   entry remains advisory and non-executed.
 - Do not claim that post-tool validation runs Prettier.
 - Keep remote required-check and branch-protection state unknown unless a
@@ -197,15 +200,15 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
   GitHub ruleset, protected-branch/required-check, and deployment-environment
   guidance was re-opened on **2026-07-13**; the earlier dated inventory remains
   unchanged.
-- The exact official GitHub workflow-syntax, secure-use,
-  deployments/environments, and rulesets URLs, plus pre-commit and DORA metrics,
-  were re-opened on **2026-07-19**. No stale claim was confirmed in that bounded
-  set. Lower-risk sources retain their earlier retrieval dates. Tracked YAML and
-  15 local quality jobs still do not prove remote runs or enforcement; the dated
-  12-context observation remains unverified rather than current truth.
+- The exact official GitHub secure-use, workflow-monitoring, and rulesets URLs,
+  plus the zizmor v1.28.0 release and GHSA-f42p-wjw5-97qh advisory, were
+  re-opened at `2026-07-27T02:33:54+09:00`. Tracked YAML and 16 local quality
+  jobs still do not prove remote runs or enforcement. The latest public
+  observation records 15 jobs and a failed run, while authenticated control
+  plane state and root cause remain unverified.
 - Mutable official pages prove retrieval-time guidance, not historical behavior
   or workspace enforcement.
-- Repo-local claims cite tracked sources at baseline `cf8790ca`; Graphify is
+- Repo-local claims cite tracked sources at baseline `ab3a0475`; Graphify is
   advisory because its report is older.
 - No external source in this reference is adopted workspace policy.
 
@@ -214,8 +217,10 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 - [Task 4 source ledger](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) - retrieval date, supported claim, evidence-surface class, and caveat for every fixed source
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - workflow/job/step and trigger syntax
 - [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secret, and immutable-action guidance
+- [GitHub workflow monitoring](https://docs.github.com/en/actions/how-tos/monitor-workflows) - run graph, history, job status, and log evidence surfaces
 - [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment approvals, environment secrets, restrictions, and protection rules
 - [GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) - layered remote branch/tag rule enforcement
+- [zizmor v1.28.0](https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0) and [GHSA-f42p-wjw5-97qh](https://github.com/zizmorcore/zizmor/security/advisories/GHSA-f42p-wjw5-97qh) - patched version and the 1.27.0-only credential debug-log advisory
 - [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) - required status check and merge-protection behavior
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, notes, and assets
 - [pre-commit](https://pre-commit.com/) - hook configuration, local execution, CI use, and skips
@@ -225,7 +230,7 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 - [Prettier CLI](https://prettier.io/docs/cli) - check-mode and exit-code behavior
 - [DORA metrics](https://dora.dev/guides/dora-metrics/) - current five-metric throughput/instability model
 - [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback
-- [CI workflow](../../../../.github/workflows/ci-quality.yml) - 15 tracked quality job IDs
+- [CI workflow](../../../../.github/workflows/ci-quality.yml) - 16 tracked quality job IDs
 - [Local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) - 20 script-backed and 18 harness gates plus responsibility split
 - [pre-commit config](../../../../.pre-commit-config.yaml) - 24 tracked hook IDs
 - [Scripts README](../../../../scripts/README.md) - script lifecycle and authority

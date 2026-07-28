@@ -4,7 +4,7 @@ artifact_id: audit:agentic-engineering-implementation:sdlc-quality-formatting
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:sdlc-qa-security]
-reviewed_at: 2026-07-12
+reviewed_at: 2026-07-27
 review_cycle: per-remediation-task
 ---
 
@@ -64,18 +64,18 @@ The Task 4 SDLC portion was revalidated on 2026-07-11 at baseline
 `e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb`. Task 6 then reproduced the
 quality inventory against tracked workflows, pre-commit configuration,
 scripts, project commands, `CHANGELOG.md`, and the release runbook. Seven tracked
-workflows contain 22 jobs; `ci-quality.yml` contains 15 quality jobs; the
+workflows contain 23 jobs; `ci-quality.yml` contains 16 quality jobs; the
 pre-commit configuration contains 24 hook IDs; the local runner executes 20
 script-backed steps or 18 harness steps and lists one advisory recommender
 separately. Definitions
 do not prove remote runs or branch-protection enforcement.
 
-Read-only remote evidence captured on 2026-07-12 establishes a narrower
-configuration fact: classic `main` protection is enabled with 12 required
-contexts, while the local contract names 15; `docs-implementation-alignment`,
-`agent-output-eval-fixture-gate`, and `dependency-vulnerability-audit` are
-absent remotely. Repository rulesets and environments are both `0`. This does
-not prove recent check execution and no remote setting was changed.
+The latest public remote observation at `2026-07-26T18:22:32+09:00` records
+default-branch commit `a897978f`, failed run `29777690571`, and 15 observed
+jobs; its root cause is unverified. Authenticated classic protection, rulesets,
+environments, secrets, and variables were not available in that observation,
+so the older 2026-07-12 12-context configuration remains historical rather
+than current evidence. No remote setting was changed.
 
 ## Criterion Matrix
 
@@ -93,8 +93,8 @@ not prove recent check execution and no remote setting was changed.
 | QAF-10 | Gate dependency vulnerabilities with explicit ecosystem, project, severity, and exception scope. | CI runs `npm audit --audit-level=high` only for `projects/storybook/nextjs`. | Partial | 3 | Improve | Security/QA owner and affected project | Existing scoped gate; broader SCA/container work is defined but still approval-gated in draft Spec 126. | Inspect `dependency-vulnerability-audit` and run only in an approved applicable environment. | High for the one npm project; no broader coverage. |
 | QAF-11 | Preserve hook stage/file filters and report intentional skips. | Twenty-four hook IDs have explicit file/stage filters; CI pre-commit intentionally skips `eslint-nextjs` because a dedicated job owns it. | Implemented | 3 | Retain | `.pre-commit-config.yaml` and CI workflow owner | Existing hook/CI orchestration; skipped hook is not silently counted. | Count hook IDs and inspect `files`, `exclude`, `stages`, and CI `SKIP`. | High. |
 | QAF-12 | Allow agents to run the full all-files pre-commit suite only through an isolated, evidence-bound wrapper. | Direct agent all-files execution remains prohibited; `run-agent-precommit-all-files.sh` provides the approved clean-linked-worktree, Stage-04-evidenced, changed-path-aware gate, and T-AER-009 independently approved its 29-case fake-hook suite. | Implemented | 3 | Retain | Controlled pre-commit wrapper and Stage 04 task owner | Retain wrapper contract tests and human-reviewed task evidence; observe only Git-visible, non-ignored repository paths. | Run the 29-case fake-hook suite; inspect T-AER-009 PASS/APPROVED evidence and wrapper contract. | High within the exact observation boundary; ignored/outside writes and process/filesystem sandboxing are not claimed. |
-| QAF-13 | Define independent CI jobs with explicit permissions and reproducible commands. | Seven workflows define 22 jobs; `ci-quality.yml` defines 15 jobs with read permissions and SHA-pinned actions. | Implemented | 3 | Retain | GitHub workflow and repository-contract owners | Existing CI definitions and local contract validation. | Inspect workflow syntax and run applicable local validators. | High for tracked definitions. |
-| QAF-14 | Separate tracked CI definitions from actual run results and required-check enforcement. | Local files define 15 quality jobs. The 2026-07-12 read-only observation found classic `main` protection with 12 required contexts and three local-only contexts; it did not collect recent workflow-run results or mutate enforcement. | Needs Revalidation | 1 | Improve | GitHub governance owner | Retain dated configuration evidence; separately verify recent named runs and synchronize protection only in an approved remote task. | Timestamped remote configuration plus separately collected named run evidence and repository identity. | High for the configuration/run/mutation boundary. |
+| QAF-13 | Define independent CI jobs with explicit permissions and reproducible commands. | Seven workflows define 23 jobs; `ci-quality.yml` defines 16 jobs with read permissions and SHA-pinned actions. The workflow pins `zizmor==1.28.0`, the patched release for the 1.27.0 advisory. | Implemented | 3 | Retain | GitHub workflow and repository-contract owners | Existing CI definitions and local contract validation. | Inspect workflow syntax, pinned action/tool versions, and run applicable local validators. | High for tracked definitions. |
+| QAF-14 | Separate tracked CI definitions from actual run results and required-check enforcement. | Local files define 16 quality jobs. The 2026-07-26 public observation recorded a failed run with 15 observed jobs at default commit `a897978f`; its root cause is unverified. Current authenticated branch protection, rulesets, environments, secrets, and variables remain unknown, and no enforcement was mutated. | Needs Revalidation | 1 | Improve | GitHub governance owner | Retain dated public evidence; separately obtain authorized control-state and named-run evidence before any synchronization task. | Timestamped public observation plus authorized remote configuration, named run evidence, and repository identity. | High for the tracked-definition/public-run/authenticated-control/mutation boundary. |
 | QAF-15 | Treat deployment, environment promotion, approvals, and rollback as CD rather than relabeling CI. | No tracked job declares an environment, deploys a target, promotes across environments, or performs automated rollback. | Missing | 0 | Add | Draft Spec 127 deployment/release chain | Keep the separately approval-gated CD design independent from quality CI. | Workflow scan plus later approved promotion/deployment/rollback acceptance evidence. | High. |
 | QAF-16 | Record a release iteration with tag, changelog, artifact, approval, and outcome evidence. | A Release profile, checker route, template, and Stage 05 index exist beside a tag-triggered changelog-string check and manual release runbook; `CHANGELOG.md` has only `Unreleased`, and no Release event/deployment record is present. | Partial | 1 | Improve | Draft Spec 127 chain and Stage 05 Release owner | Retain contract readiness and require approved record/asset evidence from a real event; the current check remains readiness only. | Inspect the Release route/template, changelog workflow/runbook, and require an actual event record before claiming execution. | High. |
 
@@ -106,7 +106,7 @@ not prove recent check execution and no remote setting was changed.
 | Execution planning | Implemented | [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Plans define WBS, verification, risk, and completion criteria. |
 | Task evidence | Implemented | [Stage 04 tasks README](../../../04.execution/tasks/README.md), [audit pack task](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Task files record evidence, status, deviation, and validation results. |
 | Documentation contracts | Partially Implemented | [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
-| CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, and workflow-security checks. Only 12 of the 15 locally contracted contexts were remotely required on 2026-07-12, and tracked definitions do not prove recent runs. |
+| CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines 16 docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, supply-chain-fixture, and workflow-security jobs. The latest public remote observation saw 15 jobs in a failed run; tracked definitions do not prove current remote success or enforcement. |
 | Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
 | Formatting | Partially Implemented | `scripts/hooks/post-tool-validate.sh`, pre-commit workflow, provider notes | Text-file trim/newline and selected shell/frontend formatting/linting exist; global formatting across all languages is not complete. |
 | Linting | Partially Implemented | `.github/workflows/ci-quality.yml`, pre-commit, frontend lint, shell syntax checks | Frontend and hook/script surfaces have checks; all repo languages do not have a single universal lint gate. |
@@ -114,7 +114,7 @@ not prove recent check execution and no remote setting was changed.
 | Docker Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [infra README](../../../../infra/README.md) | Default and all-profile validation are in CI; local validation script exists. |
 | Infrastructure hardening | Implemented | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml` | Hardening baseline is a CI gate and local script. |
 | Security quality | Partially Implemented | `.github/workflows/ci-quality.yml`, [approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md), `.github/SECURITY.md` | Workflow security and secret boundaries exist; full SSDF/SLSA automation is partial. |
-| CD / promotion / deployment | Not Implemented | `.github/workflows/*.yml`, [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md) | No tracked environment, promotion, deployment, release asset, or automated rollback job exists; the 2026-07-12 remote environment count was also `0`. |
+| CD / promotion / deployment | Not Implemented | `.github/workflows/*.yml`, [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md) | No tracked environment, promotion, deployment, release asset, or automated rollback job exists; current authenticated remote environment state is unknown. |
 
 ## Findings
 
@@ -141,7 +141,7 @@ not prove recent check execution and no remote setting was changed.
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
 | Typed document identity, parents, lifecycle, and README profiles | Partially Implemented | Retain the implemented registry/checker/contract foundation and use the [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md) to bound later corpus migration. |
 | Actual Release record | Not Implemented | Keep the implemented Release profile/template/index, changelog communication, and release runbook distinct; create a record only from an actual event. |
-| Agent-output eval as QA | Fixture Pack Implemented / Runner Partial | Use [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) for recurring docs, provider, and infra tasks; executable QA gating remains future work. |
+| Agent-output eval as QA | Synthetic Repository Eval Implemented | Retain the eleven fixtures, sixteen regressions, exact CI markers, and deterministic runner; live comparative model scoring remains separately approval-gated. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Route deployment/release engineering through the separately approval-gated draft Spec 127 chain; keep it separate from validation CI. |
 | Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](./security-framework-maturity.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
 
@@ -156,9 +156,9 @@ runtime cost before adding new gates.
 - Use repository scripts and CI workflow for current implementation claims.
 - Use external quality/security standards as criteria, not as adopted policy.
 - Exact GitHub workflow-syntax and secure-use URLs plus pre-commit were
-  re-opened on 2026-07-19; no stale claim was confirmed. The tracked 15-job
-  quality workflow is local source truth, while the 2026-07-12 remote
-  12-context observation remains dated and unverified.
+  re-opened during bounded revalidation. The tracked 16-job quality workflow is
+  local source truth, while the dated remote 15-job failed run does not prove
+  current authenticated control state or successful execution.
 - Do not record raw logs or secret values as QA evidence.
 
 ## Sources

@@ -6,33 +6,46 @@ layer: agentic
 
 - Date: 2026-05-10
 - Layer: agentic
-- Status: active
+- Status: superseded
 - Applies To: `docs/00.agent-governance/memory/`, bootstrap, task checklists, repository validators
 - Tags: #governance #memory #agentic
 - Retrieval Keywords: governance memory, advisory memory, memory template, progress.md, progress template, out-of-scope findings, repeated failures, memory contract
-- Last Verified: 2026-05-10
+- Last Verified: 2026-07-26
 
 ## Problem
 
-The governance memory folder existed and was referenced as a place to record out-of-scope findings, but it was not clearly wired into the bootstrap flow as pre-task advisory context. The `progress.md` file and ordinary memory notes also lacked dedicated templates in `docs/99.templates/` and explicit requirements for agents to update progress and memory pointers during work.
+This historical finding recorded the first repository memory workflow. Its
+active-work-log assumptions are superseded by the bounded current-memory
+contract and durable Stage 04 Task evidence.
 
 ## Context
 
-`docs/00.agent-governance/memory/` is intended for durable governance notes, repeated pitfalls, and reusable remediation patterns. It must not become active policy or override rules, scopes, provider overlays, direct user instructions, or live repository evidence.
+`docs/00.agent-governance/memory/` remains advisory. The current replacement is
+defined by [`README.md`](./README.md), [`current.md`](./current.md), and the
+applicable Stage 04 Task; memory cannot override rules, scopes, provider
+overlays, direct user instructions, or live repository evidence.
 
 ## Resolution
 
-The bootstrap sequence, agentic rule, task checklist, governance hub, memory template, progress template, and repository contract check now make the memory workflow explicit:
+This finding is retained only for provenance. The replacement contract is:
 
-- Review memory and `progress.md` for repository work.
-- Retrieve only relevant notes with targeted search.
-- Treat memory as advisory context.
-- Record task progress, verification evidence, and durable memory pointers in `progress.md`.
-- Record durable out-of-scope or repeated-failure findings back into memory notes created from `docs/99.templates/templates/governance/memory.template.md`.
+- Review `memory/README.md` and `memory/current.md` for the bounded active
+  handoff.
+- Retrieve only relevant durable notes with targeted search and corroborate
+  them against live evidence.
+- Record progress, verification, final evidence, and durable links in the
+  applicable Stage 04 Task.
+- Refresh `current.md` in place after verified-state changes.
+- Treat `progress.md` only as append-preserved historical navigation.
+- Create durable out-of-scope or repeated-failure notes from
+  `docs/99.templates/templates/governance/memory.template.md`.
 
 ## Prevention
 
-Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and runtime files. Use `progress.md` as the running work log and memory index, use `docs/99.templates/templates/governance/memory.template.md` for memory notes that should survive a single task, then validate the memory contract through `scripts/validation/check-repo-contracts.sh`.
+Do not reactivate this finding as policy. Keep active policy in `rules/`,
+`scopes/`, provider overlays, root shims, and runtime files. Use the replacement
+links above, preserve `progress.md` as historical navigation, and validate
+current memory through the Stage 00 repository contract.
 
 ## Evidence
 
@@ -41,6 +54,8 @@ Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and ru
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
+- `docs/00.agent-governance/memory/current.md`
+- `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
 - `docs/99.templates/templates/governance/memory.template.md`
 - `docs/99.templates/templates/governance/progress.template.md`
 - `scripts/validation/check-repo-contracts.sh`
@@ -48,4 +63,5 @@ Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and ru
 ## Related Documents
 
 - `README.md`
+- `current.md`
 - `progress.md`

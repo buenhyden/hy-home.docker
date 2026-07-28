@@ -10,18 +10,21 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 1. Repository Protection Contract
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
-- This is an agent behavior contract. Remote branch protection was most
-  recently verified read-only on 2026-07-04: classic branch protection is
-  active on `main`, 12 remote contexts are required with strict/latest
-  up-to-date branch enabled, 1 approving review and CODEOWNERS review are
-  required, conversation resolution is required, force pushes and branch
-  deletion are blocked, and `enforce_admins=false`. Remote rulesets are not
-  active. Agents must re-verify remote state in future audit passes before
-  asserting enforcement.
+- This is an agent behavior contract, not evidence of applied GitHub settings.
+  The approved dated public snapshot is
+  `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`;
+  its control-plane verification and observed failure root cause are both
+  `unverified`.
 - "No exceptions" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary.
-- Remote branch protection and ruleset state must be verified from GitHub before claiming enforcement is active. The local verified-state record lives in `.github/rulesets/main-protection.md`.
+- Remote branch protection and ruleset state must be authenticated and read
+  back before claiming enforcement. The tracked desired-state proposal lives
+  in `.github/rulesets/main-protection.md`; tracked files do not prove applied
+  control-plane state.
 - If remote enforcement is absent or unknown, agents must still follow protected-branch discipline locally and report the remote enforcement state as blocked or unverified.
-- Required status checks listed in `.github/rulesets/main-protection.md` must pass before any PR is considered ready to merge. Agents must not declare "done" until those checks are green or explicitly report why remote enforcement could not be verified.
+- Required status checks listed in `.github/rulesets/main-protection.md` define
+  the local desired contract. Agents must not declare a PR ready to merge
+  without separately verified remote checks, or must explicitly report that
+  remote verification is unavailable.
 - CODEOWNERS-triggered reviews are mandatory. If a changed path is owned by a CODEOWNERS entry, that review must be obtained before merge — agents must note this requirement when completing PR review tasks.
 
 ## 2. Pull Request and Review Contract
@@ -214,10 +217,14 @@ runner.
 - `docs/00.agent-governance/providers/gemini.md`
 - `docs/00.agent-governance/providers/codex.md`
 - `docs/00.agent-governance/memory/progress.md`
-- `docs/00.agent-governance/memory/github-ci-contract-audit.md`
+- `.github/INDEX.md`
+- `.github/rulesets/main-protection.md`
+- `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`
 - `docs/05.operations/runbooks/00-workspace/release-management.md`
 
 ## References
 
 - <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
-- <https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions>
+- <https://docs.github.com/en/actions/reference/security/secure-use>
+- <https://docs.github.com/en/actions/how-tos/monitor-workflows>
+- <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>

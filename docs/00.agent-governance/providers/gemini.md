@@ -22,8 +22,10 @@ Gemini CLI-specific guidance for this repository.
 ## 3. Root Import Boundary
 
 The root `GEMINI.md` owns the executable import list. It loads bootstrap, this
-provider overlay, the memory index, and progress in that order; do not copy the
-list into another governance surface.
+provider overlay, the shared memory contract, and the bounded `current.md`
+record in that order. Gemini memory commands may inspect or refresh loaded
+context but may not copy, replace, or override the repository current-state
+body.
 
 ## 4. Instruction Precedence (Gemini-Specific)
 

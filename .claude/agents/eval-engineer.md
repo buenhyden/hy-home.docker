@@ -5,10 +5,11 @@ tools:
 - Read
 - Grep
 - Glob
-model: claude-sonnet-5
+model: claude-opus-5
 effort: high
 permissionMode: plan
 skills:
+- provider-model-evaluation
 - workspace-audit-revalidation
 ---
 

@@ -41,6 +41,8 @@ validation 작업을 보조합니다. 실행 절차나 policy 변경은 canonica
 - Agent-output eval fixture and local advisory runner references for recurring task surfaces
 - Generated provider hook parity and behavioral reminder references
 - Generated audit implementation matrix references for Stage 90 audit maintenance
+- Value-free agent-role and provider-model retirement provenance
+- Dated, non-authoritative GitHub Actions control-plane observations
 - Reviewed corpus lifecycle manifests and generator-owned safe summaries
 - Governance inventory context used by audit reports
 
@@ -56,21 +58,25 @@ validation 작업을 보조합니다. 실행 절차나 policy 변경은 canonica
 ```text
 governance/
 ├── README.md                          # This file
+├── agent-governance-retirement-ledger.yaml # Role/model retirement provenance
 ├── agent-output-eval-fixtures.md      # Agent-output eval fixture catalog
 ├── audit-implementation-matrix.md     # Generated audit implementation matrix snapshot
 ├── document-corpus-lifecycle/         # Reviewed manifests and generated safe summaries
 ├── gap-to-stage-routing.md            # Gap-to-stage routing advisory reference
+├── github-actions-control-plane-observation.yaml # Dated public remote observation
 └── provider-hook-parity-matrix.md     # Generated provider hook parity matrix
 ```
 
 ## Current References
 
+- [agent-governance-retirement-ledger.yaml](./agent-governance-retirement-ledger.yaml) - historical role and model replacements with immutable baseline commit/blob provenance
 - [agent-output-eval-fixtures.md](./agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for documentation, provider, and infrastructure tasks
 - [audit-implementation-matrix.md](./audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [document-corpus-lifecycle/README.md](./document-corpus-lifecycle/README.md) - corpus lifecycle manifest and generated-summary routing
 - [document-corpus-lifecycle/foundation.yaml](./document-corpus-lifecycle/foundation.yaml) - reviewed blocking Foundation migration manifest
 - [document-corpus-lifecycle/foundation-summary.md](./document-corpus-lifecycle/foundation-summary.md) - generator-owned safe Foundation summary
 - [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
+- [github-actions-control-plane-observation.yaml](./github-actions-control-plane-observation.yaml) - dated public GitHub Actions inventory with explicit unverified control-plane and root-cause boundaries
 - [provider-hook-parity-matrix.md](./provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist
 
 ## How to Work in This Area
@@ -78,8 +84,10 @@ governance/
 1. Verify that a new document is reference data, not active policy.
 2. Link every governance fact back to Stage 00 source documents.
 3. Keep non-README reference documents English-only.
-4. Validate lifecycle manifest and summary changes through their canonical lifecycle checker modes.
-5. Run `bash scripts/validation/check-repo-contracts.sh` after changing this category.
+4. Keep retirement records value-free and bind each source to an exact Git commit, path, and blob.
+5. Validate lifecycle manifest and summary changes through their canonical lifecycle checker modes.
+6. Keep remote observations source-linked, dated, non-authoritative, and explicit about every unverified field.
+7. Run `bash scripts/validation/check-repo-contracts.sh` after changing this category.
 
 ## Related Documents
 

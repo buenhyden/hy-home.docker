@@ -17,8 +17,19 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 RECOMMENDER = ROOT / "scripts/validation/recommend-qa-gates.sh"
 PRE_COMMIT = ROOT / ".pre-commit-config.yaml"
 WORKFLOW = ROOT / ".github/workflows/ci-quality.yml"
+GITHUB_INDEX = ROOT / ".github/INDEX.md"
+GITHUB_README = ROOT / ".github/README.md"
+MAIN_PROTECTION = ROOT / ".github/rulesets/main-protection.md"
 GITHUB_GOVERNANCE = (
     ROOT / "docs/00.agent-governance/rules/github-governance.md"
+)
+ARTIFACT_CONTRACT = (
+    ROOT / "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
+)
+GITHUB_OBSERVATION = (
+    ROOT
+    / "docs/90.references/data/governance/"
+    "github-actions-control-plane-observation.yaml"
 )
 CODEOWNERS = ROOT / ".github/CODEOWNERS"
 LABELER = ROOT / ".github/labeler.yml"
@@ -61,6 +72,45 @@ REQUIRED_CI_JOBS = frozenset(
 SUPPLY_CHAIN_GOVERNANCE_DESCRIPTION = (
     "Five focused operational-readiness unittest modules, the deterministic "
     "supply-chain policy check, and the supply-chain summary freshness check"
+)
+GITHUB_INDEX_SECTIONS = (
+    "Purpose",
+    "Surface Map",
+    "Authority and Change Routes",
+    "Verification",
+    "Related Documents",
+)
+GITHUB_INDEX_LINKS = (
+    "./workflows/ci-quality.yml",
+    "./rulesets/main-protection.md",
+    "../docs/00.agent-governance/rules/github-governance.md",
+    "../scripts/validation/run-local-qa-gates.sh",
+    "../docs/90.references/data/governance/"
+    "github-actions-control-plane-observation.yaml",
+)
+GITHUB_OBSERVATION_KEYS = {
+    "schema_version",
+    "observed_at",
+    "repository",
+    "authority",
+    "source_visibility",
+    "remote_default_commit",
+    "remote_default_source_url",
+    "local_base_commit",
+    "latest_ci_run_id",
+    "latest_ci_source_url",
+    "latest_ci_conclusion",
+    "observed_ci_jobs",
+    "root_cause",
+    "managed_workflows",
+    "control_plane_verification",
+    "public_sources",
+    "limitations",
+}
+GITHUB_MANAGED_WORKFLOWS = (
+    (222509952, "Dependabot Updates"),
+    (223086017, "CodeQL"),
+    (282786058, "Dependency Graph"),
 )
 
 TARGET_SURFACE_PATHS = (
@@ -192,6 +242,205 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             ),
         )
 
+    def test_ci_quality_has_exact_sixteen_job_ids(self) -> None:
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        jobs = workflow["jobs"]
+        self.assertEqual(16, len(jobs))
+        self.assertEqual(REQUIRED_CI_JOBS, frozenset(jobs))
+
+    def test_zizmor_dynamic_tool_is_exactly_pinned(self) -> None:
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        zizmor_steps = [
+            step
+            for step in workflow["jobs"]["zizmor"]["steps"]
+            if isinstance(step, dict)
+        ]
+        commands = [
+            step.get("run")
+            for step in zizmor_steps
+            if isinstance(step.get("run"), str)
+        ]
+        self.assertEqual(
+            [
+                "uvx --from 'zizmor==1.28.0' "
+                "zizmor . --format sarif . > results.sarif"
+            ],
+            [
+                command
+                for command in commands
+                if command is not None and "zizmor" in command
+            ],
+        )
+        self.assertNotIn(
+            "zizmor==1.27.0",
+            "\n".join(command for command in commands if command is not None),
+            "the yanked credential-logging release must be rejected",
+        )
+        run_steps = [
+            step
+            for step in zizmor_steps
+            if step.get("run")
+            == (
+                "uvx --from 'zizmor==1.28.0' "
+                "zizmor . --format sarif . > results.sarif"
+            )
+        ]
+        self.assertEqual(1, len(run_steps))
+        self.assertNotIn(
+            "env",
+            run_steps[0],
+            "offline zizmor must not receive a credential environment",
+        )
+
+    def test_github_index_is_navigation_only_and_not_readme(self) -> None:
+        self.assertTrue(GITHUB_INDEX.is_file(), "missing .github/INDEX.md")
+        self.assertFalse(GITHUB_README.exists(), ".github/README.md is forbidden")
+        text = GITHUB_INDEX.read_text(encoding="utf-8")
+        self.assertFalse(text.startswith("---"), "frontmatter is forbidden")
+        self.assertEqual(
+            GITHUB_INDEX_SECTIONS,
+            tuple(re.findall(r"(?m)^## (.+?)\s*$", text)),
+        )
+        for link in GITHUB_INDEX_LINKS:
+            with self.subTest(link=link):
+                self.assertIn(f"]({link})", text)
+        for job_id in REQUIRED_CI_JOBS:
+            with self.subTest(duplicated_job=job_id):
+                self.assertNotIn(f"`{job_id}`", text)
+        for pattern in (
+            r"(?i)\b(?:must|shall)\b",
+            r"(?i)\b16[- ]job\b",
+            r"(?i)\b(?:secrets?|vars?|variables?)\.",
+            r"\bGITHUB_TOKEN\b",
+            r"(?i)\bremote\b.{0,40}\b(?:active|enforced)\b",
+            r"(?i)\b(?:active|enforced)\b.{0,40}\bremote\b",
+        ):
+            with self.subTest(forbidden_policy_pattern=pattern):
+                self.assertIsNone(re.search(pattern, text))
+
+        contract = yaml.safe_load(ARTIFACT_CONTRACT.read_text(encoding="utf-8"))
+        profiles = [
+            profile
+            for profile in contract["artifacts"]
+            if profile["profile_id"] == "github-navigation-index"
+        ]
+        self.assertEqual(1, len(profiles))
+        self.assertEqual(
+            {
+                "profile_id": "github-navigation-index",
+                "artifact_type": "github-navigation-index",
+                "path_pattern": ".github/INDEX.md",
+                "repository_section": "harness",
+                "canonical": False,
+                "required_keys": [],
+                "key_order": [],
+                "required_sections": list(GITHUB_INDEX_SECTIONS),
+                "expected_values": {},
+            },
+            profiles[0],
+        )
+
+    def test_remote_observation_schema_is_exact_and_unverified(self) -> None:
+        self.assertTrue(
+            GITHUB_OBSERVATION.is_file(),
+            "missing GitHub Actions control-plane observation",
+        )
+        data = yaml.safe_load(GITHUB_OBSERVATION.read_text(encoding="utf-8"))
+        self.assertEqual(GITHUB_OBSERVATION_KEYS, set(data))
+        self.assertEqual(1, data["schema_version"])
+        self.assertEqual("2026-07-26T18:22:32+09:00", data["observed_at"])
+        self.assertEqual("buenhyden/hy-home.docker", data["repository"])
+        self.assertEqual("non-authoritative-observation", data["authority"])
+        self.assertEqual("public-metadata-only", data["source_visibility"])
+        self.assertEqual("a897978f", data["remote_default_commit"])
+        self.assertEqual(
+            "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee",
+            data["local_base_commit"],
+        )
+        self.assertEqual(29777690571, data["latest_ci_run_id"])
+        self.assertEqual("failure", data["latest_ci_conclusion"])
+        self.assertEqual(15, data["observed_ci_jobs"])
+        self.assertEqual("unverified", data["root_cause"])
+        self.assertEqual("unverified", data["control_plane_verification"])
+        self.assertEqual(
+            {
+                "repository": "https://github.com/buenhyden/hy-home.docker",
+                "actions_secure_use": (
+                    "https://docs.github.com/en/actions/reference/security/secure-use"
+                ),
+                "workflow_monitoring": (
+                    "https://docs.github.com/en/actions/how-tos/monitor-workflows"
+                ),
+                "rulesets": (
+                    "https://docs.github.com/en/enterprise-cloud@latest/"
+                    "repositories/configuring-branches-and-merges-in-your-"
+                    "repository/managing-rulesets/about-rulesets"
+                ),
+                "zizmor_v1_28_0": (
+                    "https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0"
+                ),
+            },
+            data["public_sources"],
+        )
+
+        managed = data["managed_workflows"]
+        self.assertEqual(3, len(managed))
+        self.assertEqual(
+            list(GITHUB_MANAGED_WORKFLOWS),
+            [(record["id"], record["name"]) for record in managed],
+        )
+        expected_record_keys = {
+            "id",
+            "name",
+            "management_class",
+            "observed_state",
+            "last_run",
+            "source_visibility",
+            "review_owner",
+            "retrieved_at",
+            "source_url",
+        }
+        for record in managed:
+            with self.subTest(workflow_id=record["id"]):
+                self.assertEqual(expected_record_keys, set(record))
+                self.assertEqual("github-managed", record["management_class"])
+                self.assertEqual("active", record["observed_state"])
+                self.assertEqual("unverified", record["last_run"])
+                self.assertEqual("public-metadata-only", record["source_visibility"])
+                self.assertEqual("ci-cd-engineer", record["review_owner"])
+                self.assertEqual(
+                    "2026-07-26T18:22:32+09:00",
+                    record["retrieved_at"],
+                )
+                self.assertEqual(
+                    "https://api.github.com/repos/buenhyden/hy-home.docker/"
+                    f"actions/workflows/{record['id']}",
+                    record["source_url"],
+                )
+
+    def test_stale_remote_enforcement_claims_use_observation_boundary(self) -> None:
+        stale_patterns = (
+            r"2026-07-04",
+            r"12 remote contexts",
+            r"classic branch protection (?:is )?active",
+            r"Repository rulesets API returned `0`",
+            r"enforce_admins=false",
+        )
+        for path in (GITHUB_GOVERNANCE, MAIN_PROTECTION):
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(path=path):
+                self.assertIn(
+                    "github-actions-control-plane-observation.yaml",
+                    text,
+                )
+                self.assertRegex(
+                    text,
+                    r"(?is)(?:control[- ]plane.{0,120}unverified|"
+                    r"unverified.{0,120}control[- ]plane)",
+                )
+                for pattern in stale_patterns:
+                    self.assertIsNone(re.search(pattern, text, re.IGNORECASE))
+
     def test_existing_supply_chain_job_runs_focused_operational_suites(
         self,
     ) -> None:
@@ -278,6 +527,12 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "full commit SHA",
             ),
             (
+                "unsafe-trigger",
+                "  pull_request:\n    branches: [main]",
+                "  pull_request_target:\n    branches: [main]",
+                "pull_request_target is not allowed",
+            ),
+            (
                 "untrusted-run-input",
                 "run: bash scripts/validation/check-repo-contracts.sh",
                 "run: bash scripts/validation/check-repo-contracts.sh '${{ github.event.pull_request.title }}'",
@@ -288,6 +543,20 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "run: bash scripts/validation/check-repo-contracts.sh",
                 "run: bash scripts/validation/check-repo-contracts.sh '${{ github.ref }}'",
                 "untrusted GitHub context",
+            ),
+            (
+                "zizmor-credential-env",
+                (
+                    "        run: uvx --from 'zizmor==1.28.0' "
+                    "zizmor . --format sarif . > results.sarif"
+                ),
+                (
+                    "        run: uvx --from 'zizmor==1.28.0' "
+                    "zizmor . --format sarif . > results.sarif\n"
+                    "        env:\n"
+                    "          AUTH_CONTEXT: synthetic-value"
+                ),
+                "zizmor credential environment is forbidden",
             ),
             (
                 "stable-job-name",
@@ -426,6 +695,198 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertEqual(1, result.returncode, result.stderr)
                 self.assertIn("duplicate YAML mapping key", result.stderr)
                 self.assertNotIn(sentinel, result.stderr)
+
+    def test_duplicate_workflow_purpose_and_cross_file_job_id_fail_closed(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "workflow-purpose",
+                "duplicate-purpose.yml",
+                (
+                    "name: Greeting\n"
+                    "on:\n"
+                    "  workflow_dispatch:\n"
+                    "permissions:\n"
+                    "  contents: read\n"
+                    "jobs:\n"
+                    "  unique-purpose-probe:\n"
+                    "    permissions:\n"
+                    "      contents: read\n"
+                    "    runs-on: ubuntu-latest\n"
+                    "    timeout-minutes: 5\n"
+                    "    steps: []\n"
+                ),
+                "duplicate workflow purpose",
+            ),
+            (
+                "cross-file-job-id",
+                "duplicate-job.yml",
+                (
+                    "name: Unique duplicate-job probe\n"
+                    "on:\n"
+                    "  workflow_dispatch:\n"
+                    "permissions:\n"
+                    "  contents: read\n"
+                    "jobs:\n"
+                    "  repo-contracts:\n"
+                    "    permissions:\n"
+                    "      contents: read\n"
+                    "    runs-on: ubuntu-latest\n"
+                    "    timeout-minutes: 5\n"
+                    "    steps: []\n"
+                ),
+                "duplicate workflow job id across files",
+            ),
+        )
+        program = self._workflow_security_program()
+        for label, filename, content, expected in cases:
+            with self.subTest(label=label), self._workflow_fixture() as root:
+                workflow_path = root / ".github/workflows" / filename
+                workflow_path.write_text(content, encoding="utf-8")
+                result = subprocess.run(
+                    [sys.executable, "-c", program],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+
+    def test_remote_observation_and_stale_claim_mutations_fail_closed(self) -> None:
+        self.assertTrue(
+            GITHUB_OBSERVATION.is_file(),
+            "missing GitHub Actions control-plane observation",
+        )
+        sentinel = "remote-observation-private-sentinel"
+        cases = (
+            (
+                "duplicate-observation-key",
+                GITHUB_OBSERVATION.relative_to(ROOT),
+                "root_cause: unverified\n",
+                f"root_cause: unverified\nroot_cause: verified # {sentinel}\n",
+                "duplicate YAML mapping key",
+            ),
+            (
+                "control-plane-overclaim",
+                GITHUB_OBSERVATION.relative_to(ROOT),
+                "control_plane_verification: unverified",
+                "control_plane_verification: verified",
+                "invalid remote observation field",
+            ),
+            (
+                "root-cause-overclaim",
+                GITHUB_OBSERVATION.relative_to(ROOT),
+                "root_cause: unverified",
+                "root_cause: workflow-defect",
+                "invalid remote observation field",
+            ),
+            (
+                "stale-ruleset-claim",
+                MAIN_PROTECTION.relative_to(ROOT),
+                "## Target Ruleset",
+                "Verified read-only on 2026-07-04.\n\n## Target Ruleset",
+                "stale active remote-state claim",
+            ),
+        )
+        program = self._workflow_security_program()
+        for label, relative, old, new, expected in cases:
+            with self.subTest(label=label), self._workflow_fixture() as root:
+                target = root / relative
+                text = target.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                target.write_text(text.replace(old, new, 1), encoding="utf-8")
+                result = subprocess.run(
+                    [sys.executable, "-c", program],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn(expected, result.stderr)
+                self.assertNotIn(sentinel, result.stderr)
+
+    def test_ruleset_required_check_mismatch_fails_closed(self) -> None:
+        program = self._workflow_security_program()
+        with self._workflow_fixture() as root:
+            ruleset = root / MAIN_PROTECTION.relative_to(ROOT)
+            text = ruleset.read_text(encoding="utf-8")
+            old = "- `storybook-coverage`\n"
+            self.assertIn(old, text)
+            ruleset.write_text(text.replace(old, "", 1), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertIn("missing required status check", result.stderr)
+
+    def test_repo_memory_contract_rejects_exact_current_profile_mutation(
+        self,
+    ) -> None:
+        program = self._repo_python_program("Governance memory contract")
+        sentinel = "private-current-profile-sentinel"
+        load_sentinel = "private-contract-load-sentinel"
+        with self._memory_contract_fixture() as root:
+            baseline = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, baseline.returncode, baseline.stderr)
+
+            contract_path = root / ARTIFACT_CONTRACT.relative_to(ROOT)
+            original_contract_text = contract_path.read_text(encoding="utf-8")
+            contract = yaml.safe_load(original_contract_text)
+            profiles = [
+                profile
+                for profile in contract["artifacts"]
+                if profile.get("profile_id") == "governance-current-memory"
+            ]
+            self.assertEqual(1, len(profiles))
+            profiles[0]["required_sections"][-1] = sentinel
+            contract_path.write_text(
+                yaml.safe_dump(contract, sort_keys=False),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            contract_path.write_text(
+                original_contract_text.replace(
+                    "schema_version: 1\n",
+                    "schema_version: 1\n"
+                    f"schema_version: 1 # {load_sentinel}\n",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            load_error = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertIn("AGC-MEMORY-BOUNDS", result.stderr)
+        self.assertIn("profile-contract-mismatch", result.stderr)
+        self.assertNotIn(sentinel, result.stderr)
+        self.assertEqual(1, load_error.returncode, load_error.stderr)
+        self.assertIn("AGC-YAML-DUPLICATE-KEY", load_error.stderr)
+        self.assertNotIn(load_sentinel, load_error.stderr)
 
     def test_recommender_selects_coupled_contract_and_eval_gates(self) -> None:
         for path in COUPLED_PATHS:
@@ -1274,13 +1735,89 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )
 
     @staticmethod
-    def _workflow_security_program() -> str:
+    def _repo_python_program(section: str) -> str:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
-        start = "section \"GitHub workflow security contracts\"\nif ! python3 - <<'PY'; then\n"
+        start = f"section \"{section}\"\nif ! python3 - <<'PY'; then\n"
         return source.split(start, 1)[1].split(
             "\nPY\n  failures=$((failures + 1))",
             1,
         )[0]
+
+    @staticmethod
+    def _workflow_security_program() -> str:
+        return AgentGovernanceRoutingTests._repo_python_program(
+            "GitHub workflow security contracts"
+        )
+
+    @staticmethod
+    @contextlib.contextmanager
+    def _memory_contract_fixture():
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            governance_root = ROOT / "docs/00.agent-governance"
+            governance_rules = governance_root / "rules"
+            governance_contracts = governance_root / "contracts"
+            shutil.copytree(
+                governance_root / "memory",
+                root / "docs/00.agent-governance/memory",
+            )
+            for source in (
+                governance_root / "README.md",
+                governance_rules / "bootstrap.md",
+                governance_rules / "agentic.md",
+                governance_rules / "task-checklists.md",
+                governance_rules / "stage-authoring-matrix.md",
+                governance_contracts / "agent-governance-artifacts.yaml",
+                governance_contracts / "agent-catalog.yaml",
+                governance_contracts / "provider-models.yaml",
+                ROOT
+                / "docs/99.templates/templates/governance/memory.template.md",
+                ROOT
+                / "docs/99.templates/templates/governance/progress.template.md",
+                ROOT
+                / "docs/04.execution/tasks/"
+                "2026-07-26-agent-governance-canonical-convergence.md",
+                ROOT / "scripts/validation/agent_governance_contract.py",
+            ):
+                target = root / source.relative_to(ROOT)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, target)
+
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "fixture@example.invalid"],
+                cwd=root,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "Fixture"],
+                cwd=root,
+                check=True,
+            )
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                ["git", "commit", "-qm", "fixture"],
+                cwd=root,
+                check=True,
+            )
+            head = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            current = root / "docs/00.agent-governance/memory/current.md"
+            text = current.read_text(encoding="utf-8")
+            text, replacements = re.subn(
+                r"(?m)^- Verified commit: `[0-9a-f]{40}`$",
+                f"- Verified commit: `{head}`",
+                text,
+            )
+            if replacements != 1:
+                raise AssertionError("fixture current-memory commit label missing")
+            current.write_text(text, encoding="utf-8")
+            yield root
 
     @staticmethod
     @contextlib.contextmanager
@@ -1288,6 +1825,16 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             shutil.copytree(ROOT / ".github", root / ".github")
+            for source in (
+                GITHUB_GOVERNANCE,
+                ARTIFACT_CONTRACT,
+                GITHUB_OBSERVATION,
+            ):
+                if not source.is_file():
+                    continue
+                target = root / source.relative_to(ROOT)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, target)
             yield root
 
     @staticmethod

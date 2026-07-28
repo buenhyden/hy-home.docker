@@ -1,0 +1,52 @@
+schema_version: 1
+observed_at: "2026-07-26T18:22:32+09:00"
+repository: buenhyden/hy-home.docker
+authority: non-authoritative-observation
+source_visibility: public-metadata-only
+remote_default_commit: a897978f
+remote_default_source_url: https://github.com/buenhyden/hy-home.docker/commit/a897978f
+local_base_commit: e65bb18fa2f6e3fb6235725750c7c57cbe0227ee
+latest_ci_run_id: 29777690571
+latest_ci_source_url: https://github.com/buenhyden/hy-home.docker/actions/runs/29777690571
+latest_ci_conclusion: failure
+observed_ci_jobs: 15
+root_cause: unverified
+managed_workflows:
+  - id: 222509952
+    name: Dependabot Updates
+    management_class: github-managed
+    observed_state: active
+    last_run: unverified
+    source_visibility: public-metadata-only
+    review_owner: ci-cd-engineer
+    retrieved_at: "2026-07-26T18:22:32+09:00"
+    source_url: https://api.github.com/repos/buenhyden/hy-home.docker/actions/workflows/222509952
+  - id: 223086017
+    name: CodeQL
+    management_class: github-managed
+    observed_state: active
+    last_run: unverified
+    source_visibility: public-metadata-only
+    review_owner: ci-cd-engineer
+    retrieved_at: "2026-07-26T18:22:32+09:00"
+    source_url: https://api.github.com/repos/buenhyden/hy-home.docker/actions/workflows/223086017
+  - id: 282786058
+    name: Dependency Graph
+    management_class: github-managed
+    observed_state: active
+    last_run: unverified
+    source_visibility: public-metadata-only
+    review_owner: ci-cd-engineer
+    retrieved_at: "2026-07-26T18:22:32+09:00"
+    source_url: https://api.github.com/repos/buenhyden/hy-home.docker/actions/workflows/282786058
+control_plane_verification: unverified
+public_sources:
+  repository: https://github.com/buenhyden/hy-home.docker
+  actions_secure_use: https://docs.github.com/en/actions/reference/security/secure-use
+  workflow_monitoring: https://docs.github.com/en/actions/how-tos/monitor-workflows
+  rulesets: https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets
+  zizmor_v1_28_0: https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0
+limitations:
+  - Authenticated control-plane readback was unavailable, so no enforcement state is inferred.
+  - Public run metadata does not establish a failure root cause.
+  - No raw payload or authenticated workflow log is retained.

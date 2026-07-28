@@ -74,6 +74,11 @@ Protocol for maintaining documentation consistency and governance traceability.
   sources follow their registry-defined source metadata. The metadata checker
   validates registered placeholders without resolving them through the active
   artifact manifest, and copied targets must replace every placeholder.
+- **Current memory evidence**: `docs/00.agent-governance/memory/current.md` is
+  the bounded active handoff governed by its registered profile. Progress,
+  verification, and final evidence belong in the applicable Stage 04 Task;
+  `memory/progress.md` keeps its existing template mapping only as
+  append-preserved historical navigation.
   `docs/99.templates/README.md` is an active folder README and may use
   repository README frontmatter such as `layer: agentic`.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
@@ -194,7 +199,7 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 | `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` | Postmortem | `docs/99.templates/templates/operations/postmortem.template.md` |
 | `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | Release | `docs/99.templates/templates/operations/release.template.md` |
 | `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/templates/governance/memory.template.md`       |
-| `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/templates/governance/progress.template.md`     |
+| `docs/00.agent-governance/memory/progress.md`         | Historical Agent Progress Navigation | `docs/99.templates/templates/governance/progress.template.md` |
 | `docs/90.references/`                                 | Reference              | `docs/99.templates/templates/common/reference.template.md`    |
 | `docs/98.archive/`                                    | Archive Tombstone      | `docs/99.templates/templates/common/archive.template.md`      |
 | `README.md` (per folder)                              | README                 | `docs/99.templates/templates/common/readme.template.md`       |

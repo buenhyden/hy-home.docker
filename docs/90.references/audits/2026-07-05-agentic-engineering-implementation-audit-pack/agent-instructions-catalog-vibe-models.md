@@ -4,7 +4,7 @@ artifact_id: audit:agentic-engineering-implementation:agent-instructions-catalog
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:agent-catalog]
-reviewed_at: 2026-07-12
+reviewed_at: 2026-07-27
 review_cycle: per-remediation-task
 ---
 
@@ -47,19 +47,25 @@ model literals.
 ## Definitions / Facts
 
 - The external comparison is pinned to immutable `agency-agents` commit
-  `9f3e401ccd09aa0ee0ef8e015226d0647908e01e`; publisher breadth and maturity
-  claims are not workspace evaluation evidence.
+  `8ef49232e02431f7ca4792b487e5a85a7939ff3a`; publisher breadth and maturity
+  claims are not workspace evaluation evidence. Four bounded capabilities are
+  adopted through nine typed intake decisions, but no upstream persona or
+  voice prose is installed.
 - Workspace adoption means a bounded Stage 00 role/function with explicit
   scope, authority, review, provider mapping, and validation. A similar persona
   name is not adoption.
-- Current profiles are supervision `claude-opus-4-8` / `gpt-5.6` /
-  `gemini-3.5-flash`, complex implementation `claude-sonnet-5` / `gpt-5.6` /
-  `gemini-3.5-flash`, and read-heavy `claude-haiku-4-5-20251001` /
-  `gpt-5.6-terra` / `gemini-3.1-flash-lite`, with provider-native controls.
-- The model catalog cutoff is 2026-07-10 10:00 KST (01:00 UTC). Mutable or
-  later evidence, including the typed retrieval at
-  `2026-07-16T01:17:36+09:00`, is not backdated. Provider availability and
-  entitlement are not inferred from tracked literals.
+- The five current profiles are `adversarial-review`, `complex-implementation`,
+  `evidence-research`, `long-horizon-supervision`, and `routine-validation`.
+  They map exactly to `claude-opus-5` / `claude-sonnet-5` /
+  `claude-haiku-4-5-20251001`, `gpt-5.6-sol` / `gpt-5.6-terra`, and
+  `gemini-3.6-flash` / `gemini-3.5-flash-lite` as declared by the canonical
+  profile. There is no active fallback graph and implicit substitution is
+  prohibited.
+- The historical model catalog cutoff remains 2026-07-10 10:00 KST
+  (01:00 UTC). The provider-model contract was retrieved at
+  `2026-07-26T20:08:18+09:00`; mutable official sources were revalidated at
+  `2026-07-27T02:33:54+09:00` and are not backdated. Provider availability,
+  entitlement, and runtime acceptance are not inferred from tracked literals.
 
 ## Assessment Method
 
@@ -88,7 +94,7 @@ corroborated against tracked source.
 | AIV-13 | Bound vibe coding to worktree/branch, explicit objective, small diffs, and reversible commits. | The completed T-AER chain used an approved plan, isolated worktree, scoped task briefs, logical commits, diff review, exact validation, and independent reclosure. | Implemented | 2 | Retain | Implementation task owner | Existing git/task checks; do not make conversational style an exemption. | Inspect T-AER task evidence, worktree/branch, diff, task brief, and commits. | High. |
 | AIV-14 | Exclude unapproved runtime, secrets, remote mutation, and security decisions from vibe coding. | Spec/plan/brief explicitly prohibit protected surfaces; changed-path review and sandbox boundary apply. | Implemented | 2 | Retain | Security/operations owner | Existing approval and changed-path checks. | `git diff --name-only`; task scope inspection. | High. |
 | AIV-15 | Close plan-act-observe-verify-review-correct/stop loop with evidence. | SDD implementation/report/review loop, validators, and task ledger exist; semantic task performance is not measured across versions. | Partial | 3 | Improve | Workflow supervisor / QA | Retain SDD review and fixtures; future scored eval needs approved contracts. | Task report, review package, validation results. | High. |
-| AIV-16 | Import external agent knowledge only through canonical intake. | The typed `capability_intake` registry records seven explicit merge/defer decisions against the pinned source; retired identities are fail-closed, generated adapters derive only from the canonical catalog, and the semantic eval/independent-review gates cover adopted behavior. No upstream persona is directly installed. | Implemented | 3 | Retain | Stage 00 agent catalog owner | Retain typed provenance, disposition, renderer, evaluator, and review coupling for every future candidate. | Run catalog/renderer/evaluator contracts and confirm the runtime surfaces contain only canonical role IDs. | High. |
+| AIV-16 | Import external agent knowledge only through canonical intake. | The typed `capability_intake` registry records nine explicit merge/defer decisions against the pinned source; four bounded capabilities are adopted, retired identities are fail-closed, generated adapters derive only from the canonical catalog, and semantic eval/independent-review gates cover adopted behavior. No upstream persona or voice prose is directly installed. | Implemented | 3 | Retain | Stage 00 agent catalog owner | Retain typed provenance, disposition, renderer, evaluator, and review coupling for every future candidate. | Run catalog/renderer/evaluator contracts and confirm the runtime surfaces contain only canonical role IDs. | High. |
 
 ## Pinned Catalog Capability-Family Assessment
 
@@ -97,25 +103,25 @@ defined in the canonical Task 2 research; they do not create active catalog role
 
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
-| AIC-01 | Product discovery, outcome ownership, and specification planning. | Workflow/doc/rules roles cover artifact mechanics; no role owns product discovery or outcome validation. | Missing | 0 | Add | Product scope and Stage 00 catalog | Add only after recurring demand, bounded IO, and representative eval; merge spec conversion into existing skills. | Compare 14 roles/22 functions with pinned product/spec family. | High. |
+| AIC-01 | Product discovery, outcome ownership, and specification planning. | Workflow/doc/rules roles cover artifact mechanics; no role owns product discovery or outcome validation. | Missing | 0 | Add | Product scope and Stage 00 catalog | Add only after recurring demand, bounded IO, and representative eval; merge spec conversion into existing skills. | Compare 14 roles/24 functions with pinned product/spec family. | High. |
 | AIC-02 | Performance baseline, load/speed analysis, and regression ownership. | QA/infra roles validate correctness/drift; no dedicated benchmark baseline owner exists. | Partial | 1 | Improve | QA and infra scopes | First add benchmark/evidence function to existing roles; add a role only after workload/eval proves need. | Inspect QA/infra catalogs and benchmark evidence. | High. |
 | AIC-03 | Reliability, SLO/capacity, observability, incident, and postmortem capability. | Incident responder, drift detector, IAC reviewer, CI/CD engineer, and Stage 05 split ownership; SLO/capacity/chaos depth is uneven. | Partial | 2 | Improve | Ops/infra existing roles | Merge missing methods into existing roles; reject an overlapping umbrella SRE persona. | Map pinned reliability roles to current catalog owners. | High. |
 | AIC-04 | Release readiness and deployment automation with separate authority. | CI/CD engineer, QA, deployment skill, and Stage 04/05 gates cover readiness; deployment execution/remote authority stays separate. | Partial | 2 | Improve | QA/CI/ops existing roles | Merge readiness rubrics; reject a duplicate generic DevOps/reality-checker role. | Compare catalog/skills and deployment authority boundaries. | High. |
 | AIC-05 | Software dependency, provenance, and release-artifact supply-chain review. | Security auditor and CI/CD roles cover parts; pinned business `Supply Chain Strategist` is the wrong domain. | Partial | 2 | Improve | Security/CI existing roles | Reject business persona; merge software-supply-chain checks and evaluate specialist need only after repeated gaps. | Pinned role inspection and current security/CI catalog map. | High. |
-| AIC-06 | General semantic agent/model evaluation, calibration, and baseline ownership. | The canonical catalog includes `eval-engineer`; eight versioned fixtures, ten synthetic regressions, exact thresholds, bounded value-free scoring, and runner/tests establish repository-semantic calibration. No live cross-provider model-quality baseline exists. | Partial | 3 | Improve | `eval-engineer` and QA owner | Retain the synthetic baseline; add live/provider comparative datasets only after privacy, entitlement, cost, and runtime approval. | Run evaluator markers and inspect the current role/function inventory. | High for repository semantics; live model comparison is absent. |
+| AIC-06 | General semantic agent/model evaluation, calibration, and baseline ownership. | The canonical catalog includes `eval-engineer`; eleven versioned fixtures, sixteen synthetic regressions, exact thresholds, bounded value-free scoring, and runner/tests establish repository-semantic calibration. No live cross-provider model-quality baseline exists. | Partial | 3 | Improve | `eval-engineer` and QA owner | Retain the synthetic baseline; add live/provider comparative datasets only after privacy, entitlement, cost, and runtime approval. | Run evaluator markers and inspect the current role/function inventory. | High for repository semantics; live model comparison is absent. |
 | AIC-07 | Model routing, cost/quality comparison, and shadow evaluation. | Supervisor routes work and fixed policy assigns tiers; no autonomous router or cross-provider shadow eval is adopted. | Partial | 3 | Improve | Workflow supervisor and model-policy owner | Merge routing with supervisor; reject autonomous policy mutation; add shadow evaluation only under eval governance. | Inspect model policy, adapter literals, and eval gaps. | High. |
 
 ## Model-Routing Change Criteria
 
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
-| AMS-01 | Prove exact identifier/alias and provider-native lifecycle. | Exact policy/adapter literals and canonical IDs are tracked and enforced. GPT-5.6 maps to Sol but its current listing has no provider Stable/GA label and the unzoned `Jul 9` changelog entry cannot prove cutoff timing; entitlement/runtime acceptance remain unverified. | Partial | 3 | Improve | Model policy owner | Keep exact typed evidence states; require primary evidence and runtime authorization before any availability claim or future change. | Model-contract check, provider landscape, adapter literals, repo contracts. | High for tracked identity; medium for cutoff/runtime availability. |
+| AMS-01 | Prove exact identifier/alias and provider-native lifecycle. | Exact policy/adapter literals and eleven canonical IDs are tracked and enforced. Current official evidence lists the selected exact IDs as stable, and `gpt-5.6` maps to Sol; that current evidence does not resolve the historical unzoned `Jul 9` cutoff question, while entitlement and runtime acceptance remain unverified. | Partial | 3 | Improve | Model policy owner | Keep exact typed evidence states; require primary evidence and runtime authorization before any availability claim or future change. | Model-contract check, provider landscape, adapter literals, repo contracts. | High for tracked identity and current lifecycle; medium for cutoff/runtime availability. |
 | AMS-02 | Prove the exact product/API/CLI/IDE/account surface. | Adapters name repository surfaces, but provider/account entitlement and the collaboration platform's selected concrete model are not exposed per agent. | Needs Revalidation | 1 | Retain | Provider/runtime owner | Explicit non-automation unless authorized account/runtime evidence is available. | Authorized provider/runtime observation. | Medium. |
 | AMS-03 | Preserve lifecycle state and historical cutoff without backdating. | Canonical landscape retains 145 structural/142 cutoff-qualified rows at 2026-07-10 10:00 KST; mutable/later evidence does not resolve every historical exact-ID state. | Needs Revalidation | 2 | Retain | Canonical provider landscape | Retain cutoff ledger; do not alter counts/status from mutable current pages. | Research source ledger and cutoff notes. | High for ledger; deliberately conservative for mutable history. |
 | AMS-04 | Prove required context, tools, coding, agent, and reasoning capabilities on the exact surface. | Role needs are documented; provider catalogs are hypotheses and entitlement/surface equivalence is unproven. | Partial | 1 | Improve | Model policy and role owner | Representative fixtures required before a change. | Compare role IO/tools with exact provider evidence and fixtures. | Medium-high. |
-| AMS-05 | Use only provider-supported reasoning controls and defaults. | The typed profiles preserve provider-native controls: Claude adaptive/extended-thinking constraints, Codex `xhigh`/`high`/`low`, and Gemini `high`/`minimal` thinking levels. Renderer and validators enforce exact supported values without claiming cross-provider equivalence. | Implemented | 3 | Retain | `subagent-protocol.md` and provider-model contract | Retain surface-specific values and official-source evidence; runtime effect remains a separate observation. | Model-contract check, adapter literals, and provider ledger. | High for tracked control semantics; runtime effect is unobserved. |
-| AMS-06 | Demonstrate task fit with versioned tasks, scorer, baseline, failure cases, privacy, and calibration. | `eval-engineer` owns eight exact fixtures, ten synthetic regressions, calibrated deterministic scorers, exact thresholds, and bounded privacy controls for repository semantics. That provider-agnostic gate does not compare live model quality, latency, or cost, so no cross-provider task-fit baseline exists. | Missing | 0 | Add | `eval-engineer` and QA owner | Retain the synthetic repository gate; require a separately approved live comparative dataset and baseline before recommending model changes. | Exact `8/8` and `10/10` runner markers plus the absence of live comparative results. | High. |
-| AMS-07 | Couple policy/generator/adapters/validators/evidence with rollback and independent review. | The provider-model contract, subagent protocol, deterministic renderer, four adapter surfaces, exact validators, typed fallback approvals, Stage 04 evidence, and independent Task 2-4 reviews were changed and verified as one atomic chain. | Implemented | 3 | Retain | Model policy plus Stage 04 task owner | Reuse the same coupled protocol and approved rollback edges for any future exact-model change. | Inspect contract, renderer, sync, exact adapter literals, fallback graph, and review evidence. | High. |
+| AMS-05 | Use only provider-supported reasoning controls and defaults. | The typed profiles preserve exact provider-native controls: Claude `xhigh` / `high` / `low` or no effort field, Codex `xhigh` / `high` / `medium` / `low`, and Gemini `high` / `medium` / `minimal`. Renderer and validators enforce exact supported values without claiming cross-provider equivalence. | Implemented | 3 | Retain | `subagent-protocol.md` and provider-model contract | Retain surface-specific values and official-source evidence; runtime effect remains a separate observation. | Model-contract check, adapter literals, and provider ledger. | High for tracked control semantics; runtime effect is unobserved. |
+| AMS-06 | Demonstrate task fit with versioned tasks, scorer, baseline, failure cases, privacy, and calibration. | `eval-engineer` owns eleven exact fixtures, sixteen synthetic regressions, calibrated deterministic scorers, exact thresholds, and bounded privacy controls for repository semantics. That provider-agnostic gate does not compare live model quality, latency, or cost, so no cross-provider task-fit baseline exists. | Missing | 0 | Add | `eval-engineer` and QA owner | Retain the synthetic repository gate; require a separately approved live comparative dataset and baseline before recommending model changes. | Exact `11/11` and `16/16` runner markers plus the absence of live comparative results. | High. |
+| AMS-07 | Couple policy/generator/adapters/validators/evidence with rollback and independent review. | The provider-model contract, subagent protocol, deterministic renderer, four adapter surfaces, exact validators, Stage 04 evidence, and independent Task 2-4 reviews were changed and verified as one atomic chain. The current contract has no active fallback graph and prohibits implicit substitution. | Implemented | 3 | Retain | Model policy plus Stage 04 task owner | Reuse the same coupled protocol for any future exact-model change and require explicit review before policy rollback. | Inspect contract, renderer, sync, exact adapter literals, no-fallback invariant, and review evidence. | High. |
 
 ## Findings
 

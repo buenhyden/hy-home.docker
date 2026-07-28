@@ -13,7 +13,7 @@ linked sources. It does not define new policy.
 | Surface             | Source                                                     | Role                                  | Required Validation               | Evidence               |
 | ------------------- | ---------------------------------------------------------- | ------------------------------------- | --------------------------------- | ---------------------- |
 | Root shims          | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`                      | Direct bootstrap/provider/memory routing | `check-agent-governance-contract.py --mode contract` | PR Validation Evidence |
-| Governance hub      | `docs/00.agent-governance/README.md`, `rules/bootstrap.md` | Policy SSOT and bootstrap sequence    | `validate-harness.sh`             | `memory/progress.md`   |
+| Governance hub      | `docs/00.agent-governance/README.md`, `rules/bootstrap.md` | Policy SSOT and bootstrap sequence    | `validate-harness.sh`             | Stage 04 Task          |
 | Typed contracts     | `docs/00.agent-governance/contracts/*.yaml`                | Artifact, catalog, provider/model, and authority SSOT | `check-agent-governance-contract.py --mode contract` | Stage 04 Task |
 | Approval boundaries | `rules/approval-boundaries.md`                             | Protected-surface and approval routing | Contract authority matrix + link integrity | PR Validation Evidence |
 
@@ -68,10 +68,11 @@ linked sources. It does not define new policy.
 
 ## Evidence / Progress
 
-| Surface            | Source                                        | Role                                   | Required Validation         | Evidence |
-| ------------------ | --------------------------------------------- | -------------------------------------- | --------------------------- | -------- |
-| Progress log       | `docs/00.agent-governance/memory/progress.md` | Mandatory work progress log            | `check-repo-contracts.sh`   | self     |
-| Execution evidence | `docs/04.execution/tasks/**`                  | Task execution and validation evidence | `check-doc-traceability.sh` | self     |
+| Surface               | Source                                        | Role                                      | Required Validation       | Evidence      |
+| --------------------- | --------------------------------------------- | ----------------------------------------- | ------------------------- | ------------- |
+| Current handoff       | `docs/00.agent-governance/memory/current.md`  | Bounded active task and verified state    | Current-memory contract   | Stage 04 Task |
+| Execution evidence    | `docs/04.execution/tasks/**`                  | Progress, verification, and final evidence | Traceability validation   | self          |
+| Historical navigation | `docs/00.agent-governance/memory/progress.md` | Append-preserved earlier work navigation  | Repository contract       | Git history   |
 
 ## PR / Review
 

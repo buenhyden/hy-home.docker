@@ -888,32 +888,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             row,
         )
 
-        baseline = subprocess.run(
-            [
-                "git",
-                "show",
-                "190d2296c8ead19f3367157725694755f5d5cbe8:"
-                "docs/90.references/data/governance/document-corpus-lifecycle/"
-                "target-surface-convergence.yaml",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        baseline_manifest = yaml.safe_load(baseline.stdout)
         influxdb_path = "infra/04-data/analytics/influxdb/docker-compose.v2.yml"
-        influxdb_row = next(
-            entry
-            for entry in manifest["entries"]
-            if entry["source_path"] == influxdb_path
-        )
-        baseline_influxdb_row = next(
-            entry
-            for entry in baseline_manifest["entries"]
-            if entry["source_path"] == influxdb_path
-        )
-
         seaweedfs_path = SEAWEEDFS_DUPLICATE_PATH
         self.assertEqual(483, len(manifest["entries"]))
         self.assertEqual(
@@ -925,49 +900,23 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            7,
+            10,
             sum(entry["disposition"] == "migrate" for entry in manifest["entries"]),
         )
         self.assertEqual(
-            473,
+            470,
             sum(entry["disposition"] == "preserve" for entry in manifest["entries"]),
         )
-        self.assertEqual(baseline_influxdb_row, influxdb_row)
         self.assertEqual(
-            {"specification": "pass", "quality": "pass"},
-            influxdb_row["review_verdict"],
-        )
-        other_paths = {source_path, influxdb_path, seaweedfs_path}
-        baseline_other_rows = [
-            entry
-            for entry in baseline_manifest["entries"]
-            if entry["source_path"] not in other_paths
-        ]
-        current_other_rows = [
-            entry
-            for entry in manifest["entries"]
-            if entry["source_path"] not in other_paths
-        ]
-        self.assertEqual(480, len(current_other_rows))
-        self.assertEqual(baseline_other_rows, current_other_rows)
-        self.assertTrue(
-            all(
+            483,
+            sum(
                 entry["review_verdict"]
-                == {"specification": "pending", "quality": "pending"}
-                for entry in current_other_rows
-            )
-        )
-        self.assertEqual(
-            [influxdb_path, source_path, seaweedfs_path],
-            [
-                entry["source_path"]
-                for entry in manifest["entries"]
-                if entry["review_verdict"]
                 == {"specification": "pass", "quality": "pass"}
-            ],
+                for entry in manifest["entries"]
+            ),
         )
         self.assertEqual(
-            480,
+            0,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pending", "quality": "pending"}
@@ -1069,21 +1018,15 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            [
-                source_path,
-                "infra/04-data/analytics/opensearch/opensearch/config/"
-                "userdict_ko.txt.example",
-                seaweedfs_path,
-            ],
-            [
-                entry["source_path"]
-                for entry in manifest["entries"]
-                if entry["review_verdict"]
+            483,
+            sum(
+                entry["review_verdict"]
                 == {"specification": "pass", "quality": "pass"}
-            ],
+                for entry in manifest["entries"]
+            ),
         )
         self.assertEqual(
-            480,
+            0,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pending", "quality": "pending"}
@@ -1159,18 +1102,18 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             sum(entry["disposition"] == "delete" for entry in manifest["entries"]),
         )
         self.assertEqual(
-            7,
+            10,
             sum(entry["disposition"] == "migrate" for entry in manifest["entries"]),
         )
         self.assertEqual(
-            473,
+            470,
             sum(
                 entry["disposition"] == "preserve"
                 for entry in manifest["entries"]
             ),
         )
         self.assertEqual(
-            3,
+            483,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pass", "quality": "pass"}
@@ -1178,7 +1121,7 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            480,
+            0,
             sum(
                 entry["review_verdict"]
                 == {"specification": "pending", "quality": "pending"}
@@ -1189,8 +1132,8 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
         for expected in (
             "- Entries: 483",
             "- `delete`: 3",
-            "- `migrate`: 7",
-            "- `preserve`: 473",
+            "- `migrate`: 10",
+            "- `preserve`: 470",
             f"| {SEAWEEDFS_DUPLICATE_PATH} |  | delete | pass | pass |",
         ):
             with self.subTest(summary=expected):

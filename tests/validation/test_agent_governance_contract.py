@@ -11,6 +11,7 @@ import sys
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from collections.abc import Mapping
 from unittest import mock
 
 import yaml
@@ -20,6 +21,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts/validation/check-agent-governance-contract.py"
 MODULE = ROOT / "scripts/validation/agent_governance_contract.py"
 CONTRACT_DIR = ROOT / "docs/00.agent-governance/contracts"
+RETIREMENT_LEDGER = (
+    ROOT
+    / "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+)
 CONTRACT_FILES = (
     "agent-governance-artifacts.yaml",
     "agent-catalog.yaml",
@@ -39,6 +44,9 @@ def copy_contracts(root: pathlib.Path) -> None:
     target.mkdir(parents=True, exist_ok=True)
     for name in CONTRACT_FILES:
         shutil.copy2(CONTRACT_DIR / name, target / name)
+    ledger_target = root / RETIREMENT_LEDGER.relative_to(ROOT)
+    ledger_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(RETIREMENT_LEDGER, ledger_target)
 
 
 def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
@@ -175,7 +183,7 @@ class ContractLoadingTests(unittest.TestCase):
         bundle = contract.load_contract_bundle(ROOT)
         self.assertEqual([], contract.validate_contract_bundle(ROOT, bundle))
         self.assertEqual(14, len(bundle.catalog["agents"]))
-        self.assertEqual(22, len(bundle.catalog["functions"]))
+        self.assertEqual(24, len(bundle.catalog["functions"]))
         self.assertEqual(3, len(bundle.providers["providers"]))
 
     def test_bundle_and_findings_are_immutable(self) -> None:
@@ -208,6 +216,36 @@ class ContractLoadingTests(unittest.TestCase):
                 contract.load_contract_bundle(root)
             self.assertEqual("AGC-YAML-DUPLICATE-KEY", context.exception.code)
             self.assertNotIn("999", str(context.exception))
+
+    def test_duplicate_agent_entry_key_fails_closed_without_values(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_contracts(root)
+            path = root / "docs/00.agent-governance/contracts/agent-catalog.yaml"
+            original = (
+                "  - agent_id: skill-creator\n"
+                "    category: implementation-operations\n"
+                "    scope: agentic\n"
+            )
+            duplicate = (
+                "  - agent_id: skill-creator\n"
+                "    category: implementation-operations\n"
+                "    scope: duplicate-scope-first\n"
+                "    scope: duplicate-scope-second\n"
+            )
+            text = path.read_text(encoding="utf-8")
+            self.assertEqual(1, text.count(original))
+            path.write_text(text.replace(original, duplicate, 1), encoding="utf-8")
+
+            with (
+                mock.patch.object(contract, "_html5lib", object()),
+                self.assertRaises(contract.ContractLoadError) as context,
+            ):
+                contract.load_contract_bundle(root)
+
+            self.assertEqual("AGC-YAML-DUPLICATE-KEY", context.exception.code)
+            self.assertNotIn("duplicate-scope-first", str(context.exception))
+            self.assertNotIn("duplicate-scope-second", str(context.exception))
 
     def test_non_string_yaml_key_collision_is_rejected_before_freeze(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -394,6 +432,483 @@ class ContractLoadingTests(unittest.TestCase):
                 self.assertNotIn(str(outside), str(outside_context.exception))
             finally:
                 outside.unlink(missing_ok=True)
+
+
+class CatalogContractTests(unittest.TestCase):
+    def test_active_catalog_forbids_role_transfers_and_retired_status(self) -> None:
+        mutations = (
+            lambda values: values.__setitem__(
+                "role_transfers",
+                [
+                    {
+                        "retired_agent_id": "historical-role",
+                        "status": "retired",
+                        "successor_agent_ids": ["qa-engineer"],
+                        "successor_function_ids": ["style-validation"],
+                        "rationale": "historical fixture",
+                    }
+                ],
+            ),
+            lambda values: values["agents"][0].__setitem__("status", "retired"),
+        )
+        for mutate in mutations:
+            with (
+                self.subTest(mutate=mutate),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                mutate_yaml(root, "agent-catalog.yaml", mutate)
+
+                with mock.patch.object(contract, "_html5lib", object()):
+                    self.assertIn(
+                        "AGC-CATALOG-HISTORICAL-STATE-ACTIVE",
+                        codes(validate_fixture(root)),
+                    )
+
+
+class ProviderContractTests(unittest.TestCase):
+    def test_active_provider_contract_forbids_deprecated_models(self) -> None:
+        for lifecycle in ("deprecated", "retired"):
+            with (
+                self.subTest(lifecycle=lifecycle),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+
+                def mutate(values, lifecycle=lifecycle) -> None:
+                    values["models"][0]["provider_lifecycle"] = lifecycle
+
+                mutate_yaml(root, "provider-models.yaml", mutate)
+
+                with mock.patch.object(contract, "_html5lib", object()):
+                    self.assertIn(
+                        "AGC-MODEL-HISTORICAL-STATE-ACTIVE",
+                        codes(validate_fixture(root)),
+                    )
+
+
+class ProviderModelConvergenceTests(unittest.TestCase):
+    def test_model_catalog_matches_2026_07_26_official_set(self) -> None:
+        values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["providers"]
+        )
+        models = {
+            (entry["provider"], entry["model_id"]): entry
+            for entry in values["models"]
+        }
+        expected = {
+            ("claude", "claude-fable-5"): ("stable", "candidate", False),
+            (
+                "claude",
+                "claude-haiku-4-5-20251001",
+            ): ("stable", "default", True),
+            (
+                "claude",
+                "claude-mythos-5",
+            ): ("limited_availability", "catalog_only", False),
+            ("claude", "claude-opus-5"): ("stable", "default", True),
+            ("claude", "claude-sonnet-5"): ("stable", "default", True),
+            (
+                "codex",
+                "gpt-5.3-codex-spark",
+            ): ("preview", "catalog_only", False),
+            ("codex", "gpt-5.6-luna"): ("stable", "catalog_only", False),
+            ("codex", "gpt-5.6-sol"): ("stable", "default", True),
+            ("codex", "gpt-5.6-terra"): ("stable", "default", True),
+            (
+                "gemini",
+                "gemini-3.5-flash-lite",
+            ): ("stable", "default", True),
+            ("gemini", "gemini-3.6-flash"): ("stable", "default", True),
+        }
+
+        self.assertEqual(set(expected), set(models))
+        self.assertEqual(
+            "2026-07-26T20:08:18+09:00",
+            values["retrieved_at"],
+        )
+        independent_axes = {
+            "provider_lifecycle",
+            "repository_disposition",
+            "runtime_acceptance",
+            "entitlement",
+            "repository_default_eligible",
+            "runtime_activation_eligible",
+        }
+        sourced_policy_fields = {
+            "agent_coding_fit",
+            "native_model_field",
+            "native_reasoning_field",
+            "reasoning_control_kind",
+            "reasoning_source_url",
+            "repository_reasoning_controls",
+            "source_retrieved_at",
+            "source_url",
+            "supported_reasoning_controls",
+            "task_characteristics",
+            "task_fit_source_url",
+            "native_schema_source_url",
+            "work_profiles",
+        }
+        legacy_status_fields = {
+            "canonical_model_id",
+            "normalized_status",
+            "provider_status",
+        }
+        for key, (lifecycle, disposition, default_eligible) in expected.items():
+            with self.subTest(model=key):
+                model = models[key]
+                self.assertTrue(independent_axes.issubset(model))
+                self.assertTrue(sourced_policy_fields.issubset(model))
+                self.assertTrue(legacy_status_fields.isdisjoint(model))
+                self.assertEqual(lifecycle, model["provider_lifecycle"])
+                self.assertEqual(disposition, model["repository_disposition"])
+                self.assertEqual(
+                    "needs_revalidation", model["runtime_acceptance"]
+                )
+                self.assertEqual("needs_revalidation", model["entitlement"])
+                self.assertIs(
+                    default_eligible, model["repository_default_eligible"]
+                )
+                self.assertFalse(model["runtime_activation_eligible"])
+                self.assertEqual(values["retrieved_at"], model["source_retrieved_at"])
+
+    def test_work_profiles_and_role_assignments_are_exact(self) -> None:
+        provider_values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["providers"]
+        )
+        catalog_values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["catalog"]
+        )
+        observed_profiles = {
+            profile["profile_id"]: {
+                default["provider"]: (
+                    default["model_id"],
+                    (
+                        "effort"
+                        if default["provider"] == "claude"
+                        else "reasoning"
+                    ),
+                    default.get("effort", default.get("reasoning")),
+                )
+                for default in profile["defaults"]
+            }
+            for profile in provider_values["work_profiles"]
+        }
+        expected_profiles = {
+            "adversarial-review": {
+                "claude": ("claude-opus-5", "effort", "high"),
+                "codex": ("gpt-5.6-sol", "reasoning", "xhigh"),
+                "gemini": ("gemini-3.6-flash", "reasoning", "high"),
+            },
+            "complex-implementation": {
+                "claude": ("claude-sonnet-5", "effort", "high"),
+                "codex": ("gpt-5.6-sol", "reasoning", "high"),
+                "gemini": ("gemini-3.6-flash", "reasoning", "high"),
+            },
+            "evidence-research": {
+                "claude": ("claude-sonnet-5", "effort", "low"),
+                "codex": ("gpt-5.6-terra", "reasoning", "medium"),
+                "gemini": ("gemini-3.5-flash-lite", "reasoning", "medium"),
+            },
+            "long-horizon-supervision": {
+                "claude": ("claude-opus-5", "effort", "xhigh"),
+                "codex": ("gpt-5.6-sol", "reasoning", "xhigh"),
+                "gemini": ("gemini-3.6-flash", "reasoning", "high"),
+            },
+            "routine-validation": {
+                "claude": (
+                    "claude-haiku-4-5-20251001",
+                    "effort",
+                    None,
+                ),
+                "codex": ("gpt-5.6-terra", "reasoning", "low"),
+                "gemini": ("gemini-3.5-flash-lite", "reasoning", "minimal"),
+            },
+        }
+        expected_roles = {
+            "ci-cd-engineer": "complex-implementation",
+            "code-reviewer": "adversarial-review",
+            "doc-writer": "evidence-research",
+            "drift-detector": "routine-validation",
+            "eval-engineer": "adversarial-review",
+            "hook-developer": "complex-implementation",
+            "iac-reviewer": "adversarial-review",
+            "incident-responder": "complex-implementation",
+            "infra-implementer": "complex-implementation",
+            "qa-engineer": "complex-implementation",
+            "rules-engineer": "adversarial-review",
+            "security-auditor": "adversarial-review",
+            "skill-creator": "complex-implementation",
+            "workflow-supervisor": "long-horizon-supervision",
+        }
+
+        self.assertEqual(expected_profiles, observed_profiles)
+        self.assertEqual(
+            expected_roles,
+            {
+                entry["agent_id"]: entry["work_profile"]
+                for entry in catalog_values["agents"]
+            },
+        )
+
+    def test_no_automatic_fallback_or_legacy_model_is_active(self) -> None:
+        values = contract._load_yaml(
+            ROOT, contract.CONTRACT_RELATIVE_PATHS["providers"]
+        )
+        legacy_model_ids = {
+            "claude-opus-4-8",
+            "gemini-3.1-flash-lite",
+            "gemini-3.1-pro-preview",
+            "gemini-3.5-flash",
+            "gpt-5.6",
+        }
+        fallback_fields = {"fallback", "fallback_approval", "fallback_policy"}
+
+        self.assertNotIn("fallback_approvals", values)
+        self.assertTrue(
+            legacy_model_ids.isdisjoint(
+                {entry["model_id"] for entry in values["models"]}
+            )
+        )
+        for model in values["models"]:
+            with self.subTest(model=model["model_id"]):
+                self.assertTrue(fallback_fields.isdisjoint(model))
+                self.assertNotIn(
+                    model["provider_lifecycle"], {"deprecated", "retired"}
+                )
+                if model["repository_disposition"] == "catalog_only":
+                    self.assertNotEqual(
+                        "deprecated", model["provider_lifecycle"]
+                    )
+
+
+class RetirementLedgerTests(unittest.TestCase):
+    def test_retirement_ledger_rejects_exact_fact_mutations_without_values(
+        self,
+    ) -> None:
+        mutations = (
+            (
+                "record-kind",
+                "model:claude:claude-opus-4-1-20250805",
+                "record_kind",
+                "retired-role",
+            ),
+            (
+                "former-id",
+                "role:style-enforcer",
+                "former_id",
+                "wiki-curator",
+            ),
+            (
+                "role-replacement",
+                "role:style-enforcer",
+                "replacement_ids",
+                ["doc-writer"],
+            ),
+            (
+                "role-function",
+                "role:style-enforcer",
+                "replacement_function_ids",
+                ["knowledge-map-agent"],
+            ),
+            (
+                "role-retirement-date",
+                "role:wiki-curator",
+                "retired_at",
+                "2026-07-14",
+            ),
+            (
+                "model-provider",
+                "model:claude:claude-opus-4-1-20250805",
+                "provider",
+                "codex",
+            ),
+            (
+                "model-replacement",
+                "model:claude:claude-opus-4-1-20250805",
+                "replacement_ids",
+                ["claude-sonnet-5"],
+            ),
+            (
+                "model-deprecation-date",
+                "model:codex:gpt-5.2-codex",
+                "deprecated_at",
+                "2026-04-21",
+            ),
+            (
+                "model-shutdown-date",
+                "model:gemini:gemini-3.1-flash-lite-preview",
+                "shutdown_at",
+                "2026-05-24",
+            ),
+            (
+                "rationale",
+                "model:gemini:gemini-3.1-flash-lite-preview",
+                "rationale",
+                "A syntactically valid but unapproved rationale.",
+            ),
+            (
+                "official-but-wrong-source-url",
+                "model:codex:gpt-5.2-codex",
+                "source_url",
+                "https://developers.openai.com/api/docs/models/gpt-5.6",
+            ),
+            (
+                "source-retrieval-time",
+                "role:wiki-curator",
+                "source_retrieved_at",
+                "2026-07-15T10:00:01+09:00",
+            ),
+            (
+                "superseded-claude-replacement",
+                "model:claude:claude-opus-4-8",
+                "replacement_ids",
+                ["claude-sonnet-5"],
+            ),
+            (
+                "superseded-codex-status",
+                "model:codex:gpt-5.6",
+                "former_normalized_status",
+                "stable",
+            ),
+            (
+                "superseded-gemini-lite-date",
+                "model:gemini:gemini-3.1-flash-lite",
+                "superseded_at",
+                "2026-07-25",
+            ),
+            (
+                "superseded-gemini-preview-source",
+                "model:gemini:gemini-3.1-pro-preview",
+                "source_url",
+                "https://ai.google.dev/gemini-api/docs/deprecations",
+            ),
+            (
+                "superseded-gemini-flash-rationale",
+                "model:gemini:gemini-3.5-flash",
+                "rationale",
+                "A syntactically valid but unapproved rationale.",
+            ),
+        )
+        for label, record_id, field, mutated_value in mutations:
+            with (
+                self.subTest(case=label),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_contracts(root)
+                path = root / RETIREMENT_LEDGER.relative_to(ROOT)
+                values = yaml.safe_load(path.read_text(encoding="utf-8"))
+                record = next(
+                    entry
+                    for entry in values["records"]
+                    if entry["record_id"] == record_id
+                )
+                self.assertNotEqual(record[field], mutated_value)
+                record[field] = mutated_value
+                path.write_text(
+                    yaml.safe_dump(values, sort_keys=False),
+                    encoding="utf-8",
+                )
+
+                with mock.patch.object(contract, "_html5lib", object()):
+                    bundle = contract.load_contract_bundle(root)
+                    fact_findings = [
+                        finding
+                        for finding in contract.validate_retirement_ledger(
+                            root, bundle
+                        )
+                        if finding.code
+                        == "AGC-RETIREMENT-LEDGER-FACT-MISMATCH"
+                    ]
+
+                self.assertEqual(1, len(fact_findings))
+                self.assertEqual(
+                    "exact-approved-record-fact",
+                    fact_findings[0].expected,
+                )
+                self.assertEqual(
+                    "approved-record-fact-mismatch",
+                    fact_findings[0].actual,
+                )
+
+    def test_retirement_ledger_has_exact_replacement_and_git_provenance(self) -> None:
+        expected_path = pathlib.PurePosixPath(
+            "docs/90.references/data/governance/"
+            "agent-governance-retirement-ledger.yaml"
+        )
+        self.assertEqual(expected_path, contract.RETIREMENT_LEDGER_PATH)
+        values = contract._load_yaml(ROOT, contract.RETIREMENT_LEDGER_PATH)
+        records = {
+            entry["record_id"]: entry
+            for entry in values["records"]
+            if isinstance(entry, Mapping)
+        }
+        expected_replacements = {
+            "model:claude:claude-opus-4-1-20250805": ("claude-opus-4-8",),
+            "model:claude:claude-opus-4-8": ("claude-opus-5",),
+            "model:codex:gpt-5.2-codex": ("gpt-5.6-terra",),
+            "model:codex:gpt-5.6": ("gpt-5.6-sol",),
+            "model:gemini:gemini-3.1-flash-lite": (
+                "gemini-3.5-flash-lite",
+            ),
+            "model:gemini:gemini-3.1-flash-lite-preview": (
+                "gemini-3.1-flash-lite",
+            ),
+            "model:gemini:gemini-3.1-pro-preview": ("gemini-3.6-flash",),
+            "model:gemini:gemini-3.5-flash": ("gemini-3.6-flash",),
+            "role:style-enforcer": ("qa-engineer", "rules-engineer"),
+            "role:wiki-curator": ("doc-writer",),
+        }
+        expected_blobs = {
+            "deprecated-model": "58ee9b29cb0e519a34ff919e1e29791171c458a4",
+            "retired-role": "9f6a0fba4df6d37ab5f1a3390dc57d0dd99e8034",
+            "superseded-model": "a376b9d76263c3c2c42fbcb480af1791c1ec7a6f",
+        }
+        expected_commits = {
+            "deprecated-model": "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee",
+            "retired-role": "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee",
+            "superseded-model": "2a8a3af24b7e4b98d9f9a0dfba5c7f938af1ae82",
+        }
+        baseline_commit = "e65bb18fa2f6e3fb6235725750c7c57cbe0227ee"
+
+        self.assertEqual(set(expected_replacements), set(records))
+        self.assertEqual(baseline_commit, values["baseline_commit"])
+        for record_id, replacement_ids in expected_replacements.items():
+            with self.subTest(record_id=record_id):
+                record = records[record_id]
+                self.assertEqual(replacement_ids, record["replacement_ids"])
+                self.assertEqual(
+                    expected_commits[record["record_kind"]],
+                    record["source_commit"],
+                )
+                self.assertEqual(
+                    expected_blobs[record["record_kind"]],
+                    record["source_blob"],
+                )
+                if record["record_kind"] == "superseded-model":
+                    self.assertNotEqual(
+                        "deprecated", record["former_normalized_status"]
+                    )
+                observed_blob = subprocess.run(
+                    [
+                        "git",
+                        "rev-parse",
+                        f"{record['source_commit']}:{record['source_path']}",
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout.strip()
+                self.assertEqual(record["source_blob"], observed_blob)
+
+        with mock.patch.object(contract, "_html5lib", object()):
+            bundle = contract.load_contract_bundle(ROOT)
+            self.assertEqual([], contract.validate_retirement_ledger(ROOT, bundle))
 
 
 class ContractSchemaTests(unittest.TestCase):
@@ -970,7 +1485,6 @@ class ContractSchemaTests(unittest.TestCase):
             def mutate(values) -> None:
                 values["agents"][0]["function_ids"] = ["missing-function"]
                 values["functions"][0]["owner_agent"] = "missing-agent"
-                values["role_transfers"][0]["successor_agent_ids"] = ["missing-agent"]
 
             mutate_yaml(root, "agent-catalog.yaml", mutate)
             findings = validate_fixture(root)
@@ -984,7 +1498,6 @@ class ContractSchemaTests(unittest.TestCase):
                     "agents.ci-cd-engineer.function_ids",
                     "functions[0].owner_agent",
                     "path_authority[0].entry_reviewers[0].agent_field",
-                    "role_transfers[0].successor_agent_ids",
                 }
                 <= locations,
                 locations,
@@ -1116,7 +1629,7 @@ class ContractSchemaTests(unittest.TestCase):
 
             def mutate(values) -> None:
                 values["providers"][0]["adoption_status"] = "sentinel-provider-state"
-                values["models"][0]["provider_status"] = "sentinel-model-state"
+                values["models"][0]["provider_lifecycle"] = "sentinel-model-state"
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             findings = validate_fixture(root)
@@ -1132,7 +1645,7 @@ class ContractSchemaTests(unittest.TestCase):
 
             def mutate(values) -> None:
                 values["models"][0].pop("source_url")
-                values["models"][1].pop("checked_at")
+                values["models"][1].pop("source_retrieved_at")
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             findings = validate_fixture(root)
@@ -1141,28 +1654,17 @@ class ContractSchemaTests(unittest.TestCase):
                 sum(item.code == "AGC-SCHEMA-MISSING-FIELD" for item in findings),
             )
 
-    def test_default_ineligible_fallback_is_rejected(self) -> None:
+    def test_automatic_fallback_field_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_contracts(root)
 
             def mutate(values) -> None:
-                ineligible = next(
-                    item
-                    for item in values["models"]
-                    if not item["repository_default_eligible"]
-                )
-                eligible = next(
-                    item
-                    for item in values["models"]
-                    if item["provider"] == ineligible["provider"]
-                    and item["repository_default_eligible"]
-                )
-                eligible["fallback"] = ineligible["model_id"]
+                values["models"][0]["fallback"] = values["models"][1]["model_id"]
 
             mutate_yaml(root, "provider-models.yaml", mutate)
             self.assertIn(
-                "AGC-MODEL-INELIGIBLE-FALLBACK", codes(validate_fixture(root))
+                "AGC-SCHEMA-UNKNOWN-FIELD", codes(validate_fixture(root))
             )
 
     def test_findings_are_deterministic_and_rendered_without_raw_values(self) -> None:
@@ -1172,7 +1674,7 @@ class ContractSchemaTests(unittest.TestCase):
             copy_contracts(root)
 
             def mutate(values) -> None:
-                values["models"][0]["provider_status"] = sentinel
+                values["models"][0]["provider_lifecycle"] = sentinel
                 values["models"][1]["source_url"] = sentinel
 
             mutate_yaml(root, "provider-models.yaml", mutate)
@@ -1234,11 +1736,8 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
             category_members.setdefault(entry["category"], set()).add(entry["agent_id"])
         self.assertEqual(self.EXPECTED_CATEGORIES, category_members)
         self.assertEqual(14, sum(len(members) for members in category_members.values()))
-        self.assertEqual(22, len(bundle.catalog["functions"]))
-        self.assertEqual(
-            {"style-enforcer", "wiki-curator"},
-            {entry["retired_agent_id"] for entry in bundle.catalog["role_transfers"]},
-        )
+        self.assertEqual(24, len(bundle.catalog["functions"]))
+        self.assertNotIn("role_transfers", bundle.catalog)
         agent_functions = {
             entry["agent_id"]: set(entry["function_ids"])
             for entry in bundle.catalog["agents"]
@@ -1285,8 +1784,8 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
         self.assertFalse((ROOT / ".codex/skills").exists())
         self.assertEqual([], list((ROOT / ".claude/skills").glob("*/skill.md")))
         self.assertEqual([], list((ROOT / ".agents/skills").glob("*/skill.md")))
-        self.assertEqual(22, len(list((ROOT / ".claude/skills").glob("*/SKILL.md"))))
-        self.assertEqual(22, len(list((ROOT / ".agents/skills").glob("*/SKILL.md"))))
+        self.assertEqual(24, len(list((ROOT / ".claude/skills").glob("*/SKILL.md"))))
+        self.assertEqual(24, len(list((ROOT / ".agents/skills").glob("*/SKILL.md"))))
 
     def test_retired_role_references_are_removed_from_directly_affected_surfaces(
         self,
@@ -1390,7 +1889,7 @@ class CommandLineTests(unittest.TestCase):
         result = self.run_checker("--mode", "contract")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(
-            "agent_governance_contract: PASS contracts=3 agents=14 functions=22 providers=3 failures=0\n",
+            "agent_governance_contract: PASS contracts=3 agents=14 functions=24 providers=3 failures=0\n",
             result.stdout,
         )
         self.assertEqual("", result.stderr)
@@ -1422,19 +1921,19 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
             f"{GOVERNANCE}/rules/bootstrap.md",
             f"{GOVERNANCE}/providers/agents-md.md",
             f"{GOVERNANCE}/memory/README.md",
-            f"{GOVERNANCE}/memory/progress.md",
+            f"{GOVERNANCE}/memory/current.md",
         ),
         "CLAUDE.md": (
             f"{GOVERNANCE}/rules/bootstrap.md",
             f"{GOVERNANCE}/providers/claude.md",
             f"{GOVERNANCE}/memory/README.md",
-            f"{GOVERNANCE}/memory/progress.md",
+            f"{GOVERNANCE}/memory/current.md",
         ),
         "GEMINI.md": (
             f"{GOVERNANCE}/rules/bootstrap.md",
             f"{GOVERNANCE}/providers/gemini.md",
             f"{GOVERNANCE}/memory/README.md",
-            f"{GOVERNANCE}/memory/progress.md",
+            f"{GOVERNANCE}/memory/current.md",
         ),
     }
 
@@ -1846,12 +2345,22 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_111_uniquely_routed_artifacts(
+    def test_repository_harness_inventory_has_113_uniquely_routed_artifacts(
         self,
     ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(111, len(inventory))
+        self.assertEqual(113, len(inventory))
+        self.assertTrue(
+            {
+                ROOT
+                / "docs/00.agent-governance/agents/functions/"
+                "project-memory-stewardship.md",
+                ROOT
+                / "docs/00.agent-governance/agents/functions/"
+                "provider-model-evaluation.md",
+            }.issubset(inventory)
+        )
         findings = contract.validate_repository(ROOT, bundle, "harness")
         self.assertFalse(
             codes(findings)
@@ -3232,6 +3741,675 @@ model defaults
                 self.assertIn(f"{pattern} @buenhyden", text)
 
 
+class Task3SharedProjectMemoryTests(unittest.TestCase):
+    GOVERNANCE = "docs/00.agent-governance"
+    CURRENT_MEMORY = f"{GOVERNANCE}/memory/current.md"
+    CURRENT_TASK = (
+        "docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md"
+    )
+    EXPECTED_SECTIONS = (
+        "Current objective",
+        "Approved decisions",
+        "Active boundary",
+        "Verified state",
+        "Blockers and unverified facts",
+        "Evidence links",
+        "Next handoff",
+    )
+    ROOT_SHIMS = {
+        "AGENTS.md": (f"{GOVERNANCE}/memory/README.md", CURRENT_MEMORY),
+        "CLAUDE.md": (f"{GOVERNANCE}/memory/README.md", CURRENT_MEMORY),
+        "GEMINI.md": (f"{GOVERNANCE}/memory/README.md", CURRENT_MEMORY),
+    }
+    ACTIVE_MEMORY_CONSUMERS = (
+        f"{GOVERNANCE}/README.md",
+        f"{GOVERNANCE}/harness-implementation-map.md",
+        f"{GOVERNANCE}/memory/governance-memory-usage-contract.md",
+        f"{GOVERNANCE}/rules/agentic.md",
+        f"{GOVERNANCE}/rules/approval-boundaries.md",
+        f"{GOVERNANCE}/rules/bootstrap.md",
+        f"{GOVERNANCE}/rules/documentation-protocol.md",
+        f"{GOVERNANCE}/rules/hooks/hookify.warn-docker-infra-stop.md",
+        f"{GOVERNANCE}/rules/hooks/hookify.warn-governance-memory-edit.md",
+        f"{GOVERNANCE}/rules/provider-capability-matrix.md",
+        f"{GOVERNANCE}/rules/stage-authoring-matrix.md",
+        f"{GOVERNANCE}/rules/task-checklists.md",
+        f"{GOVERNANCE}/rules/workflows.md",
+    )
+
+    @staticmethod
+    def _copy_fixture(root: pathlib.Path) -> None:
+        copy_task2_harness_surfaces(root)
+        task_source = ROOT / Task3SharedProjectMemoryTests.CURRENT_TASK
+        task_target = root / Task3SharedProjectMemoryTests.CURRENT_TASK
+        task_target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(task_source, task_target)
+
+    @staticmethod
+    def _replace_memory(root: pathlib.Path, old: str, new: str) -> None:
+        memory = root / Task3SharedProjectMemoryTests.CURRENT_MEMORY
+        memory.write_text(
+            memory.read_text(encoding="utf-8").replace(old, new, 1),
+            encoding="utf-8",
+        )
+
+    @staticmethod
+    def _append_memory(root: pathlib.Path, content: str) -> None:
+        memory = root / Task3SharedProjectMemoryTests.CURRENT_MEMORY
+        memory.write_text(
+            memory.read_text(encoding="utf-8") + content,
+            encoding="utf-8",
+        )
+
+    def test_root_shims_import_current_memory_with_exact_parity(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        registered = {
+            entry["path"]: tuple(entry["memory_targets"])
+            for entry in bundle.artifacts["root_shims"]
+        }
+        self.assertEqual(self.ROOT_SHIMS, registered)
+
+        for relative_path, memory_targets in self.ROOT_SHIMS.items():
+            with self.subTest(path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                for target in memory_targets:
+                    self.assertEqual(1, text.count(target), target)
+                self.assertNotIn(
+                    f"{self.GOVERNANCE}/memory/progress.md",
+                    text,
+                )
+
+        forbidden_progress_directions = (
+            r"\b(?:loads?|reads?|reviews?)\s+`?"
+            r"(?:docs/00\.agent-governance/)?(?:memory/)?progress\.md",
+            r"\b(?:appends?|updates?|writes?)\s+`?"
+            r"(?:docs/00\.agent-governance/)?(?:memory/)?progress\.md",
+            r"\brecords?\b.{0,80}\b(?:in|to)\s+`?"
+            r"(?:docs/00\.agent-governance/)?(?:memory/)?progress\.md",
+            r"(?:memory/)?progress\.md`?\s+(?:and\s+)?"
+            r"(?:appends?|updates?|writes?)\b",
+            r"\b(?:mandatory|running)\b.{0,80}(?:memory/)?progress\.md",
+            r"(?:memory/)?progress\.md.{0,80}\b(?:mandatory|running)\b",
+        )
+        for relative_path in self.ACTIVE_MEMORY_CONSUMERS:
+            with self.subTest(active_rule_consumer=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertIn("memory/current.md", text)
+                self.assertIn("Stage 04 Task", text)
+                collapsed = " ".join(text.split()).lower()
+                for pattern in forbidden_progress_directions:
+                    self.assertNotRegex(collapsed, pattern)
+
+    def test_current_memory_profile_is_registered_and_required(self) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        profiles = [
+            entry
+            for entry in bundle.artifacts["artifacts"]
+            if entry["profile_id"] == "governance-current-memory"
+        ]
+        self.assertEqual(1, len(profiles))
+        profile = profiles[0]
+        self.assertEqual("governance-current-memory", profile["artifact_type"])
+        self.assertEqual(self.CURRENT_MEMORY, profile["path_pattern"])
+        self.assertEqual("harness", profile["repository_section"])
+        self.assertIs(True, profile["canonical"])
+        self.assertEqual(("layer", "status"), profile["required_keys"])
+        self.assertEqual(("layer", "status"), profile["key_order"])
+        self.assertEqual(self.EXPECTED_SECTIONS, profile["required_sections"])
+        self.assertEqual(
+            {"layer": "agentic", "status": "active"},
+            profile["expected_values"],
+        )
+        self.assertTrue((ROOT / self.CURRENT_MEMORY).is_file())
+
+        findings = contract.validate_repository(ROOT, bundle, "harness")
+        self.assertFalse(
+            {
+                "AGC-REPOSITORY-MISSING-ARTIFACT",
+                "AGC-REPOSITORY-PROFILE-COVERAGE",
+            }
+            & codes(findings),
+            contract.render_findings(findings),
+        )
+
+    def test_current_memory_enforces_fixed_section_envelope(self) -> None:
+        self.assertEqual(
+            self.CURRENT_MEMORY,
+            contract.CURRENT_MEMORY_PATH,
+        )
+        self.assertEqual(32 * 1024, contract.CURRENT_MEMORY_MAX_BYTES)
+        self.assertEqual(400, contract.CURRENT_MEMORY_MAX_LINES)
+        self.assertEqual(self.EXPECTED_SECTIONS, contract.CURRENT_MEMORY_SECTIONS)
+
+        current = ROOT / self.CURRENT_MEMORY
+        text = current.read_text(encoding="utf-8")
+        self.assertLessEqual(len(text.encode("utf-8")), 32 * 1024)
+        self.assertLessEqual(len(text.splitlines()), 400)
+        self.assertEqual(self.EXPECTED_SECTIONS, contract._section_names(text))
+        for label in ("Current task", "Verified commit", "Verified at"):
+            self.assertEqual(1, len(re.findall(rf"^- {label}:", text, re.MULTILINE)))
+
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual([], contract._validate_current_memory(ROOT, bundle))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._copy_fixture(root)
+            self._replace_memory(
+                root,
+                "## Approved decisions",
+                "## Next handoff\n\nDuplicate.\n\n## Approved decisions",
+            )
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                self.assertIn(
+                    "AGC-MEMORY-BOUNDS",
+                    codes(
+                        contract._validate_current_memory(
+                            root, contract.load_contract_bundle(root)
+                        )
+                    ),
+                )
+
+    def test_current_memory_rejects_size_line_secret_and_stale_state(self) -> None:
+        def validate_mutation(
+            mutate,
+            expected_code: str,
+            *,
+            ancestor: bool = True,
+            expected_current_max_bytes: int | None = None,
+        ) -> list[object]:
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                self._copy_fixture(root)
+                mutate(root)
+                with mock.patch.object(
+                    contract,
+                    "_git_commit_is_ancestor",
+                    return_value=ancestor,
+                ):
+                    if expected_current_max_bytes is None:
+                        findings = contract._validate_current_memory(
+                            root, contract.load_contract_bundle(root)
+                        )
+                    else:
+                        reader = contract._read_root_confined_regular_text
+                        with mock.patch.object(
+                            contract,
+                            "_read_root_confined_regular_text",
+                            wraps=reader,
+                        ) as observed_reader:
+                            findings = contract._validate_current_memory(
+                                root, contract.load_contract_bundle(root)
+                            )
+                        current_reads = [
+                            call
+                            for call in observed_reader.call_args_list
+                            if call.args[1]
+                            == pathlib.PurePosixPath(self.CURRENT_MEMORY)
+                        ]
+                        self.assertEqual(1, len(current_reads))
+                        self.assertEqual(
+                            expected_current_max_bytes,
+                            current_reads[0].kwargs["max_bytes"],
+                        )
+                self.assertIn(
+                    expected_code,
+                    codes(findings),
+                    contract.render_findings(findings),
+                )
+                return findings
+
+        oversized_marker = "oversized-current-memory-payload-marker"
+        oversized_findings = validate_mutation(
+            lambda root: self._append_memory(
+                root,
+                oversized_marker + ("x" * (32 * 1024)),
+            ),
+            "AGC-MEMORY-BOUNDS",
+            expected_current_max_bytes=contract.CURRENT_MEMORY_MAX_BYTES,
+        )
+        self.assertEqual({"AGC-MEMORY-BOUNDS"}, codes(oversized_findings))
+        self.assertNotIn(
+            oversized_marker,
+            contract.render_findings(oversized_findings),
+        )
+        validate_mutation(
+            lambda root: self._append_memory(root, "\n" * 401),
+            "AGC-MEMORY-BOUNDS",
+        )
+        for forbidden in (
+            "\n- credential token secret marker\n",
+            "\nAgents must treat this paragraph as a policy body.\n",
+            "\n$ git status\nstdout: synthetic-output-marker\n",
+            "\nRead ~/.config/auth.json and ~/.zsh_history.\n",
+            "\nCopy provider-global state from ~/.codex.\n",
+        ):
+            with self.subTest(forbidden=forbidden.splitlines()[-1]):
+                findings = validate_mutation(
+                    lambda root, value=forbidden: self._append_memory(root, value),
+                    "AGC-MEMORY-FORBIDDEN-MATERIAL",
+                )
+                self.assertNotIn(
+                    "synthetic-output-marker",
+                    contract.render_findings(findings),
+                )
+
+        validate_mutation(
+            lambda root: (root / self.CURRENT_TASK).unlink(),
+            "AGC-MEMORY-STALE-STATE",
+        )
+
+        def mark_task_completed(root: pathlib.Path) -> None:
+            task = root / self.CURRENT_TASK
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "status: active", "status: completed", 1
+                ),
+                encoding="utf-8",
+            )
+
+        validate_mutation(mark_task_completed, "AGC-MEMORY-STALE-STATE")
+        validate_mutation(
+            lambda root: None,
+            "AGC-MEMORY-STALE-STATE",
+            ancestor=False,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._copy_fixture(root)
+            memory_text = (root / self.CURRENT_MEMORY).read_text(encoding="utf-8")
+            verified_at = re.search(r"^- Verified at: .+$", memory_text, re.MULTILINE)
+            self.assertIsNotNone(verified_at)
+            self._replace_memory(
+                root,
+                verified_at.group(0),
+                "- Verified at: `2000-01-01T00:00:00+09:00`",
+            )
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                findings = contract._validate_current_memory(
+                    root, contract.load_contract_bundle(root)
+                )
+            self.assertNotIn("AGC-MEMORY-STALE-STATE", codes(findings))
+
+
+class Task4CapabilityFunctionTests(unittest.TestCase):
+    FUNCTION_CONTRACTS = {
+        "project-memory-stewardship": {
+            "scope": "docs",
+            "owner_agent": "doc-writer",
+            "reviewer_agents": ("eval-engineer", "rules-engineer"),
+            "outputs": (
+                "bounded-current-state-update",
+                "durable-evidence-links",
+                "policy-duplication-check",
+            ),
+        },
+        "provider-model-evaluation": {
+            "scope": "qa",
+            "owner_agent": "eval-engineer",
+            "reviewer_agents": ("code-reviewer", "rules-engineer"),
+            "outputs": (
+                "sourced-model-disposition",
+                "native-acceptance-verdict",
+                "regression-comparison",
+            ),
+        },
+    }
+    CAPABILITY_ROUTES = {
+        "knowledge-stewardship": (
+            "doc-writer",
+            "project-memory-stewardship",
+        ),
+        "provider-model-qa": (
+            "eval-engineer",
+            "provider-model-evaluation",
+        ),
+    }
+    SOURCE_URL = "https://github.com/msitarzewski/agency-agents"
+    SOURCE_RETRIEVED_AT = "2026-07-26"
+
+    def test_role_and_function_cardinality_ownership_and_projection_are_exact(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual(14, len(bundle.catalog["agents"]))
+        self.assertEqual(24, len(bundle.catalog["functions"]))
+
+        functions = {
+            entry["function_id"]: entry for entry in bundle.catalog["functions"]
+        }
+        agents = {entry["agent_id"]: entry for entry in bundle.catalog["agents"]}
+        for function_id, expected in self.FUNCTION_CONTRACTS.items():
+            with self.subTest(function_id=function_id):
+                entry = functions[function_id]
+                self.assertEqual(expected["scope"], entry["scope"])
+                self.assertEqual(expected["owner_agent"], entry["owner_agent"])
+                self.assertEqual(
+                    expected["reviewer_agents"], entry["reviewer_agents"]
+                )
+                self.assertEqual(expected["outputs"], entry["outputs"])
+                self.assertEqual(("agents-md", "claude"), entry["provider_projections"])
+                self.assertIn(
+                    function_id,
+                    agents[expected["owner_agent"]]["function_ids"],
+                )
+
+        self.assertEqual(
+            24, len(list((ROOT / ".agents/skills").glob("*/SKILL.md")))
+        )
+        self.assertEqual(
+            24, len(list((ROOT / ".claude/skills").glob("*/SKILL.md")))
+        )
+        for function_id in self.FUNCTION_CONTRACTS:
+            for root in (".agents/skills", ".claude/skills"):
+                with self.subTest(function_id=function_id, root=root):
+                    projection = ROOT / root / function_id / "SKILL.md"
+                    self.assertTrue(projection.is_file())
+                    text = projection.read_text(encoding="utf-8")
+                    self.assertIn(
+                        "Generated by scripts/operations/provider_surface_renderer.py",
+                        text,
+                    )
+                    self.assertIn(
+                        "docs/00.agent-governance/agents/functions/"
+                        f"{function_id}.md",
+                        text,
+                    )
+
+    def test_new_function_documents_have_registered_frontmatter_and_sections(
+        self,
+    ) -> None:
+        required_sections = (
+            "Preconditions",
+            "Inputs",
+            "Procedure",
+            "Outputs",
+            "Gates",
+            "Failure Handling",
+            "Related Documents",
+        )
+        for function_id, expected in self.FUNCTION_CONTRACTS.items():
+            with self.subTest(function_id=function_id):
+                path = (
+                    ROOT
+                    / "docs/00.agent-governance/agents/functions"
+                    / f"{function_id}.md"
+                )
+                text = path.read_text(encoding="utf-8")
+                self.assertTrue(
+                    text.startswith(
+                        "---\n"
+                        "layer: agentic\n"
+                        "artifact_type: agent-function\n"
+                        f"function_id: {function_id}\n"
+                        f"scope: {expected['scope']}\n"
+                        "status: active\n"
+                        "---\n"
+                    )
+                )
+                self.assertEqual(
+                    required_sections,
+                    tuple(
+                        match.group(1)
+                        for match in re.finditer(r"^## (.+)$", text, re.MULTILINE)
+                    ),
+                )
+                self.assertIn(expected["owner_agent"], text)
+                for output in expected["outputs"]:
+                    self.assertIn(output, text)
+
+    def test_capability_intake_maps_model_qa_and_knowledge_stewardship_without_roles(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        self.assertEqual(14, len(bundle.catalog["agents"]))
+        intake = {
+            entry["capability_id"]: entry
+            for entry in bundle.catalog["capability_intake"]
+        }
+        for capability_id, (owner, function_id) in self.CAPABILITY_ROUTES.items():
+            with self.subTest(capability_id=capability_id):
+                entry = intake[capability_id]
+                self.assertEqual("agency-agents", entry["source"])
+                self.assertEqual(self.SOURCE_URL, entry["source_url"])
+                self.assertEqual(
+                    self.SOURCE_RETRIEVED_AT, entry["source_retrieved_at"]
+                )
+                self.assertEqual("merge", entry["decision"])
+                self.assertEqual(owner, entry["owner_agent"])
+                self.assertEqual(function_id, entry["evaluation_function"])
+                self.assertIsInstance(entry["rationale"], str)
+                self.assertTrue(entry["rationale"])
+
+        for entry in intake.values():
+            self.assertIn(entry["decision"], {"merge", "defer", "reject"})
+            if entry["source"] == "agency-agents":
+                self.assertEqual(self.SOURCE_URL, entry["source_url"])
+                self.assertEqual(
+                    self.SOURCE_RETRIEVED_AT, entry["source_retrieved_at"]
+                )
+                self.assertIsInstance(entry["rationale"], str)
+                self.assertTrue(entry["rationale"])
+
+
+class Task4HarnessLoopTests(unittest.TestCase):
+    EXPECTED_LAYER_IDS = (
+        "canonical-contract",
+        "role-function-routing",
+        "permission-mutation-boundary",
+        "provider-model-reasoning-policy",
+        "semantic-event-hooks",
+        "controlled-qa-validation",
+        "tracked-ci",
+        "sanitized-evidence-handoff",
+    )
+    EXPECTED_STATE_IDS = (
+        "discover",
+        "design/plan",
+        "approval",
+        "implement",
+        "validate",
+        "independent-review",
+        "evidence",
+        "handoff",
+    )
+    LAYER_FIELDS = {
+        "layer_id",
+        "owner_agent",
+        "required_inputs",
+        "mutation_authority",
+        "gates",
+        "failure_return",
+        "evidence_fields",
+        "handoff_target",
+    }
+    STATE_FIELDS = {
+        "state_id",
+        "owner_agent",
+        "required_inputs",
+        "mutation_authority",
+        "entry_condition",
+        "exit_gate",
+        "max_attempts",
+        "failure_return",
+        "evidence_fields",
+        "handoff_target",
+    }
+    STATE_SEMANTICS = {
+        "discover": ("read-only", 1, "stop", "design/plan"),
+        "design/plan": ("workspace-write", 2, "design/plan", "approval"),
+        "approval": ("read-only", 1, "approval", "implement"),
+        "implement": ("workspace-write", 2, "stop", "validate"),
+        "validate": ("workspace-write", 1, "implement", "independent-review"),
+        "independent-review": ("read-only", 2, "implement", "evidence"),
+        "evidence": ("workspace-write", 1, "independent-review", "handoff"),
+        "handoff": ("read-only", 1, "evidence", "complete"),
+    }
+    LOOP_STATES = {
+        "approved-all-files-gate": ("validate", "evidence"),
+        "bounded-implementation-loop": ("implement", "validate"),
+        "context-bootstrap": ("discover",),
+        "independent-review-loop": ("implement", "independent-review"),
+    }
+
+    def test_harness_declares_eight_typed_layers_and_discover_to_handoff_states(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        layers = bundle.providers["harness_layers"]
+        states = bundle.providers["workflow_states"]
+        self.assertEqual(
+            self.EXPECTED_LAYER_IDS,
+            tuple(layer["layer_id"] for layer in layers),
+        )
+        self.assertEqual(
+            self.EXPECTED_STATE_IDS,
+            tuple(state["state_id"] for state in states),
+        )
+        for layer in layers:
+            with self.subTest(layer=layer["layer_id"]):
+                self.assertEqual(self.LAYER_FIELDS, set(layer))
+                self.assertTrue(layer["required_inputs"])
+                self.assertTrue(layer["gates"])
+                self.assertEqual(
+                    ("command", "result", "rollback", "skipped_checks"),
+                    layer["evidence_fields"],
+                )
+        for state in states:
+            with self.subTest(state=state["state_id"]):
+                self.assertEqual(self.STATE_FIELDS, set(state))
+                self.assertTrue(state["required_inputs"])
+                self.assertEqual(
+                    self.STATE_SEMANTICS[state["state_id"]],
+                    (
+                        state["mutation_authority"],
+                        state["max_attempts"],
+                        state["failure_return"],
+                        state["handoff_target"],
+                    ),
+                )
+                self.assertEqual(
+                    ("command", "result", "rollback", "skipped_checks"),
+                    state["evidence_fields"],
+                )
+
+        loops = {
+            entry["event_id"]: entry for entry in bundle.providers["harness_loops"]
+        }
+        self.assertEqual(set(self.LOOP_STATES), set(loops))
+        for event_id, expected_states in self.LOOP_STATES.items():
+            with self.subTest(event_id=event_id):
+                self.assertEqual(expected_states, loops[event_id]["workflow_states"])
+
+    def test_layer_and_state_validators_are_deterministic_and_value_free(
+        self,
+    ) -> None:
+        bundle = contract.load_contract_bundle(ROOT)
+        agent_ids = frozenset(
+            entry["agent_id"] for entry in bundle.catalog["agents"]
+        )
+        layers = bundle.providers["harness_layers"]
+        states = bundle.providers["workflow_states"]
+        self.assertEqual([], contract._validate_harness_layers(layers, agent_ids))
+        self.assertEqual([], contract._validate_workflow_states(states, agent_ids))
+
+        cases = []
+        changed_layers = [dict(layer) for layer in layers]
+        changed_layers[0]["unexpected"] = "sentinel-layer-value"
+        cases.append(
+            (
+                contract._validate_harness_layers,
+                changed_layers,
+                "AGC-HARNESS-LAYER-SCHEMA",
+                "sentinel-layer-value",
+            )
+        )
+        changed_layers = list(reversed([dict(layer) for layer in layers]))
+        cases.append(
+            (
+                contract._validate_harness_layers,
+                changed_layers,
+                "AGC-HARNESS-LAYER-ORDER",
+                self.EXPECTED_LAYER_IDS[-1],
+            )
+        )
+        changed_states = [dict(state) for state in states]
+        changed_states[4]["max_attempts"] = -7331
+        cases.append(
+            (
+                contract._validate_workflow_states,
+                changed_states,
+                "AGC-WORKFLOW-STATE-ATTEMPT-BOUND",
+                "-7331",
+            )
+        )
+        changed_states = [dict(state) for state in states]
+        changed_states[4]["failure_return"] = "sentinel-state-value"
+        cases.append(
+            (
+                contract._validate_workflow_states,
+                changed_states,
+                "AGC-WORKFLOW-STATE-REFERENCE",
+                "sentinel-state-value",
+            )
+        )
+        for validator, values, expected_code, sentinel in cases:
+            with self.subTest(expected_code=expected_code):
+                first = validator(values, agent_ids)
+                second = validator(values, agent_ids)
+                self.assertEqual(first, second)
+                self.assertIn(expected_code, codes(first))
+                self.assertNotIn(sentinel, contract.render_findings(first))
+
+
+class Task6CanonicalEvidenceDirectImpactTests(unittest.TestCase):
+    def test_direct_impact_provider_and_postflight_guidance_matches_current_contract(
+        self,
+    ) -> None:
+        codex_provider = (
+            ROOT / "docs/00.agent-governance/providers/codex.md"
+        ).read_text(encoding="utf-8")
+        postflight = (
+            ROOT / "docs/00.agent-governance/rules/postflight-checklist.md"
+        ).read_text(encoding="utf-8")
+        normalized_codex = " ".join(codex_provider.split())
+        normalized_postflight = " ".join(postflight.split())
+
+        self.assertIn(
+            "`adversarial-review`, `complex-implementation`, and "
+            "`long-horizon-supervision` use `gpt-5.6-sol`",
+            normalized_codex,
+        )
+        self.assertIn(
+            "`evidence-research` and `routine-validation` use `gpt-5.6-terra`",
+            normalized_codex,
+        )
+        self.assertIn(
+            "official provider lifecycle is `stable`",
+            normalized_codex,
+        )
+        self.assertIn(
+            "runtime acceptance and entitlement remain `needs_revalidation`",
+            normalized_codex,
+        )
+        self.assertNotRegex(
+            codex_provider,
+            r"(?<![A-Za-z0-9.-])GPT-5\.6(?![A-Za-z0-9.-])",
+        )
+        self.assertNotIn("raw status is\n  `listed`", codex_provider)
+        self.assertIn(
+            "reports exactly 11 fixtures, 16 regressions", normalized_postflight
+        )
+        self.assertNotIn(
+            "reports exactly eight fixtures, ten regressions", normalized_postflight
+        )
+
+
 class Task5HarnessLoopContractTests(unittest.TestCase):
     EXPECTED_LOOPS = {
         "approved-all-files-gate": (1, "controlled-wrapper-pass", "record_and_stop"),
@@ -3352,8 +4530,8 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertEqual("eval-engineer", evaluation["owner_agent"])
         self.assertEqual("code-reviewer", evaluation["reviewer_agent"])
         self.assertNotEqual(evaluation["owner_agent"], evaluation["reviewer_agent"])
-        self.assertEqual(8, evaluation["fixture_count"])
-        self.assertEqual(10, evaluation["regression_count"])
+        self.assertEqual(11, evaluation["fixture_count"])
+        self.assertEqual(16, evaluation["regression_count"])
         self.assertEqual("synthetic-fixture", evaluation["input_classification"])
         self.assertEqual(
             (
@@ -3369,6 +4547,9 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
                 "AOE-DOC-001",
                 "AOE-HOOK-001",
                 "AOE-INFRA-001",
+                "AOE-LOOP-001",
+                "AOE-MEMORY-001",
+                "AOE-MODEL-001",
                 "AOE-PROVIDER-001",
                 "AOE-ROLE-001",
                 "AOE-ROUTING-001",

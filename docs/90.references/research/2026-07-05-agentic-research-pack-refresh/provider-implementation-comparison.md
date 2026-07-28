@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:provider-implementation-comparison
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-16
+reviewed_at: 2026-07-27
 review_cycle: on-source-change
 ---
 
@@ -16,9 +16,9 @@ review_cycle: on-source-change
 Claude Code, OpenAI Codex, and Gemini CLI expose overlapping agentic coding
 features, but their schemas, defaults, lifecycle coverage, and maturity labels
 are not interchangeable. This reference compares current official
-documentation originally retrieved on 2026-07-10 and revalidated on 2026-07-11
-with the tracked provider adapters at baseline
-`1a80b6989304fa7b6a179861a9cad795dd875ca3`.
+documentation originally retrieved on 2026-07-10 and currently revalidated at
+`2026-07-27T02:33:54+09:00` with the tracked provider adapters at baseline
+`ab3a047511c2bf9b5a95ebac737f3ebdb5589384`.
 
 ## Purpose
 
@@ -51,10 +51,11 @@ global provider configuration.
   and evidence contract shared before native adaptation.
 - A **provider adapter** translates that substrate into documented native
   files/events without becoming a second policy source.
-- **Current provider capability** means documented at external revalidation on
-  2026-07-11. **Current workspace adoption** means tracked surfaces rechecked
-  on 2026-07-16. Neither is a claim about the fixed 2026-07-10 10:00 KST model
-  cutoff or live account entitlement.
+- **Current provider capability** means documented at external revalidation at
+  `2026-07-27T02:33:54+09:00`. **Current workspace adoption** means tracked
+  surfaces rechecked against the 2026-07-26 typed contracts. Neither is a claim
+  about the fixed 2026-07-10 10:00 KST model cutoff or live account
+  entitlement.
 - **Unknown** means the assigned official sources did not establish the
   capability.
 
@@ -80,9 +81,9 @@ and the final column records normalization gaps or task-fit caveats.
 | PIC-12 — Noninteractive automation | CLI/headless use, hooks, CI patterns, and scheduled workflows (`C1`, `C3`) | Noninteractive execution and parallel/batch workflows; CSV batch mode is experimental (`O2`, `O4`) | Headless mode, hooks, and parallel subagents (`G4`–`G6`) | Tracked scripts and GitHub workflows. | Automation authority is limited to the initiating trigger; remote writes remain approval-gated. |
 | PIC-13 — Checkpoint/resume | Foreground/background subagents and optional worktree isolation (`C2`) | Subagent threads inherit sandbox and propagate approvals (`O2`) | Shadow-Git checkpointing is optional and disabled by default (`G6`) | Git history, Stage 04 evidence, and Stage 05 runbooks. | Provider state is not repository rollback; resume must refresh current diff and authority. |
 | PIC-14 — Telemetry/observability | Hooks, transcripts, and provider logs expose selected lifecycle observations (`C3`) | OpenTelemetry is opt-in and configurable (`O4`) | Local/GCP OTLP telemetry and tool/API metrics are opt-in (`G6`) | Command output, diffs, CI logs, SARIF, and task evidence. | No unified trace backend is tracked; telemetry may be disabled and must respect redaction rules. |
-| PIC-15 — Provider adapter generation | Fourteen generated native Markdown agents plus 22 Claude skills/settings are present. | Fourteen generated strict TOML agents plus hooks and 22 shared skills are present. | Fourteen generated native agents/settings/hooks are distinct from `.agents` compatibility and shared skills. | The Stage 00-only renderer reports three providers and zero drift across roles, functions, settings, hooks, and indexes. | Generation plus strict schema checks still do not prove provider runtime acceptance. |
-| PIC-16 — Model selection/reasoning | Agents select a model or inherit; effort behavior is model-specific (`C2`) | Agent TOMLs select exact model and reasoning effort (`O2`, `O4`) | CLI configuration selects a model; API thinking and Antigravity selection are distinct surfaces (`G1`) | `subagent-protocol.md` owns exact active values; the cutoff landscape owns evidence. | Model labels and provider prose do not prove account availability, quality, cost, or cross-provider equivalence. |
-| PIC-17 — Evaluation integration | Hooks/subagents can invoke tests but do not create a repository semantic eval contract (`C2`, `C3`) | Skills/agents/hooks can invoke eval tooling (`O2`–`O4`) | Headless/tools/hooks/subagents can invoke checks (`G3`–`G5`) | QA scope, deterministic validators, eight exact fixtures, ten synthetic regressions, calibrated thresholds, and independent review form a repository-semantic gate. | The gate is synthetic and makes no live cross-provider model-quality claim. |
+| PIC-15 — Provider adapter generation | Fourteen generated native Markdown agents plus 24 Claude skills/settings are present. | Fourteen generated strict TOML agents plus hooks and 24 shared skills are present. | Fourteen generated native agents/settings/hooks are distinct from `.agents` compatibility and shared skills. | The Stage 00-only renderer reports three providers and zero drift across 14 roles, 24 functions, settings, hooks, and indexes. | Generation plus strict schema checks still do not prove provider runtime acceptance. |
+| PIC-16 — Model selection/reasoning | Agents select a model or inherit; effort behavior is model-specific (`C2`) | Agent TOMLs select exact model and reasoning effort (`O2`, `O4`) | CLI configuration selects a model; API thinking and Antigravity selection are distinct surfaces (`G1`) | `subagent-protocol.md` owns five exact active profiles across the 11-model registry, with no active fallback graph or implicit substitution; the cutoff landscape owns historical evidence. | Model labels and provider prose do not prove product acceptance, entitlement, quality, cost, or cross-provider equivalence. |
+| PIC-17 — Evaluation integration | Hooks/subagents can invoke tests but do not create a repository semantic eval contract (`C2`, `C3`) | Skills/agents/hooks can invoke eval tooling (`O2`–`O4`) | Headless/tools/hooks/subagents can invoke checks (`G3`–`G5`) | QA scope, deterministic validators, 11 exact fixtures, 16 synthetic regressions, calibrated thresholds, and independent review form a repository-semantic gate. | The gate is synthetic and makes no live cross-provider model-quality claim. |
 
 ## Official Evidence Ledger
 
@@ -95,15 +96,15 @@ and the final column records normalization gaps or task-fit caveats.
 | Claude (`C5`) | Permissions | [Permissions](https://code.claude.com/docs/en/permissions) | Current documentation | Current behavior | Stage 00 approvals plus Claude settings | High |
 | Claude (`C6`) | Security/sandbox | [Security](https://code.claude.com/docs/en/security), [sandboxing](https://code.claude.com/docs/en/sandboxing) | Current docs; sandbox configuration is optional | Current behavior | Environment/approval rules; actual global config unknown | Medium: local files cannot prove runtime enablement |
 | Claude (`C7`) | MCP | [MCP](https://code.claude.com/docs/en/mcp) | Current documentation | Current behavior | Provider/user configuration | High |
-| Codex (`O1`) | Project instructions | [AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md) | Current documentation | Current behavior | Root `AGENTS.md` and nested instruction chain | High |
-| Codex (`O2`) | Subagents/custom-agent schema | [Subagents](https://developers.openai.com/codex/subagents) | Current first-class feature; CSV batch mode explicitly experimental | Current behavior | Fourteen tracked strict `.codex/agents/*.toml` adapters include the required native description and developer-instruction fields; schema/drift validation passes | High for tracked schema adoption; live CLI acceptance remains unobserved |
-| Codex (`O3`) | Hooks/events/coverage | [Hooks](https://developers.openai.com/codex/hooks) | Current command hooks; prompt/agent forms parsed but skipped; documented interception limits | Current behavior | `.codex/hooks.json` and repo hook scripts | High; tracked `SessionEnd` lacks current official event support |
-| Codex (`O4`) | Config, MCP, telemetry | [Configuration reference](https://developers.openai.com/codex/config-reference) | Current reference; some keys/features carry their own maturity labels | Current behavior | No tracked `.codex/config.toml`; tracked Codex surfaces are `.codex/hooks.json`, agent TOMLs/skills, and Stage 00/provider notes | High; installed/global MCP configuration and credentials remain unknown |
+| Codex (`O1`) | Project instructions | [AGENTS.md guide](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | Current documentation | Current behavior | Root `AGENTS.md` and nested instruction chain | High |
+| Codex (`O2`) | Subagents/custom-agent schema | [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | Current first-class feature; `multi_agent` is documented Stable | Current behavior | Fourteen tracked strict `.codex/agents/*.toml` adapters include the required native description and developer-instruction fields; schema/drift validation passes | High for tracked schema adoption; live CLI acceptance remains unobserved |
+| Codex (`O3`) | Hooks/events/coverage | [Hooks](https://learn.chatgpt.com/docs/hooks) | Current Stable feature with command-hook trust review and documented event limits | Current behavior | `.codex/hooks.json` and repo hook scripts | High; tracked `SessionEnd` remains unsupported in the typed binding |
+| Codex (`O4`) | Config, MCP, telemetry | [Configuration](https://learn.chatgpt.com/docs/config-file/config-basic) | Current reference; project-local layers require trust and some keys/features carry their own maturity labels | Current behavior | No tracked `.codex/config.toml`; tracked Codex surfaces are `.codex/hooks.json`, agent TOMLs/skills, and Stage 00/provider notes | High; installed/global MCP configuration and credentials remain unknown |
 | Codex (`O5`) | Sandbox and approvals | [Agent approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security) | Current documentation; permission profiles documented as beta | Current behavior | Stage 00 approval/environment rules | High; actual global operator profile unknown |
-| Gemini (`G1`) | Configuration and context | [Configuration](https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html), [GEMINI.md](https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html) | Current documentation | Current behavior | Root `GEMINI.md`; `.agents` is a separate workspace/Antigravity surface | High |
+| Gemini (`G1`) | Configuration and context | [Generation settings](https://geminicli.com/docs/cli/generation-settings/), [memory](https://geminicli.com/docs/cli/tutorials/memory-management/) | Current documentation | Current behavior | Root `GEMINI.md`; `.agents` is a separate workspace/Antigravity surface | High |
 | Gemini (`G2`) | Sandbox | [Sandboxing](https://google-gemini.github.io/gemini-cli/docs/cli/sandbox.html) | Optional; documented disabled-by-default behavior | Current behavior | No tracked `.gemini` sandbox configuration | High |
 | Gemini (`G3`) | Tools and MCP | [MCP servers](https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html), [tools](https://google-gemini.github.io/gemini-cli/docs/tools/) | Current documentation | Current behavior | Generated pointers do not configure MCP | High |
-| Gemini (`G4`) | Subagents/custom-agent schema | [Subagents](https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md), [v0.38.1 announcement](https://github.com/google-gemini/gemini-cli/discussions/25562) | Public support announced in v0.38.1 on 2026-04-16; current docs describe built-in/custom agents | Dated announcement precedes the 2026-07-10 evidence date | Fourteen tracked `.gemini/agents/*.md` native adapters are generated separately from `.agents`; schema/drift validation passes, while live CLI acceptance remains unobserved | High for capability and tracked adoption; live provider behavior is not established |
+| Gemini (`G4`) | Subagents/custom-agent schema | [Subagents](https://geminicli.com/docs/core/subagents/), [v0.38.1 announcement](https://github.com/google-gemini/gemini-cli/discussions/25562) | Public support announced in v0.38.1 on 2026-04-16; current docs describe built-in/custom agents | Dated announcement precedes the 2026-07-10 evidence date | Fourteen tracked `.gemini/agents/*.md` native adapters are generated separately from `.agents`; schema/drift validation passes, while live CLI acceptance remains unobserved | High for capability and tracked adoption; live provider behavior is not established |
 | Gemini (`G5`) | Hooks/events/commands | [Configuration](https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/configuration.md), [writing hooks](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/writing-hooks.md), [commands](https://github.com/google-gemini/gemini-cli/blob/main/docs/reference/commands.md), [v0.26.0 announcement](https://github.com/google-gemini/gemini-cli/discussions/17790), [v0.26.0 weekly update](https://github.com/google-gemini/gemini-cli/discussions/17812) | Hooks were announced with v0.26.0 on 2026-01-28 and announced as enabled by default; current docs describe first-class lifecycle events and `/hooks` | Dated announcements precede the 2026-07-10 evidence date | Tracked `.gemini/settings.json`, `.gemini/hooks`, and fourteen native agent adapters are generated and schema/drift checked; live CLI interception remains unobserved | High for capability and tracked adoption; live provider behavior is not established |
 | Gemini (`G6`) | CLI/headless, checkpointing, telemetry | [Gemini CLI docs](https://google-gemini.github.io/gemini-cli/docs/), [checkpointing](https://google-gemini.github.io/gemini-cli/docs/cli/checkpointing.html), [telemetry](https://google-gemini.github.io/gemini-cli/docs/cli/telemetry.html) | Headless operation current; checkpointing optional/default-off; telemetry opt-in | Current behavior | Root shim/provider notes; no common provider checkpoint or telemetry backend | High for documented surfaces; runtime enablement remains unknown |
 
@@ -146,6 +147,10 @@ and the final column records normalization gaps or task-fit caveats.
   remain unverified.
 - Model freshness/cutoff claims belong to Task 2's provider landscape, not
   this implementation matrix.
+- Current contract facts retain their exact
+  `2026-07-26T20:08:18+09:00` retrieval timestamp; the provider documentation
+  revalidation at `2026-07-27T02:33:54+09:00` is a separate observation and
+  does not rewrite it.
 
 ## Source Rules
 

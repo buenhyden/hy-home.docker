@@ -52,10 +52,13 @@ Codex-specific guidance for this repository.
   `scripts/operations/sync-provider-surfaces.sh`; provider skill bodies are
   never used as policy input.
 - Apply the model and reasoning selected by the agent's work profile in
-  `contracts/provider-models.yaml`: GPT-5.6 for supervision and complex work,
-  and GPT-5.6 Terra for read-heavy/repetitive work. OpenAI's raw status is
-  `listed`, not `stable`; local entitlement and runtime acceptance still need
-  revalidation. Never carry Anthropic or Gemini model names into `.codex/`.
+  `contracts/provider-models.yaml`: `adversarial-review`,
+  `complex-implementation`, and `long-horizon-supervision` use
+  `gpt-5.6-sol`; `evidence-research` and `routine-validation` use
+  `gpt-5.6-terra`. Their official provider lifecycle is `stable`, while
+  runtime acceptance and entitlement remain `needs_revalidation`; configured
+  defaults are not live activation claims. Never carry Anthropic or Gemini
+  model names into `.codex/`.
 - GPT-5.3 Codex Spark remains non-default preview/catalog context. It cannot be
   introduced as an override until the contract, renderer, validator, and task
   evidence all encode the same approved exception.

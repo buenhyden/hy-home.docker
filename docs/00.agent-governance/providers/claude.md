@@ -38,8 +38,10 @@ Claude Code-specific guidance for this repository.
 ## 3. Root Import Boundary
 
 The root `CLAUDE.md` owns the executable import list. It loads bootstrap, this
-provider overlay, the memory index, and progress in that order; do not copy the
-list into another governance surface.
+provider overlay, the shared memory contract, and the bounded `current.md`
+record in that order. Claude-local or user-global memory may supplement session
+loading but may not copy, replace, or override the repository current-state
+body.
 
 ## 4. Instruction Precedence (Claude-Specific)
 

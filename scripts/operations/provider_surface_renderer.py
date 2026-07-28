@@ -110,6 +110,13 @@ class FunctionRecord:
 
 
 @dataclass(frozen=True)
+class ProviderSelection:
+    model_id: str
+    control_kind: str
+    control_value: str | None
+
+
+@dataclass(frozen=True)
 class Catalog:
     agents: tuple[AgentRecord, ...]
     functions: tuple[FunctionRecord, ...]
@@ -291,24 +298,30 @@ def render_function(provider: str, function: FunctionRecord) -> bytes:
     ).encode()
 
 
-def _provider_defaults(
-    root: pathlib.Path,
-) -> dict[tuple[str, str], tuple[str, str | None]]:
-    bundle = load_contract_bundle(root.absolute())
-    defaults: dict[tuple[str, str], tuple[str, str | None]] = {}
-    for profile in bundle.providers["work_profiles"]:
+def _provider_selections(
+    provider_contract: Mapping[str, object],
+) -> dict[tuple[str, str], ProviderSelection]:
+    selections: dict[tuple[str, str], ProviderSelection] = {}
+    for profile in provider_contract["work_profiles"]:
         profile_id = str(profile["profile_id"])
         for entry in profile["defaults"]:
+            provider = str(entry["provider"])
+            control_kind = {
+                "claude": "effort",
+                "codex": "model_reasoning_effort",
+                "gemini": "thinking_level",
+            }[provider]
             control = (
                 entry.get("effort")
-                if entry.get("provider") == "claude"
+                if provider == "claude"
                 else entry.get("reasoning")
             )
-            defaults[(profile_id, str(entry["provider"]))] = (
-                str(entry["model_id"]),
-                str(control) if isinstance(control, str) else None,
+            selections[(profile_id, provider)] = ProviderSelection(
+                model_id=str(entry["model_id"]),
+                control_kind=control_kind,
+                control_value=str(control) if isinstance(control, str) else None,
             )
-    return defaults
+    return selections
 
 
 def _agent_description(agent: AgentRecord) -> str:
@@ -345,9 +358,9 @@ def _markdown_projection(
 
 def _render_claude_agent(
     agent: AgentRecord,
-    defaults: Mapping[tuple[str, str], tuple[str, str | None]],
+    selections: Mapping[tuple[str, str], ProviderSelection],
 ) -> bytes:
-    model, effort = defaults[(agent.work_profile, "claude")]
+    selection = selections[(agent.work_profile, "claude")]
     read_only = agent.permission_profile == "read-only"
     tools = ["Read", "Grep", "Glob"]
     if agent.tier == "supervisor":
@@ -359,10 +372,12 @@ def _render_claude_agent(
         "name": agent.agent_id,
         "description": _agent_description(agent),
         "tools": tools,
-        "model": model,
+        "model": selection.model_id,
     }
-    if effort is not None:
-        metadata["effort"] = effort
+    if selection.control_value is not None:
+        if selection.control_kind != "effort":
+            raise ValueError("Claude selection uses a non-native control")
+        metadata["effort"] = selection.control_value
     metadata.update(
         {
             "permissionMode": "plan" if read_only else "default",
@@ -378,9 +393,14 @@ def _render_claude_agent(
 
 def _render_codex_agent(
     agent: AgentRecord,
-    defaults: Mapping[tuple[str, str], tuple[str, str | None]],
+    selections: Mapping[tuple[str, str], ProviderSelection],
 ) -> bytes:
-    model, reasoning = defaults[(agent.work_profile, "codex")]
+    selection = selections[(agent.work_profile, "codex")]
+    if (
+        selection.control_kind != "model_reasoning_effort"
+        or selection.control_value is None
+    ):
+        raise ValueError("Codex selection lacks its native reasoning control")
     output = pathlib.PurePosixPath(f".codex/agents/{agent.agent_id}.toml")
     body = (
         f"{GENERATED_MARKER}; source: {agent.catalog_path}\n\n"
@@ -390,8 +410,8 @@ def _render_codex_agent(
         "name": agent.agent_id,
         "description": _agent_description(agent),
         "developer_instructions": body,
-        "model": model,
-        "model_reasoning_effort": reasoning,
+        "model": selection.model_id,
+        "model_reasoning_effort": selection.control_value,
         "sandbox_mode": (
             "read-only"
             if agent.permission_profile == "read-only"
@@ -406,9 +426,9 @@ def _render_codex_agent(
 
 def _render_gemini_agent(
     agent: AgentRecord,
-    defaults: Mapping[tuple[str, str], tuple[str, str | None]],
+    selections: Mapping[tuple[str, str], ProviderSelection],
 ) -> bytes:
-    model, _reasoning = defaults[(agent.work_profile, "gemini")]
+    selection = selections[(agent.work_profile, "gemini")]
     read_only = agent.permission_profile == "read-only"
     tools = [
         "read_file",
@@ -426,7 +446,7 @@ def _render_gemini_agent(
             "description": _agent_description(agent),
             "kind": "local",
             "tools": tools,
-            "model": model,
+            "model": selection.model_id,
             "max_turns": 12 if agent.tier == "supervisor" else 8,
             "timeout_mins": 30 if agent.tier == "supervisor" else 20,
         },
@@ -581,7 +601,11 @@ def _render_codex_hooks(root: pathlib.Path) -> bytes:
     return (json.dumps({"hooks": hooks}, indent=2) + "\n").encode()
 
 
-def _render_gemini_settings(root: pathlib.Path) -> bytes:
+def _render_gemini_settings(
+    root: pathlib.Path,
+    catalog: Catalog,
+    selections: Mapping[tuple[str, str], ProviderSelection],
+) -> bytes:
     bindings = _provider_event_bindings(root, "gemini")
     matchers = {
         "pre-tool": "read_file|read_many_files|search_file_content|glob|list_directory|write_file|replace|run_shell_command",
@@ -607,8 +631,30 @@ def _render_gemini_settings(root: pathlib.Path) -> bytes:
                 matcher=matchers.get(semantic_id),
             )
         ]
+    overrides = []
+    for agent in catalog.agents:
+        selection = selections[(agent.work_profile, "gemini")]
+        if selection.control_kind != "thinking_level" or selection.control_value not in {
+            "high",
+            "medium",
+            "minimal",
+        }:
+            raise ValueError("Gemini selection lacks a supported thinking level")
+        overrides.append(
+            {
+                "match": {"overrideScope": agent.agent_id},
+                "modelConfig": {
+                    "generateContentConfig": {
+                        "thinkingConfig": {
+                            "thinkingLevel": selection.control_value.upper()
+                        }
+                    }
+                },
+            }
+        )
     value = {
         "hooks": hooks,
+        "modelConfigs": {"overrides": overrides},
         "security": {"environmentVariableRedaction": {"enabled": True}},
     }
     return (json.dumps(value, indent=2) + "\n").encode()
@@ -762,17 +808,18 @@ CLAUDE_HOOK_EVENTS = {
 def expected_native_projection(root: pathlib.Path) -> Mapping[pathlib.Path, bytes]:
     root = root.absolute()
     catalog = load_catalog(root)
-    defaults = _provider_defaults(root)
+    provider_contract = load_contract_bundle(root).providers
+    selections = _provider_selections(provider_contract)
     projection: dict[pathlib.Path, bytes] = {}
     for agent in catalog.agents:
         projection[pathlib.Path(f".claude/agents/{agent.agent_id}.md")] = (
-            _render_claude_agent(agent, defaults)
+            _render_claude_agent(agent, selections)
         )
         projection[pathlib.Path(f".codex/agents/{agent.agent_id}.toml")] = (
-            _render_codex_agent(agent, defaults)
+            _render_codex_agent(agent, selections)
         )
         projection[pathlib.Path(f".gemini/agents/{agent.agent_id}.md")] = (
-            _render_gemini_agent(agent, defaults)
+            _render_gemini_agent(agent, selections)
         )
         projection[pathlib.Path(f".agents/agents/{agent.agent_id}.md")] = (
             _render_compatibility_agent(agent)
@@ -793,7 +840,9 @@ def expected_native_projection(root: pathlib.Path) -> Mapping[pathlib.Path, byte
     projection[pathlib.Path(".codex/README.md")] = _provider_readme("codex")
     projection[pathlib.Path(".codex/hooks.json")] = _render_codex_hooks(root)
     projection[pathlib.Path(".gemini/README.md")] = _provider_readme("gemini")
-    projection[pathlib.Path(".gemini/settings.json")] = _render_gemini_settings(root)
+    projection[pathlib.Path(".gemini/settings.json")] = _render_gemini_settings(
+        root, catalog, selections
+    )
     projection[pathlib.Path(".gemini/hooks/agent-event-hook.sh")] = (
         _render_gemini_hook()
     )

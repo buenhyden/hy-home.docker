@@ -53,8 +53,10 @@ layer: agentic
   implementation planning, TDD, systematic debugging, verification, and branch
   finalization are adapted into the repository stage taxonomy rather than
   copied into non-canonical active docs paths.
-- **Memory**: advisory durable context under `memory/`; it supports recall and
-  progress logging but never overrides active governance.
+- **Memory**: `memory/current.md` is the bounded active handoff; other notes are
+  advisory durable context, and `memory/progress.md` is append-preserved
+  historical navigation. Execution evidence belongs in the applicable Stage 04
+  Task, and memory never overrides active governance.
 - **QA & CI/CD**: shared verification policy in `rules/github-governance.md`,
   `scopes/qa.md`, scripts, and CI docs. Providers execute the same policy with
   provider-native mechanics.
@@ -87,7 +89,7 @@ policy remains in the linked Stage 00 documents.
 | Sub-agent         | `subagent-protocol.md`                                                                     | Delegation imports exactly one primary scope and follows the shared communication and model policy.                     |
 | Output Style      | `rules/output-style.md`                                                                    | Provider output bindings remain behavioral adapters, not separate writing policy.                                       |
 | Workflow          | `rules/workflows.md`, stage docs                                                           | Planning, execution, verification, and evidence land in canonical stage paths.                                          |
-| Memory            | `memory/README.md`, `memory/progress.md`                                                   | Memory supports recall and progress logging but never overrides active governance.                                      |
+| Memory            | `memory/README.md`, `memory/current.md`, `memory/progress.md`                              | Current handoff stays bounded, Stage 04 Task evidence stays durable, and progress remains historical navigation.         |
 | QA & CI/CD        | `scopes/qa.md`, `rules/github-governance.md`                                               | Each change type has local checks, CI-only gates, hook/script evidence, and skipped-check rationale.                    |
 | Model Policy      | `subagent-protocol.md`, provider notes                                                     | Model and reasoning-effort values change only when policy, sync script, and validators agree.                           |
 | Template Contract | `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `docs/99.templates/` | Template deviations are audited with file, expected template, reason, approval/evidence owner, and validation evidence. |
@@ -104,9 +106,11 @@ policy remains in the linked Stage 00 documents.
   and adoption contracts. Repository projection modes are read-only
   diagnostics until the corresponding convergence task adds them to the
   aggregate gate.
-- `memory/`: durable governance notes, audit findings, and the agent progress log.
+- `memory/`: bounded current handoff, durable governance notes, audit findings,
+  and append-preserved historical navigation.
   - `memory/README.md` — memory policy.
-  - `memory/progress.md` — mandatory work progress log.
+  - `memory/current.md` — bounded active task and verified-state handoff.
+  - `memory/progress.md` — append-preserved historical navigation.
 - `subagent-protocol.md`: spawn rules, communication protocol, and agent lifecycle.
 - `harness-implementation-map.md`: routing map from harness surfaces to their canonical Stage 00 / script sources.
 - `rules/approval-boundaries.md`: protected-surface and approval matrix for harness work.
@@ -118,7 +122,8 @@ policy remains in the linked Stage 00 documents.
 3. Load exactly one primary scope.
 4. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
 5. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify the Completion Gate.
-6. Review `memory/progress.md` before editing.
+6. Review `memory/README.md` and `memory/current.md` before editing; use
+   `memory/progress.md` only when historical navigation is needed.
 7. Ask for clarification before state changes when the request is underspecified
    or governance constraints conflict.
 8. Before changing model/config values, confirm the Stage 00 policy, provider
@@ -129,7 +134,9 @@ policy remains in the linked Stage 00 documents.
 10. After changing canonical functions, run
     `scripts/operations/sync-provider-surfaces.sh --write`, inspect the bounded
     projection diff, and confirm `--check` reports zero drift.
-11. Run completion checklist and update `memory/progress.md`.
+11. Run the completion checklist, record progress and verification in the
+    applicable Stage 04 Task, and refresh `memory/current.md` with only the
+    bounded next handoff.
 
 ## Related Documents
 

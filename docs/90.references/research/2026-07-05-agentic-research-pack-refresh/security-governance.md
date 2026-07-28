@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:security-governance
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-16
+reviewed_at: 2026-07-27
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md -->
@@ -69,13 +69,13 @@ security truth.
 
 ## Control Census
 
-The control census was revalidated on `2026-07-16` from tracked files and the
+The control census was revalidated on `2026-07-27` from tracked files and the
 fresh canonical security-automation readiness generator.
 
 | Control surface | Current tracked evidence | Boundary |
 | --- | --- | --- |
 | Vulnerability reporting | `.github/SECURITY.md` defines private reporting, response targets, remediation, and disclosure. | A tracked policy does not prove an incident exists or that targets were met. |
-| Workflow topology | 7 tracked workflows; `ci-quality.yml` has 15 quality job IDs including dependency audit, Compose/hardening/security baselines, pre-commit, and `zizmor`. | Workflow definitions do not prove runs, branch protection, or current remote required-check state. |
+| Workflow topology | 7 tracked workflows define 23 jobs; `ci-quality.yml` has 16 quality job IDs including supply-chain fixture policy, dependency audit, Compose/hardening/security baselines, pre-commit, and `zizmor`. | Workflow definitions do not prove runs, branch protection, or current remote required-check state. |
 | Action pinning | 18/18 tracked external `uses:` references are full 40-character commit SHAs. | Source review and remote action integrity still matter; count is tracked YAML only. |
 | Workflow permissions | All 7 workflows declare top-level permissions; defaults are `contents: read` or `{}`, with job-scoped write permission for SARIF where needed. | Live organization/repository Actions settings were not queried. |
 | Secret scanning | Pre-commit config includes gitleaks with `.gitleaks.toml`; CI runs pre-commit with documented project-specific skip behavior. | Hook definition does not prove every local commit was scanned. |
@@ -85,9 +85,17 @@ fresh canonical security-automation readiness generator.
 | Supply-chain generation | No tracked SBOM generator, signing/SLSA attestation command, or OpenSSF Scorecard automation was found. | Absence is limited to tracked workflow/script surfaces scanned by the generator. |
 | Declaration provenance | Generated snapshot maps 21 curated registry images to Compose evidence: 20 pinned and 1 approved floating exception. | It explicitly excludes registry lookup, vulnerability scanning, SBOM, signing, and SLSA provenance. |
 
+The latest public remote observation at `2026-07-26T18:22:32+09:00` records
+default commit `a897978f`, failed run `29777690571`, and 15 observed jobs; its
+root cause is unverified. It also lists three GitHub-managed workflows from
+public metadata. Authenticated branch protection, rulesets, environments,
+secrets, and variables remain unverified, and no remote setting was mutated.
+
 ## External Framework Position
 
-External sources were revalidated on `2026-07-11` and remain reference-only.
+The original external framework set was retrieved on `2026-07-11`; selected
+mutable GitHub and zizmor evidence was revalidated on `2026-07-27`. All remain
+reference-only.
 
 | Reference | Supported scope | Workspace caveat |
 | --- | --- | --- |
@@ -110,7 +118,7 @@ detailed concern table below adds control and approval-boundary detail.
 | Secure SDLC governance | Stage 00 security, approval, QA, incident, and documentation contracts route protected work; CI and local checks supply selected verification. | NIST SSDF v1.1 groups practices into Prepare, Protect, Produce, and Respond and is designed to integrate with an existing SDLC. | Partially Implemented | No task/control-level SSDF adoption or conformity map exists. | Use SSDF as a comparison vocabulary until an approved security specification selects practices and evidence. | `docs/00.agent-governance/scopes/security.md` | High |
 | Secure build | CI runs project lint/type/build/coverage, a scoped npm vulnerability audit, pre-commit, workflow security, and infrastructure checks. | OWASP SAMM Secure Build calls for repeatable builds, integrated security checks, dependency records, and failure on non-compliance. | Partially Implemented | Coverage is project/control specific; no repository artifact SBOM, broader container/SCA scan, or build provenance exists. | Define artifact/ecosystem scope and exception ownership before adding broader build gates. | `docs/00.agent-governance/scopes/qa.md` | High |
 | Secure deployment / CD | Manual approval boundaries and a release-readiness runbook exist; no tracked workflow deploys to an environment or performs promotion/rollback. | OWASP SAMM Secure Deployment calls for documented/repeatable deployment, security milestones, separation of duties, records, integrity checks, and stop/reverse handling. | Missing | CI and changelog verification can be mistaken for CD despite no environment, deployment record, or executable rollback. | Route deployment targets, approvals, promotion, integrity verification, records, and rollback to a later Stage 03/04 contract. | `docs/03.specs/README.md` | High |
-| Workflow security | All external actions are SHA pinned; workflows declare top-level permissions; `zizmor` produces SARIF in CI. | GitHub recommends least privilege, untrusted-input controls, full-SHA pinning, OIDC for cloud access, and source review. | Implemented | Remote organization settings, actual token grants, and deployment identities were not queried. | Preserve explicit permissions/pinning and require target-specific OIDC trust design before any deployment. | `docs/00.agent-governance/rules/github-governance.md` | High |
+| Workflow security | All external actions are SHA pinned; workflows declare top-level permissions; `zizmor==1.28.0` produces SARIF in CI and is patched for the advisory affecting 1.27.0. | GitHub recommends least privilege, untrusted-input controls, full-SHA pinning, OIDC for cloud access, and source review. | Implemented | Public run metadata does not establish authenticated organization settings, actual token grants, or deployment identities. | Preserve explicit permissions/pinning and require target-specific OIDC trust design before any deployment. | `docs/00.agent-governance/rules/github-governance.md` | High |
 | Dependency and vulnerability response | Dependabot and one high-severity npm audit gate exist; disclosure and incident routing are tracked. | NIST SSDF includes producing secure releases and responding to residual vulnerabilities; OWASP SAMM covers dependency security. | Partially Implemented | No repository-wide multi-ecosystem/container vulnerability verdict or exception lifecycle exists. | Define ecosystems, severity, freshness, exceptions, remediation SLA, and release blocking before expansion. | `docs/00.agent-governance/scopes/qa.md` | High |
 | SBOM | No tracked SBOM generator exists in seven workflows, 29 scanned scripts, or pre-commit. | OWASP SAMM Secure Build identifies bills of materials as dependency records; GitHub supports SPDX-compatible dependency-graph export and SBOM attestations. | Missing | Lockfiles and image inventories are not release-artifact SBOMs. | Specify artifact scope, format, generation, retention, publication, verification, and exception policy first. | `docs/03.specs/README.md` | High |
 | Provenance, signing, and verification | The generated image declaration snapshot is current, but no signing/SLSA/GitHub attestation producer or verifier is tracked. | SLSA v1.2 Build L1 requires provenance; higher levels strengthen authenticity/tamper resistance, and provenance is useful only when verified against expectations. | Missing | No artifact identity, builder trust, signed provenance, verification policy, or deployment enforcement exists. | Design producer and consumer verification together; do not claim a SLSA level from declaration metadata. | `docs/03.specs/README.md` | High |
@@ -126,7 +134,8 @@ detailed concern table below adds control and approval-boundary detail.
 | OWASP SAMM | [Secure Build](https://owaspsamm.org/model/implementation/secure-build/) and [Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) | SAMM v2 mutable pages | 2026-07-11 | Repeatable secure builds, dependency controls, documented/automated deployment, security milestones, separation of duties, and secret handling. | Criteria only; no maturity score is claimed. |
 | SLSA | [SLSA specification v1.2](https://slsa.dev/spec/v1.2/) and [verifying artifacts](https://slsa.dev/spec/v1.2/verifying-artifacts) | v1.2 Approved | 2026-07-11 | Build/source tracks, provenance levels, attestations, and consumer verification against expectations. | Confirms current missing implementation; no level claim. |
 | OpenSSF | [Scorecard](https://github.com/ossf/scorecard) | Mutable official repository | 2026-07-11 | Automated heuristic security checks and their detection limits. | Candidate signal only; no scan or score produced. |
-| GitHub | [Secure use](https://docs.github.com/en/actions/reference/security/secure-use) and [deployments/environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) | Mutable product documentation | 2026-07-11 | Least privilege, immutable action refs, OIDC, environment approvals/restrictions/secrets, and deployment protection. | Retrieval-time comparison; remote settings remain unverified. |
+| GitHub | [Secure use](https://docs.github.com/en/actions/reference/security/secure-use), [workflow monitoring](https://docs.github.com/en/actions/how-tos/monitor-workflows), and [rulesets](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) | Mutable product documentation | 2026-07-27 | Least privilege, immutable action refs, workflow evidence classes, and layered remote enforcement. | Retrieval-time comparison; authenticated remote settings remain unverified. |
+| zizmor | [GHSA-f42p-wjw5-97qh](https://github.com/zizmorcore/zizmor/security/advisories/GHSA-f42p-wjw5-97qh) and [v1.28.0](https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0) | 1.27.0 affected; 1.28.0 patched | 2026-07-27 | The tracked `zizmor==1.28.0` pin is outside the advisory's affected version. | Pin evidence does not prove a remote workflow run or absence of other findings. |
 
 ## Unresolved Secret-Read Policy Tension
 
@@ -156,7 +165,7 @@ any affected validators/provider guidance. That follow-up is out of scope here.
 | Secret redaction and policy semantics | Gitleaks, template/security checks, task redaction rules, and metadata-only evidence are active; the two Stage 00 owners conflict on whether approved value reads can ever occur. | GitHub warns automatic redaction is not guaranteed and recommends least privilege, masking, audit, and rotation. | Partially Implemented | `approval-boundaries.md` unconditional ban conflicts with the approved concrete-read protocol in `scopes/security.md`. | Keep the stricter no-read rule now; route a separately approved policy reconciliation that names both owners and retains non-output/redaction guarantees. | `docs/00.agent-governance/rules/approval-boundaries.md` | No value read is authorized by this reference; policy resolution requires explicit user approval. |
 | Compose secrets | Root declares 70 IDs; 111/168 service entries and 42/60 root-included entries request secrets; no value was read. | Docker Compose grants declared secrets to named services as mounted files. | Partially Implemented | Declaration does not prove permissions, rotation, Vault-backed flow, live availability, or absence of alternate plaintext channels. | Retain file-based injection and metadata-only validation; verify rotation/recovery only in approved service tasks. | `docs/00.agent-governance/scopes/security.md` | Secret files/values and mapping changes are protected; operational secret work requires concrete approval. |
 | Action pinning | 18/18 tracked external workflow `uses:` references use full commit SHAs; repository contracts enforce full-SHA refs. | GitHub calls a full commit SHA the immutable action reference and recommends source verification. | Implemented | Pinning reduces mutable-tag risk but does not audit action source, dependency chain, or compromise. | Keep SHA enforcement and reviewer ownership; review new action source and permission needs before adoption. | `docs/00.agent-governance/rules/github-governance.md` | Any workflow/action change is protected and requires security review/approval. |
-| Workflow permissions | All 7 workflows have top-level `permissions`; `ci-quality.yml` defaults to `contents: read`, and only required jobs receive scoped additional rights. | GitHub recommends minimum `GITHUB_TOKEN` permissions and job-level increases only as required. | Implemented | Remote default settings, environment protection, branch enforcement, and actual token grants were not queried. | Maintain explicit top-level defaults, job-scoped writes, and current repo-contract/zizmor checks. | `docs/00.agent-governance/rules/github-governance.md` | Permission expansion or remote setting mutation requires explicit user approval and before/after evidence. |
+| Workflow permissions | All 7 workflows have top-level `permissions`; `ci-quality.yml` defaults to `contents: read`, and only required jobs receive scoped additional rights. | GitHub recommends minimum `GITHUB_TOKEN` permissions and job-level increases only as required. | Implemented | Public metadata does not establish authenticated default settings, environment protection, branch enforcement, or actual token grants. | Maintain explicit top-level defaults, job-scoped writes, and current repo-contract/zizmor checks. | `docs/00.agent-governance/rules/github-governance.md` | Permission expansion or remote setting mutation requires explicit user approval and before/after evidence. |
 | Dependency scanning | Dependabot is configured and CI runs high-severity `npm audit` for Storybook Next.js. | OWASP SAMM Secure Build tracks third-party dependency security; NIST SSDF includes vulnerability response. | Partially Implemented | The gate is project/ecosystem scoped; no repository-wide container/image and multi-ecosystem vulnerability result is established. | Define intended ecosystems, severity/exception handling, freshness, and owner before broadening scanning. | `docs/00.agent-governance/scopes/qa.md` | Scanner/workflow changes require approval; current vulnerability state outside the gate remains unknown. |
 | Container hardening | Tiered hardening, template/security baseline, QuickWin checks, exception registries, and CI jobs cover selected non-root/capability/mount/health/resource controls. | Docker trust model highlights privilege, capabilities, mounts, network modes, devices, images, and file references. | Partially Implemented | Repository assertions and exceptions are not exhaustive runtime, daemon, kernel, image, or host hardening proof. | Preserve exception ownership and add any new enforced field through approved threat model/spec/task work. | `docs/00.agent-governance/scopes/security.md` | Compose/script/runtime changes and service restarts require separate approvals. |
 | SBOM | Canonical readiness scan found no tracked SBOM generation command across 7 workflows, 29 scripts, and pre-commit. | GitHub supports SPDX-compatible dependency-graph export and signed SBOM attestations. | Missing | Dependency lockfiles and image lists are not an artifact SBOM, storage policy, or release evidence. | Approve a Stage 03 supply-chain contract defining artifact scope, format, generation, storage, verification, retention, and exceptions. | `docs/03.specs/README.md` | Adding workflow permissions/tools or publishing SBOMs requires explicit human/remote approval. |
@@ -176,20 +185,21 @@ Status totals: **15 concerns — 3 Implemented, 9 Partially Implemented,
 - Supply-chain work should start with one Stage 03 contract covering artifact
   scope, SBOM, signing/attestation, provenance verification, Scorecard role,
   permissions, exceptions, retention, and rollback before workflow mutation.
-- Reverify remote branch protection, Actions settings, incident contacts, and
-  provider/model availability when an approved task needs current remote state.
+- Obtain authenticated branch protection, ruleset, environment, and Actions
+  settings only when an approved task needs current remote control state;
+  preserve the dated public failed-run observation separately.
 
 ## Source Rules
 
 - Repo-local claims use tracked files at base `cf8790ca`; Graphify at
   `30df271a` is stale/advisory and not security evidence.
-- External sources were retrieved on `2026-07-11`; mutable pages without a
-  displayed update date prove retrieval-time guidance only.
-- The exact official GitHub secure-use and rulesets pages, SLSA v1.2, and NIST
-  SP 800-61 Rev. 3 were re-opened on `2026-07-19`; no stale claim was confirmed
-  in that bounded set. Other source dates remain unchanged. Repository controls
-  do not establish a SLSA level, formal NIST adoption, remote enforcement, or
-  runtime/container posture.
+- External framework sources retain their original retrieval dates; selected
+  mutable GitHub and zizmor sources were revalidated on `2026-07-27` and prove
+  retrieval-time guidance only.
+- The exact official GitHub secure-use, monitoring, and rulesets pages plus the
+  zizmor advisory and patched release were re-opened on `2026-07-27`.
+  Repository controls do not establish a SLSA level, formal NIST adoption,
+  remote enforcement, or runtime/container posture.
 - NIST SSDF, OWASP SAMM, SLSA, GitHub, OpenSSF, and Docker material is not
   formally adopted through this reference.
 - No secret value, private key, token, certificate body, `.env` value, raw log,
@@ -207,6 +217,8 @@ Status totals: **15 concerns — 3 Implemented, 9 Partially Implemented,
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use) - workflow permissions, secrets, untrusted input, pinning, and Scorecard guidance
 - [GitHub artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) - build/SBOM attestation generation and verification
 - [GitHub SBOM API](https://docs.github.com/en/rest/dependency-graph/sboms) - SPDX-compatible dependency-graph export capability
+- [zizmor 1.27.0 advisory](https://github.com/zizmorcore/zizmor/security/advisories/GHSA-f42p-wjw5-97qh) - affected-version boundary
+- [zizmor 1.28.0 release](https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0) - patched release evidence
 - [OpenSSF Scorecard](https://github.com/ossf/scorecard) - automated heuristic security-health checks and limitations
 - [Docker Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/) - service-granted secret file delivery
 - [Docker Compose trust model](https://docs.docker.com/compose/trust-model/) - trusted-input and host-affecting execution boundary
@@ -217,6 +229,7 @@ Status totals: **15 concerns — 3 Implemented, 9 Partially Implemented,
 - [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - dependency, Compose, hardening, baseline, pre-commit, and zizmor jobs
 - [Pre-commit config](../../../../.pre-commit-config.yaml) - gitleaks and local hook definitions
 - [Security readiness snapshot](../../data/security/security-automation-readiness.md) - generated tracked-control/gap census
+- [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - dated public run/workflow metadata and authenticated-control boundary
 - [Tech-stack provenance snapshot](../../data/docker/tech-stack-version-provenance.md) - declaration provenance and explicit exclusions
 - [Hardening entry point](../../../../scripts/hardening/check-all-hardening.sh) - 11-tier hardening checks
 

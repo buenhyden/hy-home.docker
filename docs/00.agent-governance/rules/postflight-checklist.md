@@ -48,8 +48,8 @@ Run after every agent task before declaring completion.
 
 - [ ] `check-agent-governance-contract.py --mode repository --section all`
       exits 0
-- [ ] `run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` reports exactly eight
-      fixtures, ten regressions, `fixtures_check=pass`, and
+- [ ] `run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`
+      reports exactly 11 fixtures, 16 regressions, `fixtures_check=pass`, and
       `regressions_check=pass`
 - [ ] Loop owner and independent reviewer are different, retry bounds were not
       exceeded, and evidence uses only the four sanitized fields

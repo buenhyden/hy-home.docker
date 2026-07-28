@@ -26,40 +26,24 @@ fallbacks, source URLs, and the historical cutoff are owned by
 
 | Work profile | Claude | GPT / Codex | Gemini |
 | --- | --- | --- | --- |
-| Supervision, architecture, final synthesis | `claude-opus-4-8` (adaptive thinking; `high` effort) | `gpt-5.6` (`xhigh`) | `gemini-3.5-flash` (`high`) |
-| Complex implementation, security, precision review | `claude-sonnet-5` (adaptive thinking; `high` effort) | `gpt-5.6` (`high`) | `gemini-3.5-flash` (`high`) |
-| Exploration, large reads, repetitive organization | `claude-haiku-4-5-20251001` (extended thinking; no effort control) | `gpt-5.6-terra` (`low`) | `gemini-3.1-flash-lite` (`minimal`) |
+| `long-horizon-supervision` | `claude-opus-5` (`xhigh`) | `gpt-5.6-sol` (`xhigh`) | `gemini-3.6-flash` (`high`) |
+| `complex-implementation` | `claude-sonnet-5` (`high`) | `gpt-5.6-sol` (`high`) | `gemini-3.6-flash` (`high`) |
+| `adversarial-review` | `claude-opus-5` (`high`) | `gpt-5.6-sol` (`xhigh`) | `gemini-3.6-flash` (`high`) |
+| `evidence-research` | `claude-sonnet-5` (`low`) | `gpt-5.6-terra` (`medium`) | `gemini-3.5-flash-lite` (`medium`) |
+| `routine-validation` | `claude-haiku-4-5-20251001` (no effort field) | `gpt-5.6-terra` (`low`) | `gemini-3.5-flash-lite` (`minimal`) |
 
 - `workflow-supervisor` is the only supervisor-tier role. Other agents select
-  the profile declared in `contracts/agent-catalog.yaml`.
-- Generated Claude agents never emit per-agent `thinking`; Claude inherits
-  thinking from the session. Native subagent `effort` is distinct and
-  overrides the session value, so Sonnet and Opus work profiles emit `high`
-  while the Haiku profile omits the key. Stage 00 separately records model
-  capability: Fable/Mythos use always-on adaptive thinking, Opus 4.8 uses
-  opt-in adaptive thinking, Sonnet 5 defaults to adaptive thinking and permits
-  disabling it, and Haiku 4.5 uses extended thinking. Supported effort values
-  for Fable, Mythos, Opus, and Sonnet are `low`, `medium`, `high`, `xhigh`, and
-  `max`.
-- Codex TOML adapters include `model_reasoning_effort`. The repository pins
-  only controls allowed by the selected model record.
-- Gemini adapters select a model but do not invent a per-agent sandbox or
-  reasoning field. Least privilege is expressed through agent tools and the
-  executing runtime's policy/sandbox controls.
-- OpenAI lists GPT-5.6 Sol/Terra but does not assign a stable lifecycle label.
-  The contract therefore records `listed` / `unclassified-listed`, separates
-  the 2026-07-10 10:00 KST cutoff from the later retrieval, and leaves local
-  entitlement/runtime acceptance at `needs_revalidation`.
-- Fable, Spark, Mythos, deprecated entries, and Gemini Pro preview are
-  catalog-only. Mutable catalogs retrieved after the cutoff are explicitly
-  `historical-state-unverified`. A degraded fallback references one typed
-  provider/source/target/profile edge in `fallback_approvals`, whose authority
-  resolves to Spec 132 `#approved-fallback-edges`; Sonnet 5 complex work may
-  escalate to Opus 4.8 only through that recorded edge. Historical status can
-  become verified only through a typed evidence record on an allowlisted
-  official domain with `published_at` at or before cutoff and `observed_at`
-  equal to retrieval. The current evidence registry is intentionally empty,
-  including for unresolved GPT-5.6 history.
+  exactly one profile declared in `contracts/agent-catalog.yaml`.
+- These configured defaults are repository-eligible selections, not live
+  activation claims. Current runtime acceptance and entitlement remain
+  `needs_revalidation`, so runtime activation eligibility remains false.
+- Claude emits only supported native `effort`; Haiku omits it. Codex emits
+  `model_reasoning_effort`. Gemini uses scoped
+  `modelConfigs.overrides` thinking levels and omits deprecated sampling
+  parameters.
+- Fable 5 is a stable non-default candidate. Mythos 5, GPT-5.6 Luna, and
+  GPT-5.3 Codex Spark remain catalog-only under their recorded lifecycle.
+  The active contract has no automatic model fallback graph.
 
 ### Model and Provider Adapter Change Protocol
 
@@ -134,6 +118,8 @@ agent name set.
 
 `contracts/provider-models.yaml` owns the exact semantic loop values. Agents
 must not invent an additional retry policy in prompts or provider adapters.
+Loops reference applicable entries in the ordered `workflow_states` contract;
+they are retry/event controls, not a second lifecycle.
 
 1. Bootstrap has one attempt and escalates when the bootstrap contract does
    not pass.
@@ -152,13 +138,16 @@ must not invent an additional retry policy in prompts or provider adapters.
 ## 6. Lifecycle
 
 ```text
-Spawn → load scope → execute → write repo-support artifact → report completion → promote durable evidence or cleanup ignored scratch
+discover → design/plan → approval → implement → validate → independent-review → evidence → handoff
 ```
 
-Ignored `_workspace/repo-support/` scratch files are task-local. Promote durable
-non-secret outcomes to Stage 04 task evidence, Stage 90 references, or Stage 00
-memory before completion. Do not delete user-created scratch artifacts without
-explicit approval.
+Delegation and scope loading occur within the applicable lifecycle state.
+Failed validation returns to `implement`; rejected design remains in
+`design/plan`; missing authority remains in `approval`; review remediation
+returns to `implement`. An exhausted attempt bound stops. Ignored
+`_workspace/repo-support/` scratch files remain task-local; promote durable
+non-secret outcomes to Stage 04, Stage 90, or bounded Stage 00 Memory before
+handoff, and never delete user-created scratch without explicit approval.
 
 ## Related Documents
 

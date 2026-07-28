@@ -84,7 +84,7 @@ runtime:
 | Applicability       | Decide whether each skill changes the work method, output artifact, or validation scope.                                                    | Inapplicable skills are recorded as N/A only when they were requested or materially relevant.            |
 | Provider loading    | Load the provider adapter file (`.claude/skills/*/SKILL.md`, `.agents/skills/*/SKILL.md`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail.                             |
 | Canonical artifact  | Write the resulting plan, task, policy, runbook, code, or review output to the repository's canonical stage path.                           | Active artifacts live under `docs/01` to `docs/05`, `docs/90`, `docs/99`, or the scoped runtime surface. |
-| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks.                                                             | `docs/04.execution/tasks/` and progress logs capture the command, outcome, and rationale.                |
+| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks.                                                             | The applicable Stage 04 Task captures the command, outcome, and rationale.                               |
 
 Provider-local skill files may describe runtime mechanics, but they do not own
 the lifecycle policy above.
@@ -123,7 +123,10 @@ that a live native event executed.
 2. Each step writes intermediate artifacts to `_workspace/repo-support/` and audit handoffs per
    the Communication Protocol.
 3. The `policy-gate-agent` step must pass before any stage document is marked complete.
-4. Read `memory/progress.md` before starting and append after completing the workflow.
+4. Review `memory/README.md` and `memory/current.md` before starting. Record
+   progress, verification, and final evidence in the applicable Stage 04 Task,
+   then refresh only the bounded current handoff. `memory/progress.md` remains
+   append-preserved historical navigation.
 
 ## Related Documents
 

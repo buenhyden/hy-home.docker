@@ -123,7 +123,7 @@ script.
 | Audit Pack Coverage Report             | [report-audit-pack-coverage.sh](./validation/report-audit-pack-coverage.sh)                 | Report and check implementation-status coverage for the agentic engineering audit pack without mutating audit reports                                                                                            |
 | Provider Hook Parity Report            | [report-provider-hook-parity.sh](./validation/report-provider-hook-parity.sh)               | Generate and check the Stage 90 provider hook parity matrix and Gemini behavioral reminder checklist from tracked provider/governance surfaces                                                                  |
 | Agent Output Eval Fixture Runner       | [run-agent-output-eval-fixtures.sh](./validation/run-agent-output-eval-fixtures.sh)         | List, check, and locally score advisory agent-output eval fixtures without model calls, CI gates, or runtime mutation                                                                                           |
-| Controlled Agent Pre-commit Wrapper    | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh)           | Run the configured all-files hook suite only at an approved final QA gate in a clean linked worktree, with tracked task evidence and explicit allowed path prefixes                                             |
+| Controlled Agent Pre-commit Wrapper    | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh)           | Run the configured all-files hook suite only at an approved final QA gate in a clean linked worktree, with tracked task evidence, explicit allowed path prefixes, and a value-free first-failure diagnostic       |
 | Documentation Implementation Alignment | [check-doc-implementation-alignment.sh](./validation/check-doc-implementation-alignment.sh) | Validate active Stage 01-05 docs against tracked implementation surfaces, removed template names, archive index-only links, operations service coverage, scripts, and workflow paths                            |
 | Documentation Traceability Check       | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                         | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
 | Local QA Gate Runner                   | [run-local-qa-gates.sh](./validation/run-local-qa-gates.sh)                                 | Run locally reproducible script-backed QA/CI gates and list remote-only CI responsibilities                                                                                                                     |
@@ -279,7 +279,15 @@ final QA gate, from an initially clean linked worktree, with one tracked
 `docs/04.execution/tasks/` path and one or more narrow repository-relative
 `--allow-prefix` values. Direct all-files execution is prohibited. The wrapper
 captures hook output in ephemeral files, reports only the command, prefixes,
-hook exit, and before/after/newly changed Git-visible paths.
+hook exit, a value-free first-failure result, and before/after/newly changed
+Git-visible paths. A successful run reports `first_failure=not_applicable`. A
+nonzero hook exit reports at most one tuple containing an exact, uniquely
+registered `.pre-commit-config.yaml` hook ID and either `exit_0` through
+`exit_255` or `files_modified`; absent, malformed, unregistered, duplicate,
+ambiguous, oversized, binary, or spoofable metadata reports
+`first_failure=unavailable`. Hook names, messages, durations, raw command
+output, output-derived paths, configuration or environment values, and secrets
+are never printed.
 The wrapper never writes task evidence. Exit `20` means a hook changed a newly
 observed path outside every prefix; otherwise the wrapper returns the hook's
 exit status.
