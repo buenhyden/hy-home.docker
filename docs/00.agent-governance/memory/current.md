@@ -13,8 +13,10 @@ status: active
   attempt failed and stopped the loop; the bounded T-AGCC-006-QA-R1
   remediation and reviews completed, and a separately approved exceptional
   second attempt passed. A later unauthorized execution by the assigned
-  read-only correctness reviewer returned a conflicting wrapper failure, so
-  whole-branch closure is paused under T-AGCC-006-QA-D2.
+  read-only correctness reviewer returned a conflicting wrapper failure. The
+  independently reviewed T-AGCC-006-QA-D2 route then received one exact
+  recovery approval from clean `041262274f8965beacbcf02b9e28a665558600b4`;
+  the recovery passed, and entirely fresh whole-branch reviews are next.
 
 ## Approved decisions
 
@@ -34,6 +36,11 @@ status: active
   at `6c6a153058fb7d1511d57fd90b0f3f18555a1540`. The failure is
   unauthorized discrepancy evidence, not closure evidence, and does not
   authorize another run.
+- After the bounded discrepancy Plan passed independent review, the user
+  explicitly approved one named recovery execution from clean commit
+  `041262274f8965beacbcf02b9e28a665558600b4`, acknowledging the unauthorized
+  intervening execution. The recovery passed and consumed that approval. No
+  further wrapper or direct `pre-commit` execution is authorized.
 
 ## Active boundary
 
@@ -43,15 +50,17 @@ status: active
 - The initial controlled-wrapper approval was consumed by a failed attempt.
   T-AGCC-006-QA-R1 and its clean reviews enabled a separately approved
   exceptional second attempt, which passed. The later unauthorized reviewer
-  execution failed with no Git-visible path changes. T-AGCC-006-QA-D2 permits
-  static disposition work and plan review only; remote mutation, live provider
-  calls, runtime changes, Compose, infrastructure, deployment, release, and
-  any further wrapper run remain separately gated or outside this task.
+  execution failed with no Git-visible path changes. T-AGCC-006-QA-D2's one
+  separately approved recovery passed from clean `04126227`; its approval is
+  consumed. Only evidence synchronization and entirely fresh whole-branch
+  reviews may proceed. Remote mutation, live provider calls, runtime changes,
+  Compose, infrastructure, deployment, release, and any further wrapper or
+  direct `pre-commit` run remain separately gated or outside this task.
 
 ## Verified state
 
-- Verified commit: `78f8a11a516fa9c0c7c3ea1d2f5cf17a4da1a525`
-- Verified at: `2026-07-28T14:03:27+09:00`
+- Verified commit: `041262274f8965beacbcf02b9e28a665558600b4`
+- Verified at: `2026-07-28T14:06:30+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -96,15 +105,23 @@ status: active
   only on three existing missing-`html5lib` paths.
 - T-AGCC-006-QA-D2 Plan/evidence commit
   `78f8a11a516fa9c0c7c3ea1d2f5cf17a4da1a525` passed independent
-  read-only Plan review with C0/I0/M0. The bounded recovery route is ready for
-  a new exact user approval; no recovery run is authorized yet.
+  read-only Plan review with C0/I0/M0. Commit
+  `041262274f8965beacbcf02b9e28a665558600b4` records that review evidence.
+- From clean commit `041262274f8965beacbcf02b9e28a665558600b4`,
+  the separately approved recovery wrapper attempt returned 0 with
+  `hook_result=passed hook_exit=0`, `first_failure=not_applicable`, and
+  `snapshot_result=passed`. All four Git-visible path counts were zero and all
+  four path sets were `(none)`. The approval is consumed; no raw hook output
+  was persisted and no further wrapper or direct `pre-commit` run is
+  authorized.
 
 ## Blockers and unverified facts
 
-- The unauthorized post-pass wrapper discrepancy blocks lifecycle closure.
-  T-AGCC-006-QA-D2 Plan review is complete, but a new exact user approval is
-  required before one recovery run. Without that approval the required
-  disposition is record-and-stop.
+- Lifecycle closure remains blocked until entirely fresh whole-branch
+  correctness and security reviewers independently review the exact
+  `e65bb18fa2f6e3fb6235725750c7c57cbe0227ee..HEAD` range and authorize
+  closure. They must remain read-only and must not run the wrapper or
+  `pre-commit`.
 - The first failed attempt remains historical evidence. Its sanitized result
   cannot identify the failing hook or distinguish one exit-3 hook from a
   bitwise combination of hook exits; no root cause is claimed.
@@ -122,7 +139,6 @@ status: active
 
 ## Next handoff
 
-- From the next clean evidence commit, request exact user approval for one
-  named recovery wrapper attempt that acknowledges the unauthorized
-  intervening execution. On pass, use entirely fresh whole-branch reviewers;
-  on failure, record and stop without another run.
+- Commit the sanitized recovery evidence, then dispatch entirely fresh
+  whole-branch correctness and security reviewers over the exact feature-base
+  through evidence-commit range. Do not run the wrapper or `pre-commit` again.
