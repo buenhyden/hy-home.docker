@@ -663,7 +663,6 @@ class ManifestValidationTests(LifecycleTestCase):
             relative_path: str,
             *,
             require_tracked: bool,
-            max_bytes: int | None = None,
         ) -> bytes | None:
             if relative_path == target_path and not require_tracked:
                 return payload
@@ -671,7 +670,6 @@ class ManifestValidationTests(LifecycleTestCase):
                 root,
                 relative_path,
                 require_tracked=require_tracked,
-                max_bytes=max_bytes,
             )
 
         with mock.patch.object(
@@ -686,27 +684,25 @@ class ManifestValidationTests(LifecycleTestCase):
         document: lifecycle.MigrationManifestDocument,
         payload: bytes | None,
     ) -> set[str]:
-        original_read = lifecycle._read_regular_repo_bytes
+        delta = lifecycle._ensure_target_surface_delta_loaded()
+        original_read = delta._read_contract_text
 
         def read_result(
             root: pathlib.Path,
             relative_path: str,
-            *,
-            require_tracked: bool,
-            max_bytes: int | None = None,
-        ) -> bytes | None:
+        ) -> str:
             if relative_path == SUCCESSOR_MANIFEST:
-                return payload
-            return original_read(
-                root,
-                relative_path,
-                require_tracked=require_tracked,
-                max_bytes=max_bytes,
-            )
+                if payload is None:
+                    raise delta.ContractInputError
+                try:
+                    return payload.decode("utf-8")
+                except UnicodeDecodeError:
+                    raise delta.ContractInputError from None
+            return original_read(root, relative_path)
 
         with mock.patch.object(
-            lifecycle,
-            "_read_regular_repo_bytes",
+            delta,
+            "_read_contract_text",
             side_effect=read_result,
         ):
             return self.target_codes(document)
@@ -836,6 +832,154 @@ class ManifestValidationTests(LifecycleTestCase):
                 self.assertTrue(
                     SAMPLE_PREDECESSOR_EQUALITY_CODES
                     <= self.target_codes_with_successor_payload(document, payload)
+                )
+
+    def test_v2_sample_fixture_handoff_requires_complete_successor_evidence(
+        self,
+    ) -> None:
+        document = self.target_manifest()
+        valid = yaml.safe_load(
+            (ROOT / SUCCESSOR_MANIFEST).read_text(encoding="utf-8")
+        )
+
+        def payload(
+            *,
+            top_updates: dict[str, object] | None = None,
+            top_delete: str | None = None,
+            row_updates: dict[str, object] | None = None,
+            row_delete: str | None = None,
+        ) -> bytes:
+            candidate = copy.deepcopy(valid)
+            if top_updates:
+                candidate.update(top_updates)
+            if top_delete:
+                candidate.pop(top_delete)
+            sample_row = next(
+                row
+                for row in candidate["entries"]
+                if row["path"] == SAMPLE_FIXTURE_PATH
+            )
+            if row_updates:
+                sample_row.update(row_updates)
+            if row_delete:
+                sample_row.pop(row_delete)
+            return yaml.safe_dump(candidate, sort_keys=False).encode()
+
+        cases = {
+            "failed-specification-verdict": payload(
+                row_updates={"spec_verdict": "fail"}
+            ),
+            "failed-quality-verdict": payload(
+                row_updates={"quality_verdict": "fail"}
+            ),
+            "wrong-implementation-base": payload(
+                top_updates={"implementation_base": "0" * 40}
+            ),
+            "wrong-enforcement": payload(
+                top_updates={"enforcement": "blocking"}
+            ),
+            "wrong-target-roots": payload(
+                top_updates={"target_roots": list(reversed(valid["target_roots"]))}
+            ),
+            "missing-direct-consumers": payload(
+                row_updates={"direct_consumers": []}
+            ),
+            "wrong-direct-consumers": payload(
+                row_updates={"direct_consumers": [SAMPLE_FIXTURE_PATH]}
+            ),
+            "missing-finding": payload(row_updates={"finding": ""}),
+            "wrong-finding": payload(
+                row_updates={"finding": "Incomplete sample evidence."}
+            ),
+            "missing-validators": payload(row_updates={"validators": []}),
+            "wrong-validators": payload(
+                row_updates={"validators": ["scripts/validation/check-json.py"]}
+            ),
+            "missing-tests": payload(row_updates={"tests": []}),
+            "wrong-tests": payload(
+                row_updates={"tests": ["tests/validation/test_json.py"]}
+            ),
+            "extra-destructive-provenance": payload(
+                row_updates={
+                    "provenance": [
+                        *next(
+                            row
+                            for row in valid["entries"]
+                            if row["path"] == SAMPLE_FIXTURE_PATH
+                        )["provenance"],
+                        (
+                            "git:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74:"
+                            f"{SAMPLE_FIXTURE_PATH}"
+                        ),
+                    ]
+                }
+            ),
+            "extra-destructive-rollback": payload(
+                row_updates={
+                    "rollback": [
+                        *next(
+                            row
+                            for row in valid["entries"]
+                            if row["path"] == SAMPLE_FIXTURE_PATH
+                        )["rollback"],
+                        (
+                            "git-revert:"
+                            "63039b5b0b20c99a10aae7162627afefcd7a1d8b:"
+                            f"{SAMPLE_FIXTURE_PATH}"
+                        ),
+                    ]
+                }
+            ),
+            "extra-top-level-key": payload(top_updates={"unexpected": True}),
+            "missing-top-level-key": payload(top_delete="implementation_base"),
+            "extra-row-key": payload(row_updates={"unexpected": True}),
+            "missing-row-key": payload(row_delete="finding"),
+        }
+        for name, candidate_payload in cases.items():
+            with self.subTest(case=name):
+                self.assertTrue(
+                    SAMPLE_PREDECESSOR_EQUALITY_CODES
+                    <= self.target_codes_with_successor_payload(
+                        document,
+                        candidate_payload,
+                    )
+                )
+
+    def test_v2_sample_fixture_handoff_accepts_nonfailed_review_states(
+        self,
+    ) -> None:
+        document = self.target_manifest()
+        valid = yaml.safe_load(
+            (ROOT / SUCCESSOR_MANIFEST).read_text(encoding="utf-8")
+        )
+        for spec_verdict, quality_verdict in (
+            ("pass", "pass"),
+            ("pass", "pending"),
+            ("pending", "pass"),
+        ):
+            with self.subTest(
+                spec_verdict=spec_verdict,
+                quality_verdict=quality_verdict,
+            ):
+                candidate = copy.deepcopy(valid)
+                sample_row = next(
+                    row
+                    for row in candidate["entries"]
+                    if row["path"] == SAMPLE_FIXTURE_PATH
+                )
+                sample_row["spec_verdict"] = spec_verdict
+                sample_row["quality_verdict"] = quality_verdict
+                candidate_payload = yaml.safe_dump(
+                    candidate,
+                    sort_keys=False,
+                ).encode()
+                self.assertTrue(
+                    SAMPLE_PREDECESSOR_EQUALITY_CODES.isdisjoint(
+                        self.target_codes_with_successor_payload(
+                            document,
+                            candidate_payload,
+                        )
+                    )
                 )
 
     def test_v2_sample_fixture_handoff_rejects_wrong_current_metadata(self) -> None:
@@ -1038,7 +1182,6 @@ class ManifestValidationTests(LifecycleTestCase):
             relative_path: str,
             *,
             require_tracked: bool,
-            max_bytes: int | None = None,
         ) -> bytes | None:
             if relative_path == target and not require_tracked:
                 result_reads.append(relative_path)
@@ -1047,7 +1190,6 @@ class ManifestValidationTests(LifecycleTestCase):
                 root,
                 relative_path,
                 require_tracked=require_tracked,
-                max_bytes=max_bytes,
             )
 
         with mock.patch.object(
@@ -1147,7 +1289,6 @@ class ManifestValidationTests(LifecycleTestCase):
             relative_path: str,
             *,
             require_tracked: bool,
-            max_bytes: int | None = None,
         ) -> bytes | None:
             if relative_path == replacement_path:
                 raise AssertionError("native replacement body must remain opaque")
@@ -1155,7 +1296,6 @@ class ManifestValidationTests(LifecycleTestCase):
                 root,
                 relative_path,
                 require_tracked=require_tracked,
-                max_bytes=max_bytes,
             )
 
         with (

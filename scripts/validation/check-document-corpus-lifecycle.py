@@ -28,11 +28,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
-TARGET_SURFACE_DELTA_MANIFEST = (
-    "docs/90.references/data/governance/target-surface-delta-manifest.yaml"
-)
-TARGET_SURFACE_PREDECESSOR_CLOSURE = (
-    "63039b5b0b20c99a10aae7162627afefcd7a1d8b"
+TARGET_SURFACE_DELTA_SCRIPT = (
+    ROOT / "scripts/validation/target_surface_delta_contract.py"
 )
 SAMPLE_SERVICE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 SAMPLE_SERVICE_FIXTURE_METADATA = {
@@ -44,27 +41,6 @@ SAMPLE_SERVICE_FIXTURE_METADATA = {
         "spec:127-deployment-release-engineering-remediation",
     ],
 }
-SUCCESSOR_DELTA_ROW_FIELDS = frozenset(
-    {
-        "path",
-        "surface_class",
-        "profile",
-        "changed_since",
-        "disposition",
-        "canonical_owner",
-        "direct_consumers",
-        "finding",
-        "replacement",
-        "secret_safety",
-        "validators",
-        "tests",
-        "provenance",
-        "rollback",
-        "spec_verdict",
-        "quality_verdict",
-    }
-)
-MAX_SUCCESSOR_MANIFEST_BYTES = 2 * 1_048_576
 
 MODES = (
     "check-contract",
@@ -130,6 +106,19 @@ def _load_metadata_module() -> Any:
     return module
 
 
+def _load_target_surface_delta_module() -> Any:
+    spec = importlib.util.spec_from_file_location(
+        "target_surface_delta_for_corpus_lifecycle",
+        TARGET_SURFACE_DELTA_SCRIPT,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("target-surface delta validator module is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class _BootstrapProfileError(ValueError):
     """Used only until the canonical metadata module is loaded safely."""
 
@@ -144,6 +133,7 @@ class _CorpusSafetyError(Exception):
 
 
 metadata: Any = None
+target_surface_delta: Any = None
 Finding: Any = None
 Record: Any = None
 ProfileError: type[Exception] = _BootstrapProfileError
@@ -162,6 +152,15 @@ def _ensure_metadata_loaded() -> Any:
         Record = metadata.Record
         ProfileError = metadata.ProfileError
     return metadata
+
+
+def _ensure_target_surface_delta_loaded() -> Any:
+    """Load the canonical successor contract only after CLI-shape validation."""
+
+    global target_surface_delta
+    if target_surface_delta is None:
+        target_surface_delta = _load_target_surface_delta_module()
+    return target_surface_delta
 
 
 @dataclasses.dataclass(frozen=True)
@@ -690,13 +689,10 @@ def _read_regular_repo_bytes(
     relative_path: str,
     *,
     require_tracked: bool,
-    max_bytes: int | None = None,
 ) -> bytes | None:
     """Read a regular in-root file through a no-follow directory-fd chain."""
 
-    if not _safe_path(relative_path) or (
-        max_bytes is not None and max_bytes < 0
-    ):
+    if not _safe_path(relative_path):
         return None
     if require_tracked:
         tracked = _run_git(
@@ -718,21 +714,11 @@ def _read_regular_repo_bytes(
         return None
     try:
         chunks: list[bytes] = []
-        total_bytes = 0
         while True:
-            read_size = 1024 * 1024
-            if max_bytes is not None:
-                remaining = max_bytes + 1 - total_bytes
-                if remaining <= 0:
-                    return None
-                read_size = min(read_size, remaining)
-            chunk = os.read(descriptor, read_size)
+            chunk = os.read(descriptor, 1024 * 1024)
             if not chunk:
                 break
             chunks.append(chunk)
-            total_bytes += len(chunk)
-            if max_bytes is not None and total_bytes > max_bytes:
-                return None
         return b"".join(chunks)
     except OSError:
         return None
@@ -2147,44 +2133,86 @@ def _sample_service_successor_handoff_valid(
         != ["service"]
     ):
         return False
-    payload = _read_regular_repo_bytes(
-        root,
-        TARGET_SURFACE_DELTA_MANIFEST,
-        require_tracked=True,
-        max_bytes=MAX_SUCCESSOR_MANIFEST_BYTES,
-    )
-    if payload is None or len(payload) > MAX_SUCCESSOR_MANIFEST_BYTES:
-        return False
+    delta = _ensure_target_surface_delta_loaded()
     try:
-        loaded = metadata._safe_load_unique(payload.decode("utf-8"))
-    except (UnicodeDecodeError, yaml.YAMLError):
+        document = delta.load_delta_manifest(root)
+        findings = delta.validate_delta_manifest(root, document)
+    except delta.ContractInputError:
+        return False
+    if findings:
         return False
     if (
-        not isinstance(loaded, dict)
-        or loaded.get("schema_version") != 1
-        or loaded.get("predecessor_closure")
-        != TARGET_SURFACE_PREDECESSOR_CLOSURE
-        or not isinstance(loaded.get("entries"), list)
+        document.schema_version != delta.SCHEMA_VERSION
+        or document.predecessor_closure
+        != delta.DEFAULT_PREDECESSOR_CLOSURE
+        or document.implementation_base
+        != delta.DEFAULT_IMPLEMENTATION_BASE
+        or document.enforcement != "advisory"
+        or document.target_roots != delta.TARGET_ROOTS
     ):
         return False
     matching_rows = [
         candidate
-        for candidate in loaded["entries"]
-        if isinstance(candidate, dict)
-        and candidate.get("path") == SAMPLE_SERVICE_FIXTURE_PATH
+        for candidate in document.entries
+        if candidate.path == SAMPLE_SERVICE_FIXTURE_PATH
     ]
     if len(matching_rows) != 1:
         return False
+    expected_row = delta.DeltaManifestRow(
+        path=SAMPLE_SERVICE_FIXTURE_PATH,
+        surface_class="typed-example",
+        profile="service",
+        changed_since=delta.DEFAULT_PREDECESSOR_CLOSURE,
+        disposition="update",
+        canonical_owner=SAMPLE_SERVICE_FIXTURE_PATH,
+        direct_consumers=("examples/sample-web-service/README.md",),
+        finding=(
+            "Updated examples/sample-web-service/service.md as a draft Service "
+            "fixture with its exact domain parent pair and no active SDLC claim."
+        ),
+        replacement=None,
+        secret_safety="not-applicable",
+        validators=(
+            "scripts/validation/check-document-metadata.py",
+            "scripts/validation/check-target-surface-contract.py",
+            "scripts/validation/check-target-surface-delta-contract.py",
+        ),
+        tests=(
+            "tests/validation/test_document_metadata.py",
+            "tests/validation/test_target_surface_contracts.py",
+            "tests/validation/test_target_surface_delta_contracts.py",
+        ),
+        provenance=(
+            (
+                "git:63039b5b0b20c99a10aae7162627afefcd7a1d8b.."
+                "1671e9beb257b538d258a513502f3324ed6c8d0b:"
+                "examples/sample-web-service/service.md"
+            ),
+            "implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74",
+        ),
+        rollback=(
+            (
+                "git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:"
+                "examples/sample-web-service/service.md"
+            ),
+        ),
+        spec_verdict=delta.PENDING_REVIEW_VERDICT,
+        quality_verdict=delta.PENDING_REVIEW_VERDICT,
+    )
     row = matching_rows[0]
+    nonfailed_verdicts = {
+        delta.PENDING_REVIEW_VERDICT,
+        delta.PASSING_REVIEW_VERDICT,
+    }
     return (
-        set(row) == SUCCESSOR_DELTA_ROW_FIELDS
-        and row.get("surface_class") == "typed-example"
-        and row.get("profile") == "service"
-        and row.get("changed_since") == TARGET_SURFACE_PREDECESSOR_CLOSURE
-        and row.get("disposition") == "update"
-        and row.get("canonical_owner") == SAMPLE_SERVICE_FIXTURE_PATH
-        and row.get("replacement") is None
-        and row.get("secret_safety") == "not-applicable"
+        row.spec_verdict in nonfailed_verdicts
+        and row.quality_verdict in nonfailed_verdicts
+        and dataclasses.replace(
+            row,
+            spec_verdict=delta.PENDING_REVIEW_VERDICT,
+            quality_verdict=delta.PENDING_REVIEW_VERDICT,
+        )
+        == expected_row
     )
 
 
