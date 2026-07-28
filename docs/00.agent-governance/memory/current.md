@@ -10,7 +10,8 @@ status: active
 - Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
 - T-AGCC-001 through T-AGCC-005 are complete; preserve their bounded evidence
   while T-AGCC-006 remains active after its separately approved repository-wide
-  wrapper attempt failed and stopped the closure loop.
+  wrapper attempt failed and stopped the closure loop. The bounded
+  T-AGCC-006-QA-R1 implementation is complete and awaits independent reviews.
 
 ## Approved decisions
 
@@ -36,8 +37,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `0271081ca63bfe45cbd0fd8d3b229c194b8ddace`
-- Verified at: `2026-07-28T12:31:07+09:00`
+- Verified commit: `d7bd40c4aa916e5429f3b31edc158a39f8ead8a1`
+- Verified at: `2026-07-28T12:51:50+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -50,12 +51,18 @@ status: active
 - The approved wrapper then returned hook exit 3 with a passing snapshot,
   empty before/after/changed/unexpected Git-visible path sets, and no retained
   raw hook output.
+- T-AGCC-006-QA-R1 commit
+  `d7bd40c4aa916e5429f3b31edc158a39f8ead8a1` passed its fake-hook RED/GREEN
+  contract: RED was 26 passed and 7 failed, implementer and controller GREEN
+  were both 33/33, Bash syntax and ShellCheck passed for both shell files, and
+  diff hygiene passed. No real wrapper or `pre-commit` was run.
 
 ## Blockers and unverified facts
 
 - The controlled wrapper did not pass. Its typed one-attempt loop requires
-  `record_and_stop`; T-AGCC-006-QA-R1 remediation is approved, but a second
-  attempt still needs a new exact approval plus an explicit override record.
+  `record_and_stop`; T-AGCC-006-QA-R1 is implemented but awaits independent
+  specification and quality/security reviews. A second attempt still needs a
+  new exact approval plus an explicit override record.
 - The sanitized wrapper result cannot identify the failing hook or distinguish
   one exit-3 hook from a bitwise combination of hook exits. No root cause is
   claimed.
@@ -73,6 +80,7 @@ status: active
 
 ## Next handoff
 
-- Implement and independently review T-AGCC-006-QA-R1 without running the
-  wrapper. Any second wrapper attempt requires a new exact user approval before
-  whole-branch reviews or lifecycle transition resume.
+- Complete independent specification and quality/security reviews of
+  T-AGCC-006-QA-R1 without running the wrapper. Any second wrapper attempt
+  requires a new exact user approval before whole-branch reviews or lifecycle
+  transition resume.
