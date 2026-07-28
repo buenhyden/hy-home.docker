@@ -63,8 +63,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `0086ebfa763969aee8d489384ab097f7045b9694`
-- Verified at: `2026-07-28T14:22:17+09:00`
+- Verified commit: `8fbb951b4e616613fa89fde415f0a9a4931c14d8`
+- Verified at: `2026-07-28T14:28:35+09:00`
 - T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
   ledger.
 - T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
@@ -154,6 +154,7 @@ status: active
 
 ## Next handoff
 
-- Validate and commit the bounded Task/current-memory evidence
-  synchronization, then request read-only delta re-reviews from both fresh
-  whole-branch reviewers. Do not run the wrapper or `pre-commit` again.
+- Complete the pending read-only correctness delta re-review. Once both fresh
+  whole-branch reviewers have closed every Critical and Important finding,
+  proceed directly to the approved lifecycle-closure transition and its
+  post-transition validation. Do not run the wrapper or `pre-commit` again.
