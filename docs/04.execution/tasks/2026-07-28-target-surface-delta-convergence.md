@@ -646,6 +646,8 @@ consume or create Agent authorization.
 | T-TSDC-002 | Task 2 documentation-surface implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `78af8462..b28764a9` | approved; completed | Fresh independent reviewers found no unresolved issues after canonical-contract remediation. All 136 manifest row verdict pairs remain pending for Task 6. |
 | T-TSDC-003 | Task 3 static-version implementation agent / replacement remediation implementers | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; PASS; COMMIT_READY YES | `b1e62873..60e0313c` | approved; completed | Fresh independent reviewers found no unresolved issues across all four pinned implementation commits. Exact stale-absence protects all 15 mappings, global dequoted service-name uniqueness prevents ambiguity, and all 141 manifest verdict pairs remain pending for Task 6. |
 | T-TSDC-004 | Task 4 workflow/QA implementation agent / replacement remediation implementers | C0/I4/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I4/M1; CHANGES_REQUIRED; COMMIT_READY NO | `ba93483c..78f9f012` final fix re-review; prior review chain begins at `6fabbf05` | blocked after fix round 5/5 | TSDC-012 remains load-bearing: the validator cannot yet prove one CI owner across all valid shell/Python/helper execution equivalences and bounded provenance paths. No finding is waived; all 148 manifest verdict pairs remain pending. |
+| T-TSDC-004R-1 initial implementation | Task 4.1 typed-gate implementation agent | C0/I3/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I4/M2; CHANGES_REQUIRED; COMMIT_READY NO | `ae5632b2..fdc01e1c` | remediation attempt 2/2 required | Accepted findings covered typed parent/read failures, bounded iterative parsing and graph traversal, hostile Git provenance, exact profile classification, integer schema typing, a complete positive registry, and exact structural local safety. The specification review withdrew its proposed duplicate entrypoint/argv catalog because the canonical schema-v2 file must remain the sole command authority. |
+| T-TSDC-004R-1 remediation review | Task 4.1 typed-gate implementation agent / controller evidence owner | C0/I1/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I0/M1; APPROVED; COMMIT_READY YES | full `ae5632b2..af898045`; remediation `fdc01e1c..af898045` | controller evidence correction and specification recheck required | The implementation findings are closed and quality/security approved the committed code. The remaining specification finding is limited to stale Review Evidence, Commit Ledger, and Deferred-state records. The quality minor requests a full strict-JSON positive registry fixture and remains assigned to the Task 4.2 canonical schema-v2 conversion rather than authorizing a parallel Task 4.1 command catalog. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
 | Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Final implementation not started |
@@ -680,6 +682,8 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004 ownership-gap remediation | Close direct/transitive ownership and Stage 00 fail-closed gaps | `fix(ci): close workflow ownership gaps` | `b07b0f44` | focused RED 5 methods/15 failures; focused GREEN 5/5; workflow 17/17; Stage 00 4/4; routing 35/36 with known missing `html5lib`; exact manifest/advisory and scoped static gates pass; re-review pending |
 | T-TSDC-004 transitive-ownership remediation | Enforce complete semantic ownership and restore control-plane QA routing | `fix(ci): enforce transitive qa ownership` | `ba93483c` | focused RED 4 methods/13 failures; focused GREEN 4/4; workflow 20/20 with co-mutations 4/4; eval 38/38; Stage 00 4/4; routing 35/36 with known local `html5lib` absence; exact manifest/advisory and scoped static gates pass; independent re-review pending |
 | T-TSDC-004 final semantic-resolution remediation | Harden complete-program ownership and bounded helper traversal | `fix(ci): harden semantic command resolution` | `78f9f012` | focused RED 8 methods/29 failures; focused GREEN 8/8; workflow 27/27; eval 38/38; Stage 00 4/4; wrapper, CLI 7/23/8, exact manifest/advisory, and scoped static gates pass; final reviews C0/I4/M0 and C0/I4/M1 leave Task 4 blocked |
+| T-TSDC-004R-1 | Add the dependency-free typed gate contract | `feat(ci): add typed gate contract` | `fdc01e1c` | signature-only RED produced nine behavior errors across the exact seven methods; manifest oracle failed `150 != 148`; focused 7/7, delta 30/30, canonical 150/89/61/0/0 summary, Ruff, compileall, advisory, and diff gates passed; initial reviews required bounded remediation |
+| T-TSDC-004R-1 remediation | Harden typed parsing, graph bounds, provenance, and local structural safety | `fix(ci): harden typed gate contract` | `af898045` | 19-case remediation RED; focused 7/7 and delta 30/30 GREEN; Ruff, compileall, advisory, diff hygiene, clean scope, and byte-identical schema-v1 workflow hash passed; final quality/security review approved and specification evidence recheck remains pending |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -687,7 +691,7 @@ finding and must not be silently accepted as independent review evidence.
 
 | Item | State | Reason | Destination |
 | --- | --- | --- | --- |
-| T-TSDC-004 semantic ownership proof | active recovery | Historical five-round implementation and Revision R1 Plan loops remain exhausted and unwaived. Approved Revision R2 plus the final corrected C0/I0 Plan review pair create the new bounded structural recovery path. | execute T-TSDC-004R-1 under Subagent-Driven review gates |
+| T-TSDC-004R-1 typed gate contract | final review evidence correction | Commits `fdc01e1c` and `af898045` close the accepted implementation findings; final quality/security review is approved, while the specification reviewer requires these execution, commit, and state records to converge before its recheck. | commit this controller-owned evidence correction and obtain the bounded specification recheck before Task 4.2 |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -697,12 +701,14 @@ finding and must not be silently accepted as independent review evidence.
 | Broad dependency/container vulnerability scanning | partial gap | Existing scoped checks do not establish broad SCA/image coverage | Spec 126 successor work |
 | Controlled Agent all-files pre-commit | blocked by approval | No exact one-attempt approval for this wave | final Task 6 gate if separately approved |
 
-The T-TSDC-004R Revision R2 Plan-review gate is satisfied and Task 4 is in
-active recovery. Tasks 5 and 6 remain serially blocked by Task 4 completion.
-The original five-round implementation blocker and exhausted Revision R1 Plan
-reviews remain historical evidence and are neither waived nor counted as extra
-attempts. The remaining items prevent only their corresponding external,
-runtime, or approval-gated claim.
+The T-TSDC-004R Revision R2 Plan-review gate is satisfied. Task 4.1
+implementation and remediation are committed; its final quality/security
+review is approved and its bounded specification evidence recheck remains
+pending. Task 4.2 and Tasks 5–6 remain serially blocked by that evidence
+boundary. The original five-round implementation blocker and exhausted
+Revision R1 Plan reviews remain historical evidence and are neither waived nor
+counted as extra attempts. The remaining items prevent only their
+corresponding external, runtime, or approval-gated claim.
 
 ## Related Documents
 
