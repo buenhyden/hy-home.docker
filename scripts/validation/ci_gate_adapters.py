@@ -44,6 +44,12 @@ _SECRET_ENV_SHAPE = re.compile(
 _MAX_CAPTURE_BYTES = 1024 * 1024
 _PROC_FD_ROOT = re.compile(r"/proc/self/fd/([0-9]+)\Z")
 _CHILD_TERMINATION_SECONDS = 0.25
+_CLEANUP_ERROR_CODES = frozenset(
+    {
+        "ci-gate-adapter-compose-cleanup",
+        "ci-gate-adapter-sarif-cleanup",
+    }
+)
 
 
 class AdapterError(ValueError):
@@ -53,21 +59,65 @@ class AdapterError(ValueError):
         self.message = message
 
 
+class _AdoptedRootCleanupError(Exception):
+    def __init__(self, owned_root_fd: int) -> None:
+        super().__init__()
+        self.owned_root_fd = owned_root_fd
+
+
 def run_adapter(
     root: pathlib.Path,
     argv: tuple[str, ...],
     environ: Mapping[str, str],
 ) -> int:
-    canonical_root, owned_root_fd = _adopt_root(root)
-    child_environment = dict(environ)
-    child_environment["HYHOME_CI_GATE_ROOT"] = canonical_root.as_posix()
     try:
-        return _dispatch_adapter(canonical_root, argv, child_environment)
-    finally:
+        canonical_root, owned_root_fd = _adopt_root(root)
+    except _AdoptedRootCleanupError as error:
         try:
-            os.close(owned_root_fd)
+            os.close(error.owned_root_fd)
         except OSError:
             pass
+        raise AdapterError(
+            "ci-gate-adapter-root-cleanup",
+            "the repository root capability could not be cleaned up",
+        ) from None
+    result: int | None = None
+    product_error: BaseException | None = None
+    try:
+        child_environment = dict(environ)
+        child_environment["HYHOME_CI_GATE_ROOT"] = canonical_root.as_posix()
+        result = _dispatch_adapter(canonical_root, argv, child_environment)
+    except BaseException as error:
+        product_error = (
+            AdapterError(
+                "ci-gate-adapter-operation",
+                "the adapter operation is unavailable",
+            )
+            if isinstance(error, OSError)
+            else error
+        )
+    root_cleanup_failed = False
+    try:
+        os.close(owned_root_fd)
+    except OSError:
+        root_cleanup_failed = True
+    if root_cleanup_failed:
+        if (
+            isinstance(product_error, AdapterError)
+            and product_error.code in _CLEANUP_ERROR_CODES
+        ):
+            raise product_error
+        raise AdapterError(
+            "ci-gate-adapter-root-cleanup",
+            "the repository root capability could not be cleaned up",
+        ) from None
+    if product_error is not None:
+        try:
+            raise product_error
+        finally:
+            product_error = None
+    assert result is not None
+    return result
 
 
 def _dispatch_adapter(
@@ -366,14 +416,7 @@ def _adopt_root(root: pathlib.Path) -> tuple[pathlib.Path, int]:
         try:
             os.close(inherited_fd)
         except OSError:
-            try:
-                os.close(owned_fd)
-            except OSError:
-                pass
-            raise AdapterError(
-                "ci-gate-adapter-root",
-                "the repository root descriptor is unavailable",
-            ) from None
+            raise _AdoptedRootCleanupError(owned_fd) from None
         return pathlib.Path(f"/proc/self/fd/{owned_fd}"), owned_fd
     try:
         resolved = candidate.resolve(strict=True)
@@ -743,6 +786,7 @@ def _prepare_compose_env(
     source_fd = -1
     destination_fd = -1
     created = False
+    product_error: BaseException | None = None
     try:
         try:
             source_fd = os.open(
@@ -755,7 +799,13 @@ def _prepare_compose_env(
                 "ci-gate-adapter-compose-source",
                 "the compose example source is invalid",
             ) from None
-        source_metadata = os.fstat(source_fd)
+        try:
+            source_metadata = os.fstat(source_fd)
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-compose-source",
+                "the compose example source is invalid",
+            ) from None
         if (
             not stat.S_ISREG(source_metadata.st_mode)
             or source_metadata.st_size > _MAX_CAPTURE_BYTES
@@ -840,23 +890,44 @@ def _prepare_compose_env(
                 "ci-gate-adapter-compose-output",
                 "the compose environment destination is unavailable",
             ) from None
-    except BaseException:
-        if created:
-            try:
-                os.unlink(".env", dir_fd=root_fd)
-            except OSError:
-                raise AdapterError(
-                    "ci-gate-adapter-compose-output",
-                    "the partial compose environment could not be removed",
-                ) from None
-        raise
-    finally:
-        for descriptor in (destination_fd, source_fd):
-            if descriptor >= 0:
-                try:
-                    os.close(descriptor)
-                except OSError:
-                    pass
+    except BaseException as error:
+        product_error = (
+            AdapterError(
+                "ci-gate-adapter-compose-output",
+                "the compose environment destination is unavailable",
+            )
+            if isinstance(error, OSError)
+            else error
+        )
+
+    descriptor_cleanup_failed = False
+    for descriptor in (destination_fd, source_fd):
+        if descriptor < 0:
+            continue
+        try:
+            os.close(descriptor)
+        except OSError:
+            descriptor_cleanup_failed = True
+
+    unlink_cleanup_failed = False
+    if created and (
+        product_error is not None or descriptor_cleanup_failed
+    ):
+        try:
+            os.unlink(".env", dir_fd=root_fd)
+        except OSError:
+            unlink_cleanup_failed = True
+
+    if descriptor_cleanup_failed or unlink_cleanup_failed:
+        raise AdapterError(
+            "ci-gate-adapter-compose-cleanup",
+            "the compose environment could not be cleaned up",
+        ) from None
+    if product_error is not None:
+        try:
+            raise product_error
+        finally:
+            product_error = None
 
 
 def _tracked_regular_source(
@@ -905,7 +976,8 @@ def _run_zizmor_sarif(
     root_fd = _owned_root_descriptor(root)
     output_fd = -1
     created = False
-    succeeded = False
+    result_code: int | None = None
+    product_error: BaseException | None = None
     try:
         try:
             output_fd = os.open(
@@ -939,26 +1011,47 @@ def _run_zizmor_sarif(
             environ=environ,
             stdout=output_fd,
         )
-        succeeded = result.returncode == 0
-        return int(result.returncode)
-    except AdapterError:
-        raise
-    except OSError:
-        raise AdapterError(
-            "ci-gate-adapter-sarif-output",
-            "the SARIF output is unavailable",
-        ) from None
-    finally:
-        if output_fd >= 0:
+        result_code = int(result.returncode)
+    except BaseException as error:
+        product_error = (
+            AdapterError(
+                "ci-gate-adapter-sarif-output",
+                "the SARIF output is unavailable",
+            )
+            if isinstance(error, OSError)
+            else error
+        )
+
+    output_cleanup_failed = False
+    if output_fd >= 0:
+        try:
             os.close(output_fd)
-        if created and not succeeded:
-            try:
-                os.unlink("results.sarif", dir_fd=root_fd)
-            except OSError:
-                raise AdapterError(
-                    "ci-gate-adapter-sarif-output",
-                    "the partial SARIF output could not be removed",
-                ) from None
+        except OSError:
+            output_cleanup_failed = True
+
+    unlink_cleanup_failed = False
+    if created and (
+        product_error is not None
+        or result_code != 0
+        or output_cleanup_failed
+    ):
+        try:
+            os.unlink("results.sarif", dir_fd=root_fd)
+        except OSError:
+            unlink_cleanup_failed = True
+
+    if output_cleanup_failed or unlink_cleanup_failed:
+        raise AdapterError(
+            "ci-gate-adapter-sarif-cleanup",
+            "the SARIF output could not be cleaned up",
+        ) from None
+    if product_error is not None:
+        try:
+            raise product_error
+        finally:
+            product_error = None
+    assert result_code is not None
+    return result_code
 
 
 def _open_root(root: pathlib.Path) -> int:

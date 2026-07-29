@@ -1023,13 +1023,55 @@ class DescriptorExecutionTests(unittest.TestCase):
         for outcome, expected in ((0, 0), (17, 17), ("timeout", 124)):
             with self.subTest(outcome=outcome):
                 process = mock.Mock(pid=43210)
-                if outcome == "timeout":
-                    process.wait.side_effect = subprocess.TimeoutExpired(
-                        ("adapter",),
-                        60,
-                    )
-                else:
-                    process.wait.return_value = outcome
+                trace: list[object] = []
+
+                def wait(timeout: float) -> int:
+                    trace.append(("wait", timeout))
+                    if outcome == "timeout" and not any(
+                        entry in {
+                            ("signal", signal.SIGTERM),
+                            ("signal", signal.SIGKILL),
+                        }
+                        for entry in trace
+                    ):
+                        raise subprocess.TimeoutExpired(("adapter",), 60)
+                    return 9 if outcome == "timeout" else int(outcome)
+
+                process.wait.side_effect = wait
+                process.poll.side_effect = AssertionError(
+                    "poll before identity-safe finalization"
+                )
+                process.communicate.side_effect = AssertionError(
+                    "communicate before identity-safe finalization"
+                )
+                readiness = (
+                    [False, False, True]
+                    if outcome == "timeout"
+                    else [True]
+                )
+
+                def pidfd_ready(
+                    descriptor: int,
+                    timeout: float,
+                ) -> bool:
+                    trace.append(("ready", descriptor, timeout))
+                    return readiness.pop(0)
+
+                def signal_group(pgid: int, signum: int) -> None:
+                    self.assertNotIn("wait", [entry[0] for entry in trace if isinstance(entry, tuple)])
+                    trace.append(("signal", signum))
+
+                def members(
+                    pgid: int,
+                    leader_pid: int,
+                    **_kwargs: object,
+                ) -> tuple[int, ...]:
+                    self.assertEqual(43210, pgid)
+                    self.assertEqual(43210, leader_pid)
+                    self.assertNotIn("wait", [entry[0] for entry in trace if isinstance(entry, tuple)])
+                    trace.append(("members", pgid))
+                    return ()
+
                 with (
                     mock.patch.object(
                         runner.subprocess,
@@ -1037,10 +1079,43 @@ class DescriptorExecutionTests(unittest.TestCase):
                         return_value=process,
                     ) as popen,
                     mock.patch.object(
+                        runner.os,
+                        "pidfd_open",
+                        side_effect=lambda pid: trace.append(
+                            ("pidfd-open", pid)
+                        )
+                        or 91,
+                    ) as pidfd_open,
+                    mock.patch.object(
                         runner,
-                        "_finalize_process_group",
+                        "_pidfd_ready",
+                        side_effect=pidfd_ready,
                         create=True,
-                    ) as finalize,
+                    ),
+                    mock.patch.object(
+                        runner,
+                        "_same_pgid_members",
+                        side_effect=members,
+                        create=True,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "killpg",
+                        side_effect=signal_group,
+                    ) as killpg,
+                    mock.patch.object(
+                        runner,
+                        "_wait_for_process_group_absence",
+                        return_value=True,
+                        create=True,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "close",
+                        side_effect=lambda descriptor: trace.append(
+                            ("close", descriptor)
+                        ),
+                    ) as close,
                 ):
                     self.assertEqual(
                         expected,
@@ -1055,45 +1130,439 @@ class DescriptorExecutionTests(unittest.TestCase):
                     (41, 42, 43),
                     popen.call_args.kwargs["pass_fds"],
                 )
-                finalize.assert_called_once_with(
-                    process,
-                    "leaf.lifecycle",
+                pidfd_open.assert_called_once_with(43210)
+                process.poll.assert_not_called()
+                process.communicate.assert_not_called()
+                process.wait.assert_called_once_with(
+                    timeout=runner._TERMINATION_GRACE_SECONDS
                 )
-        process = mock.Mock(pid=43210)
-        process.wait.return_value = 0
-        with (
-            mock.patch.object(runner.os, "killpg") as killpg,
-            mock.patch.object(
-                runner,
-                "_wait_for_process_group_absence",
-                side_effect=(False, True),
-            ),
-        ):
-            runner._finalize_process_group(process, "leaf.lifecycle")
-        self.assertEqual(
-            [
-                mock.call(43210, signal.SIGTERM),
-                mock.call(43210, signal.SIGKILL),
-            ],
-            killpg.call_args_list,
-        )
-        process.poll.assert_not_called()
+                self.assertEqual(
+                    [signal.SIGTERM]
+                    if outcome != "timeout"
+                    else [signal.SIGTERM, signal.SIGKILL],
+                    [call.args[1] for call in killpg.call_args_list],
+                )
+                close.assert_called_once_with(91)
+                wait_index = next(
+                    index
+                    for index, entry in enumerate(trace)
+                    if isinstance(entry, tuple) and entry[0] == "wait"
+                )
+                for index, entry in enumerate(trace):
+                    if (
+                        isinstance(entry, tuple)
+                        and entry[0] in {"signal", "members"}
+                    ):
+                        self.assertLess(index, wait_index)
 
-        process = mock.Mock(pid=43210)
-        process.wait.return_value = 0
-        with (
-            mock.patch.object(runner.os, "killpg"),
-            mock.patch.object(
-                runner,
-                "_wait_for_process_group_absence",
-                side_effect=(False, False),
+        for kill_error, wait_error, expected_code in (
+            (
+                ProcessLookupError(),
+                None,
+                "ci-gate-runner-pidfd-acquisition",
             ),
-            self.assertRaises(contract.GateContractError) as caught,
+            (
+                PermissionError("private signal payload"),
+                None,
+                "ci-gate-runner-cleanup",
+            ),
+            (
+                PermissionError("private signal payload"),
+                subprocess.TimeoutExpired(("adapter",), 0.25),
+                "ci-gate-runner-cleanup",
+            ),
         ):
-            runner._finalize_process_group(process, "private-gate-payload")
-        self.assertEqual("ci-gate-child-cleanup", caught.exception.code)
-        self.assertNotIn("private-gate-payload", str(caught.exception))
-        process.poll.assert_not_called()
+            with self.subTest(
+                acquisition_kill=type(kill_error).__name__,
+                acquisition_wait=type(wait_error).__name__,
+            ):
+                process = mock.Mock(pid=43210)
+                process.wait.return_value = 0
+                if wait_error is not None:
+                    process.wait.side_effect = wait_error
+                with (
+                    mock.patch.object(
+                        runner.subprocess,
+                        "Popen",
+                        return_value=process,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "pidfd_open",
+                        side_effect=OSError("private pidfd payload"),
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "killpg",
+                        side_effect=kill_error,
+                    ) as killpg,
+                    mock.patch.object(
+                        runner,
+                        "_finalize_process_group",
+                        return_value=None,
+                    ),
+                    mock.patch.object(runner.os, "close") as close,
+                    self.assertRaises(
+                        contract.GateContractError
+                    ) as caught,
+                ):
+                    runner._run_verified_child(
+                        41,
+                        item,
+                        {"PATH": "/usr/bin"},
+                    )
+                self.assertEqual(expected_code, caught.exception.code)
+                self.assertNotIn("private", str(caught.exception))
+                killpg.assert_called_once_with(43210, signal.SIGKILL)
+                process.wait.assert_called_once_with(
+                    timeout=runner._TERMINATION_GRACE_SECONDS
+                )
+                close.assert_not_called()
+
+        def exercise_later_case(
+            *,
+            name: str,
+            readiness: list[bool | BaseException],
+            term_error: OSError | None = None,
+            kill_error: OSError | None = None,
+            member_effects: list[tuple[int, ...] | BaseException] | None = None,
+            wait_error: BaseException | None = None,
+            close_error: OSError | None = None,
+            expected_result: int | None = None,
+            expected_code: str | None = None,
+            expect_wait: bool = True,
+        ) -> None:
+            process = mock.Mock(pid=43210)
+            process.wait.return_value = 0
+            if wait_error is not None:
+                process.wait.side_effect = wait_error
+            process.poll.side_effect = AssertionError("forbidden poll")
+            process.communicate.side_effect = AssertionError(
+                "forbidden communicate"
+            )
+            member_queue = list(member_effects or [()])
+            trace: list[tuple[str, int]] = []
+
+            def ready(_descriptor: int, _timeout: float) -> bool:
+                effect = readiness.pop(0)
+                if isinstance(effect, BaseException):
+                    raise effect
+                return effect
+
+            def signal_group(_pgid: int, signum: int) -> None:
+                trace.append(("signal", signum))
+                if signum == signal.SIGTERM and term_error is not None:
+                    raise term_error
+                if signum == signal.SIGKILL and kill_error is not None:
+                    raise kill_error
+
+            def members(
+                _pgid: int,
+                _leader_pid: int,
+                **_kwargs: object,
+            ) -> tuple[int, ...]:
+                effect = member_queue.pop(0)
+                if isinstance(effect, BaseException):
+                    raise effect
+                return effect
+
+            def close(_descriptor: int) -> None:
+                trace.append(("close", 91))
+                if close_error is not None:
+                    raise close_error
+
+            with (
+                self.subTest(later_case=name),
+                mock.patch.object(
+                    runner.subprocess,
+                    "Popen",
+                    return_value=process,
+                ),
+                mock.patch.object(runner.os, "pidfd_open", return_value=91),
+                mock.patch.object(
+                    runner,
+                    "_pidfd_ready",
+                    side_effect=ready,
+                    create=True,
+                ),
+                mock.patch.object(
+                    runner,
+                    "_same_pgid_members",
+                    side_effect=members,
+                    create=True,
+                ),
+                mock.patch.object(
+                    runner.os,
+                    "killpg",
+                    side_effect=signal_group,
+                ),
+                mock.patch.object(
+                    runner,
+                    "_wait_for_process_group_absence",
+                    return_value=True,
+                    create=True,
+                ),
+                mock.patch.object(runner.os, "close", side_effect=close),
+            ):
+                if expected_code is None:
+                    self.assertEqual(
+                        expected_result,
+                        runner._run_verified_child(
+                            41,
+                            item,
+                            {"PATH": "/usr/bin"},
+                        ),
+                    )
+                else:
+                    with self.assertRaises(
+                        contract.GateContractError
+                    ) as caught:
+                        runner._run_verified_child(
+                            41,
+                            item,
+                            {"PATH": "/usr/bin"},
+                        )
+                    self.assertEqual(expected_code, caught.exception.code)
+                    self.assertNotIn("private", str(caught.exception))
+            if expect_wait:
+                process.wait.assert_called_once_with(
+                    timeout=runner._TERMINATION_GRACE_SECONDS
+                )
+            else:
+                process.wait.assert_not_called()
+            process.poll.assert_not_called()
+            process.communicate.assert_not_called()
+            self.assertEqual(("close", 91), trace[-1])
+
+        exercise_later_case(
+            name="term-esrch",
+            readiness=[True],
+            term_error=ProcessLookupError(),
+            expected_result=0,
+        )
+        exercise_later_case(
+            name="kill-esrch",
+            readiness=[False, False, True],
+            kill_error=ProcessLookupError(),
+            expected_result=124,
+        )
+        exercise_later_case(
+            name="later-readiness-skips-wait",
+            readiness=[
+                True,
+                contract.GateContractError(
+                    "ci-gate-runner-pidfd-readiness",
+                    "pidfd",
+                    "the adapter leader readiness could not be observed",
+                ),
+            ],
+            term_error=PermissionError("private TERM payload"),
+            expected_code="ci-gate-runner-cleanup",
+            expect_wait=False,
+        )
+        exercise_later_case(
+            name="kill-failure-still-readies-reaps-and-closes",
+            readiness=[False, False, True],
+            kill_error=PermissionError("private KILL payload"),
+            expected_code="ci-gate-runner-cleanup",
+        )
+        exercise_later_case(
+            name="ready-wait-timeout-still-closes",
+            readiness=[True],
+            wait_error=subprocess.TimeoutExpired(("adapter",), 0.25),
+            expected_code="ci-gate-runner-cleanup",
+        )
+        exercise_later_case(
+            name="pidfd-close-overrides-product",
+            readiness=[True],
+            close_error=OSError("private close payload"),
+            expected_code="ci-gate-runner-cleanup",
+        )
+        exercise_later_case(
+            name="scan-error-recovers-before-reap",
+            readiness=[True, True],
+            member_effects=[
+                contract.GateContractError(
+                    "ci-gate-runner-proc-scan",
+                    "proc",
+                    "the process-group membership scan failed",
+                )
+            ],
+            expected_code="ci-gate-runner-proc-scan",
+        )
+
+        scanner = getattr(runner, "_same_pgid_members", None)
+        self.assertTrue(
+            callable(scanner),
+            "strict bounded proc scanner must be implemented",
+        )
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+
+            def write_stat(pid: int, pgrp: int, payload: bytes | None = None) -> None:
+                directory = proc_root / str(pid)
+                directory.mkdir()
+                (directory / "stat").write_bytes(
+                    payload
+                    if payload is not None
+                    else (
+                        f"{pid} (worker ({pid})) S 1 {pgrp} 1 0 0 0\n"
+                    ).encode("ascii")
+                )
+
+            write_stat(43210, 43210)
+            write_stat(123, 43210)
+            write_stat(124, 99999)
+            (proc_root / "125").mkdir()
+            (proc_root / "net").write_text("metadata", encoding="ascii")
+            self.assertEqual(
+                (123,),
+                scanner(43210, 43210, proc_root=proc_root),
+            )
+
+        for malformed_name, payload in (
+            ("malformed", b"private malformed payload"),
+            ("oversized", b"x" * (4096 + 1)),
+        ):
+            with (
+                self.subTest(proc_case=malformed_name),
+                tempfile.TemporaryDirectory(dir=self.root) as proc_temporary,
+            ):
+                proc_root = pathlib.Path(proc_temporary)
+                numeric = proc_root / "126"
+                numeric.mkdir()
+                (numeric / "stat").write_bytes(payload)
+                with self.assertRaises(
+                    contract.GateContractError
+                ) as caught:
+                    scanner(43210, 43210, proc_root=proc_root)
+                self.assertEqual(
+                    "ci-gate-runner-proc-scan",
+                    caught.exception.code,
+                )
+                self.assertNotIn("private", str(caught.exception))
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+            target = proc_root / "target"
+            target.mkdir()
+            (target / "stat").write_bytes(
+                b"127 (worker) S 1 43210 1 0\n"
+            )
+            (proc_root / "127").symlink_to(target, target_is_directory=True)
+            with self.assertRaises(contract.GateContractError) as caught:
+                scanner(43210, 43210, proc_root=proc_root)
+            self.assertEqual(
+                "ci-gate-runner-proc-scan",
+                caught.exception.code,
+            )
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+            real_open = os.open
+            numeric = proc_root / "128"
+            numeric.mkdir()
+            (numeric / "stat").write_bytes(
+                b"128 (worker) S 1 43210 1 0\n"
+            )
+
+            def deny_stat(
+                path: str | pathlib.Path,
+                flags: int,
+                mode: int = 0o777,
+                *,
+                dir_fd: int | None = None,
+            ) -> int:
+                if path == "stat":
+                    raise PermissionError("private permission payload")
+                return real_open(path, flags, mode, dir_fd=dir_fd)
+
+            with (
+                mock.patch.object(runner.os, "open", side_effect=deny_stat),
+                self.assertRaises(contract.GateContractError) as caught,
+            ):
+                scanner(43210, 43210, proc_root=proc_root)
+            self.assertEqual(
+                "ci-gate-runner-proc-scan",
+                caught.exception.code,
+            )
+            self.assertNotIn("private", str(caught.exception))
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+            numeric = proc_root / "129"
+            numeric.mkdir()
+            (numeric / "stat").write_bytes(
+                b"129 (worker) S 1 43210 1 0\n"
+            )
+            real_read = os.read
+
+            def fail_stat_read(descriptor: int, size: int) -> bytes:
+                target = os.readlink(f"/proc/self/fd/{descriptor}")
+                if target.endswith("/129/stat"):
+                    raise OSError("private read payload")
+                return real_read(descriptor, size)
+
+            with (
+                mock.patch.object(runner.os, "read", side_effect=fail_stat_read),
+                self.assertRaises(contract.GateContractError) as caught,
+            ):
+                scanner(43210, 43210, proc_root=proc_root)
+            self.assertEqual(
+                "ci-gate-runner-proc-scan",
+                caught.exception.code,
+            )
+            self.assertNotIn("private", str(caught.exception))
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+
+            class FakeEntry:
+                def __init__(self, name: str) -> None:
+                    self.name = name
+
+            class FakeScandir:
+                def __enter__(self):
+                    return (
+                        FakeEntry(str(pid))
+                        for pid in range(
+                            getattr(runner, "_MAX_PROC_PID_ENTRIES", 65536)
+                            + 1
+                        )
+                    )
+
+                def __exit__(self, *_args: object) -> None:
+                    return None
+
+            with (
+                mock.patch.object(
+                    runner.os,
+                    "scandir",
+                    return_value=FakeScandir(),
+                ),
+                self.assertRaises(contract.GateContractError) as caught,
+            ):
+                scanner(43210, 43210, proc_root=proc_root)
+            self.assertEqual(
+                "ci-gate-runner-proc-scan",
+                caught.exception.code,
+            )
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            target = pathlib.Path(proc_temporary)
+            proc_link = self.root / "proc-link"
+            proc_link.symlink_to(target, target_is_directory=True)
+            try:
+                with self.assertRaises(
+                    contract.GateContractError
+                ) as caught:
+                    scanner(43210, 43210, proc_root=proc_link)
+                self.assertEqual(
+                    "ci-gate-runner-proc-scan",
+                    caught.exception.code,
+                )
+            finally:
+                proc_link.unlink()
 
     def _assert_runner_rejects_immutable_and_dangerous_allowed_env_keys(
         self,

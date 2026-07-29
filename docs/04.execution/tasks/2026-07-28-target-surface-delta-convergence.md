@@ -248,6 +248,9 @@ have no unresolved Critical or Important findings.
 | 2026-07-29 | T-TSDC-004R-2 executable-oracle Plan correction | Controller | Both S3 and S4 exact-path builders now use `printf '%s\n'`, while retaining checkpoint-to-working-tree plus untracked rejection before commit and checkpoint-to-HEAD plus clean status after commit. The actual correction SHA is recorded by the succeeding executable checkpoint commit. |
 | 2026-07-29 | T-TSDC-004R-2 executable identity design checkpoint | Controller | Correction `38259d1f` passed the literal five-line shell oracle, metadata 15/0, traceability 46/0, and diff-hygiene validation. This checkpoint changes only the Task ledger and is identified by the exact unique subject `docs(plan): record executable typed gate identity checkpoint`; fresh specification and quality/security C0/I0 reviews remain required before implementation. |
 | 2026-07-29 | T-TSDC-004R-2 executable identity Plan final reviews | Fresh independent specification and quality/security reviewers | Both read-only reviews of checkpoint `86146050` returned `C0/I0/M0` and `IMPLEMENTATION_READY YES`; specification returned `SPEC_COMPLIANCE YES` and quality/security returned `PASS`. They reproduced exactly five newline-delimited expected paths, confirmed the pre-commit working-tree and untracked gates plus post-commit range and clean-status gates, and found no regression in bounded pidfd recovery, deterministic cleanup precedence, `ESRCH`, strict proc bounds, exact 94 discovery, four freezes, or the Wave B block. The one Task 4.2S implementation attempt is now authorized from checkpoint `86146050`; no other scope is opened. |
+| 2026-07-29 | T-TSDC-004R-2 identity-cleanup RED | Task 4.2S implementation agent, sole attempt | The unchanged five-module discovery ran 94 tests in 128.301 seconds: 74 passed, 11 planned Wave-C witnesses skipped, six failed, and three errored. Every new failure was behavior-specific: runner failures exposed pre-finalization reaping and missing pidfd-acquisition recovery, while adapter failures exposed incorrect adopted-root, Compose, and SARIF cleanup ordering or normalization. There was no import, discovery, network, Compose, or external-dependency failure. |
+| 2026-07-29 | T-TSDC-004R-2 identity-cleanup implementation | Task 4.2S implementation agent, sole attempt | Adapter ownership now transfers adopted root `M` to the outer cleanup boundary before inherited `N` close can fail, independently attempts destination/source/output close and required unlink actions, and preserves the first cleanup failure with fixed value-free domain codes. The runner opens the leader pidfd immediately after `Popen`, keeps the leader unreaped through TERM/readiness/strict bounded no-follow proc-membership/KILL validation, performs exactly one final timeout-bounded reap, treats signal `ESRCH` as a disappeared-target race requiring validation, and independently closes the pidfd on every acquired path. Existing top-level test methods were extended; no test discovery was added. |
+| 2026-07-29 | T-TSDC-004R-2 identity-cleanup GREEN and invariant gates | Task 4.2S implementation agent, sole attempt | Focused runner/adapter tests pass 28/28. The exact five-module suite ran 94 tests in 122.596 seconds: 83 passed, 11 planned Wave-C witnesses skipped, and zero failed or errored. The workflow checker reports 7 workflows, 23 jobs, and eight Actions; execution-free `local-harness` list/dry-run remains 32 leaves and `local-all-profiles` dry-run remains 34 projected lines. Exact four-file Ruff through the existing uv Ruff Python module, compileall, advisory delta validation, and diff hygiene pass. Contract, workflow, manifest, and summary remain byte-identical to `17bb5cdd` at their recorded hashes. No network, installation, child gate, real Compose, runtime, remote, secret, wrapper, direct pre-commit, or Wave B action ran. Fresh implementation reviews remain required. |
 
 ## Verification Evidence
 
@@ -629,6 +632,56 @@ have no unresolved Critical or Important findings.
   mutated. Independent specification and quality/security reviews remain
   pending.
 
+### T-TSDC-004R-2 identity-cleanup implementation evidence
+
+- The unique executable design checkpoint resolves to
+  `86146050e04da99c106177f94c509200b991342d`. The sole implementation attempt
+  began from clean pre-implementation HEAD
+  `6b506d9246116439be9eb5ea740cff602062571f`; the checkpoint-to-working-tree
+  scope remains limited to the two runtime files, their two existing test
+  files, and this Task ledger.
+- RED used the unchanged five-module discovery. It ran 94 tests in 128.301
+  seconds with 74 passes, 11 planned Wave-C skips, six failures, and three
+  errors. The failures were the intended adopted-root/Compose/SARIF cleanup
+  and unreaped-leader pidfd lifecycle witnesses; there was no import,
+  discovery, network, Compose, or external-dependency failure.
+- Adapter cleanup starts at adoption: if inherited `N` close fails after
+  `F_DUPFD_CLOEXEC` creates `M`, the outer boundary still owns and closes
+  `M`. Compose destination/source closes and required unlink, SARIF output
+  close and required unlink, and final `M` close are each independently
+  attempted in deterministic order. Cleanup failure outranks product or
+  operation outcome and is reduced to the fixed value-free root, Compose, or
+  SARIF cleanup code.
+- The runner opens the leader pidfd immediately after `Popen` and performs no
+  `poll`, `communicate`, or numeric-PGID probe. Initial acquisition recovery,
+  later recovery, normal, nonzero, timeout, output-overflow, and read-error
+  paths use bounded readiness and exactly one final reap attempt. Strict proc
+  membership uses descriptor-relative `O_NOFOLLOW` traversal, a 65,536
+  numeric-entry limit, a 4,096-byte stat limit, fail-closed parsing, and
+  value-free errors; no numeric-PGID signal or membership scan occurs after
+  reap. TERM/KILL `ESRCH` is accepted only as a disappeared-target race that
+  still requires bounded validation.
+- Existing top-level tests remain exactly 94. Focused runner/adapter GREEN is
+  28/28, and the exact integration GREEN is 94 in 122.596 seconds:
+  83 passes, 11 planned Wave-C skips, zero failures, and zero errors.
+  Workflow projection remains 7/23/8; `local-harness` and
+  `local-all-profiles` remain deterministic and execution-free. Exact Ruff,
+  compileall, advisory validation, and diff hygiene pass.
+- The four frozen surfaces remain byte-identical to `17bb5cdd`:
+  `.github/workflow-contract.yml`
+  `21dcc9a59b4c7fe087431c647e8d385d64125021dfa583542818a68ed84c9d20`,
+  `.github/workflows/ci-quality.yml`
+  `18bdc27e634f83edcd57da9f39aafff62ffe3bbd76d820a74c061021ee811756`,
+  the canonical delta manifest
+  `f82b6d7c93ae12d5709e24704b2aad562b5275b56bf7ea3a10c491739da59e87`,
+  and its summary
+  `4030982fcf981b2ee342929fa61804bd0b20a9be5eef0ef3dbe874864354e514`.
+- Graphify remains stale advisory evidence and was corroborated against
+  Spec 135, the corrected Plan, Stage 00, and tracked source. No network,
+  installation, child gate, real Compose, runtime, remote, secret, controlled
+  wrapper, direct pre-commit, or Wave B action ran. Fresh specification and
+  quality/security C0/I0 implementation reviews remain mandatory.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -681,9 +734,10 @@ consume or create Agent authorization.
 | T-TSDC-004R-2 bounded identity-cleanup Plan | bounded future implementer | C0/I1/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | C0/I0/M0; APPROVED; IMPLEMENTATION_READY YES | `8df1b9cd..6877ac4b` | scope-oracle correction and fresh review required; Wave B blocked | The lifecycle design passed, but the pre-commit exact-path gate did not observe staged/unstaged or untracked changes. |
 | T-TSDC-004R-2 scoped identity-cleanup Plan | bounded future implementer | C0/I1/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | canceled after specification blocker; no verdict | `8df1b9cd..ba7ccb79` | executable-oracle correction and fresh review required; Wave B blocked | Scope timing is correct, but literal backslash-n output makes both exact-path comparisons fail. |
 | T-TSDC-004R-2 executable identity-cleanup Plan | bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; PASS; IMPLEMENTATION_READY YES | `8df1b9cd..86146050` | one implementation attempt authorized; Wave B still blocked | The successor begins after the exact unique `docs(plan): record executable typed gate identity checkpoint` commit and must satisfy both executable scope oracles before one fresh implementation review pair. |
+| T-TSDC-004R-2 identity-cleanup implementation | Task 4.2S implementation agent, sole attempt | pending fresh review | pending fresh review | `86146050` through the unique `fix(ci): finalize typed gate identity cleanup` commit | implementation complete; fresh review required; Wave B blocked | RED/GREEN and local invariant gates pass within the exact five-path boundary. No manifest verdict is promoted, and no Wave B authority follows until both fresh reviewers return C0/I0 and controller-owned review evidence is committed. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Final implementation not started |
+| Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Task 4.2S implementation is complete locally; its fresh review pair and controller evidence commit remain pending |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -733,6 +787,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 executable-oracle Plan correction | Emit newline-delimited exact-path expectations in both scope gates | `docs(plan): make typed gate scope oracle executable` | `38259d1f` | Literal five-line oracle, metadata 15/0, traceability 46/0, and diff hygiene passed; implementation remains blocked pending checkpoint reviews. |
 | T-TSDC-004R-2 executable identity design checkpoint | Freeze the executable corrected Plan as the successor implementation scope baseline | `docs(plan): record executable typed gate identity checkpoint` | resolved by this exact unique subject | The implementation oracle requires one matching commit and supersedes the scoped checkpoint while retaining its review history. |
 | T-TSDC-004R-2 executable identity Plan review evidence | Record the final C0/I0 Plan approval pair | `docs(task): record executable identity plan reviews` | resolved by this exact unique subject | Read-only specification and quality/security reviewers both authorized the one bounded five-path implementation attempt; Wave B remains blocked. |
+| T-TSDC-004R-2 identity-cleanup implementation | Finalize adopted-root cleanup and unreaped-leader pidfd identity | `fix(ci): finalize typed gate identity cleanup` | resolved by this exact unique subject | RED 94 = 74 pass + 11 skip + 6 fail + 3 error; focused GREEN 28/28; full GREEN 94 = 83 pass + 11 skip; workflow 7/23/8; both execution-free profile projections; exact Ruff/compileall; four byte freezes; advisory, exact five-path scope, and diff hygiene pass. Fresh implementation reviews remain required; Wave B stays blocked. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -741,7 +796,7 @@ finding and must not be silently accepted as independent review evidence.
 | Item | State | Reason | Destination |
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
-| T-TSDC-004R-2 typed gate runner | returned to identity-cleanup design | The sole redesigned implementation is not approved: reviews of `e6fefb69..8df1b9cd` returned Spec C0/I1/M0 and Quality/Security C0/I3/M0. All four `17bb5cdd` freezes and manifest pending state remain binding. | execute one new five-path identity-cleanup attempt, obtain one fresh specification and one fresh quality/security C0/I0 review, then commit controller-owned review evidence before Wave B |
+| T-TSDC-004R-2 typed gate runner | identity-cleanup implementation complete; reviews pending | The sole Task 4.2S five-path attempt passes its RED/GREEN, invariant, freeze, and local scope gates. All manifest verdicts remain pending, and implementation is not approved until one fresh specification and one fresh quality/security review both return C0/I0. | obtain the fresh C0/I0 review pair, then commit controller-owned review evidence before Wave B |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -754,8 +809,8 @@ finding and must not be silently accepted as independent review evidence.
 The T-TSDC-004R Revision R2 Plan-review gate is satisfied. Task 4.1
 implementation, remediation, and review-evidence correction are committed and
 approved. Task 4.2S is the sole remaining five-path identity-cleanup design
-return; Wave B and Tasks 5–6 remain blocked until its one successor attempt
-receives a new C0/I0 review pair and controller evidence commit. The
+attempt and is now implemented locally; Wave B and Tasks 5–6 remain blocked
+until it receives a new C0/I0 review pair and controller evidence commit. The
 original five-round implementation blocker and exhausted Revision R1 Plan
 reviews remain historical evidence and are neither waived nor counted as extra
 attempts. The remaining items prevent only their corresponding external,

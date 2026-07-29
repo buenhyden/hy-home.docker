@@ -7,6 +7,7 @@ import errno
 import os
 import pathlib
 import re
+import select
 import shutil
 import signal
 import stat
@@ -63,6 +64,9 @@ _ADMITTED_ENV_KEYS = frozenset(
     }
 )
 _TERMINATION_GRACE_SECONDS = 0.25
+_MAX_PROC_PID_ENTRIES = 65_536
+_MAX_PROC_STAT_BYTES = 4_096
+_PROC_ROOT = pathlib.Path("/proc")
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -699,74 +703,405 @@ def _run_verified_child(
             "the verified gate could not be executed",
         ) from None
     try:
-        try:
-            result = int(
-                process.wait(timeout=item.invocation.timeout_seconds)
-            )
-        except subprocess.TimeoutExpired:
-            result = 124
-        return result
-    finally:
-        _finalize_process_group(process, item.invocation.gate_id)
+        pidfd = os.pidfd_open(process.pid)
+    except OSError:
+        _recover_pidfd_acquisition(process)
+        raise AssertionError("pidfd acquisition recovery must raise")
+    try:
+        leader_ready = _pidfd_ready(
+            pidfd,
+            item.invocation.timeout_seconds,
+        )
+    except GateContractError as error:
+        _recover_later_failure(process, pidfd, error)
+        raise AssertionError("later pidfd recovery must raise")
+    timed_out = not leader_ready
+    returncode = _finalize_process_group(
+        process,
+        pidfd,
+        leader_ready=leader_ready,
+    )
+    return 124 if timed_out else returncode
 
 
 def _finalize_process_group(
     process: subprocess.Popen[bytes],
-    _gate_id: str,
-) -> None:
+    pidfd: int,
+    *,
+    leader_ready: bool,
+) -> int:
     pgid = process.pid
     try:
-        os.killpg(pgid, signal.SIGTERM)
-    except ProcessLookupError:
-        _reap_adapter(process)
-        return
-    except OSError:
-        raise _process_group_cleanup_error() from None
-    _reap_adapter(process)
-    if _wait_for_process_group_absence(pgid):
-        return
+        _signal_process_group(pgid, signal.SIGTERM)
+        if not leader_ready:
+            leader_ready = _pidfd_ready(
+                pidfd,
+                _TERMINATION_GRACE_SECONDS,
+            )
+        members = (
+            _same_pgid_members(pgid, process.pid)
+            if leader_ready
+            else ()
+        )
+        if not leader_ready or members:
+            _signal_process_group(pgid, signal.SIGKILL)
+            if not leader_ready:
+                leader_ready = _pidfd_ready(
+                    pidfd,
+                    _TERMINATION_GRACE_SECONDS,
+                )
+            if not leader_ready:
+                raise GateContractError(
+                    "ci-gate-runner-pidfd-readiness",
+                    "pidfd",
+                    "the adapter leader did not become ready",
+                )
+            if not _wait_for_nonleader_absence(pgid, process.pid):
+                raise GateContractError(
+                    "ci-gate-runner-proc-members",
+                    "proc",
+                    "the adapter process group retained members",
+                )
+    except GateContractError as error:
+        _recover_later_failure(process, pidfd, error)
+        raise AssertionError("later process-group recovery must raise")
+    return _reap_ready_leader(process, pidfd)
+
+
+def _recover_pidfd_acquisition(
+    process: subprocess.Popen[bytes],
+) -> None:
+    cleanup_failed = False
     try:
-        os.killpg(pgid, signal.SIGKILL)
-    except ProcessLookupError:
-        _reap_adapter(process)
-        return
-    except OSError:
-        raise _process_group_cleanup_error() from None
-    _reap_adapter(process)
-    if not _wait_for_process_group_absence(pgid):
-        raise _process_group_cleanup_error()
-
-
-def _reap_adapter(process: subprocess.Popen[bytes]) -> None:
+        _signal_process_group(process.pid, signal.SIGKILL)
+    except GateContractError:
+        cleanup_failed = True
     try:
         process.wait(timeout=_TERMINATION_GRACE_SECONDS)
-    except subprocess.TimeoutExpired:
-        return
+    except Exception:
+        cleanup_failed = True
+    if cleanup_failed:
+        raise _runner_cleanup_error()
+    raise GateContractError(
+        "ci-gate-runner-pidfd-acquisition",
+        "pidfd",
+        "the adapter leader identity could not be acquired",
+    )
+
+
+def _recover_later_failure(
+    process: subprocess.Popen[bytes],
+    pidfd: int,
+    product_error: GateContractError,
+) -> None:
+    cleanup_failed = False
+    try:
+        _signal_process_group(process.pid, signal.SIGKILL)
+    except GateContractError:
+        cleanup_failed = True
+
+    leader_ready = False
+    try:
+        leader_ready = _pidfd_ready(
+            pidfd,
+            _TERMINATION_GRACE_SECONDS,
+        )
+    except GateContractError:
+        cleanup_failed = True
+    if not leader_ready:
+        cleanup_failed = True
+    else:
+        try:
+            process.wait(timeout=_TERMINATION_GRACE_SECONDS)
+        except Exception:
+            cleanup_failed = True
+    try:
+        os.close(pidfd)
     except OSError:
-        raise _process_group_cleanup_error() from None
+        cleanup_failed = True
+    if cleanup_failed:
+        raise _runner_cleanup_error()
+    raise product_error
 
 
-def _wait_for_process_group_absence(pgid: int) -> bool:
-    deadline = time.monotonic() + _TERMINATION_GRACE_SECONDS
+def _reap_ready_leader(
+    process: subprocess.Popen[bytes],
+    pidfd: int,
+) -> int:
+    cleanup_failed = False
+    returncode = 0
+    try:
+        returncode = int(
+            process.wait(timeout=_TERMINATION_GRACE_SECONDS)
+        )
+    except Exception:
+        cleanup_failed = True
+    try:
+        os.close(pidfd)
+    except OSError:
+        cleanup_failed = True
+    if cleanup_failed:
+        raise _runner_cleanup_error()
+    return returncode
+
+
+def _signal_process_group(pgid: int, signum: int) -> None:
+    try:
+        os.killpg(pgid, signum)
+    except OSError as error:
+        if isinstance(error, ProcessLookupError) or error.errno == errno.ESRCH:
+            return
+        raise GateContractError(
+            "ci-gate-runner-signal",
+            "process-group",
+            "the adapter process group could not be signaled",
+        ) from None
+
+
+def _pidfd_ready(pidfd: int, timeout_seconds: float) -> bool:
+    deadline = time.monotonic() + max(0.0, timeout_seconds)
+    poller = select.poll()
+    try:
+        poller.register(pidfd, select.POLLIN)
+    except (OSError, ValueError):
+        raise GateContractError(
+            "ci-gate-runner-pidfd-readiness",
+            "pidfd",
+            "the adapter leader readiness could not be observed",
+        ) from None
     while True:
         try:
-            os.killpg(pgid, 0)
-        except ProcessLookupError:
+            remaining = max(0.0, deadline - time.monotonic())
+            timeout_ms = min(
+                2_147_483_647,
+                max(0, int(remaining * 1000)),
+            )
+            events = poller.poll(timeout_ms)
+        except OSError as error:
+            if error.errno == errno.EINTR and time.monotonic() < deadline:
+                continue
+            raise GateContractError(
+                "ci-gate-runner-pidfd-readiness",
+                "pidfd",
+                "the adapter leader readiness could not be observed",
+            ) from None
+        if events:
+            for descriptor, event in events:
+                if descriptor != pidfd or event & (
+                    select.POLLERR | select.POLLNVAL
+                ):
+                    raise GateContractError(
+                        "ci-gate-runner-pidfd-readiness",
+                        "pidfd",
+                        "the adapter leader readiness could not be observed",
+                    )
+                if event & select.POLLIN:
+                    return True
+            raise GateContractError(
+                "ci-gate-runner-pidfd-readiness",
+                "pidfd",
+                "the adapter leader readiness could not be observed",
+            )
+        if time.monotonic() >= deadline:
+            return False
+
+
+def _wait_for_nonleader_absence(
+    pgid: int,
+    leader_pid: int,
+) -> bool:
+    deadline = time.monotonic() + _TERMINATION_GRACE_SECONDS
+    while True:
+        if not _same_pgid_members(pgid, leader_pid):
             return True
-        except PermissionError:
-            pass
-        except OSError:
-            raise _process_group_cleanup_error() from None
         if time.monotonic() >= deadline:
             return False
         time.sleep(0.01)
 
 
-def _process_group_cleanup_error() -> GateContractError:
+def _same_pgid_members(
+    pgid: int,
+    leader_pid: int,
+    *,
+    proc_root: pathlib.Path = _PROC_ROOT,
+) -> tuple[int, ...]:
+    proc_fd = -1
+    scan_error: GateContractError | None = None
+    members: list[int] = []
+    try:
+        proc_fd = os.open(
+            proc_root,
+            os.O_RDONLY
+            | os.O_CLOEXEC
+            | os.O_NOFOLLOW
+            | os.O_DIRECTORY,
+        )
+        try:
+            numeric_names: list[str] = []
+            with os.scandir(proc_fd) as entries:
+                for entry in entries:
+                    name = entry.name
+                    if (
+                        not name
+                        or not name.isascii()
+                        or any(
+                            character < "0" or character > "9"
+                            for character in name
+                        )
+                    ):
+                        continue
+                    numeric_names.append(name)
+                    if len(numeric_names) > _MAX_PROC_PID_ENTRIES:
+                        raise _proc_scan_error()
+        except OSError:
+            raise _proc_scan_error() from None
+        numeric_entries: list[tuple[int, str]] = []
+        for name in numeric_names:
+            if len(name) > 20:
+                raise _proc_scan_error()
+            try:
+                pid = int(name, 10)
+            except ValueError:
+                raise _proc_scan_error() from None
+            numeric_entries.append((pid, name))
+        numeric_entries.sort()
+        for pid, name in numeric_entries:
+            if pid == leader_pid:
+                continue
+            member_pgid = _read_proc_entry_pgid(proc_fd, name, pid)
+            if member_pgid == pgid:
+                members.append(pid)
+    except GateContractError as error:
+        scan_error = error
+    except OSError:
+        scan_error = _proc_scan_error()
+    if proc_fd >= 0:
+        try:
+            os.close(proc_fd)
+        except OSError:
+            scan_error = _proc_scan_error()
+    if scan_error is not None:
+        raise scan_error
+    return tuple(members)
+
+
+def _read_proc_entry_pgid(
+    proc_fd: int,
+    name: str,
+    pid: int,
+) -> int | None:
+    pid_fd = -1
+    stat_fd = -1
+    vanished = False
+    entry_error: GateContractError | None = None
+    pgrp: int | None = None
+    try:
+        try:
+            pid_fd = os.open(
+                name,
+                os.O_RDONLY
+                | os.O_CLOEXEC
+                | os.O_NOFOLLOW
+                | os.O_DIRECTORY,
+                dir_fd=proc_fd,
+            )
+        except OSError as error:
+            if error.errno in {errno.ENOENT, errno.ESRCH}:
+                vanished = True
+            else:
+                entry_error = _proc_scan_error()
+        if not vanished and entry_error is None:
+            try:
+                stat_fd = os.open(
+                    "stat",
+                    os.O_RDONLY
+                    | os.O_CLOEXEC
+                    | os.O_NOFOLLOW
+                    | os.O_NONBLOCK,
+                    dir_fd=pid_fd,
+                )
+            except OSError as error:
+                if error.errno in {errno.ENOENT, errno.ESRCH}:
+                    vanished = True
+                else:
+                    entry_error = _proc_scan_error()
+        if not vanished and entry_error is None:
+            try:
+                payload = _read_proc_stat(stat_fd)
+            except OSError as error:
+                if error.errno in {errno.ENOENT, errno.ESRCH}:
+                    vanished = True
+                else:
+                    entry_error = _proc_scan_error()
+            else:
+                try:
+                    pgrp = _parse_proc_stat_pgid(payload, pid)
+                except ValueError:
+                    entry_error = _proc_scan_error()
+    finally:
+        for descriptor in (stat_fd, pid_fd):
+            if descriptor < 0:
+                continue
+            try:
+                os.close(descriptor)
+            except OSError:
+                entry_error = _proc_scan_error()
+    if entry_error is not None:
+        raise entry_error
+    return None if vanished else pgrp
+
+
+def _read_proc_stat(descriptor: int) -> bytes:
+    payload = bytearray()
+    while len(payload) <= _MAX_PROC_STAT_BYTES:
+        chunk = os.read(
+            descriptor,
+            _MAX_PROC_STAT_BYTES + 1 - len(payload),
+        )
+        if not chunk:
+            return bytes(payload)
+        payload.extend(chunk)
+        if len(payload) > _MAX_PROC_STAT_BYTES:
+            raise OSError(errno.EFBIG, "proc stat too large")
+    raise OSError(errno.EFBIG, "proc stat too large")
+
+
+def _parse_proc_stat_pgid(payload: bytes, pid: int) -> int:
+    if len(payload) > _MAX_PROC_STAT_BYTES or b"\0" in payload:
+        raise ValueError
+    line = payload[:-1] if payload.endswith(b"\n") else payload
+    if not line or b"\n" in line:
+        raise ValueError
+    prefix = f"{pid} (".encode("ascii")
+    if not line.startswith(prefix):
+        raise ValueError
+    comm_end = line.rfind(b") ")
+    if comm_end < len(prefix):
+        raise ValueError
+    fields = line[comm_end + 2 :].split()
+    if (
+        len(fields) < 3
+        or len(fields[0]) != 1
+        or not fields[1].isdigit()
+        or not fields[2].isdigit()
+    ):
+        raise ValueError
+    return int(fields[2], 10)
+
+
+def _proc_scan_error() -> GateContractError:
     return GateContractError(
-        "ci-gate-child-cleanup",
+        "ci-gate-runner-proc-scan",
+        "proc",
+        "the process-group membership scan failed",
+    )
+
+
+def _runner_cleanup_error() -> GateContractError:
+    return GateContractError(
+        "ci-gate-runner-cleanup",
         "process-group",
-        "the gate process group could not be finalized",
+        "the adapter process group could not be cleaned up",
     )
 
 

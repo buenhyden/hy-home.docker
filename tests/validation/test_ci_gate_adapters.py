@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from collections.abc import Mapping
 from unittest import mock
 
 from scripts.validation import ci_gate_adapters as adapters
@@ -358,6 +359,178 @@ class CiGateAdapterTests(unittest.TestCase):
         self._assert_prepare_compose_env_rejects_non_blob_identical_sources()
         self._assert_prepare_compose_env_rejects_path_replacement_after_open()
         self._assert_compose_copy_normalizes_zero_short_write_and_cleans_partial()
+        cleanup_events: list[tuple[str, int | str]] = []
+        metadata = mock.Mock(
+            st_mode=0o100600,
+            st_size=1,
+            st_dev=11,
+            st_ino=12,
+        )
+
+        def fail_compose_close(descriptor: int) -> None:
+            cleanup_events.append(("close", descriptor))
+            raise OSError(f"private descriptor {descriptor}")
+
+        def fail_compose_unlink(
+            path: str,
+            *,
+            dir_fd: int,
+        ) -> None:
+            self.assertEqual(700, dir_fd)
+            cleanup_events.append(("unlink", path))
+            raise OSError("private compose path")
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_owned_root_descriptor",
+                return_value=700,
+            ),
+            mock.patch.object(
+                adapters.os,
+                "open",
+                side_effect=(701, 702),
+            ),
+            mock.patch.object(adapters.os, "fstat", return_value=metadata),
+            mock.patch.object(adapters.os, "stat", return_value=metadata),
+            mock.patch.object(
+                adapters,
+                "_tracked_regular_source",
+                return_value="0" * 40,
+            ),
+            mock.patch.object(adapters, "_read_bounded", return_value=b"x"),
+            mock.patch.object(
+                adapters,
+                "_run_child",
+                return_value=subprocess.CompletedProcess(
+                    ("git",),
+                    0,
+                    b"x",
+                    b"",
+                ),
+            ),
+            mock.patch.object(
+                adapters,
+                "_write_all",
+                side_effect=OSError("private operation payload"),
+            ),
+            mock.patch.object(adapters.os, "close", side_effect=fail_compose_close),
+            mock.patch.object(adapters.os, "unlink", side_effect=fail_compose_unlink),
+            self.assertRaises(adapters.AdapterError) as cleanup_error,
+        ):
+            adapters._prepare_compose_env(
+                pathlib.Path("/proc/self/fd/700"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-compose-cleanup",
+            cleanup_error.exception.code,
+        )
+        self.assertNotIn("private", str(cleanup_error.exception))
+        self.assertEqual(
+            [
+                ("close", 702),
+                ("close", 701),
+                ("unlink", ".env"),
+            ],
+            cleanup_events,
+        )
+        cleanup_events = []
+
+        def close_after_success(descriptor: int) -> None:
+            cleanup_events.append(("close", descriptor))
+            if descriptor == 712:
+                raise OSError("private destination close")
+
+        def unlink_after_close(
+            path: str,
+            *,
+            dir_fd: int,
+        ) -> None:
+            self.assertEqual(710, dir_fd)
+            cleanup_events.append(("unlink", path))
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_owned_root_descriptor",
+                return_value=710,
+            ),
+            mock.patch.object(
+                adapters.os,
+                "open",
+                side_effect=(711, 712),
+            ),
+            mock.patch.object(adapters.os, "fstat", return_value=metadata),
+            mock.patch.object(adapters.os, "stat", return_value=metadata),
+            mock.patch.object(
+                adapters,
+                "_tracked_regular_source",
+                return_value="0" * 40,
+            ),
+            mock.patch.object(adapters, "_read_bounded", return_value=b"x"),
+            mock.patch.object(
+                adapters,
+                "_run_child",
+                return_value=subprocess.CompletedProcess(
+                    ("git",),
+                    0,
+                    b"x",
+                    b"",
+                ),
+            ),
+            mock.patch.object(adapters, "_write_all"),
+            mock.patch.object(adapters.os, "fsync"),
+            mock.patch.object(adapters.os, "close", side_effect=close_after_success),
+            mock.patch.object(adapters.os, "unlink", side_effect=unlink_after_close),
+            self.assertRaises(adapters.AdapterError) as cleanup_error,
+        ):
+            adapters._prepare_compose_env(
+                pathlib.Path("/proc/self/fd/710"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-compose-cleanup",
+            cleanup_error.exception.code,
+        )
+        self.assertEqual(
+            [
+                ("close", 712),
+                ("close", 711),
+                ("unlink", ".env"),
+            ],
+            cleanup_events,
+        )
+        with (
+            mock.patch.object(
+                adapters,
+                "_adopt_root",
+                return_value=(pathlib.Path("/proc/self/fd/713"), 713),
+            ),
+            mock.patch.object(
+                adapters,
+                "_dispatch_adapter",
+                side_effect=adapters.AdapterError(
+                    "ci-gate-adapter-compose-cleanup",
+                    "the compose environment could not be cleaned up",
+                ),
+            ),
+            mock.patch.object(
+                adapters.os,
+                "close",
+                side_effect=OSError("private root close payload"),
+            ),
+            self.assertRaises(adapters.AdapterError) as priority_error,
+        ):
+            adapters.run_adapter(
+                self.root,
+                ("prepare-compose-env",),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-compose-cleanup",
+            priority_error.exception.code,
+        )
 
     def test_install_playwright_uses_the_fixed_child_vector(self) -> None:
         result, recorder = self.run_with_recorder(("install-playwright",))
@@ -432,6 +605,138 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         (self.root / "results.sarif").unlink()
         self._assert_sarif_partial_is_removed_after_exception_and_retry_succeeds()
+        cleanup_events: list[tuple[str, int | str]] = []
+
+        def fail_sarif_close(descriptor: int) -> None:
+            cleanup_events.append(("close", descriptor))
+            raise OSError(f"private descriptor {descriptor}")
+
+        def fail_sarif_unlink(
+            path: str,
+            *,
+            dir_fd: int,
+        ) -> None:
+            self.assertEqual(800, dir_fd)
+            cleanup_events.append(("unlink", path))
+            raise OSError("private SARIF path")
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_owned_root_descriptor",
+                return_value=800,
+            ),
+            mock.patch.object(adapters.os, "open", return_value=801),
+            mock.patch.object(
+                adapters,
+                "_run_child",
+                side_effect=adapters.AdapterError(
+                    "ci-gate-adapter-child-exec",
+                    "the child process is unavailable",
+                ),
+            ),
+            mock.patch.object(adapters.os, "close", side_effect=fail_sarif_close),
+            mock.patch.object(adapters.os, "unlink", side_effect=fail_sarif_unlink),
+            self.assertRaises(adapters.AdapterError) as cleanup_error,
+        ):
+            adapters._run_zizmor_sarif(
+                pathlib.Path("/proc/self/fd/800"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-sarif-cleanup",
+            cleanup_error.exception.code,
+        )
+        self.assertNotIn("private", str(cleanup_error.exception))
+        self.assertEqual(
+            [("close", 801), ("unlink", "results.sarif")],
+            cleanup_events,
+        )
+        cleanup_events = []
+
+        def close_successful_sarif(descriptor: int) -> None:
+            cleanup_events.append(("close", descriptor))
+            raise OSError("private successful SARIF close")
+
+        def unlink_successful_sarif(
+            path: str,
+            *,
+            dir_fd: int,
+        ) -> None:
+            self.assertEqual(810, dir_fd)
+            cleanup_events.append(("unlink", path))
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_owned_root_descriptor",
+                return_value=810,
+            ),
+            mock.patch.object(adapters.os, "open", return_value=811),
+            mock.patch.object(
+                adapters,
+                "_run_child",
+                return_value=subprocess.CompletedProcess(
+                    ("uvx",),
+                    0,
+                    b"",
+                    b"",
+                ),
+            ),
+            mock.patch.object(
+                adapters.os,
+                "close",
+                side_effect=close_successful_sarif,
+            ),
+            mock.patch.object(
+                adapters.os,
+                "unlink",
+                side_effect=unlink_successful_sarif,
+            ),
+            self.assertRaises(adapters.AdapterError) as cleanup_error,
+        ):
+            adapters._run_zizmor_sarif(
+                pathlib.Path("/proc/self/fd/810"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-sarif-cleanup",
+            cleanup_error.exception.code,
+        )
+        self.assertEqual(
+            [("close", 811), ("unlink", "results.sarif")],
+            cleanup_events,
+        )
+        with (
+            mock.patch.object(
+                adapters,
+                "_adopt_root",
+                return_value=(pathlib.Path("/proc/self/fd/812"), 812),
+            ),
+            mock.patch.object(
+                adapters,
+                "_dispatch_adapter",
+                side_effect=adapters.AdapterError(
+                    "ci-gate-adapter-sarif-cleanup",
+                    "the SARIF output could not be cleaned up",
+                ),
+            ),
+            mock.patch.object(
+                adapters.os,
+                "close",
+                side_effect=OSError("private root close payload"),
+            ),
+            self.assertRaises(adapters.AdapterError) as priority_error,
+        ):
+            adapters.run_adapter(
+                self.root,
+                ("run-zizmor-sarif",),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-sarif-cleanup",
+            priority_error.exception.code,
+        )
 
     def test_rejects_unknown_metacharacter_paths_npm_verbs_and_secret_env(
         self,
@@ -587,6 +892,124 @@ class CiGateAdapterTests(unittest.TestCase):
             os.fstat(error_root_fd)
         with self.assertRaises(OSError):
             os.fstat(failed_adopted[0])
+
+        inherited_fd = os.open(
+            self.root,
+            os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY,
+        )
+        real_fcntl = fcntl.fcntl
+        real_close = os.close
+        adopted_after_failure: list[int] = []
+        close_order: list[int] = []
+
+        def capture_duplicate(
+            descriptor: int,
+            command: int,
+            argument: int = 0,
+        ) -> int:
+            duplicated = real_fcntl(descriptor, command, argument)
+            adopted_after_failure.append(duplicated)
+            return duplicated
+
+        def fail_inherited_close(descriptor: int) -> None:
+            close_order.append(descriptor)
+            real_close(descriptor)
+            if descriptor == inherited_fd:
+                raise OSError("private inherited descriptor")
+
+        try:
+            with (
+                mock.patch.object(
+                    adapters.fcntl,
+                    "fcntl",
+                    side_effect=capture_duplicate,
+                ),
+                mock.patch.object(
+                    adapters.os,
+                    "close",
+                    side_effect=fail_inherited_close,
+                ),
+                self.assertRaises(adapters.AdapterError) as root_cleanup,
+            ):
+                adapters.run_adapter(
+                    pathlib.Path(f"/proc/self/fd/{inherited_fd}"),
+                    ("check-diff-hygiene",),
+                    {"PATH": "/usr/bin"},
+                )
+        finally:
+            for descriptor in (inherited_fd, *adopted_after_failure):
+                try:
+                    real_close(descriptor)
+                except OSError:
+                    pass
+        self.assertEqual(
+            "ci-gate-adapter-root-cleanup",
+            root_cleanup.exception.code,
+        )
+        self.assertNotIn("private", str(root_cleanup.exception))
+        self.assertEqual(
+            [inherited_fd, adopted_after_failure[0]],
+            close_order,
+        )
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_adopt_root",
+                return_value=(pathlib.Path("/proc/self/fd/902"), 902),
+            ),
+            mock.patch.object(
+                adapters,
+                "_dispatch_adapter",
+                side_effect=adapters.AdapterError(
+                    "ci-gate-adapter-child-exec",
+                    "the child process is unavailable",
+                ),
+            ),
+            mock.patch.object(
+                adapters.os,
+                "close",
+                side_effect=OSError("private owned descriptor"),
+            ) as close,
+            self.assertRaises(adapters.AdapterError) as root_cleanup,
+        ):
+            adapters.run_adapter(
+                self.root,
+                ("check-diff-hygiene",),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-root-cleanup",
+            root_cleanup.exception.code,
+        )
+        self.assertNotIn("private", str(root_cleanup.exception))
+        close.assert_called_once_with(902)
+
+        class ExplodingEnvironment(Mapping[str, str]):
+            def __getitem__(self, key: str) -> str:
+                raise KeyError(key)
+
+            def __iter__(self):
+                raise RuntimeError("private environment payload")
+
+            def __len__(self) -> int:
+                return 1
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_adopt_root",
+                return_value=(pathlib.Path("/proc/self/fd/903"), 903),
+            ),
+            mock.patch.object(adapters.os, "close") as close,
+            self.assertRaisesRegex(RuntimeError, "private environment payload"),
+        ):
+            adapters.run_adapter(
+                self.root,
+                ("check-diff-hygiene",),
+                ExplodingEnvironment(),
+            )
+        close.assert_called_once_with(903)
 
         inventory_root, inventory_fd = adapters._adopt_root(self.root)
         inventory_source = (
