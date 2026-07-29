@@ -1858,7 +1858,11 @@ successor design authority for the next bounded implementation attempt. The
 initial `4abc8009` design draft and `5d089dd4` checkpoint were committed by a
 read-only analysis agent outside its assignment. They remain historical
 evidence but grant no implementation authority and are superseded by the
-corrected checkpoint defined below.
+corrected checkpoint defined below. The first corrected checkpoint `b73d2a99`
+then received specification `C0/I0/M0` but quality/security `C0/I1/M0`
+because it began interruption ownership after inherited-root adoption rather
+than at the `N`-to-`M` transfer. It is also superseded and grants no
+implementation authority.
 
 **Exact implementation allowlist:** after the uniquely named controller design
 checkpoint for this subsection is committed and independently approved, the
@@ -1874,7 +1878,7 @@ Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
 
   Commit the correction and then one Task-ledger-only checkpoint whose exact
   unique subject is
-  `docs(plan): record interruption-safe typed gate checkpoint`. Fresh
+  `docs(plan): record adopted-root interruption checkpoint`. Fresh
   specification and quality/security reviewers inspect the exact
   `17645f2a`-through-checkpoint range. Both must return `C0/I0`,
   `IMPLEMENTATION_READY YES`; otherwise implementation remains blocked. The
@@ -1887,7 +1891,18 @@ Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
   Keep top-level discovery exactly `94` tests. Extend existing methods only.
   Required new or corrected witnesses:
 
-  1. Adapter boundary taxonomy preserves an already typed `AdapterError`.
+  1. Adapter ownership transfers immediately when `F_DUPFD_CLOEXEC` returns
+     owned capability `M`, before attempting to close inherited capability
+     `N`. If closing `N` raises `OSError` or any control-flow
+     `BaseException`, `_adopt_root` transfers `M` to the outer cleanup path.
+     That path attempts to close `M` exactly once, does not retry or reuse
+     `N`, and returns fixed value-free `ci-gate-adapter-root-cleanup`
+     regardless of whether the `M` close succeeds, fails, or is interrupted.
+     The original close value and interruption never cross the adapter
+     boundary. Existing tests inject `KeyboardInterrupt`, `SystemExit`, and
+     `GeneratorExit` at the `N` close, verify the exact `N`-then-`M` attempt
+     order, verify exactly one `M` close attempt, and reject any raw payload.
+  2. Adapter boundary taxonomy preserves an already typed `AdapterError`.
      Every other ordinary `Exception` raised while copying `dict(environ)` or
      dispatching a subcommand becomes the fixed value-free `AdapterError` code
      `ci-gate-adapter-operation` after the owned root capability `M` cleanup
@@ -1900,7 +1915,7 @@ Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
      order. Ordinary exception messages, environment values, paths, descriptor
      numbers, and raw payloads never cross the adapter's typed diagnostic
      boundary.
-  2. Runner ownership begins when `Popen(start_new_session=True)` returns. If
+  3. Runner ownership begins when `Popen(start_new_session=True)` returns. If
      `pidfd_open` raises `OSError`, preserve the existing typed acquisition
      recovery. If it raises an ordinary unexpected `Exception`, perform the
      same no-pidfd recovery and return fixed value-free
@@ -1908,7 +1923,7 @@ Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
      perform the same group `KILL` plus exactly one bounded wait attempt and
      re-raise the original interruption only when recovery succeeds. Any
      signal or wait failure takes precedence as `ci-gate-runner-cleanup`.
-  3. After pidfd acquisition and before the sole bounded reap attempt, every
+  4. After pidfd acquisition and before the sole bounded reap attempt, every
      `GateContractError`, unexpected ordinary `Exception`, or control-flow
      `BaseException` from pidfd readiness, process-group finalization, or proc
      scanning enters one later-failure cleanup controller. It independently
@@ -1918,7 +1933,7 @@ Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
      `Exception` to fixed value-free `ci-gate-runner-cleanup`, and re-raises a
      control-flow interruption unchanged. Any recovery-action failure takes
      precedence as `ci-gate-runner-cleanup`.
-  4. The runner tracks whether its single bounded wait/reap has begun. If the
+  5. The runner tracks whether its single bounded wait/reap has begun. If the
      wait itself raises any exception or interruption, it never signals,
      observes, scans, or waits on the numeric PGID again; it still attempts
      pidfd close and returns fixed `ci-gate-runner-cleanup`. If pidfd close
@@ -1928,14 +1943,14 @@ Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
      `BaseException`-safe `finally` cleanup, attempt all owned closes
      independently, and convert an incomplete close to the fixed runner
      cleanup domain without leaking the original value.
-  5. Evidence wording: later runner recovery performs a single bounded
+  6. Evidence wording: later runner recovery performs a single bounded
      `process.wait(timeout=grace)` only when readiness is confirmed; if
      readiness is unavailable or not reached, the runner skips wait, records
      cleanup failure, and still attempts pidfd close. Prohibit `process.poll`,
      `communicate`, and any reaping primitive before identity-safe finalization;
      do not state a broader "no poll" ban that could be confused with bounded
      pidfd polling.
-  6. Post-implementation evidence: Task ledger evidence must explicitly record
+  7. Post-implementation evidence: Task ledger evidence must explicitly record
      the changed-document metadata check result and documentation traceability
      result, or state `unverified` if a command was not run. Existing Ruff,
      compileall, advisory, diff, freeze, workflow, projection, and exact
@@ -1986,7 +2001,7 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2T_DESIGN_SUBJECT='docs(plan): record interruption-safe typed gate checkpoint'
+TASK_4_2T_DESIGN_SUBJECT='docs(plan): record adopted-root interruption checkpoint'
 TASK_4_2T_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2T_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2T_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2T_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
@@ -2021,7 +2036,7 @@ git diff --check
   subject `fix(ci): close typed interruption boundary`, then run:
 
 ```bash
-TASK_4_2T_DESIGN_SUBJECT='docs(plan): record interruption-safe typed gate checkpoint'
+TASK_4_2T_DESIGN_SUBJECT='docs(plan): record adopted-root interruption checkpoint'
 TASK_4_2T_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2T_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2T_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2T_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
