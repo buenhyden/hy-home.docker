@@ -90,6 +90,36 @@ class _VerifiedInvocation:
     interpreter: str
 
 
+@dataclasses.dataclass(slots=True)
+class _ProcessLifecycle:
+    process: subprocess.Popen[bytes] | None = None
+    pidfd: int | None = None
+    group_finalized: bool = False
+    reap_started: bool = False
+    pidfd_close_attempted: bool = False
+
+    @property
+    def pidfd_acquired(self) -> bool:
+        return self.pidfd is not None
+
+    def bind_process(self, process: subprocess.Popen[bytes]) -> None:
+        self.process = process
+
+    def acquire_pidfd(self) -> None:
+        if self.process is None:
+            raise _runner_cleanup_error()
+        self.pidfd = os.pidfd_open(self.process.pid)
+
+    def mark_group_finalized(self) -> None:
+        self.group_finalized = True
+
+    def mark_reap_started(self) -> None:
+        self.reap_started = True
+
+    def mark_pidfd_close_attempted(self) -> None:
+        self.pidfd_close_attempted = True
+
+
 class _GateArgumentParser(argparse.ArgumentParser):
     def error(self, message: str) -> None:
         raise GateContractError(
@@ -679,6 +709,8 @@ def _run_verified_child(
         f"/proc/self/fd/{item.entrypoint_fd}",
         *item.invocation.argv,
     ]
+    lifecycle = _ProcessLifecycle()
+    process: subprocess.Popen[bytes] | None = None
     try:
         process = subprocess.Popen(
             argv,
@@ -696,39 +728,32 @@ def _run_verified_child(
             shell=False,
             start_new_session=True,
         )
-    except OSError:
-        raise GateContractError(
-            "ci-gate-child-exec",
-            item.invocation.gate_id,
-            "the verified gate could not be executed",
-        ) from None
-    acquisition_error: BaseException | None = None
-    try:
-        pidfd = os.pidfd_open(process.pid)
-    except BaseException as error:
-        acquisition_error = error
-    if acquisition_error is not None:
-        _recover_pidfd_acquisition(process, acquisition_error)
-        raise AssertionError("pidfd acquisition recovery must raise")
-    later_error: BaseException | None = None
-    try:
+        lifecycle.bind_process(process)
+        lifecycle.acquire_pidfd()
+        if lifecycle.pidfd is None:
+            raise _runner_cleanup_error()
         leader_ready = _pidfd_ready(
-            pidfd,
+            lifecycle.pidfd,
             item.invocation.timeout_seconds,
         )
         timed_out = not leader_ready
         _finalize_process_group(
             process,
-            pidfd,
+            lifecycle.pidfd,
             leader_ready=leader_ready,
         )
+        lifecycle.mark_group_finalized()
+        returncode = _bounded_reap(process, lifecycle)
+        _close_pidfd_once(lifecycle)
+        return 124 if timed_out else returncode
     except BaseException as error:
-        later_error = error
-    if later_error is not None:
-        _recover_later_failure(process, pidfd, later_error)
-        raise AssertionError("later process-group recovery must raise")
-    returncode = _reap_ready_leader(process, pidfd)
-    return 124 if timed_out else returncode
+        _recover_process_lifecycle(
+            item.invocation.gate_id,
+            process,
+            lifecycle,
+            error,
+        )
+        raise AssertionError("process lifecycle recovery must raise")
 
 
 def _finalize_process_group(
@@ -770,22 +795,34 @@ def _finalize_process_group(
             )
 
 
-def _recover_pidfd_acquisition(
-    process: subprocess.Popen[bytes],
+def _recover_process_lifecycle(
+    gate_id: str,
+    process: subprocess.Popen[bytes] | None,
+    lifecycle: _ProcessLifecycle,
     product_error: BaseException,
 ) -> None:
-    cleanup_failed = False
-    try:
-        _signal_process_group(process.pid, signal.SIGKILL)
-    except BaseException:
-        cleanup_failed = True
-    try:
-        process.wait(timeout=_TERMINATION_GRACE_SECONDS)
-    except BaseException:
-        cleanup_failed = True
+    if process is None:
+        if isinstance(product_error, OSError):
+            raise GateContractError(
+                "ci-gate-child-exec",
+                gate_id,
+                "the verified gate could not be executed",
+            ) from None
+        raise product_error
+
+    if lifecycle.reap_started:
+        _finish_post_reap_cleanup(lifecycle)
+        raise _runner_cleanup_error()
+
+    if lifecycle.pidfd_acquired:
+        cleanup_failed = _recover_with_pidfd(process, lifecycle)
+    else:
+        cleanup_failed = _recover_without_pidfd(process, lifecycle)
     if cleanup_failed:
         raise _runner_cleanup_error()
-    if isinstance(product_error, OSError):
+    if isinstance(product_error, GateContractError):
+        raise product_error
+    if not lifecycle.pidfd_acquired and isinstance(product_error, OSError):
         raise GateContractError(
             "ci-gate-runner-pidfd-acquisition",
             "pidfd",
@@ -796,64 +833,87 @@ def _recover_pidfd_acquisition(
     raise product_error
 
 
-def _recover_later_failure(
+def _recover_without_pidfd(
     process: subprocess.Popen[bytes],
-    pidfd: int,
-    product_error: BaseException,
-) -> None:
+    lifecycle: _ProcessLifecycle,
+) -> bool:
     cleanup_failed = False
     try:
         _signal_process_group(process.pid, signal.SIGKILL)
     except BaseException:
         cleanup_failed = True
-
-    leader_ready = False
     try:
-        leader_ready = _pidfd_ready(
-            pidfd,
-            _TERMINATION_GRACE_SECONDS,
-        )
+        _bounded_reap(process, lifecycle)
     except BaseException:
         cleanup_failed = True
+    return cleanup_failed
+
+
+def _recover_with_pidfd(
+    process: subprocess.Popen[bytes],
+    lifecycle: _ProcessLifecycle,
+) -> bool:
+    cleanup_failed = False
+    leader_ready = lifecycle.group_finalized
+    if not lifecycle.group_finalized:
+        try:
+            _signal_process_group(process.pid, signal.SIGKILL)
+        except BaseException:
+            cleanup_failed = True
+        try:
+            if lifecycle.pidfd is None:
+                raise _runner_cleanup_error()
+            leader_ready = _pidfd_ready(
+                lifecycle.pidfd,
+                _TERMINATION_GRACE_SECONDS,
+            )
+        except BaseException:
+            cleanup_failed = True
     if not leader_ready:
         cleanup_failed = True
     else:
         try:
-            process.wait(timeout=_TERMINATION_GRACE_SECONDS)
+            _bounded_reap(process, lifecycle)
         except BaseException:
             cleanup_failed = True
+    if not lifecycle.pidfd_close_attempted:
+        try:
+            _close_pidfd_once(lifecycle)
+        except BaseException:
+            cleanup_failed = True
+    return cleanup_failed
+
+
+def _finish_post_reap_cleanup(
+    lifecycle: _ProcessLifecycle,
+) -> None:
+    if not lifecycle.pidfd_acquired or lifecycle.pidfd_close_attempted:
+        return
     try:
-        os.close(pidfd)
+        _close_pidfd_once(lifecycle)
     except BaseException:
-        cleanup_failed = True
-    if cleanup_failed:
-        raise _runner_cleanup_error()
-    if isinstance(product_error, GateContractError):
-        raise product_error
-    if isinstance(product_error, Exception):
-        raise _runner_cleanup_error()
-    raise product_error
+        pass
 
 
-def _reap_ready_leader(
+def _bounded_reap(
     process: subprocess.Popen[bytes],
-    pidfd: int,
+    lifecycle: _ProcessLifecycle,
 ) -> int:
-    cleanup_failed = False
-    returncode = 0
-    try:
-        returncode = int(
-            process.wait(timeout=_TERMINATION_GRACE_SECONDS)
-        )
-    except BaseException:
-        cleanup_failed = True
-    try:
-        os.close(pidfd)
-    except BaseException:
-        cleanup_failed = True
-    if cleanup_failed:
+    if lifecycle.reap_started:
         raise _runner_cleanup_error()
-    return returncode
+    lifecycle.mark_reap_started()
+    return int(process.wait(timeout=_TERMINATION_GRACE_SECONDS))
+
+
+def _close_pidfd_once(lifecycle: _ProcessLifecycle) -> None:
+    if (
+        not lifecycle.pidfd_acquired
+        or lifecycle.pidfd is None
+        or lifecycle.pidfd_close_attempted
+    ):
+        raise _runner_cleanup_error()
+    lifecycle.mark_pidfd_close_attempted()
+    os.close(lifecycle.pidfd)
 
 
 def _signal_process_group(pgid: int, signum: int) -> None:
@@ -988,12 +1048,13 @@ def _same_pgid_members(
         product_error = _proc_scan_error()
     except BaseException as error:
         product_error = error
-    cleanup_failed = False
-    if proc_fd >= 0:
-        try:
-            os.close(proc_fd)
-        except BaseException:
-            cleanup_failed = True
+    finally:
+        cleanup_failed = False
+        if proc_fd >= 0:
+            try:
+                os.close(proc_fd)
+            except BaseException:
+                cleanup_failed = True
     if cleanup_failed:
         raise _runner_cleanup_error()
     if product_error is not None:

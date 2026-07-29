@@ -270,6 +270,9 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-2 phase-owned runner gate reconciliation | Controller | Correction `9281692e` passed changed-document metadata `15/0` with five registered legacy exceptions, documentation traceability `46/0`, and diff hygiene. The Plan and Task ledger now require a new reconciled Task 4.2U checkpoint, its sole runner-only implementation attempt, fresh implementation `C0/I0` reviews, and controller-owned evidence before Wave B. |
 | 2026-07-30 | T-TSDC-004R-2 reconciled phase-owned runner checkpoint | Controller | This checkpoint changes only this Task ledger and is identified by exact unique subject `docs(plan): record reconciled phase-owned runner checkpoint`. It supersedes `ce4111d8`, preserves the accepted adapter pair at `483d3a47`, limits the successor to three paths, and requires a fresh specification and quality/security `C0/I0` Plan pair before the sole Task 4.2U implementation attempt. |
 | 2026-07-30 | T-TSDC-004R-2 reconciled phase-owned Plan final reviews | Fresh independent specification and quality/security reviewers | Both read-only reviews of exact range `483d3a47..5dc49631` returned `C0/I0/M0` and `IMPLEMENTATION_READY YES`; specification returned `SPEC_COMPLIANCE YES` and quality/security returned `QUALITY_SECURITY PASS`. They confirmed the superseded checkpoint history, corrected Task 4.2U branch gate, one outer lifecycle controller, explicit transition state, sole bounded wait, post-reap prohibitions, real proc-root `finally`, meaningful transition witnesses, exact three-path allowlist, adapter and four-file freezes, exact `94/11` discovery, `32/32/35` projections, executable scope oracles, and Wave B block. The sole Task 4.2U implementation attempt is authorized from checkpoint `5dc49631`; no other scope is opened. |
+| 2026-07-30 | T-TSDC-004R-2 phase-owned runner RED | Task 4.2U implementation agent, sole attempt | The authoritative exact five-module RED discovered and ran all 94 tests in 151.560 seconds: 77 passed, 11 planned Wave-C witnesses skipped, six transition subtests failed, and zero errored. All six failures stayed inside the existing runner top-level method and identified the missing phase-owned lifecycle state at bound-process-before-pidfd, pidfd-acquired-before-readiness, finalized-group-before-reap, reap-started-before-wait, wait interruption, and close-started interruption. Production remained unchanged; there was no import, discovery, environment, network, Compose, runtime, or dependency failure. |
+| 2026-07-30 | T-TSDC-004R-2 phase-owned runner implementation | Task 4.2U implementation agent, sole attempt | One outer controller now begins with the preinitialized process and successful `Popen` binding and spans pidfd acquisition, readiness, group finalization, one bounded reap, one pidfd close attempt, and return. A private production lifecycle object owns the process and pidfd and tracks pidfd acquisition, finalization, reap start, and close-attempt state. Before reap, bound failures route by pidfd ownership; after reap starts, only the one independent close attempt is permitted. The sole wait and close helpers mutate state before the operation, ambiguous close is not retried, incomplete cleanup becomes fixed value-free `ci-gate-runner-cleanup`, and proc-root cleanup now uses an actual `finally` while PID/stat descriptor finalizers remain independent. |
+| 2026-07-30 | T-TSDC-004R-2 phase-owned runner GREEN and invariant gates | Task 4.2U implementation agent, sole attempt | Final focused runner/adapter tests pass 28/28 in 3.385 seconds. The final exact five-module GREEN passes `94 = 83 pass + 11 planned Wave-C skip` in 156.093 seconds with zero failure or error. The workflow checker reports exactly 7 workflows, 23 jobs, and eight Actions; execution-free projections remain `32/32/35`. Exact four-file Ruff through the pre-existing uv Ruff environment, exact four-file compileall, advisory delta validation, changed-document metadata `15/0` with five registered legacy exceptions, documentation traceability `46/0`, and diff hygiene pass. The unique `5dc49631` checkpoint-to-working-tree oracle returns exactly the three admitted paths with zero non-ignored untracked paths. The accepted adapter pair remains byte-identical to `483d3a47`; the contract, workflow, manifest, and summary remain byte-identical to `17bb5cdd`. No network, installation, child gate, real Compose, runtime, remote, secret, wrapper, direct pre-commit, or Wave B action ran. Fresh implementation reviews remain required. |
 
 ## Verification Evidence
 
@@ -707,6 +710,60 @@ have no unresolved Critical or Important findings.
   wrapper, direct pre-commit, or Wave B action ran. Fresh specification and
   quality/security C0/I0 implementation reviews remain mandatory.
 
+### T-TSDC-004R-2 phase-owned runner implementation evidence
+
+- The unique reconciled design checkpoint resolves to
+  `5dc496310cbe41f86609c751024a12e984228dd8`. The sole Task 4.2U attempt
+  began from clean approval-evidence commit `8f8a393b`. Its
+  checkpoint-to-working-tree scope is exactly the runner, its existing test,
+  and this Task ledger; no non-ignored untracked path exists.
+- Authoritative RED preserved 94-test discovery and ran in 151.560 seconds:
+  77 passed, six intended transition subtests failed, 11 planned Wave-C tests
+  skipped, and zero errored. The six failures were limited to bound process,
+  acquired pidfd, finalized group, reap start, interrupted wait, and
+  close-started ownership transitions inside the existing runner top-level
+  test. No import, discovery, environment, network, Compose, runtime, or
+  dependency failure occurred.
+- `_ProcessLifecycle` is production state rather than a no-op hook. It owns the
+  bound process and pidfd, derives acquired ownership from the bound
+  descriptor, records successful group finalization, and sets `reap_started`
+  and `pidfd_close_attempted` before their respective operations. Test
+  wrappers call the real transition method, verify its mutation, and only then
+  raise. Ordered traces reject PGID signals, readiness observation, proc scans,
+  or another wait after reap starts.
+- `_run_verified_child` has one outer `BaseException` controller beginning
+  with a preinitialized process reference and the successful `Popen` binding.
+  Before reap, it selects no-pidfd or pidfd-owned recovery from lifecycle
+  state. The single `_bounded_reap` source site performs the only
+  grace-bounded wait; the single `_close_pidfd_once` source site marks close
+  attempted first and never retries an interrupted or ambiguous close.
+  Incomplete reap or close has fixed value-free runner-cleanup precedence.
+  Proc-root cleanup is an actual `finally`; PID-directory and stat descriptors
+  retain independent `finally` close attempts.
+- Final focused runner/adapter GREEN is 28/28 in 3.385 seconds. Final
+  authoritative GREEN is `94 = 83 pass + 11 planned Wave-C skip` in 156.093
+  seconds with zero failure or error. Workflow inventory is exactly
+  `7/23/8`, and execution-free profile projections are exactly `32/32/35`.
+  Exact four-file Ruff through the pre-existing uv Ruff 0.15.12 environment,
+  compileall, advisory delta validation, changed metadata `15/0` with five
+  registered legacy exceptions, traceability `46/0`, and diff hygiene pass.
+- The accepted adapter pair remains byte-identical to `483d3a47` at SHA-256
+  `a634b60eb179fef833f4a80703dc76f285748e4225ef7c008e1be75003f97815`
+  and
+  `cb232266558d4935bf2768efadeb3fc73ebfaa7d70965078a21bfcfd636a4ff8`.
+  The four `17bb5cdd` freezes remain
+  `21dcc9a59b4c7fe087431c647e8d385d64125021dfa583542818a68ed84c9d20`,
+  `18bdc27e634f83edcd57da9f39aafff62ffe3bbd76d820a74c061021ee811756`,
+  `f82b6d7c93ae12d5709e24704b2aad562b5275b56bf7ea3a10c491739da59e87`,
+  and
+  `4030982fcf981b2ee342929fa61804bd0b20a9be5eef0ef3dbe874864354e514`.
+- Graphify `f8a72211` remained stale advisory evidence and was corroborated
+  against the tracked Plan, Spec 135, Stage 00, source, and tests. No network,
+  installation, child gate, real Compose, runtime, remote, secret, controlled
+  wrapper, direct pre-commit, or Wave B action ran. Fresh specification and
+  quality/security C0/I0 implementation reviews and controller-owned review
+  evidence remain mandatory before Wave B.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -765,9 +822,10 @@ consume or create Agent authorization.
 | T-TSDC-004R-2 typed-interruption implementation | Task 4.2T implementation agent, sole attempt | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I1/M0; QUALITY_SECURITY CHANGES_REQUIRED; COMMIT_READY NO | `5cd98c7b..483d3a47` | returned to design; Wave B blocked | The adapter boundary and action-raised runner cleanup pass review, but disjoint source-level lifecycle regions permit control-flow interruption between bound ownership transitions. No manifest verdict is promoted. |
 | T-TSDC-004R-2 phase-owned runner initial checkpoint | Controller / bounded future implementer | C0/I1/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | C0/I0/M1; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `483d3a47..ce4111d8` | superseded; Wave B blocked | The lifecycle design passed, but the `Whole branch` row still named exhausted Task 4.2T as the prerequisite. No implementation authority followed. |
 | T-TSDC-004R-2 reconciled phase-owned runner design | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `483d3a47..5dc49631` | sole implementation attempt authorized; Wave B blocked | Task 4.2U freezes the accepted adapter pair and permits only runner, runner-test, and Task-ledger changes for one outer phase-owning controller with transition-specific witnesses. |
+| T-TSDC-004R-2 phase-owned runner implementation | Task 4.2U implementation agent, sole attempt | pending fresh reviewer | pending different fresh reviewer | starts after `5dc49631`; ends at the exact unique `fix(ci): close runner ownership transitions` commit | implementation complete; Wave B blocked | Local RED/GREEN, workflow, projection, static, documentation, freeze, and scope gates pass. Fresh specification and quality/security `C0/I0` implementation reviews plus controller-owned evidence remain mandatory; no manifest verdict is promoted. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Wave B remains blocked until the reconciled Task 4.2U checkpoint receives fresh Plan approval, its sole runner-only implementation attempt receives fresh specification and quality/security `C0/I0` reviews, and controller-owned review evidence is committed. |
+| Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | The reconciled Task 4.2U Plan approval and sole runner-only implementation are complete. Wave B remains blocked until that implementation receives fresh specification and quality/security `C0/I0` reviews and controller-owned review evidence is committed. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -831,6 +889,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 phase-owned runner gate reconciliation | Align the branch gate with Task 4.2U | `docs(plan): reconcile phase-owned runner gate` | `9281692e` | Replaces the stale Task 4.2T prerequisite while preserving the runner-only allowlist, accepted adapter freeze, lifecycle design, and Wave B block. |
 | T-TSDC-004R-2 reconciled phase-owned runner checkpoint | Freeze the corrected runner-only successor scope | `docs(plan): record reconciled phase-owned runner checkpoint` | resolved by this exact unique subject | The implementation oracle requires one matching commit after the reconciliation and supersedes `ce4111d8` without changing accepted adapter behavior. |
 | T-TSDC-004R-2 reconciled phase-owned Plan review evidence | Record the final C0/I0 Plan approval pair | `docs(task): record reconciled phase-owned plan reviews` | resolved by this exact unique subject | Read-only specification and quality/security reviewers authorize the sole three-path Task 4.2U implementation attempt; Wave B remains blocked. |
+| T-TSDC-004R-2 phase-owned runner implementation | Close all bound-process lifecycle ownership transitions | `fix(ci): close runner ownership transitions` | resolved by this exact unique subject | RED `77/11/6/0`; final GREEN focused `28/28` and full `83/11/0/0`; workflow `7/23/8`; projections `32/32/35`; exact Ruff, compileall, advisory, metadata, traceability, adapter and four-file freezes, three-path scope, zero-untracked, and diff gates pass. Fresh implementation reviews remain required, so Wave B stays blocked. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -839,7 +898,7 @@ finding and must not be silently accepted as independent review evidence.
 | Item | State | Reason | Destination |
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
-| T-TSDC-004R-2 typed gate runner | approved runner-only implementation pending | The 4.2S and 4.2T attempts failed fresh quality/security review. The reconciled Task 4.2U Plan now has a fresh `C0/I0` approval pair, the accepted adapter pair remains frozen, all manifest verdicts remain pending, and Wave B has no authority. | complete the sole bounded Task 4.2U implementation attempt, obtain a fresh implementation C0/I0 pair, then commit controller-owned evidence |
+| T-TSDC-004R-2 typed gate runner | phase-owned implementation complete; reviews pending | The sole Task 4.2U attempt passes local RED/GREEN, freeze, and scope gates. The accepted adapter pair remains frozen, all manifest verdicts remain pending, and Wave B has no authority until fresh implementation reviews and controller-owned evidence pass. | obtain a fresh specification and quality/security C0/I0 implementation pair, then commit controller-owned review evidence |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -857,10 +916,11 @@ first corrected checkpoint was also review-rejected and grants no authority.
 The adopted-root interruption checkpoint received a fresh Plan C0/I0 pair,
 but its sole Task 4.2T implementation attempt failed fresh quality/security
 review on closable runner state transitions. Task 4.2U is a runner-only design
-return that freezes the accepted adapter pair; its reconciled checkpoint has
-received a fresh Plan C0/I0 pair and authorizes one implementation attempt.
-Wave B and Tasks 5–6 remain blocked until that implementation receives a fresh
-implementation C0/I0 pair and controller-owned review evidence is committed.
+return that freezes the accepted adapter pair. Its reconciled checkpoint
+received a fresh Plan C0/I0 pair, and its sole implementation attempt now
+passes local RED/GREEN, freeze, and scope gates. Wave B and Tasks 5–6 remain
+blocked until that implementation receives a fresh implementation C0/I0 pair
+and controller-owned review evidence is committed.
 The original five-round
 implementation blocker, exhausted Revision R1 Plan reviews, and superseded
 `5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
