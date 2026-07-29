@@ -8,10 +8,12 @@ import os
 import pathlib
 import re
 import shutil
+import signal
 import stat
 import subprocess
 import sys
 import tempfile
+import time
 from collections.abc import Mapping
 
 try:
@@ -45,6 +47,22 @@ _SECRET_ENV_SHAPE = re.compile(
     r"(?:SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|API_KEY|PRIVATE_KEY)",
     re.IGNORECASE,
 )
+_ADMITTED_ENV_KEYS = frozenset(
+    {
+        "CI",
+        "EVENT_NAME",
+        "GITHUB_ACTIONS",
+        "GITHUB_STEP_SUMMARY",
+        "HEAD_REF",
+        "HYHOME_COMPOSE_PROFILES",
+        "PR_BASE_SHA",
+        "PR_TITLE",
+        "PUSH_BEFORE_SHA",
+        "SKIP",
+        "TEMPLATE_GATE_BASE",
+    }
+)
+_TERMINATION_GRACE_SECONDS = 0.25
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -159,6 +177,11 @@ def execute_execution_plan(
         root_fd = _open_root(canonical_root)
         verified: list[_VerifiedInvocation] = []
         try:
+            descriptor_root = f"/proc/self/fd/{root_fd}"
+            python_bootstrap = _create_python_bootstrap(
+                home,
+                descriptor_root,
+            )
             for invocation in plan:
                 verified.append(
                     _verify_invocation(
@@ -169,43 +192,20 @@ def execute_execution_plan(
                 )
             for item in verified:
                 child_environment = _child_environment(
-                    canonical_root,
+                    root_fd,
                     home,
                     item.invocation,
                     item.interpreter,
                     environ,
+                    python_bootstrap=python_bootstrap,
                 )
-                try:
-                    result = subprocess.run(
-                        [
-                            f"/proc/self/fd/{item.entrypoint_fd}",
-                            *item.invocation.argv,
-                        ],
-                        cwd=f"/proc/self/fd/{item.cwd_fd}",
-                        env=child_environment,
-                        pass_fds=tuple(
-                            sorted(
-                                {
-                                    root_fd,
-                                    item.cwd_fd,
-                                    item.entrypoint_fd,
-                                }
-                            )
-                        ),
-                        shell=False,
-                        check=False,
-                        timeout=item.invocation.timeout_seconds,
-                    )
-                except subprocess.TimeoutExpired:
-                    return 124
-                except OSError as error:
-                    raise GateContractError(
-                        "ci-gate-child-exec",
-                        item.invocation.gate_id,
-                        "the verified gate could not be executed",
-                    ) from error
-                if result.returncode != 0:
-                    return result.returncode
+                result = _run_verified_child(
+                    root_fd,
+                    item,
+                    child_environment,
+                )
+                if result != 0:
+                    return result
             return 0
         finally:
             for item in verified:
@@ -213,7 +213,14 @@ def execute_execution_plan(
                 _close(item.cwd_fd)
             _close(root_fd)
     finally:
-        shutil.rmtree(home, ignore_errors=True)
+        try:
+            shutil.rmtree(home)
+        except OSError:
+            raise GateContractError(
+                "ci-gate-home-cleanup",
+                "HOME",
+                "the isolated gate home could not be removed",
+            ) from None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -583,12 +590,29 @@ def _descriptor_matches_object(
 
 
 def _child_environment(
-    root: pathlib.Path,
+    root: pathlib.Path | int,
     home: pathlib.Path,
     invocation: GateInvocation,
     interpreter: str,
     environ: Mapping[str, str],
+    *,
+    python_bootstrap: pathlib.Path | None = None,
 ) -> dict[str, str]:
+    for key in invocation.allowed_env_keys:
+        if (
+            _SECRET_ENV_SHAPE.search(key)
+            or key not in _ADMITTED_ENV_KEYS
+        ):
+            raise GateContractError(
+                "ci-gate-environment",
+                invocation.gate_id,
+                "the gate environment key is not admitted",
+            )
+    root_value = (
+        f"/proc/self/fd/{root}"
+        if isinstance(root, int)
+        else str(root)
+    )
     admitted: dict[str, str] = {
         "PATH": environ["PATH"],
         "LANG": "C.UTF-8",
@@ -598,22 +622,127 @@ def _child_environment(
         "PYTHONNOUSERSITE": "1",
         "PYTHONSAFEPATH": "1",
         "PIP_DISABLE_PIP_VERSION_CHECK": "1",
-        "HYHOME_CI_GATE_ROOT": str(root),
+        "HYHOME_CI_GATE_ROOT": root_value,
     }
     if interpreter == "python":
-        admitted["PYTHONPATH"] = os.pathsep.join(
-            (str(root), str(root / "scripts/validation"))
-        )
-    for key in invocation.allowed_env_keys:
-        if _SECRET_ENV_SHAPE.search(key):
+        if python_bootstrap is None:
             raise GateContractError(
-                "ci-gate-environment",
+                "ci-gate-python-bootstrap",
                 invocation.gate_id,
-                "the gate environment key is not admitted",
+                "the isolated Python bootstrap is unavailable",
             )
+        admitted["PYTHONPATH"] = str(python_bootstrap)
+    for key in invocation.allowed_env_keys:
         if key in environ:
             admitted[key] = environ[key]
     return admitted
+
+
+def _create_python_bootstrap(
+    home: pathlib.Path,
+    descriptor_root: str,
+) -> pathlib.Path:
+    directory = home / "python-bootstrap"
+    try:
+        directory.mkdir(mode=0o700)
+        descriptor = os.open(
+            directory / "sitecustomize.py",
+            os.O_WRONLY
+            | os.O_CREAT
+            | os.O_EXCL
+            | os.O_CLOEXEC
+            | os.O_NOFOLLOW,
+            0o600,
+        )
+        try:
+            payload = (
+                "import sys\n"
+                f"sys.path[:0] = [{descriptor_root!r}, "
+                f"{(descriptor_root + '/scripts/validation')!r}]\n"
+            ).encode("utf-8")
+            _write_all(descriptor, payload)
+            os.fsync(descriptor)
+        finally:
+            _close(descriptor)
+    except OSError:
+        raise GateContractError(
+            "ci-gate-python-bootstrap",
+            "python-bootstrap",
+            "the isolated Python bootstrap could not be created",
+        ) from None
+    return directory
+
+
+def _run_verified_child(
+    root_fd: int,
+    item: _VerifiedInvocation,
+    environment: Mapping[str, str],
+) -> int:
+    argv = [
+        f"/proc/self/fd/{item.entrypoint_fd}",
+        *item.invocation.argv,
+    ]
+    try:
+        process = subprocess.Popen(
+            argv,
+            cwd=f"/proc/self/fd/{item.cwd_fd}",
+            env=dict(environment),
+            pass_fds=tuple(
+                sorted(
+                    {
+                        root_fd,
+                        item.cwd_fd,
+                        item.entrypoint_fd,
+                    }
+                )
+            ),
+            shell=False,
+            start_new_session=True,
+        )
+    except OSError:
+        raise GateContractError(
+            "ci-gate-child-exec",
+            item.invocation.gate_id,
+            "the verified gate could not be executed",
+        ) from None
+    try:
+        return int(process.wait(timeout=item.invocation.timeout_seconds))
+    except subprocess.TimeoutExpired:
+        _terminate_process_group(process)
+        return 124
+
+
+def _terminate_process_group(process: subprocess.Popen[bytes]) -> None:
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+    deadline = time.monotonic() + _TERMINATION_GRACE_SECONDS
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            break
+        time.sleep(0.01)
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    try:
+        process.wait(timeout=_TERMINATION_GRACE_SECONDS)
+    except subprocess.TimeoutExpired:
+        raise GateContractError(
+            "ci-gate-child-cleanup",
+            "process-group",
+            "the timed-out gate process group could not be reaped",
+        ) from None
+
+
+def _write_all(descriptor: int, payload: bytes) -> None:
+    view = memoryview(payload)
+    while view:
+        written = os.write(descriptor, view)
+        if written <= 0:
+            raise OSError(errno.EIO, "short write")
+        view = view[written:]
 
 
 def _close(descriptor: int) -> None:

@@ -5,8 +5,11 @@ import io
 import json
 import os
 import pathlib
+import shutil
+import signal
 import subprocess
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -318,7 +321,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
 
 class DescriptorExecutionTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.temporary = tempfile.TemporaryDirectory()
+        self.temporary = tempfile.TemporaryDirectory(dir="/tmp")
         self.root = pathlib.Path(self.temporary.name).resolve()
         REAL_SUBPROCESS_RUN(
             ["git", "init", "-q"],
@@ -347,18 +350,35 @@ class DescriptorExecutionTests(unittest.TestCase):
                 cwd=self.root,
                 check=True,
             )
+            if mode & 0o111:
+                REAL_SUBPROCESS_RUN(
+                    [
+                        "git",
+                        "update-index",
+                        "--chmod=+x",
+                        "--",
+                        relative,
+                    ],
+                    cwd=self.root,
+                    check=True,
+                )
         return path
 
     def child_interceptor(self, captures: list[dict[str, object]]):
         def intercept(
-            argv: list[str],
-            *args: object,
-            **kwargs: object,
-        ) -> subprocess.CompletedProcess[bytes]:
-            if argv[0] == "git":
-                return REAL_SUBPROCESS_RUN(argv, *args, **kwargs)
-            captures.append({"argv": argv, **kwargs})
-            return subprocess.CompletedProcess(argv, 0, b"", b"")
+            root_fd: int,
+            item: runner._VerifiedInvocation,
+            environment: dict[str, str],
+        ) -> int:
+            captures.append(
+                {
+                    "root_fd": root_fd,
+                    "item": item,
+                    "env": environment,
+                    "shell": False,
+                }
+            )
+            return 0
 
         return intercept
 
@@ -367,8 +387,8 @@ class DescriptorExecutionTests(unittest.TestCase):
         self.add_entrypoint("scripts/validation/two.py")
         captures: list[dict[str, object]] = []
         with mock.patch.object(
-            runner.subprocess,
-            "run",
+            runner,
+            "_run_verified_child",
             side_effect=self.child_interceptor(captures),
         ):
             result = runner.execute_execution_plan(
@@ -399,7 +419,10 @@ class DescriptorExecutionTests(unittest.TestCase):
         )
         for environment in environments:
             self.assertEqual("C.UTF-8", environment["LANG"])  # type: ignore[index]
-            self.assertEqual(str(self.root), environment["HYHOME_CI_GATE_ROOT"])  # type: ignore[index]
+            self.assertRegex(
+                environment["HYHOME_CI_GATE_ROOT"],  # type: ignore[index]
+                r"\A/proc/self/fd/[0-9]+\Z",
+            )
             self.assertNotIn("GIT_DIR", environment)
             self.assertNotIn("GIT_CONFIG", environment)
             self.assertNotIn("NODE_OPTIONS", environment)
@@ -411,26 +434,29 @@ class DescriptorExecutionTests(unittest.TestCase):
         self.assertTrue(all(capture["shell"] is False for capture in captures))
         self.assertTrue(
             all(
-                str(capture["argv"][0]).startswith("/proc/self/fd/")  # type: ignore[index]
+                capture["item"].entrypoint_fd >= 0  # type: ignore[union-attr]
                 for capture in captures
             )
         )
+        self._assert_runner_rejects_immutable_and_dangerous_allowed_env_keys()
 
     def test_timeout_returns_124_and_home_is_cleaned(self) -> None:
         self.add_entrypoint("scripts/validation/timeout.py")
         homes: list[pathlib.Path] = []
 
         def intercept(
-            argv: list[str],
-            *args: object,
-            **kwargs: object,
-        ) -> subprocess.CompletedProcess[bytes]:
-            if argv[0] == "git":
-                return REAL_SUBPROCESS_RUN(argv, *args, **kwargs)
-            homes.append(pathlib.Path(kwargs["env"]["HOME"]))  # type: ignore[index]
-            raise subprocess.TimeoutExpired(argv, kwargs["timeout"])
+            _root_fd: int,
+            _item: runner._VerifiedInvocation,
+            environment: dict[str, str],
+        ) -> int:
+            homes.append(pathlib.Path(environment["HOME"]))
+            return 124
 
-        with mock.patch.object(runner.subprocess, "run", side_effect=intercept):
+        with mock.patch.object(
+            runner,
+            "_run_verified_child",
+            side_effect=intercept,
+        ):
             self.assertEqual(
                 124,
                 runner.execute_execution_plan(
@@ -441,6 +467,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             )
         self.assertEqual(1, len(homes))
         self.assertFalse(homes[0].exists())
+        self._assert_timeout_terminates_child_and_grandchild_process_group()
 
     def test_executor_exception_always_cleans_home(self) -> None:
         created = self.root / "executor-home"
@@ -462,6 +489,7 @@ class DescriptorExecutionTests(unittest.TestCase):
                 ),
             )
         self.assertFalse(created.exists())
+        self._assert_home_cleanup_failure_is_value_free_and_not_silent()
 
     def test_symlink_untracked_mode_shebang_regular_and_cwd_fail_closed(
         self,
@@ -548,18 +576,19 @@ class DescriptorExecutionTests(unittest.TestCase):
         observed: list[bytes] = []
 
         def intercept(
-            argv: list[str],
-            *args: object,
-            **kwargs: object,
-        ) -> subprocess.CompletedProcess[bytes]:
-            if argv[0] == "git":
-                return REAL_SUBPROCESS_RUN(argv, *args, **kwargs)
+            _root_fd: int,
+            item: runner._VerifiedInvocation,
+            _environment: dict[str, str],
+        ) -> int:
             os.replace(replacement, path)
-            descriptor = int(argv[0].rsplit("/", 1)[1])
-            observed.append(os.pread(descriptor, 4096, 0))
-            return subprocess.CompletedProcess(argv, 0, b"", b"")
+            observed.append(os.pread(item.entrypoint_fd, 4096, 0))
+            return 0
 
-        with mock.patch.object(runner.subprocess, "run", side_effect=intercept):
+        with mock.patch.object(
+            runner,
+            "_run_verified_child",
+            side_effect=intercept,
+        ):
             self.assertEqual(
                 0,
                 runner.execute_execution_plan(
@@ -570,6 +599,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             )
         self.assertIn(b"original inode", observed[0])
         self.assertNotIn(b"replacement inode", observed[0])
+        self._assert_descriptor_root_survives_path_replacement()
 
     def test_descriptor_mode_preserves_root_and_python_sibling_imports(
         self,
@@ -620,6 +650,216 @@ class DescriptorExecutionTests(unittest.TestCase):
                 },
             ),
         )
+        self._assert_python_startup_ignores_untracked_sitecustomize()
+
+    def _assert_descriptor_root_survives_path_replacement(self) -> None:
+        marker = self.root / "root-marker"
+        marker.write_text("original", encoding="utf-8")
+        self.add_entrypoint(
+            "scripts/validation/root-bound.py",
+            (
+                "#!/usr/bin/env python3\n"
+                "import os\n"
+                "from pathlib import Path\n"
+                "root = Path(os.environ['HYHOME_CI_GATE_ROOT'])\n"
+                "raise SystemExit("
+                "0 if (root / 'root-marker').read_text() == 'original' else 9"
+                ")\n"
+            ),
+        )
+        original_root = self.root.with_name(f"{self.root.name}-original")
+        real_verify = runner._verify_invocation
+        replaced = False
+
+        def replace_after_verify(*args: object, **kwargs: object):
+            nonlocal replaced
+            verified = real_verify(*args, **kwargs)
+            if not replaced:
+                self.root.rename(original_root)
+                self.root.mkdir()
+                replaced = True
+            return verified
+
+        with mock.patch.object(
+            runner,
+            "_verify_invocation",
+            side_effect=replace_after_verify,
+        ):
+            try:
+                self.assertEqual(
+                    0,
+                    runner.execute_execution_plan(
+                        self.root,
+                        (
+                            _invocation(
+                                "leaf.root-bound",
+                                "scripts/validation/root-bound.py",
+                            ),
+                        ),
+                        {"PATH": os.environ.get("PATH", os.defpath)},
+                    ),
+                )
+            finally:
+                if replaced:
+                    shutil.rmtree(self.root)
+                    original_root.rename(self.root)
+
+    def _assert_python_startup_ignores_untracked_sitecustomize(self) -> None:
+        injected = self.root / "sitecustomize-ran"
+        (self.root / "sitecustomize.py").write_text(
+            (
+                "from pathlib import Path\n"
+                f"Path({str(injected)!r}).write_text('injected')\n"
+            ),
+            encoding="utf-8",
+        )
+        self.add_entrypoint(
+            "scripts/validation/isolation.py",
+            "#!/usr/bin/env python3\nraise SystemExit(0)\n",
+        )
+        self.assertEqual(
+            0,
+            runner.execute_execution_plan(
+                self.root,
+                (
+                    _invocation(
+                        "leaf.isolation",
+                        "scripts/validation/isolation.py",
+                    ),
+                ),
+                {"PATH": os.environ.get("PATH", os.defpath)},
+            ),
+        )
+        self.assertFalse(injected.exists())
+
+    def _assert_timeout_terminates_child_and_grandchild_process_group(
+        self,
+    ) -> None:
+        prefix = self.root / "timeout-tree"
+        child_source = (
+            "import pathlib,signal,subprocess,sys,time\n"
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+            "grand=subprocess.Popen([sys.executable,'-c',"
+            "'import signal,time; signal.signal(signal.SIGTERM, "
+            "signal.SIG_IGN); time.sleep(60)'])\n"
+            "pathlib.Path(sys.argv[1]+'.grandchild').write_text(str(grand.pid))\n"
+            "time.sleep(60)\n"
+        )
+        entrypoint = (
+            "#!/usr/bin/env python3\n"
+            "import pathlib,subprocess,sys,time\n"
+            f"source={child_source!r}\n"
+            "child=subprocess.Popen([sys.executable,'-c',source,sys.argv[1]])\n"
+            "pathlib.Path(sys.argv[1]+'.child').write_text(str(child.pid))\n"
+            "while not pathlib.Path(sys.argv[1]+'.grandchild').exists():\n"
+            "    time.sleep(0.01)\n"
+            "time.sleep(60)\n"
+        )
+        self.add_entrypoint("scripts/validation/tree.py", entrypoint)
+        invocation = dataclasses.replace(
+            _invocation("leaf.tree", "scripts/validation/tree.py"),
+            argv=(str(prefix),),
+            timeout_seconds=1,
+        )
+        pid_paths = (
+            pathlib.Path(f"{prefix}.child"),
+            pathlib.Path(f"{prefix}.grandchild"),
+        )
+        pids: list[int] = []
+        try:
+            self.assertEqual(
+                124,
+                runner.execute_execution_plan(
+                    self.root,
+                    (invocation,),
+                    {"PATH": os.environ.get("PATH", os.defpath)},
+                ),
+            )
+            pids = [int(path.read_text()) for path in pid_paths]
+            time.sleep(0.1)
+            for pid in pids:
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(pid, 0)
+        finally:
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+
+    def _assert_runner_rejects_immutable_and_dangerous_allowed_env_keys(
+        self,
+    ) -> None:
+        dangerous = (
+            "HOME",
+            "PATH",
+            "LANG",
+            "LC_ALL",
+            "TMPDIR",
+            "PYTHONPATH",
+            "PYTHONSTARTUP",
+            "HYHOME_CI_GATE_ROOT",
+            "BASH_ENV",
+            "ENV",
+            "NODE_OPTIONS",
+            "CDPATH",
+            "IFS",
+            "SHELLOPTS",
+            "GLOBIGNORE",
+            "GIT_DIR",
+            "GITHUB_TOKEN",
+        )
+        for key in dangerous:
+            with self.subTest(key=key):
+                with self.assertRaises(contract.GateContractError) as caught:
+                    runner._child_environment(
+                        self.root,
+                        self.root / "home",
+                        _invocation(
+                            "leaf.env",
+                            "scripts/validation/env.py",
+                            allowed_env_keys=(key,),
+                        ),
+                        "python",
+                        {"PATH": "/usr/bin", key: "hostile"},
+                    )
+                self.assertEqual("ci-gate-environment", caught.exception.code)
+
+    def _assert_home_cleanup_failure_is_value_free_and_not_silent(self) -> None:
+        home = self.root / "cleanup-home"
+
+        def create_home(*_args: object, **_kwargs: object) -> str:
+            home.mkdir()
+            return str(home)
+
+        try:
+            with (
+                mock.patch.object(
+                    runner.tempfile,
+                    "mkdtemp",
+                    side_effect=create_home,
+                ),
+                mock.patch.object(
+                    runner.shutil,
+                    "rmtree",
+                    side_effect=PermissionError("private cleanup path"),
+                ),
+                self.assertRaises(contract.GateContractError) as caught,
+            ):
+                runner.execute_execution_plan(
+                    self.root,
+                    (),
+                    {"PATH": "/usr/bin"},
+                    executor=lambda _invocation: 0,
+                )
+            self.assertEqual(
+                "ci-gate-home-cleanup",
+                caught.exception.code,
+            )
+            self.assertNotIn("private cleanup path", str(caught.exception))
+        finally:
+            if home.exists():
+                shutil.rmtree(home)
 
 
 if __name__ == "__main__":

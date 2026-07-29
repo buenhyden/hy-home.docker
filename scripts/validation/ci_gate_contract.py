@@ -267,6 +267,21 @@ _SECRET_ENV_SHAPE = re.compile(
     re.IGNORECASE,
 )
 _ENV_KEY = re.compile(r"[A-Z_][A-Z0-9_]*\Z")
+_ADMITTED_ENV_KEYS = frozenset(
+    {
+        "CI",
+        "EVENT_NAME",
+        "GITHUB_ACTIONS",
+        "GITHUB_STEP_SUMMARY",
+        "HEAD_REF",
+        "HYHOME_COMPOSE_PROFILES",
+        "PR_BASE_SHA",
+        "PR_TITLE",
+        "PUSH_BEFORE_SHA",
+        "SKIP",
+        "TEMPLATE_GATE_BASE",
+    }
+)
 _IDENTIFIER = re.compile(r"[a-z0-9]+(?:[.-][a-z0-9]+)*\Z")
 
 
@@ -939,7 +954,12 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
     if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 60:
         raise GateContractError("ci-gate-timeout", path, "the timeout is invalid")
     env_keys = _strings(record["allowed_env_keys"], "ci-gate-env", path)
-    if any(not _ENV_KEY.fullmatch(key) or _SECRET_ENV_SHAPE.search(key) for key in env_keys):
+    if any(
+        not _ENV_KEY.fullmatch(key)
+        or _SECRET_ENV_SHAPE.search(key)
+        or key not in _ADMITTED_ENV_KEYS
+        for key in env_keys
+    ):
         raise GateContractError("ci-gate-env", path, "an environment key is not admitted")
     suite_key = _string(record["suite_key"], "ci-gate-suite-key", path) if kind is GateKind.LEAF else None
     if suite_key is not None and gate_id != f"leaf.{suite_key}":

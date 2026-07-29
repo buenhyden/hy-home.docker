@@ -8,6 +8,8 @@ import re
 import stat
 import subprocess
 import sys
+import threading
+import time
 from collections.abc import Mapping
 
 
@@ -33,11 +35,14 @@ _NPM_PREFIX = ("--prefix", "projects/storybook/nextjs")
 _NPM_SCRIPTS = {"lint", "typecheck", "build", "build-storybook", "coverage"}
 _UNITTEST_MODULE = re.compile(r"tests\.validation\.[A-Za-z0-9_.]+\Z")
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
+_GIT_OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 _SECRET_ENV_SHAPE = re.compile(
     r"(?:SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|API_KEY|PRIVATE_KEY)",
     re.IGNORECASE,
 )
 _MAX_CAPTURE_BYTES = 1024 * 1024
+_PROC_FD_ROOT = re.compile(r"/proc/self/fd/([0-9]+)\Z")
+_CHILD_TERMINATION_SECONDS = 0.25
 
 
 class AdapterError(ValueError):
@@ -178,22 +183,158 @@ def _run_child(
     capture_output: bool = False,
     stdout: int | None = None,
 ) -> subprocess.CompletedProcess[bytes]:
+    pass_fds = _root_pass_fds(root)
+    if not capture_output and stdout is None:
+        try:
+            return subprocess.run(
+                list(argv),
+                cwd=root,
+                env=dict(environ),
+                shell=False,
+                check=False,
+                pass_fds=pass_fds,
+            )
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-child-exec",
+                "the child process is unavailable",
+            ) from None
     keyword_arguments: dict[str, object] = {
         "cwd": root,
         "env": dict(environ),
         "shell": False,
-        "check": False,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.PIPE,
+        "pass_fds": pass_fds,
     }
-    if stdout is not None:
-        keyword_arguments["stdout"] = stdout
-        keyword_arguments["stderr"] = subprocess.PIPE
-    elif capture_output:
-        keyword_arguments["capture_output"] = True
-    return subprocess.run(list(argv), **keyword_arguments)  # type: ignore[arg-type]
+    try:
+        process = subprocess.Popen(  # type: ignore[arg-type]
+            list(argv),
+            **keyword_arguments,
+        )
+    except OSError:
+        raise AdapterError(
+            "ci-gate-adapter-child-exec",
+            "the child process is unavailable",
+        ) from None
+    streams = {
+        "stdout": process.stdout,
+        "stderr": process.stderr,
+    }
+    captured = {"stdout": bytearray(), "stderr": bytearray()}
+    overflow = threading.Event()
+    read_error = threading.Event()
+
+    def drain(name: str) -> None:
+        stream = streams[name]
+        if stream is None:
+            return
+        try:
+            while True:
+                chunk = os.read(stream.fileno(), 65536)
+                if not chunk:
+                    return
+                if len(captured[name]) + len(chunk) > _MAX_CAPTURE_BYTES:
+                    overflow.set()
+                    return
+                captured[name].extend(chunk)
+        except OSError:
+            read_error.set()
+
+    readers = tuple(
+        threading.Thread(
+            target=drain,
+            args=(name,),
+            daemon=True,
+        )
+        for name in streams
+    )
+    try:
+        for reader in readers:
+            reader.start()
+        while process.poll() is None:
+            if overflow.is_set() or read_error.is_set():
+                _terminate_child(process)
+                break
+            time.sleep(0.01)
+        for reader in readers:
+            reader.join(timeout=_CHILD_TERMINATION_SECONDS)
+        if any(reader.is_alive() for reader in readers):
+            _terminate_child(process)
+            raise AdapterError(
+                "ci-gate-adapter-output",
+                "the adapter output is invalid",
+            )
+        if overflow.is_set():
+            raise AdapterError(
+                "ci-gate-adapter-output",
+                "the adapter output is invalid",
+            )
+        if read_error.is_set():
+            raise AdapterError(
+                "ci-gate-adapter-child-exec",
+                "the child process is unavailable",
+            )
+        returncode = process.wait()
+        stdout_payload = bytes(captured["stdout"])
+        stderr_payload = bytes(captured["stderr"])
+        if stdout is not None:
+            try:
+                _write_all(stdout, stdout_payload)
+            except OSError:
+                raise AdapterError(
+                    "ci-gate-adapter-output",
+                    "the adapter output is unavailable",
+                ) from None
+        return subprocess.CompletedProcess(
+            argv,
+            returncode,
+            stdout_payload,
+            stderr_payload,
+        )
+    except OSError:
+        _terminate_child(process)
+        raise AdapterError(
+            "ci-gate-adapter-child-exec",
+            "the child process is unavailable",
+        ) from None
+    finally:
+        for stream in streams.values():
+            if stream is not None:
+                stream.close()
+
+
+def _terminate_child(process: subprocess.Popen[bytes]) -> None:
+    if process.poll() is not None:
+        return
+    try:
+        process.terminate()
+    except ProcessLookupError:
+        return
+    try:
+        process.wait(timeout=_CHILD_TERMINATION_SECONDS)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait()
 
 
 def _canonical_root(root: pathlib.Path) -> pathlib.Path:
     candidate = pathlib.Path(root)
+    match = _PROC_FD_ROOT.fullmatch(candidate.as_posix())
+    if match is not None:
+        try:
+            metadata = os.fstat(int(match.group(1)))
+        except (OSError, ValueError):
+            raise AdapterError(
+                "ci-gate-adapter-root",
+                "the repository root descriptor is unavailable",
+            ) from None
+        if not stat.S_ISDIR(metadata.st_mode):
+            raise AdapterError(
+                "ci-gate-adapter-root",
+                "the repository root descriptor is invalid",
+            )
+        return candidate
     try:
         resolved = candidate.resolve(strict=True)
     except OSError:
@@ -212,6 +353,26 @@ def _canonical_root(root: pathlib.Path) -> pathlib.Path:
             "the repository root must be canonical",
         )
     return candidate
+
+
+def _root_pass_fds(root: pathlib.Path) -> tuple[int, ...]:
+    match = _PROC_FD_ROOT.fullmatch(pathlib.Path(root).as_posix())
+    if match is None:
+        return ()
+    descriptor = int(match.group(1))
+    try:
+        metadata = os.fstat(descriptor)
+    except OSError:
+        raise AdapterError(
+            "ci-gate-adapter-root",
+            "the repository root descriptor is unavailable",
+        ) from None
+    if not stat.S_ISDIR(metadata.st_mode):
+        raise AdapterError(
+            "ci-gate-adapter-root",
+            "the repository root descriptor is invalid",
+        )
+    return (descriptor,)
 
 
 def _validate_environment(environ: Mapping[str, str]) -> None:
@@ -376,7 +537,13 @@ def _publish_qa_recommendations(
             + output.rstrip(b"\n")
             + b"\n```\n"
         )
-        os.write(descriptor, body)
+        try:
+            _write_all(descriptor, body)
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-summary",
+                "the summary output is unavailable",
+            ) from None
         return 0
     finally:
         os.close(descriptor)
@@ -473,7 +640,14 @@ def _run_agent_output_eval(
             "ci-gate-adapter-eval-output",
             "the eval output markers are incomplete",
         )
-    sys.stdout.write(output.decode("utf-8", errors="strict"))
+    try:
+        rendered = output.decode("utf-8", errors="strict")
+    except UnicodeDecodeError:
+        raise AdapterError(
+            "ci-gate-adapter-eval-output",
+            "the eval output markers are incomplete",
+        ) from None
+    sys.stdout.write(rendered)
     return 0
 
 
@@ -530,12 +704,57 @@ def _prepare_compose_env(
                 "ci-gate-adapter-compose-source",
                 "the compose example source is invalid",
             ) from None
-        if not stat.S_ISREG(os.fstat(source_fd).st_mode):
+        source_metadata = os.fstat(source_fd)
+        if (
+            not stat.S_ISREG(source_metadata.st_mode)
+            or source_metadata.st_size > _MAX_CAPTURE_BYTES
+        ):
             raise AdapterError(
                 "ci-gate-adapter-compose-source",
                 "the compose example source is invalid",
             )
-        if not _tracked_regular_source(root, environ):
+        provenance = _tracked_regular_source(root, environ)
+        if provenance is None:
+            raise AdapterError(
+                "ci-gate-adapter-compose-source",
+                "the compose example source is invalid",
+            )
+        try:
+            current_metadata = os.stat(
+                ".env.example",
+                dir_fd=root_fd,
+                follow_symlinks=False,
+            )
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-compose-source",
+                "the compose example source is invalid",
+            ) from None
+        if (
+            current_metadata.st_dev != source_metadata.st_dev
+            or current_metadata.st_ino != source_metadata.st_ino
+        ):
+            raise AdapterError(
+                "ci-gate-adapter-compose-source",
+                "the compose example source is invalid",
+            )
+        try:
+            payload = _read_bounded(source_fd)
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-compose-source",
+                "the compose example source is invalid",
+            ) from None
+        tracked_blob = _run_child(
+            ("git", "cat-file", "blob", provenance),
+            root=root,
+            environ=_git_environment(environ),
+            capture_output=True,
+        )
+        if (
+            tracked_blob.returncode != 0
+            or tracked_blob.stdout != payload
+        ):
             raise AdapterError(
                 "ci-gate-adapter-compose-source",
                 "the compose example source is invalid",
@@ -562,21 +781,23 @@ def _prepare_compose_env(
                 "ci-gate-adapter-compose-output",
                 "the compose environment destination is unavailable",
             ) from None
-        while True:
-            chunk = os.read(source_fd, 65536)
-            if not chunk:
-                break
-            view = memoryview(chunk)
-            while view:
-                written = os.write(destination_fd, view)
-                view = view[written:]
-        os.fsync(destination_fd)
+        try:
+            _write_all(destination_fd, payload)
+            os.fsync(destination_fd)
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-compose-output",
+                "the compose environment destination is unavailable",
+            ) from None
     except BaseException:
         if created:
             try:
                 os.unlink(".env", dir_fd=root_fd)
             except OSError:
-                pass
+                raise AdapterError(
+                    "ci-gate-adapter-compose-output",
+                    "the partial compose environment could not be removed",
+                ) from None
         raise
     finally:
         for descriptor in (destination_fd, source_fd, root_fd):
@@ -590,7 +811,7 @@ def _prepare_compose_env(
 def _tracked_regular_source(
     root: pathlib.Path,
     environ: Mapping[str, str],
-) -> bool:
+) -> str | None:
     result = _run_child(
         (
             "git",
@@ -607,16 +828,23 @@ def _tracked_regular_source(
         capture_output=True,
     )
     if result.returncode != 0:
-        return False
+        return None
     records = (result.stdout or b"").rstrip(b"\0").split(b"\0")
     if len(records) != 1:
-        return False
+        return None
     try:
         metadata, path = records[0].split(b"\t", 1)
-        mode, _object_id, stage = metadata.decode("ascii").split(" ")
+        mode, object_id, stage = metadata.decode("ascii").split(" ")
     except (UnicodeDecodeError, ValueError):
-        return False
-    return mode in {"100644", "100755"} and stage == "0" and path == b".env.example"
+        return None
+    if (
+        mode not in {"100644", "100755"}
+        or stage != "0"
+        or path != b".env.example"
+        or _GIT_OBJECT_ID.fullmatch(object_id) is None
+    ):
+        return None
+    return object_id
 
 
 def _run_zizmor_sarif(
@@ -626,6 +854,7 @@ def _run_zizmor_sarif(
     root_fd = _open_root(root)
     output_fd = -1
     created = False
+    succeeded = False
     try:
         try:
             output_fd = os.open(
@@ -659,18 +888,27 @@ def _run_zizmor_sarif(
             environ=environ,
             stdout=output_fd,
         )
-        if result.returncode != 0:
-            os.close(output_fd)
-            output_fd = -1
-            os.unlink("results.sarif", dir_fd=root_fd)
-            created = False
+        succeeded = result.returncode == 0
         return int(result.returncode)
+    except AdapterError:
+        raise
+    except OSError:
+        raise AdapterError(
+            "ci-gate-adapter-sarif-output",
+            "the SARIF output is unavailable",
+        ) from None
     finally:
         if output_fd >= 0:
             os.close(output_fd)
+        if created and not succeeded:
+            try:
+                os.unlink("results.sarif", dir_fd=root_fd)
+            except OSError:
+                raise AdapterError(
+                    "ci-gate-adapter-sarif-output",
+                    "the partial SARIF output could not be removed",
+                ) from None
         os.close(root_fd)
-        if created:
-            pass
 
 
 def _open_root(root: pathlib.Path) -> int:
@@ -684,6 +922,27 @@ def _open_root(root: pathlib.Path) -> int:
             "ci-gate-adapter-root",
             "the repository root could not be opened",
         ) from None
+
+
+def _read_bounded(descriptor: int) -> bytes:
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    result = bytearray()
+    while True:
+        chunk = os.read(descriptor, 65536)
+        if not chunk:
+            return bytes(result)
+        result.extend(chunk)
+        if len(result) > _MAX_CAPTURE_BYTES:
+            raise OSError(errno.EFBIG, "input too large")
+
+
+def _write_all(descriptor: int, payload: bytes) -> None:
+    view = memoryview(payload)
+    while view:
+        written = os.write(descriptor, view)
+        if written <= 0:
+            raise OSError(errno.EIO, "short write")
+        view = view[written:]
 
 
 if __name__ == "__main__":

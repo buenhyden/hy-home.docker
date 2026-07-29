@@ -1262,6 +1262,8 @@ class RepositoryManifestTests(unittest.TestCase):
         task4_owners = {path: path for path in TASK4_UPDATE_PATHS}
         task4_consumers = {
             ".github/workflow-contract.yml": (
+                "scripts/validation/ci_gate_contract.py",
+                "scripts/validation/ci_gate_runner.py",
                 "scripts/validation/github_workflow_contract.py",
             ),
             "scripts/requirements-pre-commit.txt": (
@@ -1322,7 +1324,11 @@ class RepositoryManifestTests(unittest.TestCase):
                     rows[path].tests,
                 )
         self.assertEqual(
-            ("tests/validation/test_ci_gate_contract.py",),
+            (
+                "scripts/validation/ci_gate_runner.py",
+                "scripts/validation/github_workflow_contract.py",
+                "tests/validation/test_ci_gate_contract.py",
+            ),
             rows[
                 "scripts/validation/ci_gate_contract.py"
             ].direct_consumers,
@@ -1509,9 +1515,20 @@ class RepositoryManifestTests(unittest.TestCase):
                 artifact,
                 pathlib.PurePosixPath(consumer).parent.as_posix(),
             ).replace(os.sep, "/")
+            module = (
+                artifact[:-3].replace("/", ".")
+                if artifact.endswith(".py")
+                else ""
+            )
             return any(
                 token in consumer_text
-                for token in (artifact, relative, f"./{relative}")
+                for token in (
+                    artifact,
+                    relative,
+                    f"./{relative}",
+                    module,
+                )
+                if token
             )
 
         for row in document.entries:

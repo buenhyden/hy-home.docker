@@ -576,6 +576,8 @@ class CiGateContractTests(unittest.TestCase):
                     expected_code,
                     caught.exception.code,
                 )
+        self._assert_rejects_immutable_or_dangerous_execution_environment_keys()
+        self._assert_canonical_registry_uses_exact_safe_environment_key_catalog()
 
     def test_gate_graph_rejects_cycles_missing_children_and_orphans(self) -> None:
         for mutation, expected_code in (
@@ -1058,6 +1060,89 @@ class CiGateContractTests(unittest.TestCase):
             with self.assertRaises(contract.GateContractError) as caught:
                 contract.load_contract_document(real_root)
             self.assertEqual("ci-gate-input-non-utf8", caught.exception.code)
+
+    def _assert_rejects_immutable_or_dangerous_execution_environment_keys(
+        self,
+    ) -> None:
+        valid_leaf = {
+            "gate_id": "leaf.safe",
+            "kind": "leaf",
+            "suite_key": "safe",
+            "entrypoint": "scripts/check.py",
+            "argv": [],
+            "cwd": ".",
+            "allowed_env_keys": [],
+            "timeout_minutes": 10,
+            "profiles": ["ci"],
+            "opaque": True,
+        }
+        dangerous = (
+            "HOME",
+            "PATH",
+            "LANG",
+            "LC_ALL",
+            "TMPDIR",
+            "PYTHONPATH",
+            "PYTHONSTARTUP",
+            "HYHOME_CI_GATE_ROOT",
+            "BASH_ENV",
+            "ENV",
+            "NODE_OPTIONS",
+            "CDPATH",
+            "IFS",
+            "SHELLOPTS",
+            "GLOBIGNORE",
+            "GIT_DIR",
+            "GIT_CONFIG_COUNT",
+        )
+        for key in dangerous:
+            with self.subTest(key=key):
+                document: dict[str, object] = {
+                    "schema_version": 2,
+                    "gate_nodes": [
+                        {
+                            **valid_leaf,
+                            "allowed_env_keys": [key],
+                        }
+                    ],
+                    "job_roots": [],
+                    "profile_roots": [],
+                }
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.parse_gate_registry(
+                        document,
+                        ".github/workflow-contract.yml",
+                    )
+                self.assertEqual("ci-gate-env", caught.exception.code)
+
+    def _assert_canonical_registry_uses_exact_safe_environment_key_catalog(
+        self,
+    ) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document,
+            ".github/workflow-contract.yml",
+        )
+        self.assertEqual(
+            {
+                "CI",
+                "EVENT_NAME",
+                "GITHUB_ACTIONS",
+                "GITHUB_STEP_SUMMARY",
+                "HEAD_REF",
+                "HYHOME_COMPOSE_PROFILES",
+                "PR_BASE_SHA",
+                "PR_TITLE",
+                "PUSH_BEFORE_SHA",
+                "SKIP",
+                "TEMPLATE_GATE_BASE",
+            },
+            {
+                key
+                for node in registry.nodes
+                for key in node.allowed_env_keys
+            },
+        )
 
 
 if __name__ == "__main__":

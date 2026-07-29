@@ -62,6 +62,8 @@ entries:
   disposition: update
   canonical_owner: .github/workflow-contract.yml
   direct_consumers:
+  - scripts/validation/ci_gate_contract.py
+  - scripts/validation/ci_gate_runner.py
   - scripts/validation/github_workflow_contract.py
   finding: Converted the canonical workflow contract to deterministic strict-JSON schema v2 with exact workflow metadata, one typed gate registry, three local profiles, required-job roots, and full-SHA Action evidence.
   replacement: null
@@ -1934,6 +1936,8 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/ci_gate_contract.py
   direct_consumers:
+  - scripts/validation/ci_gate_runner.py
+  - scripts/validation/github_workflow_contract.py
   - tests/validation/test_ci_gate_contract.py
   finding: Added the dependency-free strict JSON schema-v2 typed gate parser, graph validator, suite and root ownership contract, and ordered profile expansion.
   replacement: null

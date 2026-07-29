@@ -4,6 +4,7 @@ import io
 import os
 import pathlib
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -146,6 +147,7 @@ class CiGateAdapterTests(unittest.TestCase):
             [("git", "diff", "--check")],
             [call[0] for call in recorder.calls],
         )
+        self._assert_descriptor_root_is_passed_to_adapter_children()
 
     def test_check_shell_syntax_uses_nul_tracked_paths_and_one_bash_call(
         self,
@@ -219,6 +221,9 @@ class CiGateAdapterTests(unittest.TestCase):
             ),
             recorder.calls[0][0],
         )
+        self._assert_run_child_bounds_stdout_and_stderr_before_returning()
+        self._assert_run_child_normalizes_spawn_error_without_payload()
+        self._assert_eval_invalid_utf8_is_normalized()
 
     def test_run_agent_output_eval_checks_markers_and_emits_output_once(
         self,
@@ -348,6 +353,9 @@ class CiGateAdapterTests(unittest.TestCase):
             caught.exception.code,
         )
         self.assertEqual(b"EXISTING_PRIVATE_BYTES\n", destination.read_bytes())
+        self._assert_prepare_compose_env_rejects_non_blob_identical_sources()
+        self._assert_prepare_compose_env_rejects_path_replacement_after_open()
+        self._assert_compose_copy_normalizes_zero_short_write_and_cleans_partial()
 
     def test_install_playwright_uses_the_fixed_child_vector(self) -> None:
         result, recorder = self.run_with_recorder(("install-playwright",))
@@ -420,6 +428,8 @@ class CiGateAdapterTests(unittest.TestCase):
             "ci-gate-adapter-sarif-output",
             caught.exception.code,
         )
+        (self.root / "results.sarif").unlink()
+        self._assert_sarif_partial_is_removed_after_exception_and_retry_succeeds()
 
     def test_rejects_unknown_metacharacter_paths_npm_verbs_and_secret_env(
         self,
@@ -457,6 +467,274 @@ class CiGateAdapterTests(unittest.TestCase):
                 with self.assertRaises(adapters.AdapterError) as caught:
                     adapters.run_adapter(self.root, argv, environ)
                 self.assertEqual(expected_code, caught.exception.code)
+
+    def _assert_run_child_bounds_stdout_and_stderr_before_returning(self) -> None:
+        for stream in ("stdout", "stderr"):
+            with self.subTest(stream=stream):
+                descriptor = "1" if stream == "stdout" else "2"
+                marker = self.root / f"{stream}-overflow-child-survived"
+                source = (
+                    "import os,pathlib,time\n"
+                    f"os.write({descriptor}, b'x' * "
+                    f"({adapters._MAX_CAPTURE_BYTES + 1}))\n"
+                    "time.sleep(2)\n"
+                    f"pathlib.Path({str(marker)!r}).write_text('survived')\n"
+                )
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters._run_child(
+                        (sys.executable, "-c", source),
+                        root=self.root,
+                        environ={"PATH": "/usr/bin"},
+                        capture_output=True,
+                    )
+                self.assertEqual(
+                    "ci-gate-adapter-output",
+                    caught.exception.code,
+                )
+                self.assertFalse(marker.exists())
+
+    def _assert_descriptor_root_is_passed_to_adapter_children(self) -> None:
+        marker = self.root / "descriptor-root-marker"
+        marker.write_text("bound", encoding="utf-8")
+        root_fd = os.open(
+            self.root,
+            os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY,
+        )
+        try:
+            descriptor_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
+            source = (
+                "import os,pathlib\n"
+                "root=pathlib.Path(os.environ['HYHOME_CI_GATE_ROOT'])\n"
+                "raise SystemExit(0 if "
+                "(root/'descriptor-root-marker').read_text()=='bound' "
+                "and pathlib.Path.cwd()==root.resolve() else 9)\n"
+            )
+            result = adapters._run_child(
+                (sys.executable, "-c", source),
+                root=descriptor_root,
+                environ={
+                    "PATH": "/usr/bin",
+                    "HYHOME_CI_GATE_ROOT": descriptor_root.as_posix(),
+                },
+                capture_output=True,
+            )
+        finally:
+            os.close(root_fd)
+        self.assertEqual(0, result.returncode)
+
+    def _assert_run_child_normalizes_spawn_error_without_payload(self) -> None:
+        with (
+            mock.patch.object(
+                adapters.subprocess,
+                "Popen",
+                side_effect=OSError("private executable path"),
+            ),
+            self.assertRaises(adapters.AdapterError) as caught,
+        ):
+            adapters._run_child(
+                ("missing-program",),
+                root=self.root,
+                environ={"PATH": "/usr/bin"},
+                capture_output=True,
+            )
+        self.assertEqual("ci-gate-adapter-child-exec", caught.exception.code)
+        self.assertNotIn("private executable path", str(caught.exception))
+
+    def _assert_eval_invalid_utf8_is_normalized(self) -> None:
+        with mock.patch.object(
+            adapters,
+            "_run_child",
+            return_value=subprocess.CompletedProcess(
+                ("bash",),
+                0,
+                b"fixtures_check=pass\nregressions_check=pass\n\xff",
+                b"",
+            ),
+        ):
+            with self.assertRaises(adapters.AdapterError) as caught:
+                adapters.run_adapter(
+                    self.root,
+                    ("run-agent-output-eval",),
+                    {"PATH": "/usr/bin"},
+                )
+        self.assertEqual(
+            "ci-gate-adapter-eval-output",
+            caught.exception.code,
+        )
+
+    def _assert_sarif_partial_is_removed_after_exception_and_retry_succeeds(
+        self,
+    ) -> None:
+        attempts = 0
+
+        def fail_then_write(
+            argv: tuple[str, ...],
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[bytes]:
+            nonlocal attempts
+            attempts += 1
+            descriptor = kwargs["stdout"]
+            os.write(descriptor, b'{"partial":true}')  # type: ignore[arg-type]
+            if attempts == 1:
+                raise adapters.AdapterError(
+                    "ci-gate-adapter-child-exec",
+                    "the child process is unavailable",
+                )
+            return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+        with mock.patch.object(
+            adapters,
+            "_run_child",
+            side_effect=fail_then_write,
+        ):
+            with self.assertRaises(adapters.AdapterError):
+                adapters.run_adapter(
+                    self.root,
+                    ("run-zizmor-sarif",),
+                    {"PATH": "/usr/bin"},
+                )
+            self.assertFalse((self.root / "results.sarif").exists())
+            self.assertEqual(
+                0,
+                adapters.run_adapter(
+                    self.root,
+                    ("run-zizmor-sarif",),
+                    {"PATH": "/usr/bin"},
+                ),
+            )
+        self.assertEqual(
+            b'{"partial":true}',
+            (self.root / "results.sarif").read_bytes(),
+        )
+
+    def _assert_prepare_compose_env_rejects_non_blob_identical_sources(
+        self,
+    ) -> None:
+        for case in ("modified", "untracked", "symlink", "nonregular"):
+            with self.subTest(case=case):
+                case_root = self.root / case
+                case_root.mkdir()
+                REAL_SUBPROCESS_RUN(
+                    ["git", "init", "-q"],
+                    cwd=case_root,
+                    check=True,
+                )
+                source = case_root / ".env.example"
+                if case == "untracked":
+                    source.write_bytes(b"UNTRACKED=1\n")
+                elif case == "symlink":
+                    target = case_root / "target"
+                    target.write_bytes(b"TARGET=1\n")
+                    source.symlink_to("target")
+                elif case == "nonregular":
+                    source.mkdir()
+                else:
+                    source.write_bytes(b"STAGED=1\n")
+                    REAL_SUBPROCESS_RUN(
+                        ["git", "add", "--", ".env.example"],
+                        cwd=case_root,
+                        check=True,
+                    )
+                    source.write_bytes(b"MODIFIED=1\n")
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters.run_adapter(
+                        case_root,
+                        ("prepare-compose-env",),
+                        {"PATH": "/usr/bin", "CI": "true"},
+                    )
+                self.assertEqual(
+                    "ci-gate-adapter-compose-source",
+                    caught.exception.code,
+                )
+                self.assertFalse((case_root / ".env").exists())
+
+    def _assert_prepare_compose_env_rejects_path_replacement_after_open(
+        self,
+    ) -> None:
+        case_root = self.root / "replaced"
+        case_root.mkdir()
+        REAL_SUBPROCESS_RUN(["git", "init", "-q"], cwd=case_root, check=True)
+        source = case_root / ".env.example"
+        source.write_bytes(b"STAGED=1\n")
+        REAL_SUBPROCESS_RUN(
+            ["git", "add", "--", ".env.example"],
+            cwd=case_root,
+            check=True,
+        )
+        real_provenance = adapters._tracked_regular_source
+
+        def replace_after_provenance(*args: object, **kwargs: object):
+            result = real_provenance(*args, **kwargs)
+            source.rename(case_root / ".env.original")
+            source.write_bytes(b"REPLACED=1\n")
+            return result
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_tracked_regular_source",
+                side_effect=replace_after_provenance,
+            ),
+            self.assertRaises(adapters.AdapterError) as caught,
+        ):
+            adapters.run_adapter(
+                case_root,
+                ("prepare-compose-env",),
+                {"PATH": "/usr/bin", "CI": "true"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-compose-source",
+            caught.exception.code,
+        )
+        self.assertFalse((case_root / ".env").exists())
+
+    def _assert_compose_copy_normalizes_zero_short_write_and_cleans_partial(
+        self,
+    ) -> None:
+        case_root = self.root / "short-write"
+        case_root.mkdir()
+        REAL_SUBPROCESS_RUN(["git", "init", "-q"], cwd=case_root, check=True)
+        source = case_root / ".env.example"
+        source.write_bytes(b"STAGED=1\n")
+        REAL_SUBPROCESS_RUN(
+            ["git", "add", "--", ".env.example"],
+            cwd=case_root,
+            check=True,
+        )
+        real_write = os.write
+        zero_writes = 0
+
+        def zero_destination_write(
+            descriptor: int,
+            payload: bytes | memoryview,
+        ) -> int:
+            nonlocal zero_writes
+            target = pathlib.Path(f"/proc/self/fd/{descriptor}")
+            if target.resolve() == case_root / ".env":
+                zero_writes += 1
+                if zero_writes == 1:
+                    return 0
+                raise OSError("private short-write payload")
+            return real_write(descriptor, payload)
+
+        with (
+            mock.patch.object(
+                adapters.os,
+                "write",
+                side_effect=zero_destination_write,
+            ),
+            self.assertRaises(adapters.AdapterError) as caught,
+        ):
+            adapters.run_adapter(
+                case_root,
+                ("prepare-compose-env",),
+                {"PATH": "/usr/bin", "CI": "true"},
+            )
+        self.assertEqual(
+            "ci-gate-adapter-compose-output",
+            caught.exception.code,
+        )
+        self.assertFalse((case_root / ".env").exists())
 
 
 if __name__ == "__main__":
