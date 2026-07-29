@@ -38,9 +38,11 @@ unittest, Git, and repository-owned generators.
 `a0f91bb50cbd589abdecd8cd217d1673ac0e76d9`
 
 **Revision R2 status:** Revision R1 exhausted its two-attempt Plan review loop
-with unresolved Important findings and returned to design/plan. This Revision
-R2 was explicitly approved by the user on 2026-07-29 and remains blocked
-pending fresh independent specification and quality/security C0/I0 reviews.
+with unresolved Important findings and returned to design/plan. The user
+approved Revision R2 on 2026-07-29. Its first fresh review attempt returned
+specification `C0/I5/M0` and quality/security `C0/I0/M0`; implementation
+remains blocked while this bounded correction receives the final second
+independent specification and quality/security `C0/I0` review pair.
 
 ## Global Constraints
 
@@ -1133,15 +1135,24 @@ parity for this exact set before workflow cutover.
   rows or treating it as controlled-wrapper, remote, runtime, or secret
   authority.
 - [x] Record the user's 2026-07-29 explicit approval of this Revision R2.
-- [ ] After that approval, assign fresh independent specification and
+- [x] After that approval, assign fresh independent specification and
   quality/security Plan reviewers to the complete R2 range.
-- [ ] Require both R2 reviews to map TSDC-010 through TSDC-017, verify exact
-  file ownership and commands, and return C0/I0 before implementation.
+- [x] Record the first R2 review attempt over
+  `e97b7966..5b7388d0`: specification `C0/I5/M0`,
+  `SPEC_COMPLIANCE NO`, `COMMIT_READY NO`; quality/security `C0/I0/M0`,
+  `APPROVED`, `COMMIT_READY YES`. A separate specification corroboration
+  returned `C0/I4/M0`; no verdict authorizes implementation.
+- [x] Correct the union of the first-attempt findings without changing the
+  approved external-authority boundary.
+- [ ] Assign one final fresh specification reviewer plus one different
+  quality/security reviewer to the complete corrected R2 range.
+- [ ] Require both final R2 reviews to map TSDC-010 through TSDC-017, verify
+  exact file ownership and commands, and return C0/I0 before implementation.
 
-Expected gate: only after Revision R2 approval and both fresh R2 reviews return
-C0/I0 does the Task ledger change from
-`blocked pending Revision R2 Plan reviews` to `active recovery`; no production
-or test file changes before that transition.
+Expected gate: only after Revision R2 approval and both final corrected R2
+reviews return C0/I0 does the Task ledger change from
+`blocked pending corrected Revision R2 Plan reviews` to `active recovery`; no
+production or test file changes before that transition.
 
 #### Task 4.1 / Wave A / T-TSDC-004R-1: Typed Gate Contract
 
@@ -1303,10 +1314,21 @@ git commit -m "docs(task): record typed gate contract review"
   version 2 after all registered new entrypoints exist.
 - Modify `scripts/validation/github_workflow_contract.py` and
   `tests/validation/test_github_workflow_contract.py` for schema-v2 loading
-  with temporary current-workflow semantic compatibility.
+  with a commit-bounded unchanged-current-workflow transition.
+- Change only Git mode, from `100644` to `100755`, for these seven registered
+  shebang entrypoints before schema-v2 conversion:
+  `scripts/validation/check-agent-governance-contract.py`,
+  `scripts/validation/check-doc-implementation-alignment.sh`,
+  `scripts/validation/check-document-metadata.py`,
+  `scripts/validation/check-document-corpus-lifecycle.py`,
+  `scripts/validation/check-supply-chain-policy.py`,
+  `scripts/security/generate-supply-chain-sample-service-summary.sh`, and
+  `scripts/validation/check-target-surface-delta-contract.py`.
 - Modify `scripts/README.md`.
 - Modify the delta manifest, generated summary, exact manifest tests, and Task
-  ledger for these five new target paths.
+  ledger for five new runner/test paths, the new
+  `check-agent-governance-contract.py` row, and the six existing
+  mode-normalized rows.
 - Preserve `.pre-commit-config.yaml`; its existing repository-contract selector
   includes the exact `scripts/.*`, `tests/.*`, and `.github/.*` alternatives,
   so it already covers every new path.
@@ -1388,32 +1410,59 @@ finding-code assertion. Missing-import evidence alone does not satisfy RED.
   temporary strict-schema-v2 repositories; no live command targets the
   canonical schema-v1 file.
 
-- [ ] **Step 5: Mark both executable entry points as mode `100755`, add exact
-  manifest rows, and update the scripts index.**
+- [ ] **Step 5: Normalize every registered entrypoint mode, add exact manifest
+  rows, and update the scripts index before schema conversion.**
 
 ```bash
 chmod 0755 \
   scripts/validation/run-ci-gate.py \
-  scripts/validation/ci_gate_adapters.py
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/security/generate-supply-chain-sample-service-summary.sh \
+  scripts/validation/check-target-surface-delta-contract.py
 git add \
   scripts/validation/ci_gate_runner.py \
   scripts/validation/run-ci-gate.py \
   scripts/validation/ci_gate_adapters.py \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/security/generate-supply-chain-sample-service-summary.sh \
+  scripts/validation/check-target-surface-delta-contract.py \
   tests/validation/test_ci_gate_runner.py \
   tests/validation/test_ci_gate_adapters.py
+git diff --cached --summary -- \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/security/generate-supply-chain-sample-service-summary.sh \
+  scripts/validation/check-target-surface-delta-contract.py
 python3 scripts/validation/check-target-surface-delta-contract.py \
   --mode advisory \
   --write-summary
 ```
 
-  Edit the five manifest rows only after the exact-row test fails. Each row's
-  `canonical_owner` is its own path. Initial direct consumers are:
+  The scoped summary must report exactly seven
+  `mode change 100644 => 100755` entries and no content change for those
+  paths. Edit manifest rows only after the exact-row test fails. Each new
+  row's `canonical_owner` is its own path. Initial direct consumers are:
   `ci_gate_runner.py` by `run-ci-gate.py` and its focused test,
   `run-ci-gate.py` by its focused test, `ci_gate_adapters.py` by its focused
   test, and no direct consumers yet for either focused test file. Wave B
   updates those consumer edges only when the workflow and local profile
-  projections become tracked consumers. The exact oracle becomes 155 rows: 89
-  `preserve`, 66 `update`, zero `migrate`, and zero `delete`.
+  projections become tracked consumers. Add
+  `scripts/validation/check-agent-governance-contract.py` as an `update` row;
+  change the four mode-normalized `preserve` rows to `update`; retain the two
+  already-`update` rows. The exact oracle becomes 156 rows: 85 `preserve`, 71
+  `update`, zero `migrate`, and zero `delete`.
 
 - [ ] **Step 6: Complete Spec Wave 1 with the canonical schema-v2 registry.**
 
@@ -1422,16 +1471,20 @@ python3 scripts/validation/check-target-surface-delta-contract.py \
   Action identities, 16 required IDs, `gate_nodes`, `job_roots`, and the three
   exact local `profile_roots` as deterministic strict JSON in the existing
   `.github/workflow-contract.yml`. Remove schema-v1 `owner_commands` and
-  `expensive_commands`.
+  `expensive_commands`, and remove `ExpensiveCommandOwner` plus
+  `_EXPENSIVE_COMMAND_BASELINE` in the same conversion.
 
   `github_workflow_contract.py` imports the typed parser and preserves its
-  stable public interfaces. Until Wave B changes the current workflow
-  programs, the old semantic interpreter and its existing code-owned baseline
-  remain the temporary compatibility authority explicitly allowed by Spec
-  Wave 1; they do not create a second registry file and are deleted after
-  cutover review. Add exact tests proving schema v1 now fails closed, current
-  direct workflow execution still validates, and all registered entrypoints
-  exist with the required tracked modes.
+  stable public interfaces. From this point the schema-v2 registry is the sole
+  ownership authority: active validation no longer calls the old semantic
+  ownership interpreter and no code-owned command table remains. The unused
+  parser implementation may remain as dead cutover code only until Wave C.
+  Task 4.2 must leave `.github/workflows/ci-quality.yml` byte-identical to the
+  committed Task 4.1 review-evidence checkpoint and prove that boundary with
+  an exact Git diff plus independent review; it makes no transitional semantic
+  ownership claim for the unchanged free-form workflow. Add exact tests
+  proving schema v1 now fails closed, the duplicate command authority is
+  absent, and all registered entrypoints exist with required tracked modes.
 
   Update the existing `.github/workflow-contract.yml`,
   `scripts/validation/github_workflow_contract.py`, and
@@ -1476,7 +1529,26 @@ python3 -m compileall -q \
   scripts/validation/run-ci-gate.py \
   scripts/validation/ci_gate_adapters.py \
   scripts/validation/github_workflow_contract.py \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/validation/check-target-surface-delta-contract.py \
   tests/validation/test_github_workflow_contract.py
+bash -n \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/security/generate-supply-chain-sample-service-summary.sh
+shellcheck --severity=warning \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/security/generate-supply-chain-sample-service-summary.sh
+TASK_4_1_REVIEW_COMMIT="$(
+  git log -1 \
+    --format=%H \
+    --grep='^docs(task): record typed gate contract review$'
+)"
+test -n "$TASK_4_1_REVIEW_COMMIT"
+git diff --exit-code "$TASK_4_1_REVIEW_COMMIT" -- \
+  .github/workflows/ci-quality.yml
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 git diff --check
 ```
@@ -1484,8 +1556,9 @@ git diff --check
 Expected GREEN: the fake executor observes one ordered execution per gate ID;
 path, provenance, environment, timeout, and output tests fail closed without
 running real CI suites or network operations; the canonical registry is strict
-schema v2 and the unchanged current workflow remains valid through the
-temporary old compatibility interpreter.
+schema v2 and the current workflow remains byte-identical to the committed
+Task 4.1 review boundary. No active semantic interpreter or parallel command
+table remains.
 
 - [ ] **Step 8: Commit and review.**
 
@@ -1496,6 +1569,13 @@ git add \
   scripts/validation/run-ci-gate.py \
   scripts/validation/ci_gate_adapters.py \
   scripts/validation/github_workflow_contract.py \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/security/generate-supply-chain-sample-service-summary.sh \
+  scripts/validation/check-target-surface-delta-contract.py \
   scripts/README.md \
   tests/validation/test_ci_gate_runner.py \
   tests/validation/test_ci_gate_adapters.py \
@@ -1549,16 +1629,6 @@ git commit -m "docs(task): record typed gate runner review"
   `tests/validation/test_run_ci_precommit.sh`, and
   `scripts/requirements-pre-commit.txt`; register the existing CI wrapper as a
   typed leaf without turning it into an Agent route.
-- Change only Git mode, from `100644` to `100755`, for these seven tracked
-  shebang entrypoints so descriptor-bound execution can prove executable
-  provenance:
-  `scripts/validation/check-agent-governance-contract.py`,
-  `scripts/validation/check-doc-implementation-alignment.sh`,
-  `scripts/validation/check-document-metadata.py`,
-  `scripts/validation/check-document-corpus-lifecycle.py`,
-  `scripts/validation/check-supply-chain-policy.py`,
-  `scripts/security/generate-supply-chain-sample-service-summary.sh`, and
-  `scripts/validation/check-target-surface-delta-contract.py`.
 - Modify `.github/INDEX.md` and `.github/rulesets/main-protection.md`.
 - Modify `docs/00.agent-governance/rules/github-governance.md` and
   `docs/00.agent-governance/scopes/qa.md`.
@@ -1620,32 +1690,14 @@ executable steps that fail the new exact projection tests.
 
 - [ ] **Step 3: Freeze the reviewed canonical registry as the cutover input.**
 
-  Read the Task 4.1 review-evidence commit from the Task ledger and require
+  Read the Task 4.2 review-evidence commit from the Task ledger and require
   `.github/workflow-contract.yml` to be byte-unchanged from that checkpoint.
   It already contains all workflow, trigger, permission, job, Action, typed
   gate, job-root, and profile-root facts and contains no `owner_commands` or
   `expensive_commands`. Any needed registry change returns to Task 4.2 and
   consumes its bounded remediation loop rather than being folded into Wave B.
 
-- [ ] **Step 4: Normalize the seven registered first-party entrypoint modes.**
-
-```bash
-chmod 0755 \
-  scripts/validation/check-agent-governance-contract.py \
-  scripts/validation/check-doc-implementation-alignment.sh \
-  scripts/validation/check-document-metadata.py \
-  scripts/validation/check-document-corpus-lifecycle.py \
-  scripts/validation/check-supply-chain-policy.py \
-  scripts/security/generate-supply-chain-sample-service-summary.sh \
-  scripts/validation/check-target-surface-delta-contract.py
-```
-
-  Do not change file bodies in this step. Assert each exact
-  `git ls-files --stage` mode before workflow execution tests and require
-  `git diff --summary` to report only seven `mode change 100644 => 100755`
-  entries for this substep.
-
-- [ ] **Step 4A: Migrate the exact descriptor-compatibility set.**
+- [ ] **Step 4: Migrate the exact descriptor-compatibility set.**
 
   Each of the seven named consumers resolves its repository root from
   runner-created `HYHOME_CI_GATE_ROOT` when present and otherwise retains its
@@ -1675,14 +1727,13 @@ chmod 0755 \
 
 - [ ] **Step 6: Switch workflow validation to structural projection.**
 
-  Remove the temporary derived semantic-owner compatibility projection from
-  `WorkflowJobContract`; `WorkflowContract` continues to carry the reviewed
-  `gate_registry`.
+  Replace the Task 4.2 unchanged-workflow transition boundary with active
+  structural projection from the reviewed `gate_registry`.
   `validate_workflows` compares exact static gate invocations with root
   expansion and retains all existing workflow-shape, permission, trigger,
-  Action, and remote-mutation checks. It no longer calls
-  `_resolve_job_semantics`; the old functions remain dead code only until the
-  independent cutover review.
+  Action, and remote-mutation checks. No semantic-owner compatibility
+  projection or command table exists; the unused old parser functions remain
+  dead code only until the independent cutover review.
 
 - [ ] **Step 7: Switch local QA and the repository umbrella.**
 
@@ -1715,18 +1766,16 @@ python3 scripts/validation/check-target-surface-delta-contract.py \
   --write-summary
 ```
 
-  Add the newly changed
-  `scripts/validation/check-agent-governance-contract.py` row with disposition
-  `update` and its own path as canonical owner. Add corresponding `update`
-  rows for `scripts/operations/sync-provider-surfaces.sh` and
+  Task 4.2 already owns the new
+  `scripts/validation/check-agent-governance-contract.py` row and all seven
+  mode-provenance dispositions. Add only the two new `update` rows for
+  `scripts/operations/sync-provider-surfaces.sh` and
   `scripts/operations/sync-tech-stack-versions.sh`, each with its own path as
   canonical owner and the typed local profile plus descriptor-compatibility
-  test as direct consumers. Change four existing mode-normalized rows from
-  `preserve` to `update`; keep the two already-update rows as `update`. Update
-  the existing compatibility rows for hardening, document corpus, metadata,
-  and supply-chain policy with their new typed-runner consumers. The exact
-  delta oracle becomes 158 rows: 85 `preserve`, 73 `update`, zero `migrate`,
-  and zero `delete`.
+  test as direct consumers. Update the existing compatibility rows for
+  hardening, agent governance, document corpus, metadata, and supply-chain
+  policy with their new typed-runner consumers. The exact delta oracle becomes
+  158 rows: 85 `preserve`, 73 `update`, zero `migrate`, and zero `delete`.
 
 - [ ] **Step 9: Run cutover GREEN.**
 
@@ -1812,13 +1861,10 @@ git add \
   .github/rulesets/main-protection.md \
   docs/00.agent-governance/rules/github-governance.md \
   docs/00.agent-governance/scopes/qa.md \
-  scripts/security/generate-supply-chain-sample-service-summary.sh \
   scripts/validation/check-agent-governance-contract.py \
-  scripts/validation/check-doc-implementation-alignment.sh \
   scripts/validation/check-document-corpus-lifecycle.py \
   scripts/validation/check-document-metadata.py \
   scripts/validation/check-supply-chain-policy.py \
-  scripts/validation/check-target-surface-delta-contract.py \
   scripts/hardening/check-all-hardening.sh \
   scripts/operations/sync-provider-surfaces.sh \
   scripts/operations/sync-tech-stack-versions.sh \
@@ -1869,7 +1915,8 @@ two-attempt loops; exhaustion blocks Task 4R.
 
 - [ ] **Step 1: Add a RED absence test for the obsolete authority.**
 
-  Require removal of `ExpensiveCommandOwner`, `_EXPENSIVE_COMMAND_BASELINE`,
+  First assert that Wave A already removed `ExpensiveCommandOwner` and
+  `_EXPENSIVE_COMMAND_BASELINE`. Require removal of the remaining dead
   `_ShellSubstitution`, `_PreparedShellProgram`, `_ScriptInvocation`,
   `_ShellAnalysis`, `_VariableBinding`, `_SemanticResolution`,
   `_TraversalBudget`, `_analyze_shell_program`, `_analyze_python_helper`,
@@ -2184,6 +2231,45 @@ promotion is a product failure and blocks closure.
 
 - [ ] Confirm the worktree is clean at the Task 5 reviewed commit before final
   verification.
+- [ ] From that clean checkpoint, compute the exact Git-visible branch-delta
+  path set for the optional controlled Agent wrapper. For every changed path,
+  use the full file path as an `--allow-prefix` unless a proposed directory
+  prefix contains no other tracked or untracked Git-visible path. Append the
+  literal path-by-path command and reviewed path set to the Task ledger without
+  running it. No command substitution, generated shell fragment, wildcard,
+  root-level target prefix, or direct `pre-commit run` is admitted.
+- [ ] Commit that command-evidence boundary before requesting approval:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): stage controlled all-files qa request"
+```
+
+- [ ] Confirm the worktree is clean at that new command-evidence commit, then
+  request a separate user approval for the exact recorded one-attempt command.
+  Approval for any earlier command, prefix set, or checkpoint does not carry
+  forward.
+- [ ] If separately approved, run that exact literal wrapper command once. If
+  approval is absent or the user directs a skip, do not run it and record
+  `NOT AUTHORIZED / NOT RUN`. In either case append only value-free
+  disposition, exit/snapshot facts when available, and exact Git-visible path
+  sets to the Task ledger.
+- [ ] Before any manifest, routing, enforcement, Plan-status, or handoff edit,
+  commit the wrapper disposition. If the one approved attempt produced
+  allowlisted hook mutations, inspect and validate them, include them in this
+  independently reviewed logical unit, and do not run a second attempt:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record controlled all-files qa disposition"
+```
+
+  Add any actual allowlisted hook-mutated paths explicitly to that `git add`
+  command; never stage by directory or wildcard. A failed or skipped attempt
+  remains honest evidence and is not converted to pass. Any necessary manual
+  remediation is a new focused implementation/review unit, not a second
+  wrapper attempt.
+
 - [ ] Recompute predecessor-to-`HEAD` target changes and confirm every path has
   exactly one current manifest row.
 - [ ] Confirm Spec 133 tracked artifact hashes match the closure commit.
@@ -2301,23 +2387,6 @@ and repository contracts are green.
 - [ ] If any command is unavailable, record the exact environment limitation
   and leave the corresponding result `unverified`; never convert it to pass.
 - [ ] Do not run direct all-files pre-commit.
-- [ ] Do not pre-authorize or publish a wrapper command with broad repository
-  roots. At the clean Task 5 checkpoint, compute the exact Git-visible
-  branch-delta path set. For every changed path, use the full file path as an
-  `--allow-prefix` unless a proposed directory prefix contains no other
-  tracked or untracked Git-visible path. Append that literal, path-by-path
-  command and its reviewed path set to the Task ledger, then request a new
-  user approval for that exact one-attempt command.
-- [ ] Only after that separate approval, run the exact literal command recorded
-  in the Task ledger. No command substitution, generated shell fragment,
-  wildcard, root-level target prefix, direct `pre-commit run`, or second
-  attempt is admitted.
-
-Expected controlled result, if separately authorized: the wrapper records a
-value-free pass/fail, exit status, snapshot result, and exact Git-visible path
-sets. One approval authorizes one attempt only. Without that exact future
-approval, record `NOT AUTHORIZED / NOT RUN` and continue only with the other
-Plan gates.
 
 - [ ] Commit the blocking-enforcement candidate before whole-branch review:
 
@@ -2418,7 +2487,7 @@ Every task must provide:
 | Local Compose setup overwrites ignored `.env` | local-only aggregates exclude CI setup; byte-preservation regression | stop local cutover and restore prior local routing |
 | Stateful setup data disappears between workflow steps | one root invocation and one HOME for each stateful plan | revert the affected job projection |
 | Ambient Git or secret-shaped environment changes execution | construct minimal environment, clear ambient `GIT_*`, reject secret-shaped keys | stop execution and correct the node contract |
-| Old semantic interpreter remains authoritative | R4 independent cutover approval followed by R5 symbol-removal gate | leave Task 4R blocked; do not start Task 5 |
+| Dead semantic interpreter is reactivated or retained | Wave A removes its authority/table, R3 uses only structural projection, and R4 approval precedes the R5 symbol-removal gate | leave Task 4R blocked; do not start Task 5 |
 | Audit overclaim | local/remote/unverified schema | correct the affected audit row and regenerate owners |
 | Reviewer mutation | explicit read-only review role | discard no work; inspect and separately authorize any reviewer-created commit |
 

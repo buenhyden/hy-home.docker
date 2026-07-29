@@ -418,11 +418,15 @@ a typed `setup` node or an immutable registered Action; there is no hidden
 setup-shell exemption.
 
 CI and local QA consume the same registry and graph. The `ci` profile derives
-its roots from `job_roots`; `local-script-backed` and `local-harness` derive
-theirs from `profile_roots`. Profiles may select different admitted roots, but
-they may not redefine a gate's entrypoint or arguments. Local aggregate
-execution uses the ordered profile-root projection rather than a second command
-list.
+its roots from `job_roots`; `local-script-backed`, `local-harness`, and
+`local-all-profiles` derive theirs from `profile_roots`. Profiles may select
+different admitted roots, but they may not redefine a gate's entrypoint or
+arguments. `local-all-profiles` consists of the full ordered
+`local-script-backed` roots followed by
+`local.compose-all-profiles-validation` and is selected only through
+`profile_roots`, with neither a second command list nor a direct gate route.
+All three local profiles exclude the CI-only `setup.compose-env` node and
+preserve an existing ignored `.env` unchanged.
 `scripts/validation/check-repo-contracts.sh` remains a wiring and repository
 contract checker, not a second gate executor.
 
@@ -515,12 +519,16 @@ Task 4 uses a three-wave cutover:
    contract fixtures while retaining current workflow execution;
 2. convert workflow and local QA routes to typed gates and prove ordered
    one-time parity with a fake executor;
-3. remove the prior shell/Python semantic interpreter and its obsolete tests
-   only after independent parity review.
+3. remove the dead prior shell/Python semantic interpreter and its obsolete
+   tests only after independent parity review.
 
-The old interpreter may coexist only as temporary cutover evidence inside Task
-4. It is not a permanent fallback or a second post-cutover authority. Failure
-in any wave leaves Task 4 blocked without weakening the exact runner grammar.
+When schema version 2 becomes canonical, it is the sole ownership authority:
+`ExpensiveCommandOwner`, `_EXPENSIVE_COMMAND_BASELINE`, and every active
+semantic-ownership claim or hard-coded command table are removed in that same
+conversion. The remaining old parser implementation may exist only as
+dead/inactive cutover evidence until Wave C deletes it; it is neither a
+fallback nor a parallel authority. Failure in any wave leaves Task 4 blocked
+without weakening the exact runner grammar.
 
 ### Convergence Flow
 
@@ -622,10 +630,16 @@ Each local profile-root record contains:
 - ordered `root_gate_ids`;
 - `classification`.
 
-The admitted local profiles are `local-script-backed` and `local-harness`.
-Their roots may reuse CI gates but cannot override node fields. The `ci`
-profile is derived from required `job_roots`, so the registry cannot define a
-conflicting second CI root list.
+The admitted local profiles are exactly `local-script-backed`,
+`local-harness`, and `local-all-profiles`. Their roots may reuse CI gates but
+cannot override node fields. `local-all-profiles` is the complete ordered
+`local-script-backed` root sequence followed by
+`local.compose-all-profiles-validation`; it is selected only through its
+`profile_roots` record and has neither a second command list nor a direct gate
+route. All three local profiles exclude the CI-only `setup.compose-env` node
+and preserve an existing ignored `.env` unchanged. The `ci` profile is derived
+from required `job_roots`, so the registry cannot define a conflicting second
+CI root list.
 
 ### Remote Observation Record
 
