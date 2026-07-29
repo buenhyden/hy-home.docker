@@ -32,96 +32,53 @@ allowed_docs=(
 mapfile -t actual_docs < <(find docs -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
 expected_docs="$(printf '%s\n' "${allowed_docs[@]}" | sort)"
 actual_docs_text="$(printf '%s\n' "${actual_docs[@]}")"
-
-section "Canonical document contracts"
-if ! python3 scripts/validation/check-document-metadata.py --mode check-contracts; then
-  failures=$((failures + 1))
-fi
-
-section "Document corpus lifecycle Foundation checks"
-lifecycle_contract="docs/99.templates/support/document-corpus-migration-contract.yaml"
-lifecycle_checker="scripts/validation/check-document-corpus-lifecycle.py"
-lifecycle_tests="tests/validation/test_document_corpus_lifecycle.py"
-lifecycle_workflow=".github/workflows/document-corpus-lifecycle.yml"
-
-[[ -f "$lifecycle_contract" ]] || fail "missing document corpus lifecycle contract: $lifecycle_contract"
-[[ -f "$lifecycle_checker" ]] || fail "missing document corpus lifecycle checker: $lifecycle_checker"
-[[ -f "$lifecycle_tests" ]] || fail "missing document corpus lifecycle tests: $lifecycle_tests"
-[[ -f "$lifecycle_workflow" ]] || fail "missing document corpus lifecycle workflow: $lifecycle_workflow"
-
-if [[ -f "$lifecycle_checker" && -f "$lifecycle_contract" ]]; then
-  if ! python3 "$lifecycle_checker" --mode check-contract; then
-    failures=$((failures + 1))
-  fi
-  if ! python3 "$lifecycle_checker" --mode check-promoted; then
-    failures=$((failures + 1))
-  fi
-
-  lifecycle_base_ref=""
-  if [[ -n "${TEMPLATE_GATE_BASE:-}" ]]; then
-    if git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}" 2>/dev/null; then
-      lifecycle_base_ref="$TEMPLATE_GATE_BASE"
-    else
-      fail "TEMPLATE_GATE_BASE does not resolve to a commit for lifecycle impact validation"
-    fi
-  elif git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then
-    lifecycle_base_ref="HEAD~1"
-  else
-    echo "SKIP: document corpus lifecycle impact check; no comparison base exists"
-  fi
-
-  if [[ -n "$lifecycle_base_ref" ]]; then
-    if ! python3 "$lifecycle_checker" --mode check-impacted --base-ref "$lifecycle_base_ref"; then
-      failures=$((failures + 1))
-    fi
-  fi
-fi
-
-section "Target surface convergence contracts"
-target_surface_checker="scripts/validation/check-target-surface-contract.py"
-target_surface_library="scripts/validation/target_surface_contract.py"
-target_surface_tests="tests/validation/test_target_surface_contracts.py"
-target_surface_delta_checker="scripts/validation/check-target-surface-delta-contract.py"
-target_surface_delta_library="scripts/validation/target_surface_delta_contract.py"
-target_surface_delta_tests="tests/validation/test_target_surface_delta_contracts.py"
-
-[[ -f "$target_surface_checker" ]] || fail "missing target surface checker: $target_surface_checker"
-[[ -f "$target_surface_library" ]] || fail "missing target surface library: $target_surface_library"
-[[ -f "$target_surface_tests" ]] || fail "missing target surface tests: $target_surface_tests"
-[[ -f "$target_surface_delta_checker" ]] || fail "missing target surface delta checker: $target_surface_delta_checker"
-[[ -f "$target_surface_delta_library" ]] || fail "missing target surface delta library: $target_surface_delta_library"
-[[ -f "$target_surface_delta_tests" ]] || fail "missing target surface delta tests: $target_surface_delta_tests"
-if [[ -f "$target_surface_checker" && -f "$target_surface_library" ]]; then
-  if ! python3 "$target_surface_checker"; then
-    failures=$((failures + 1))
-  fi
-fi
-if [[ -f "$target_surface_delta_checker" && -f "$target_surface_delta_library" ]]; then
-  if ! python3 "$target_surface_delta_checker" --mode advisory; then
-    failures=$((failures + 1))
-  fi
-fi
-
-section "Supply-chain deterministic fixture policy"
-supply_chain_checker="scripts/validation/check-supply-chain-policy.py"
-supply_chain_summary="scripts/security/generate-supply-chain-sample-service-summary.sh"
-supply_chain_tests=(
-  "tests/validation/test_compose_core_readiness.py"
-  "tests/validation/test_postgres_logical_upgrade_rehearsal.py"
-  "tests/validation/test_grype_db_seed.py"
-  "tests/validation/test_supply_chain_policy.py"
-  "tests/validation/test_sample_service_delivery_rehearsal.py"
-)
-for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" \
-  "${supply_chain_tests[@]}"; do
-  [[ -f "$supply_chain_path" ]] || fail "missing supply-chain policy surface: $supply_chain_path"
-done
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
-  echo "Expected:" >&2
-  printf '  %s\n' "${allowed_docs[@]}" >&2
-  echo "Actual:" >&2
-  printf '  %s\n' "${actual_docs[@]}" >&2
+fi
+
+section "Typed repository gate wiring"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import json
+import pathlib
+import sys
+
+contract_path = pathlib.Path(".github/workflow-contract.yml")
+try:
+    document = json.loads(contract_path.read_text(encoding="utf-8"))
+except (OSError, UnicodeError, json.JSONDecodeError):
+    print("FAIL: typed repository gate wiring is unavailable", file=sys.stderr)
+    sys.exit(1)
+
+nodes = {
+    node.get("gate_id"): node
+    for node in document.get("gate_nodes", [])
+    if isinstance(node, dict)
+}
+repo_leaf = nodes.get("leaf.repo-contracts")
+repo_root = nodes.get("ci.repo-contracts")
+if (
+    repo_leaf != {
+        "gate_id": "leaf.repo-contracts",
+        "kind": "leaf",
+        "entrypoint": "scripts/validation/check-repo-contracts.sh",
+        "argv": [],
+        "cwd": ".",
+        "allowed_env_keys": ["TEMPLATE_GATE_BASE"],
+        "timeout_minutes": 10,
+        "profiles": ["ci", "local"],
+        "opaque": True,
+        "suite_key": "repo-contracts",
+    }
+    or not isinstance(repo_root, dict)
+    or repo_root.get("kind") != "aggregate"
+    or repo_root.get("children", [])[-1:] != ["leaf.repo-contracts"]
+):
+    print("FAIL: typed repository gate wiring differs from the exact contract", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
 fi
 
 section "Required README files"
@@ -871,7 +828,6 @@ else:
             )
 
 ci_path = ".github/workflows/ci-quality.yml"
-ci_job: dict[object, object] | None = None
 try:
     workflow_documents = load_workflows(pathlib.Path.cwd())
 except WorkflowContractError as error:
@@ -895,92 +851,10 @@ else:
             ci_jobs = set()
         else:
             ci_jobs = set(raw_jobs)
-            raw_repo_job = raw_jobs.get("repo-contracts")
-            if isinstance(raw_repo_job, dict):
-                ci_job = raw_repo_job
-            else:
-                failures.append(
-                    f"{ci_path}: repository contract job is invalid"
-                )
 if ci_jobs != required_jobs:
     failures.append(
         f"{ci_path}: required job IDs differ from the typed workflow contract"
     )
-
-if ci_job is not None:
-    expected_base_binding = {
-        "TEMPLATE_GATE_BASE": (
-            "${{ github.event_name == 'pull_request' && "
-            "github.event.pull_request.base.sha || "
-            "github.event_name == 'push' && github.event.before || '' }}"
-        )
-    }
-    if ci_job.get("env") != expected_base_binding:
-        failures.append(
-            f"{ci_path}: repository metadata base binding differs from the exact contract"
-        )
-
-    expected_preflight = {
-        "name": "Verify document metadata comparison base",
-        "if": (
-            "github.event_name == 'pull_request' || "
-            "github.event_name == 'push'"
-        ),
-        "shell": "bash",
-        "run": (
-            "set -euo pipefail\n"
-            'git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
-            'git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
-        ),
-    }
-    expected_metadata = {
-        "name": "Check changed and new document metadata",
-        "run": (
-            "python3 scripts/validation/check-document-metadata.py "
-            "--mode check-changed"
-        ),
-    }
-    steps = ci_job.get("steps")
-    if not isinstance(steps, list):
-        failures.append(
-            f"{ci_path}: repository metadata steps differ from the exact contract"
-        )
-    else:
-        preflight_indices = [
-            index for index, step in enumerate(steps) if step == expected_preflight
-        ]
-        metadata_indices = [
-            index for index, step in enumerate(steps) if step == expected_metadata
-        ]
-        if len(preflight_indices) != 1:
-            failures.append(
-                f"{ci_path}: repository metadata preflight differs from the exact contract"
-            )
-        if len(metadata_indices) != 1:
-            failures.append(
-                f"{ci_path}: changed document metadata step differs from the exact contract"
-            )
-        ordered_names = (
-            "Verify document metadata comparison base",
-            "Set up Python for repository contracts",
-            "Install repository contract Python dependencies",
-            "Check changed and new document metadata",
-            "Check repository contracts",
-        )
-        actual_names = tuple(
-            step.get("name")
-            for step in steps
-            if isinstance(step, dict) and step.get("name") in ordered_names
-        )
-        if (
-            len(preflight_indices) == 1
-            and len(metadata_indices) == 1
-            and actual_names != ordered_names
-        ):
-            failures.append(
-                f"{ci_path}: repository metadata steps are out of order"
-            )
-
 
 class DuplicateKeyError(yaml.YAMLError):
     pass
@@ -1350,249 +1224,6 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Document corpus lifecycle QA routing contract"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import pathlib
-import re
-import subprocess
-import sys
-
-import yaml
-
-failures: list[str] = []
-lifecycle_command = "python3 scripts/validation/check-document-corpus-lifecycle.py"
-pre_commit_path = pathlib.Path(".pre-commit-config.yaml")
-if not pre_commit_path.is_file():
-    failures.append(f"missing pre-commit configuration: {pre_commit_path}")
-else:
-    config = yaml.safe_load(pre_commit_path.read_text(encoding="utf-8")) or {}
-    local_hooks = [
-        hook
-        for repository in config.get("repos", [])
-        if repository.get("repo") == "local"
-        for hook in repository.get("hooks", [])
-    ]
-    repo_contract_hooks = [
-        hook for hook in local_hooks if hook.get("id") == "check-repo-contracts"
-    ]
-    expected_selector = (
-        r"^(AGENTS\.md|CLAUDE\.md|GEMINI\.md|docker-compose\.yml|\.env\.example|\.prettierignore|"
-        r"\.agents/.*|\.claude/.*|\.codex/.*|\.gemini/.*|infra/.*|docs/.*|"
-        r"archive/.*|examples/.*|projects/.*|scripts/.*|secrets/.*|tests/.*|"
-        r"\.github/.*|\.pre-commit-config\.yaml)$"
-    )
-    expected_hook = {
-        "id": "check-repo-contracts",
-        "name": "Repo contracts (docs/infra/scripts drift)",
-        "entry": "./scripts/validation/check-repo-contracts.sh",
-        "language": "script",
-        "files": expected_selector,
-        "pass_filenames": False,
-        "stages": ["pre-push"],
-    }
-    if repo_contract_hooks != [expected_hook]:
-        failures.append(
-            ".pre-commit-config.yaml: repo-contracts hook must match the approved lifecycle routing contract"
-        )
-    else:
-        selector = re.compile(expected_selector)
-        routed_paths = (
-            "docs/99.templates/support/document-corpus-migration-contract.yaml",
-            "scripts/validation/check-document-corpus-lifecycle.py",
-            "tests/validation/test_document_corpus_lifecycle.py",
-            ".github/workflows/document-corpus-lifecycle.yml",
-            ".pre-commit-config.yaml",
-            ".prettierignore",
-            "archive/Windows-Network-IP.md",
-            "examples/sample-web-service/service.md",
-            "projects/storybook/README.md",
-            "secrets/SENSITIVE_ENV_VARS.md.example",
-            "scripts/validation/check-target-surface-delta-contract.py",
-            "scripts/validation/check-github-workflow-contract.py",
-            "scripts/validation/github_workflow_contract.py",
-            "scripts/validation/run-ci-precommit.sh",
-            "scripts/validation/target_surface_delta_contract.py",
-            "scripts/validation/target_surface_contract.py",
-            "tests/validation/test_github_workflow_contract.py",
-            "tests/validation/test_run_ci_precommit.sh",
-            "tests/validation/test_target_surface_delta_contracts.py",
-            "tests/validation/test_target_surface_contracts.py",
-        )
-        for routed_path in routed_paths:
-            if selector.fullmatch(routed_path) is None:
-                failures.append(
-                    f".pre-commit-config.yaml: repo-contracts selector misses {routed_path}"
-                )
-    lifecycle_hooks = [
-        hook for hook in local_hooks if hook.get("id") == "check-document-corpus-lifecycle"
-    ]
-    if lifecycle_hooks:
-        failures.append(
-            ".pre-commit-config.yaml: lifecycle checks must remain inside the existing repo-contracts hook"
-        )
-
-lifecycle_gate_commands = (
-    "python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v",
-    f"{lifecycle_command} --mode check-contract",
-    f"{lifecycle_command} --mode check-promoted",
-)
-workflow_gate_commands = (
-    "python3 -m unittest tests.validation.test_github_workflow_contract -v",
-    "python3 scripts/validation/check-github-workflow-contract.py",
-    "bash tests/validation/test_run_ci_precommit.sh",
-)
-generated_freshness_commands = (
-    "bash scripts/validation/generate-security-automation-readiness.sh --check",
-    "bash scripts/validation/generate-audit-implementation-matrix.sh --check",
-    "bash scripts/knowledge/generate-llm-wiki-index.sh --check",
-    "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check",
-)
-required_lifecycle_recommendation_commands = (
-    *lifecycle_gate_commands,
-    *generated_freshness_commands,
-)
-generated_freshness_mode_functions = (
-    "run_script_backed_gates",
-    "run_harness_gates",
-)
-lifecycle_surfaces = (
-    "docs/99.templates/support/document-corpus-migration-contract.yaml",
-    "scripts/validation/check-document-corpus-lifecycle.py",
-    "tests/validation/test_document_corpus_lifecycle.py",
-    ".github/workflows/document-corpus-lifecycle.yml",
-    ".pre-commit-config.yaml",
-    "docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml",
-    "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md",
-    "docs/98.archive/example.md",
-)
-recommend_script = pathlib.Path("scripts/validation/recommend-qa-gates.sh")
-if not recommend_script.is_file():
-    failures.append(f"missing QA recommendation owner: {recommend_script}")
-else:
-    for surface in lifecycle_surfaces:
-        result = subprocess.run(
-            ["bash", str(recommend_script), "--files", surface],
-            check=False,
-            cwd=pathlib.Path.cwd(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        if result.returncode != 0:
-            failures.append(f"{recommend_script}: failed to route lifecycle surface {surface}")
-            continue
-        for command in required_lifecycle_recommendation_commands:
-            if f"- {command}\n" not in result.stdout:
-                failures.append(
-                    f"{recommend_script}: lifecycle surface {surface} misses gate: {command}"
-                )
-
-local_runner = pathlib.Path("scripts/validation/run-local-qa-gates.sh")
-if not local_runner.is_file():
-    failures.append(f"missing local QA owner: {local_runner}")
-else:
-    local_runner_text = local_runner.read_text(encoding="utf-8")
-    for command in (*lifecycle_gate_commands, *workflow_gate_commands):
-        if command not in local_runner_text:
-            failures.append(f"{local_runner}: missing lifecycle gate: {command}")
-
-    list_result = subprocess.run(
-        ["bash", str(local_runner), "--list"],
-        check=False,
-        cwd=pathlib.Path.cwd(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    if list_result.returncode != 0:
-        failures.append(f"{local_runner}: --list failed")
-    else:
-        listed_generated_freshness_commands = tuple(
-            line.removeprefix("- ")
-            for line in list_result.stdout.splitlines()
-            if re.fullmatch(
-                r"- bash scripts/(?:validation|knowledge)/generate-[^ ]+\.sh --check",
-                line,
-            )
-        )
-        if listed_generated_freshness_commands != generated_freshness_commands:
-            failures.append(
-                f"{local_runner}: --list must enumerate every executed generated freshness gate"
-            )
-
-    generated_function_match = re.search(
-        r"(?ms)^run_generated_freshness_gates\(\) \{\n(.*?)^\}\n",
-        local_runner_text,
-    )
-    if generated_function_match is None:
-        failures.append(f"{local_runner}: missing run_generated_freshness_gates function")
-    else:
-        executed_generated_freshness_commands = tuple(
-            re.findall(
-                r'^\s*run_step\s+"[^"]+"\s+(bash scripts/(?:validation|knowledge)/generate-[^ ]+\.sh --check)\s*$',
-                generated_function_match.group(1),
-                flags=re.MULTILINE,
-            )
-        )
-        if executed_generated_freshness_commands != generated_freshness_commands:
-            failures.append(
-                f"{local_runner}: generated freshness execution must match the approved gate set"
-            )
-        if list_result.returncode == 0 and (
-            listed_generated_freshness_commands != executed_generated_freshness_commands
-        ):
-            failures.append(
-                f"{local_runner}: generated freshness --list/execution parity mismatch"
-            )
-
-    for function_name in generated_freshness_mode_functions:
-        mode_function_match = re.search(
-            rf"(?ms)^{re.escape(function_name)}\(\) \{{\n(.*?)^\}}\n",
-            local_runner_text,
-        )
-        if mode_function_match is None:
-            failures.append(f"{local_runner}: missing {function_name} function")
-            continue
-        helper_calls = re.findall(
-            r"(?m)^\s*run_generated_freshness_gates\s*$",
-            mode_function_match.group(1),
-        )
-        if len(helper_calls) != 1:
-            failures.append(
-                f"{local_runner}: {function_name} must invoke "
-                "run_generated_freshness_gates exactly once"
-            )
-
-scripts_readme = pathlib.Path("scripts/README.md")
-if not scripts_readme.is_file():
-    failures.append(f"missing script inventory: {scripts_readme}")
-else:
-    scripts_readme_text = scripts_readme.read_text(encoding="utf-8")
-    for fragment in (
-        "scripts/validation/check-document-corpus-lifecycle.py",
-        "scripts/validation/check-target-surface-delta-contract.py",
-        "scripts/validation/check-github-workflow-contract.py",
-        "scripts/validation/github_workflow_contract.py",
-        "scripts/validation/run-ci-precommit.sh",
-        "scripts/validation/target_surface_delta_contract.py",
-        "tests/validation/test_document_corpus_lifecycle.py",
-        "tests/validation/test_github_workflow_contract.py",
-        "tests/validation/test_run_ci_precommit.sh",
-        "tests/validation/test_target_surface_delta_contracts.py",
-    ):
-        if fragment not in scripts_readme_text:
-            failures.append(f"{scripts_readme}: missing lifecycle inventory fragment: {fragment}")
-
-if failures:
-    for failure in failures:
-        print(f"FAIL: {failure}", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
 section "GitHub governance surface"
 if [[ -f ".github/copilot-instructions.md" || -d ".github/instructions" ]]; then
   fail "GitHub-native instruction files are not adopted in this repository"
@@ -1771,17 +1402,6 @@ if failures:
 PY
   failures=$((failures + 1))
 fi
-
-section "Typed agent governance repository contract"
-if ! python3 scripts/validation/check-agent-governance-contract.py \
-  --mode repository --section all; then
-  failures=$((failures + 1))
-fi
-if ! bash scripts/operations/sync-provider-surfaces.sh --check; then
-  failures=$((failures + 1))
-fi
-
-
 
 section "Provider workspace artifact path parity"
 if ! python3 - <<'PY'; then
@@ -2478,15 +2098,6 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Changed and new document template contracts"
-if [[ -n "${TEMPLATE_GATE_BASE:-}" ]]; then
-  if ! python3 scripts/validation/check-document-metadata.py --mode check-changed; then
-    failures=$((failures + 1))
-  fi
-else
-  echo "SKIP: TEMPLATE_GATE_BASE is unset; run the Python changed checker with an explicit safe base"
-fi
-
 section "Infra README rubric advisory"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3078,30 +2689,6 @@ if coverage_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{coverage_path}: generated coverage includes secret content path: {linked_path}")
 
-generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh")
-if generator.is_file() and index_path.is_file():
-    result = subprocess.run(
-        ["bash", "scripts/knowledge/generate-llm-wiki-index.sh", "--check"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        failures.append("generated LLM Wiki index is stale or generator check failed")
-        for line in (result.stderr or result.stdout).splitlines():
-            failures.append(f"generate-llm-wiki-index.sh --check: {line}")
-
-coverage_generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh")
-if coverage_generator.is_file() and coverage_path.is_file():
-    result = subprocess.run(
-        ["bash", "scripts/knowledge/generate-llm-wiki-coverage.sh", "--check"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        failures.append("generated LLM Wiki coverage snapshot is stale or generator check failed")
-        for line in (result.stderr or result.stdout).splitlines():
-            failures.append(f"generate-llm-wiki-coverage.sh --check: {line}")
-
 if failures:
     for failure in failures:
         print(f"FAIL: {failure}", file=sys.stderr)
@@ -3156,28 +2743,11 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Compose profile coverage snapshot"
-if ! bash scripts/operations/generate-compose-profile-service-coverage.sh --check >/tmp/check-repo-contracts-compose-profile-coverage.txt 2>&1; then
-  fail "generated Compose profile coverage snapshot is stale or generator check failed"
-  cat /tmp/check-repo-contracts-compose-profile-coverage.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-compose-profile-coverage.txt
-
-section "Tech-stack version provenance snapshot"
-if ! bash scripts/operations/generate-tech-stack-version-provenance.sh --check >/tmp/check-repo-contracts-tech-stack-provenance.txt 2>&1; then
-  fail "generated tech-stack provenance snapshot is stale or generator check failed"
-  cat /tmp/check-repo-contracts-tech-stack-provenance.txt >&2
-elif ! grep -q 'generated tech-stack provenance snapshot is fresh' /tmp/check-repo-contracts-tech-stack-provenance.txt; then
-  fail "tech-stack provenance generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-tech-stack-provenance.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-tech-stack-provenance.txt
-
 section "Gap routing recommender"
 if ! bash scripts/validation/recommend-gap-routing.sh --text "runbook recovery procedure is missing rollback evidence" >/tmp/check-repo-contracts-gap-routing-ops.txt 2>&1; then
   fail "gap routing recommender failed for operations text"
   cat /tmp/check-repo-contracts-gap-routing-ops.txt >&2
-elif ! grep -q 'suggested_owner=`docs/05.operations/`' /tmp/check-repo-contracts-gap-routing-ops.txt; then
+elif ! grep -q "suggested_owner=\`docs/05.operations/\`" /tmp/check-repo-contracts-gap-routing-ops.txt; then
   fail "gap routing recommender did not route operations text to docs/05.operations"
   cat /tmp/check-repo-contracts-gap-routing-ops.txt >&2
 fi
@@ -3186,7 +2756,7 @@ rm -f /tmp/check-repo-contracts-gap-routing-ops.txt
 if ! bash scripts/validation/recommend-gap-routing.sh --files docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md >/tmp/check-repo-contracts-gap-routing-spec.txt 2>&1; then
   fail "gap routing recommender failed for spec path"
   cat /tmp/check-repo-contracts-gap-routing-spec.txt >&2
-elif ! grep -q 'suggested_owner=`docs/03.specs/`' /tmp/check-repo-contracts-gap-routing-spec.txt; then
+elif ! grep -q "suggested_owner=\`docs/03.specs/\`" /tmp/check-repo-contracts-gap-routing-spec.txt; then
   fail "gap routing recommender did not route spec path to docs/03.specs"
   cat /tmp/check-repo-contracts-gap-routing-spec.txt >&2
 fi
@@ -3238,96 +2808,6 @@ elif ! grep -Fxq 'audit_semantic_freshness: PASS assertions=11 failures=0' "$sem
 fi
 cleanup_semantic_audit_output
 trap - EXIT HUP INT TERM
-
-section "Document metadata inventory and changed/new hook contract"
-metadata_profiles="docs/99.templates/support/document-metadata-profiles.yaml"
-metadata_checker="scripts/validation/check-document-metadata.py"
-metadata_tests="tests/validation/test_document_metadata.py"
-metadata_inventory="docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md"
-
-[[ -f "$metadata_profiles" ]] || fail "missing document metadata profiles: $metadata_profiles"
-[[ -f "$metadata_checker" ]] || fail "missing document metadata checker: $metadata_checker"
-[[ -f "$metadata_tests" ]] || fail "missing document metadata tests: $metadata_tests"
-[[ -f "$metadata_inventory" ]] || fail "missing document metadata inventory: $metadata_inventory"
-
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import pathlib
-import sys
-
-import yaml
-
-config = yaml.safe_load(pathlib.Path(".pre-commit-config.yaml").read_text(encoding="utf-8"))
-hooks = [
-    hook
-    for repository in config.get("repos", [])
-    if repository.get("repo") == "local"
-    for hook in repository.get("hooks", [])
-    if hook.get("id") == "check-document-metadata"
-]
-expected = {
-    "id": "check-document-metadata",
-    "name": "Document metadata changed/new contract",
-    "entry": "python3 scripts/validation/check-document-metadata.py --mode check-changed",
-    "language": "system",
-    "files": r"^docs/.*\.md$",
-    "pass_filenames": False,
-    "stages": ["pre-push"],
-}
-if hooks != [expected]:
-    print("FAIL: changed/new document metadata hook must match the approved pre-push contract", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
-metadata_check_output="$(mktemp "${TMPDIR:-/tmp}/check-repo-contracts-document-metadata.XXXXXX")"
-cleanup_metadata_check_output() {
-  rm -f "$metadata_check_output"
-}
-trap cleanup_metadata_check_output EXIT
-if [[ -f "$metadata_profiles" && -f "$metadata_checker" && -f "$metadata_inventory" ]]; then
-  if ! python3 "$metadata_checker" --mode report --output "$metadata_inventory" --check >"$metadata_check_output" 2>&1; then
-    fail "document metadata profile syntax or advisory inventory freshness check failed"
-    cat "$metadata_check_output" >&2
-  elif ! grep -q 'metadata inventory fresh:' "$metadata_check_output"; then
-    fail "document metadata inventory check did not print a freshness marker"
-    cat "$metadata_check_output" >&2
-  fi
-fi
-cleanup_metadata_check_output
-trap - EXIT
-
-section "Audit implementation matrix snapshot"
-if ! bash scripts/validation/generate-audit-implementation-matrix.sh --check >/tmp/check-repo-contracts-audit-implementation-matrix.txt 2>&1; then
-  fail "generated audit implementation matrix is stale or generator check failed"
-  cat /tmp/check-repo-contracts-audit-implementation-matrix.txt >&2
-elif ! grep -q 'generated audit implementation matrix is fresh' /tmp/check-repo-contracts-audit-implementation-matrix.txt; then
-  fail "audit implementation matrix generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-audit-implementation-matrix.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-audit-implementation-matrix.txt
-
-section "Provider hook parity matrix"
-if ! bash scripts/validation/report-provider-hook-parity.sh --check >/tmp/check-repo-contracts-provider-hook-parity.txt 2>&1; then
-  fail "generated provider hook parity matrix is stale or generator check failed"
-  cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
-elif ! grep -q 'generated provider hook parity matrix is fresh' /tmp/check-repo-contracts-provider-hook-parity.txt; then
-  fail "provider hook parity generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
-
-section "Security automation readiness snapshot"
-if ! bash scripts/validation/generate-security-automation-readiness.sh --check >/tmp/check-repo-contracts-security-readiness.txt 2>&1; then
-  fail "generated security automation readiness snapshot is stale or generator check failed"
-  cat /tmp/check-repo-contracts-security-readiness.txt >&2
-elif ! grep -q 'generated security automation readiness snapshot is fresh' /tmp/check-repo-contracts-security-readiness.txt; then
-  fail "security automation readiness generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-security-readiness.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-security-readiness.txt
 
 section "Controlled agent pre-commit wrapper contract"
 wrapper_script="scripts/validation/run-agent-precommit-all-files.sh"

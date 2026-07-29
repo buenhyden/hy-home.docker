@@ -1011,10 +1011,20 @@ def _environment_keys(value: object) -> set[str] | None:
 
 def _workflow_projection_findings(
     path: str,
+    raw_workflow: dict[object, object],
     raw_jobs: dict[object, object],
     contract: WorkflowContract,
 ) -> tuple[WorkflowFinding, ...]:
     findings: list[WorkflowFinding] = []
+    workflow_defaults = raw_workflow.get("defaults")
+    if isinstance(workflow_defaults, dict) and "run" in workflow_defaults:
+        findings.append(
+            _finding(
+                "workflow-gate-execution-context-invalid",
+                path,
+                "required workflow defaults.run is forbidden",
+            )
+        )
     root_by_job = {
         record.job_id: record.root_gate_id
         for record in contract.gate_registry.job_roots
@@ -1029,6 +1039,28 @@ def _workflow_projection_findings(
         root_gate_id = root_by_job.get(raw_job_id)
         if root_gate_id is None:
             continue
+        admitted_job_condition = (
+            "github.event_name == 'pull_request'"
+            if raw_job_id == "git-flow-contract"
+            else None
+        )
+        if raw_job.get("if") != admitted_job_condition:
+            findings.append(
+                _finding(
+                    "workflow-gate-execution-context-invalid",
+                    path,
+                    f"job {raw_job_id} condition is not admitted",
+                )
+            )
+        job_defaults = raw_job.get("defaults")
+        if isinstance(job_defaults, dict) and "run" in job_defaults:
+            findings.append(
+                _finding(
+                    "workflow-gate-execution-context-invalid",
+                    path,
+                    f"job {raw_job_id} defaults.run is forbidden",
+                )
+            )
         steps = raw_job.get("steps")
         if not isinstance(steps, list):
             findings.append(
@@ -1056,6 +1088,28 @@ def _workflow_projection_findings(
                     )
                 )
                 continue
+            admitted_step_condition = (
+                "always()"
+                if (
+                    raw_job_id == "docs-implementation-alignment"
+                    and step.get("name") == "Publish QA gate recommendations"
+                    and _static_gate_id(program)
+                    == "leaf.docs-qa-gate-recommendations"
+                )
+                else None
+            )
+            if (
+                step.get("if") != admitted_step_condition
+                or "shell" in step
+                or "working-directory" in step
+            ):
+                findings.append(
+                    _finding(
+                        "workflow-gate-execution-context-invalid",
+                        path,
+                        f"job {raw_job_id} run step context is not admitted",
+                    )
+                )
             gate_id = _static_gate_id(program)
             if gate_id is None:
                 findings.append(
@@ -1142,6 +1196,35 @@ def _workflow_projection_findings(
                     f"job {raw_job_id} environment is not admitted",
                 )
             )
+        if raw_job_id == "git-flow-contract":
+            checkout = next(
+                (
+                    action
+                    for action in contract.actions
+                    if action.action == "actions/checkout"
+                ),
+                None,
+            )
+            expected_checkout = (
+                {
+                    "name": "Checkout repository",
+                    "uses": f"actions/checkout@{checkout.sha}",
+                    "with": {
+                        "persist-credentials": False,
+                        "fetch-depth": 0,
+                    },
+                }
+                if checkout is not None
+                else None
+            )
+            if not steps or steps[0] != expected_checkout:
+                findings.append(
+                    _finding(
+                        "workflow-gate-checkout-required",
+                        path,
+                        "git-flow-contract requires the registered checkout",
+                    )
+                )
     return tuple(findings)
 
 
@@ -2545,6 +2628,7 @@ def validate_workflows(
             findings.extend(
                 _workflow_projection_findings(
                     path,
+                    data,
                     raw_jobs,
                     contract,
                 )

@@ -120,6 +120,7 @@ jobs:
       PR_TITLE: ${{ github.event.pull_request.title }}
       HEAD_REF: ${{ github.head_ref }}
     steps:
+      - *checkout
       - name: Check PR title and source branch
         run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.git-flow-contract
 

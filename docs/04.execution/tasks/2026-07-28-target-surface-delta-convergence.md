@@ -856,6 +856,51 @@ have no unresolved Critical or Important findings.
   action ran. Remote required-check and ruleset enforcement remain
   `unverified`; independent Task 4.4 reviews are still required.
 
+### T-TSDC-004R-4 bounded cutover remediation attempt 1 evidence
+
+- Fresh Task 4.4 review of `cfce3218..fd124581` rejected the cutover with
+  specification `C0/I5/M0` and quality/security `C0/I4/M0`. The accepted
+  findings covered required-step execution context, git-flow checkout,
+  retired repository-umbrella ownership, descriptor-root authentication, and
+  shared CI/local node identity.
+- Focused RED ran 80 tests with 15 failures, one error, and 12 planned Wave-C
+  skips. The failures reproduced all six execution-context mutations, the
+  missing git-flow checkout, all seven invalid descriptor consumers, and
+  registry-derived sibling dispatch. One new shared-profile oracle was
+  corrected before production changes because `local-all-profiles`
+  legitimately adds `leaf.compose-all-profiles-validation`.
+- GREEN admits only the exact git-flow job condition and the exact
+  `always()` QA-summary step condition; rejects workflow/job `defaults.run`,
+  other job/step conditions, custom shells, and working directories; and
+  requires the registered pinned checkout before the git-flow runner.
+  The focused two-module rerun passes 80 tests with 12 planned skips.
+- All seven compatibility consumers now accept only an inherited
+  `/proc/self/fd/<nonnegative-integer>` directory capability whose device and
+  inode match their direct script-relative repository root. Invalid and
+  mismatched values return the fixed value-free
+  `FAIL: invalid HYHOME_CI_GATE_ROOT` diagnostic. Every consumer retains
+  direct fallback, and the metadata checker imports its sibling through the
+  verified selected root.
+- The repository umbrella retains unique repository and Stage 00 cross-surface
+  wiring checks but no longer intentionally dispatches registered lifecycle,
+  target-surface, workflow, CI-precommit, provider/agent, metadata, generated,
+  or profile siblings. Its test derives the complete sibling entrypoint set
+  from the frozen registry. The stale direct metadata preflight/step
+  assertions and retired local-wrapper command/function assumptions are gone.
+- The full Task 4.3 five-module slice passes 115 tests with 12 planned skips.
+  CI and three local execution-free projections, local `--list`, Bash syntax,
+  actionlint, compileall, and diff hygiene pass. ShellCheck passed after
+  restoring the unique top-level docs-taxonomy comparison. Ruff is
+  `unverified` because the local Python runtime has no Ruff module and
+  dependency installation is prohibited.
+- Target-delta advisory, changed-document metadata, traceability, the
+  repository umbrella, the standalone workflow checker, and every other
+  registered child gate were
+  `skipped — controller dispatch prohibited registered child-gate execution`.
+  No direct pre-commit, controlled wrapper, real Compose, dependency install,
+  network, remote mutation, runtime, credential, secret, or Graphify update
+  ran.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -917,9 +962,10 @@ consume or create Agent authorization.
 | T-TSDC-004R-2 phase-owned runner implementation | Task 4.2U implementation agent, sole attempt | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I2/M0; QUALITY_SECURITY CHANGES_REQUIRED; COMMIT_READY NO | `5dc49631..ad2df527` | returned to recovery-owned design; Wave B blocked | Local gates pass, but recovery transitions remain outside one finalization owner and ordinary pre-bind `Popen` exceptions can expose private values. No manifest verdict is promoted. |
 | T-TSDC-004R-2 recovery-owned finalization design | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `ad2df527..5274f58b` | sole implementation attempt authorized; Wave B blocked | Task 4.2V preserves the three-path allowlist and requires one lifecycle identity, nested cleanup finalizers, fixed pre-bind taxonomy, and recovery-transition RED witnesses. |
 | T-TSDC-004R-2 recovery-owned runner implementation | Task 4.2V replacement implementation agent, sole attempt | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES | `5274f58b..cdae7523` | accepted; Task 4.3 Wave B authorized from controller evidence checkpoint | Local RED/GREEN, exact discovery, workflow/projection, static, metadata, traceability, freeze, scope, and diff gates pass. Both fresh read-only reviews found no unresolved defect; no manifest verdict is promoted by this runner-only acceptance. |
+| T-TSDC-004R-3 initial cutover review | Task 4.3 implementation agent | C0/I5/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I4/M0; CHANGES_REQUIRED; COMMIT_READY NO | `cfce3218..fd124581` | bounded remediation attempt 1/2 required | Accepted findings require exact execution-context rejection, registered git-flow checkout, wiring-only repository ownership, authenticated descriptor compatibility, executable descriptor regressions, and exact shared CI/local node identity. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending fresh reviewer after Task 4 | pending different fresh reviewer after Task 4 | not available | active | Task 4.2V is accepted with a fresh C0/I0 pair. Task 4.3 Wave B is the next authorized boundary; Wave C, Tasks 5–6, and final branch review remain gated by their canonical prerequisites. |
+| Whole branch | not applicable | pending fresh reviewer after Task 4 | pending different fresh reviewer after Task 4 | not available | active | Task 4.3 bounded remediation attempt 1 is implementation-complete and requires fresh Task 4.4 re-review; Wave C, Tasks 5–6, and final branch review remain gated. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -990,6 +1036,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 recovery-owned runner implementation | Close recovery ownership and pre-bind taxonomy | `fix(ci): close recovery ownership transitions` | `cdae7523` | RED `81/11/2/0`; GREEN focused `28/28` and full `83/11/0/0`; workflow `7/23/8`; projections `32/32/35`; exact Ruff, compileall, advisory, metadata, traceability, adapter/four-surface freezes, three-path scope, zero-untracked, and diff gates pass. Fresh implementation reviews returned C0/I0. |
 | T-TSDC-004R-2 recovery-owned implementation review evidence | Record the fresh C0/I0 implementation review pair | `docs(task): record recovery-owned implementation reviews` | resolved by this exact unique subject | Both independent read-only reviews approve `5274f58b..cdae7523`; controller revalidation passes and Task 4.3 Wave B becomes the next authorized boundary. |
 | T-TSDC-004R-3 atomic workflow/local projection cutover | Project required jobs and local profiles through the frozen typed gate registry | `ci(governance): cut over to typed gate projections` | resolved by this exact unique subject | RED captured the old direct programs; core GREEN is 98 pass plus 12 explained skips, target-delta is 30/30, workflow inventory is 7/23/8 with 16 required IDs, four execution-free profiles pass, manifest is 158/85/73/0/0, and independent Task 4.4 review remains pending. |
+| T-TSDC-004R-4 bounded cutover remediation attempt 1 | Close the first fresh cutover review findings | `fix(ci): close typed cutover enforcement gaps` | resolved by this exact unique subject | RED 80 = 52 pass + 12 skip + 15 fail + 1 error; focused GREEN 80 = 68 pass + 12 skip; five-module GREEN 115 = 103 pass + 12 skip; four execution-free projections, Bash, ShellCheck, actionlint, compileall, freeze, exact scope/mode, and diff gates pass; Ruff and controller-prohibited registered child gates remain unverified/skipped. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -999,7 +1046,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | implementation-complete / review-pending | The frozen registry now owns exact required-workflow and local-profile projections; all bounded local gates pass except unavailable Ruff, and remote state remains unverified. | run the fresh independent Task 4.4 specification and quality/security review pair before Wave C |
+| T-TSDC-004R-3 atomic projection cutover | remediation implementation-complete / re-review pending | Attempt 1 closes the accepted Task 4.4 execution-context, checkout, umbrella, descriptor, and shared-node findings; Ruff, registered child gates, and remote state remain unverified under the active boundary. | run a fresh independent Task 4.4 specification and quality/security re-review before Wave C |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -1023,8 +1070,8 @@ fresh quality/security review on recovery-transition ownership and pre-bind
 ordinary-exception normalization. Task 4.2V is the bounded recovery-owned
 design return. Its corrected checkpoint received a fresh Plan C0/I0 pair,
 and its sole implementation attempt passes the bounded local gates and fresh
-implementation C0/I0 pair. Task 4.3 Wave B has completed its bounded local
-implementation and awaits the independent Task 4.4 review pair; Wave C,
+implementation C0/I0 pair. Task 4.3 Wave B has completed bounded remediation
+attempt 1 and awaits the independent Task 4.4 re-review pair; Wave C,
 Tasks 5–6, and final whole-branch review remain blocked by their canonical
 prerequisites.
 The original five-round

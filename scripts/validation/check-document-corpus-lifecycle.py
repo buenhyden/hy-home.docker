@@ -24,12 +24,32 @@ from typing import Any
 import yaml
 
 
-_ROOT_OVERRIDE = os.environ.get("HYHOME_CI_GATE_ROOT")
-ROOT = (
-    pathlib.Path(_ROOT_OVERRIDE)
-    if _ROOT_OVERRIDE
-    else pathlib.Path(__file__).resolve().parents[2]
-)
+_ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
+
+
+def _repository_root() -> pathlib.Path:
+    fallback = pathlib.Path(__file__).resolve().parents[2]
+    override = os.environ.get("HYHOME_CI_GATE_ROOT")
+    if override is None:
+        return fallback
+    match = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", override)
+    if match is None:
+        raise SystemExit(_ROOT_ERROR)
+    try:
+        descriptor = os.fstat(int(match.group(1)))
+        direct = fallback.stat()
+    except (OSError, ValueError, OverflowError):
+        raise SystemExit(_ROOT_ERROR) from None
+    if (
+        not stat.S_ISDIR(descriptor.st_mode)
+        or (descriptor.st_dev, descriptor.st_ino)
+        != (direct.st_dev, direct.st_ino)
+    ):
+        raise SystemExit(_ROOT_ERROR)
+    return pathlib.Path(override)
+
+
+ROOT = _repository_root()
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"

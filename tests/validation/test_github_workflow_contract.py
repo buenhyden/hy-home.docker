@@ -403,6 +403,114 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 }
                 self.assertIn("workflow-gate-projection-invalid", codes)
 
+    def test_required_run_steps_reject_execution_context_mutations(self) -> None:
+        cases = (
+            (
+                "workflow-defaults-run",
+                "permissions:\n  contents: read\n",
+                "permissions:\n  contents: read\n\ndefaults:\n  run:\n    shell: bash\n",
+            ),
+            (
+                "job-defaults-run",
+                "  docs-traceability:\n    permissions:\n",
+                "  docs-traceability:\n    defaults:\n"
+                "      run:\n"
+                "        working-directory: scripts\n"
+                "    permissions:\n",
+            ),
+            (
+                "job-if",
+                "  docs-traceability:\n    permissions:\n",
+                "  docs-traceability:\n    if: false\n    permissions:\n",
+            ),
+            (
+                "step-if",
+                "      - name: Check docs traceability sync\n"
+                "        run: python3 scripts/validation/run-ci-gate.py",
+                "      - name: Check docs traceability sync\n"
+                "        if: false\n"
+                "        run: python3 scripts/validation/run-ci-gate.py",
+            ),
+            (
+                "step-shell",
+                "      - name: Check docs traceability sync\n"
+                "        run: python3 scripts/validation/run-ci-gate.py",
+                "      - name: Check docs traceability sync\n"
+                "        shell: bash\n"
+                "        run: python3 scripts/validation/run-ci-gate.py",
+            ),
+            (
+                "step-working-directory",
+                "      - name: Check docs traceability sync\n"
+                "        run: python3 scripts/validation/run-ci-gate.py",
+                "      - name: Check docs traceability sync\n"
+                "        working-directory: scripts\n"
+                "        run: python3 scripts/validation/run-ci-gate.py",
+            ),
+        )
+        for label, old, new in cases:
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                workflow.write_text(text.replace(old, new, 1), encoding="utf-8")
+                codes = {
+                    finding.code
+                    for finding in self.module.validate_workflows(
+                        root,
+                        self.module.load_workflow_contract(root),
+                    )
+                }
+                self.assertIn("workflow-gate-execution-context-invalid", codes)
+
+    def test_only_registered_run_conditions_are_admitted(self) -> None:
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        self.assertEqual(
+            "github.event_name == 'pull_request'",
+            jobs["git-flow-contract"]["if"],
+        )
+        conditioned_steps = [
+            (job_id, step.get("name"), step["if"])
+            for job_id, job in jobs.items()
+            for step in job.get("steps", [])
+            if isinstance(step, dict) and "run" in step and "if" in step
+        ]
+        self.assertEqual(
+            [
+                (
+                    "docs-implementation-alignment",
+                    "Publish QA gate recommendations",
+                    "always()",
+                )
+            ],
+            conditioned_steps,
+        )
+
+    def test_git_flow_runner_has_exact_registered_checkout(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        checkout = next(
+            action
+            for action in contract.actions
+            if action.action == "actions/checkout"
+        )
+        self.assertEqual(
+            {
+                "name": "Checkout repository",
+                "uses": f"actions/checkout@{checkout.sha}",
+                "with": {
+                    "persist-credentials": False,
+                    "fetch-depth": 0,
+                },
+            },
+            jobs["git-flow-contract"]["steps"][0],
+        )
+        self.assertEqual(
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.git-flow-contract",
+            jobs["git-flow-contract"]["steps"][1]["run"],
+        )
+
     def test_workflow_and_registry_co_mutations_fail_closed(self) -> None:
         with self.workflow_fixture() as root:
             workflow = root / ".github/workflows/ci-quality.yml"
@@ -433,36 +541,99 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_ci_and_local_profiles_share_node_definitions(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        node_by_id = {
-            node.gate_id: node for node in contract.gate_registry.nodes
-        }
-        ci_ids = set(
-            self.module.expand_gate_ids(
+        ci_nodes = {
+            node.gate_id: node
+            for node in contract.gate_registry.nodes
+            if node.gate_id
+            in self.module.expand_gate_ids(
                 contract.gate_registry,
                 "ci",
                 None,
                 True,
             )
+        }
+        expected_shared = {
+            profile: tuple(
+                sorted(
+                    set(ci_nodes)
+                    & set(
+                        self.module.expand_gate_ids(
+                            contract.gate_registry,
+                            profile,
+                            None,
+                            True,
+                        )
+                    )
+                )
+            )
+            for profile in (
+                "local-script-backed",
+                "local-harness",
+                "local-all-profiles",
+            )
+        }
+        script_backed = set(expected_shared["local-script-backed"])
+        harness = set(expected_shared["local-harness"])
+        all_profiles = set(expected_shared["local-all-profiles"])
+        self.assertEqual({"leaf.quickwin-baseline"}, script_backed - harness)
+        self.assertEqual(set(), harness - script_backed)
+        self.assertEqual(
+            {"leaf.compose-all-profiles-validation"},
+            all_profiles - script_backed,
         )
-        for profile in (
-            "local-script-backed",
-            "local-harness",
-            "local-all-profiles",
-        ):
-            local_ids = set(
-                self.module.expand_gate_ids(
+        self.assertEqual(set(), script_backed - all_profiles)
+        node_by_id = {
+            node.gate_id: node for node in contract.gate_registry.nodes
+        }
+        for profile, shared_ids in expected_shared.items():
+            profile_nodes = {
+                gate_id: node_by_id[gate_id]
+                for gate_id in self.module.expand_gate_ids(
                     contract.gate_registry,
                     profile,
                     None,
                     True,
                 )
-            )
-            for gate_id in sorted(ci_ids & local_ids):
+            }
+            for gate_id in shared_ids:
                 with self.subTest(profile=profile, gate_id=gate_id):
                     self.assertIs(
-                        node_by_id[gate_id],
-                        node_by_id[gate_id],
+                        ci_nodes[gate_id],
+                        profile_nodes[gate_id],
                     )
+
+    def test_local_parallel_node_substitution_fails_closed(self) -> None:
+        with self.workflow_fixture() as root:
+            document = self.load_contract_document(root)
+            source = next(
+                node
+                for node in document["gate_nodes"]
+                if node["gate_id"] == "leaf.docs-traceability"
+            )
+            parallel = dict(source)
+            parallel["gate_id"] = "leaf.local-parallel-docs-traceability"
+            parallel["suite_key"] = "local-parallel-docs-traceability"
+            document["gate_nodes"].append(parallel)
+            profile = next(
+                record
+                for record in document["profile_roots"]
+                if record["profile"] == "local-script-backed"
+            )
+            profile["root_gate_ids"] = [
+                parallel["gate_id"]
+                if gate_id == "ci.docs-traceability"
+                else gate_id
+                for gate_id in profile["root_gate_ids"]
+            ]
+            self.write_contract_document(root, document)
+            findings = self.module.validate_workflows(
+                root,
+                self.module.load_workflow_contract(root),
+            )
+        self.assertIn(
+            "ci-gate-profile-roots",
+            {finding.code for finding in findings},
+        )
 
     def test_storybook_root_runs_setup_and_coverage_in_one_runner_lifetime(
         self,

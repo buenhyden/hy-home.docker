@@ -251,12 +251,24 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             ),
         )
         aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
-        self.assertIn(
-            'target_surface_checker="scripts/validation/'
-            'check-target-surface-contract.py"',
-            aggregate,
+        self.assertNotIn(TARGET_CLI_COMMAND, aggregate)
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
         )
-        self.assertIn('python3 "$target_surface_checker"', aggregate)
+        node_by_id = {
+            node["gate_id"]: node for node in contract["gate_nodes"]
+        }
+        self.assertEqual(
+            [
+                "leaf.local-target-surface-regressions",
+                "leaf.local-target-surface-contract",
+                "leaf.local-target-delta-regressions",
+                "leaf.local-target-delta-contract",
+            ],
+            node_by_id["local.target-surface"]["children"],
+        )
         local_qa = LOCAL_QA.read_text(encoding="utf-8")
         self.assertIn("--profile local-script-backed", local_qa)
         self.assertNotIn(TARGET_CLI_COMMAND, local_qa)
@@ -1037,10 +1049,9 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             ),
         )
         aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
-        self.assertRegex(
+        self.assertNotIn(
+            "python3 scripts/validation/check-agent-governance-contract.py",
             aggregate,
-            r"python3 scripts/validation/check-agent-governance-contract\.py \\\n"
-            r"\s+--mode repository --section all",
         )
         self.assertNotRegex(
             aggregate,
@@ -1138,7 +1149,12 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             'pathlib.Path("scripts/validation/run-local-qa-gates.sh")',
             aggregate_fragments,
         )
-        self.assertIn("--mode repository --section all", source)
+        self.assertIn('"gate_id": "leaf.repo-contracts"', source)
+        self.assertIn(
+            '"entrypoint": "scripts/validation/check-repo-contracts.sh"',
+            source,
+        )
+        self.assertNotIn("--mode repository --section all", source)
 
     def test_script_reference_scan_ignores_only_python_cache_artifacts(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
@@ -1917,21 +1933,191 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         }
         self.assertEqual(expected, references)
 
+    def test_descriptor_compatibility_consumers_validate_root_identity(
+        self,
+    ) -> None:
+        consumers = {
+            "scripts/hardening/check-all-hardening.sh": "shell",
+            "scripts/operations/sync-provider-surfaces.sh": "shell",
+            "scripts/operations/sync-tech-stack-versions.sh": "shell",
+            "scripts/validation/check-agent-governance-contract.py": "python",
+            "scripts/validation/check-document-corpus-lifecycle.py": "python",
+            "scripts/validation/check-document-metadata.py": "python",
+            "scripts/validation/check-supply-chain-policy.py": "python",
+        }
+        diagnostic = "FAIL: invalid HYHOME_CI_GATE_ROOT\n"
+        for relative, kind in consumers.items():
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+                fixture_root = pathlib.Path(directory) / "repository"
+                target = fixture_root / relative
+                target.parent.mkdir(parents=True)
+                shutil.copy2(ROOT / relative, target)
+                validation = fixture_root / "scripts/validation"
+                validation.mkdir(parents=True, exist_ok=True)
+                sibling = validation / "agent_governance_contract.py"
+                if not sibling.exists():
+                    shutil.copy2(
+                        ROOT / "scripts/validation/agent_governance_contract.py",
+                        sibling,
+                    )
+                if relative.endswith("check-document-corpus-lifecycle.py"):
+                    shutil.copy2(
+                        ROOT / "scripts/validation/check-document-metadata.py",
+                        validation / "check-document-metadata.py",
+                    )
+
+                if kind == "shell":
+                    source = target.read_text(encoding="utf-8")
+                    marker = 'REPO_ROOT="$(_verified_repository_root)"\n'
+                    self.assertIn(marker, source)
+                    target.write_text(
+                        source.replace(
+                            marker,
+                            marker + "printf '%s\\n' \"$REPO_ROOT\"\nexit 0\n",
+                            1,
+                        ),
+                        encoding="utf-8",
+                    )
+                    command = ["bash", str(target)]
+                else:
+                    command = [
+                        sys.executable,
+                        "-c",
+                        (
+                            "import importlib.util, pathlib, sys;"
+                            "p=pathlib.Path(sys.argv[1]);"
+                            "s=importlib.util.spec_from_file_location('probe',p);"
+                            "m=importlib.util.module_from_spec(s);"
+                            "sys.modules[s.name]=m;"
+                            "sys.path.insert(0,str(p.parent));"
+                            "s.loader.exec_module(m);"
+                            "print(m.ROOT);"
+                            "print(sys.modules.get('agent_governance_contract').__file__ "
+                            "if p.name == 'check-document-metadata.py' else '-')"
+                        ),
+                        str(target),
+                    ]
+
+                direct_env = os.environ.copy()
+                direct_env.pop("HYHOME_CI_GATE_ROOT", None)
+                direct = subprocess.run(
+                    command,
+                    cwd=fixture_root,
+                    env=direct_env,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, direct.returncode, direct.stderr)
+                self.assertEqual(
+                    str(fixture_root),
+                    direct.stdout.splitlines()[0],
+                )
+
+                root_fd = os.open(
+                    fixture_root,
+                    os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
+                )
+                try:
+                    descriptor_env = direct_env | {
+                        "HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{root_fd}"
+                    }
+                    valid = subprocess.run(
+                        command,
+                        cwd=fixture_root,
+                        env=descriptor_env,
+                        pass_fds=(root_fd,),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                finally:
+                    os.close(root_fd)
+                self.assertEqual(0, valid.returncode, valid.stderr)
+                self.assertRegex(
+                    valid.stdout.splitlines()[0],
+                    r"\A/proc/self/fd/[0-9]+\Z",
+                )
+                if relative.endswith("check-document-metadata.py"):
+                    self.assertRegex(
+                        valid.stdout.splitlines()[1],
+                        r"\A/proc/self/fd/[0-9]+/scripts/validation/"
+                        r"agent_governance_contract\.py\Z",
+                    )
+
+                invalid = subprocess.run(
+                    command,
+                    cwd=fixture_root,
+                    env=direct_env
+                    | {"HYHOME_CI_GATE_ROOT": "/tmp/not-a-descriptor"},
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertNotEqual(0, invalid.returncode)
+                self.assertEqual(diagnostic, invalid.stderr)
+
+                with tempfile.TemporaryDirectory() as other_directory:
+                    other_fd = os.open(
+                        other_directory,
+                        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
+                    )
+                    try:
+                        mismatched = subprocess.run(
+                            command,
+                            cwd=fixture_root,
+                            env=direct_env
+                            | {
+                                "HYHOME_CI_GATE_ROOT": (
+                                    f"/proc/self/fd/{other_fd}"
+                                )
+                            },
+                            pass_fds=(other_fd,),
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                        )
+                    finally:
+                        os.close(other_fd)
+                self.assertNotEqual(0, mismatched.returncode)
+                self.assertEqual(diagnostic, mismatched.stderr)
+
     def test_repository_umbrella_is_wiring_only(self) -> None:
         source = (
             ROOT / "scripts/validation/check-repo-contracts.sh"
         ).read_text(encoding="utf-8")
-        forbidden_patterns = (
-            r'(?m)^section "GitHub workflow contract"$',
-            r"(?m)^if ! python3 scripts/validation/"
-            r"check-github-workflow-contract\.py; then$",
-            r"(?m)^if ! python3 -m unittest "
-            r"tests\.validation\.test_github_workflow_contract",
-            r"(?m)^if ! bash tests/validation/test_run_ci_precommit\.sh",
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
         )
-        for pattern in forbidden_patterns:
-            with self.subTest(pattern=pattern):
-                self.assertIsNone(re.search(pattern, source))
+        sibling_entrypoints = {
+            node["entrypoint"]
+            for node in contract["gate_nodes"]
+            if node["kind"] in {"leaf", "setup"}
+            and node["gate_id"] != "leaf.repo-contracts"
+        }
+        dispatch_re = re.compile(
+            r"(?m)^\s*(?:if\s+!\s+)?(?:python3|bash)\s+"
+            r"(?P<quote>[\"']?)(?P<path>scripts/[^\"' ;]+)"
+            r"(?P=quote)(?:\s|;|$)"
+        )
+        dispatched = {
+            match.group("path")
+            for match in dispatch_re.finditer(source)
+            if match.group("path") in sibling_entrypoints
+        }
+        self.assertEqual(set(), dispatched)
+        for retired in (
+            "lifecycle_gate_commands",
+            "workflow_gate_commands",
+            "generated_freshness_commands",
+            "run_generated_freshness_gates",
+            "Verify document metadata comparison base",
+            "Check changed and new document metadata",
+        ):
+            with self.subTest(retired=retired):
+                self.assertNotIn(retired, source)
 
     @staticmethod
     def _repo_python_program(section: str) -> str:
