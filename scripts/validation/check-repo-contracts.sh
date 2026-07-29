@@ -65,9 +65,14 @@ if (
         "entrypoint": "scripts/validation/check-repo-contracts.sh",
         "argv": [],
         "cwd": ".",
-        "allowed_env_keys": ["TEMPLATE_GATE_BASE"],
+        "allowed_env_keys": [],
         "timeout_minutes": 10,
-        "profiles": ["ci", "local"],
+        "profiles": [
+            "ci",
+            "local-script-backed",
+            "local-harness",
+            "local-all-profiles",
+        ],
         "opaque": True,
         "suite_key": "repo-contracts",
     }

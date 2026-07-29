@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import ast
 import contextlib
 import importlib.util
 import json
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -1978,9 +1980,9 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                         ),
                         encoding="utf-8",
                     )
-                    command = ["bash", str(target)]
+                    direct_command = ["bash", str(target)]
                 else:
-                    command = [
+                    direct_command = [
                         sys.executable,
                         "-c",
                         (
@@ -2001,7 +2003,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 direct_env = os.environ.copy()
                 direct_env.pop("HYHOME_CI_GATE_ROOT", None)
                 direct = subprocess.run(
-                    command,
+                    direct_command,
                     cwd=fixture_root,
                     env=direct_env,
                     capture_output=True,
@@ -2018,20 +2020,37 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     fixture_root,
                     os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
                 )
+                entrypoint_fd = (
+                    os.open(target, os.O_RDONLY)
+                    if kind == "shell"
+                    else None
+                )
                 try:
                     descriptor_env = direct_env | {
                         "HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{root_fd}"
                     }
+                    descriptor_command = (
+                        ["bash", f"/proc/self/fd/{entrypoint_fd}"]
+                        if entrypoint_fd is not None
+                        else direct_command
+                    )
+                    inherited_fds = (
+                        (entrypoint_fd, root_fd)
+                        if entrypoint_fd is not None
+                        else (root_fd,)
+                    )
                     valid = subprocess.run(
-                        command,
+                        descriptor_command,
                         cwd=fixture_root,
                         env=descriptor_env,
-                        pass_fds=(root_fd,),
+                        pass_fds=inherited_fds,
                         capture_output=True,
                         text=True,
                         check=False,
                     )
                 finally:
+                    if entrypoint_fd is not None:
+                        os.close(entrypoint_fd)
                     os.close(root_fd)
                 self.assertEqual(0, valid.returncode, valid.stderr)
                 self.assertRegex(
@@ -2045,15 +2064,33 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                         r"agent_governance_contract\.py\Z",
                     )
 
-                invalid = subprocess.run(
-                    command,
-                    cwd=fixture_root,
-                    env=direct_env
-                    | {"HYHOME_CI_GATE_ROOT": "/tmp/not-a-descriptor"},
-                    capture_output=True,
-                    text=True,
-                    check=False,
+                entrypoint_fd = (
+                    os.open(target, os.O_RDONLY)
+                    if kind == "shell"
+                    else None
                 )
+                try:
+                    invalid = subprocess.run(
+                        (
+                            ["bash", f"/proc/self/fd/{entrypoint_fd}"]
+                            if entrypoint_fd is not None
+                            else direct_command
+                        ),
+                        cwd=fixture_root,
+                        env=direct_env
+                        | {"HYHOME_CI_GATE_ROOT": "/tmp/not-a-descriptor"},
+                        pass_fds=(
+                            (entrypoint_fd,)
+                            if entrypoint_fd is not None
+                            else ()
+                        ),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                finally:
+                    if entrypoint_fd is not None:
+                        os.close(entrypoint_fd)
                 self.assertNotEqual(0, invalid.returncode)
                 self.assertEqual(diagnostic, invalid.stderr)
 
@@ -2062,9 +2099,18 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                         other_directory,
                         os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
                     )
+                    entrypoint_fd = (
+                        os.open(target, os.O_RDONLY)
+                        if kind == "shell"
+                        else None
+                    )
                     try:
                         mismatched = subprocess.run(
-                            command,
+                            (
+                                ["bash", f"/proc/self/fd/{entrypoint_fd}"]
+                                if entrypoint_fd is not None
+                                else direct_command
+                            ),
                             cwd=fixture_root,
                             env=direct_env
                             | {
@@ -2072,15 +2118,61 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                                     f"/proc/self/fd/{other_fd}"
                                 )
                             },
-                            pass_fds=(other_fd,),
+                            pass_fds=(
+                                (entrypoint_fd, other_fd)
+                                if entrypoint_fd is not None
+                                else (other_fd,)
+                            ),
                             capture_output=True,
                             text=True,
                             check=False,
                         )
                     finally:
+                        if entrypoint_fd is not None:
+                            os.close(entrypoint_fd)
                         os.close(other_fd)
                 self.assertNotEqual(0, mismatched.returncode)
                 self.assertEqual(diagnostic, mismatched.stderr)
+
+    def test_typed_repository_wiring_matches_exact_registered_node(self) -> None:
+        program = self._repo_python_program("Typed repository gate wiring")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            contract = root / ".github/workflow-contract.yml"
+            contract.parent.mkdir(parents=True)
+            shutil.copy2(ROOT / ".github/workflow-contract.yml", contract)
+            baseline = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, baseline.returncode, baseline.stderr)
+
+            document = json.loads(contract.read_text(encoding="utf-8"))
+            repo_leaf = next(
+                node
+                for node in document["gate_nodes"]
+                if node["gate_id"] == "leaf.repo-contracts"
+            )
+            repo_leaf["profiles"] = ["ci"]
+            contract.write_text(
+                json.dumps(document, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            mutated = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, mutated.returncode)
+        self.assertEqual(
+            "FAIL: typed repository gate wiring differs from the exact contract\n",
+            mutated.stderr,
+        )
 
     def test_repository_umbrella_is_wiring_only(self) -> None:
         source = (
@@ -2097,17 +2189,49 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             if node["kind"] in {"leaf", "setup"}
             and node["gate_id"] != "leaf.repo-contracts"
         }
-        dispatch_re = re.compile(
-            r"(?m)^\s*(?:if\s+!\s+)?(?:python3|bash)\s+"
-            r"(?P<quote>[\"']?)(?P<path>scripts/[^\"' ;]+)"
-            r"(?P=quote)(?:\s|;|$)"
+        dispatched = self._registered_sibling_dispatches(
+            source,
+            sibling_entrypoints,
         )
-        dispatched = {
-            match.group("path")
-            for match in dispatch_re.finditer(source)
-            if match.group("path") in sibling_entrypoints
-        }
         self.assertEqual(set(), dispatched)
+        sibling = "scripts/validation/check-target-surface-contract.py"
+        dispatch_mutations = {
+            "literal-python": f"\npython3 {sibling}\n",
+            "literal-bash": f"\nbash {sibling}\n",
+            "direct-executable": f"\n{sibling}\n",
+            "quoted-path": f'\npython3 "{sibling}"\n',
+            "variable-mediated": (
+                f'\nregistered_gate="{sibling}"\npython3 "$registered_gate"\n'
+            ),
+            "command-wrapper": f"\ncommand python3 {sibling}\n",
+            "env-wrapper": f"\nenv LANG=C python3 {sibling}\n",
+            "exec-wrapper": f"\nexec python3 {sibling}\n",
+            "helper-indirection": (
+                '\nrun_registered_gate() { python3 "$1"; }\n'
+                f"run_registered_gate {sibling}\n"
+            ),
+            "python-subprocess": (
+                "\npython3 - <<'PY'\n"
+                "import subprocess\n"
+                f"subprocess.run(['python3', '{sibling}'], check=False)\n"
+                "PY\n"
+            ),
+            "python-os-system": (
+                "\npython3 - <<'PY'\n"
+                "import os\n"
+                f"os.system('python3 {sibling}')\n"
+                "PY\n"
+            ),
+        }
+        for family, mutation in dispatch_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                )
         for retired in (
             "lifecycle_gate_commands",
             "workflow_gate_commands",
@@ -2118,6 +2242,247 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         ):
             with self.subTest(retired=retired):
                 self.assertNotIn(retired, source)
+
+    @staticmethod
+    def _registered_sibling_dispatches(
+        source: str,
+        sibling_entrypoints: set[str],
+    ) -> set[str]:
+        dispatched: set[str] = set()
+        heredoc_re = re.compile(
+            r"(?ms)^(?P<header>[^\n]*\bpython3\b[^\n]*"
+            r"<<[\"']?(?P<tag>[A-Za-z_][A-Za-z0-9_]*)[\"']?[^\n]*)\n"
+            r"(?P<body>.*?)^(?P=tag)[ \t]*$"
+        )
+
+        def static_value(
+            node: ast.AST,
+            values: dict[str, object],
+        ) -> object | None:
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                return node.value
+            if isinstance(node, ast.Name):
+                return values.get(node.id)
+            if isinstance(node, (ast.List, ast.Tuple)):
+                resolved = [static_value(item, values) for item in node.elts]
+                if all(isinstance(item, str) for item in resolved):
+                    return resolved
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+                left = static_value(node.left, values)
+                right = static_value(node.right, values)
+                if isinstance(left, str) and isinstance(right, str):
+                    return left + right
+                if isinstance(left, list) and isinstance(right, list):
+                    return left + right
+            return None
+
+        def command_paths(value: object) -> set[str]:
+            if isinstance(value, str):
+                try:
+                    tokens = shlex.split(value)
+                except ValueError:
+                    tokens = value.split()
+            elif isinstance(value, list):
+                tokens = [item for item in value if isinstance(item, str)]
+            else:
+                return set()
+            return sibling_entrypoints.intersection(tokens)
+
+        def python_dispatches(body: str) -> set[str]:
+            try:
+                tree = ast.parse(body)
+            except SyntaxError:
+                if (
+                    ("subprocess" in body or "os.system" in body)
+                    and any(path in body for path in sibling_entrypoints)
+                ):
+                    return {
+                        path
+                        for path in sibling_entrypoints
+                        if path in body
+                    }
+                return set()
+            values: dict[str, object] = {}
+            assignments = [
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.Assign, ast.AnnAssign))
+            ]
+            for _ in range(len(assignments) + 1):
+                changed = False
+                for assignment in assignments:
+                    targets = (
+                        assignment.targets
+                        if isinstance(assignment, ast.Assign)
+                        else [assignment.target]
+                    )
+                    value_node = assignment.value
+                    if value_node is None:
+                        continue
+                    value = static_value(value_node, values)
+                    for target in targets:
+                        if (
+                            isinstance(target, ast.Name)
+                            and value is not None
+                            and values.get(target.id) != value
+                        ):
+                            values[target.id] = value
+                            changed = True
+                if not changed:
+                    break
+            found: set[str] = set()
+            subprocess_sinks = {
+                "run",
+                "call",
+                "check_call",
+                "check_output",
+                "Popen",
+            }
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call) or not node.args:
+                    continue
+                function = node.func
+                is_sink = (
+                    isinstance(function, ast.Attribute)
+                    and isinstance(function.value, ast.Name)
+                    and (
+                        (
+                            function.value.id == "subprocess"
+                            and function.attr in subprocess_sinks
+                        )
+                        or (
+                            function.value.id == "os"
+                            and function.attr == "system"
+                        )
+                    )
+                )
+                if is_sink:
+                    found.update(
+                        command_paths(static_value(node.args[0], values))
+                    )
+            return found
+
+        shell_source = source
+        for match in reversed(tuple(heredoc_re.finditer(source))):
+            dispatched.update(python_dispatches(match.group("body")))
+            shell_source = (
+                shell_source[: match.start("body")]
+                + "\n" * match.group("body").count("\n")
+                + shell_source[match.end("body") :]
+            )
+
+        variables: dict[str, str] = {}
+        assignment_re = re.compile(
+            r"^\s*(?:local\s+|declare(?:\s+-[A-Za-z]+)?\s+)?"
+            r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)="
+            r"(?P<quote>[\"']?)(?P<value>scripts/[^\"'\s;]+)(?P=quote)\s*$"
+        )
+        for statement in re.split(r"[;\n]", shell_source.replace("\\\n", " ")):
+            match = assignment_re.match(statement)
+            if match and match.group("value") in sibling_entrypoints:
+                variables[match.group("name")] = match.group("value")
+
+        variable_re = re.compile(
+            r"^\$(?:\{(?P<braced>[A-Za-z_][A-Za-z0-9_]*)\}|"
+            r"(?P<plain>[A-Za-z_][A-Za-z0-9_]*))$"
+        )
+
+        def resolved_path(token: str, positional: str | None = None) -> str | None:
+            if token in sibling_entrypoints:
+                return token
+            if token in {"$1", "${1}"}:
+                return positional
+            match = variable_re.fullmatch(token)
+            if match:
+                return variables.get(
+                    match.group("braced") or match.group("plain")
+                )
+            return None
+
+        def command_sink(
+            statement: str,
+            *,
+            positional: str | None = None,
+        ) -> set[str]:
+            try:
+                tokens = shlex.split(statement, comments=True)
+            except ValueError:
+                return {
+                    path
+                    for path in sibling_entrypoints
+                    if path in statement
+                }
+            while tokens and tokens[0] in {
+                "if",
+                "then",
+                "elif",
+                "while",
+                "until",
+                "do",
+                "!",
+                "{",
+                "}",
+            }:
+                tokens.pop(0)
+            while tokens and tokens[0] in {"command", "exec"}:
+                tokens.pop(0)
+            if tokens and tokens[0] == "env":
+                tokens.pop(0)
+                while tokens and (
+                    tokens[0].startswith("-") or "=" in tokens[0]
+                ):
+                    tokens.pop(0)
+            if not tokens:
+                return set()
+            interpreter = tokens[0] in {"python3", "bash"}
+            if interpreter:
+                tokens.pop(0)
+            if not tokens:
+                return set()
+            path = resolved_path(tokens[0], positional)
+            return {path} if path is not None else set()
+
+        helper_names: set[str] = set()
+        helper_re = re.compile(
+            r"(?ms)^\s*(?:function\s+)?"
+            r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)"
+            r"(?:\s*\(\s*\))?\s*\{(?P<body>.*?)\}"
+        )
+        sentinel = next(iter(sibling_entrypoints), None)
+        if sentinel is not None:
+            for match in helper_re.finditer(shell_source):
+                if any(
+                    command_sink(statement, positional=sentinel)
+                    for statement in re.split(r"[;\n]", match.group("body"))
+                ):
+                    helper_names.add(match.group("name"))
+
+        for statement in re.split(r"[;\n]", shell_source.replace("\\\n", " ")):
+            if assignment_re.match(statement):
+                continue
+            dispatched.update(command_sink(statement))
+            try:
+                tokens = shlex.split(statement, comments=True)
+            except ValueError:
+                continue
+            while tokens and tokens[0] in {
+                "if",
+                "then",
+                "elif",
+                "while",
+                "until",
+                "do",
+                "!",
+                "{",
+                "}",
+            }:
+                tokens.pop(0)
+            if tokens and tokens[0] in helper_names:
+                for token in tokens[1:]:
+                    path = resolved_path(token)
+                    if path is not None:
+                        dispatched.add(path)
+        return dispatched
 
     @staticmethod
     def _repo_python_program(section: str) -> str:

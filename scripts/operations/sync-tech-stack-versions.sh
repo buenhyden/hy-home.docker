@@ -29,8 +29,13 @@ case "${1:-}" in
 esac
 
 _verified_repository_root() {
-  local direct_root candidate direct_identity candidate_identity
-  direct_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  local entrypoint direct_root candidate direct_identity candidate_identity
+  entrypoint="$(readlink -f -- "${BASH_SOURCE[0]}" 2>/dev/null || true)"
+  if [[ -z "$entrypoint" || ! -f "$entrypoint" ]] \
+    || ! direct_root="$(cd "$(dirname "$entrypoint")/../.." && pwd -P)"; then
+    printf '%s\n' "FAIL: invalid HYHOME_CI_GATE_ROOT" >&2
+    return 2
+  fi
   if [[ -z "${HYHOME_CI_GATE_ROOT+x}" ]]; then
     printf '%s\n' "$direct_root"
     return 0
