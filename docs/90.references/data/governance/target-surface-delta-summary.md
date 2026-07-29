@@ -6,8 +6,8 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 148
-- Current tracked target paths: 485
+- Delta entries: 150
+- Current tracked target paths: 487
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
 
@@ -20,14 +20,14 @@
 | `examples` | 9 |
 | `infra` | 275 |
 | `projects` | 52 |
-| `scripts` | 59 |
+| `scripts` | 60 |
 | `secrets` | 19 |
-| `tests` | 53 |
+| `tests` | 54 |
 
 ## Dispositions
 
 - `preserve`: 89
-- `update`: 59
+- `update`: 61
 - `migrate`: 0
 - `delete`: 0
 
@@ -120,6 +120,7 @@
 | `scripts/validation/check-repo-contracts.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-supply-chain-policy.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-target-surface-delta-contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/ci_gate_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/compose-core-readiness.lib.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/generate-security-automation-readiness.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/github_workflow_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
@@ -167,6 +168,7 @@
 | `tests/validation/test_agent_governance_ci_routing.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_governance_contract.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_output_eval_fixtures.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_ci_gate_contract.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_compose_core_readiness.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_document_corpus_lifecycle.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_document_metadata.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |

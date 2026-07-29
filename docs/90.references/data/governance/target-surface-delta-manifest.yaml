@@ -1889,6 +1889,25 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/check-target-surface-delta-contract.py
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/validation/ci_gate_contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/ci_gate_contract.py
+  direct_consumers:
+  - tests/validation/test_ci_gate_contract.py
+  finding: Added the dependency-free strict JSON schema-v2 typed gate parser, graph validator, suite and root ownership contract, and ordered profile expansion.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/ci_gate_contract.py
+  tests:
+  - tests/validation/test_ci_gate_contract.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/validation/compose-core-readiness.lib.sh
   surface_class: executable-script
   profile: null
@@ -2921,6 +2940,24 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_agent_output_eval_fixtures.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_ci_gate_contract.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: tests/validation/test_ci_gate_contract.py
+  direct_consumers: []
+  finding: Added focused strict JSON, exact kind-field, DAG, suite ownership, required-root, ordered-profile, and bounded no-follow reader regressions.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/ci_gate_contract.py
+  tests:
+  - tests/validation/test_ci_gate_contract.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: tests/validation/test_compose_core_readiness.py

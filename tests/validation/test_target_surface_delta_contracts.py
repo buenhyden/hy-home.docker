@@ -125,11 +125,18 @@ TASK4_TRACKED_UPDATE_PATHS = frozenset(
     }
 )
 TASK4_UPDATE_PATHS = TASK4_NEW_UPDATE_PATHS | TASK4_TRACKED_UPDATE_PATHS
+TASK41_UPDATE_PATHS = frozenset(
+    {
+        "scripts/validation/ci_gate_contract.py",
+        "tests/validation/test_ci_gate_contract.py",
+    }
+)
 EXPECTED_UPDATE_PATHS = (
     PRE_TASK2_UPDATE_PATHS
     | TASK2_UPDATE_PATHS
     | TASK3_UPDATE_PATHS
     | TASK4_UPDATE_PATHS
+    | TASK41_UPDATE_PATHS
 )
 
 
@@ -1172,7 +1179,7 @@ class RepositoryManifestTests(unittest.TestCase):
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
-        self.assertEqual(148, len(document.entries))
+        self.assertEqual(150, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
@@ -1186,7 +1193,7 @@ class RepositoryManifestTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            {"preserve": 89, "update": 59},
+            {"preserve": 89, "update": 61},
             {
                 disposition: sum(
                     row.disposition == disposition for row in document.entries
@@ -1278,6 +1285,32 @@ class RepositoryManifestTests(unittest.TestCase):
         for path, consumers in task4_consumers.items():
             with self.subTest(task4_consumers=path):
                 self.assertEqual(consumers, rows[path].direct_consumers)
+        for path in TASK41_UPDATE_PATHS:
+            with self.subTest(task41_path=path):
+                self.assertEqual("update", rows[path].disposition)
+                self.assertEqual(path, rows[path].canonical_owner)
+                self.assertEqual("pending", rows[path].spec_verdict)
+                self.assertEqual("pending", rows[path].quality_verdict)
+                self.assertEqual(
+                    ("scripts/validation/ci_gate_contract.py",),
+                    rows[path].validators,
+                )
+                self.assertEqual(
+                    ("tests/validation/test_ci_gate_contract.py",),
+                    rows[path].tests,
+                )
+        self.assertEqual(
+            ("tests/validation/test_ci_gate_contract.py",),
+            rows[
+                "scripts/validation/ci_gate_contract.py"
+            ].direct_consumers,
+        )
+        self.assertEqual(
+            (),
+            rows[
+                "tests/validation/test_ci_gate_contract.py"
+            ].direct_consumers,
+        )
         self.assertFalse(
             any(
                 row.disposition in {"migrate", "delete"}
@@ -1336,8 +1369,28 @@ class RepositoryManifestTests(unittest.TestCase):
         )
         explicit_pairs = {
             (
+                ".github/workflows/ci-quality.yml",
+                ".github/rulesets/main-protection.md",
+            ),
+            (
                 "examples/sample-web-service/.dockerignore",
                 "scripts/validation/check-supply-chain-policy.py",
+            ),
+            (
+                "scripts/validation/ci_gate_contract.py",
+                "tests/validation/test_ci_gate_contract.py",
+            ),
+            (
+                "scripts/validation/github_workflow_contract.py",
+                "scripts/validation/check-github-workflow-contract.py",
+            ),
+            (
+                "scripts/validation/github_workflow_contract.py",
+                "tests/validation/test_agent_governance_ci_routing.py",
+            ),
+            (
+                "scripts/validation/github_workflow_contract.py",
+                "tests/validation/test_github_workflow_contract.py",
             ),
             (
                 "scripts/validation/target_surface_contract.py",
@@ -1357,6 +1410,14 @@ class RepositoryManifestTests(unittest.TestCase):
             ),
             (
                 "tests/validation/test_target_surface_delta_contracts.py",
+                "scripts/validation/run-local-qa-gates.sh",
+            ),
+            (
+                "tests/validation/test_agent_governance_ci_routing.py",
+                ".github/workflows/ci-quality.yml",
+            ),
+            (
+                "tests/validation/test_github_workflow_contract.py",
                 "scripts/validation/run-local-qa-gates.sh",
             ),
         }
