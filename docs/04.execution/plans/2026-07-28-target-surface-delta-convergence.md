@@ -1609,7 +1609,7 @@ git commit -m "docs(task): record typed gate runner review"
 ##### Task 4.2R / Wave A design reset: Descriptor-root and invocation-lifecycle remediation
 
 **Status:** The design-reset commit `5f5c746e` received independent Plan
-reviews of specification `C0/I3/M0` and quality/security `C0/I5/M1`; both are
+reviews of specification `C0/I3/M0` and quality/security `C0/I5/M0`; both are
 `CHANGES_REQUIRED` / `COMMIT_READY NO`. Those findings supersede its earlier
 design. The previous remediation evidence at `17bb5cdd` remains historical,
 not a pass or Wave B authorization. Manifest review verdicts remain `pending`.
