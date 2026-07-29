@@ -1854,7 +1854,11 @@ the exact range `86146050..17645f2a`. The fresh specification review returned
 quality/security review returned `C0/I1/M0`, `CHANGES_REQUIRED`,
 `COMMIT_READY NO`. The 4.2S one-attempt allowance is exhausted, Wave B remains
 blocked, and no manifest verdict is promoted. This subsection is the only
-successor design authority for the next bounded implementation attempt.
+successor design authority for the next bounded implementation attempt. The
+initial `4abc8009` design draft and `5d089dd4` checkpoint were committed by a
+read-only analysis agent outside its assignment. They remain historical
+evidence but grant no implementation authority and are superseded by the
+corrected checkpoint defined below.
 
 **Exact implementation allowlist:** after the uniquely named controller design
 checkpoint for this subsection is committed and independently approved, the
@@ -1866,40 +1870,84 @@ successor implementation paths remain exactly
 schema, workflow, manifest, generated summary, Stage 00 contract, runtime,
 Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
 
+- [ ] **Step T0: Commit and independently approve the corrected design.**
+
+  Commit the correction and then one Task-ledger-only checkpoint whose exact
+  unique subject is
+  `docs(plan): record interruption-safe typed gate checkpoint`. Fresh
+  specification and quality/security reviewers inspect the exact
+  `17645f2a`-through-checkpoint range. Both must return `C0/I0`,
+  `IMPLEMENTATION_READY YES`; otherwise implementation remains blocked. The
+  correction and checkpoint run only changed-document metadata, documentation
+  traceability, and diff hygiene. They do not run production tests, child
+  gates, runtime, Compose, network, wrapper, or direct pre-commit actions.
+
 - [ ] **Step T1: Add behavior-specific RED witnesses inside existing tests.**
 
   Keep top-level discovery exactly `94` tests. Extend existing methods only.
   Required new or corrected witnesses:
 
-  1. Adapter boundary taxonomy: any ordinary `Exception` raised while copying
-     `dict(environ)` or dispatching a subcommand becomes the fixed value-free
-     `AdapterError` code `ci-gate-adapter-operation` after the owned root
-     capability `M` cleanup runs. `OSError` remains the same fixed operation
-     error. `BaseException` interruption (`KeyboardInterrupt`, `SystemExit`, or
-     equivalent) still triggers `M` cleanup and is then re-raised unless a root,
-     Compose, or SARIF cleanup failure wins by the existing cleanup-precedence
-     order. No exception message may leak a private environment value, path,
-     descriptor number, or raw payload.
-  2. Runner post-`Popen` ownership: after `Popen(start_new_session=True)`
-     succeeds and before the pidfd is closed, every `BaseException` from
-     pidfd readiness, process-group finalization, bounded reap, or close enters
-     the same cleanup controller as ordinary runner failures. The runner sends
-     best-effort group `KILL`, performs bounded pidfd readiness when the pidfd is
-     usable, reaps only after readiness is confirmed, attempts pidfd close, and
-     re-raises the original interruption only if cleanup succeeds. Any cleanup
-     failure takes precedence as fixed value-free `ci-gate-runner-cleanup`.
-  3. Evidence wording: later runner recovery performs a single bounded
+  1. Adapter boundary taxonomy preserves an already typed `AdapterError`.
+     Every other ordinary `Exception` raised while copying `dict(environ)` or
+     dispatching a subcommand becomes the fixed value-free `AdapterError` code
+     `ci-gate-adapter-operation` after the owned root capability `M` cleanup
+     runs. `OSError` remains the same fixed operation error. A control-flow
+     `BaseException` that is not an `Exception`, including `KeyboardInterrupt`,
+     `SystemExit`, or `GeneratorExit`, still triggers `M` cleanup and is
+     re-raised unchanged only when cleanup succeeds. The adapter never copies
+     that interruption's value into an `AdapterError` or diagnostic. A root,
+     Compose, or SARIF cleanup failure wins by the existing first-cleanup-domain
+     order. Ordinary exception messages, environment values, paths, descriptor
+     numbers, and raw payloads never cross the adapter's typed diagnostic
+     boundary.
+  2. Runner ownership begins when `Popen(start_new_session=True)` returns. If
+     `pidfd_open` raises `OSError`, preserve the existing typed acquisition
+     recovery. If it raises an ordinary unexpected `Exception`, perform the
+     same no-pidfd recovery and return fixed value-free
+     `ci-gate-runner-cleanup`. If it raises a control-flow `BaseException`,
+     perform the same group `KILL` plus exactly one bounded wait attempt and
+     re-raise the original interruption only when recovery succeeds. Any
+     signal or wait failure takes precedence as `ci-gate-runner-cleanup`.
+  3. After pidfd acquisition and before the sole bounded reap attempt, every
+     `GateContractError`, unexpected ordinary `Exception`, or control-flow
+     `BaseException` from pidfd readiness, process-group finalization, or proc
+     scanning enters one later-failure cleanup controller. It independently
+     attempts group `KILL`, bounded pidfd readiness, one bounded wait only when
+     readiness is confirmed, and pidfd close. Cleanup success preserves an
+     existing `GateContractError`, normalizes an unexpected ordinary
+     `Exception` to fixed value-free `ci-gate-runner-cleanup`, and re-raises a
+     control-flow interruption unchanged. Any recovery-action failure takes
+     precedence as `ci-gate-runner-cleanup`.
+  4. The runner tracks whether its single bounded wait/reap has begun. If the
+     wait itself raises any exception or interruption, it never signals,
+     observes, scans, or waits on the numeric PGID again; it still attempts
+     pidfd close and returns fixed `ci-gate-runner-cleanup`. If pidfd close
+     fails or is interrupted after a successful reap, it does not retry the
+     close or touch the reaped identity and returns the same cleanup code.
+     `/proc` directory, PID-directory, and stat descriptors use
+     `BaseException`-safe `finally` cleanup, attempt all owned closes
+     independently, and convert an incomplete close to the fixed runner
+     cleanup domain without leaking the original value.
+  5. Evidence wording: later runner recovery performs a single bounded
      `process.wait(timeout=grace)` only when readiness is confirmed; if
      readiness is unavailable or not reached, the runner skips wait, records
      cleanup failure, and still attempts pidfd close. Prohibit `process.poll`,
      `communicate`, and any reaping primitive before identity-safe finalization;
      do not state a broader "no poll" ban that could be confused with bounded
      pidfd polling.
-  4. Post-implementation evidence: Task ledger evidence must explicitly record
+  6. Post-implementation evidence: Task ledger evidence must explicitly record
      the changed-document metadata check result and documentation traceability
      result, or state `unverified` if a command was not run. Existing Ruff,
      compileall, advisory, diff, freeze, workflow, projection, and exact
      five-path evidence remains required.
+
+  RED must fail only on the new adapter ordinary-exception/control-flow
+  witnesses and runner acquisition/pre-reap/reap/close interruption witnesses,
+  not on import or discovery. Mocks fail the test if any numeric-PGID action
+  occurs after a bounded wait attempt. Existing real child/grandchild evidence
+  for normal, nonzero, timeout, output-overflow, and read-error paths remains
+  unchanged; no new live runtime, Compose, network, or external dependency
+  action is authorized.
 
 - [ ] **Step T2: Implement only the typed boundary corrections.**
 
@@ -1938,7 +1986,7 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2T_DESIGN_SUBJECT='docs(plan): record typed interruption design checkpoint'
+TASK_4_2T_DESIGN_SUBJECT='docs(plan): record interruption-safe typed gate checkpoint'
 TASK_4_2T_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2T_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2T_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2T_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
@@ -1968,12 +2016,32 @@ git diff --check
 
 - [ ] **Step T4: Commit, independent review, and gate.**
 
-  Commit the bounded correction with a distinct subject, then assign fresh
-  independent specification and quality/security reviewers to the exact
-  checkpoint-through-implementation range. Both reviewers must return `C0/I0`.
-  If either reviewer reports an Important or Critical finding, return to
-  design/plan again. Only a controller-owned review-evidence commit after a
-  passing pair may unblock Wave B.
+  This subsection permits one successor implementation attempt and one fresh
+  independent review pair. Commit the bounded correction with the exact
+  subject `fix(ci): close typed interruption boundary`, then run:
+
+```bash
+TASK_4_2T_DESIGN_SUBJECT='docs(plan): record interruption-safe typed gate checkpoint'
+TASK_4_2T_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2T_DESIGN_SUBJECT}$")"
+test -n "$TASK_4_2T_DESIGN_COMMIT"
+test "$(printf '%s\n' "$TASK_4_2T_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+test "$(git show -s --format=%s "$TASK_4_2T_DESIGN_COMMIT")" = "$TASK_4_2T_DESIGN_SUBJECT"
+TASK_4_2T_EXPECTED_PATHS="$(printf '%s\n' \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py | sort)"
+test "$(git diff --name-only "$TASK_4_2T_DESIGN_COMMIT"..HEAD | sort)" = "$TASK_4_2T_EXPECTED_PATHS"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  Assign fresh independent specification and quality/security reviewers to
+  that exact checkpoint-through-implementation range. Both reviewers must
+  return `C0/I0`. If either reports an Important or Critical finding, return
+  to design/plan again without another implementation attempt. Only a
+  controller-owned review-evidence commit after a passing pair may unblock
+  Wave B.
 
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 

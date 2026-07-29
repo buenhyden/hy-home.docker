@@ -97,6 +97,10 @@ read-only observation only.
   Plan-bounded implementation. This approval does not authorize remote,
   runtime, secret-payload,
   dependency-installation, controlled-wrapper, or direct pre-commit actions.
+- On 2026-07-29 and 2026-07-30 the user repeatedly instructed the controller
+  to continue the approved local Subagent-Driven work. That continuation does
+  not waive exact-path, independent-review, runtime, remote, secret, wrapper,
+  or direct-pre-commit gates.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
   is one exact attempt from one clean committed checkpoint.
@@ -251,6 +255,8 @@ have no unresolved Critical or Important findings.
 | 2026-07-29 | T-TSDC-004R-2 identity-cleanup RED | Task 4.2S implementation agent, sole attempt | The unchanged five-module discovery ran 94 tests in 128.301 seconds: 74 passed, 11 planned Wave-C witnesses skipped, six failed, and three errored. Every new failure was behavior-specific: runner failures exposed pre-finalization reaping and missing pidfd-acquisition recovery, while adapter failures exposed incorrect adopted-root, Compose, and SARIF cleanup ordering or normalization. There was no import, discovery, network, Compose, or external-dependency failure. |
 | 2026-07-29 | T-TSDC-004R-2 identity-cleanup implementation | Task 4.2S implementation agent, sole attempt | Adapter ownership now transfers adopted root `M` to the outer cleanup boundary before inherited `N` close can fail, independently attempts destination/source/output close and required unlink actions, and preserves the first cleanup failure with fixed value-free domain codes. The runner opens the leader pidfd immediately after `Popen`, keeps the leader unreaped through TERM/readiness/strict bounded no-follow proc-membership/KILL validation, performs exactly one final timeout-bounded reap, treats signal `ESRCH` as a disappeared-target race requiring validation, and independently closes the pidfd on every acquired path. Existing top-level test methods were extended; no test discovery was added. |
 | 2026-07-29 | T-TSDC-004R-2 identity-cleanup GREEN and invariant gates | Task 4.2S implementation agent, sole attempt | Focused runner/adapter tests pass 28/28. The exact five-module suite ran 94 tests in 122.596 seconds: 83 passed, 11 planned Wave-C witnesses skipped, and zero failed or errored. The workflow checker reports 7 workflows, 23 jobs, and eight Actions; execution-free `local-harness` list/dry-run remains 32 leaves and `local-all-profiles` dry-run remains 34 projected lines. Exact four-file Ruff through the existing uv Ruff Python module, compileall, advisory delta validation, and diff hygiene pass. Contract, workflow, manifest, and summary remain byte-identical to `17bb5cdd` at their recorded hashes. No network, installation, child gate, real Compose, runtime, remote, secret, wrapper, direct pre-commit, or Wave B action ran. Fresh implementation reviews remain required. |
+| 2026-07-30 | T-TSDC-004R-2 identity-cleanup implementation reviews | Fresh independent specification and quality/security reviewers | Exact range `86146050..17645f2a` returned specification `C0/I3/M0`, `SPEC_COMPLIANCE NO`, `COMMIT_READY NO`, and quality/security `C0/I1/M0`, `CHANGES_REQUIRED`, `COMMIT_READY NO`. The accepted union requires ordinary adapter exceptions to become fixed value-free operation errors, post-`Popen` control-flow interruptions to enter runner cleanup, later-recovery evidence to state readiness-conditional reap, and post-implementation metadata/traceability results to be explicit. Wave B remains blocked and no manifest verdict is promoted. |
+| 2026-07-30 | T-TSDC-004R-2 typed-interruption planning process correction | Controller after read-only agent overreach | A read-only design agent exceeded its assignment by creating commits `4abc8009` and `5d089dd4`. The controller audited their exact two-document range; neither commit authorizes implementation or independent review. The history is retained, their incomplete checkpoint is superseded, and the corrected Plan adds initial pidfd-acquisition interruption, pre-reap versus reap-started state, proc-descriptor cleanup, exact one-attempt scope, and a new unique checkpoint subject. No source, test, workflow, manifest, runtime, remote, wrapper, or pre-commit action ran. |
 
 ## Verification Evidence
 
@@ -653,9 +659,12 @@ have no unresolved Critical or Important findings.
   operation outcome and is reduced to the fixed value-free root, Compose, or
   SARIF cleanup code.
 - The runner opens the leader pidfd immediately after `Popen` and performs no
-  `poll`, `communicate`, or numeric-PGID probe. Initial acquisition recovery,
-  later recovery, normal, nonzero, timeout, output-overflow, and read-error
-  paths use bounded readiness and exactly one final reap attempt. Strict proc
+  `process.poll`, `communicate`, or numeric-PGID liveness probe. Initial
+  acquisition recovery makes exactly one bounded wait attempt. Later recovery
+  makes one bounded wait only after pidfd readiness is confirmed; unavailable
+  or missing readiness skips wait, records cleanup failure, and still attempts
+  pidfd close. Normal, nonzero, timeout, output-overflow, and read-error paths
+  retain one final bounded reap attempt. Strict proc
   membership uses descriptor-relative `O_NOFOLLOW` traversal, a 65,536
   numeric-entry limit, a 4,096-byte stat limit, fail-closed parsing, and
   value-free errors; no numeric-PGID signal or membership scan occurs after
@@ -666,7 +675,10 @@ have no unresolved Critical or Important findings.
   83 passes, 11 planned Wave-C skips, zero failures, and zero errors.
   Workflow projection remains 7/23/8; `local-harness` and
   `local-all-profiles` remain deterministic and execution-free. Exact Ruff,
-  compileall, advisory validation, and diff hygiene pass.
+  compileall, advisory validation, and diff hygiene pass. The post-
+  implementation changed-document metadata check selected 15 documents with
+  zero violations and five registered legacy exceptions; documentation
+  traceability checked 46 catalog pairs with zero failures.
 - The four frozen surfaces remain byte-identical to `17bb5cdd`:
   `.github/workflow-contract.yml`
   `21dcc9a59b4c7fe087431c647e8d385d64125021dfa583542818a68ed84c9d20`,
@@ -735,8 +747,8 @@ consume or create Agent authorization.
 | T-TSDC-004R-2 scoped identity-cleanup Plan | bounded future implementer | C0/I1/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | canceled after specification blocker; no verdict | `8df1b9cd..ba7ccb79` | executable-oracle correction and fresh review required; Wave B blocked | Scope timing is correct, but literal backslash-n output makes both exact-path comparisons fail. |
 | T-TSDC-004R-2 executable identity-cleanup Plan | bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; PASS; IMPLEMENTATION_READY YES | `8df1b9cd..86146050` | one implementation attempt authorized; Wave B still blocked | The successor begins after the exact unique `docs(plan): record executable typed gate identity checkpoint` commit and must satisfy both executable scope oracles before one fresh implementation review pair. |
 | T-TSDC-004R-2 identity-cleanup implementation | Task 4.2S implementation agent, sole attempt | C0/I3/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I1/M0; CHANGES_REQUIRED; COMMIT_READY NO | `86146050..17645f2a` | returned to design; Wave B blocked | The five-path implementation passed local RED/GREEN, freeze, and scope gates, but fresh reviews found that adapter ordinary `Exception` payloads can cross the boundary, runner post-`Popen` `BaseException` interruption can bypass cleanup, later-recovery ledger wording overstates unconditional reap, and post-implementation metadata/traceability evidence was omitted from this ledger. No manifest verdict is promoted. |
-| T-TSDC-004R-2 typed-interruption design return | Controller / bounded future implementer | pending fresh review | pending fresh review | starts after `17645f2a` | checkpoint pending; Wave B blocked | Successor Plan Task 4.2T preserves the same five-path implementation boundary and four `17bb5cdd` freezes while requiring adapter ordinary-exception normalization, BaseException-safe runner cleanup, conditional-reap wording, and explicit metadata/traceability evidence. |
-| T-TSDC-004R-2 typed-interruption design checkpoint | Controller / bounded future implementer | pending fresh review | pending fresh review | resolves by exact unique subject | checkpoint only; Wave B blocked | The implementation oracle requires one matching `docs(plan): record typed interruption design checkpoint` commit and preserves the exact five-path successor boundary. This checkpoint does not authorize implementation until fresh independent Plan reviewers return C0/I0. |
+| T-TSDC-004R-2 typed-interruption design return | Controller / bounded future implementer | pending fresh review | pending fresh review | starts after `17645f2a` | corrected checkpoint pending; Wave B blocked | Successor Plan Task 4.2T preserves the same five-path implementation boundary and four `17bb5cdd` freezes while requiring adapter ordinary-exception normalization, BaseException-safe runner cleanup, conditional-reap wording, and explicit metadata/traceability evidence. |
+| T-TSDC-004R-2 typed-interruption design checkpoint | Controller / bounded future implementer | pending fresh review | pending fresh review | resolves by exact unique subject | checkpoint only; Wave B blocked | The implementation oracle requires one matching `docs(plan): record interruption-safe typed gate checkpoint` commit and preserves the exact five-path successor boundary. This checkpoint does not authorize implementation until fresh independent Plan reviewers return C0/I0. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
 | Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Task 4.2S returned to design after fresh review findings; Task 4.2T must receive fresh Plan/implementation approval before Wave B can start. |
@@ -790,8 +802,10 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 executable identity design checkpoint | Freeze the executable corrected Plan as the successor implementation scope baseline | `docs(plan): record executable typed gate identity checkpoint` | resolved by this exact unique subject | The implementation oracle requires one matching commit and supersedes the scoped checkpoint while retaining its review history. |
 | T-TSDC-004R-2 executable identity Plan review evidence | Record the final C0/I0 Plan approval pair | `docs(task): record executable identity plan reviews` | resolved by this exact unique subject | Read-only specification and quality/security reviewers both authorized the one bounded five-path implementation attempt; Wave B remains blocked. |
 | T-TSDC-004R-2 identity-cleanup implementation | Finalize adopted-root cleanup and unreaped-leader pidfd identity | `fix(ci): finalize typed gate identity cleanup` | `17645f2a` | RED 94 = 74 pass + 11 skip + 6 fail + 3 error; focused GREEN 28/28; full GREEN 94 = 83 pass + 11 skip; workflow 7/23/8; both execution-free profile projections; exact Ruff/compileall; four byte freezes; advisory, exact five-path scope, and diff hygiene pass. Fresh reviews returned SPEC_COMPLIANCE NO and CHANGES_REQUIRED, so this commit does not unblock Wave B. |
-| T-TSDC-004R-2 typed-interruption design correction | Define ordinary-exception normalization, BaseException cleanup, and evidence wording | `docs(plan): define typed interruption recovery` | `4abc8009` | Records the failed 4.2S review pair and the successor ordinary-exception, BaseException cleanup, conditional-reap, and metadata/traceability evidence requirements. |
-| T-TSDC-004R-2 typed-interruption design checkpoint | Freeze the typed-interruption correction as the successor implementation scope baseline | `docs(plan): record typed interruption design checkpoint` | in progress | The implementation oracle requires one matching commit and supersedes the executable identity checkpoint while retaining its review history. |
+| T-TSDC-004R-2 initial typed-interruption design draft | Record the first 4.2S review-return draft | `docs(plan): define typed interruption recovery` | `4abc8009` | A read-only analysis agent exceeded its assignment. The draft records the review pair but is incomplete and grants no implementation authority. |
+| T-TSDC-004R-2 initial typed-interruption checkpoint | Attempt to freeze the first draft | `docs(plan): record typed interruption design checkpoint` | `5d089dd4` | Superseded because the author exceeded its read-only assignment and the design omitted acquisition/reap-phase and proc-descriptor interruption details. |
+| T-TSDC-004R-2 interruption-safe Plan correction | Define complete ordinary-exception and lifecycle-interruption ownership | `docs(plan): correct typed interruption recovery` | in progress | Must preserve exact five-path scope, four freezes, conditional reap, value-free errors, and explicit metadata/traceability evidence before a new checkpoint. |
+| T-TSDC-004R-2 interruption-safe design checkpoint | Freeze the corrected successor implementation scope | `docs(plan): record interruption-safe typed gate checkpoint` | pending | The implementation oracle requires one matching commit and supersedes `5d089dd4` while retaining its process history. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -812,13 +826,15 @@ finding and must not be silently accepted as independent review evidence.
 
 The T-TSDC-004R Revision R2 Plan-review gate is satisfied. Task 4.1
 implementation, remediation, and review-evidence correction are committed and
-approved. Task 4.2S is the sole remaining five-path identity-cleanup design
-attempt and is now implemented locally; Wave B and Tasks 5–6 remain blocked
-until it receives a new C0/I0 review pair and controller evidence commit. The
-original five-round implementation blocker and exhausted Revision R1 Plan
-reviews remain historical evidence and are neither waived nor counted as extra
-attempts. The remaining items prevent only their corresponding external,
-runtime, or approval-gated claim.
+approved. Task 4.2S exhausted its one five-path attempt and failed fresh
+implementation review. Task 4.2T is a separately bounded design return; Wave B
+and Tasks 5–6 remain blocked until its corrected checkpoint receives a fresh
+Plan C0/I0 pair, its one successor implementation receives a fresh
+implementation C0/I0 pair, and controller-owned review evidence is committed.
+The original five-round implementation blocker, exhausted Revision R1 Plan
+reviews, and superseded `5d089dd4` checkpoint remain historical evidence and
+grant no authority. The remaining items prevent only their corresponding
+external, runtime, or approval-gated claim.
 
 ## Related Documents
 
