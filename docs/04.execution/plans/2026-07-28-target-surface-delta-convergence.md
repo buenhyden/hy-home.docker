@@ -37,10 +37,10 @@ unittest, Git, and repository-owned generators.
 **Revision R1 resume checkpoint:**
 `a0f91bb50cbd589abdecd8cd217d1673ac0e76d9`
 
-**Revision R1 status:** The user approved this revised Plan on 2026-07-29.
-The first independent reviews returned blocking findings; implementation
-remains blocked until the corrected Plan receives independent specification
-and quality/security C0/I0 re-reviews.
+**Revision R2 status:** Revision R1 exhausted its two-attempt Plan review loop
+with unresolved Important findings and returned to design/plan. This Revision
+R2 remains blocked pending explicit user approval and fresh independent
+specification and quality/security C0/I0 reviews.
 
 ## Global Constraints
 
@@ -1041,24 +1041,26 @@ The exact `local-script-backed` root order is
 `local.generated-freshness`, and `leaf.repo-contracts`.
 
 The exact `local-harness` root order is the same sequence without
-`leaf.local-tech-stack-version-drift` and `local.quickwin-baseline`. Both local
-profiles exclude real pre-commit, dependency audit, frontend
+`leaf.local-tech-stack-version-drift` and `local.quickwin-baseline`.
+The exact `local-all-profiles` root order is the complete
+`local-script-backed` sequence followed by
+`local.compose-all-profiles-validation`. All three local profiles exclude real
+pre-commit, dependency audit, frontend
 dependency/build/coverage, Playwright installation, zizmor execution/upload,
 and every CI-only or networked setup node. Contract and routing tests require
-both local profiles to exclude `setup.compose-env`, and an existing ignored
+all three local profiles to exclude `setup.compose-env`, and an existing ignored
 `.env` fixture must remain byte-identical after every local wrapper mode. The
 existing `--all-profiles` local-runner mode remains a compatibility route: it
-executes the complete `local-script-backed` profile and then the separately
-registered `local.compose-all-profiles-validation` aggregate. Normal and
-all-profile Compose are distinct suite identities, so this intentionally runs
-both without duplicate ownership. The local all-profile aggregate is not part
-of the default local profile-root list. The wrapper sets
+executes the registered `local-all-profiles` profile once. Normal and
+all-profile Compose are distinct suite identities, so that profile
+intentionally reaches each distinct leaf once without duplicate ownership.
+The wrapper sets
 `HYHOME_COMPOSE_PROFILES` to an already supplied nonempty value or to the exact
 default `core data obs workflow ai tooling messaging security communication
 service storage admin iac registry sast sync testing graph mng ksql nginx`; it
 does not inherit `HYHOME_ALL_COMPOSE_PROFILES`.
-`--script-backed`, `--harness`, and `--all-profiles` contain no literal
-child-command list.
+`--script-backed`, `--harness`, and `--all-profiles` each select one registered
+profile and contain no literal child-command list.
 
 Gate-specific environment admission is exact:
 
@@ -1121,18 +1123,24 @@ parity for this exact set before workflow cutover.
 - [x] Record the first independent read-only Plan reviews of
   `a0f91bb5..1a86f929` as `C0/I4/M1` specification and `C1/I2/M1`
   quality/security; neither verdict authorizes implementation.
-- [ ] Obtain one final independent specification re-review and one separate
-  quality/security re-review of the complete corrected Plan range.
-- [ ] Require both re-reviews to map TSDC-010 through TSDC-017, verify exact
-  file ownership and commands, and return C0/I0 before implementation.
+- [x] Record the second independent reviews of
+  `a0f91bb5..e97b7966` as `C0/I3/M1` specification and `C0/I2/M1`
+  quality/security. The two-attempt Plan review loop is exhausted and returns
+  to design/plan.
 - [x] Record the user's 2026-07-29 explicit approval of this exact Plan
-  revision.
+  Revision R1.
 - [x] Record that approval in the Task ledger without changing old work-log
   rows or treating it as controlled-wrapper, remote, runtime, or secret
   authority.
+- [ ] Obtain explicit user approval of this Revision R2.
+- [ ] After that approval, assign fresh independent specification and
+  quality/security Plan reviewers to the complete R2 range.
+- [ ] Require both R2 reviews to map TSDC-010 through TSDC-017, verify exact
+  file ownership and commands, and return C0/I0 before implementation.
 
-Expected gate: only after both correction re-reviews return C0/I0 does the
-Task ledger change from `blocked pending corrected Plan review` to
+Expected gate: only after Revision R2 approval and both fresh R2 reviews return
+C0/I0 does the Task ledger change from `blocked pending Revision R2 approval`
+to
 `active recovery`; no production or test file changes before that transition.
 
 #### Task 4.1 / Wave A / T-TSDC-004R-1: Typed Gate Contract
@@ -1156,6 +1164,8 @@ Task ledger change from `blocked pending corrected Plan review` to
   Interfaces.
 - Produces: dependency-free schema parsing, kind validation, DAG expansion,
   suite ownership, job-root ownership, and local-profile projection for R2.
+  Tasks 4.1 and 4.2 jointly form Spec Wave 1; Wave B cannot start until Task
+  4.2 has converted and reviewed the canonical schema-v2 registry.
 
 - [ ] **Step 1: Create an importable signature-only skeleton, then write
   schema-v2 RED tests.**
@@ -1248,8 +1258,9 @@ git diff --check
 ```
 
 Expected GREEN: every schema/DAG mutation has one value-free finding; the
-canonical v1 file remains the only active workflow authority during this
-foundation unit, and no workflow execution changes.
+canonical schema-v1 file remains the temporary current workflow authority
+inside unfinished Spec Wave 1, and no workflow execution changes. Task 4.2
+must convert the canonical registry to schema v2 before Wave B.
 
 - [ ] **Step 6: Commit and review.**
 
@@ -1267,6 +1278,18 @@ git commit -m "feat(ci): add typed gate contract"
 Assign fresh specification and quality/security reviewers. Use only the
 canonical two-attempt implementation and review loops.
 
+- [ ] **Step 7: Commit the independent review evidence before Task 4.2.**
+
+  After both reviewers return C0/I0, append their exact range and verdicts to
+  the Task ledger and commit the controller-owned evidence:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record typed gate contract review"
+```
+
+  Task 4.2 starts only from this clean committed evidence boundary.
+
 #### Task 4.2 / Wave A / T-TSDC-004R-2: Dependency-Free Runner and Adapters
 
 **Files:**
@@ -1276,6 +1299,11 @@ canonical two-attempt implementation and review loops.
 - Create executable `scripts/validation/ci_gate_adapters.py`.
 - Create `tests/validation/test_ci_gate_runner.py`.
 - Create `tests/validation/test_ci_gate_adapters.py`.
+- Convert `.github/workflow-contract.yml` to deterministic strict-JSON schema
+  version 2 after all registered new entrypoints exist.
+- Modify `scripts/validation/github_workflow_contract.py` and
+  `tests/validation/test_github_workflow_contract.py` for schema-v2 loading
+  with temporary current-workflow semantic compatibility.
 - Modify `scripts/README.md`.
 - Modify the delta manifest, generated summary, exact manifest tests, and Task
   ledger for these five new target paths.
@@ -1287,7 +1315,8 @@ canonical two-attempt implementation and review loops.
 
 - Consumes: `GateRegistry`, `GateNode`, and `expand_gate_ids` from R1.
 - Produces: the exact CLI and execution interfaces declared above for the
-  atomic workflow cutover in R3.
+  atomic workflow cutover in R3 and completes Spec Wave 1 by introducing the
+  one canonical schema-v2 registry while retaining current workflow execution.
 
 - [ ] **Step 1: Create importable signature-only skeletons, then write runner
   and adapter RED tests.**
@@ -1354,12 +1383,10 @@ finding-code assertion. Missing-import evidence alone does not satisfy RED.
 
   `--list` and `--dry-run` print gate IDs and repository-relative entrypoints
   only. They do not print environment values or execute child programs.
-  Adapter subprocesses always use argument arrays and `shell=False`. During
-  this unit the canonical repository file intentionally remains schema v1, so
-  no live `run-ci-gate.py --list`, `--dry-run`, `--gate`, or `--all` command
-  may target it. CLI tests must instead use a bounded temporary repository
-  containing one strict schema-v2 fixture. The first successful command
-  against the canonical registry belongs to the atomic Wave B conversion.
+  Adapter subprocesses always use argument arrays and `shell=False`. Until
+  Step 6 converts the canonical registry, CLI behavior tests use only bounded
+  temporary strict-schema-v2 repositories; no live command targets the
+  canonical schema-v1 file.
 
 - [ ] **Step 5: Mark both executable entry points as mode `100755`, add exact
   manifest rows, and update the scripts index.**
@@ -1388,46 +1415,91 @@ python3 scripts/validation/check-target-surface-delta-contract.py \
   projections become tracked consumers. The exact oracle becomes 155 rows: 89
   `preserve`, 66 `update`, zero `migrate`, and zero `delete`.
 
-- [ ] **Step 6: Run GREEN and security regressions.**
+- [ ] **Step 6: Complete Spec Wave 1 with the canonical schema-v2 registry.**
+
+  After the runner and every registered new entrypoint are tracked and
+  executable, serialize all seven workflow records, 23 job records, eight
+  Action identities, 16 required IDs, `gate_nodes`, `job_roots`, and the three
+  exact local `profile_roots` as deterministic strict JSON in the existing
+  `.github/workflow-contract.yml`. Remove schema-v1 `owner_commands` and
+  `expensive_commands`.
+
+  `github_workflow_contract.py` imports the typed parser and preserves its
+  stable public interfaces. Until Wave B changes the current workflow
+  programs, the old semantic interpreter and its existing code-owned baseline
+  remain the temporary compatibility authority explicitly allowed by Spec
+  Wave 1; they do not create a second registry file and are deleted after
+  cutover review. Add exact tests proving schema v1 now fails closed, current
+  direct workflow execution still validates, and all registered entrypoints
+  exist with the required tracked modes.
+
+  Update the existing `.github/workflow-contract.yml`,
+  `scripts/validation/github_workflow_contract.py`, and
+  `tests/validation/test_github_workflow_contract.py` manifest rows with
+  factual schema-v2/transitional-consumer evidence while retaining their
+  pending verdicts and dispositions.
+
+- [ ] **Step 7: Run GREEN, live execution-free projections, and security
+  regressions.**
 
 ```bash
 python3 -m unittest \
   tests.validation.test_ci_gate_contract \
   tests.validation.test_ci_gate_runner \
   tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
   tests.validation.test_target_surface_delta_contracts \
   -v
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile local-harness --list
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-harness \
+  --dry-run \
+  --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-all-profiles \
+  --dry-run \
+  --all
 python3 -m ruff check \
   scripts/validation/ci_gate_contract.py \
   scripts/validation/ci_gate_runner.py \
   scripts/validation/run-ci-gate.py \
   scripts/validation/ci_gate_adapters.py \
+  scripts/validation/github_workflow_contract.py \
   tests/validation/test_ci_gate_contract.py \
   tests/validation/test_ci_gate_runner.py \
-  tests/validation/test_ci_gate_adapters.py
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_github_workflow_contract.py
 python3 -m compileall -q \
   scripts/validation/ci_gate_contract.py \
   scripts/validation/ci_gate_runner.py \
   scripts/validation/run-ci-gate.py \
-  scripts/validation/ci_gate_adapters.py
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/github_workflow_contract.py \
+  tests/validation/test_github_workflow_contract.py
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 git diff --check
 ```
 
 Expected GREEN: the fake executor observes one ordered execution per gate ID;
 path, provenance, environment, timeout, and output tests fail closed without
-running real CI suites or network operations.
+running real CI suites or network operations; the canonical registry is strict
+schema v2 and the unchanged current workflow remains valid through the
+temporary old compatibility interpreter.
 
-- [ ] **Step 7: Commit and review.**
+- [ ] **Step 8: Commit and review.**
 
 ```bash
 git add \
+  .github/workflow-contract.yml \
   scripts/validation/ci_gate_runner.py \
   scripts/validation/run-ci-gate.py \
   scripts/validation/ci_gate_adapters.py \
+  scripts/validation/github_workflow_contract.py \
   scripts/README.md \
   tests/validation/test_ci_gate_runner.py \
   tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_github_workflow_contract.py \
   tests/validation/test_target_surface_delta_contracts.py \
   docs/90.references/data/governance/target-surface-delta-manifest.yaml \
   docs/90.references/data/governance/target-surface-delta-summary.md \
@@ -1437,11 +1509,24 @@ git commit -m "feat(ci): add typed gate runner"
 
 Assign fresh specification and quality/security reviewers before Wave B.
 
+- [ ] **Step 9: Commit the independent review evidence before Wave B.**
+
+  After both Task 4.2 reviewers return C0/I0, append the exact range and
+  verdicts to the Task ledger and commit:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record typed gate runner review"
+```
+
+  Wave B starts only from this clean committed evidence boundary.
+
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
 **Files:**
 
-- Modify `.github/workflow-contract.yml` to strict-JSON schema version 2.
+- Preserve the reviewed strict-JSON schema-v2
+  `.github/workflow-contract.yml` byte-for-byte.
 - Modify `.github/workflows/ci-quality.yml`.
 - Modify `scripts/validation/github_workflow_contract.py`.
 - Preserve the stable thin
@@ -1484,9 +1569,8 @@ Assign fresh specification and quality/security reviewers before Wave B.
 **Interfaces:**
 
 - Consumes: reviewed R1 contract and R2 runner interfaces.
-- Produces: schema-v2 canonical registry, exact required-workflow projection,
-  shared local profiles, and an unused-but-still-present old semantic
-  interpreter awaiting Wave C removal.
+- Produces: exact required-workflow projection, shared local profiles, and an
+  unused-but-still-present old semantic interpreter awaiting Wave C removal.
 
 - [ ] **Step 1: Add workflow-projection RED tests.**
 
@@ -1520,7 +1604,8 @@ def test_required_run_steps_use_only_static_gate_invocations(self) -> None:
   `-c`, direct scripts/tools, unregistered local Actions, duplicate
   `suite_key`, duplicate reachable leaf, and changed required root.
 
-- [ ] **Step 2: Run RED against schema v1 and current workflows.**
+- [ ] **Step 2: Run RED against the reviewed schema-v2 registry and current
+  workflows.**
 
 ```bash
 python3 -m unittest \
@@ -1529,16 +1614,18 @@ python3 -m unittest \
   -v
 ```
 
-Expected RED: schema v1 has no typed roots and current required-quality
-workflow contains direct and multiline executable steps.
+Expected RED: the schema-v2 registry and its graph remain valid, while current
+required-quality workflow programs still contain direct and multiline
+executable steps that fail the new exact projection tests.
 
-- [ ] **Step 3: Convert the one canonical registry atomically.**
+- [ ] **Step 3: Freeze the reviewed canonical registry as the cutover input.**
 
-  Serialize the full existing workflow, trigger, permission, job, and Action
-  facts plus the declared gate graph as deterministic strict JSON in
-  `.github/workflow-contract.yml`. Remove every `owner_commands` and
-  `expensive_commands` field. Keep all seven workflow records, 23 job records,
-  eight Action identities, and 16 required IDs unchanged.
+  Read the Task 4.1 review-evidence commit from the Task ledger and require
+  `.github/workflow-contract.yml` to be byte-unchanged from that checkpoint.
+  It already contains all workflow, trigger, permission, job, Action, typed
+  gate, job-root, and profile-root facts and contains no `owner_commands` or
+  `expensive_commands`. Any needed registry change returns to Task 4.2 and
+  consumes its bounded remediation loop rather than being folded into Wave B.
 
 - [ ] **Step 4: Normalize the seven registered first-party entrypoint modes.**
 
@@ -1588,8 +1675,9 @@ chmod 0755 \
 
 - [ ] **Step 6: Switch workflow validation to structural projection.**
 
-  `WorkflowJobContract` drops `owner_commands`.
-  `WorkflowContract` carries `gate_registry`.
+  Remove the temporary derived semantic-owner compatibility projection from
+  `WorkflowJobContract`; `WorkflowContract` continues to carry the reviewed
+  `gate_registry`.
   `validate_workflows` compares exact static gate invocations with root
   expansion and retains all existing workflow-shape, permission, trigger,
   Action, and remote-mutation checks. It no longer calls
@@ -1600,9 +1688,9 @@ chmod 0755 \
 
   `run-local-qa-gates.sh` obtains `--list`, `--dry-run`, and execution order
   from the exact `profile_roots` above. `--script-backed` and `--harness`
-  invoke their matching profile once. `--all-profiles` invokes
-  `local-script-backed` once and then invokes only
-  `local.compose-all-profiles-validation`; it retains no child-command list.
+  invoke their matching profile once. `--all-profiles` invokes the registered
+  `local-all-profiles` profile once; it retains no child-command list or
+  second direct `--gate` route.
   The local routes never reach `setup.compose-env`; their Compose validators
   retain the existing create-only-and-cleanup behavior and preserve any
   existing `.env` byte-for-byte. `check-repo-contracts.sh` no longer invokes
@@ -1666,9 +1754,9 @@ python3 scripts/validation/run-ci-gate.py \
   --dry-run \
   --all
 python3 scripts/validation/run-ci-gate.py \
-  --profile local-script-backed \
+  --profile local-all-profiles \
   --dry-run \
-  --gate local.compose-all-profiles-validation
+  --all
 bash scripts/validation/run-local-qa-gates.sh --list
 bash -n \
   scripts/validation/check-repo-contracts.sh \
@@ -1719,7 +1807,6 @@ installation, credential, or secret-payload action occurs.
 
 ```bash
 git add \
-  .github/workflow-contract.yml \
   .github/workflows/ci-quality.yml \
   .github/INDEX.md \
   .github/rulesets/main-protection.md \
@@ -1846,14 +1933,23 @@ git commit -m "refactor(ci): remove semantic command interpreter"
 Assign fresh specification and quality/security reviewers. Both must return
 C0/I0 before Task 4R evidence promotion.
 
-#### Task 4.6 / T-TSDC-004R-6: Task 4 Recovery Evidence and Promotion
+- [ ] **Step 6: Commit the removal-review evidence.**
+
+  After both reviewers return C0/I0, append their exact range and verdicts and
+  commit:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record semantic interpreter removal review"
+```
+
+#### Task 4.6 / T-TSDC-004R-6: Task 4 Recovery Evidence
 
 - [ ] Run the full Task 4R focused ladder from a clean committed checkpoint.
 - [ ] Record exact commands, results, skipped CI-only gates, rollback commits,
   and review ranges in the Task ledger.
-- [ ] Promote only Task 4 and Task 4R manifest rows to `spec_verdict: pass` and
-  `quality_verdict: pass` after the corresponding independent reviews exist;
-  leave unrelated rows unchanged.
+- [ ] Keep every manifest review verdict `pending`; Task 6 owns one unified,
+  review-bound promotion after Tasks 1–5 all have committed C0/I0 evidence.
 - [ ] Regenerate the delta summary through its canonical writer.
 
 ```bash
@@ -1875,7 +1971,15 @@ git commit -m "docs(task): close typed CI gate recovery"
 - [ ] Assign fresh final Task 4R specification and quality/security reviewers
   to the whole recovery range.
 - [ ] If both remain C0/I0, append a value-free final review record and mark
-  T-TSDC-004 completed; only then may T-TSDC-005 begin.
+  T-TSDC-004 completed.
+- [ ] Commit that terminal Task 4R review evidence before T-TSDC-005:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record final typed CI recovery review"
+```
+
+  Only this clean committed boundary may start T-TSDC-005.
 
 Expected completion evidence:
 
@@ -2017,10 +2121,37 @@ typed structural ownership without claiming arbitrary leaf semantics or remote
 enforcement; all cross-links resolve.
 
 - [ ] Record affected audit row IDs, before/after totals, generator commands,
-  observation boundary, and reviewers in the Task ledger.
-- [ ] Obtain independent specification and quality/security reviews.
-- [ ] Commit as
-  `docs(audit): reconcile target surface evidence`.
+  and the observation boundary in the Task ledger, then commit the
+  implementation candidate:
+
+```bash
+git add \
+  docs/90.references/data/governance/github-actions-control-plane-observation.yaml \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md \
+  docs/90.references/data/governance/audit-implementation-matrix.md \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md \
+  scripts/validation/check-repo-contracts.sh \
+  tests/validation/test_agent_governance_ci_routing.py \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(audit): reconcile target surface evidence"
+```
+
+- [ ] Obtain independent specification and quality/security reviews of that
+  committed candidate.
+- [ ] After both return C0/I0, append their exact ranges and verdicts and
+  commit the evidence before Task 6:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record audit reconciliation review"
+```
 
 ### Task 6: T-TSDC-006 — Promote Enforcement and Close the Branch
 
@@ -2045,17 +2176,67 @@ enforcement; all cross-links resolve.
 
 **Closure interface:**
 
-The manifest can move from `advisory` to `blocking` only when all rows have a
-valid disposition, every destructive row has both review verdicts, Tasks 1–5
-are committed and independently approved, generated outputs are fresh, and
-the Spec 133 integrity test is green. A finding after promotion is a product
-failure and blocks closure.
+The manifest can move from `advisory` to `blocking` only when all 158 rows have
+a valid disposition and both review verdicts equal `pass`, Tasks 1–5 and every
+Task 4R review boundary are committed and independently approved, generated
+outputs are fresh, and the Spec 133 integrity test is green. A finding after
+promotion is a product failure and blocks closure.
 
 - [ ] Confirm the worktree is clean at the Task 5 reviewed commit before final
   verification.
 - [ ] Recompute predecessor-to-`HEAD` target changes and confirm every path has
   exactly one current manifest row.
 - [ ] Confirm Spec 133 tracked artifact hashes match the closure commit.
+- [ ] Build a `Manifest Review Promotion Crosswalk` in the Task ledger before
+  changing any verdict. It must list each of the 158 row paths exactly once,
+  assign the latest logical unit that created or modified that row, and cite
+  that unit's committed implementation range plus independent specification
+  and quality/security C0/I0 review ranges. Use the Task 5 reviewed commit as
+  the fixed checkpoint and `git blame --line-porcelain` on the complete row
+  blocks to detect later uncited row changes. Duplicate, missing, uncommitted,
+  non-C0/I0, or out-of-range evidence blocks promotion.
+- [ ] Record the pre-promotion oracle:
+
+```bash
+rg -c '^  spec_verdict: pending$' \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+rg -c '^  quality_verdict: pending$' \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+```
+
+  Both counts must equal 158; any existing `pass` or `fail` before this unified
+  step is a contract error, proven by:
+
+```bash
+if rg -n '^  (spec_verdict|quality_verdict): (pass|fail)$' \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml; then
+  exit 1
+fi
+```
+
+- [ ] Use `apply_patch` to change exactly the 158 crosswalk-approved
+  `spec_verdict: pending` and 158 `quality_verdict: pending` values to `pass`.
+  Change no row identity, finding, provenance, rollback, owner, consumer,
+  validator, or test field in that patch.
+- [ ] Prove the post-promotion oracle before changing enforcement:
+
+```bash
+rg -c '^  spec_verdict: pass$' \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+rg -c '^  quality_verdict: pass$' \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+```
+
+  Both counts must equal 158, and exact searches for pending or failed review
+  verdicts must return no row:
+
+```bash
+if rg -n '^  (spec_verdict|quality_verdict): (pending|fail)$' \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml; then
+  exit 1
+fi
+```
+
 - [ ] Set enforcement to `blocking`, regenerate the summary through its
   canonical writer, and run the focused delta tests/checker.
 
@@ -2091,6 +2272,10 @@ python3 scripts/validation/run-ci-gate.py \
   --all
 python3 scripts/validation/run-ci-gate.py \
   --profile local-harness \
+  --dry-run \
+  --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-all-profiles \
   --dry-run \
   --all
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
@@ -2134,7 +2319,20 @@ sets. One approval authorizes one attempt only. Without that exact future
 approval, record `NOT AUTHORIZED / NOT RUN` and continue only with the other
 Plan gates.
 
-- [ ] Assign a fresh whole-branch correctness/specification reviewer.
+- [ ] Commit the blocking-enforcement candidate before whole-branch review:
+
+```bash
+git add \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  scripts/validation/check-repo-contracts.sh \
+  scripts/validation/run-local-qa-gates.sh \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "feat(governance): promote target delta enforcement"
+```
+
+- [ ] Assign a fresh whole-branch correctness/specification reviewer to that
+  committed candidate.
 - [ ] Assign a different fresh whole-branch security/quality reviewer.
 - [ ] Remediate every Critical and Important finding with a new focused test
   and re-review.
@@ -2142,8 +2340,17 @@ Plan gates.
   skipped/unverified distinctions, and terminal evidence.
 - [ ] Advance `current.md` to the next bounded handoff without rewriting
   historical `progress.md`.
-- [ ] Commit as
-  `docs(task): close target surface delta convergence`.
+- [ ] Only after both whole-branch reviewers return C0/I0, set this Plan and
+  the Task ledger to `completed`, update `current.md`, and commit the terminal
+  evidence:
+
+```bash
+git add \
+  docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  docs/00.agent-governance/memory/current.md
+git commit -m "docs(task): close target surface delta convergence"
+```
 
 ## Verification Plan
 
@@ -2202,8 +2409,8 @@ Every task must provide:
 | CI status name drift | four-way exact ID contract | revert Task 4 before remote use |
 | Workflow privilege widening | typed permission/trigger validator | revert Task 4 and keep remote unchanged |
 | Action dependency drift | full-SHA registry and runtime check | revert Action consumer and registry together |
-| Registry bootstrap depends on an uninstalled YAML package | strict JSON serialization in the one `.yml` registry and standard-library reader | revert the R3 cutover; keep current workflow active |
-| Wave A runner is exercised before schema-v2 cutover | temporary strict-JSON fixtures only in R2; first canonical runner command occurs after the atomic R3 conversion | revert R2 if fixture-bound CLI tests are not isolated |
+| Registry bootstrap depends on an uninstalled YAML package | strict JSON serialization in the one `.yml` registry and standard-library reader | revert the R2 schema conversion; keep current workflow active |
+| Wave A runner is exercised before schema-v2 cutover | temporary strict-JSON fixtures only during early R2; first canonical runner command occurs after R2 completes the schema-v2 conversion | revert R2 if fixture-bound CLI tests are not isolated |
 | Gate graph duplicates or omits a suite | unique `suite_key`, root reachability, cycle/orphan checks, and fake executor | revert the owning R1/R3 unit |
 | Workflow bypasses typed execution | exact single-line projection and Action registry | revert R3 before remote use |
 | Entrypoint or cwd is redirected | descriptor-relative no-follow traversal, tracked mode, verified identity, and fail-closed `/proc/self/fd` requirement | revert R2 and block cutover |
@@ -2226,12 +2433,14 @@ is not applicable because neither surface is mutated.
 - The typed CI design at Spec commit `a0f91bb5` is approved.
 - The 2026-07-28 Plan approval does not authorize T-TSDC-004R after the
   exhausted five-round breaker.
-- The user approved Revision R1 on 2026-07-29. Its first independent reviews
-  returned blocking findings; independent specification and quality/security
-  C0/I0 re-reviews of the corrected range remain the final gate before any R1
-  production or test file is created or modified.
-- After both re-reviews, protected local workflow, contract, governance, and
-  test changes listed under T-TSDC-004R are within the Plan-bounded class.
+- The user approved Revision R1 on 2026-07-29. Its two-attempt Plan review
+  loop remained blocked and returned to design/plan.
+- Revision R2 requires a new explicit user approval, then fresh independent
+  specification and quality/security C0/I0 reviews before any R1 production
+  or test file is created or modified.
+- After Revision R2 approval and both fresh reviews, protected local workflow,
+  contract, governance, and test changes listed under T-TSDC-004R are within
+  the Plan-bounded class.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
