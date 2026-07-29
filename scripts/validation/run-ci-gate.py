@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-from target_surface_delta_contract import main
+from __future__ import annotations
+
+from ci_gate_runner import main
 
 
 if __name__ == "__main__":

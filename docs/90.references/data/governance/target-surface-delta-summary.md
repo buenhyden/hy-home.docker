@@ -6,8 +6,8 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 150
-- Current tracked target paths: 487
+- Delta entries: 156
+- Current tracked target paths: 492
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
 
@@ -20,14 +20,14 @@
 | `examples` | 9 |
 | `infra` | 275 |
 | `projects` | 52 |
-| `scripts` | 60 |
+| `scripts` | 63 |
 | `secrets` | 19 |
-| `tests` | 54 |
+| `tests` | 56 |
 
 ## Dispositions
 
-- `preserve`: 89
-- `update`: 61
+- `preserve`: 85
+- `update`: 71
 - `migrate`: 0
 - `delete`: 0
 
@@ -108,19 +108,22 @@
 | `scripts/operations/provider_surface_renderer.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/rehearse-sample-service-delivery.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/requirements-pre-commit.txt` | `native-file` | `none` | `update` | `not-applicable` | `pending` | `pending` |
-| `scripts/security/generate-supply-chain-sample-service-summary.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/security/generate-supply-chain-sample-service-summary.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/seed-grype-db-cache.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/verify-sample-service-supply-chain.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/agent_governance_contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/agent_output_eval.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `scripts/validation/check-doc-implementation-alignment.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-agent-governance-contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-doc-implementation-alignment.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-document-corpus-lifecycle.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-document-metadata.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-github-workflow-contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/check-repo-contracts.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
-| `scripts/validation/check-supply-chain-policy.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
-| `scripts/validation/check-target-surface-delta-contract.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-supply-chain-policy.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/check-target-surface-delta-contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/ci_gate_adapters.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/ci_gate_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/ci_gate_runner.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/compose-core-readiness.lib.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/generate-security-automation-readiness.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/github_workflow_contract.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
@@ -128,6 +131,7 @@
 | `scripts/validation/recommend-qa-gates.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/rehearse-postgres-logical-upgrade.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-agent-precommit-all-files.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/validation/run-ci-gate.py` | `python-source` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-ci-precommit.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-compose-core-readiness.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/validation/run-local-qa-gates.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
@@ -168,7 +172,9 @@
 | `tests/validation/test_agent_governance_ci_routing.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_governance_contract.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_agent_output_eval_fixtures.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_ci_gate_adapters.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_ci_gate_contract.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `tests/validation/test_ci_gate_runner.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_compose_core_readiness.py` | `test-or-fixture` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_document_corpus_lifecycle.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `tests/validation/test_document_metadata.py` | `test-or-fixture` | `none` | `update` | `not-applicable` | `pending` | `pending` |

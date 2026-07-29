@@ -131,12 +131,34 @@ TASK41_UPDATE_PATHS = frozenset(
         "tests/validation/test_ci_gate_contract.py",
     }
 )
+TASK42_NEW_UPDATE_PATHS = frozenset(
+    {
+        "scripts/validation/check-agent-governance-contract.py",
+        "scripts/validation/ci_gate_adapters.py",
+        "scripts/validation/ci_gate_runner.py",
+        "scripts/validation/run-ci-gate.py",
+        "tests/validation/test_ci_gate_adapters.py",
+        "tests/validation/test_ci_gate_runner.py",
+    }
+)
+TASK42_MODE_UPDATE_PATHS = frozenset(
+    {
+        "scripts/security/generate-supply-chain-sample-service-summary.sh",
+        "scripts/validation/check-doc-implementation-alignment.sh",
+        "scripts/validation/check-document-corpus-lifecycle.py",
+        "scripts/validation/check-document-metadata.py",
+        "scripts/validation/check-supply-chain-policy.py",
+        "scripts/validation/check-target-surface-delta-contract.py",
+    }
+)
+TASK42_UPDATE_PATHS = TASK42_NEW_UPDATE_PATHS | TASK42_MODE_UPDATE_PATHS
 EXPECTED_UPDATE_PATHS = (
     PRE_TASK2_UPDATE_PATHS
     | TASK2_UPDATE_PATHS
     | TASK3_UPDATE_PATHS
     | TASK4_UPDATE_PATHS
     | TASK41_UPDATE_PATHS
+    | TASK42_UPDATE_PATHS
 )
 
 
@@ -1179,7 +1201,7 @@ class RepositoryManifestTests(unittest.TestCase):
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
-        self.assertEqual(150, len(document.entries))
+        self.assertEqual(156, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
@@ -1193,7 +1215,7 @@ class RepositoryManifestTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            {"preserve": 89, "update": 61},
+            {"preserve": 85, "update": 71},
             {
                 disposition: sum(
                     row.disposition == disposition for row in document.entries
@@ -1311,6 +1333,39 @@ class RepositoryManifestTests(unittest.TestCase):
                 "tests/validation/test_ci_gate_contract.py"
             ].direct_consumers,
         )
+        task42_consumers = {
+            "scripts/validation/ci_gate_runner.py": (
+                "scripts/validation/run-ci-gate.py",
+                "tests/validation/test_ci_gate_runner.py",
+            ),
+            "scripts/validation/run-ci-gate.py": (
+                "tests/validation/test_ci_gate_runner.py",
+            ),
+            "scripts/validation/ci_gate_adapters.py": (
+                "tests/validation/test_ci_gate_adapters.py",
+            ),
+            "tests/validation/test_ci_gate_runner.py": (),
+            "tests/validation/test_ci_gate_adapters.py": (),
+        }
+        for path in TASK42_UPDATE_PATHS:
+            with self.subTest(task42_path=path):
+                self.assertEqual("update", rows[path].disposition)
+                self.assertEqual("pending", rows[path].spec_verdict)
+                self.assertEqual("pending", rows[path].quality_verdict)
+                self.assertIn(
+                    "scripts/validation/check-target-surface-delta-contract.py",
+                    rows[path].validators,
+                )
+                self.assertIn(
+                    "tests/validation/test_target_surface_delta_contracts.py",
+                    rows[path].tests,
+                )
+        for path in TASK42_NEW_UPDATE_PATHS:
+            with self.subTest(task42_new_owner=path):
+                self.assertEqual(path, rows[path].canonical_owner)
+        for path, consumers in task42_consumers.items():
+            with self.subTest(task42_consumers=path):
+                self.assertEqual(consumers, rows[path].direct_consumers)
         self.assertFalse(
             any(
                 row.disposition in {"migrate", "delete"}
@@ -1379,6 +1434,22 @@ class RepositoryManifestTests(unittest.TestCase):
             (
                 "scripts/validation/ci_gate_contract.py",
                 "tests/validation/test_ci_gate_contract.py",
+            ),
+            (
+                "scripts/validation/ci_gate_adapters.py",
+                "tests/validation/test_ci_gate_adapters.py",
+            ),
+            (
+                "scripts/validation/ci_gate_runner.py",
+                "scripts/validation/run-ci-gate.py",
+            ),
+            (
+                "scripts/validation/ci_gate_runner.py",
+                "tests/validation/test_ci_gate_runner.py",
+            ),
+            (
+                "scripts/validation/run-ci-gate.py",
+                "tests/validation/test_ci_gate_runner.py",
             ),
             (
                 "scripts/validation/github_workflow_contract.py",

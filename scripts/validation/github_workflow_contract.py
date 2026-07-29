@@ -14,6 +14,27 @@ from typing import Final
 
 import yaml
 
+try:
+    from scripts.validation.ci_gate_contract import (
+        GateContractError,
+        GateRegistry,
+        expand_gate_ids as _expand_gate_ids,
+        load_contract_document,
+        parse_gate_registry,
+        validate_gate_registry,
+    )
+except ModuleNotFoundError:  # Direct sibling-script execution.
+    from ci_gate_contract import (  # type: ignore[no-redef]
+        GateContractError,
+        GateRegistry,
+        expand_gate_ids as _expand_gate_ids,
+        load_contract_document,
+        parse_gate_registry,
+        validate_gate_registry,
+    )
+
+expand_gate_ids = _expand_gate_ids
+
 
 WORKFLOW_CONTRACT: Final = pathlib.PurePosixPath(".github/workflow-contract.yml")
 WORKFLOW_ROOT: Final = pathlib.PurePosixPath(".github/workflows")
@@ -67,7 +88,6 @@ class WorkflowJobContract:
     permissions: dict[str, str] | None
     runs_on: str
     timeout_minutes: int
-    owner_commands: tuple[str, ...]
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -83,19 +103,11 @@ class WorkflowSpec:
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
-class ExpensiveCommandOwner:
-    identifier: str
-    workflow: str
-    job: str
-    command: str
-
-
-@dataclasses.dataclass(frozen=True, slots=True)
 class WorkflowContract:
     schema_version: int
     workflows: tuple[WorkflowSpec, ...]
-    expensive_commands: tuple[ExpensiveCommandOwner, ...]
     actions: tuple[ActionDependency, ...]
+    gate_registry: GateRegistry
 
 
 PermissionItems = tuple[tuple[str, str], ...]
@@ -239,147 +251,6 @@ _ACTION_REGISTRY_BASELINE: Final = (
     (
         "github/codeql-action/upload-sarif",
         "7188fc363630916deb702c7fdcf4e481b751f97a",
-    ),
-)
-_EXPENSIVE_COMMAND_BASELINE: Final = (
-    ExpensiveCommandOwner(
-        "docs-traceability",
-        ".github/workflows/ci-quality.yml",
-        "docs-traceability",
-        "bash scripts/validation/check-doc-traceability.sh",
-    ),
-    ExpensiveCommandOwner(
-        "docs-implementation-alignment",
-        ".github/workflows/ci-quality.yml",
-        "docs-implementation-alignment",
-        "bash scripts/validation/check-doc-implementation-alignment.sh",
-    ),
-    ExpensiveCommandOwner(
-        "repo-contracts",
-        ".github/workflows/ci-quality.yml",
-        "repo-contracts",
-        "bash scripts/validation/check-repo-contracts.sh",
-    ),
-    ExpensiveCommandOwner(
-        "repo-contracts-control-plane-regressions",
-        ".github/workflows/ci-quality.yml",
-        "repo-contracts",
-        (
-            "python3 -m unittest "
-            "tests.validation.test_agent_governance_ci_routing -v"
-        ),
-    ),
-    ExpensiveCommandOwner(
-        "agent-output-eval-fixture-gate",
-        ".github/workflows/ci-quality.yml",
-        "agent-output-eval-fixture-gate",
-        (
-            'output="$(bash scripts/validation/'
-            "run-agent-output-eval-fixtures.sh "
-            '--check-fixtures --check-regressions)"'
-        ),
-    ),
-    ExpensiveCommandOwner(
-        "agent-output-eval-fixture-regressions",
-        ".github/workflows/ci-quality.yml",
-        "agent-output-eval-fixture-gate",
-        (
-            "python3 -m unittest "
-            "tests.validation.test_agent_output_eval_fixtures -v"
-        ),
-    ),
-    ExpensiveCommandOwner(
-        "supply-chain-fixture-policy",
-        ".github/workflows/ci-quality.yml",
-        "supply-chain-fixture-policy",
-        (
-            "python3 -m unittest tests.validation.test_compose_core_readiness "
-            "tests.validation.test_postgres_logical_upgrade_rehearsal "
-            "tests.validation.test_grype_db_seed "
-            "tests.validation.test_supply_chain_policy "
-            "tests.validation.test_sample_service_delivery_rehearsal -v"
-        ),
-    ),
-    ExpensiveCommandOwner(
-        "supply-chain-deterministic-policy",
-        ".github/workflows/ci-quality.yml",
-        "supply-chain-fixture-policy",
-        "python3 scripts/validation/check-supply-chain-policy.py --check",
-    ),
-    ExpensiveCommandOwner(
-        "supply-chain-summary-freshness",
-        ".github/workflows/ci-quality.yml",
-        "supply-chain-fixture-policy",
-        (
-            "bash scripts/security/"
-            "generate-supply-chain-sample-service-summary.sh --check"
-        ),
-    ),
-    ExpensiveCommandOwner(
-        "dependency-vulnerability-audit",
-        ".github/workflows/ci-quality.yml",
-        "dependency-vulnerability-audit",
-        "npm audit --audit-level=high --prefix projects/storybook/nextjs",
-    ),
-    ExpensiveCommandOwner(
-        "git-flow-contract",
-        ".github/workflows/ci-quality.yml",
-        "git-flow-contract",
-        'if ! [[ "$PR_TITLE" =~ $title_re ]]; then',
-    ),
-    ExpensiveCommandOwner(
-        "compose-validation",
-        ".github/workflows/ci-quality.yml",
-        "compose-validation",
-        "bash scripts/validation/validate-docker-compose.sh",
-    ),
-    ExpensiveCommandOwner(
-        "compose-all-profiles-validation",
-        ".github/workflows/ci-quality.yml",
-        "compose-all-profiles-validation",
-        "bash scripts/validation/validate-docker-compose.sh",
-    ),
-    ExpensiveCommandOwner(
-        "infrastructure-hardening",
-        ".github/workflows/ci-quality.yml",
-        "infrastructure-hardening",
-        "bash scripts/hardening/check-all-hardening.sh",
-    ),
-    ExpensiveCommandOwner(
-        "template-security-baseline",
-        ".github/workflows/ci-quality.yml",
-        "template-security-baseline",
-        "bash scripts/validation/check-template-security-baseline.sh",
-    ),
-    ExpensiveCommandOwner(
-        "quickwin-baseline",
-        ".github/workflows/ci-quality.yml",
-        "quickwin-baseline",
-        "bash scripts/validation/check-quickwin-baseline.sh",
-    ),
-    ExpensiveCommandOwner(
-        "pre-commit",
-        ".github/workflows/ci-quality.yml",
-        "pre-commit",
-        "bash scripts/validation/run-ci-precommit.sh",
-    ),
-    ExpensiveCommandOwner(
-        "frontend-quality",
-        ".github/workflows/ci-quality.yml",
-        "frontend-quality",
-        "npm run build-storybook --prefix projects/storybook/nextjs",
-    ),
-    ExpensiveCommandOwner(
-        "storybook-coverage",
-        ".github/workflows/ci-quality.yml",
-        "storybook-coverage",
-        "npm run coverage --prefix projects/storybook/nextjs",
-    ),
-    ExpensiveCommandOwner(
-        "zizmor",
-        ".github/workflows/ci-quality.yml",
-        "zizmor",
-        "uvx --from 'zizmor==1.28.0' zizmor . --format sarif . > results.sarif",
     ),
 )
 
@@ -806,19 +677,18 @@ def _trigger_contract(
 
 
 def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
-    _, raw = _read_bounded_yaml(root, WORKFLOW_CONTRACT)
-    _expect_exact_keys(
-        raw,
-        {"schema_version", "workflows", "expensive_commands", "actions"},
-        path=WORKFLOW_CONTRACT.as_posix(),
-        field="contract",
-    )
-    if raw["schema_version"] != 1:
-        raise WorkflowContractError(
-            "contract-schema-version-invalid",
+    try:
+        raw = load_contract_document(root)
+        gate_registry = parse_gate_registry(
+            raw,
             WORKFLOW_CONTRACT.as_posix(),
-            "schema_version must equal 1",
         )
+    except GateContractError as error:
+        raise WorkflowContractError(
+            error.code,
+            error.path,
+            error.message,
+        ) from None
     workflow_mapping = _expect_mapping(
         raw["workflows"],
         path=WORKFLOW_CONTRACT.as_posix(),
@@ -934,7 +804,7 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             )
             _expect_exact_keys(
                 job,
-                {"permissions", "runs_on", "timeout_minutes", "owner_commands"},
+                {"permissions", "runs_on", "timeout_minutes"},
                 path=workflow_path,
                 field=f"jobs.{job_id}",
             )
@@ -965,11 +835,6 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
                 ),
                 runs_on=runs_on,
                 timeout_minutes=timeout,
-                owner_commands=_string_tuple(
-                    job["owner_commands"],
-                    path=workflow_path,
-                    field=f"jobs.{job_id}.owner_commands",
-                ),
             )
         workflows.append(
             WorkflowSpec(
@@ -992,61 +857,16 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             "workflow records must be path-sorted",
         )
 
-    raw_expensive = raw["expensive_commands"]
-    if not isinstance(raw_expensive, list):
-        raise WorkflowContractError(
-            "contract-schema-invalid",
-            WORKFLOW_CONTRACT.as_posix(),
-            "expensive_commands must be a list",
-        )
-    expensive: list[ExpensiveCommandOwner] = []
-    expensive_ids: set[str] = set()
-    for record in raw_expensive:
-        mapping = _expect_mapping(
-            record,
-            path=WORKFLOW_CONTRACT.as_posix(),
-            field="expensive_commands entry",
-        )
-        _expect_exact_keys(
-            mapping,
-            {"id", "workflow", "job", "command"},
-            path=WORKFLOW_CONTRACT.as_posix(),
-            field="expensive_commands entry",
-        )
-        values = tuple(mapping[key] for key in ("id", "workflow", "job", "command"))
-        if any(not isinstance(value, str) or not value for value in values):
-            raise WorkflowContractError(
-                "contract-schema-invalid",
-                WORKFLOW_CONTRACT.as_posix(),
-                "expensive command fields must be non-empty strings",
-            )
-        if values[0] in expensive_ids:
-            raise WorkflowContractError(
-                "contract-expensive-owner-duplicate",
-                WORKFLOW_CONTRACT.as_posix(),
-                "expensive command identifiers must be unique",
-            )
-        expensive_ids.add(values[0])
-        expensive.append(
-            ExpensiveCommandOwner(
-                identifier=values[0],
-                workflow=values[1],
-                job=values[2],
-                command=values[3],
-            )
-        )
-
     raw_actions = raw["actions"]
-    if not isinstance(raw_actions, list):
+    if not isinstance(raw_actions, dict):
         raise WorkflowContractError(
             "contract-schema-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "actions must be a list",
+            "actions must be an object",
         )
     actions: list[ActionDependency] = []
     action_names: set[str] = set()
     action_keys = {
-        "action",
         "sha",
         "runtime",
         "manifest_url",
@@ -1054,7 +874,13 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         "consumers",
         "security_disposition",
     }
-    for record in raw_actions:
+    for action_name, record in raw_actions.items():
+        if not isinstance(action_name, str) or not action_name:
+            raise WorkflowContractError(
+                "contract-schema-invalid",
+                WORKFLOW_CONTRACT.as_posix(),
+                "Action registry keys must be non-empty strings",
+            )
         mapping = _expect_mapping(
             record,
             path=WORKFLOW_CONTRACT.as_posix(),
@@ -1067,7 +893,6 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             field="actions entry",
         )
         scalar_fields = (
-            "action",
             "sha",
             "runtime",
             "manifest_url",
@@ -1083,7 +908,6 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
                 WORKFLOW_CONTRACT.as_posix(),
                 "action fields must be non-empty strings",
             )
-        action_name = mapping["action"]
         if action_name in action_names:
             raise WorkflowContractError(
                 "contract-action-duplicate",
@@ -1093,7 +917,7 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         action_names.add(action_name)
         actions.append(
             ActionDependency(
-                action=mapping["action"],
+                action=action_name,
                 sha=mapping["sha"],
                 runtime=mapping["runtime"],
                 manifest_url=mapping["manifest_url"],
@@ -1125,47 +949,11 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             WORKFLOW_CONTRACT.as_posix(),
             "exactly one required-quality workflow with 16 jobs is required",
         )
-    required_workflow = required_workflows[0]
-    if tuple(expensive) != _EXPENSIVE_COMMAND_BASELINE:
-        raise WorkflowContractError(
-            "contract-expensive-owner-baseline-invalid",
-            WORKFLOW_CONTRACT.as_posix(),
-            "semantic command ownership differs from the code baseline",
-        )
-    expensive_job_ids: set[str] = set()
-    expensive_commands_by_job: dict[str, list[str]] = {}
-    for owner in expensive:
-        if (
-            owner.workflow != required_workflow.path
-            or owner.job not in required_workflow.jobs
-            or owner.command
-            not in required_workflow.jobs[owner.job].owner_commands
-        ):
-            raise WorkflowContractError(
-                "contract-expensive-owner-invalid",
-                WORKFLOW_CONTRACT.as_posix(),
-                "expensive command ownership does not match the required workflow",
-            )
-        expensive_job_ids.add(owner.job)
-        expensive_commands_by_job.setdefault(owner.job, []).append(owner.command)
-    if expensive_job_ids != set(required_workflow.jobs):
-        raise WorkflowContractError(
-            "contract-expensive-owner-incomplete",
-            WORKFLOW_CONTRACT.as_posix(),
-            "every required-quality job must own one expensive semantic command",
-        )
-    for job_id, job in required_workflow.jobs.items():
-        if job.owner_commands != tuple(expensive_commands_by_job[job_id]):
-            raise WorkflowContractError(
-                "contract-expensive-owner-incomplete",
-                WORKFLOW_CONTRACT.as_posix(),
-                "required-quality semantic commands must be completely registered",
-            )
     return WorkflowContract(
-        schema_version=1,
+        schema_version=2,
         workflows=tuple(workflows),
-        expensive_commands=tuple(expensive),
         actions=tuple(actions),
+        gate_registry=gate_registry,
     )
 
 
@@ -2216,13 +2004,7 @@ def _direct_script_admitted(
 
 
 def _governed_script_paths() -> frozenset[str]:
-    return frozenset(
-        marker
-        for owner in _EXPENSIVE_COMMAND_BASELINE
-        if (
-            marker := _semantic_command_marker(owner.command)
-        ).startswith("scripts/")
-    )
+    return frozenset()
 
 
 def _merge_shell_analysis(
@@ -2478,7 +2260,10 @@ def validate_workflows(
     root: pathlib.Path,
     contract: WorkflowContract,
 ) -> tuple[WorkflowFinding, ...]:
-    findings: list[WorkflowFinding] = []
+    findings: list[WorkflowFinding] = [
+        _finding(finding.code, finding.path, finding.message)
+        for finding in validate_gate_registry(root, contract.gate_registry)
+    ]
     try:
         documents = load_workflows(root)
     except WorkflowContractError as error:
@@ -2499,8 +2284,6 @@ def validate_workflows(
 
     job_owners: dict[str, str] = {}
     action_consumers: dict[tuple[str, str], set[str]] = {}
-    workflow_job_tokens: dict[tuple[str, str], tuple[str, ...]] = {}
-    workflow_job_programs: dict[tuple[str, str], tuple[str, ...]] = {}
     sha_pattern = re.compile(r"[0-9a-f]{40}")
     forbidden_events = {"pull_request_target", "workflow_run", "workflow_call"}
     workflow_names: dict[str, str] = {}
@@ -2634,18 +2417,6 @@ def validate_workflows(
                         f"job {job_id} timeout differs from the contract",
                     )
                 )
-            tokens = _job_tokens(raw_job)
-            workflow_job_tokens[(path, job_id)] = tokens
-            workflow_job_programs[(path, job_id)] = _job_programs(raw_job)
-            for command in expected_job.owner_commands:
-                if tokens.count(command) != 1:
-                    findings.append(
-                        _finding(
-                            "workflow-owner-command-mismatch",
-                            path,
-                            f"job {job_id} semantic owner command must occur exactly once",
-                        )
-                    )
             steps = raw_job.get("steps")
             if not isinstance(steps, list):
                 continue
@@ -2758,70 +2529,6 @@ def validate_workflows(
                     )
                     continue
                 action_consumers.setdefault((action, sha), set()).add(path)
-
-    registered_expensive: dict[str, set[tuple[str, str]]] = {}
-    for owner in contract.expensive_commands:
-        registered_expensive.setdefault(owner.command, set()).add(
-            (owner.workflow, owner.job)
-        )
-        tokens = workflow_job_tokens.get((owner.workflow, owner.job), ())
-        if tokens.count(owner.command) != 1:
-            findings.append(
-                _finding(
-                    "expensive-command-owner-mismatch",
-                    owner.workflow,
-                    f"semantic gate {owner.identifier} does not have exactly one owner command",
-                )
-            )
-    semantic_resolutions = {
-        identity: _resolve_job_semantics(root, programs)
-        for identity, programs in workflow_job_programs.items()
-    }
-    if any(
-        resolution.invalid
-        for resolution in semantic_resolutions.values()
-    ):
-        findings.append(
-            _finding(
-                "workflow-semantic-command-source-invalid",
-                WORKFLOW_CONTRACT.as_posix(),
-                "workflow semantic command grammar is ambiguous",
-            )
-        )
-    if any(
-        resolution.aggregate_invalid
-        for resolution in semantic_resolutions.values()
-    ):
-        findings.append(
-            _finding(
-                "workflow-aggregate-source-invalid",
-                REPOSITORY_AGGREGATE.as_posix(),
-                "repository aggregate semantic source is invalid",
-            )
-        )
-    for command, expected_owners in registered_expensive.items():
-        marker = _semantic_command_marker(command)
-        if marker.startswith("scripts/"):
-            actual_owners = {
-                identity
-                for identity, resolution in semantic_resolutions.items()
-                if marker in resolution.script_paths
-            }
-        else:
-            signatures = _semantic_command_signatures(command)
-            actual_owners = {
-                identity
-                for identity, resolution in semantic_resolutions.items()
-                if signatures & resolution.command_signatures
-            }
-        if actual_owners != expected_owners:
-            findings.append(
-                _finding(
-                    "expensive-command-ownership-duplicate",
-                    WORKFLOW_CONTRACT.as_posix(),
-                    "an expensive semantic command has missing or duplicate CI ownership",
-                )
-            )
 
     registry_identities = tuple(
         (action.action, action.sha) for action in contract.actions

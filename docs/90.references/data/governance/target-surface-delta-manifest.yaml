@@ -63,7 +63,7 @@ entries:
   canonical_owner: .github/workflow-contract.yml
   direct_consumers:
   - scripts/validation/github_workflow_contract.py
-  finding: Added the machine-readable contract for exact workflow triggers, permissions, concurrency, timeouts, job identities, command ownership, and full-SHA Action evidence.
+  finding: Converted the canonical workflow contract to deterministic strict-JSON schema v2 with exact workflow metadata, one typed gate registry, three local profiles, required-job roots, and full-SHA Action evidence.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1622,10 +1622,10 @@ entries:
   surface_class: executable-script
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: scripts/security/generate-supply-chain-sample-service-summary.sh
   direct_consumers: []
-  finding: Preserve scripts/security/generate-supply-chain-sample-service-summary.sh as an implemented validation or operations support surface owned by scripts/security/generate-supply-chain-sample-service-summary.sh.
+  finding: Normalized the registered Bash entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1723,14 +1723,32 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/agent_output_eval.py
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/validation/check-agent-governance-contract.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/check-agent-governance-contract.py
+  direct_consumers: []
+  finding: Registered the Agent governance CLI as a tracked mode-100755 Python entrypoint for the typed gate registry.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/validation/check-doc-implementation-alignment.sh
   surface_class: executable-script
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: scripts/validation/check-doc-implementation-alignment.sh
   direct_consumers: []
-  finding: Preserve scripts/validation/check-doc-implementation-alignment.sh as an implemented validation or operations support surface owned by scripts/validation/check-doc-implementation-alignment.sh.
+  finding: Normalized the registered Bash entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1753,7 +1771,7 @@ entries:
   direct_consumers:
   - tests/validation/test_document_corpus_lifecycle.py
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated scripts/validation/check-document-corpus-lifecycle.py to accept only the exact successor-owned draft Service fixture while preserving predecessor equality checks elsewhere.
+  finding: Retained the successor-owned draft Service contract and normalized this registered Python entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1778,7 +1796,7 @@ entries:
   direct_consumers:
   - tests/validation/test_document_metadata.py
   - tests/validation/test_target_surface_contracts.py
-  finding: Updated scripts/validation/check-document-metadata.py to reject active status and incorrect domain parents on the exact sample fixture path.
+  finding: Retained the sample-fixture metadata checks and normalized this registered Python entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1849,10 +1867,10 @@ entries:
   surface_class: python-source
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: scripts/validation/check-supply-chain-policy.py
   direct_consumers: []
-  finding: Preserve scripts/validation/check-supply-chain-policy.py as an implemented validation or operations support surface owned by scripts/validation/check-supply-chain-policy.py.
+  finding: Normalized the registered Python entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1870,12 +1888,12 @@ entries:
   surface_class: python-source
   profile: null
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
-  disposition: preserve
+  disposition: update
   canonical_owner: scripts/validation/target_surface_delta_contract.py
   direct_consumers:
   - scripts/validation/check-repo-contracts.sh
   - scripts/validation/run-local-qa-gates.sh
-  finding: Preserve scripts/validation/check-target-surface-delta-contract.py as an implemented validation or operations support surface owned by scripts/validation/target_surface_delta_contract.py.
+  finding: Normalized the registered target-delta CLI entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1887,6 +1905,26 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/check-target-surface-delta-contract.py
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/ci_gate_adapters.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/ci_gate_adapters.py
+  direct_consumers:
+  - tests/validation/test_ci_gate_adapters.py
+  finding: Added the closed twelve-subcommand adapter grammar with literal argument vectors, minimal environments, and fail-closed output handling.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_ci_gate_adapters.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: scripts/validation/ci_gate_contract.py
@@ -1904,6 +1942,27 @@ entries:
   - scripts/validation/ci_gate_contract.py
   tests:
   - tests/validation/test_ci_gate_contract.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/ci_gate_runner.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/ci_gate_runner.py
+  direct_consumers:
+  - scripts/validation/run-ci-gate.py
+  - tests/validation/test_ci_gate_runner.py
+  finding: Added deterministic typed-gate expansion and descriptor-bound execution with tracked executable provenance, minimal environments, timeouts, and cleanup.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_ci_gate_runner.py
+  - tests/validation/test_target_surface_delta_contracts.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -1960,7 +2019,7 @@ entries:
   - scripts/validation/check-github-workflow-contract.py
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_github_workflow_contract.py
-  finding: Added the bounded duplicate-safe workflow loader and typed validator for trigger, permission, job, command-owner, and direct Action dependency contracts.
+  finding: Converted the bounded workflow validator to load the canonical typed gate registry, enforce schema-v2 structure and provenance, and retain workflow, permission, and Action contracts without active semantic-command ownership.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -2056,6 +2115,26 @@ entries:
   - implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74
   rollback:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/validation/run-agent-precommit-all-files.sh
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/validation/run-ci-gate.py
+  surface_class: python-source
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/validation/run-ci-gate.py
+  direct_consumers:
+  - tests/validation/test_ci_gate_runner.py
+  finding: Added the executable dependency-free CLI wrapper for list, dry-run, single-gate, and full-profile typed gate plans.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_ci_gate_runner.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
   spec_verdict: pending
   quality_verdict: pending
 - path: scripts/validation/run-ci-precommit.sh
@@ -2942,6 +3021,25 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:tests/validation/test_agent_output_eval_fixtures.py
   spec_verdict: pending
   quality_verdict: pending
+- path: tests/validation/test_ci_gate_adapters.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: tests/validation/test_ci_gate_adapters.py
+  direct_consumers: []
+  finding: Added focused fake-executor regressions for all twelve closed adapters and their path, grammar, environment, creation, and SARIF safety boundaries.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_ci_gate_adapters.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: tests/validation/test_ci_gate_contract.py
   surface_class: test-or-fixture
   profile: null
@@ -2956,6 +3054,25 @@ entries:
   - scripts/validation/ci_gate_contract.py
   tests:
   - tests/validation/test_ci_gate_contract.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: tests/validation/test_ci_gate_runner.py
+  surface_class: test-or-fixture
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: tests/validation/test_ci_gate_runner.py
+  direct_consumers: []
+  finding: Added focused execution-plan, CLI, descriptor-provenance, environment, timeout, cleanup, and path-replacement regressions for the typed gate runner.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_ci_gate_runner.py
+  - tests/validation/test_target_surface_delta_contracts.py
   provenance: []
   rollback: []
   spec_verdict: pending
@@ -3038,7 +3155,7 @@ entries:
   canonical_owner: tests/validation/test_github_workflow_contract.py
   direct_consumers:
   - scripts/validation/run-local-qa-gates.sh
-  finding: Added baseline, parser-boundary, diagnostic, and mutation regressions for every tracked workflow and all prohibited workflow or Action widening cases.
+  finding: Added schema-v2 load, parse, validate, expand, provenance, duplicate-authority, workflow-baseline, parser-boundary, diagnostic, and mutation regressions while retaining inactive semantic-parser evidence for Wave C removal.
   replacement: null
   secret_safety: not-applicable
   validators:
