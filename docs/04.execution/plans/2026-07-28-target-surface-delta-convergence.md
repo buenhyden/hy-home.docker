@@ -1787,12 +1787,12 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2S_DESIGN_SUBJECT='docs(plan): record scoped typed gate identity checkpoint'
+TASK_4_2S_DESIGN_SUBJECT='docs(plan): record executable typed gate identity checkpoint'
 TASK_4_2S_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2S_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2S_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2S_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
 test "$(git show -s --format=%s "$TASK_4_2S_DESIGN_COMMIT")" = "$TASK_4_2S_DESIGN_SUBJECT"
-TASK_4_2S_EXPECTED_PATHS="$(printf '%s\\n' \
+TASK_4_2S_EXPECTED_PATHS="$(printf '%s\n' \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
   scripts/validation/ci_gate_adapters.py \
   scripts/validation/ci_gate_runner.py \
@@ -1817,7 +1817,7 @@ git diff --check
 
   Commit the bounded implementation as `fix(ci): finalize typed gate identity
   cleanup`. The implementation must begin after the unique controller commit
-  whose exact subject is `docs(plan): record scoped typed gate identity
+  whose exact subject is `docs(plan): record executable typed gate identity
   checkpoint`; that commit is the changed-path oracle baseline above. Assign
   new independent specification and quality/security reviewers to the exact
   checkpoint-through-implementation range. Immediately after the implementation
@@ -1827,11 +1827,11 @@ git diff --check
   record those results in the Task ledger:
 
 ```bash
-TASK_4_2S_DESIGN_SUBJECT='docs(plan): record scoped typed gate identity checkpoint'
+TASK_4_2S_DESIGN_SUBJECT='docs(plan): record executable typed gate identity checkpoint'
 TASK_4_2S_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2S_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2S_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2S_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
-TASK_4_2S_EXPECTED_PATHS="$(printf '%s\\n' \
+TASK_4_2S_EXPECTED_PATHS="$(printf '%s\n' \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
   scripts/validation/ci_gate_adapters.py \
   scripts/validation/ci_gate_runner.py \
