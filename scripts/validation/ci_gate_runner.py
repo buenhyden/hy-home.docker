@@ -702,25 +702,32 @@ def _run_verified_child(
             item.invocation.gate_id,
             "the verified gate could not be executed",
         ) from None
+    acquisition_error: BaseException | None = None
     try:
         pidfd = os.pidfd_open(process.pid)
-    except OSError:
-        _recover_pidfd_acquisition(process)
+    except BaseException as error:
+        acquisition_error = error
+    if acquisition_error is not None:
+        _recover_pidfd_acquisition(process, acquisition_error)
         raise AssertionError("pidfd acquisition recovery must raise")
+    later_error: BaseException | None = None
     try:
         leader_ready = _pidfd_ready(
             pidfd,
             item.invocation.timeout_seconds,
         )
-    except GateContractError as error:
-        _recover_later_failure(process, pidfd, error)
-        raise AssertionError("later pidfd recovery must raise")
-    timed_out = not leader_ready
-    returncode = _finalize_process_group(
-        process,
-        pidfd,
-        leader_ready=leader_ready,
-    )
+        timed_out = not leader_ready
+        _finalize_process_group(
+            process,
+            pidfd,
+            leader_ready=leader_ready,
+        )
+    except BaseException as error:
+        later_error = error
+    if later_error is not None:
+        _recover_later_failure(process, pidfd, later_error)
+        raise AssertionError("later process-group recovery must raise")
+    returncode = _reap_ready_leader(process, pidfd)
     return 124 if timed_out else returncode
 
 
@@ -729,75 +736,75 @@ def _finalize_process_group(
     pidfd: int,
     *,
     leader_ready: bool,
-) -> int:
+) -> None:
     pgid = process.pid
-    try:
-        _signal_process_group(pgid, signal.SIGTERM)
+    _signal_process_group(pgid, signal.SIGTERM)
+    if not leader_ready:
+        leader_ready = _pidfd_ready(
+            pidfd,
+            _TERMINATION_GRACE_SECONDS,
+        )
+    members = (
+        _same_pgid_members(pgid, process.pid)
+        if leader_ready
+        else ()
+    )
+    if not leader_ready or members:
+        _signal_process_group(pgid, signal.SIGKILL)
         if not leader_ready:
             leader_ready = _pidfd_ready(
                 pidfd,
                 _TERMINATION_GRACE_SECONDS,
             )
-        members = (
-            _same_pgid_members(pgid, process.pid)
-            if leader_ready
-            else ()
-        )
-        if not leader_ready or members:
-            _signal_process_group(pgid, signal.SIGKILL)
-            if not leader_ready:
-                leader_ready = _pidfd_ready(
-                    pidfd,
-                    _TERMINATION_GRACE_SECONDS,
-                )
-            if not leader_ready:
-                raise GateContractError(
-                    "ci-gate-runner-pidfd-readiness",
-                    "pidfd",
-                    "the adapter leader did not become ready",
-                )
-            if not _wait_for_nonleader_absence(pgid, process.pid):
-                raise GateContractError(
-                    "ci-gate-runner-proc-members",
-                    "proc",
-                    "the adapter process group retained members",
-                )
-    except GateContractError as error:
-        _recover_later_failure(process, pidfd, error)
-        raise AssertionError("later process-group recovery must raise")
-    return _reap_ready_leader(process, pidfd)
+        if not leader_ready:
+            raise GateContractError(
+                "ci-gate-runner-pidfd-readiness",
+                "pidfd",
+                "the adapter leader did not become ready",
+            )
+        if not _wait_for_nonleader_absence(pgid, process.pid):
+            raise GateContractError(
+                "ci-gate-runner-proc-members",
+                "proc",
+                "the adapter process group retained members",
+            )
 
 
 def _recover_pidfd_acquisition(
     process: subprocess.Popen[bytes],
+    product_error: BaseException,
 ) -> None:
     cleanup_failed = False
     try:
         _signal_process_group(process.pid, signal.SIGKILL)
-    except GateContractError:
+    except BaseException:
         cleanup_failed = True
     try:
         process.wait(timeout=_TERMINATION_GRACE_SECONDS)
-    except Exception:
+    except BaseException:
         cleanup_failed = True
     if cleanup_failed:
         raise _runner_cleanup_error()
-    raise GateContractError(
-        "ci-gate-runner-pidfd-acquisition",
-        "pidfd",
-        "the adapter leader identity could not be acquired",
-    )
+    if isinstance(product_error, OSError):
+        raise GateContractError(
+            "ci-gate-runner-pidfd-acquisition",
+            "pidfd",
+            "the adapter leader identity could not be acquired",
+        )
+    if isinstance(product_error, Exception):
+        raise _runner_cleanup_error()
+    raise product_error
 
 
 def _recover_later_failure(
     process: subprocess.Popen[bytes],
     pidfd: int,
-    product_error: GateContractError,
+    product_error: BaseException,
 ) -> None:
     cleanup_failed = False
     try:
         _signal_process_group(process.pid, signal.SIGKILL)
-    except GateContractError:
+    except BaseException:
         cleanup_failed = True
 
     leader_ready = False
@@ -806,20 +813,24 @@ def _recover_later_failure(
             pidfd,
             _TERMINATION_GRACE_SECONDS,
         )
-    except GateContractError:
+    except BaseException:
         cleanup_failed = True
     if not leader_ready:
         cleanup_failed = True
     else:
         try:
             process.wait(timeout=_TERMINATION_GRACE_SECONDS)
-        except Exception:
+        except BaseException:
             cleanup_failed = True
     try:
         os.close(pidfd)
-    except OSError:
+    except BaseException:
         cleanup_failed = True
     if cleanup_failed:
+        raise _runner_cleanup_error()
+    if isinstance(product_error, GateContractError):
+        raise product_error
+    if isinstance(product_error, Exception):
         raise _runner_cleanup_error()
     raise product_error
 
@@ -834,11 +845,11 @@ def _reap_ready_leader(
         returncode = int(
             process.wait(timeout=_TERMINATION_GRACE_SECONDS)
         )
-    except Exception:
+    except BaseException:
         cleanup_failed = True
     try:
         os.close(pidfd)
-    except OSError:
+    except BaseException:
         cleanup_failed = True
     if cleanup_failed:
         raise _runner_cleanup_error()
@@ -926,7 +937,7 @@ def _same_pgid_members(
     proc_root: pathlib.Path = _PROC_ROOT,
 ) -> tuple[int, ...]:
     proc_fd = -1
-    scan_error: GateContractError | None = None
+    product_error: BaseException | None = None
     members: list[int] = []
     try:
         proc_fd = os.open(
@@ -972,16 +983,21 @@ def _same_pgid_members(
             if member_pgid == pgid:
                 members.append(pid)
     except GateContractError as error:
-        scan_error = error
+        product_error = error
     except OSError:
-        scan_error = _proc_scan_error()
+        product_error = _proc_scan_error()
+    except BaseException as error:
+        product_error = error
+    cleanup_failed = False
     if proc_fd >= 0:
         try:
             os.close(proc_fd)
-        except OSError:
-            scan_error = _proc_scan_error()
-    if scan_error is not None:
-        raise scan_error
+        except BaseException:
+            cleanup_failed = True
+    if cleanup_failed:
+        raise _runner_cleanup_error()
+    if product_error is not None:
+        raise product_error
     return tuple(members)
 
 
@@ -994,6 +1010,8 @@ def _read_proc_entry_pgid(
     stat_fd = -1
     vanished = False
     entry_error: GateContractError | None = None
+    product_error: BaseException | None = None
+    cleanup_failed = False
     pgrp: int | None = None
     try:
         try:
@@ -1038,14 +1056,20 @@ def _read_proc_entry_pgid(
                     pgrp = _parse_proc_stat_pgid(payload, pid)
                 except ValueError:
                     entry_error = _proc_scan_error()
+    except BaseException as error:
+        product_error = error
     finally:
         for descriptor in (stat_fd, pid_fd):
             if descriptor < 0:
                 continue
             try:
                 os.close(descriptor)
-            except OSError:
-                entry_error = _proc_scan_error()
+            except BaseException:
+                cleanup_failed = True
+    if cleanup_failed:
+        raise _runner_cleanup_error()
+    if product_error is not None:
+        raise product_error
     if entry_error is not None:
         raise entry_error
     return None if vanished else pgrp

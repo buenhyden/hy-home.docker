@@ -1219,37 +1219,182 @@ class DescriptorExecutionTests(unittest.TestCase):
                 )
                 close.assert_not_called()
 
+        for pidfd_error, expected_code in (
+            (
+                RuntimeError("private pidfd runtime payload"),
+                "ci-gate-runner-cleanup",
+            ),
+            (
+                KeyboardInterrupt("private pidfd interrupt"),
+                None,
+            ),
+            (
+                SystemExit("private pidfd exit"),
+                None,
+            ),
+            (
+                GeneratorExit("private pidfd generator"),
+                None,
+            ),
+        ):
+            with self.subTest(pidfd_error=type(pidfd_error).__name__):
+                process = mock.Mock(pid=43210)
+                trace: list[tuple[str, object]] = []
+
+                def acquisition_wait(*, timeout: float) -> int:
+                    trace.append(("wait", timeout))
+                    return 0
+
+                process.wait.side_effect = acquisition_wait
+
+                def acquisition_signal(_pgid: int, signum: int) -> None:
+                    self.assertFalse(
+                        any(event[0] == "wait" for event in trace)
+                    )
+                    trace.append(("signal", signum))
+
+                with (
+                    mock.patch.object(
+                        runner.subprocess,
+                        "Popen",
+                        return_value=process,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "pidfd_open",
+                        side_effect=pidfd_error,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "killpg",
+                        side_effect=acquisition_signal,
+                    ) as killpg,
+                    mock.patch.object(runner.os, "close") as close,
+                ):
+                    if expected_code is not None:
+                        with self.assertRaises(
+                            contract.GateContractError
+                        ) as caught:
+                            runner._run_verified_child(
+                                41,
+                                item,
+                                {"PATH": "/usr/bin"},
+                            )
+                        self.assertEqual(expected_code, caught.exception.code)
+                        self.assertNotIn("private", str(caught.exception))
+                    else:
+                        try:
+                            runner._run_verified_child(
+                                41,
+                                item,
+                                {"PATH": "/usr/bin"},
+                            )
+                        except BaseException as caught:
+                            self.assertIs(pidfd_error, caught)
+                        else:
+                            self.fail(
+                                "pidfd control-flow interruption was not re-raised"
+                            )
+                killpg.assert_called_once_with(43210, signal.SIGKILL)
+                process.wait.assert_called_once_with(
+                    timeout=runner._TERMINATION_GRACE_SECONDS
+                )
+                close.assert_not_called()
+
+        process = mock.Mock(pid=43210)
+        process.wait.side_effect = KeyboardInterrupt(
+            "private acquisition wait interrupt"
+        )
+        with (
+            mock.patch.object(
+                runner.subprocess,
+                "Popen",
+                return_value=process,
+            ),
+            mock.patch.object(
+                runner.os,
+                "pidfd_open",
+                side_effect=OSError("private pidfd payload"),
+            ),
+            mock.patch.object(runner.os, "killpg") as killpg,
+            mock.patch.object(runner.os, "close") as close,
+        ):
+            observed_acquisition_error: BaseException | None = None
+            try:
+                runner._run_verified_child(
+                    41,
+                    item,
+                    {"PATH": "/usr/bin"},
+                )
+            except BaseException as error:
+                observed_acquisition_error = error
+            else:
+                self.fail("interrupted acquisition wait did not fail closed")
+        self.assertIsInstance(
+            observed_acquisition_error,
+            contract.GateContractError,
+        )
+        self.assertEqual(
+            "ci-gate-runner-cleanup",
+            getattr(observed_acquisition_error, "code", None),
+        )
+        self.assertNotIn("private", str(observed_acquisition_error))
+        killpg.assert_called_once_with(43210, signal.SIGKILL)
+        process.wait.assert_called_once_with(
+            timeout=runner._TERMINATION_GRACE_SECONDS
+        )
+        close.assert_not_called()
+
         def exercise_later_case(
             *,
             name: str,
             readiness: list[bool | BaseException],
-            term_error: OSError | None = None,
-            kill_error: OSError | None = None,
+            term_error: BaseException | None = None,
+            kill_error: BaseException | None = None,
             member_effects: list[tuple[int, ...] | BaseException] | None = None,
             wait_error: BaseException | None = None,
-            close_error: OSError | None = None,
+            close_error: BaseException | None = None,
             expected_result: int | None = None,
             expected_code: str | None = None,
+            expected_interruption: BaseException | None = None,
             expect_wait: bool = True,
         ) -> None:
             process = mock.Mock(pid=43210)
-            process.wait.return_value = 0
-            if wait_error is not None:
-                process.wait.side_effect = wait_error
             process.poll.side_effect = AssertionError("forbidden poll")
             process.communicate.side_effect = AssertionError(
                 "forbidden communicate"
             )
             member_queue = list(member_effects or [()])
-            trace: list[tuple[str, int]] = []
+            trace: list[tuple[str, object]] = []
+
+            def wait(*, timeout: float) -> int:
+                self.assertFalse(
+                    any(entry[0] == "wait" for entry in trace),
+                    "the bounded wait may begin only once",
+                )
+                trace.append(("wait", timeout))
+                if wait_error is not None:
+                    raise wait_error
+                return 0
+
+            process.wait.side_effect = wait
 
             def ready(_descriptor: int, _timeout: float) -> bool:
+                self.assertFalse(
+                    any(entry[0] == "wait" for entry in trace),
+                    "pidfd readiness is forbidden after reap begins",
+                )
+                trace.append(("ready", _descriptor))
                 effect = readiness.pop(0)
                 if isinstance(effect, BaseException):
                     raise effect
                 return effect
 
             def signal_group(_pgid: int, signum: int) -> None:
+                self.assertFalse(
+                    any(entry[0] == "wait" for entry in trace),
+                    "numeric process-group signaling is forbidden after reap begins",
+                )
                 trace.append(("signal", signum))
                 if signum == signal.SIGTERM and term_error is not None:
                     raise term_error
@@ -1261,6 +1406,10 @@ class DescriptorExecutionTests(unittest.TestCase):
                 _leader_pid: int,
                 **_kwargs: object,
             ) -> tuple[int, ...]:
+                self.assertFalse(
+                    any(entry[0] == "wait" for entry in trace),
+                    "proc scanning is forbidden after reap begins",
+                )
                 effect = member_queue.pop(0)
                 if isinstance(effect, BaseException):
                     raise effect
@@ -1304,7 +1453,18 @@ class DescriptorExecutionTests(unittest.TestCase):
                 ),
                 mock.patch.object(runner.os, "close", side_effect=close),
             ):
-                if expected_code is None:
+                if expected_interruption is not None:
+                    try:
+                        runner._run_verified_child(
+                            41,
+                            item,
+                            {"PATH": "/usr/bin"},
+                        )
+                    except BaseException as caught:
+                        self.assertIs(expected_interruption, caught)
+                    else:
+                        self.fail("control-flow interruption was not re-raised")
+                elif expected_code is None:
                     self.assertEqual(
                         expected_result,
                         runner._run_verified_child(
@@ -1314,16 +1474,26 @@ class DescriptorExecutionTests(unittest.TestCase):
                         ),
                     )
                 else:
-                    with self.assertRaises(
-                        contract.GateContractError
-                    ) as caught:
+                    observed_failure: BaseException | None = None
+                    try:
                         runner._run_verified_child(
                             41,
                             item,
                             {"PATH": "/usr/bin"},
                         )
-                    self.assertEqual(expected_code, caught.exception.code)
-                    self.assertNotIn("private", str(caught.exception))
+                    except BaseException as error:
+                        observed_failure = error
+                    else:
+                        self.fail("runner failure did not fail closed")
+                    self.assertIsInstance(
+                        observed_failure,
+                        contract.GateContractError,
+                    )
+                    self.assertEqual(
+                        expected_code,
+                        getattr(observed_failure, "code", None),
+                    )
+                    self.assertNotIn("private", str(observed_failure))
             if expect_wait:
                 process.wait.assert_called_once_with(
                     timeout=runner._TERMINATION_GRACE_SECONDS
@@ -1389,6 +1559,57 @@ class DescriptorExecutionTests(unittest.TestCase):
                 )
             ],
             expected_code="ci-gate-runner-proc-scan",
+        )
+        exercise_later_case(
+            name="ordinary-readiness-error-normalizes-after-cleanup",
+            readiness=[
+                RuntimeError("private readiness runtime payload"),
+                True,
+            ],
+            expected_code="ci-gate-runner-cleanup",
+        )
+        term_interrupt = KeyboardInterrupt("private TERM interrupt")
+        exercise_later_case(
+            name="term-control-flow-recovers-and-reraises",
+            readiness=[True, True],
+            term_error=term_interrupt,
+            expected_interruption=term_interrupt,
+        )
+        scan_interrupt = GeneratorExit("private scan interrupt")
+        exercise_later_case(
+            name="scan-control-flow-recovers-and-reraises",
+            readiness=[True, True],
+            member_effects=[scan_interrupt],
+            expected_interruption=scan_interrupt,
+        )
+        exercise_later_case(
+            name="recovery-readiness-interruption-is-cleanup",
+            readiness=[
+                True,
+                SystemExit("private recovery readiness exit"),
+            ],
+            term_error=PermissionError("private TERM payload"),
+            expected_code="ci-gate-runner-cleanup",
+            expect_wait=False,
+        )
+        exercise_later_case(
+            name="recovery-wait-interruption-still-closes",
+            readiness=[True, True],
+            term_error=PermissionError("private TERM payload"),
+            wait_error=KeyboardInterrupt("private recovery wait interrupt"),
+            expected_code="ci-gate-runner-cleanup",
+        )
+        exercise_later_case(
+            name="reap-interruption-does-not-reenter-numeric-cleanup",
+            readiness=[True],
+            wait_error=GeneratorExit("private reap interrupt"),
+            expected_code="ci-gate-runner-cleanup",
+        )
+        exercise_later_case(
+            name="post-reap-close-interruption-is-cleanup",
+            readiness=[True],
+            close_error=SystemExit("private pidfd close exit"),
+            expected_code="ci-gate-runner-cleanup",
         )
 
         scanner = getattr(runner, "_same_pgid_members", None)
@@ -1513,6 +1734,151 @@ class DescriptorExecutionTests(unittest.TestCase):
                 caught.exception.code,
             )
             self.assertNotIn("private", str(caught.exception))
+
+        for close_interruption in (
+            KeyboardInterrupt("private stat close interrupt"),
+            SystemExit("private stat close exit"),
+            GeneratorExit("private stat close generator"),
+        ):
+            with self.subTest(
+                proc_descriptor_close=type(close_interruption).__name__
+            ):
+                close_attempts: list[int] = []
+
+                def open_proc_entry(
+                    path: str | pathlib.Path,
+                    _flags: int,
+                    _mode: int = 0o777,
+                    *,
+                    dir_fd: int | None = None,
+                ) -> int:
+                    self.assertIn(path, {"130", "stat"})
+                    self.assertIn(dir_fd, {77, 201})
+                    return 201 if path == "130" else 202
+
+                def close_proc_entry(descriptor: int) -> None:
+                    close_attempts.append(descriptor)
+                    if descriptor == 202:
+                        raise close_interruption
+
+                with (
+                    mock.patch.object(
+                        runner.os,
+                        "open",
+                        side_effect=open_proc_entry,
+                    ),
+                    mock.patch.object(
+                        runner,
+                        "_read_proc_stat",
+                        return_value=b"130 (worker) S 1 43210 1 0\n",
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "close",
+                        side_effect=close_proc_entry,
+                    ),
+                ):
+                    observed_close_error: BaseException | None = None
+                    try:
+                        runner._read_proc_entry_pgid(77, "130", 130)
+                    except BaseException as error:
+                        observed_close_error = error
+                    else:
+                        self.fail("proc descriptor cleanup did not fail closed")
+                self.assertIsInstance(
+                    observed_close_error,
+                    contract.GateContractError,
+                )
+                self.assertEqual(
+                    "ci-gate-runner-cleanup",
+                    getattr(observed_close_error, "code", None),
+                )
+                self.assertNotIn("private", str(observed_close_error))
+                self.assertEqual([202, 201], close_attempts)
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+            real_open = os.open
+            real_close = os.close
+            proc_descriptors: list[int] = []
+            close_attempts: list[int] = []
+            scan_interrupt = KeyboardInterrupt("private scandir interrupt")
+
+            def open_proc_root(*args: object, **kwargs: object) -> int:
+                descriptor = real_open(*args, **kwargs)  # type: ignore[arg-type]
+                proc_descriptors.append(descriptor)
+                return descriptor
+
+            def close_proc_root(descriptor: int) -> None:
+                close_attempts.append(descriptor)
+                real_close(descriptor)
+
+            try:
+                with (
+                    mock.patch.object(
+                        runner.os,
+                        "open",
+                        side_effect=open_proc_root,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "scandir",
+                        side_effect=scan_interrupt,
+                    ),
+                    mock.patch.object(
+                        runner.os,
+                        "close",
+                        side_effect=close_proc_root,
+                    ),
+                ):
+                    try:
+                        scanner(43210, 43210, proc_root=proc_root)
+                    except BaseException as caught:
+                        self.assertIs(scan_interrupt, caught)
+                    else:
+                        self.fail("scandir interruption was not re-raised")
+            finally:
+                for descriptor in proc_descriptors:
+                    try:
+                        real_close(descriptor)
+                    except OSError:
+                        pass
+            self.assertEqual(proc_descriptors, close_attempts)
+
+        with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
+            proc_root = pathlib.Path(proc_temporary)
+            real_close = os.close
+            close_attempts: list[int] = []
+
+            def interrupt_proc_root_close(descriptor: int) -> None:
+                close_attempts.append(descriptor)
+                real_close(descriptor)
+                raise GeneratorExit("private proc root close interrupt")
+
+            with (
+                mock.patch.object(
+                    runner.os,
+                    "close",
+                    side_effect=interrupt_proc_root_close,
+                ),
+            ):
+                observed_close_error: BaseException | None = None
+                try:
+                    scanner(43210, 43210, proc_root=proc_root)
+                except BaseException as error:
+                    observed_close_error = error
+                else:
+                    self.fail("proc-root cleanup did not fail closed")
+            self.assertIsInstance(
+                observed_close_error,
+                contract.GateContractError,
+            )
+            self.assertEqual(
+                "ci-gate-runner-cleanup",
+                getattr(observed_close_error, "code", None),
+            )
+            self.assertNotIn("private", str(observed_close_error))
+            self.assertEqual(1, len(close_attempts))
 
         with tempfile.TemporaryDirectory(dir=self.root) as proc_temporary:
             proc_root = pathlib.Path(proc_temporary)

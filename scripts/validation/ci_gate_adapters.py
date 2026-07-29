@@ -70,12 +70,15 @@ def run_adapter(
     argv: tuple[str, ...],
     environ: Mapping[str, str],
 ) -> int:
+    adoption_cleanup_fd: int | None = None
     try:
         canonical_root, owned_root_fd = _adopt_root(root)
     except _AdoptedRootCleanupError as error:
+        adoption_cleanup_fd = error.owned_root_fd
+    if adoption_cleanup_fd is not None:
         try:
-            os.close(error.owned_root_fd)
-        except OSError:
+            os.close(adoption_cleanup_fd)
+        except BaseException:
             pass
         raise AdapterError(
             "ci-gate-adapter-root-cleanup",
@@ -88,18 +91,19 @@ def run_adapter(
         child_environment["HYHOME_CI_GATE_ROOT"] = canonical_root.as_posix()
         result = _dispatch_adapter(canonical_root, argv, child_environment)
     except BaseException as error:
-        product_error = (
-            AdapterError(
+        if isinstance(error, AdapterError):
+            product_error = error
+        elif isinstance(error, Exception):
+            product_error = AdapterError(
                 "ci-gate-adapter-operation",
                 "the adapter operation is unavailable",
             )
-            if isinstance(error, OSError)
-            else error
-        )
+        else:
+            product_error = error
     root_cleanup_failed = False
     try:
         os.close(owned_root_fd)
-    except OSError:
+    except BaseException:
         root_cleanup_failed = True
     if root_cleanup_failed:
         if (
@@ -413,9 +417,12 @@ def _adopt_root(root: pathlib.Path) -> tuple[pathlib.Path, int]:
                 "ci-gate-adapter-root",
                 "the repository root descriptor is unavailable",
             ) from None
+        inherited_cleanup_failed = False
         try:
             os.close(inherited_fd)
-        except OSError:
+        except BaseException:
+            inherited_cleanup_failed = True
+        if inherited_cleanup_failed:
             raise _AdoptedRootCleanupError(owned_fd) from None
         return pathlib.Path(f"/proc/self/fd/{owned_fd}"), owned_fd
     try:

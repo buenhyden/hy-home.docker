@@ -893,65 +893,102 @@ class CiGateAdapterTests(unittest.TestCase):
         with self.assertRaises(OSError):
             os.fstat(failed_adopted[0])
 
-        inherited_fd = os.open(
-            self.root,
-            os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY,
-        )
         real_fcntl = fcntl.fcntl
         real_close = os.close
-        adopted_after_failure: list[int] = []
-        close_order: list[int] = []
-
-        def capture_duplicate(
-            descriptor: int,
-            command: int,
-            argument: int = 0,
-        ) -> int:
-            duplicated = real_fcntl(descriptor, command, argument)
-            adopted_after_failure.append(duplicated)
-            return duplicated
-
-        def fail_inherited_close(descriptor: int) -> None:
-            close_order.append(descriptor)
-            real_close(descriptor)
-            if descriptor == inherited_fd:
-                raise OSError("private inherited descriptor")
-
-        try:
-            with (
-                mock.patch.object(
-                    adapters.fcntl,
-                    "fcntl",
-                    side_effect=capture_duplicate,
+        for inherited_error, owned_error in (
+            (OSError("private inherited descriptor"), None),
+            (KeyboardInterrupt("private inherited interrupt"), None),
+            (
+                SystemExit("private inherited exit"),
+                OSError("private owned descriptor"),
+            ),
+            (
+                GeneratorExit("private inherited generator"),
+                KeyboardInterrupt("private owned interrupt"),
+            ),
+        ):
+            with self.subTest(
+                inherited_error=type(inherited_error).__name__,
+                owned_error=(
+                    None if owned_error is None else type(owned_error).__name__
                 ),
-                mock.patch.object(
-                    adapters.os,
-                    "close",
-                    side_effect=fail_inherited_close,
-                ),
-                self.assertRaises(adapters.AdapterError) as root_cleanup,
             ):
-                adapters.run_adapter(
-                    pathlib.Path(f"/proc/self/fd/{inherited_fd}"),
-                    ("check-diff-hygiene",),
-                    {"PATH": "/usr/bin"},
+                inherited_fd = os.open(
+                    self.root,
+                    os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY,
                 )
-        finally:
-            for descriptor in (inherited_fd, *adopted_after_failure):
-                try:
-                    real_close(descriptor)
-                except OSError:
-                    pass
-        self.assertEqual(
-            "ci-gate-adapter-root-cleanup",
-            root_cleanup.exception.code,
-        )
-        self.assertNotIn("private", str(root_cleanup.exception))
-        self.assertEqual(
-            [inherited_fd, adopted_after_failure[0]],
-            close_order,
-        )
+                adopted_after_failure: list[int] = []
+                close_order: list[int] = []
 
+                def capture_duplicate(
+                    descriptor: int,
+                    command: int,
+                    argument: int = 0,
+                ) -> int:
+                    duplicated = real_fcntl(descriptor, command, argument)
+                    adopted_after_failure.append(duplicated)
+                    return duplicated
+
+                def fail_inherited_close(descriptor: int) -> None:
+                    close_order.append(descriptor)
+                    real_close(descriptor)
+                    if descriptor == inherited_fd:
+                        raise inherited_error
+                    if owned_error is not None:
+                        raise owned_error
+
+                observed_root_cleanup: BaseException | None = None
+                try:
+                    with (
+                        mock.patch.object(
+                            adapters.fcntl,
+                            "fcntl",
+                            side_effect=capture_duplicate,
+                        ),
+                        mock.patch.object(
+                            adapters.os,
+                            "close",
+                            side_effect=fail_inherited_close,
+                        ),
+                    ):
+                        try:
+                            adapters.run_adapter(
+                                pathlib.Path(f"/proc/self/fd/{inherited_fd}"),
+                                ("check-diff-hygiene",),
+                                {"PATH": "/usr/bin"},
+                            )
+                        except BaseException as error:
+                            observed_root_cleanup = error
+                        else:
+                            self.fail("adopted-root cleanup did not fail closed")
+                finally:
+                    for descriptor in (
+                        inherited_fd,
+                        *adopted_after_failure,
+                    ):
+                        try:
+                            real_close(descriptor)
+                        except OSError:
+                            pass
+                self.assertEqual(
+                    "ci-gate-adapter-root-cleanup",
+                    getattr(observed_root_cleanup, "code", None),
+                )
+                self.assertIsInstance(
+                    observed_root_cleanup,
+                    adapters.AdapterError,
+                )
+                self.assertNotIn("private", str(observed_root_cleanup))
+                self.assertEqual(
+                    [inherited_fd, adopted_after_failure[0]],
+                    close_order,
+                )
+                self.assertEqual(
+                    1,
+                    close_order.count(adopted_after_failure[0]),
+                )
+
+        observed_cleanup_error: BaseException | None = None
         with (
             mock.patch.object(
                 adapters,
@@ -1002,14 +1039,123 @@ class CiGateAdapterTests(unittest.TestCase):
                 return_value=(pathlib.Path("/proc/self/fd/903"), 903),
             ),
             mock.patch.object(adapters.os, "close") as close,
-            self.assertRaisesRegex(RuntimeError, "private environment payload"),
+            self.assertRaises(adapters.AdapterError) as operation_error,
         ):
             adapters.run_adapter(
                 self.root,
                 ("check-diff-hygiene",),
                 ExplodingEnvironment(),
             )
+        self.assertEqual(
+            "ci-gate-adapter-operation",
+            operation_error.exception.code,
+        )
+        self.assertNotIn("private", str(operation_error.exception))
         close.assert_called_once_with(903)
+
+        typed_error = adapters.AdapterError(
+            "ci-gate-adapter-command",
+            "the adapter subcommand is not admitted",
+        )
+        for dispatch_error, expected_code in (
+            (typed_error, "ci-gate-adapter-command"),
+            (
+                RuntimeError("private dispatch payload"),
+                "ci-gate-adapter-operation",
+            ),
+            (OSError("private dispatch payload"), "ci-gate-adapter-operation"),
+        ):
+            with (
+                self.subTest(dispatch_error=type(dispatch_error).__name__),
+                mock.patch.object(
+                    adapters,
+                    "_adopt_root",
+                    return_value=(pathlib.Path("/proc/self/fd/904"), 904),
+                ),
+                mock.patch.object(
+                    adapters,
+                    "_dispatch_adapter",
+                    side_effect=dispatch_error,
+                ),
+                mock.patch.object(adapters.os, "close") as close,
+                self.assertRaises(adapters.AdapterError) as caught,
+            ):
+                adapters.run_adapter(
+                    self.root,
+                    ("check-diff-hygiene",),
+                    {"PATH": "/usr/bin"},
+                )
+            self.assertEqual(expected_code, caught.exception.code)
+            self.assertNotIn("private", str(caught.exception))
+            if dispatch_error is typed_error:
+                self.assertIs(typed_error, caught.exception)
+            close.assert_called_once_with(904)
+
+        for interruption in (
+            KeyboardInterrupt("private dispatch interrupt"),
+            SystemExit("private dispatch exit"),
+            GeneratorExit("private dispatch generator"),
+        ):
+            with (
+                self.subTest(interruption=type(interruption).__name__),
+                mock.patch.object(
+                    adapters,
+                    "_adopt_root",
+                    return_value=(pathlib.Path("/proc/self/fd/905"), 905),
+                ),
+                mock.patch.object(
+                    adapters,
+                    "_dispatch_adapter",
+                    side_effect=interruption,
+                ),
+                mock.patch.object(adapters.os, "close") as close,
+            ):
+                try:
+                    adapters.run_adapter(
+                        self.root,
+                        ("check-diff-hygiene",),
+                        {"PATH": "/usr/bin"},
+                    )
+                except BaseException as caught:
+                    self.assertIs(interruption, caught)
+                else:
+                    self.fail("control-flow interruption was not re-raised")
+            close.assert_called_once_with(905)
+
+        with (
+            mock.patch.object(
+                adapters,
+                "_adopt_root",
+                return_value=(pathlib.Path("/proc/self/fd/906"), 906),
+            ),
+            mock.patch.object(
+                adapters,
+                "_dispatch_adapter",
+                side_effect=KeyboardInterrupt("private product interrupt"),
+            ),
+            mock.patch.object(
+                adapters.os,
+                "close",
+                side_effect=SystemExit("private cleanup interrupt"),
+            ) as close,
+        ):
+            try:
+                adapters.run_adapter(
+                    self.root,
+                    ("check-diff-hygiene",),
+                    {"PATH": "/usr/bin"},
+                )
+            except BaseException as error:
+                observed_cleanup_error = error
+            else:
+                self.fail("interrupted root cleanup did not fail closed")
+        self.assertEqual(
+            "ci-gate-adapter-root-cleanup",
+            getattr(observed_cleanup_error, "code", None),
+        )
+        self.assertIsInstance(observed_cleanup_error, adapters.AdapterError)
+        self.assertNotIn("private", str(observed_cleanup_error))
+        close.assert_called_once_with(906)
 
         inventory_root, inventory_fd = adapters._adopt_root(self.root)
         inventory_source = (
