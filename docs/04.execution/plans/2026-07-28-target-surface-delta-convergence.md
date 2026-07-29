@@ -1606,6 +1606,118 @@ git commit -m "docs(task): record typed gate runner review"
 
   Wave B starts only from this clean committed evidence boundary.
 
+##### Task 4.2R / Wave A design reset: Descriptor-root and invocation-lifecycle remediation
+
+**Status:** Required before any further Task 4.2 production or test change.
+The two fresh reviews of `5819c8ab..17bb5cdd` found specification
+`C0/I2/M0` (`SPEC_COMPLIANCE NO`, `COMMIT_READY NO`) and quality/security
+`C0/I2/M1` (`CHANGES_REQUIRED`, `COMMIT_READY NO`). The earlier remediation
+claim is therefore historical implementation evidence, not a pass or a Wave B
+authorization. Manifest review verdicts remain `pending`.
+
+**Bounded scope:** amend only the Task 4.2 runner, adapters, contract parsing
+where required for immutable environment keys, focused runner/adapter/contract
+tests, factual manifest consumer edges and generated summary, and this Task
+ledger. Do not alter workflows, local profile roots, schema-v2 topology, Wave
+B/C code, runtime/Compose services, remote state, dependencies, secrets, the
+controlled wrapper, or direct `pre-commit` execution.
+
+- [ ] **Step R1: Write behavior-specific RED tests before implementation.**
+
+  The test design must establish all of the following without running a real
+  CI suite or network operation:
+
+  1. The runner passes one already-open root directory descriptor to each
+     adapter invocation. For a `/proc/self/fd/N` root, adapter `_open_root`
+     must `fstat` that inherited descriptor, require a directory, duplicate it
+     with `FD_CLOEXEC`, and use only the duplicate for traversal; it must never
+     path-open the procfs magic link. Physical roots remain canonical and use
+     `O_NOFOLLOW`. Integrated runner tests exercise registered
+     `setup.compose-env` and `leaf.zizmor` through this descriptor root, then
+     replace the named repository root and prove the original descriptor is
+     retained. A sibling `sitecustomize.py` injection witness must fail closed
+     rather than become importable.
+  2. The runner creates exactly one new-session process group for an adapter
+     invocation. It owns the group through completion: on timeout, send TERM,
+     wait a bounded interval, then send KILL; after *every* normal or nonzero
+     adapter result, perform the same bounded descendant-finalization before
+     returning. Adapters must not set `start_new_session` or create a nested
+     session. Integration tests cover timeout, output overflow, read error,
+     and nonzero child cases where a child creates a grandchild; each proves
+     both PIDs are gone before return (with deterministic cleanup of test PIDs
+     if an assertion fails).
+  3. HOME teardown retries for a bounded, documented number of attempts.
+     One fixture proves a transient cleanup failure then success; one proves a
+     persistent failure becomes a typed, value-free error. Preserve the
+     existing minimal environment, immutable/dangerous environment-key denial,
+     bounded stdout/stderr capture, SARIF cleanup/retry, and Compose
+     staged-blob identity properties.
+
+  RED command and accounting:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_target_surface_delta_contracts \
+  -v
+```
+
+  Expected RED: each new descriptor, group-lifecycle, or HOME-cleanup witness
+  fails on its named assertion, not by import failure. The committed GREEN
+  accounting must remain exactly `94` discovered tests: `83` pass and `11`
+  documented Wave-C skips; a proposed count change requires an exact test
+  oracle and a Plan/Task correction before GREEN evidence is recorded.
+
+- [ ] **Step R2: Implement only the revised ownership boundaries.**
+
+  The runner, not an adapter, owns the invocation session/process group. It
+  supplies the inherited descriptor through `pass_fds`, uses descriptor-bound
+  import/root resolution, and finalizes descendants on all result paths. The
+  adapter receives that descriptor and duplicates it with CLOEXEC after
+  validating its directory identity. It must not re-open `/proc/self/fd/N` by
+  pathname and must not create a nested session. Cleanup failures are typed and
+  value-free. Preserve registered product timeouts and all existing safe-env,
+  bounded-output, Compose source-identity, and SARIF-atomicity constraints.
+
+- [ ] **Step R3: Run GREEN and invariant gates.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_target_surface_delta_contracts \
+  -v
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile local-harness --list
+python3 scripts/validation/run-ci-gate.py --profile local-harness --dry-run --all
+python3 scripts/validation/run-ci-gate.py --profile local-all-profiles --dry-run --all
+python3 -m compileall -q scripts/validation/ci_gate_contract.py scripts/validation/ci_gate_runner.py scripts/validation/run-ci-gate.py scripts/validation/ci_gate_adapters.py
+git diff --exit-code 0d833563 -- .github/workflows/ci-quality.yml
+python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+git diff --check
+```
+
+  GREEN requires the exact `94 = 83 pass + 11 skip` accounting, schema-v2
+  workflow projection (`7/23/8`), both execution-free local projections,
+  byte-identical workflow boundary, factual manifest/summary consistency, and
+  static/byte invariants. It must also prove no orphan child or grandchild
+  survives any exercised result path.
+
+- [ ] **Step R4: Commit, independent review, and gate.**
+
+  Commit the bounded implementation as `fix(ci): finalize typed gate runner
+  lifecycle`. Assign new independent specification and quality/security
+  reviewers to the exact commit range. Both must return `C0/I0`; otherwise
+  return to design/plan without another implementation attempt. This redesigned
+  subtask permits **one** implementation attempt and **one** independent review
+  pair. Only a controller-owned review-evidence commit after that pair may
+  unblock Wave B.
+
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
 **Files:**
