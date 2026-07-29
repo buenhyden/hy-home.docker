@@ -1144,7 +1144,7 @@ parity for this exact set before workflow cutover.
   returned `C0/I4/M0`; no verdict authorizes implementation.
 - [x] Correct the union of the first-attempt findings without changing the
   approved external-authority boundary.
-- [ ] Assign one final fresh specification reviewer plus one different
+- [x] Assign one final fresh specification reviewer plus one different
   quality/security reviewer to the complete corrected R2 range.
 - [ ] Require both final R2 reviews to map TSDC-010 through TSDC-017, verify
   exact file ownership and commands, and return C0/I0 before implementation.
