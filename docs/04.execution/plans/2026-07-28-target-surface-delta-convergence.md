@@ -2058,6 +2058,164 @@ test -z "$(git status --porcelain=v1 --untracked-files=all)"
   controller-owned review-evidence commit after a passing pair may unblock
   Wave B.
 
+##### Task 4.2U / Wave A design return: phase-owned runner lifecycle
+
+**Status:** The sole Task 4.2T implementation `483d3a47` was reviewed over
+`5cd98c7b..483d3a47`. Specification returned `C0/I0/M0`,
+`SPEC_COMPLIANCE YES`, `COMMIT_READY YES`; quality/security returned
+`C0/I1/M0`, `QUALITY_SECURITY CHANGES_REQUIRED`, `COMMIT_READY NO`. The
+adapter changes and action-raised runner cleanup are accepted, but the runner
+splits bound-process ownership across disjoint source-level `try` regions.
+Interruptions in those closable transitions can escape cleanup. Task 4.2T is
+exhausted, Wave B remains blocked, and no manifest verdict is promoted.
+
+**Exact implementation allowlist:** after a new independently approved
+checkpoint, the sole successor implementation paths are
+`scripts/validation/ci_gate_runner.py`,
+`tests/validation/test_ci_gate_runner.py`, and this Task ledger. Preserve
+`scripts/validation/ci_gate_adapters.py` and
+`tests/validation/test_ci_gate_adapters.py` byte-for-byte from `483d3a47`.
+Preserve the four `17bb5cdd` contract/workflow/manifest/summary freezes.
+Schema, workflow, profile, registry, runtime, Compose, remote, dependency,
+secret, wrapper, direct-pre-commit, and Wave B/C changes remain excluded.
+
+- [ ] **Step U0: Commit and independently approve the phase-owned design.**
+
+  Commit the correction and then a Task-ledger-only checkpoint with exact
+  unique subject `docs(plan): record phase-owned runner checkpoint`. Fresh
+  specification and quality/security reviewers inspect the exact
+  `483d3a47`-through-checkpoint range. Both must return `C0/I0` and
+  `IMPLEMENTATION_READY YES`. The design commits run only changed-document
+  metadata, documentation traceability, and diff hygiene.
+
+- [ ] **Step U1: Add transition-specific RED witnesses inside the existing
+  runner test method.**
+
+  Preserve exactly `94` top-level tests and the existing 11 Wave-C skips.
+  The RED design proves:
+
+  1. One outer lifecycle controller begins in the same `try` region that
+     assigns a successfully returned `Popen` object and continues without a
+     source-level gap through pidfd acquisition, finalization, the sole
+     bounded reap, pidfd close, and return. A preinitialized process reference
+     distinguishes a `Popen` failure from a bound child. This requirement does
+     not claim control over the theoretical interval inside `Popen` before
+     Python binds its result.
+  2. The controller explicitly tracks `pidfd_acquired`, `reap_started`, and
+     `pidfd_close_attempted`. Before reap starts, every `BaseException` after a
+     bound process routes to no-pidfd acquisition recovery or pidfd-owned later
+     recovery according to state. There is no unprotected transition after
+     process binding, pidfd binding, or successful process-group finalization.
+  3. `reap_started` is set immediately before the one
+     `process.wait(timeout=grace)` call. After that state transition, an
+     exception or interruption permits only one independent pidfd-close
+     attempt. It never signals a PGID, observes readiness, scans `/proc`, or
+     invokes a second wait. `pidfd_close_attempted` is set before the close so
+     an interrupted or ambiguous close is never retried. Any incomplete
+     reap/close state returns fixed value-free `ci-gate-runner-cleanup`.
+  4. Proc-root descriptor cleanup is an actual `finally` region rather than a
+     post-catch block. PID-directory and stat descriptors retain their
+     independent `finally` closes. Cleanup failure takes fixed runner-cleanup
+     precedence and no raw exception value crosses the typed boundary.
+  5. Transition injections are behaviorally faithful: a private lifecycle
+     state abstraction performs real production state changes, and test
+     wrappers raise only after those changes. No no-op production test hook is
+     added. Witnesses cover bound-process-before-pidfd, acquired-pidfd-before-
+     readiness, finalized-group-before-reap, reap-started-before-wait, wait
+     interruption, and close-started interruption. Ordered traces fail if any
+     forbidden action follows the reap transition.
+
+  Existing adapter interruption witnesses, live child/grandchild evidence,
+  normal/nonzero/timeout/output/read paths, `ESRCH`, proc bounds, HOME
+  teardown, and output bounds remain GREEN. RED must fail only in the existing
+  runner top-level method on the new transition witnesses, never by import,
+  discovery, network, Compose, runtime, or dependency failure.
+
+- [ ] **Step U2: Implement only the single phase-owned runner controller.**
+
+  Replace disjoint lifecycle `try` regions with the U1 controller and real
+  state transitions. Do not add a second cleanup authority, unbounded wait,
+  raw PID liveness probe, post-reap numeric-PGID action, nested session,
+  pathname fallback, or test-only hook. Preserve every accepted Task 4.2T
+  adapter and runner behavior outside the closable transition gaps.
+
+- [ ] **Step U3: Run GREEN and exact invariants.**
+
+  GREEN remains `94 = 83 pass + 11 skip`; workflow projection remains
+  `7/23/8`; the frozen execution-free projections are `local-harness` list
+  `32`, dry-run `32`, and `local-all-profiles` dry-run `35`. Run:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_target_surface_delta_contracts \
+  -v
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile local-harness --list
+python3 scripts/validation/run-ci-gate.py --profile local-harness --dry-run --all
+python3 scripts/validation/run-ci-gate.py --profile local-all-profiles --dry-run --all
+python3 -m ruff check \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+python3 -m compileall -q \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+bash scripts/validation/check-doc-traceability.sh
+git diff --exit-code 483d3a47 -- \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_adapters.py
+git diff --exit-code 17bb5cdd -- \
+  .github/workflow-contract.yml \
+  .github/workflows/ci-quality.yml \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md
+TASK_4_2U_DESIGN_SUBJECT='docs(plan): record phase-owned runner checkpoint'
+TASK_4_2U_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2U_DESIGN_SUBJECT}$")"
+test -n "$TASK_4_2U_DESIGN_COMMIT"
+test "$(printf '%s\n' "$TASK_4_2U_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+test "$(git show -s --format=%s "$TASK_4_2U_DESIGN_COMMIT")" = "$TASK_4_2U_DESIGN_SUBJECT"
+TASK_4_2U_EXPECTED_PATHS="$(printf '%s\n' \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  scripts/validation/ci_gate_runner.py \
+  tests/validation/test_ci_gate_runner.py | sort)"
+test "$(git diff --name-only "$TASK_4_2U_DESIGN_COMMIT" -- | sort)" = "$TASK_4_2U_EXPECTED_PATHS"
+test -z "$(git ls-files --others --exclude-standard)"
+git diff --check
+```
+
+- [ ] **Step U4: Commit, independently review, and gate.**
+
+  This subsection permits one implementation attempt and one fresh review
+  pair. Commit with exact subject
+  `fix(ci): close runner ownership transitions`. Before review, run:
+
+```bash
+TASK_4_2U_DESIGN_SUBJECT='docs(plan): record phase-owned runner checkpoint'
+TASK_4_2U_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2U_DESIGN_SUBJECT}$")"
+test -n "$TASK_4_2U_DESIGN_COMMIT"
+test "$(printf '%s\n' "$TASK_4_2U_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+test "$(git show -s --format=%s "$TASK_4_2U_DESIGN_COMMIT")" = "$TASK_4_2U_DESIGN_SUBJECT"
+TASK_4_2U_EXPECTED_PATHS="$(printf '%s\n' \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  scripts/validation/ci_gate_runner.py \
+  tests/validation/test_ci_gate_runner.py | sort)"
+test "$(git diff --name-only "$TASK_4_2U_DESIGN_COMMIT"..HEAD | sort)" = "$TASK_4_2U_EXPECTED_PATHS"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  Both reviewers must return `C0/I0`; otherwise return to design without
+  another implementation attempt. Only controller-owned passing review
+  evidence may unblock Wave B.
+
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
 **Files:**
