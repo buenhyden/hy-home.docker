@@ -14,6 +14,10 @@ from collections.abc import Mapping
 
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
+_MAX_JSON_DEPTH = 256
+_MAX_GATE_NODES = 2048
+_MAX_GATE_EDGES = 8192
+_GIT_TIMEOUT_SECONDS = 5
 _TOP_LEVEL_FIELDS = frozenset(
     {
         "schema_version",
@@ -92,6 +96,135 @@ _REQUIRED_JOB_SUITES = {
     "storybook-coverage": ("storybook-coverage",),
     "zizmor": ("zizmor",),
 }
+_REQUIRED_ROOT_CHILDREN = {
+    "ci.docs-traceability": ("leaf.docs-traceability",),
+    "ci.docs-implementation-alignment": (
+        "leaf.docs-implementation-alignment",
+        "leaf.docs-qa-gate-recommendations",
+    ),
+    "ci.repo-contracts": (
+        "leaf.repo-metadata-base",
+        "setup.repo-python-dependencies",
+        "leaf.repo-document-metadata",
+        "leaf.ci-gate-contract-regressions",
+        "leaf.ci-gate-runner-regressions",
+        "leaf.ci-gate-adapter-regressions",
+        "leaf.workflow-contract-regressions",
+        "leaf.repo-contracts-control-plane-regressions",
+        "leaf.ci-precommit-regressions",
+        "leaf.workflow-contract",
+        "leaf.repo-contracts",
+    ),
+    "ci.agent-output-eval-fixture-gate": (
+        "leaf.agent-output-eval-fixture-regressions",
+        "leaf.agent-output-eval-fixture-gate",
+    ),
+    "ci.supply-chain-fixture-policy": (
+        "leaf.supply-chain-fixture-policy",
+        "leaf.supply-chain-deterministic-policy",
+        "leaf.supply-chain-summary-freshness",
+    ),
+    "ci.dependency-vulnerability-audit": (
+        "leaf.dependency-vulnerability-audit",
+    ),
+    "ci.git-flow-contract": ("leaf.git-flow-contract",),
+    "ci.compose-validation": (
+        "setup.compose-env",
+        "leaf.compose-validation",
+    ),
+    "ci.compose-all-profiles-validation": (
+        "setup.compose-env",
+        "leaf.compose-all-profiles-validation",
+    ),
+    "ci.infrastructure-hardening": (
+        "setup.compose-env",
+        "leaf.infrastructure-hardening",
+    ),
+    "ci.template-security-baseline": (
+        "setup.compose-env",
+        "leaf.template-security-baseline",
+    ),
+    "ci.quickwin-baseline": (
+        "setup.compose-env",
+        "leaf.quickwin-baseline",
+    ),
+    "ci.pre-commit": (
+        "setup.precommit-python-dependencies",
+        "leaf.pre-commit",
+    ),
+    "ci.frontend-quality": (
+        "setup.frontend-node-dependencies",
+        "leaf.frontend-lint",
+        "leaf.frontend-typecheck",
+        "leaf.frontend-build",
+        "leaf.frontend-quality",
+    ),
+    "ci.storybook-coverage": (
+        "setup.storybook-node-dependencies",
+        "setup.storybook-playwright",
+        "leaf.storybook-coverage",
+    ),
+    "ci.zizmor": ("leaf.zizmor",),
+}
+_LOCAL_AGGREGATE_CHILDREN = {
+    "local.document-corpus-lifecycle": (
+        "leaf.local-document-corpus-lifecycle-tests",
+        "leaf.local-document-corpus-contract",
+        "leaf.local-document-corpus-promoted",
+    ),
+    "local.target-surface": (
+        "leaf.local-target-surface-regressions",
+        "leaf.local-target-surface-contract",
+        "leaf.local-target-delta-regressions",
+        "leaf.local-target-delta-contract",
+    ),
+    "local.workflow-harness": (
+        "leaf.ci-gate-contract-regressions",
+        "leaf.ci-gate-runner-regressions",
+        "leaf.ci-gate-adapter-regressions",
+        "leaf.workflow-contract-regressions",
+        "leaf.repo-contracts-control-plane-regressions",
+        "leaf.ci-precommit-regressions",
+        "leaf.workflow-contract",
+    ),
+    "local.supply-chain": (
+        "leaf.supply-chain-deterministic-policy",
+        "leaf.supply-chain-summary-freshness",
+    ),
+    "local.generated-freshness": (
+        "leaf.local-security-readiness-freshness",
+        "leaf.local-audit-matrix-freshness",
+        "leaf.local-llm-wiki-index-freshness",
+        "leaf.local-llm-wiki-coverage-freshness",
+    ),
+    "local.compose-validation": ("leaf.compose-validation",),
+    "local.compose-all-profiles-validation": (
+        "leaf.compose-all-profiles-validation",
+    ),
+    "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
+    "local.template-security-baseline": (
+        "leaf.template-security-baseline",
+    ),
+    "local.quickwin-baseline": ("leaf.quickwin-baseline",),
+}
+_LOCAL_FORBIDDEN_GATE_IDS = frozenset(
+    {
+        "setup.compose-env",
+        "setup.repo-python-dependencies",
+        "setup.precommit-python-dependencies",
+        "setup.frontend-node-dependencies",
+        "setup.storybook-node-dependencies",
+        "setup.storybook-playwright",
+        "leaf.dependency-vulnerability-audit",
+        "leaf.pre-commit",
+        "leaf.frontend-lint",
+        "leaf.frontend-typecheck",
+        "leaf.frontend-build",
+        "leaf.frontend-quality",
+        "leaf.storybook-coverage",
+        "leaf.zizmor",
+    }
+)
 _LOCAL_SCRIPT_BACKED_ROOTS = (
     "leaf.local-diff-hygiene",
     "leaf.local-shell-syntax",
@@ -197,11 +330,15 @@ class GateRegistry:
 
 def load_contract_document(root: pathlib.Path) -> dict[str, object]:
     root = pathlib.Path(root)
-    if (
-        not root.is_absolute()
-        or ".." in root.parts
-        or pathlib.Path(root.resolve(strict=False)) != root
-    ):
+    try:
+        canonical_root = pathlib.Path(root.resolve(strict=False))
+    except OSError:
+        raise GateContractError(
+            "ci-gate-input-unreadable",
+            _CONTRACT_PATH.as_posix(),
+            "the contract input could not be read",
+        ) from None
+    if not root.is_absolute() or ".." in root.parts or canonical_root != root:
         raise GateContractError(
             "ci-gate-path-noncanonical",
             _CONTRACT_PATH.as_posix(),
@@ -213,27 +350,21 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
     file_descriptor = -1
     github_descriptor = -1
     root_descriptor = -1
+    open_stage = "root"
     try:
         root_descriptor = os.open(root, directory_flags)
+        open_stage = "parent"
         github_descriptor = os.open(
             ".github",
             directory_flags,
             dir_fd=root_descriptor,
         )
-        try:
-            file_descriptor = os.open(
-                "workflow-contract.yml",
-                os_flags,
-                dir_fd=github_descriptor,
-            )
-        except OSError as error:
-            if error.errno == errno.ELOOP:
-                raise GateContractError(
-                    "ci-gate-input-symlink",
-                    _CONTRACT_PATH.as_posix(),
-                    "the contract input must not be a symbolic link",
-                ) from None
-            raise
+        open_stage = "input"
+        file_descriptor = os.open(
+            "workflow-contract.yml",
+            os_flags,
+            dir_fd=github_descriptor,
+        )
         metadata = os.fstat(file_descriptor)
         if not stat.S_ISREG(metadata.st_mode):
             raise GateContractError(
@@ -249,6 +380,7 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
             )
         chunks: list[bytes] = []
         remaining = _MAX_CONTRACT_BYTES + 1
+        open_stage = "read"
         while remaining:
             chunk = os.read(file_descriptor, min(65536, remaining))
             if not chunk:
@@ -268,6 +400,21 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
             _CONTRACT_PATH.as_posix(),
             "the contract input is missing",
         ) from None
+    except OSError as error:
+        if error.errno == errno.ELOOP:
+            code = "ci-gate-input-symlink"
+            message = "the contract input must not be a symbolic link"
+        elif error.errno == errno.ENOTDIR or open_stage == "parent":
+            code = "ci-gate-parent-invalid"
+            message = "the contract parent must be a real directory"
+        else:
+            code = "ci-gate-input-unreadable"
+            message = "the contract input could not be read"
+        raise GateContractError(
+            code,
+            _CONTRACT_PATH.as_posix(),
+            message,
+        ) from None
     finally:
         for descriptor in (
             file_descriptor,
@@ -275,7 +422,10 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
             root_descriptor,
         ):
             if descriptor >= 0:
-                os.close(descriptor)
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
 
     try:
         source = payload.decode("utf-8", errors="strict")
@@ -300,6 +450,12 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
     def reject_constant(_value: str) -> object:
         raise ValueError
 
+    if not _json_depth_within_limit(source):
+        raise GateContractError(
+            "ci-gate-json-invalid",
+            _CONTRACT_PATH.as_posix(),
+            "the contract input must be bounded strict JSON",
+        )
     try:
         document = json.loads(
             source,
@@ -312,7 +468,7 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
             _CONTRACT_PATH.as_posix(),
             "the contract input contains a duplicate JSON key",
         ) from None
-    except (json.JSONDecodeError, ValueError):
+    except (json.JSONDecodeError, RecursionError, ValueError):
         raise GateContractError(
             "ci-gate-json-invalid",
             _CONTRACT_PATH.as_posix(),
@@ -343,7 +499,7 @@ def parse_gate_registry(
     path: str,
 ) -> GateRegistry:
     _require_fields(document, _TOP_LEVEL_FIELDS, {"schema_version", "gate_nodes", "job_roots", "profile_roots"}, "ci-gate-document-fields", path)
-    if document["schema_version"] != 2 or isinstance(document["schema_version"], bool):
+    if type(document["schema_version"]) is not int or document["schema_version"] != 2:
         raise GateContractError(
             "ci-gate-schema-version",
             path,
@@ -357,10 +513,22 @@ def parse_gate_registry(
                 "registry sections must be JSON objects",
             )
     raw_nodes = _require_records(document["gate_nodes"], "ci-gate-nodes-type", path)
+    if len(raw_nodes) > _MAX_GATE_NODES:
+        raise GateContractError(
+            "ci-gate-node-limit",
+            path,
+            "the gate registry exceeds the node limit",
+        )
     nodes = tuple(
         _parse_node(record, f"{path}#gate_nodes[{index}]")
         for index, record in enumerate(raw_nodes)
     )
+    if sum(len(node.children) for node in nodes) > _MAX_GATE_EDGES:
+        raise GateContractError(
+            "ci-gate-edge-limit",
+            path,
+            "the gate registry exceeds the edge limit",
+        )
     if len({node.gate_id for node in nodes}) != len(nodes):
         raise GateContractError(
             "ci-gate-id-duplicate",
@@ -392,6 +560,22 @@ def validate_gate_registry(
 
     def finding(code: str, path: str, message: str) -> None:
         findings.append(GateFinding(code, path, message))
+
+    if len(registry.nodes) > _MAX_GATE_NODES:
+        finding(
+            "ci-gate-node-limit",
+            "gate_nodes",
+            "the gate registry exceeds the node limit",
+        )
+        return tuple(findings)
+    edge_count = sum(len(node.children) for node in registry.nodes)
+    if edge_count > _MAX_GATE_EDGES:
+        finding(
+            "ci-gate-edge-limit",
+            "gate_nodes",
+            "the gate registry exceeds the edge limit",
+        )
+        return tuple(findings)
 
     job_mapping = {
         job.job_id: job.root_gate_id
@@ -438,22 +622,7 @@ def validate_gate_registry(
         )
         return tuple(findings)
 
-    visiting: set[str] = set()
-    visited: set[str] = set()
-
-    def visit(gate_id: str) -> bool:
-        if gate_id in visiting:
-            return True
-        if gate_id in visited:
-            return False
-        visiting.add(gate_id)
-        if any(visit(child) for child in node_by_id[gate_id].children):
-            return True
-        visiting.remove(gate_id)
-        visited.add(gate_id)
-        return False
-
-    if any(visit(node.gate_id) for node in registry.nodes):
+    if _graph_has_cycle(node_by_id):
         finding(
             "ci-gate-cycle",
             "gate_nodes",
@@ -461,17 +630,7 @@ def validate_gate_registry(
         )
         return tuple(findings)
 
-    reachable: set[str] = set()
-
-    def collect(gate_id: str) -> None:
-        if gate_id in reachable:
-            return
-        reachable.add(gate_id)
-        for child in node_by_id[gate_id].children:
-            collect(child)
-
-    for root_gate_id in roots:
-        collect(root_gate_id)
+    reachable = set(_expanded_all_ids(node_by_id, roots))
     if reachable != set(node_by_id):
         finding(
             "ci-gate-orphan",
@@ -480,11 +639,13 @@ def validate_gate_registry(
         )
         return tuple(findings)
 
-    leaves = [node for node in registry.nodes if node.kind is GateKind.LEAF]
-    suites = [node.suite_key for node in leaves]
-    duplicate_suites = {
-        suite_key for suite_key in suites if suites.count(suite_key) > 1
-    }
+    seen_suites: set[str] = set()
+    duplicate_suites: set[str] = set()
+    for node in registry.nodes:
+        if node.kind is GateKind.LEAF and node.suite_key is not None:
+            if node.suite_key in seen_suites:
+                duplicate_suites.add(node.suite_key)
+            seen_suites.add(node.suite_key)
     if duplicate_suites:
         finding(
             "ci-gate-suite-duplicate",
@@ -498,26 +659,32 @@ def validate_gate_registry(
         )
         return tuple(findings)
 
+    topological_ids = _topological_ids(node_by_id)
     for job in registry.job_roots:
-        path_counts: dict[str, int] = {}
-
-        def count_paths(gate_id: str) -> None:
-            node = node_by_id[gate_id]
-            if node.kind is GateKind.LEAF:
-                if node.suite_key is not None:
-                    path_counts[node.suite_key] = (
-                        path_counts.get(node.suite_key, 0) + 1
-                    )
-                return
-            for child in node.children:
-                count_paths(child)
-
-        count_paths(job.root_gate_id)
-        if any(count > 1 for count in path_counts.values()):
+        path_counts = _bounded_path_counts(
+            node_by_id,
+            topological_ids,
+            job.root_gate_id,
+        )
+        if any(
+            count > 1
+            for gate_id, count in path_counts.items()
+            if node_by_id[gate_id].kind is GateKind.LEAF
+        ):
             finding(
                 "ci-gate-suite-reachable-duplicate",
                 "job_roots",
                 "a semantic suite is reachable more than once from a workflow",
+            )
+            return tuple(findings)
+        if (
+            node_by_id[job.root_gate_id].children
+            != _REQUIRED_ROOT_CHILDREN[job.root_gate_id]
+        ):
+            finding(
+                "ci-gate-required-root-children",
+                f"gate_nodes/{job.root_gate_id}",
+                "required roots must retain their exact ordered children",
             )
             return tuple(findings)
         actual_suites = tuple(
@@ -540,6 +707,10 @@ def validate_gate_registry(
     if (
         len(profile_mapping) != len(registry.profile_roots)
         or profile_mapping != _EXPECTED_PROFILE_ROOTS
+        or any(
+            profile.classification != "local"
+            for profile in registry.profile_roots
+        )
     ):
         finding(
             "ci-gate-profile-roots",
@@ -547,6 +718,27 @@ def validate_gate_registry(
             "local profile roots must match the exact ordered projections",
         )
         return tuple(findings)
+
+    for profile in registry.profile_roots:
+        local_reachable = set(
+            _expanded_all_ids(node_by_id, profile.root_gate_ids)
+        )
+        if local_reachable & _LOCAL_FORBIDDEN_GATE_IDS:
+            finding(
+                "ci-gate-local-unsafe",
+                f"profile_roots/{profile.profile}",
+                "local profiles must exclude CI-only and networked gates",
+            )
+            return tuple(findings)
+
+    for gate_id, expected_children in _LOCAL_AGGREGATE_CHILDREN.items():
+        if node_by_id[gate_id].children != expected_children:
+            finding(
+                "ci-gate-local-aggregate-children",
+                f"gate_nodes/{gate_id}",
+                "local aggregates must retain their exact ordered children",
+            )
+            return tuple(findings)
 
     computed_profiles: dict[str, list[str]] = {
         gate_id: [] for gate_id in node_by_id
@@ -559,6 +751,8 @@ def validate_gate_registry(
         )
         for gate_id in _expanded_all_ids(node_by_id, profile_roots):
             computed_profiles[gate_id].append(profile)
+    tracked_files: dict[pathlib.PurePosixPath, bool] = {}
+    canonical_directories: dict[pathlib.PurePosixPath, bool] = {}
     for node in registry.nodes:
         if node.profiles != tuple(computed_profiles[node.gate_id]):
             finding(
@@ -572,13 +766,23 @@ def validate_gate_registry(
             continue
         if node.entrypoint is None or node.cwd is None:
             continue
-        if not _tracked_regular_file(root, node.entrypoint):
+        if node.entrypoint not in tracked_files:
+            tracked_files[node.entrypoint] = _tracked_regular_file(
+                root,
+                node.entrypoint,
+            )
+        if not tracked_files[node.entrypoint]:
             finding(
                 "ci-gate-entrypoint-invalid",
                 f"gate_nodes/{node.gate_id}",
                 "entrypoints must be tracked canonical first-party files",
             )
-        if not _canonical_directory(root, node.cwd):
+        if node.cwd not in canonical_directories:
+            canonical_directories[node.cwd] = _canonical_directory(
+                root,
+                node.cwd,
+            )
+        if not canonical_directories[node.cwd]:
             finding(
                 "ci-gate-cwd-invalid",
                 f"gate_nodes/{node.gate_id}",
@@ -599,7 +803,41 @@ def expand_gate_ids(
             "gate",
             "select exactly one gate or all roots",
         )
+    if len(registry.nodes) > _MAX_GATE_NODES:
+        raise GateContractError(
+            "ci-gate-node-limit",
+            "gate_nodes",
+            "the gate registry exceeds the node limit",
+        )
+    if sum(len(node.children) for node in registry.nodes) > _MAX_GATE_EDGES:
+        raise GateContractError(
+            "ci-gate-edge-limit",
+            "gate_nodes",
+            "the gate registry exceeds the edge limit",
+        )
     node_by_id = {node.gate_id: node for node in registry.nodes}
+    if len(node_by_id) != len(registry.nodes):
+        raise GateContractError(
+            "ci-gate-id-duplicate",
+            "gate_nodes",
+            "gate identifiers must be unique",
+        )
+    if any(
+        child not in node_by_id
+        for node in registry.nodes
+        for child in node.children
+    ):
+        raise GateContractError(
+            "ci-gate-child-missing",
+            "gate_nodes",
+            "a registered child does not exist",
+        )
+    if _graph_has_cycle(node_by_id):
+        raise GateContractError(
+            "ci-gate-cycle",
+            "gate_nodes",
+            "the gate graph must be acyclic",
+        )
     if profile == "ci":
         roots = tuple(job.root_gate_id for job in registry.job_roots)
     else:
@@ -742,27 +980,42 @@ def _parse_job_root(record: Mapping[str, object], path: str) -> JobRoot:
 def _parse_profile_root(record: Mapping[str, object], path: str) -> ProfileRoot:
     fields = frozenset({"profile", "root_gate_ids", "classification"})
     _require_fields(record, fields, set(fields), "ci-gate-profile-fields", path)
+    profile = _string(record["profile"], "ci-gate-profile-value", path)
+    classification = _string(
+        record["classification"],
+        "ci-gate-profile-value",
+        path,
+    )
+    if profile not in _EXPECTED_PROFILE_ROOTS or classification != "local":
+        raise GateContractError(
+            "ci-gate-profile-classification",
+            path,
+            "the local profile classification is invalid",
+        )
     return ProfileRoot(
-        _string(record["profile"], "ci-gate-profile-value", path),
+        profile,
         _strings(record["root_gate_ids"], "ci-gate-profile-value", path),
-        _string(record["classification"], "ci-gate-profile-value", path),
+        classification,
     )
 
 
 def _expanded_all_ids(node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]) -> tuple[str, ...]:
     ordered: list[str] = []
     seen: set[str] = set()
-
-    def walk(gate_id: str) -> None:
+    pending = list(reversed(roots))
+    while pending:
+        gate_id = pending.pop()
         if gate_id in seen:
-            return
+            continue
+        if gate_id not in node_by_id:
+            raise GateContractError(
+                "ci-gate-child-missing",
+                "gate_nodes",
+                "a registered root or child does not exist",
+            )
         seen.add(gate_id)
         ordered.append(gate_id)
-        for child in node_by_id[gate_id].children:
-            walk(child)
-
-    for root in roots:
-        walk(root)
+        pending.extend(reversed(node_by_id[gate_id].children))
     return tuple(ordered)
 
 
@@ -774,19 +1027,124 @@ def _expanded_ids(node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]) ->
     )
 
 
+def _graph_has_cycle(node_by_id: Mapping[str, GateNode]) -> bool:
+    state: dict[str, int] = {}
+    for start in node_by_id:
+        if state.get(start, 0) != 0:
+            continue
+        state[start] = 1
+        stack: list[tuple[str, int]] = [(start, 0)]
+        while stack:
+            gate_id, child_index = stack[-1]
+            children = node_by_id[gate_id].children
+            if child_index >= len(children):
+                state[gate_id] = 2
+                stack.pop()
+                continue
+            child = children[child_index]
+            stack[-1] = (gate_id, child_index + 1)
+            child_state = state.get(child, 0)
+            if child_state == 1:
+                return True
+            if child_state == 0:
+                state[child] = 1
+                stack.append((child, 0))
+    return False
+
+
+def _topological_ids(node_by_id: Mapping[str, GateNode]) -> tuple[str, ...]:
+    indegree = {gate_id: 0 for gate_id in node_by_id}
+    for node in node_by_id.values():
+        for child in node.children:
+            indegree[child] += 1
+    pending = [
+        gate_id
+        for gate_id in node_by_id
+        if indegree[gate_id] == 0
+    ]
+    ordered: list[str] = []
+    index = 0
+    while index < len(pending):
+        gate_id = pending[index]
+        index += 1
+        ordered.append(gate_id)
+        for child in node_by_id[gate_id].children:
+            indegree[child] -= 1
+            if indegree[child] == 0:
+                pending.append(child)
+    return tuple(ordered)
+
+
+def _bounded_path_counts(
+    node_by_id: Mapping[str, GateNode],
+    topological_ids: tuple[str, ...],
+    root: str,
+) -> dict[str, int]:
+    counts = {root: 1}
+    for gate_id in topological_ids:
+        count = counts.get(gate_id, 0)
+        if not count:
+            continue
+        for child in node_by_id[gate_id].children:
+            counts[child] = min(2, counts.get(child, 0) + count)
+    return counts
+
+
+def _json_depth_within_limit(source: str) -> bool:
+    depth = 0
+    in_string = False
+    escaped = False
+    for character in source:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                in_string = False
+            continue
+        if character == '"':
+            in_string = True
+        elif character in "[{":
+            depth += 1
+            if depth > _MAX_JSON_DEPTH:
+                return False
+        elif character in "]}":
+            depth -= 1
+            if depth < 0:
+                return False
+    return depth == 0 and not in_string
+
+
 def _tracked_regular_file(root: pathlib.Path, path: pathlib.PurePosixPath) -> bool:
     candidate = root.joinpath(*path.parts)
     try:
         if not _path_without_symlinks(root, path) or not candidate.is_file():
             return False
+        environment = {
+            "PATH": os.defpath,
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": "/dev/null",
+        }
         result = subprocess.run(
-            ["git", "ls-files", "--error-unmatch", "--", path.as_posix()],
+            [
+                "git",
+                "--literal-pathspecs",
+                "ls-files",
+                "--error-unmatch",
+                "--",
+                path.as_posix(),
+            ],
             cwd=root,
             capture_output=True,
             check=False,
+            env=environment,
+            timeout=_GIT_TIMEOUT_SECONDS,
         )
         return result.returncode == 0
-    except OSError:
+    except (OSError, subprocess.TimeoutExpired):
         return False
 
 
