@@ -79,6 +79,14 @@ read-only observation only.
   local implementation tasks, protected local targets, and Plan-bounded
   destructive convergence are authorized through the selected
   Subagent-Driven method.
+- On 2026-07-29 the user approved the revised typed CI gate design recorded at
+  Spec commit `a0f91bb5`. That approval authorizes Revision R1 Plan drafting
+  only; it does not reopen the consumed five-round Task 4 implementation loop.
+- On 2026-07-29 the user explicitly approved the exact revised Plan. That
+  approval authorizes local T-TSDC-004R implementation only after an
+  independent read-only Plan review returns C0/I0; it does not authorize
+  remote, runtime, secret-payload, dependency-installation, controlled-wrapper,
+  or direct pre-commit actions.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
   is one exact attempt from one clean committed checkpoint.
@@ -94,7 +102,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Type workflow triggers, dependencies, and QA ownership | CI/security | TSDC-010–014 | workflow contract and CI script tests | Task 4 workflow/QA implementation agent and replacement remediation agents | blocked after fix round 5/5 |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | original agents remain historical; fresh R1 agents only after independent revised-Plan review | blocked pending Revision R1 Plan review |
 | T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | pending |
 | T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | pending |
 
@@ -186,6 +194,11 @@ have no unresolved Critical or Important findings.
 | 2026-07-29 | T-TSDC-004 final specification re-review | Fresh independent specification reviewer | Exact fix range `ba93483c..78f9f012`: C0/I4/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO. Load-bearing gaps remain for non-aggregate helper traversal, nonliteral Python process calls and `os.exec*` shapes, executable interpreter heredocs, and literal-variable non-script owner resolution. |
 | 2026-07-29 | T-TSDC-004 final quality/security re-review | Fresh independent quality/security reviewer | Exact fix range `ba93483c..78f9f012`: C0/I4/M1; CHANGES_REQUIRED; COMMIT_READY NO. Load-bearing gaps remain for shell/Python execution equivalence, unquoted-heredoc expansion, recursive resource/provenance bounds, Git-environment isolation, descriptor/inode execute-mode proof, and exact positive assertions. |
 | 2026-07-29 | T-TSDC-004 fix-loop breaker | Controller | Fix round 5/5 is exhausted with unresolved load-bearing TSDC-012 findings. T-TSDC-004 is blocked; serial T-TSDC-005 and T-TSDC-006 do not start. No finding is parked or waived, no manifest verdict is promoted, and no further implementation is authorized without a revised approved Plan or an explicit exception to the five-round breaker. |
+| 2026-07-29 | T-TSDC-004R specification revision | Controller plus independent design reviewers | Replaced the unbounded shell/Python semantic-equivalence objective with the approved structural schema-v2 gate registry, DAG, exact runner, workflow projection, and honest opaque-leaf boundary. Spec commit `a0f91bb5` passed metadata, 5,662-link alignment, diff hygiene, and independent specification plus quality/security review with no findings. |
+| 2026-07-29 | T-TSDC-004R specification approval | User / Controller | The user approved the written Spec revision. The approval advances the lifecycle to prospective Plan drafting only; no production/test implementation, remote mutation, runtime action, dependency installation, wrapper run, or direct pre-commit is authorized. |
+| 2026-07-29 | T-TSDC-004R Plan draft | Controller plus read-only planning agents | Revised the canonical Plan in place around schema contract, dependency-free runner, atomic workflow/local projection, independent cutover review, and old-interpreter removal. Historical Task evidence is preserved. The exact Plan remains pending independent review and user approval. |
+| 2026-07-29 | T-TSDC-004R Plan approval | User / Controller | The user approved the exact revised Plan. Local production/test implementation remains gated only by an independent read-only C0/I0 Plan review; remote mutation, runtime actions, dependency installation, the controlled all-files wrapper, and direct pre-commit remain unauthorized. |
+| 2026-07-29 | T-TSDC-004R Plan self-review | Controller | Mapped TSDC-010–017 to exact recovery units; removed placeholder-like signatures; fixed delta-manifest owner/writer/count semantics; made adapter grammars, safe environment construction, required root children, local profile order, mode normalization, RED/GREEN commands, and type interfaces exact. No production, test, workflow, runtime, remote, dependency, wrapper, or pre-commit action ran. |
 
 ## Verification Evidence
 
@@ -197,8 +210,9 @@ have no unresolved Critical or Important findings.
 | Spec 135 Markdown | zero errors | Passed before Plan drafting |
 | Document implementation alignment | zero failures | Passed before Plan drafting |
 | `git diff --check` | zero whitespace errors | Passed before Plan drafting |
-| Plan/Task metadata and Markdown | zero failures | Passed: changed metadata selected 3 with 0 violations; explicit three-file markdownlint reported 0 errors |
-| Plan/Task cross-links | zero failures | Passed: traceability and implementation alignment reported 0 failures |
+| Revision R1 Plan/Task metadata and Markdown | zero failures | Passed: explicit base `a0f91bb5` selected 2 changed documents with 0 violations; explicit two-file `markdownlint-cli2 --no-globs` linted 2 files with 0 errors |
+| Revision R1 Plan/Task links and alignment | zero failures | Passed: traceability checked 46 catalog pairs with 0 failures; implementation alignment checked 674 stage documents and 5,663 repository-local Markdown links with 0 failures |
+| Revision R1 Plan/Task diff hygiene | zero whitespace errors | Passed: `git diff --check` returned 0 |
 
 ### Task execution evidence
 
@@ -612,7 +626,9 @@ finding and must not be silently accepted as independent review evidence.
 | Unit | Logical purpose | Expected commit | Actual commit | Validation |
 | --- | --- | --- | --- | --- |
 | Planning specification | Define successor convergence design | `docs(spec): define target surface delta convergence` | `e828745a` | metadata, Markdown, alignment, diff hygiene passed |
+| Planning specification recovery | Redesign typed CI gate ownership | `docs(spec): redesign typed CI gate ownership` | `a0f91bb5` | metadata 1/0, alignment links 5,662/0, diff hygiene, independent spec and quality/security review passed |
 | Planning activation | Activate Spec and define Plan/Task | `docs(plan): define target surface delta execution` | `a2ba9eb4` | metadata 3/0, Markdown 3/0, traceability 46/0, alignment 674/5,658/141/0, diff hygiene passed |
+| Revision R1 planning recovery | Define typed CI gate recovery execution | `docs(plan): define typed CI gate recovery` | pending | metadata 2/0, Markdown 2/0, traceability 46/0, alignment 674/5,663/0, diff hygiene passed; independent Plan review pending |
 | T-TSDC-001 | Successor delta contract | `feat(governance): establish target surface delta contract` | `1671e9be` | focused 15/15, predecessor 40/40, metadata 0 violations, advisory CLI, Ruff, Bash syntax, and diff hygiene pass; aggregate limitations recorded |
 | T-TSDC-001 remediation | Harden successor evidence contract after two reviews | `fix(governance): harden target delta evidence` | `72e452d0` | remediation RED/GREEN, successor/predecessor/metadata, advisory/blocking, summary, static QA, and diff hygiene |
 | T-TSDC-001 second remediation | Close fresh fail-closed review gaps | `fix(governance): close target delta fail-closed gaps` | `25f4c52a` | advisory structural RED/GREEN, secret-like field matrix, no-follow bootstrap, successor/static/metadata/diff gates |
@@ -636,7 +652,7 @@ finding and must not be silently accepted as independent review evidence.
 
 | Item | State | Reason | Destination |
 | --- | --- | --- | --- |
-| T-TSDC-004 semantic ownership proof | blocked | Five remediation rounds are exhausted; valid non-aggregate helper, dynamic Python, variable-equivalent shell, executable heredoc, and resource/provenance paths remain fail-open | revised approved TSDC-012 design and implementation Plan, or explicit breaker exception |
+| T-TSDC-004 semantic ownership proof | blocked pending Revision R1 Plan review | Five original remediation rounds remain exhausted. The revised typed structural design and exact recovery Plan are approved, but implementation cannot start until the independent read-only Plan review returns C0/I0. | independent C0/I0 Plan review, then T-TSDC-004R activation |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -646,9 +662,10 @@ finding and must not be silently accepted as independent review evidence.
 | Broad dependency/container vulnerability scanning | partial gap | Existing scoped checks do not establish broad SCA/image coverage | Spec 126 successor work |
 | Controlled Agent all-files pre-commit | blocked by approval | No exact one-attempt approval for this wave | final Task 6 gate if separately approved |
 
-The T-TSDC-004 semantic-ownership item blocks Tasks 4 through 6. The remaining
-items prevent only their corresponding external, runtime, or approval-gated
-claim.
+The T-TSDC-004R Plan-approval gate blocks Tasks 4 through 6. The original
+five-round blocker remains historical evidence and is neither waived nor
+counted as a sixth recovery attempt. The remaining items prevent only their
+corresponding external, runtime, or approval-gated claim.
 
 ## Related Documents
 

@@ -23,13 +23,23 @@ duplicate-safe delta manifest classifies every later target change and a
 whole-surface validator checks the current repository independently of that
 manifest. Native files keep native schemas; README and typed Markdown use
 consumer-selected Stage 99 profiles. The local workflow contract becomes the
-machine authority for exact triggers, jobs, permissions, and direct Action
-dependencies, while Stage 90 remains observation/evidence rather than desired
-state.
+machine authority for exact triggers, jobs, permissions, direct Action
+dependencies, typed CI gates, required-job roots, and local profile roots. A
+dependency-free runner expands that declarative DAG and executes verified
+first-party entry points without shell interpretation, while Stage 90 remains
+observation/evidence rather than desired state.
 
-**Tech Stack:** Python 3.12, PyYAML, Bash, JSON, YAML, Markdown/CommonMark,
+**Tech Stack:** Python 3.12 standard-library JSON and subprocess APIs, PyYAML
+for GitHub workflow documents, Bash, JSON-compatible YAML, Markdown/CommonMark,
 GitHub Actions, actionlint, ShellCheck, markdownlint-cli2, pre-commit 4.6.1,
 unittest, Git, and repository-owned generators.
+
+**Revision R1 resume checkpoint:**
+`a0f91bb50cbd589abdecd8cd217d1673ac0e76d9`
+
+**Revision R1 status:** The user approved this revised Plan on 2026-07-29.
+Implementation remains blocked until an independent read-only Plan review
+returns no Critical or Important finding.
 
 ## Global Constraints
 
@@ -62,6 +72,18 @@ unittest, Git, and repository-owned generators.
   Static tracked version reconciliation is allowed; runtime change is not.
 - Keep `.github/workflows/ci-quality.yml` as the sole required-quality
   workflow and preserve its 16 exact unique job IDs.
+- Keep `.github/workflow-contract.yml` as the only CI registry. Schema version
+  2 uses deterministic strict JSON syntax, which is also valid YAML, so the
+  runner can bootstrap with the Python standard library before dependency
+  installation. Do not create a generated or hard-coded parallel command
+  registry.
+- Required-quality executable steps may use only an immutable registered
+  `uses:` action or the exact static
+  `python3 scripts/validation/run-ci-gate.py --profile ci --gate <gate-id>`
+  grammar. Non-gating automation retains its separate registered contract.
+- Treat T-TSDC-001 through T-TSDC-003 and the original five T-TSDC-004
+  remediation rounds as historical evidence. Do not rerun, rewrite, or
+  reclassify them during the R1 recovery.
 - Do not push, open or merge a pull request, dispatch a workflow, or mutate
   remote branch protection, rulesets, required checks, environments,
   variables, secrets, repository settings, or credentials.
@@ -72,8 +94,15 @@ unittest, Git, and repository-owned generators.
 - Each logical task uses a fresh implementer, a distinct specification
   reviewer, and a distinct quality/security reviewer. Critical and Important
   findings must be remediated and re-reviewed.
-- Each task ends in one independently revertible Conventional Commit.
-  Generated-owner fallout belongs to the owning task.
+- Each prospective R1 work unit ends in one independently revertible
+  Conventional Commit. The six top-level Spec task identities remain stable;
+  recovery commits do not rewrite historical commits. Generated-owner fallout
+  belongs to the owning work unit.
+- Use only the canonical `bounded-implementation-loop` and
+  `independent-review-loop` from
+  `docs/00.agent-governance/contracts/provider-models.yaml`, each with
+  `max_attempts: 2`. Exhaustion blocks the work unit and returns to
+  design/plan; no prompt-local extra retry budget is created.
 - Never run `pre-commit run --all-files` directly. A final Agent all-files run
   requires a new exact user approval and
   `scripts/validation/run-agent-precommit-all-files.sh` from a clean committed
@@ -94,7 +123,8 @@ through six serial logical tasks:
    documentation;
 3. reconcile static version drift and verified active legacy/deprecated
    residue;
-4. type and harden local GitHub Actions and QA ownership;
+4. replace free-form CI semantic interpretation with a typed gate registry,
+   dependency-free runner, and exact workflow/local projections;
 5. refresh canonical audit, generated, and remote-observation evidence;
 6. promote enforcement, run the final validation ladder, and close independent
    reviews.
@@ -103,6 +133,22 @@ The sibling
 [Task ledger](../tasks/2026-07-28-target-surface-delta-convergence.md)
 records actual commands, results, commits, deviations, deletion evidence, and
 review verdicts. It does not duplicate planned implementation.
+
+### Revision R1 Resume Boundary
+
+- T-TSDC-001 through T-TSDC-003 remain completed.
+- The original T-TSDC-004 implementation and five remediation rounds remain
+  blocked historical evidence. No finding is waived and no old retry is
+  reopened.
+- Commit `a0f91bb5` contains the approved revised Spec and is the only R1
+  planning base.
+- T-TSDC-004R may start only after this exact revised Plan receives explicit
+  user approval and an independent read-only Plan review returns no Critical
+  or Important finding.
+- T-TSDC-005 and T-TSDC-006 remain serially blocked until T-TSDC-004R has
+  completed specification and quality/security reviews.
+- Plan text stays prospective. Existing commands, results, commits, and
+  review verdicts remain in the Task ledger and are not normalized here.
 
 ## Context and Inputs
 
@@ -135,11 +181,13 @@ review verdicts. It does not duplicate planned implementation.
 | Local required-quality contract | 16 exact job IDs |
 | Remote required contexts observed | 12 contexts; four locally desired contexts absent |
 | Static tech-stack drift | Six registry values behind Compose declarations |
+| R1 resume checkpoint | `a0f91bb50cbd589abdecd8cd217d1673ac0e76d9` |
+| R1 current boundary | Tasks 1–3 complete; original Task 4 blocked after five rounds; Tasks 5–6 not started |
 
 ### External Sources
 
 The implementation retains source URL and 2026-07-28 KST retrieval context
-for fast-moving facts:
+for the original facts and the 2026-07-29 KST CI design revalidation:
 
 - GitHub workflow syntax:
   <https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax>
@@ -147,6 +195,10 @@ for fast-moving facts:
   <https://docs.github.com/en/actions/reference/security/secure-use>
 - GitHub protected branches:
   <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches>
+- GitHub reusable workflows:
+  <https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows>
+- GitHub Action metadata syntax:
+  <https://docs.github.com/en/enterprise-cloud%40latest/actions/reference/workflows-and-actions/metadata-syntax>
 - GitHub Actions Node 20 retirement:
   <https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/>
 - GitHub self-hosted runner minimum-version enforcement:
@@ -178,7 +230,14 @@ claiming its outer SHA makes the dependency graph immutable.
 - Register the sample service as an explicit typed example fixture.
 - Synchronize safe secret-path inventory without reading values.
 - Reconcile six tracked static image-version drifts and their direct evidence.
-- Preserve exact CI status identities while removing redundant execution.
+- Preserve exact CI status identities while proving typed suite ownership and
+  one-time DAG reachability.
+- Use one schema version 2 registry with `gate_nodes`, `job_roots`, and
+  `profile_roots`; remove free-form `owner_commands` and
+  `expensive_commands`.
+- Execute registered first-party entry points through a deterministic,
+  non-shell runner with confined path, provenance, environment, and timeout
+  controls.
 - Enforce exact workflow triggers, permissions, timeouts, concurrency, and
   direct Action dependencies.
 - Separate CI pre-commit execution from separately approved Agent execution.
@@ -211,14 +270,14 @@ claiming its outer SHA makes the dependency graph immutable.
 | TSDC-004, TSDC-005 | T-TSDC-002 | exact README headings, typed fixture registration, metadata tests |
 | TSDC-006, TSDC-007 | T-TSDC-002 | archive split and value-free secret inventory tests |
 | TSDC-008, TSDC-009 | T-TSDC-002, T-TSDC-003 | owner routing and reviewed disposition ledger |
-| TSDC-010 | T-TSDC-004 | exact workflow trigger and permission contract |
-| TSDC-011 | T-TSDC-004 | unchanged 16-job identity across four owners |
-| TSDC-012 | T-TSDC-004 | one CI owner for every expensive semantic gate |
-| TSDC-013 | T-TSDC-004 | full-SHA Action registry and Node 20 rejection |
-| TSDC-014 | T-TSDC-004 | separate CI and Agent pre-commit authority paths |
+| TSDC-010 | T-TSDC-004R | exact workflow trigger and permission contract |
+| TSDC-011 | T-TSDC-004R | unchanged 16-job identity across four owners |
+| TSDC-012 | T-TSDC-004R | one schema v2 registry; unique leaf `suite_key`; one required-job root owner; at most one reachable workflow execution; ordered fake-executor proof |
+| TSDC-013 | T-TSDC-004R | full-SHA Action registry and Node 20 rejection |
+| TSDC-014 | T-TSDC-004R | separate CI and Agent pre-commit authority paths |
 | TSDC-015 | T-TSDC-005 | dated local/remote observation with unverified boundaries |
 | TSDC-016 | T-TSDC-005, T-TSDC-006 | affected audit rows and generated summaries fresh |
-| TSDC-017 | all tasks, T-TSDC-006 | six logical commits, task reviews, whole-branch reviews |
+| TSDC-017 | all tasks, T-TSDC-004R, T-TSDC-006 | independently revertible logical units, task reviews, cutover review, and whole-branch reviews |
 
 ## Work Breakdown
 
@@ -245,7 +304,7 @@ claiming its outer SHA makes the dependency graph immutable.
 
 **Interfaces:**
 
-```python
+```text
 TARGET_ROOTS: Final[tuple[str, ...]]
 DELTA_MANIFEST: Final[pathlib.PurePosixPath]
 DELTA_SUMMARY: Final[pathlib.PurePosixPath]
@@ -295,33 +354,33 @@ def changed_target_paths(
     root: pathlib.Path,
     predecessor_commit: str,
     roots: tuple[str, ...] = TARGET_ROOTS,
-) -> tuple[str, ...]: ...
+) -> tuple[str, ...]
 
 def load_delta_manifest(
     root: pathlib.Path,
     path: pathlib.PurePosixPath = DELTA_MANIFEST,
-) -> DeltaManifestDocument: ...
+) -> DeltaManifestDocument
 
 def validate_delta_manifest(
     root: pathlib.Path,
     document: DeltaManifestDocument,
-) -> tuple[DeltaFinding, ...]: ...
+) -> tuple[DeltaFinding, ...]
 
-def current_target_inventory(root: pathlib.Path) -> TargetInventory: ...
+def current_target_inventory(root: pathlib.Path) -> TargetInventory
 
 def render_delta_summary(
     document: DeltaManifestDocument,
     inventory: TargetInventory,
-) -> str: ...
+) -> str
 
 def bootstrap_delta_manifest(
     root: pathlib.Path,
     output: pathlib.Path,
     predecessor_commit: str,
     implementation_base_commit: str,
-) -> None: ...
+) -> None
 
-def main(argv: list[str] | None = None) -> int: ...
+def main(argv: list[str] | None = None) -> int
 ```
 
 The CLI defaults to check mode, accepts `--mode advisory|blocking`,
@@ -604,143 +663,1087 @@ negative evidence was erased.
 - [ ] Commit as
   `fix(infra): reconcile static version and lifecycle drift`.
 
-### Task 4: T-TSDC-004 — Converge GitHub Actions and QA Control Plane
+### Task 4 Recovery: T-TSDC-004R — Cut Over to Typed CI Gates
 
-**Files:**
+The original Task 4 implementation remains blocked evidence. This recovery is
+a new approved-design lineage under the same top-level Task ID, not a sixth
+semantic-parser fix. It uses three implementation waves:
 
-- Create `.github/workflow-contract.yml`.
-- Create `scripts/validation/github_workflow_contract.py`.
-- Create `scripts/validation/check-github-workflow-contract.py`.
-- Create `tests/validation/test_github_workflow_contract.py`.
-- Create `scripts/validation/run-ci-precommit.sh`.
-- Create `tests/validation/test_run_ci_precommit.sh`.
-- Create `scripts/requirements-pre-commit.txt` with exact
-  `pre-commit==4.6.1`.
-- Modify `.github/workflows/ci-quality.yml`.
-- Modify `.github/rulesets/main-protection.md`.
-- Modify `.github/INDEX.md`.
-- Modify `docs/00.agent-governance/rules/github-governance.md`.
-- Modify `docs/00.agent-governance/scopes/qa.md`.
-- Modify `scripts/validation/check-repo-contracts.sh`.
-- Modify `scripts/validation/run-local-qa-gates.sh`.
-- Modify `scripts/README.md`.
-- Modify `tests/validation/test_agent_governance_ci_routing.py`.
-- Modify `.pre-commit-config.yaml` routing only if the new checker paths are
-  not already selected by the existing repository-contract hook.
-- Modify the Task 1 manifest/summary and sibling Task ledger.
+- **Wave A:** typed schema and dependency-free runner foundations;
+- **Wave B:** atomic workflow and local-profile projection cutover;
+- **Wave C:** old semantic interpreter removal after independent cutover
+  approval.
 
-**Interfaces:**
+#### Stable Public Interfaces
+
+The following existing public names in
+`scripts/validation/github_workflow_contract.py` remain import-compatible:
+
+```text
+WorkflowFinding
+TriggerContract
+ActionDependency
+WorkflowDocument
+WorkflowContractError
+load_workflows(root: pathlib.Path) -> tuple[WorkflowDocument, ...]
+load_workflow_contract(root: pathlib.Path) -> WorkflowContract
+validate_workflows(root: pathlib.Path, contract: WorkflowContract) -> tuple[WorkflowFinding, ...]
+main(argv: list[str] | None = None) -> int
+```
+
+The new `scripts/validation/ci_gate_contract.py` owns these exact typed
+interfaces:
 
 ```python
-@dataclass(frozen=True, order=True, slots=True)
-class WorkflowFinding:
+class GateKind(enum.StrEnum):
+    LEAF = "leaf"
+    AGGREGATE = "aggregate"
+    SETUP = "setup"
+
+
+@dataclasses.dataclass(frozen=True, order=True, slots=True)
+class GateFinding:
     code: str
     path: str
     message: str
 
-@dataclass(frozen=True, slots=True)
-class TriggerContract:
-    events: tuple[str, ...]
-    branches: tuple[str, ...]
-    paths: tuple[str, ...]
-    schedules: tuple[str, ...]
 
-@dataclass(frozen=True, slots=True)
-class ActionDependency:
-    action: str
-    sha: str
-    runtime: str
-    manifest_url: str
-    retrieved_at: str
-    consumers: tuple[str, ...]
-    security_disposition: str
+class GateContractError(ValueError):
+    def __init__(self, code: str, path: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+        self.path = path
+        self.message = message
 
-def load_workflow_contract(root: pathlib.Path) -> WorkflowContract: ...
-def load_workflows(root: pathlib.Path) -> tuple[WorkflowDocument, ...]: ...
-def validate_workflows(
-    root: pathlib.Path,
-    contract: WorkflowContract,
-) -> tuple[WorkflowFinding, ...]: ...
-def main(argv: list[str] | None = None) -> int: ...
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class GateNode:
+    gate_id: str
+    kind: GateKind
+    suite_key: str | None
+    entrypoint: pathlib.PurePosixPath | None
+    argv: tuple[str, ...]
+    cwd: pathlib.PurePosixPath | None
+    allowed_env_keys: tuple[str, ...]
+    timeout_minutes: int | None
+    profiles: tuple[str, ...]
+    opaque: bool
+    children: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class JobRoot:
+    workflow: str
+    job_id: str
+    root_gate_id: str
+    classification: str
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class ProfileRoot:
+    profile: str
+    root_gate_ids: tuple[str, ...]
+    classification: str
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class GateRegistry:
+    nodes: tuple[GateNode, ...]
+    job_roots: tuple[JobRoot, ...]
+    profile_roots: tuple[ProfileRoot, ...]
 ```
 
-The contract registers exact event/branch/path/schedule combinations,
-permissions, concurrency, timeouts, job IDs, semantic job owner commands, and
-direct Action dependencies. It rejects `pull_request_target`, unapproved
-`workflow_run`/`workflow_call`, event widening, write-all, permission widening,
-mutable Action refs, Node 20, duplicate job identities, missing timeouts, and
-unsafe interpolation.
+The module exposes these exact functions:
 
-The 16 required IDs remain:
+```text
+load_contract_document(root: pathlib.Path) -> dict[str, object]
+parse_gate_registry(document: Mapping[str, object], path: str) -> GateRegistry
+validate_gate_registry(root: pathlib.Path, registry: GateRegistry) -> tuple[GateFinding, ...]
+expand_gate_ids(registry: GateRegistry, profile: str, gate_id: str | None, all_roots: bool) -> tuple[str, ...]
+```
 
-`docs-traceability`, `docs-implementation-alignment`, `repo-contracts`,
-`agent-output-eval-fixture-gate`, `supply-chain-fixture-policy`,
-`dependency-vulnerability-audit`, `git-flow-contract`,
-`compose-validation`, `compose-all-profiles-validation`,
-`infrastructure-hardening`, `template-security-baseline`,
-`quickwin-baseline`, `pre-commit`, `frontend-quality`,
-`storybook-coverage`, and `zizmor`.
+`load_contract_document` reads the one strict-JSON
+`.github/workflow-contract.yml` through bounded descriptor-relative,
+no-follow traversal and rejects duplicate JSON keys, non-UTF-8, oversized
+input, noncanonical paths, and schema versions other than 2. JSON syntax is a
+YAML 1.2 subset; no second registry file is created.
 
-`scripts/validation/run-ci-precommit.sh`:
+The new `scripts/validation/ci_gate_runner.py` owns:
 
-- requires both `GITHUB_ACTIONS=true` and `CI=true`;
-- rejects positional arguments and Agent-wrapper variables;
-- executes exactly
-  `pre-commit run --all-files --show-diff-on-failure`;
-- preserves `SKIP=eslint-nextjs`;
-- propagates the child exit code;
-- does not snapshot or authorize Agent changes.
+```python
+@dataclasses.dataclass(frozen=True, slots=True)
+class GateInvocation:
+    gate_id: str
+    entrypoint: pathlib.PurePosixPath
+    argv: tuple[str, ...]
+    cwd: pathlib.PurePosixPath
+    allowed_env_keys: tuple[str, ...]
+    timeout_seconds: int
 
-- [ ] Add RED workflow tests for every tracked workflow's exact trigger,
-  permission, timeout, concurrency, and job contract.
-- [ ] Add mutation RED cases for `pull_request_target`, event/branch/path
-  widening, unapproved `workflow_call`/`workflow_run`, write permissions,
-  missing timeout, duplicate job ID, mutable Action tag, unregistered Action,
-  and Node 20.
-- [ ] Add RED asserting `ci-quality.yml` retains exactly the 16 required IDs
-  and each expensive semantic command has one CI job owner.
-- [ ] Add shell RED tests for CI environment requirements, exact command,
-  `SKIP` preservation, argument rejection, fake pre-commit exit propagation,
-  and no Agent-wrapper acceptance.
-- [ ] Record expected RED failures before production edits.
-- [ ] Write the workflow contract and full-SHA Action registry from the
-  verified official manifests.
-- [ ] Replace `pre-commit/action` with setup-python, installation from
-  `scripts/requirements-pre-commit.txt`, and the CI-only script.
-- [ ] Remove overlapping inline workflow parsing from
-  `check-repo-contracts.sh`; invoke the focused checker once and retain
-  separate Stage 00 routing assertions.
-- [ ] Register `tech-stack-version-sync.yml` in the non-gating taxonomy and
-  local-runner remote-automation inventory.
-- [ ] Synchronize `.github/INDEX.md`, desired protection, Stage 00 GitHub/QA
-  governance, and tests without creating `.github/README.md`.
-- [ ] Update manifest dispositions and regenerate the delta summary.
-- [ ] Run:
+
+GateExecutor = collections.abc.Callable[[GateInvocation], int]
+```
+
+```text
+build_execution_plan(registry: GateRegistry, profile: str, gate_id: str | None, all_roots: bool) -> tuple[GateInvocation, ...]
+render_execution_plan(plan: tuple[GateInvocation, ...]) -> tuple[str, ...]
+execute_execution_plan(root: pathlib.Path, plan: tuple[GateInvocation, ...], environ: Mapping[str, str], executor: GateExecutor | None = None) -> int
+main(argv: list[str] | None = None) -> int
+```
+
+`scripts/validation/run-ci-gate.py` remains a thin executable wrapper around
+`ci_gate_runner.main`. `scripts/validation/ci_gate_adapters.py` supplies only
+the enumerated non-shell adapters needed to replace current inline workflow
+logic:
+
+```text
+verify-metadata-base
+publish-qa-recommendations
+check-diff-hygiene
+check-shell-syntax
+install-python-requirements
+run-unittest
+run-agent-output-eval
+run-npm
+check-git-flow
+prepare-compose-env
+install-playwright
+run-zizmor-sarif
+```
+
+The adapter does not accept an arbitrary command selector, shell source, or
+gate ID. Every child process uses a literal argument vector with
+`shell=False`. `run-zizmor-sarif` passes a no-follow output descriptor as
+stdout instead of using shell redirection.
+
+Adapter argument grammars are closed:
+
+- `verify-metadata-base`, `publish-qa-recommendations`,
+  `check-diff-hygiene`, `check-shell-syntax`, `run-agent-output-eval`,
+  `check-git-flow`, `prepare-compose-env`, `install-playwright`, and
+  `run-zizmor-sarif` accept no trailing arguments.
+- `install-python-requirements` accepts exactly one repository-relative path:
+  `scripts/requirements.txt` or
+  `scripts/requirements-pre-commit.txt`.
+- `run-unittest` accepts one or more module names matching
+  `tests.validation.[A-Za-z0-9_.]+`, followed by the literal `-v`; options,
+  paths, and module names outside that namespace are rejected.
+- `run-npm` accepts exactly
+  `audit --audit-level=high --prefix projects/storybook/nextjs`,
+  `ci --prefix projects/storybook/nextjs`, or
+  `run <script> --prefix projects/storybook/nextjs`, where `<script>` is one
+  of `lint`, `typecheck`, `build`, `build-storybook`, or `coverage`.
+- `install-playwright` owns the fixed child vector
+  `npx --prefix projects/storybook/nextjs playwright install chromium
+  --with-deps`.
+- `run-zizmor-sarif` owns the fixed child vector
+  `uvx --from zizmor==1.28.0 zizmor . --format sarif .` and the fixed
+  repository-relative output `results.sarif`.
+- `verify-metadata-base`, `publish-qa-recommendations`,
+  `check-diff-hygiene`, `check-shell-syntax`, `run-agent-output-eval`,
+  `check-git-flow`, and `prepare-compose-env` each replace one corresponding
+  current workflow or local-runner body with a purpose-specific
+  implementation. `check-shell-syntax` obtains only tracked
+  `scripts/**/*.sh` and `.claude/hooks/*.sh` paths through NUL-delimited Git
+  output before one literal `bash -n` call. None delegates to an arbitrary
+  program.
+
+#### Canonical Root and Suite Mapping
+
+The 16 required job IDs and their root IDs are exact:
+
+| Required job ID | Root gate ID | Semantic suite keys |
+| --- | --- | --- |
+| `docs-traceability` | `ci.docs-traceability` | `docs-traceability` |
+| `docs-implementation-alignment` | `ci.docs-implementation-alignment` | `docs-implementation-alignment`, `docs-qa-gate-recommendations` |
+| `repo-contracts` | `ci.repo-contracts` | `repo-metadata-base`, `repo-document-metadata`, `ci-gate-contract-regressions`, `ci-gate-runner-regressions`, `ci-gate-adapter-regressions`, `workflow-contract-regressions`, `repo-contracts-control-plane-regressions`, `ci-precommit-regressions`, `workflow-contract`, `repo-contracts` |
+| `agent-output-eval-fixture-gate` | `ci.agent-output-eval-fixture-gate` | `agent-output-eval-fixture-regressions`, `agent-output-eval-fixture-gate` |
+| `supply-chain-fixture-policy` | `ci.supply-chain-fixture-policy` | `supply-chain-fixture-policy`, `supply-chain-deterministic-policy`, `supply-chain-summary-freshness` |
+| `dependency-vulnerability-audit` | `ci.dependency-vulnerability-audit` | `dependency-vulnerability-audit` |
+| `git-flow-contract` | `ci.git-flow-contract` | `git-flow-contract` |
+| `compose-validation` | `ci.compose-validation` | `compose-validation` |
+| `compose-all-profiles-validation` | `ci.compose-all-profiles-validation` | `compose-all-profiles-validation` |
+| `infrastructure-hardening` | `ci.infrastructure-hardening` | `infrastructure-hardening` |
+| `template-security-baseline` | `ci.template-security-baseline` | `template-security-baseline` |
+| `quickwin-baseline` | `ci.quickwin-baseline` | `quickwin-baseline` |
+| `pre-commit` | `ci.pre-commit` | `pre-commit` |
+| `frontend-quality` | `ci.frontend-quality` | `frontend-lint`, `frontend-typecheck`, `frontend-build`, `frontend-quality` |
+| `storybook-coverage` | `ci.storybook-coverage` | `storybook-coverage` |
+| `zizmor` | `ci.zizmor` | `zizmor` |
+
+Setup nodes have no `suite_key`. The exact setup IDs are
+`setup.repo-python-dependencies`, `setup.precommit-python-dependencies`,
+`setup.frontend-node-dependencies`, `setup.storybook-node-dependencies`,
+`setup.storybook-playwright`, and `setup.compose-env`. Immutable
+`actions/checkout`, `actions/setup-python`, `actions/setup-node`,
+`astral-sh/setup-uv`, and `github/codeql-action/upload-sarif` steps remain
+Action-registry consumers rather than gate nodes.
+
+Every semantic leaf ID is exactly `leaf.<suite-key>`. The required roots have
+these ordered children:
+
+| Root gate ID | Ordered children |
+| --- | --- |
+| `ci.docs-traceability` | `leaf.docs-traceability` |
+| `ci.docs-implementation-alignment` | `leaf.docs-implementation-alignment`, `leaf.docs-qa-gate-recommendations` |
+| `ci.repo-contracts` | `leaf.repo-metadata-base`, `setup.repo-python-dependencies`, `leaf.repo-document-metadata`, `leaf.ci-gate-contract-regressions`, `leaf.ci-gate-runner-regressions`, `leaf.ci-gate-adapter-regressions`, `leaf.workflow-contract-regressions`, `leaf.repo-contracts-control-plane-regressions`, `leaf.ci-precommit-regressions`, `leaf.workflow-contract`, `leaf.repo-contracts` |
+| `ci.agent-output-eval-fixture-gate` | `leaf.agent-output-eval-fixture-regressions`, `leaf.agent-output-eval-fixture-gate` |
+| `ci.supply-chain-fixture-policy` | `leaf.supply-chain-fixture-policy`, `leaf.supply-chain-deterministic-policy`, `leaf.supply-chain-summary-freshness` |
+| `ci.dependency-vulnerability-audit` | `leaf.dependency-vulnerability-audit` |
+| `ci.git-flow-contract` | `leaf.git-flow-contract` |
+| `ci.compose-validation` | `setup.compose-env`, `leaf.compose-validation` |
+| `ci.compose-all-profiles-validation` | `setup.compose-env`, `leaf.compose-all-profiles-validation` |
+| `ci.infrastructure-hardening` | `setup.compose-env`, `leaf.infrastructure-hardening` |
+| `ci.template-security-baseline` | `setup.compose-env`, `leaf.template-security-baseline` |
+| `ci.quickwin-baseline` | `setup.compose-env`, `leaf.quickwin-baseline` |
+| `ci.pre-commit` | `setup.precommit-python-dependencies`, `leaf.pre-commit` |
+| `ci.frontend-quality` | `setup.frontend-node-dependencies`, `leaf.frontend-lint`, `leaf.frontend-typecheck`, `leaf.frontend-build`, `leaf.frontend-quality` |
+| `ci.storybook-coverage` | `setup.storybook-node-dependencies`, `setup.storybook-playwright`, `leaf.storybook-coverage` |
+| `ci.zizmor` | `leaf.zizmor` |
+
+Required leaf/setup execution fields are exact:
+
+| Node ID | Entrypoint | Exact `argv` |
+| --- | --- | --- |
+| `leaf.docs-traceability` | `scripts/validation/check-doc-traceability.sh` | no arguments |
+| `leaf.docs-implementation-alignment` | `scripts/validation/check-doc-implementation-alignment.sh` | no arguments |
+| `leaf.docs-qa-gate-recommendations` | `scripts/validation/ci_gate_adapters.py` | `publish-qa-recommendations` |
+| `leaf.repo-metadata-base` | `scripts/validation/ci_gate_adapters.py` | `verify-metadata-base` |
+| `setup.repo-python-dependencies` | `scripts/validation/ci_gate_adapters.py` | `install-python-requirements`, `scripts/requirements.txt` |
+| `leaf.repo-document-metadata` | `scripts/validation/check-document-metadata.py` | `--mode`, `check-changed` |
+| `leaf.ci-gate-contract-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_ci_gate_contract`, `-v` |
+| `leaf.ci-gate-runner-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_ci_gate_runner`, `-v` |
+| `leaf.ci-gate-adapter-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_ci_gate_adapters`, `-v` |
+| `leaf.workflow-contract-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_github_workflow_contract`, `-v` |
+| `leaf.repo-contracts-control-plane-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_agent_governance_ci_routing`, `-v` |
+| `leaf.ci-precommit-regressions` | `tests/validation/test_run_ci_precommit.sh` | no arguments |
+| `leaf.workflow-contract` | `scripts/validation/check-github-workflow-contract.py` | no arguments |
+| `leaf.repo-contracts` | `scripts/validation/check-repo-contracts.sh` | no arguments |
+| `leaf.agent-output-eval-fixture-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_agent_output_eval_fixtures`, `-v` |
+| `leaf.agent-output-eval-fixture-gate` | `scripts/validation/ci_gate_adapters.py` | `run-agent-output-eval` |
+| `leaf.supply-chain-fixture-policy` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_compose_core_readiness`, `tests.validation.test_postgres_logical_upgrade_rehearsal`, `tests.validation.test_grype_db_seed`, `tests.validation.test_supply_chain_policy`, `tests.validation.test_sample_service_delivery_rehearsal`, `-v` |
+| `leaf.supply-chain-deterministic-policy` | `scripts/validation/check-supply-chain-policy.py` | `--check` |
+| `leaf.supply-chain-summary-freshness` | `scripts/security/generate-supply-chain-sample-service-summary.sh` | `--check` |
+| `leaf.dependency-vulnerability-audit` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `audit`, `--audit-level=high`, `--prefix`, `projects/storybook/nextjs` |
+| `leaf.git-flow-contract` | `scripts/validation/ci_gate_adapters.py` | `check-git-flow` |
+| `setup.compose-env` | `scripts/validation/ci_gate_adapters.py` | `prepare-compose-env` |
+| `leaf.compose-validation` | `scripts/validation/validate-docker-compose.sh` | no arguments |
+| `leaf.compose-all-profiles-validation` | `scripts/validation/validate-docker-compose.sh` | no arguments |
+| `leaf.infrastructure-hardening` | `scripts/hardening/check-all-hardening.sh` | no arguments |
+| `leaf.template-security-baseline` | `scripts/validation/check-template-security-baseline.sh` | no arguments |
+| `leaf.quickwin-baseline` | `scripts/validation/check-quickwin-baseline.sh` | no arguments |
+| `setup.precommit-python-dependencies` | `scripts/validation/ci_gate_adapters.py` | `install-python-requirements`, `scripts/requirements-pre-commit.txt` |
+| `leaf.pre-commit` | `scripts/validation/run-ci-precommit.sh` | no arguments |
+| `setup.frontend-node-dependencies` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `ci`, `--prefix`, `projects/storybook/nextjs` |
+| `leaf.frontend-lint` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `run`, `lint`, `--prefix`, `projects/storybook/nextjs` |
+| `leaf.frontend-typecheck` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `run`, `typecheck`, `--prefix`, `projects/storybook/nextjs` |
+| `leaf.frontend-build` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `run`, `build`, `--prefix`, `projects/storybook/nextjs` |
+| `leaf.frontend-quality` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `run`, `build-storybook`, `--prefix`, `projects/storybook/nextjs` |
+| `setup.storybook-node-dependencies` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `ci`, `--prefix`, `projects/storybook/nextjs` |
+| `setup.storybook-playwright` | `scripts/validation/ci_gate_adapters.py` | `install-playwright` |
+| `leaf.storybook-coverage` | `scripts/validation/ci_gate_adapters.py` | `run-npm`, `run`, `coverage`, `--prefix`, `projects/storybook/nextjs` |
+| `leaf.zizmor` | `scripts/validation/ci_gate_adapters.py` | `run-zizmor-sarif` |
+
+Every node above uses `cwd: "."`. Each required leaf/setup timeout equals its
+owning job's preserved timeout: 5 minutes for documentation, agent-output,
+git-flow, and supply-chain roots; 20 minutes for pre-commit, frontend, and
+Storybook roots; and 10 minutes for all other required roots. Every semantic
+leaf is `opaque: true`; every setup and aggregate is `opaque: false`. A shared
+node's `profiles` field must equal its computed root reachability and cannot be
+manually widened.
+
+The local-only semantic leaves are exact:
+
+| Gate ID | `suite_key` | Entrypoint | Exact `argv` |
+| --- | --- | --- | --- |
+| `leaf.local-diff-hygiene` | `local-diff-hygiene` | `scripts/validation/ci_gate_adapters.py` | `check-diff-hygiene` |
+| `leaf.local-shell-syntax` | `local-shell-syntax` | `scripts/validation/ci_gate_adapters.py` | `check-shell-syntax` |
+| `leaf.local-provider-surface-drift` | `local-provider-surface-drift` | `scripts/operations/sync-provider-surfaces.sh` | `--check` |
+| `leaf.local-agent-governance-contract` | `local-agent-governance-contract` | `scripts/validation/check-agent-governance-contract.py` | `--mode`, `repository`, `--section`, `all` |
+| `leaf.local-tech-stack-version-drift` | `local-tech-stack-version-drift` | `scripts/operations/sync-tech-stack-versions.sh` | `--check` |
+| `leaf.local-document-corpus-lifecycle-tests` | `local-document-corpus-lifecycle-tests` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_document_corpus_lifecycle`, `-v` |
+| `leaf.local-document-corpus-contract` | `local-document-corpus-contract` | `scripts/validation/check-document-corpus-lifecycle.py` | `--mode`, `check-contract` |
+| `leaf.local-document-corpus-promoted` | `local-document-corpus-promoted` | `scripts/validation/check-document-corpus-lifecycle.py` | `--mode`, `check-promoted` |
+| `leaf.local-target-surface-regressions` | `local-target-surface-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_target_surface_contracts`, `-v` |
+| `leaf.local-target-surface-contract` | `local-target-surface-contract` | `scripts/validation/check-target-surface-contract.py` | no arguments |
+| `leaf.local-target-delta-regressions` | `local-target-delta-regressions` | `scripts/validation/ci_gate_adapters.py` | `run-unittest`, `tests.validation.test_target_surface_delta_contracts`, `-v` |
+| `leaf.local-target-delta-contract` | `local-target-delta-contract` | `scripts/validation/check-target-surface-delta-contract.py` | `--mode`, `advisory` |
+| `leaf.local-security-readiness-freshness` | `local-security-readiness-freshness` | `scripts/validation/generate-security-automation-readiness.sh` | `--check` |
+| `leaf.local-audit-matrix-freshness` | `local-audit-matrix-freshness` | `scripts/validation/generate-audit-implementation-matrix.sh` | `--check` |
+| `leaf.local-llm-wiki-index-freshness` | `local-llm-wiki-index-freshness` | `scripts/knowledge/generate-llm-wiki-index.sh` | `--check` |
+| `leaf.local-llm-wiki-coverage-freshness` | `local-llm-wiki-coverage-freshness` | `scripts/knowledge/generate-llm-wiki-coverage.sh` | `--check` |
+
+All local-only nodes use `cwd: "."`, `timeout_minutes: 10`, and
+`opaque: true`. Their `profiles` fields must equal the exact profile-root
+reachability below.
+
+Local aggregate children are exact:
+
+| Aggregate ID | Ordered children |
+| --- | --- |
+| `local.document-corpus-lifecycle` | `leaf.local-document-corpus-lifecycle-tests`, `leaf.local-document-corpus-contract`, `leaf.local-document-corpus-promoted` |
+| `local.target-surface` | `leaf.local-target-surface-regressions`, `leaf.local-target-surface-contract`, `leaf.local-target-delta-regressions`, `leaf.local-target-delta-contract` |
+| `local.workflow-harness` | `leaf.ci-gate-contract-regressions`, `leaf.ci-gate-runner-regressions`, `leaf.ci-gate-adapter-regressions`, `leaf.workflow-contract-regressions`, `leaf.repo-contracts-control-plane-regressions`, `leaf.ci-precommit-regressions`, `leaf.workflow-contract` |
+| `local.supply-chain` | `leaf.supply-chain-deterministic-policy`, `leaf.supply-chain-summary-freshness` |
+| `local.generated-freshness` | `leaf.local-security-readiness-freshness`, `leaf.local-audit-matrix-freshness`, `leaf.local-llm-wiki-index-freshness`, `leaf.local-llm-wiki-coverage-freshness` |
+
+The `ci` profile derives from `job_roots`.
+The exact `local-script-backed` root order is
+`leaf.local-diff-hygiene`, `leaf.local-shell-syntax`,
+`leaf.local-provider-surface-drift`,
+`ci.agent-output-eval-fixture-gate`,
+`leaf.local-agent-governance-contract`,
+`leaf.local-tech-stack-version-drift`, `ci.docs-traceability`,
+`leaf.docs-implementation-alignment`, `local.document-corpus-lifecycle`,
+`local.target-surface`, `local.workflow-harness`, `local.supply-chain`,
+`ci.compose-validation`, `ci.infrastructure-hardening`,
+`ci.template-security-baseline`, `ci.quickwin-baseline`,
+`local.generated-freshness`, and `leaf.repo-contracts`.
+
+The exact `local-harness` root order is the same sequence without
+`leaf.local-tech-stack-version-drift` and `ci.quickwin-baseline`. Both local
+profiles exclude real pre-commit, dependency audit, frontend
+dependency/build/coverage, Playwright installation, zizmor execution/upload,
+and every networked setup node. The existing `--all-profiles` local-runner mode
+remains a compatibility route: it executes the complete
+`local-script-backed` profile and then the separately registered
+`ci.compose-all-profiles-validation` root. Normal and all-profile Compose are
+distinct suite identities, so this intentionally runs both without duplicate
+ownership. That root admits both `ci` and `local-script-backed` applicability
+but is not part of the default local profile-root list. The wrapper sets
+`HYHOME_COMPOSE_PROFILES` to an already supplied nonempty value or to the exact
+default `core data obs workflow ai tooling messaging security communication
+service storage admin iac registry sast sync testing graph mng ksql nginx`; it
+does not inherit `HYHOME_ALL_COMPOSE_PROFILES`.
+`--script-backed`, `--harness`, and `--all-profiles` contain no literal
+child-command list.
+
+Gate-specific environment admission is exact:
+
+| Gate purpose | Admitted keys |
+| --- | --- |
+| QA recommendation summary | `EVENT_NAME`, `PR_BASE_SHA`, `PUSH_BEFORE_SHA`, `GITHUB_STEP_SUMMARY` |
+| Repository metadata base/check | `TEMPLATE_GATE_BASE` |
+| Git-flow validation | `PR_TITLE`, `HEAD_REF` |
+| All-profile Compose validation | `HYHOME_COMPOSE_PROFILES` |
+| CI pre-commit leaf | `CI`, `GITHUB_ACTIONS`, `SKIP` |
+| All other gates | no gate-specific inherited keys |
+
+The runner constructs the child environment from an empty mapping. Its fixed
+baseline is `PATH` copied from the controller environment,
+`LANG=C.UTF-8`, `LC_ALL=C.UTF-8`, `HOME` set to a fresh
+`/tmp/ci-gate-home-*` directory, `TMPDIR=/tmp`,
+`PYTHONNOUSERSITE=1`, and `PIP_DISABLE_PIP_VERSION_CHECK=1`; a missing or empty
+controller `PATH` fails closed. Before gate-specific admission it drops every
+ambient `GIT_*` key and never inherits `PYTHONPATH`, `NODE_OPTIONS`,
+`BASH_ENV`, `ENV`, `CDPATH`, `IFS`, `SHELLOPTS`, or `GLOBIGNORE`. A
+purpose-specific Git subprocess may construct
+`GIT_CONFIG_NOSYSTEM=1` and `GIT_CONFIG_GLOBAL=/dev/null` for that subprocess
+only; those values are not inherited from the controller. Secret-, token-,
+password-, credential-, and auth-shaped environment keys are rejected by the
+registry validator. Values are never included in diagnostics.
+The fresh HOME is removed in a `finally` path after the complete execution
+plan, including timeout, child failure, and executor exception paths.
+
+#### T-TSDC-004R-0: Revised Plan Approval Gate
+
+**Files:**
+
+- Modify this Plan in place.
+- Append only the new Spec/Plan approval facts to the sibling Task ledger.
+
+- [ ] Obtain an independent read-only Plan review against commit `a0f91bb5`.
+- [ ] Require the Plan review to map TSDC-010 through TSDC-017, verify exact
+  file ownership and commands, and return C0/I0 before implementation.
+- [x] Record the user's 2026-07-29 explicit approval of this exact Plan
+  revision.
+- [x] Record that approval in the Task ledger without changing old work-log
+  rows or treating it as controlled-wrapper, remote, runtime, or secret
+  authority.
+
+Expected gate: the Task ledger changes from `blocked pending revised Plan`
+to `active recovery`; no production file changes before that transition.
+
+#### Wave A / T-TSDC-004R-1: Typed Gate Contract
+
+**Files:**
+
+- Create `scripts/validation/ci_gate_contract.py`.
+- Create `tests/validation/test_ci_gate_contract.py`.
+- Modify
+  `docs/90.references/data/governance/target-surface-delta-manifest.yaml`
+  with exact new-path rows.
+- Regenerate
+  `docs/90.references/data/governance/target-surface-delta-summary.md`.
+- Modify `tests/validation/test_target_surface_delta_contracts.py` for exact
+  path count, ownership, consumer, and pending-review assertions.
+- Append actual RED/GREEN/review evidence to the Task ledger.
+
+**Interfaces:**
+
+- Consumes: the dataclasses and functions declared in Stable Public
+  Interfaces.
+- Produces: dependency-free schema parsing, kind validation, DAG expansion,
+  suite ownership, job-root ownership, and local-profile projection for R2.
+
+- [ ] **Step 1: Write schema-v2 RED tests.**
+
+  Add exact tests named:
+  `test_schema_v2_contract_is_strict_json_and_duplicate_safe`,
+  `test_gate_kind_fields_are_exact`,
+  `test_gate_graph_rejects_cycles_missing_children_and_orphans`,
+  `test_suite_keys_and_required_owners_are_unique`,
+  `test_required_job_roots_are_the_exact_sixteen`,
+  `test_profile_roots_are_ordered_and_cannot_override_nodes`, and
+  `test_contract_reader_rejects_symlink_noncanonical_and_oversized_inputs`.
+
+```python
+def test_gate_graph_rejects_cycles_missing_children_and_orphans(self) -> None:
+    for mutation, expected_code in (
+        ("cycle", "ci-gate-cycle"),
+        ("missing-child", "ci-gate-child-missing"),
+        ("orphan", "ci-gate-orphan"),
+    ):
+        findings = self.validate_fixture(mutation)
+        self.assertEqual({finding.code for finding in findings}, {expected_code})
+```
+
+- [ ] **Step 2: Run the RED suite.**
 
 ```bash
-python3 -m unittest tests.validation.test_github_workflow_contract -v
-bash tests/validation/test_run_ci_precommit.sh
-python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
-python3 scripts/validation/check-github-workflow-contract.py
-bash scripts/validation/check-repo-contracts.sh
-actionlint
-shellcheck scripts/validation/run-ci-precommit.sh tests/validation/test_run_ci_precommit.sh
-bash -n scripts/validation/run-ci-precommit.sh
+python3 -m unittest tests.validation.test_ci_gate_contract -v
+```
+
+Expected RED: import failure for
+`scripts.validation.ci_gate_contract`; no production gate module exists.
+
+- [ ] **Step 3: Implement the strict contract and graph validator.**
+
+  Implement the declared dataclasses and functions. Aggregate nodes admit only
+  ordered children. Leaf/setup nodes require tracked canonical first-party
+  entrypoint fields, exact argv, cwd, timeout, profiles, and allowed
+  environment keys. Each semantic `suite_key` belongs to one leaf; each
+  required suite reaches one required root and at most one workflow path.
+  Unknown fields fail rather than being ignored.
+
+- [ ] **Step 4: Add exact manifest rows under a failing oracle and regenerate
+  the summary through its canonical writer.**
+
+  Edit the manifest only after the exact-row test fails; the manifest has no
+  post-bootstrap row writer. The
+  `scripts/validation/ci_gate_contract.py` row uses disposition `update`,
+  canonical owner `scripts/validation/ci_gate_contract.py`, and direct consumer
+  `tests/validation/test_ci_gate_contract.py`. The
+  `tests/validation/test_ci_gate_contract.py` row uses disposition `update`,
+  canonical owner `tests/validation/test_ci_gate_contract.py`, and no direct
+  consumer in this unit. Both rows name the focused validator/test evidence and
+  retain pending review verdicts. The exact oracle becomes 150 rows: 89
+  `preserve`, 61 `update`, zero `migrate`, and zero `delete`. Regenerate only
+  the derived summary with:
+
+```bash
+git add \
+  scripts/validation/ci_gate_contract.py \
+  tests/validation/test_ci_gate_contract.py
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory \
+  --write-summary
+```
+
+  The scoped pre-validation staging makes the two new files visible to the
+  tracked-path and canonical-owner checks; the commit step refreshes the same
+  paths after all later edits.
+
+- [ ] **Step 5: Run GREEN and static checks.**
+
+```bash
+python3 -m unittest tests.validation.test_ci_gate_contract -v
+python3 -m unittest \
+  tests.validation.test_target_surface_delta_contracts \
+  -v
+python3 -m ruff check \
+  scripts/validation/ci_gate_contract.py \
+  tests/validation/test_ci_gate_contract.py
+python3 -m compileall -q \
+  scripts/validation/ci_gate_contract.py \
+  tests/validation/test_ci_gate_contract.py
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 git diff --check
 ```
 
-Expected GREEN: exact triggers and job identities match the machine contract;
-all direct Actions are registered full SHAs with Node 24/composite evidence;
-the mutable transitive pre-commit Action path is absent; CI and Agent
-pre-commit routes remain distinct; repository contracts invoke one focused
-workflow checker.
+Expected GREEN: every schema/DAG mutation has one value-free finding; the
+canonical v1 file remains the only active workflow authority during this
+foundation unit, and no workflow execution changes.
 
-- [ ] Record exact workflow/job/action counts, removed duplicate execution,
-  CI-script evidence, and no-remote-mutation statement in the Task ledger.
-- [ ] Obtain independent specification and quality/security reviews.
-- [ ] Commit as
-  `ci(governance): type workflow and qa ownership`.
+- [ ] **Step 6: Commit and review.**
+
+```bash
+git add \
+  scripts/validation/ci_gate_contract.py \
+  tests/validation/test_ci_gate_contract.py \
+  tests/validation/test_target_surface_delta_contracts.py \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "feat(ci): add typed gate contract"
+```
+
+Assign fresh specification and quality/security reviewers. Use only the
+canonical two-attempt implementation and review loops.
+
+#### Wave A / T-TSDC-004R-2: Dependency-Free Runner and Adapters
+
+**Files:**
+
+- Create `scripts/validation/ci_gate_runner.py`.
+- Create executable `scripts/validation/run-ci-gate.py`.
+- Create executable `scripts/validation/ci_gate_adapters.py`.
+- Create `tests/validation/test_ci_gate_runner.py`.
+- Create `tests/validation/test_ci_gate_adapters.py`.
+- Modify `scripts/README.md`.
+- Modify the delta manifest, generated summary, exact manifest tests, and Task
+  ledger for these five new target paths.
+- Preserve `.pre-commit-config.yaml`; its existing repository-contract selector
+  includes the exact `scripts/.*`, `tests/.*`, and `.github/.*` alternatives,
+  so it already covers every new path.
+
+**Interfaces:**
+
+- Consumes: `GateRegistry`, `GateNode`, and `expand_gate_ids` from R1.
+- Produces: the exact CLI and execution interfaces declared above for the
+  atomic workflow cutover in R3.
+
+- [ ] **Step 1: Write runner and adapter RED tests.**
+
+  Add exact runner tests for mutually exclusive `--gate`/`--all`, unknown
+  profile/gate, deterministic `--list`, value-free `--dry-run`, ordered
+  deduplication, timeout propagation, nonzero child propagation, minimal
+  environment, all ambient `GIT_*` removal, and fake-executor one-time output.
+  Add filesystem tests for symlink parent/leaf, untracked entrypoint, Git mode
+  other than `100755`, unsupported shebang, non-regular file, cwd escape, and
+  path replacement after descriptor open.
+
+```python
+def test_fake_executor_receives_each_leaf_once_in_order(self) -> None:
+    seen: list[str] = []
+    result = execute_execution_plan(
+        self.root,
+        self.plan,
+        environ={"PATH": "/usr/bin", "GIT_DIR": "/tmp/hostile"},
+        executor=lambda invocation: seen.append(invocation.gate_id) or 0,
+    )
+    self.assertEqual(result, 0)
+    self.assertEqual(seen, ["setup.repo-python-dependencies", "leaf.repo-contracts"])
+```
+
+  Add one adapter test per enumerated subcommand plus rejection tests for
+  unknown subcommands, shell metacharacter command selectors, out-of-repository
+  requirements paths, unapproved npm verbs, secret-shaped environment names,
+  and SARIF symlink output.
+
+- [ ] **Step 2: Run RED.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  -v
+```
+
+Expected RED: both production modules and the executable wrapper are absent.
+
+- [ ] **Step 3: Implement descriptor-bound execution.**
+
+  Walk cwd and entrypoint components with `openat`-style
+  `O_NOFOLLOW` descriptor traversal, require a tracked regular Git mode
+  `100755` file and admitted Bash/Python shebang, and execute the verified file
+  descriptor through `/proc/self/fd/<fd>` with `pass_fds`, `shell=False`, and
+  the registered timeout. Use the verified directory descriptor for cwd.
+  Fail closed when `/proc/self/fd` is unavailable.
+
+- [ ] **Step 4: Implement deterministic CLI modes and adapters.**
+
+```bash
+python3 scripts/validation/run-ci-gate.py --profile local-harness --list
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-harness \
+  --dry-run \
+  --all
+```
+
+  `--list` and `--dry-run` print gate IDs and repository-relative entrypoints
+  only. They do not print environment values or execute child programs.
+  Adapter subprocesses always use argument arrays and `shell=False`.
+
+- [ ] **Step 5: Mark both executable entry points as mode `100755`, add exact
+  manifest rows, and update the scripts index.**
+
+```bash
+chmod 0755 \
+  scripts/validation/run-ci-gate.py \
+  scripts/validation/ci_gate_adapters.py
+git add \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/run-ci-gate.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory \
+  --write-summary
+```
+
+  Edit the five manifest rows only after the exact-row test fails. Each row's
+  `canonical_owner` is its own path. Initial direct consumers are:
+  `ci_gate_runner.py` by `run-ci-gate.py` and its focused test,
+  `run-ci-gate.py` by its focused test, `ci_gate_adapters.py` by its focused
+  test, and no direct consumers yet for either focused test file. Wave B
+  updates those consumer edges only when the workflow and local profile
+  projections become tracked consumers. The exact oracle becomes 155 rows: 89
+  `preserve`, 66 `update`, zero `migrate`, and zero `delete`.
+
+- [ ] **Step 6: Run GREEN and security regressions.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_target_surface_delta_contracts \
+  -v
+python3 -m ruff check \
+  scripts/validation/ci_gate_contract.py \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/run-ci-gate.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_contract.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+python3 -m compileall -q \
+  scripts/validation/ci_gate_contract.py \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/run-ci-gate.py \
+  scripts/validation/ci_gate_adapters.py
+python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+git diff --check
+```
+
+Expected GREEN: the fake executor observes one ordered execution per gate ID;
+path, provenance, environment, timeout, and output tests fail closed without
+running real CI suites or network operations.
+
+- [ ] **Step 7: Commit and review.**
+
+```bash
+git add \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/run-ci-gate.py \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/README.md \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_target_surface_delta_contracts.py \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "feat(ci): add typed gate runner"
+```
+
+Assign fresh specification and quality/security reviewers before Wave B.
+
+#### Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
+
+**Files:**
+
+- Modify `.github/workflow-contract.yml` to strict-JSON schema version 2.
+- Modify `.github/workflows/ci-quality.yml`.
+- Modify `scripts/validation/github_workflow_contract.py`.
+- Preserve the stable thin
+  `scripts/validation/check-github-workflow-contract.py` CLI.
+- Modify `tests/validation/test_github_workflow_contract.py`.
+- Modify `scripts/validation/check-repo-contracts.sh`.
+- Modify `scripts/validation/run-local-qa-gates.sh`.
+- Modify `tests/validation/test_agent_governance_ci_routing.py`.
+- Modify `tests/validation/test_target_surface_delta_contracts.py`.
+- Preserve `scripts/validation/run-ci-precommit.sh`,
+  `tests/validation/test_run_ci_precommit.sh`, and
+  `scripts/requirements-pre-commit.txt`; register the existing CI wrapper as a
+  typed leaf without turning it into an Agent route.
+- Change only Git mode, from `100644` to `100755`, for these seven tracked
+  shebang entrypoints so descriptor-bound execution can prove executable
+  provenance:
+  `scripts/validation/check-agent-governance-contract.py`,
+  `scripts/validation/check-doc-implementation-alignment.sh`,
+  `scripts/validation/check-document-metadata.py`,
+  `scripts/validation/check-document-corpus-lifecycle.py`,
+  `scripts/validation/check-supply-chain-policy.py`,
+  `scripts/security/generate-supply-chain-sample-service-summary.sh`, and
+  `scripts/validation/check-target-surface-delta-contract.py`.
+- Modify `.github/INDEX.md` and `.github/rulesets/main-protection.md`.
+- Modify `docs/00.agent-governance/rules/github-governance.md` and
+  `docs/00.agent-governance/scopes/qa.md`.
+- Modify exact existing Task 4 manifest rows, regenerate the summary, and
+  append Task evidence.
+- Do not create `.github/README.md` or modify `.pre-commit-config.yaml`.
+
+**Interfaces:**
+
+- Consumes: reviewed R1 contract and R2 runner interfaces.
+- Produces: schema-v2 canonical registry, exact required-workflow projection,
+  shared local profiles, and an unused-but-still-present old semantic
+  interpreter awaiting Wave C removal.
+
+- [ ] **Step 1: Add workflow-projection RED tests.**
+
+  Replace the old ownership assertions with exact tests named
+  `test_required_jobs_project_their_registered_roots_once`,
+  `test_required_run_steps_use_only_static_gate_invocations`,
+  `test_workflow_projection_rejects_dynamic_ids_and_free_form_shell`,
+  `test_workflow_and_registry_co_mutations_fail_closed`,
+  `test_ci_and_local_profiles_share_node_definitions`, and
+  `test_repository_umbrella_is_wiring_only`.
+
+```python
+def test_required_run_steps_use_only_static_gate_invocations(self) -> None:
+    programs = self.required_quality_run_programs()
+    for program in programs:
+        self.assertRegex(
+            program,
+            r"\Apython3 scripts/validation/run-ci-gate\.py "
+            r"--profile ci --gate [a-z0-9.-]+\Z",
+        )
+```
+
+  Preserve and rerun the current trigger, permission, concurrency, timeout,
+  required-job, Action, YAML safety, bounded-reader, ambiguous-`on`, and CI
+  pre-commit tests. Add mutations for multiline run bodies, workflow
+  expressions, variables, heredocs, substitutions, `eval`, `source`, shell
+  `-c`, direct scripts/tools, unregistered local Actions, duplicate
+  `suite_key`, duplicate reachable leaf, and changed required root.
+
+- [ ] **Step 2: Run RED against schema v1 and current workflows.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+```
+
+Expected RED: schema v1 has no typed roots and current required-quality
+workflow contains direct and multiline executable steps.
+
+- [ ] **Step 3: Convert the one canonical registry atomically.**
+
+  Serialize the full existing workflow, trigger, permission, job, and Action
+  facts plus the declared gate graph as deterministic strict JSON in
+  `.github/workflow-contract.yml`. Remove every `owner_commands` and
+  `expensive_commands` field. Keep all seven workflow records, 23 job records,
+  eight Action identities, and 16 required IDs unchanged.
+
+- [ ] **Step 4: Normalize the seven registered first-party entrypoint modes.**
+
+```bash
+chmod 0755 \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/security/generate-supply-chain-sample-service-summary.sh \
+  scripts/validation/check-target-surface-delta-contract.py
+```
+
+  Do not change file bodies in this step. Assert each exact
+  `git ls-files --stage` mode before workflow execution tests and require
+  `git diff --summary` to report only seven `mode change 100644 => 100755`
+  entries for this substep.
+
+- [ ] **Step 5: Convert every required-quality executable step.**
+
+  Each `run:` scalar becomes one exact static `run-ci-gate.py` invocation.
+  The static flattened gate sequence in each job must equal its root DAG
+  expansion exactly once. Preserve the existing `always()` QA-summary
+  condition, metadata event condition, git-flow job condition, setup Actions,
+  least-privilege permissions, timeouts, concurrency, and SARIF upload Action.
+  Environment blocks may contain only keys admitted by the invoked node.
+
+- [ ] **Step 6: Switch workflow validation to structural projection.**
+
+  `WorkflowJobContract` drops `owner_commands`.
+  `WorkflowContract` carries `gate_registry`.
+  `validate_workflows` compares exact static gate invocations with root
+  expansion and retains all existing workflow-shape, permission, trigger,
+  Action, and remote-mutation checks. It no longer calls
+  `_resolve_job_semantics`; the old functions remain dead code only until the
+  independent cutover review.
+
+- [ ] **Step 7: Switch local QA and the repository umbrella.**
+
+  `run-local-qa-gates.sh` obtains `--list`, `--dry-run`, and execution order
+  from the exact `profile_roots` above. `--script-backed` and `--harness`
+  invoke their matching profile once. `--all-profiles` invokes
+  `local-script-backed` once and then invokes only
+  `ci.compose-all-profiles-validation`; it retains no child-command list.
+  `check-repo-contracts.sh` invokes the focused workflow checker once and
+  performs only unique repository wiring checks. Gate-specific tests prove it
+  does not intentionally dispatch a sibling registered suite.
+
+- [ ] **Step 8: Synchronize governance and desired-state documentation.**
+
+  Replace semantic-parser claims with structural registry/DAG guarantees,
+  preserve the 16 status IDs, keep non-gating automation separate, and state
+  that remote enforcement remains unverified until a separately approved
+  remote execution. Under the existing exact-row oracle, update the manifest
+  consumer edges for `ci_gate_runner.py`, `run-ci-gate.py`,
+  `ci_gate_adapters.py`, and their focused tests to the now-tracked workflow,
+  local-profile, and validation consumers. Regenerate only the derived summary:
+
+```bash
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory \
+  --write-summary
+```
+
+  Add the newly changed
+  `scripts/validation/check-agent-governance-contract.py` row with disposition
+  `update` and its own path as canonical owner. Change four existing
+  mode-normalized rows from `preserve` to `update`; keep the two already-update
+  rows as `update`. The exact delta oracle becomes 156 rows: 85 `preserve`, 71
+  `update`, zero `migrate`, and zero `delete`.
+
+- [ ] **Step 9: Run cutover GREEN.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+bash tests/validation/test_run_ci_precommit.sh
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile ci --list
+python3 scripts/validation/run-ci-gate.py \
+  --profile ci \
+  --dry-run \
+  --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-script-backed \
+  --dry-run \
+  --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-harness \
+  --dry-run \
+  --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-script-backed \
+  --dry-run \
+  --gate ci.compose-all-profiles-validation
+bash scripts/validation/run-local-qa-gates.sh --list
+actionlint
+python3 -m ruff check \
+  scripts/validation/ci_gate_contract.py \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/github_workflow_contract.py \
+  tests/validation/test_ci_gate_contract.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_github_workflow_contract.py
+python3 -m compileall -q \
+  scripts/validation/ci_gate_contract.py \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/run-ci-gate.py \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/github_workflow_contract.py \
+  tests/validation/test_ci_gate_contract.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_github_workflow_contract.py \
+  tests/validation/test_agent_governance_ci_routing.py
+python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+git diff --check
+```
+
+Expected GREEN: exact counts remain 7 workflows, 23 jobs, eight Actions, and
+16 required IDs; the delta oracle is exactly 156 rows with 85 `preserve`, 71
+`update`, and no destructive row; every required run step is a static
+registered gate;
+CI/local dry runs are deterministic and execute nothing; no direct
+pre-commit, network, remote mutation, runtime, Compose service, dependency
+installation, credential, or secret-payload action occurs.
+
+- [ ] **Step 10: Commit the atomic cutover.**
+
+```bash
+git add \
+  .github/workflow-contract.yml \
+  .github/workflows/ci-quality.yml \
+  .github/INDEX.md \
+  .github/rulesets/main-protection.md \
+  docs/00.agent-governance/rules/github-governance.md \
+  docs/00.agent-governance/scopes/qa.md \
+  scripts/security/generate-supply-chain-sample-service-summary.sh \
+  scripts/validation/check-agent-governance-contract.py \
+  scripts/validation/check-doc-implementation-alignment.sh \
+  scripts/validation/check-document-corpus-lifecycle.py \
+  scripts/validation/check-document-metadata.py \
+  scripts/validation/check-supply-chain-policy.py \
+  scripts/validation/check-target-surface-delta-contract.py \
+  scripts/validation/github_workflow_contract.py \
+  scripts/validation/check-repo-contracts.sh \
+  scripts/validation/run-local-qa-gates.sh \
+  scripts/README.md \
+  tests/validation/test_github_workflow_contract.py \
+  tests/validation/test_agent_governance_ci_routing.py \
+  tests/validation/test_target_surface_delta_contracts.py \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "ci(governance): cut over to typed gate projections"
+```
+
+#### T-TSDC-004R-4: Independent Cutover Review Gate
+
+- [ ] Assign a fresh read-only specification reviewer to the exact R1-through-
+  R3 range.
+- [ ] Assign a different fresh read-only quality/security reviewer to that
+  range.
+- [ ] Require both reviews to verify the 16 IDs, root/suite uniqueness, fake
+  executor order, CI/local profile parity, exact workflow grammar, trigger and
+  permission retention, Action registry, pre-commit separation, descriptor
+  identity, `GIT_*` isolation, timeout, value-free diagnostics, and absence of
+  hidden repository-umbrella sibling dispatch.
+- [ ] Record C0/I0 verdicts in one evidence-only commit:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record typed CI cutover review"
+```
+
+If either reviewer finds a design-contract defect, stop and return to
+design/plan. For an implementation defect, use only the canonical
+two-attempt loops; exhaustion blocks Task 4R.
+
+#### Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+**Files:**
+
+- Modify `scripts/validation/github_workflow_contract.py`.
+- Modify `tests/validation/test_github_workflow_contract.py`.
+- Modify the Task ledger.
+
+- [ ] **Step 1: Add a RED absence test for the obsolete authority.**
+
+  Require removal of `ExpensiveCommandOwner`, `_EXPENSIVE_COMMAND_BASELINE`,
+  `_ShellSubstitution`, `_PreparedShellProgram`, `_ScriptInvocation`,
+  `_ShellAnalysis`, `_VariableBinding`, `_SemanticResolution`,
+  `_TraversalBudget`, `_analyze_shell_program`, `_analyze_python_helper`,
+  `_resolve_job_semantics`, `_semantic_command_marker`, and
+  `_semantic_command_signatures`.
+
+- [ ] **Step 2: Run RED.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_github_workflow_contract \
+  -v
+```
+
+Expected RED: the independently approved but obsolete interpreter symbols
+still exist.
+
+- [ ] **Step 3: Delete the dead interpreter and only its obsolete grammar
+  tests.**
+
+  Preserve every schema-v2, exact projection, trigger, permission,
+  concurrency, timeout, job identity, Action, YAML safety, bounded-reader,
+  remote-mutation, and CI-precommit regression. Remove unused imports and
+  constants only after static analysis proves no consumer.
+
+- [ ] **Step 4: Run behavior-preserving GREEN.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+python3 scripts/validation/check-github-workflow-contract.py
+actionlint
+python3 -m ruff check \
+  scripts/validation/github_workflow_contract.py \
+  tests/validation/test_github_workflow_contract.py
+python3 -m compileall -q \
+  scripts/validation/github_workflow_contract.py \
+  tests/validation/test_github_workflow_contract.py
+git diff --check
+```
+
+Expected GREEN: typed behavior is byte-for-byte equivalent at the CLI
+boundary, old semantic symbols are absent, and no shell/Python source
+interpreter remains.
+
+- [ ] **Step 5: Commit and review.**
+
+```bash
+git add \
+  scripts/validation/github_workflow_contract.py \
+  tests/validation/test_github_workflow_contract.py \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "refactor(ci): remove semantic command interpreter"
+```
+
+Assign fresh specification and quality/security reviewers. Both must return
+C0/I0 before Task 4R evidence promotion.
+
+#### T-TSDC-004R-6: Task 4 Recovery Evidence and Promotion
+
+- [ ] Run the full Task 4R focused ladder from a clean committed checkpoint.
+- [ ] Record exact commands, results, skipped CI-only gates, rollback commits,
+  and review ranges in the Task ledger.
+- [ ] Promote only Task 4 and Task 4R manifest rows to `spec_verdict: pass` and
+  `quality_verdict: pass` after the corresponding independent reviews exist;
+  leave unrelated rows unchanged.
+- [ ] Regenerate the delta summary through its canonical writer.
+
+```bash
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory \
+  --write-summary
+```
+
+- [ ] Commit the evidence candidate:
+
+```bash
+git add \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): close typed CI gate recovery"
+```
+
+- [ ] Assign fresh final Task 4R specification and quality/security reviewers
+  to the whole recovery range.
+- [ ] If both remain C0/I0, append a value-free final review record and mark
+  T-TSDC-004 completed; only then may T-TSDC-005 begin.
+
+Expected completion evidence:
+
+- exact 7/23/8/16 workflow invariants;
+- one strict schema-v2 registry with no `owner_commands`,
+  `expensive_commands`, or semantic interpreter;
+- one required root owner and at most one workflow reachability for every
+  required `suite_key`;
+- deterministic fake executor, `--list`, and dry-run output;
+- CI/local profile parity;
+- separate CI and Agent pre-commit authority;
+- local tracked implementation only, with remote execution and enforcement
+  still unverified.
 
 ### Task 5: T-TSDC-005 — Reconcile Audit and Remote Observation Evidence
 
@@ -773,7 +1776,8 @@ workflow checker.
 - repository: `buenhyden/hy-home.docker`;
 - observed local base:
   `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`;
-- remote default commit: `bffc5aed...`, behind local;
+- remote default commit:
+  `bffc5aedb7c2bd7da1da0db34d58e56bf144412e`, behind local;
 - recent main CI run: `30325161033`, conclusion `failure`;
 - recent PR run: `30325219960`, conclusion `failure`;
 - remote required contexts: 12;
@@ -794,8 +1798,9 @@ workflow checker.
 - [ ] Add RED proving the four-context drift list is the set difference, not a
   claim that remote checks failed to run.
 - [ ] Add RED audit semantic assertions for the new delta checker, README
-  convergence, version synchronization, workflow contract, CI pre-commit
-  route, and remaining remote/CD/runtime gaps.
+  convergence, version synchronization, schema-v2 typed gate registry,
+  structural CI ownership boundary, CI pre-commit route, and remaining
+  remote/CD/runtime gaps.
 - [ ] Record expected failures before evidence edits.
 - [ ] Update the observation using only sanitized metadata already obtained;
   do not perform another remote call or read raw logs.
@@ -822,15 +1827,16 @@ python3 scripts/validation/check-document-metadata.py \
   --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md \
   --check
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/governance/validate-cross-links.sh
+bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
 git diff --check
 ```
 
 Expected GREEN: canonical audit total remains 161 with recalculated affected
 statuses; generated matrix and inventory are fresh; the observation contains
-the dated 12-vs-16 comparison and no root-cause inference; all cross-links
-resolve.
+the dated 12-vs-16 comparison and no root-cause inference; audit claims describe
+typed structural ownership without claiming arbitrary leaf semantics or remote
+enforcement; all cross-links resolve.
 
 - [ ] Record affected audit row IDs, before/after totals, generator commands,
   observation boundary, and reviewers in the Task ledger.
@@ -847,9 +1853,12 @@ resolve.
   to set `enforcement: blocking` only after Tasks 1–5 have pass/pass reviews.
 - Regenerate
   `docs/90.references/data/governance/target-surface-delta-summary.md`.
-- Modify `scripts/validation/check-repo-contracts.sh` and
-  `scripts/validation/run-local-qa-gates.sh` only if advisory invocation still
-  needs promotion to blocking.
+- Inspect `scripts/validation/check-repo-contracts.sh` and
+  `scripts/validation/run-local-qa-gates.sh` with the exact
+  `check-target-surface-delta-contract.py --mode advisory` search. Replace each
+  matching active invocation with `--mode blocking`; when neither file
+  contains that exact active invocation, leave both byte-unchanged and record
+  the no-op in the Task ledger.
 - Modify this Plan status to `completed`.
 - Modify the sibling Task ledger status to `completed` only after all closure
   evidence exists.
@@ -869,8 +1878,15 @@ failure and blocks closure.
 - [ ] Recompute predecessor-to-`HEAD` target changes and confirm every path has
   exactly one current manifest row.
 - [ ] Confirm Spec 133 tracked artifact hashes match the closure commit.
-- [ ] Set enforcement to `blocking`, regenerate the summary, and run the
-  focused delta tests/checker.
+- [ ] Set enforcement to `blocking`, regenerate the summary through its
+  canonical writer, and run the focused delta tests/checker.
+
+```bash
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode blocking \
+  --write-summary
+```
+
 - [ ] Run the final local validation ladder:
 
 ```bash
@@ -879,6 +1895,9 @@ python3 -m unittest \
   tests.validation.test_target_surface_delta_contracts \
   tests.validation.test_document_metadata \
   tests.validation.test_tech_stack_version_contract \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
   tests.validation.test_github_workflow_contract \
   tests.validation.test_agent_governance_ci_routing \
   -v
@@ -886,6 +1905,16 @@ bash tests/validation/test_run_ci_precommit.sh
 python3 scripts/validation/check-target-surface-contract.py
 python3 scripts/validation/check-target-surface-delta-contract.py --mode blocking
 python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile ci --list
+python3 scripts/validation/run-ci-gate.py --profile ci --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-script-backed \
+  --dry-run \
+  --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-harness \
+  --dry-run \
+  --all
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/operations/sync-tech-stack-versions.sh --check
@@ -894,7 +1923,6 @@ bash scripts/hardening/check-all-hardening.sh
 python3 scripts/validation/check-supply-chain-policy.py --check
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
-bash scripts/governance/validate-cross-links.sh
 python3 scripts/validation/check-agentic-audit-semantic-freshness.py
 bash scripts/validation/generate-audit-implementation-matrix.sh --check
 bash scripts/validation/check-repo-contracts.sh
@@ -904,7 +1932,8 @@ git diff --check
 
 Expected GREEN: all focused and aggregate checks pass; delta enforcement is
 blocking with zero findings; generated owners are fresh; version, hardening,
-metadata, links, workflow, audit, and repository contracts are green.
+metadata, links, typed gate registry, deterministic dry-run, workflow, audit,
+and repository contracts are green.
 
 - [ ] If any command is unavailable, record the exact environment limitation
   and leave the corresponding result `unverified`; never convert it to pass.
@@ -971,6 +2000,16 @@ Every task must provide:
 - Secret values never enter commands, output, tests, or evidence.
 - The six version changes are static tracked synchronization only.
 - The 16 required job IDs never change.
+- `.github/workflow-contract.yml` is the one schema-v2 CI registry; no
+  generated or code-owned duplicate command table exists.
+- Every required semantic `suite_key` belongs to one leaf, one required root,
+  and at most one workflow execution path.
+- Required-quality `run` steps are exact static gate-runner invocations.
+- CI and local profiles share node definitions and differ only in registered
+  roots.
+- The runner uses `shell=False`, descriptor-bound repository paths, tracked
+  executable provenance, bounded timeouts, minimal environment, and no ambient
+  `GIT_*`.
 - CI pre-commit and Agent pre-commit remain separate authority paths.
 - Remote GitHub state remains observed, not mutated.
 - Canonical audit claims remain bounded by actual evidence.
@@ -988,6 +2027,12 @@ Every task must provide:
 | CI status name drift | four-way exact ID contract | revert Task 4 before remote use |
 | Workflow privilege widening | typed permission/trigger validator | revert Task 4 and keep remote unchanged |
 | Action dependency drift | full-SHA registry and runtime check | revert Action consumer and registry together |
+| Registry bootstrap depends on an uninstalled YAML package | strict JSON serialization in the one `.yml` registry and standard-library reader | revert the R3 cutover; keep current workflow active |
+| Gate graph duplicates or omits a suite | unique `suite_key`, root reachability, cycle/orphan checks, and fake executor | revert the owning R1/R3 unit |
+| Workflow bypasses typed execution | exact single-line projection and Action registry | revert R3 before remote use |
+| Entrypoint or cwd is redirected | descriptor-relative no-follow traversal, tracked mode, verified identity, and fail-closed `/proc/self/fd` requirement | revert R2 and block cutover |
+| Ambient Git or secret-shaped environment changes execution | construct minimal environment, clear ambient `GIT_*`, reject secret-shaped keys | stop execution and correct the node contract |
+| Old semantic interpreter remains authoritative | R4 independent cutover approval followed by R5 symbol-removal gate | leave Task 4R blocked; do not start Task 5 |
 | Audit overclaim | local/remote/unverified schema | correct the affected audit row and regenerate owners |
 | Reviewer mutation | explicit read-only review role | discard no work; inspect and separately authorize any reviewer-created commit |
 
@@ -997,11 +2042,16 @@ is not applicable because neither surface is mutated.
 
 ## Approval Gates
 
-- Spec 135 and this design are approved.
-- The user approved this exact Plan and Task ledger on 2026-07-28; Task 1
-  implementation may begin through the selected Subagent-Driven method.
-- Protected local workflow, contract, governance, and template changes are
-  within the Plan-bounded approved class after that approval.
+- Original Spec 135, the 2026-07-28 Plan, and Tasks 1–3 are approved historical
+  execution.
+- The typed CI design at Spec commit `a0f91bb5` is approved.
+- The 2026-07-28 Plan approval does not authorize T-TSDC-004R after the
+  exhausted five-round breaker.
+- The user approved this exact Revision R1 on 2026-07-29. An independent
+  C0/I0 Plan review remains the final gate before any R1 production or test
+  file is created or modified.
+- After that review, protected local workflow, contract, governance, and test
+  changes listed under T-TSDC-004R are within the Plan-bounded class.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
@@ -1011,13 +2061,17 @@ is not applicable because neither surface is mutated.
 ## Completion Criteria
 
 - TSDC-001 through TSDC-017 have named passing evidence.
-- Six logical task commits exist and are independently revertible.
+- Every completed top-level task and R1 recovery unit has independently
+  revertible logical commits; historical remediation commits remain preserved.
 - Every task has independent specification and quality/security approval.
 - The delta manifest is blocking, complete, duplicate-safe, and green.
 - Spec 133 artifacts are unchanged from their closure commit.
 - README, typed fixture, archive, secret inventory, and version contracts pass.
-- Workflow triggers, permissions, jobs, Action dependencies, and CI QA pass.
+- Workflow triggers, permissions, jobs, Action dependencies, typed gate
+  registry/DAG, runner security, CI/local projections, and CI QA pass.
 - The 16 required job IDs are unchanged.
+- `owner_commands`, `expensive_commands`, and the shell/Python semantic
+  interpreter are absent after the reviewed cutover.
 - Canonical audit/generated evidence is fresh and does not overclaim remote or
   runtime state.
 - A fresh whole-branch correctness review and a different security review have
@@ -1036,5 +2090,6 @@ is not applicable because neither surface is mutated.
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
+- [Workflow contract](../../../.github/workflow-contract.yml)
 - [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
 - [Controlled Agent pre-commit wrapper](../../../scripts/validation/run-agent-precommit-all-files.sh)
