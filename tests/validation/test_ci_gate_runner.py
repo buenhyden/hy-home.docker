@@ -5,11 +5,12 @@ import io
 import json
 import os
 import pathlib
+import select
 import shutil
 import signal
 import subprocess
 import tempfile
-import time
+import threading
 import unittest
 from unittest import mock
 
@@ -18,6 +19,7 @@ from scripts.validation import ci_gate_runner as runner
 
 
 REAL_SUBPROCESS_RUN = subprocess.run
+REAL_SHUTIL_RMTREE = shutil.rmtree
 
 
 def _leaf(
@@ -467,6 +469,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             )
         self.assertEqual(1, len(homes))
         self.assertFalse(homes[0].exists())
+        self._assert_runner_finalizes_every_adapter_result()
         self._assert_timeout_terminates_child_and_grandchild_process_group()
 
     def test_executor_exception_always_cleans_home(self) -> None:
@@ -650,22 +653,25 @@ class DescriptorExecutionTests(unittest.TestCase):
                 },
             ),
         )
+        self._assert_registered_adapter_integrations()
         self._assert_python_startup_ignores_untracked_sitecustomize()
 
     def _assert_descriptor_root_survives_path_replacement(self) -> None:
-        marker = self.root / "root-marker"
-        marker.write_text("original", encoding="utf-8")
+        (self.root / ".env.example").write_text(
+            "ORIGINAL_ROOT=1\n",
+            encoding="utf-8",
+        )
+        REAL_SUBPROCESS_RUN(
+            ["git", "add", "--", ".env.example"],
+            cwd=self.root,
+            check=True,
+        )
+        adapter_source = pathlib.Path(runner.__file__).with_name(
+            "ci_gate_adapters.py"
+        ).read_text(encoding="utf-8")
         self.add_entrypoint(
-            "scripts/validation/root-bound.py",
-            (
-                "#!/usr/bin/env python3\n"
-                "import os\n"
-                "from pathlib import Path\n"
-                "root = Path(os.environ['HYHOME_CI_GATE_ROOT'])\n"
-                "raise SystemExit("
-                "0 if (root / 'root-marker').read_text() == 'original' else 9"
-                ")\n"
-            ),
+            "scripts/validation/ci_gate_adapters.py",
+            adapter_source,
         )
         original_root = self.root.with_name(f"{self.root.name}-original")
         real_verify = runner._verify_invocation
@@ -691,14 +697,22 @@ class DescriptorExecutionTests(unittest.TestCase):
                     runner.execute_execution_plan(
                         self.root,
                         (
-                            _invocation(
-                                "leaf.root-bound",
-                                "scripts/validation/root-bound.py",
+                            dataclasses.replace(
+                                _invocation(
+                                    "setup.compose-env",
+                                    "scripts/validation/ci_gate_adapters.py",
+                                ),
+                                argv=("prepare-compose-env",),
                             ),
                         ),
                         {"PATH": os.environ.get("PATH", os.defpath)},
                     ),
                 )
+                self.assertEqual(
+                    "ORIGINAL_ROOT=1\n",
+                    (original_root / ".env").read_text(encoding="utf-8"),
+                )
+                self.assertFalse((self.root / ".env").exists())
             finally:
                 if replaced:
                     shutil.rmtree(self.root)
@@ -713,79 +727,373 @@ class DescriptorExecutionTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        adapter_source = pathlib.Path(runner.__file__).with_name(
+            "ci_gate_adapters.py"
+        ).read_text(encoding="utf-8")
         self.add_entrypoint(
-            "scripts/validation/isolation.py",
-            "#!/usr/bin/env python3\nraise SystemExit(0)\n",
+            "scripts/validation/ci_gate_adapters.py",
+            adapter_source,
+        )
+        fake_bin = self.root / "fake-bin-isolation"
+        fake_bin.mkdir()
+        fake_uvx = fake_bin / "uvx"
+        fake_uvx.write_text(
+            self._fd_inventory_uvx_source(),
+            encoding="utf-8",
+        )
+        fake_uvx.chmod(0o755)
+        invocation = dataclasses.replace(
+            _invocation(
+                "leaf.zizmor",
+                "scripts/validation/ci_gate_adapters.py",
+            ),
+            argv=("run-zizmor-sarif",),
         )
         self.assertEqual(
             0,
             runner.execute_execution_plan(
                 self.root,
-                (
-                    _invocation(
-                        "leaf.isolation",
-                        "scripts/validation/isolation.py",
-                    ),
-                ),
-                {"PATH": os.environ.get("PATH", os.defpath)},
+                (invocation,),
+                {
+                    "PATH": (
+                        f"{fake_bin}:"
+                        f"{os.environ.get('PATH', os.defpath)}"
+                    )
+                },
             ),
         )
         self.assertFalse(injected.exists())
+        self.assertEqual(
+            b'{"runs":[]}\n',
+            (self.root / "results.sarif").read_bytes(),
+        )
+        (self.root / "results.sarif").unlink()
+
+    def _assert_registered_adapter_integrations(self) -> None:
+        adapter_source = pathlib.Path(runner.__file__).with_name(
+            "ci_gate_adapters.py"
+        ).read_text(encoding="utf-8")
+        self.add_entrypoint(
+            "scripts/validation/ci_gate_adapters.py",
+            adapter_source,
+        )
+        (self.root / ".env.example").write_text(
+            "SAFE_EXAMPLE=1\n",
+            encoding="utf-8",
+        )
+        REAL_SUBPROCESS_RUN(
+            ["git", "add", "--", ".env.example"],
+            cwd=self.root,
+            check=True,
+        )
+        fake_bin = self.root / "fake-bin"
+        fake_bin.mkdir()
+        fake_uvx = fake_bin / "uvx"
+        fake_uvx.write_text(
+            self._fd_inventory_uvx_source(),
+            encoding="utf-8",
+        )
+        fake_uvx.chmod(0o755)
+        plan = (
+            dataclasses.replace(
+                _invocation(
+                    "setup.compose-env",
+                    "scripts/validation/ci_gate_adapters.py",
+                ),
+                argv=("prepare-compose-env",),
+            ),
+            dataclasses.replace(
+                _invocation(
+                    "leaf.zizmor",
+                    "scripts/validation/ci_gate_adapters.py",
+                ),
+                argv=("run-zizmor-sarif",),
+            ),
+        )
+        self.assertEqual(
+            0,
+            runner.execute_execution_plan(
+                self.root,
+                plan,
+                {
+                    "PATH": (
+                        f"{fake_bin}:"
+                        f"{os.environ.get('PATH', os.defpath)}"
+                    )
+                },
+            ),
+        )
+        self.assertEqual(
+            b"SAFE_EXAMPLE=1\n",
+            (self.root / ".env").read_bytes(),
+        )
+        self.assertEqual(
+            b'{"runs":[]}\n',
+            (self.root / "results.sarif").read_bytes(),
+        )
+        (self.root / ".env").unlink()
+        (self.root / "results.sarif").unlink()
+
+    def _fd_inventory_uvx_source(self) -> str:
+        return (
+            "#!/usr/bin/env python3\n"
+            "import os, pathlib\n"
+            "root=pathlib.Path(os.environ['HYHOME_CI_GATE_ROOT'])\n"
+            "visible=[]\n"
+            "for name in os.listdir('/proc/self/fd'):\n"
+            "    number=int(name)\n"
+            "    if number <= 2: continue\n"
+            "    try: target=os.readlink('/proc/self/fd/'+name)\n"
+            "    except OSError: continue\n"
+            "    visible.append(target)\n"
+            "valid=(len(visible)==1 and "
+            "pathlib.Path(visible[0]).samefile(root) and "
+            "os.getpgrp()==os.getpgid(os.getppid()))\n"
+            "if not valid: raise SystemExit(9)\n"
+            "print('{\"runs\":[]}')\n"
+        )
 
     def _assert_timeout_terminates_child_and_grandchild_process_group(
         self,
     ) -> None:
-        prefix = self.root / "timeout-tree"
         child_source = (
-            "import pathlib,signal,subprocess,sys,time\n"
+            "import os,pathlib,signal,subprocess,sys,time\n"
+            "mode,ready,ack,release,trigger=sys.argv[1:]\n"
             "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
-            "grand=subprocess.Popen([sys.executable,'-c',"
-            "'import signal,time; signal.signal(signal.SIGTERM, "
-            "signal.SIG_IGN); time.sleep(60)'])\n"
-            "pathlib.Path(sys.argv[1]+'.grandchild').write_text(str(grand.pid))\n"
-            "time.sleep(60)\n"
+            "grand_source=\"import pathlib,signal,sys,time; \"\n"
+            "grand_source+=\"signal.signal(signal.SIGTERM, signal.SIG_IGN); \"\n"
+            "grand_source+=\"release=pathlib.Path(sys.argv[1]); \"\n"
+            "grand_source+=\"\\nwhile not release.exists(): time.sleep(0.01)\"\n"
+            "grand=subprocess.Popen([sys.executable,'-c',grand_source,release])\n"
+            "with open(ready,'w',encoding='ascii') as stream:\n"
+            "    stream.write(f'{os.getpid()} {grand.pid}\\n')\n"
+            "    stream.flush()\n"
+            "while not pathlib.Path(ack).exists(): time.sleep(0.01)\n"
+            "if mode == 'safe-normal':\n"
+            "    pathlib.Path(release).touch()\n"
+            "    grand.wait()\n"
+            "elif mode == 'overflow':\n"
+            f"    os.write(1, b'x' * ({1024 * 1024 + 1}))\n"
+            "    time.sleep(60)\n"
+            "elif mode == 'read-error':\n"
+            "    pathlib.Path(trigger).touch()\n"
+            "    os.write(1, b'x')\n"
+            "    time.sleep(60)\n"
+            "else:\n"
+            "    time.sleep(60)\n"
         )
-        entrypoint = (
+        harness = (
             "#!/usr/bin/env python3\n"
             "import pathlib,subprocess,sys,time\n"
+            "from scripts.validation import ci_gate_adapters as adapters\n"
+            "mode,ready,ack,release,trigger=sys.argv[1:]\n"
             f"source={child_source!r}\n"
-            "child=subprocess.Popen([sys.executable,'-c',source,sys.argv[1]])\n"
-            "pathlib.Path(sys.argv[1]+'.child').write_text(str(child.pid))\n"
-            "while not pathlib.Path(sys.argv[1]+'.grandchild').exists():\n"
-            "    time.sleep(0.01)\n"
-            "time.sleep(60)\n"
+            "command=(sys.executable,'-c',source,mode,ready,ack,release,trigger)\n"
+            "if mode in {'timeout','nonzero'}:\n"
+            "    child=subprocess.Popen(command)\n"
+            "    while not pathlib.Path(ack).exists(): time.sleep(0.01)\n"
+            "    if mode == 'timeout': time.sleep(60)\n"
+            "    raise SystemExit(17)\n"
+            "if mode == 'read-error':\n"
+            "    real_read=adapters.os.read\n"
+            "    def controlled_read(descriptor, size):\n"
+            "        if pathlib.Path(trigger).exists():\n"
+            "            raise OSError('private read payload')\n"
+            "        return real_read(descriptor, size)\n"
+            "    adapters.os.read=controlled_read\n"
+            "try:\n"
+            "    result=adapters._run_child(\n"
+            "        command,\n"
+            "        root=pathlib.Path(adapters.os.environ['HYHOME_CI_GATE_ROOT']),\n"
+            "        environ=adapters.os.environ,\n"
+            "        capture_output=mode in {'overflow','read-error'},\n"
+            "    )\n"
+            "except adapters.AdapterError:\n"
+            "    raise SystemExit(2)\n"
+            "raise SystemExit(result.returncode)\n"
         )
-        self.add_entrypoint("scripts/validation/tree.py", entrypoint)
-        invocation = dataclasses.replace(
-            _invocation("leaf.tree", "scripts/validation/tree.py"),
-            argv=(str(prefix),),
-            timeout_seconds=1,
+        adapter_source = pathlib.Path(runner.__file__).with_name(
+            "ci_gate_adapters.py"
+        ).read_text(encoding="utf-8")
+        self.add_entrypoint(
+            "scripts/validation/ci_gate_adapters.py",
+            adapter_source,
         )
-        pid_paths = (
-            pathlib.Path(f"{prefix}.child"),
-            pathlib.Path(f"{prefix}.grandchild"),
-        )
-        pids: list[int] = []
-        try:
-            self.assertEqual(
-                124,
-                runner.execute_execution_plan(
-                    self.root,
-                    (invocation,),
-                    {"PATH": os.environ.get("PATH", os.defpath)},
-                ),
-            )
-            pids = [int(path.read_text()) for path in pid_paths]
-            time.sleep(0.1)
-            for pid in pids:
-                with self.assertRaises(ProcessLookupError):
-                    os.kill(pid, 0)
-        finally:
-            for pid in pids:
+        self.add_entrypoint("scripts/validation/tree-harness.py", harness)
+        for mode, expected in (
+            ("timeout", 124),
+            ("overflow", 2),
+            ("read-error", 2),
+            ("nonzero", 17),
+            ("safe-normal", 0),
+        ):
+            with self.subTest(lifecycle=mode):
+                ready_path = self.root / f"{mode}.ready"
+                ack_path = self.root / f"{mode}.ack"
+                release_path = self.root / f"{mode}.release"
+                trigger_path = self.root / f"{mode}.trigger"
+                os.mkfifo(ready_path)
+                ready_fd = os.open(
+                    ready_path,
+                    os.O_RDONLY | os.O_NONBLOCK,
+                )
+                result_read_fd, result_write_fd = os.pipe2(os.O_CLOEXEC)
+                result: list[int | BaseException] = []
+                pidfds: list[int] = []
+                invocation = dataclasses.replace(
+                    _invocation(
+                        f"leaf.lifecycle-{mode}",
+                        "scripts/validation/tree-harness.py",
+                    ),
+                    argv=(
+                        mode,
+                        str(ready_path),
+                        str(ack_path),
+                        str(release_path),
+                        str(trigger_path),
+                    ),
+                    timeout_seconds=1 if mode == "timeout" else 10,
+                )
+
+                def execute() -> None:
+                    try:
+                        result.append(
+                            runner.execute_execution_plan(
+                                self.root,
+                                (invocation,),
+                                {
+                                    "PATH": os.environ.get(
+                                        "PATH",
+                                        os.defpath,
+                                    )
+                                },
+                            )
+                        )
+                    except BaseException as error:
+                        result.append(error)
+                    finally:
+                        os.write(result_write_fd, b"done")
+                        os.close(result_write_fd)
+
+                worker = threading.Thread(target=execute)
                 try:
-                    os.kill(pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
+                    worker.start()
+                    ready_poll = select.poll()
+                    ready_poll.register(ready_fd, select.POLLIN)
+                    self.assertTrue(ready_poll.poll(5000))
+                    pids = tuple(
+                        int(value)
+                        for value in os.read(ready_fd, 128)
+                        .decode("ascii")
+                        .split()
+                    )
+                    self.assertEqual(2, len(pids))
+                    pidfds = [os.pidfd_open(pid) for pid in pids]
+                    ack_path.touch()
+                    result_poll = select.poll()
+                    result_poll.register(result_read_fd, select.POLLIN)
+                    self.assertTrue(result_poll.poll(15000))
+                    os.read(result_read_fd, 16)
+                    worker.join()
+                    self.assertEqual([expected], result)
+                    for pidfd in pidfds:
+                        exit_poll = select.poll()
+                        exit_poll.register(pidfd, select.POLLIN)
+                        self.assertTrue(exit_poll.poll(1000))
+                finally:
+                    for pidfd in pidfds:
+                        try:
+                            signal.pidfd_send_signal(
+                                pidfd,
+                                signal.SIGKILL,
+                            )
+                        except OSError:
+                            pass
+                        os.close(pidfd)
+                    os.close(ready_fd)
+                    os.close(result_read_fd)
+
+    def _assert_runner_finalizes_every_adapter_result(self) -> None:
+        item = runner._VerifiedInvocation(
+            _invocation("leaf.lifecycle", "scripts/validation/lifecycle.py"),
+            entrypoint_fd=42,
+            cwd_fd=43,
+            interpreter="python",
+        )
+        for outcome, expected in ((0, 0), (17, 17), ("timeout", 124)):
+            with self.subTest(outcome=outcome):
+                process = mock.Mock(pid=43210)
+                if outcome == "timeout":
+                    process.wait.side_effect = subprocess.TimeoutExpired(
+                        ("adapter",),
+                        60,
+                    )
+                else:
+                    process.wait.return_value = outcome
+                with (
+                    mock.patch.object(
+                        runner.subprocess,
+                        "Popen",
+                        return_value=process,
+                    ) as popen,
+                    mock.patch.object(
+                        runner,
+                        "_finalize_process_group",
+                        create=True,
+                    ) as finalize,
+                ):
+                    self.assertEqual(
+                        expected,
+                        runner._run_verified_child(
+                            41,
+                            item,
+                            {"PATH": "/usr/bin"},
+                        ),
+                    )
+                self.assertTrue(popen.call_args.kwargs["start_new_session"])
+                self.assertEqual(
+                    (41, 42, 43),
+                    popen.call_args.kwargs["pass_fds"],
+                )
+                finalize.assert_called_once_with(
+                    process,
+                    "leaf.lifecycle",
+                )
+        process = mock.Mock(pid=43210)
+        process.wait.return_value = 0
+        with (
+            mock.patch.object(runner.os, "killpg") as killpg,
+            mock.patch.object(
+                runner,
+                "_wait_for_process_group_absence",
+                side_effect=(False, True),
+            ),
+        ):
+            runner._finalize_process_group(process, "leaf.lifecycle")
+        self.assertEqual(
+            [
+                mock.call(43210, signal.SIGTERM),
+                mock.call(43210, signal.SIGKILL),
+            ],
+            killpg.call_args_list,
+        )
+        process.poll.assert_not_called()
+
+        process = mock.Mock(pid=43210)
+        process.wait.return_value = 0
+        with (
+            mock.patch.object(runner.os, "killpg"),
+            mock.patch.object(
+                runner,
+                "_wait_for_process_group_absence",
+                side_effect=(False, False),
+            ),
+            self.assertRaises(contract.GateContractError) as caught,
+        ):
+            runner._finalize_process_group(process, "private-gate-payload")
+        self.assertEqual("ci-gate-child-cleanup", caught.exception.code)
+        self.assertNotIn("private-gate-payload", str(caught.exception))
+        process.poll.assert_not_called()
 
     def _assert_runner_rejects_immutable_and_dangerous_allowed_env_keys(
         self,
@@ -832,6 +1140,15 @@ class DescriptorExecutionTests(unittest.TestCase):
             home.mkdir()
             return str(home)
 
+        transient_attempts = 0
+
+        def transient_rmtree(path: pathlib.Path) -> None:
+            nonlocal transient_attempts
+            transient_attempts += 1
+            if transient_attempts < 2:
+                raise PermissionError("private transient cleanup path")
+            REAL_SHUTIL_RMTREE(path)
+
         try:
             with (
                 mock.patch.object(
@@ -842,8 +1159,34 @@ class DescriptorExecutionTests(unittest.TestCase):
                 mock.patch.object(
                     runner.shutil,
                     "rmtree",
-                    side_effect=PermissionError("private cleanup path"),
+                    side_effect=transient_rmtree,
                 ),
+                mock.patch.object(runner.time, "sleep") as sleep,
+            ):
+                self.assertEqual(
+                    0,
+                    runner.execute_execution_plan(
+                        self.root,
+                        (),
+                        {"PATH": "/usr/bin"},
+                        executor=lambda _invocation: 0,
+                    ),
+                )
+            self.assertEqual(2, transient_attempts)
+            sleep.assert_called_once_with(0.05)
+
+            with (
+                mock.patch.object(
+                    runner.tempfile,
+                    "mkdtemp",
+                    side_effect=create_home,
+                ),
+                mock.patch.object(
+                    runner.shutil,
+                    "rmtree",
+                    side_effect=PermissionError("private cleanup path"),
+                ) as rmtree,
+                mock.patch.object(runner.time, "sleep") as sleep,
                 self.assertRaises(contract.GateContractError) as caught,
             ):
                 runner.execute_execution_plan(
@@ -857,6 +1200,11 @@ class DescriptorExecutionTests(unittest.TestCase):
                 caught.exception.code,
             )
             self.assertNotIn("private cleanup path", str(caught.exception))
+            self.assertEqual(3, rmtree.call_count)
+            self.assertEqual(
+                [mock.call(0.05), mock.call(0.05)],
+                sleep.call_args_list,
+            )
         finally:
             if home.exists():
                 shutil.rmtree(home)

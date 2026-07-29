@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import errno
+import fcntl
 import os
 import pathlib
 import re
@@ -57,7 +58,23 @@ def run_adapter(
     argv: tuple[str, ...],
     environ: Mapping[str, str],
 ) -> int:
-    canonical_root = _canonical_root(root)
+    canonical_root, owned_root_fd = _adopt_root(root)
+    child_environment = dict(environ)
+    child_environment["HYHOME_CI_GATE_ROOT"] = canonical_root.as_posix()
+    try:
+        return _dispatch_adapter(canonical_root, argv, child_environment)
+    finally:
+        try:
+            os.close(owned_root_fd)
+        except OSError:
+            pass
+
+
+def _dispatch_adapter(
+    canonical_root: pathlib.Path,
+    argv: tuple[str, ...],
+    environ: Mapping[str, str],
+) -> int:
     _validate_environment(environ)
     if not argv or argv[0] not in SUBCOMMANDS:
         raise AdapterError(
@@ -318,12 +335,13 @@ def _terminate_child(process: subprocess.Popen[bytes]) -> None:
         process.wait()
 
 
-def _canonical_root(root: pathlib.Path) -> pathlib.Path:
+def _adopt_root(root: pathlib.Path) -> tuple[pathlib.Path, int]:
     candidate = pathlib.Path(root)
     match = _PROC_FD_ROOT.fullmatch(candidate.as_posix())
     if match is not None:
+        inherited_fd = int(match.group(1))
         try:
-            metadata = os.fstat(int(match.group(1)))
+            metadata = os.fstat(inherited_fd)
         except (OSError, ValueError):
             raise AdapterError(
                 "ci-gate-adapter-root",
@@ -334,7 +352,29 @@ def _canonical_root(root: pathlib.Path) -> pathlib.Path:
                 "ci-gate-adapter-root",
                 "the repository root descriptor is invalid",
             )
-        return candidate
+        try:
+            owned_fd = fcntl.fcntl(
+                inherited_fd,
+                fcntl.F_DUPFD_CLOEXEC,
+                3,
+            )
+        except OSError:
+            raise AdapterError(
+                "ci-gate-adapter-root",
+                "the repository root descriptor is unavailable",
+            ) from None
+        try:
+            os.close(inherited_fd)
+        except OSError:
+            try:
+                os.close(owned_fd)
+            except OSError:
+                pass
+            raise AdapterError(
+                "ci-gate-adapter-root",
+                "the repository root descriptor is unavailable",
+            ) from None
+        return pathlib.Path(f"/proc/self/fd/{owned_fd}"), owned_fd
     try:
         resolved = candidate.resolve(strict=True)
     except OSError:
@@ -352,7 +392,8 @@ def _canonical_root(root: pathlib.Path) -> pathlib.Path:
             "ci-gate-adapter-root",
             "the repository root must be canonical",
         )
-    return candidate
+    owned_fd = _open_root(candidate)
+    return pathlib.Path(f"/proc/self/fd/{owned_fd}"), owned_fd
 
 
 def _root_pass_fds(root: pathlib.Path) -> tuple[int, ...]:
@@ -373,6 +414,16 @@ def _root_pass_fds(root: pathlib.Path) -> tuple[int, ...]:
             "the repository root descriptor is invalid",
         )
     return (descriptor,)
+
+
+def _owned_root_descriptor(root: pathlib.Path) -> int:
+    descriptors = _root_pass_fds(root)
+    if len(descriptors) != 1:
+        raise AdapterError(
+            "ci-gate-adapter-root",
+            "the repository root descriptor is unavailable",
+        )
+    return descriptors[0]
 
 
 def _validate_environment(environ: Mapping[str, str]) -> None:
@@ -688,7 +739,7 @@ def _prepare_compose_env(
     root: pathlib.Path,
     environ: Mapping[str, str],
 ) -> None:
-    root_fd = _open_root(root)
+    root_fd = _owned_root_descriptor(root)
     source_fd = -1
     destination_fd = -1
     created = False
@@ -800,7 +851,7 @@ def _prepare_compose_env(
                 ) from None
         raise
     finally:
-        for descriptor in (destination_fd, source_fd, root_fd):
+        for descriptor in (destination_fd, source_fd):
             if descriptor >= 0:
                 try:
                     os.close(descriptor)
@@ -851,7 +902,7 @@ def _run_zizmor_sarif(
     root: pathlib.Path,
     environ: Mapping[str, str],
 ) -> int:
-    root_fd = _open_root(root)
+    root_fd = _owned_root_descriptor(root)
     output_fd = -1
     created = False
     succeeded = False
@@ -908,7 +959,6 @@ def _run_zizmor_sarif(
                     "ci-gate-adapter-sarif-output",
                     "the partial SARIF output could not be removed",
                 ) from None
-        os.close(root_fd)
 
 
 def _open_root(root: pathlib.Path) -> int:

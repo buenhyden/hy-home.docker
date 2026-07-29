@@ -213,14 +213,7 @@ def execute_execution_plan(
                 _close(item.cwd_fd)
             _close(root_fd)
     finally:
-        try:
-            shutil.rmtree(home)
-        except OSError:
-            raise GateContractError(
-                "ci-gate-home-cleanup",
-                "HOME",
-                "the isolated gate home could not be removed",
-            ) from None
+        _remove_home(home)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -640,7 +633,7 @@ def _child_environment(
 
 def _create_python_bootstrap(
     home: pathlib.Path,
-    descriptor_root: str,
+    _descriptor_root: str,
 ) -> pathlib.Path:
     directory = home / "python-bootstrap"
     try:
@@ -656,9 +649,9 @@ def _create_python_bootstrap(
         )
         try:
             payload = (
-                "import sys\n"
-                f"sys.path[:0] = [{descriptor_root!r}, "
-                f"{(descriptor_root + '/scripts/validation')!r}]\n"
+                "import os, sys\n"
+                "root = os.environ['HYHOME_CI_GATE_ROOT']\n"
+                "sys.path[:0] = [root, root + '/scripts/validation']\n"
             ).encode("utf-8")
             _write_all(descriptor, payload)
             os.fsync(descriptor)
@@ -706,34 +699,90 @@ def _run_verified_child(
             "the verified gate could not be executed",
         ) from None
     try:
-        return int(process.wait(timeout=item.invocation.timeout_seconds))
-    except subprocess.TimeoutExpired:
-        _terminate_process_group(process)
-        return 124
+        try:
+            result = int(
+                process.wait(timeout=item.invocation.timeout_seconds)
+            )
+        except subprocess.TimeoutExpired:
+            result = 124
+        return result
+    finally:
+        _finalize_process_group(process, item.invocation.gate_id)
 
 
-def _terminate_process_group(process: subprocess.Popen[bytes]) -> None:
+def _finalize_process_group(
+    process: subprocess.Popen[bytes],
+    _gate_id: str,
+) -> None:
+    pgid = process.pid
     try:
-        os.killpg(process.pid, signal.SIGTERM)
+        os.killpg(pgid, signal.SIGTERM)
     except ProcessLookupError:
-        pass
-    deadline = time.monotonic() + _TERMINATION_GRACE_SECONDS
-    while time.monotonic() < deadline:
-        if process.poll() is not None:
-            break
-        time.sleep(0.01)
+        _reap_adapter(process)
+        return
+    except OSError:
+        raise _process_group_cleanup_error() from None
+    _reap_adapter(process)
+    if _wait_for_process_group_absence(pgid):
+        return
     try:
-        os.killpg(process.pid, signal.SIGKILL)
+        os.killpg(pgid, signal.SIGKILL)
     except ProcessLookupError:
-        pass
+        _reap_adapter(process)
+        return
+    except OSError:
+        raise _process_group_cleanup_error() from None
+    _reap_adapter(process)
+    if not _wait_for_process_group_absence(pgid):
+        raise _process_group_cleanup_error()
+
+
+def _reap_adapter(process: subprocess.Popen[bytes]) -> None:
     try:
         process.wait(timeout=_TERMINATION_GRACE_SECONDS)
     except subprocess.TimeoutExpired:
-        raise GateContractError(
-            "ci-gate-child-cleanup",
-            "process-group",
-            "the timed-out gate process group could not be reaped",
-        ) from None
+        return
+    except OSError:
+        raise _process_group_cleanup_error() from None
+
+
+def _wait_for_process_group_absence(pgid: int) -> bool:
+    deadline = time.monotonic() + _TERMINATION_GRACE_SECONDS
+    while True:
+        try:
+            os.killpg(pgid, 0)
+        except ProcessLookupError:
+            return True
+        except PermissionError:
+            pass
+        except OSError:
+            raise _process_group_cleanup_error() from None
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(0.01)
+
+
+def _process_group_cleanup_error() -> GateContractError:
+    return GateContractError(
+        "ci-gate-child-cleanup",
+        "process-group",
+        "the gate process group could not be finalized",
+    )
+
+
+def _remove_home(home: pathlib.Path) -> None:
+    for attempt in range(3):
+        try:
+            shutil.rmtree(home)
+            return
+        except OSError:
+            if attempt < 2:
+                time.sleep(0.05)
+    raise GateContractError(
+        "ci-gate-home-cleanup",
+        "HOME",
+        "the isolated gate home could not be removed",
+    ) from None
 
 
 def _write_all(descriptor: int, payload: bytes) -> None:

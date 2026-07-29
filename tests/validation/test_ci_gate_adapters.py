@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import ast
+import fcntl
 import io
 import os
 import pathlib
@@ -494,33 +496,132 @@ class CiGateAdapterTests(unittest.TestCase):
                 self.assertFalse(marker.exists())
 
     def _assert_descriptor_root_is_passed_to_adapter_children(self) -> None:
-        marker = self.root / "descriptor-root-marker"
-        marker.write_text("bound", encoding="utf-8")
         root_fd = os.open(
             self.root,
             os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY,
         )
+        adopted: list[int] = []
+
+        def inspect_child(
+            argv: tuple[str, ...],
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[bytes]:
+            child_root = pathlib.Path(kwargs["root"])  # type: ignore[arg-type]
+            match = adapters._PROC_FD_ROOT.fullmatch(child_root.as_posix())
+            self.assertIsNotNone(match)
+            adopted_fd = int(match.group(1))  # type: ignore[union-attr]
+            adopted.append(adopted_fd)
+            self.assertNotEqual(root_fd, adopted_fd)
+            self.assertTrue(os.path.isdir(child_root))
+            self.assertFalse(os.get_inheritable(adopted_fd))
+            self.assertTrue(
+                fcntl.fcntl(adopted_fd, fcntl.F_GETFD) & fcntl.FD_CLOEXEC
+            )
+            self.assertEqual((adopted_fd,), adapters._root_pass_fds(child_root))
+            self.assertEqual(
+                child_root.as_posix(),
+                kwargs["environ"]["HYHOME_CI_GATE_ROOT"],  # type: ignore[index]
+            )
+            with self.assertRaises(OSError):
+                os.fstat(root_fd)
+            return subprocess.CompletedProcess(argv, 0, b"", b"")
+
         try:
             descriptor_root = pathlib.Path(f"/proc/self/fd/{root_fd}")
-            source = (
-                "import os,pathlib\n"
-                "root=pathlib.Path(os.environ['HYHOME_CI_GATE_ROOT'])\n"
-                "raise SystemExit(0 if "
-                "(root/'descriptor-root-marker').read_text()=='bound' "
-                "and pathlib.Path.cwd()==root.resolve() else 9)\n"
+            with mock.patch.object(
+                adapters,
+                "_run_child",
+                side_effect=inspect_child,
+            ):
+                result = adapters.run_adapter(
+                    descriptor_root,
+                    ("check-diff-hygiene",),
+                    {
+                        "PATH": "/usr/bin",
+                        "HYHOME_CI_GATE_ROOT": descriptor_root.as_posix(),
+                    },
+                )
+        finally:
+            try:
+                os.close(root_fd)
+            except OSError:
+                pass
+        self.assertEqual(0, result)
+        self.assertEqual(1, len(adopted))
+        with self.assertRaises(OSError):
+            os.fstat(adopted[0])
+
+        error_root_fd = os.open(
+            self.root,
+            os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY,
+        )
+        failed_adopted: list[int] = []
+
+        def fail_child(
+            _argv: tuple[str, ...],
+            **kwargs: object,
+        ) -> subprocess.CompletedProcess[bytes]:
+            match = adapters._PROC_FD_ROOT.fullmatch(
+                pathlib.Path(kwargs["root"]).as_posix()  # type: ignore[arg-type]
             )
-            result = adapters._run_child(
-                (sys.executable, "-c", source),
-                root=descriptor_root,
+            self.assertIsNotNone(match)
+            failed_adopted.append(int(match.group(1)))  # type: ignore[union-attr]
+            raise adapters.AdapterError(
+                "ci-gate-adapter-child-exec",
+                "the child process is unavailable",
+            )
+
+        with (
+            mock.patch.object(adapters, "_run_child", side_effect=fail_child),
+            self.assertRaises(adapters.AdapterError),
+        ):
+            adapters.run_adapter(
+                pathlib.Path(f"/proc/self/fd/{error_root_fd}"),
+                ("check-diff-hygiene",),
+                {
+                    "PATH": "/usr/bin",
+                    "HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{error_root_fd}",
+                },
+            )
+        with self.assertRaises(OSError):
+            os.fstat(error_root_fd)
+        with self.assertRaises(OSError):
+            os.fstat(failed_adopted[0])
+
+        inventory_root, inventory_fd = adapters._adopt_root(self.root)
+        inventory_source = (
+            "import os\n"
+            "visible=[]\n"
+            "for name in os.listdir('/proc/self/fd'):\n"
+            "    number=int(name)\n"
+            "    if number <= 2: continue\n"
+            "    try: target=os.readlink('/proc/self/fd/'+name)\n"
+            "    except OSError: continue\n"
+            "    visible.append((number,target))\n"
+            "print(os.getsid(0), os.getpgrp(), repr(visible))\n"
+        )
+        try:
+            inventory = adapters._run_child(
+                (sys.executable, "-c", inventory_source),
+                root=inventory_root,
                 environ={
                     "PATH": "/usr/bin",
-                    "HYHOME_CI_GATE_ROOT": descriptor_root.as_posix(),
+                    "HYHOME_CI_GATE_ROOT": inventory_root.as_posix(),
                 },
                 capture_output=True,
             )
         finally:
-            os.close(root_fd)
-        self.assertEqual(0, result.returncode)
+            os.close(inventory_fd)
+        session, group, visible = inventory.stdout.decode("ascii").split(
+            " ",
+            2,
+        )
+        self.assertEqual(os.getsid(0), int(session))
+        self.assertEqual(os.getpgrp(), int(group))
+        self.assertEqual(
+            [(inventory_fd, str(self.root))],
+            ast.literal_eval(visible),
+        )
 
     def _assert_run_child_normalizes_spawn_error_without_payload(self) -> None:
         with (
