@@ -38,8 +38,9 @@ unittest, Git, and repository-owned generators.
 `a0f91bb50cbd589abdecd8cd217d1673ac0e76d9`
 
 **Revision R1 status:** The user approved this revised Plan on 2026-07-29.
-Implementation remains blocked until an independent read-only Plan review
-returns no Critical or Important finding.
+The first independent reviews returned blocking findings; implementation
+remains blocked until the corrected Plan receives independent specification
+and quality/security C0/I0 re-reviews.
 
 ## Global Constraints
 
@@ -116,7 +117,7 @@ returns no Critical or Important finding.
 
 This Plan implements
 [Spec 135](../../03.specs/135-target-surface-delta-convergence/spec.md)
-through six serial logical tasks:
+through six serial top-level tasks:
 
 1. create the successor delta manifest, validator, and whole-surface contract;
 2. normalize README, typed example, archive, project, and redacted secret
@@ -142,9 +143,10 @@ review verdicts. It does not duplicate planned implementation.
   reopened.
 - Commit `a0f91bb5` contains the approved revised Spec and is the only R1
   planning base.
-- T-TSDC-004R may start only after this exact revised Plan receives explicit
-  user approval and an independent read-only Plan review returns no Critical
-  or Important finding.
+- T-TSDC-004R may start only after this revised Plan has explicit user
+  approval and the complete corrected range receives independent
+  specification and quality/security reviews with no Critical or Important
+  finding.
 - T-TSDC-005 and T-TSDC-006 remain serially blocked until T-TSDC-004R has
   completed specification and quality/security reviews.
 - Plan text stays prospective. Existing commands, results, commits, and
@@ -847,6 +849,11 @@ Adapter argument grammars are closed:
   `scripts/**/*.sh` and `.claude/hooks/*.sh` paths through NUL-delimited Git
   output before one literal `bash -n` call. None delegates to an arbitrary
   program.
+- `prepare-compose-env` is CI-only. It copies the tracked regular
+  `.env.example` to `.env` with descriptor-relative `O_NOFOLLOW | O_EXCL`
+  creation and fails value-free when `.env` already exists; it never
+  overwrites or reads an existing environment payload. No local profile
+  reaches this setup node.
 
 #### Canonical Root and Suite Mapping
 
@@ -900,6 +907,34 @@ these ordered children:
 | `ci.frontend-quality` | `setup.frontend-node-dependencies`, `leaf.frontend-lint`, `leaf.frontend-typecheck`, `leaf.frontend-build`, `leaf.frontend-quality` |
 | `ci.storybook-coverage` | `setup.storybook-node-dependencies`, `setup.storybook-playwright`, `leaf.storybook-coverage` |
 | `ci.zizmor` | `leaf.zizmor` |
+
+The exact required-workflow runner targets are:
+
+| Required job ID | Ordered static runner targets |
+| --- | --- |
+| `docs-traceability` | `ci.docs-traceability` |
+| `docs-implementation-alignment` | `leaf.docs-implementation-alignment`, then the existing conditional `leaf.docs-qa-gate-recommendations` |
+| `repo-contracts` | `ci.repo-contracts` |
+| `agent-output-eval-fixture-gate` | `ci.agent-output-eval-fixture-gate` |
+| `supply-chain-fixture-policy` | `ci.supply-chain-fixture-policy` |
+| `dependency-vulnerability-audit` | `ci.dependency-vulnerability-audit` |
+| `git-flow-contract` | `ci.git-flow-contract` |
+| `compose-validation` | `ci.compose-validation` |
+| `compose-all-profiles-validation` | `ci.compose-all-profiles-validation` |
+| `infrastructure-hardening` | `ci.infrastructure-hardening` |
+| `template-security-baseline` | `ci.template-security-baseline` |
+| `quickwin-baseline` | `ci.quickwin-baseline` |
+| `pre-commit` | `ci.pre-commit` |
+| `frontend-quality` | `ci.frontend-quality` |
+| `storybook-coverage` | `ci.storybook-coverage` |
+| `zizmor` | `ci.zizmor` |
+
+Every table cell denotes
+`python3 scripts/validation/run-ci-gate.py --profile ci --gate <target>`.
+The workflow validator expands the ordered target list and requires it to
+equal the owning root expansion exactly once. The Storybook, frontend,
+pre-commit, Compose, and repository setup chains therefore stay within one
+runner lifetime rather than being flattened into separate processes.
 
 Required leaf/setup execution fields are exact:
 
@@ -986,6 +1021,11 @@ Local aggregate children are exact:
 | `local.workflow-harness` | `leaf.ci-gate-contract-regressions`, `leaf.ci-gate-runner-regressions`, `leaf.ci-gate-adapter-regressions`, `leaf.workflow-contract-regressions`, `leaf.repo-contracts-control-plane-regressions`, `leaf.ci-precommit-regressions`, `leaf.workflow-contract` |
 | `local.supply-chain` | `leaf.supply-chain-deterministic-policy`, `leaf.supply-chain-summary-freshness` |
 | `local.generated-freshness` | `leaf.local-security-readiness-freshness`, `leaf.local-audit-matrix-freshness`, `leaf.local-llm-wiki-index-freshness`, `leaf.local-llm-wiki-coverage-freshness` |
+| `local.compose-validation` | `leaf.compose-validation` |
+| `local.compose-all-profiles-validation` | `leaf.compose-all-profiles-validation` |
+| `local.infrastructure-hardening` | `leaf.infrastructure-hardening` |
+| `local.template-security-baseline` | `leaf.template-security-baseline` |
+| `local.quickwin-baseline` | `leaf.quickwin-baseline` |
 
 The `ci` profile derives from `job_roots`.
 The exact `local-script-backed` root order is
@@ -996,21 +1036,23 @@ The exact `local-script-backed` root order is
 `leaf.local-tech-stack-version-drift`, `ci.docs-traceability`,
 `leaf.docs-implementation-alignment`, `local.document-corpus-lifecycle`,
 `local.target-surface`, `local.workflow-harness`, `local.supply-chain`,
-`ci.compose-validation`, `ci.infrastructure-hardening`,
-`ci.template-security-baseline`, `ci.quickwin-baseline`,
+`local.compose-validation`, `local.infrastructure-hardening`,
+`local.template-security-baseline`, `local.quickwin-baseline`,
 `local.generated-freshness`, and `leaf.repo-contracts`.
 
 The exact `local-harness` root order is the same sequence without
-`leaf.local-tech-stack-version-drift` and `ci.quickwin-baseline`. Both local
+`leaf.local-tech-stack-version-drift` and `local.quickwin-baseline`. Both local
 profiles exclude real pre-commit, dependency audit, frontend
 dependency/build/coverage, Playwright installation, zizmor execution/upload,
-and every networked setup node. The existing `--all-profiles` local-runner mode
-remains a compatibility route: it executes the complete
-`local-script-backed` profile and then the separately registered
-`ci.compose-all-profiles-validation` root. Normal and all-profile Compose are
-distinct suite identities, so this intentionally runs both without duplicate
-ownership. That root admits both `ci` and `local-script-backed` applicability
-but is not part of the default local profile-root list. The wrapper sets
+and every CI-only or networked setup node. Contract and routing tests require
+both local profiles to exclude `setup.compose-env`, and an existing ignored
+`.env` fixture must remain byte-identical after every local wrapper mode. The
+existing `--all-profiles` local-runner mode remains a compatibility route: it
+executes the complete `local-script-backed` profile and then the separately
+registered `local.compose-all-profiles-validation` aggregate. Normal and
+all-profile Compose are distinct suite identities, so this intentionally runs
+both without duplicate ownership. The local all-profile aggregate is not part
+of the default local profile-root list. The wrapper sets
 `HYHOME_COMPOSE_PROFILES` to an already supplied nonempty value or to the exact
 default `core data obs workflow ai tooling messaging security communication
 service storage admin iac registry sast sync testing graph mng ksql nginx`; it
@@ -1033,10 +1075,15 @@ The runner constructs the child environment from an empty mapping. Its fixed
 baseline is `PATH` copied from the controller environment,
 `LANG=C.UTF-8`, `LC_ALL=C.UTF-8`, `HOME` set to a fresh
 `/tmp/ci-gate-home-*` directory, `TMPDIR=/tmp`,
-`PYTHONNOUSERSITE=1`, and `PIP_DISABLE_PIP_VERSION_CHECK=1`; a missing or empty
-controller `PATH` fails closed. Before gate-specific admission it drops every
-ambient `GIT_*` key and never inherits `PYTHONPATH`, `NODE_OPTIONS`,
-`BASH_ENV`, `ENV`, `CDPATH`, `IFS`, `SHELLOPTS`, or `GLOBIGNORE`. A
+`PYTHONNOUSERSITE=1`, `PYTHONSAFEPATH=1`,
+`PIP_DISABLE_PIP_VERSION_CHECK=1`, and a runner-created
+`HYHOME_CI_GATE_ROOT` bound to the already verified repository-root
+descriptor; a missing or empty controller `PATH` fails closed. For Python
+entrypoints only, the runner constructs a fixed `PYTHONPATH` from that root
+and `scripts/validation`; it never inherits a controller `PYTHONPATH`.
+Before gate-specific admission it drops every ambient `GIT_*` key and never
+inherits `NODE_OPTIONS`, `BASH_ENV`, `ENV`, `CDPATH`, `IFS`, `SHELLOPTS`, or
+`GLOBIGNORE`. A
 purpose-specific Git subprocess may construct
 `GIT_CONFIG_NOSYSTEM=1` and `GIT_CONFIG_GLOBAL=/dev/null` for that subprocess
 only; those values are not inherited from the controller. Secret-, token-,
@@ -1045,15 +1092,38 @@ registry validator. Values are never included in diagnostics.
 The fresh HOME is removed in a `finally` path after the complete execution
 plan, including timeout, child failure, and executor exception paths.
 
-#### T-TSDC-004R-0: Revised Plan Approval Gate
+Entrypoints remain inode-bound: the runner opens the tracked regular
+executable with descriptor-relative no-follow traversal, verifies its Git mode
+and identity, and executes `/proc/self/fd/<fd>` with `pass_fds` and
+`shell=False`. Because that kernel path intentionally changes
+`BASH_SOURCE[0]`, Python `__file__`, and sibling-module discovery, Wave B must
+migrate every affected registered entrypoint to consume the runner-created
+`HYHOME_CI_GATE_ROOT` while preserving its existing direct-execution fallback.
+The exact compatibility set is
+`scripts/hardening/check-all-hardening.sh`,
+`scripts/operations/sync-provider-surfaces.sh`,
+`scripts/operations/sync-tech-stack-versions.sh`,
+`scripts/validation/check-agent-governance-contract.py`,
+`scripts/validation/check-document-corpus-lifecycle.py`,
+`scripts/validation/check-document-metadata.py`, and
+`scripts/validation/check-supply-chain-policy.py`. The focused workflow wrapper
+also imports its sibling module through the fixed runner-created Python path.
+Descriptor-mode smoke tests must prove repository-root and sibling-import
+parity for this exact set before workflow cutover.
+
+#### Task 4.0 / T-TSDC-004R-0: Revised Plan Approval Gate
 
 **Files:**
 
 - Modify this Plan in place.
 - Append only the new Spec/Plan approval facts to the sibling Task ledger.
 
-- [ ] Obtain an independent read-only Plan review against commit `a0f91bb5`.
-- [ ] Require the Plan review to map TSDC-010 through TSDC-017, verify exact
+- [x] Record the first independent read-only Plan reviews of
+  `a0f91bb5..1a86f929` as `C0/I4/M1` specification and `C1/I2/M1`
+  quality/security; neither verdict authorizes implementation.
+- [ ] Obtain one final independent specification re-review and one separate
+  quality/security re-review of the complete corrected Plan range.
+- [ ] Require both re-reviews to map TSDC-010 through TSDC-017, verify exact
   file ownership and commands, and return C0/I0 before implementation.
 - [x] Record the user's 2026-07-29 explicit approval of this exact Plan
   revision.
@@ -1061,10 +1131,11 @@ plan, including timeout, child failure, and executor exception paths.
   rows or treating it as controlled-wrapper, remote, runtime, or secret
   authority.
 
-Expected gate: the Task ledger changes from `blocked pending revised Plan`
-to `active recovery`; no production file changes before that transition.
+Expected gate: only after both correction re-reviews return C0/I0 does the
+Task ledger change from `blocked pending corrected Plan review` to
+`active recovery`; no production or test file changes before that transition.
 
-#### Wave A / T-TSDC-004R-1: Typed Gate Contract
+#### Task 4.1 / Wave A / T-TSDC-004R-1: Typed Gate Contract
 
 **Files:**
 
@@ -1086,9 +1157,12 @@ to `active recovery`; no production file changes before that transition.
 - Produces: dependency-free schema parsing, kind validation, DAG expansion,
   suite ownership, job-root ownership, and local-profile projection for R2.
 
-- [ ] **Step 1: Write schema-v2 RED tests.**
+- [ ] **Step 1: Create an importable signature-only skeleton, then write
+  schema-v2 RED tests.**
 
-  Add exact tests named:
+  Create only the declared dataclasses and function signatures, with every
+  behavior raising `NotImplementedError`; the skeleton is not a usable
+  validator. Add exact tests named:
   `test_schema_v2_contract_is_strict_json_and_duplicate_safe`,
   `test_gate_kind_fields_are_exact`,
   `test_gate_graph_rejects_cycles_missing_children_and_orphans`,
@@ -1114,8 +1188,10 @@ def test_gate_graph_rejects_cycles_missing_children_and_orphans(self) -> None:
 python3 -m unittest tests.validation.test_ci_gate_contract -v
 ```
 
-Expected RED: import failure for
-`scripts.validation.ci_gate_contract`; no production gate module exists.
+Expected RED: the signature-only module imports, but each named contract test
+fails on its own expected behavior or finding-code assertion. Missing-import
+evidence alone is insufficient, and the behavior-specific failures are
+recorded in the Task ledger.
 
 - [ ] **Step 3: Implement the strict contract and graph validator.**
 
@@ -1191,7 +1267,7 @@ git commit -m "feat(ci): add typed gate contract"
 Assign fresh specification and quality/security reviewers. Use only the
 canonical two-attempt implementation and review loops.
 
-#### Wave A / T-TSDC-004R-2: Dependency-Free Runner and Adapters
+#### Task 4.2 / Wave A / T-TSDC-004R-2: Dependency-Free Runner and Adapters
 
 **Files:**
 
@@ -1213,15 +1289,23 @@ canonical two-attempt implementation and review loops.
 - Produces: the exact CLI and execution interfaces declared above for the
   atomic workflow cutover in R3.
 
-- [ ] **Step 1: Write runner and adapter RED tests.**
+- [ ] **Step 1: Create importable signature-only skeletons, then write runner
+  and adapter RED tests.**
 
-  Add exact runner tests for mutually exclusive `--gate`/`--all`, unknown
+  Create only the declared symbols and closed subcommand names, with execution
+  behavior raising `NotImplementedError`; do not add a working runner or
+  adapter. Add exact runner tests for mutually exclusive `--gate`/`--all`, unknown
   profile/gate, deterministic `--list`, value-free `--dry-run`, ordered
   deduplication, timeout propagation, nonzero child propagation, minimal
-  environment, all ambient `GIT_*` removal, and fake-executor one-time output.
+  environment, all ambient `GIT_*` removal, one HOME shared by every node in
+  one complete execution plan, cleanup after every exit path, and
+  fake-executor one-time output.
   Add filesystem tests for symlink parent/leaf, untracked entrypoint, Git mode
   other than `100755`, unsupported shebang, non-regular file, cwd escape, and
-  path replacement after descriptor open.
+  path replacement after descriptor open. Add descriptor-mode fixtures proving
+  that `HYHOME_CI_GATE_ROOT` and the fixed Python import path preserve logical
+  repository-root and sibling-module discovery without inherited
+  `PYTHONPATH`.
 
 ```python
 def test_fake_executor_receives_each_leaf_once_in_order(self) -> None:
@@ -1239,7 +1323,10 @@ def test_fake_executor_receives_each_leaf_once_in_order(self) -> None:
   Add one adapter test per enumerated subcommand plus rejection tests for
   unknown subcommands, shell metacharacter command selectors, out-of-repository
   requirements paths, unapproved npm verbs, secret-shaped environment names,
-  and SARIF symlink output.
+  and SARIF symlink output. The `prepare-compose-env` tests must prove
+  exclusive creation from a tracked regular `.env.example`, value-free failure
+  when `.env` already exists, and byte-identical preservation of that existing
+  file.
 
 - [ ] **Step 2: Run RED.**
 
@@ -1250,7 +1337,9 @@ python3 -m unittest \
   -v
 ```
 
-Expected RED: both production modules and the executable wrapper are absent.
+Expected RED: after the signature-only skeletons import successfully, each
+runner and adapter behavior group fails on its own expected result or
+finding-code assertion. Missing-import evidence alone does not satisfy RED.
 
 - [ ] **Step 3: Implement descriptor-bound execution.**
 
@@ -1263,17 +1352,14 @@ Expected RED: both production modules and the executable wrapper are absent.
 
 - [ ] **Step 4: Implement deterministic CLI modes and adapters.**
 
-```bash
-python3 scripts/validation/run-ci-gate.py --profile local-harness --list
-python3 scripts/validation/run-ci-gate.py \
-  --profile local-harness \
-  --dry-run \
-  --all
-```
-
   `--list` and `--dry-run` print gate IDs and repository-relative entrypoints
   only. They do not print environment values or execute child programs.
-  Adapter subprocesses always use argument arrays and `shell=False`.
+  Adapter subprocesses always use argument arrays and `shell=False`. During
+  this unit the canonical repository file intentionally remains schema v1, so
+  no live `run-ci-gate.py --list`, `--dry-run`, `--gate`, or `--all` command
+  may target it. CLI tests must instead use a bounded temporary repository
+  containing one strict schema-v2 fixture. The first successful command
+  against the canonical registry belongs to the atomic Wave B conversion.
 
 - [ ] **Step 5: Mark both executable entry points as mode `100755`, add exact
   manifest rows, and update the scripts index.**
@@ -1351,7 +1437,7 @@ git commit -m "feat(ci): add typed gate runner"
 
 Assign fresh specification and quality/security reviewers before Wave B.
 
-#### Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
+#### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
 **Files:**
 
@@ -1363,6 +1449,15 @@ Assign fresh specification and quality/security reviewers before Wave B.
 - Modify `tests/validation/test_github_workflow_contract.py`.
 - Modify `scripts/validation/check-repo-contracts.sh`.
 - Modify `scripts/validation/run-local-qa-gates.sh`.
+- Modify these descriptor-compatibility consumers without changing their
+  direct-execution behavior:
+  `scripts/hardening/check-all-hardening.sh`,
+  `scripts/operations/sync-provider-surfaces.sh`,
+  `scripts/operations/sync-tech-stack-versions.sh`,
+  `scripts/validation/check-agent-governance-contract.py`,
+  `scripts/validation/check-document-corpus-lifecycle.py`,
+  `scripts/validation/check-document-metadata.py`, and
+  `scripts/validation/check-supply-chain-policy.py`.
 - Modify `tests/validation/test_agent_governance_ci_routing.py`.
 - Modify `tests/validation/test_target_surface_delta_contracts.py`.
 - Preserve `scripts/validation/run-ci-precommit.sh`,
@@ -1401,7 +1496,11 @@ Assign fresh specification and quality/security reviewers before Wave B.
   `test_workflow_projection_rejects_dynamic_ids_and_free_form_shell`,
   `test_workflow_and_registry_co_mutations_fail_closed`,
   `test_ci_and_local_profiles_share_node_definitions`, and
-  `test_repository_umbrella_is_wiring_only`.
+  `test_repository_umbrella_is_wiring_only`. Add exact regressions named
+  `test_local_profiles_exclude_compose_env_setup`,
+  `test_local_wrapper_preserves_existing_env_bytes`,
+  `test_storybook_root_runs_setup_and_coverage_in_one_runner_lifetime`, and
+  `test_descriptor_mode_root_and_import_compatibility_set_is_exact`.
 
 ```python
 def test_required_run_steps_use_only_static_gate_invocations(self) -> None:
@@ -1459,14 +1558,33 @@ chmod 0755 \
   `git diff --summary` to report only seven `mode change 100644 => 100755`
   entries for this substep.
 
+- [ ] **Step 4A: Migrate the exact descriptor-compatibility set.**
+
+  Each of the seven named consumers resolves its repository root from
+  runner-created `HYHOME_CI_GATE_ROOT` when present and otherwise retains its
+  current direct-execution `BASH_SOURCE[0]` or `__file__` fallback.
+  `check-document-metadata.py` derives its sibling import directory from that
+  selected root. No consumer reads a controller-supplied value because the
+  runner builds the child environment from empty state. Run the descriptor
+  compatibility test once per path and prove the focused workflow wrapper can
+  import `github_workflow_contract` through the fixed runner-created Python
+  path. Direct-execution regression tests must remain green.
+
 - [ ] **Step 5: Convert every required-quality executable step.**
 
   Each `run:` scalar becomes one exact static `run-ci-gate.py` invocation.
-  The static flattened gate sequence in each job must equal its root DAG
-  expansion exactly once. Preserve the existing `always()` QA-summary
-  condition, metadata event condition, git-flow job condition, setup Actions,
-  least-privilege permissions, timeouts, concurrency, and SARIF upload Action.
-  Environment blocks may contain only keys admitted by the invoked node.
+  The ordered union of the invoked targets' expansions in each job must equal
+  its root DAG expansion exactly once. A stateful setup chain is invoked as
+  its complete root in one runner process: in particular
+  `ci.storybook-coverage` performs node dependency installation, Playwright
+  installation, and coverage under one fresh HOME that survives until the
+  root finishes. Conditionally separated nodes such as the existing
+  `always()` QA-summary leaf may remain separate exact static invocations, but
+  their combined expansion must still cover the root once with no overlap.
+  Preserve the metadata event condition, git-flow job condition, setup
+  Actions, least-privilege permissions, timeouts, concurrency, and SARIF
+  upload Action. Environment blocks may contain only keys admitted by the
+  invoked node.
 
 - [ ] **Step 6: Switch workflow validation to structural projection.**
 
@@ -1484,10 +1602,14 @@ chmod 0755 \
   from the exact `profile_roots` above. `--script-backed` and `--harness`
   invoke their matching profile once. `--all-profiles` invokes
   `local-script-backed` once and then invokes only
-  `ci.compose-all-profiles-validation`; it retains no child-command list.
-  `check-repo-contracts.sh` invokes the focused workflow checker once and
-  performs only unique repository wiring checks. Gate-specific tests prove it
-  does not intentionally dispatch a sibling registered suite.
+  `local.compose-all-profiles-validation`; it retains no child-command list.
+  The local routes never reach `setup.compose-env`; their Compose validators
+  retain the existing create-only-and-cleanup behavior and preserve any
+  existing `.env` byte-for-byte. `check-repo-contracts.sh` no longer invokes
+  the focused workflow checker because `leaf.workflow-contract` owns that
+  suite explicitly in both the CI root and local workflow harness. The
+  repository umbrella performs only unique wiring checks. Gate-specific tests
+  prove it does not intentionally dispatch any sibling registered suite.
 
 - [ ] **Step 8: Synchronize governance and desired-state documentation.**
 
@@ -1507,10 +1629,16 @@ python3 scripts/validation/check-target-surface-delta-contract.py \
 
   Add the newly changed
   `scripts/validation/check-agent-governance-contract.py` row with disposition
-  `update` and its own path as canonical owner. Change four existing
-  mode-normalized rows from `preserve` to `update`; keep the two already-update
-  rows as `update`. The exact delta oracle becomes 156 rows: 85 `preserve`, 71
-  `update`, zero `migrate`, and zero `delete`.
+  `update` and its own path as canonical owner. Add corresponding `update`
+  rows for `scripts/operations/sync-provider-surfaces.sh` and
+  `scripts/operations/sync-tech-stack-versions.sh`, each with its own path as
+  canonical owner and the typed local profile plus descriptor-compatibility
+  test as direct consumers. Change four existing mode-normalized rows from
+  `preserve` to `update`; keep the two already-update rows as `update`. Update
+  the existing compatibility rows for hardening, document corpus, metadata,
+  and supply-chain policy with their new typed-runner consumers. The exact
+  delta oracle becomes 158 rows: 85 `preserve`, 73 `update`, zero `migrate`,
+  and zero `delete`.
 
 - [ ] **Step 9: Run cutover GREEN.**
 
@@ -1540,8 +1668,20 @@ python3 scripts/validation/run-ci-gate.py \
 python3 scripts/validation/run-ci-gate.py \
   --profile local-script-backed \
   --dry-run \
-  --gate ci.compose-all-profiles-validation
+  --gate local.compose-all-profiles-validation
 bash scripts/validation/run-local-qa-gates.sh --list
+bash -n \
+  scripts/validation/check-repo-contracts.sh \
+  scripts/validation/run-local-qa-gates.sh \
+  scripts/hardening/check-all-hardening.sh \
+  scripts/operations/sync-provider-surfaces.sh \
+  scripts/operations/sync-tech-stack-versions.sh
+shellcheck --severity=warning \
+  scripts/validation/check-repo-contracts.sh \
+  scripts/validation/run-local-qa-gates.sh \
+  scripts/hardening/check-all-hardening.sh \
+  scripts/operations/sync-provider-surfaces.sh \
+  scripts/operations/sync-tech-stack-versions.sh
 actionlint
 python3 -m ruff check \
   scripts/validation/ci_gate_contract.py \
@@ -1568,7 +1708,7 @@ git diff --check
 ```
 
 Expected GREEN: exact counts remain 7 workflows, 23 jobs, eight Actions, and
-16 required IDs; the delta oracle is exactly 156 rows with 85 `preserve`, 71
+16 required IDs; the delta oracle is exactly 158 rows with 85 `preserve`, 73
 `update`, and no destructive row; every required run step is a static
 registered gate;
 CI/local dry runs are deterministic and execute nothing; no direct
@@ -1592,6 +1732,9 @@ git add \
   scripts/validation/check-document-metadata.py \
   scripts/validation/check-supply-chain-policy.py \
   scripts/validation/check-target-surface-delta-contract.py \
+  scripts/hardening/check-all-hardening.sh \
+  scripts/operations/sync-provider-surfaces.sh \
+  scripts/operations/sync-tech-stack-versions.sh \
   scripts/validation/github_workflow_contract.py \
   scripts/validation/check-repo-contracts.sh \
   scripts/validation/run-local-qa-gates.sh \
@@ -1605,7 +1748,7 @@ git add \
 git commit -m "ci(governance): cut over to typed gate projections"
 ```
 
-#### T-TSDC-004R-4: Independent Cutover Review Gate
+#### Task 4.4 / T-TSDC-004R-4: Independent Cutover Review Gate
 
 - [ ] Assign a fresh read-only specification reviewer to the exact R1-through-
   R3 range.
@@ -1614,8 +1757,10 @@ git commit -m "ci(governance): cut over to typed gate projections"
 - [ ] Require both reviews to verify the 16 IDs, root/suite uniqueness, fake
   executor order, CI/local profile parity, exact workflow grammar, trigger and
   permission retention, Action registry, pre-commit separation, descriptor
-  identity, `GIT_*` isolation, timeout, value-free diagnostics, and absence of
-  hidden repository-umbrella sibling dispatch.
+  identity and compatibility-root parity, `GIT_*` isolation, timeout,
+  value-free diagnostics, local `.env` preservation, stateful Storybook
+  setup-to-coverage continuity, and absence of hidden repository-umbrella
+  sibling dispatch.
 - [ ] Record C0/I0 verdicts in one evidence-only commit:
 
 ```bash
@@ -1627,7 +1772,7 @@ If either reviewer finds a design-contract defect, stop and return to
 design/plan. For an implementation defect, use only the canonical
 two-attempt loops; exhaustion blocks Task 4R.
 
-#### Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
 
 **Files:**
 
@@ -1701,7 +1846,7 @@ git commit -m "refactor(ci): remove semantic command interpreter"
 Assign fresh specification and quality/security reviewers. Both must return
 C0/I0 before Task 4R evidence promotion.
 
-#### T-TSDC-004R-6: Task 4 Recovery Evidence and Promotion
+#### Task 4.6 / T-TSDC-004R-6: Task 4 Recovery Evidence and Promotion
 
 - [ ] Run the full Task 4R focused ladder from a clean committed checkpoint.
 - [ ] Record exact commands, results, skipped CI-only gates, rollback commits,
@@ -1793,15 +1938,31 @@ Expected completion evidence:
   signatures disabled, rulesets response empty;
 - root causes and raw logs remain `unverified`/unread.
 
-- [ ] Add RED schema tests that distinguish tracked desired state, observed
-  remote state, unverified cause, and proposed future synchronization.
-- [ ] Add RED proving the four-context drift list is the set difference, not a
-  claim that remote checks failed to run.
-- [ ] Add RED audit semantic assertions for the new delta checker, README
+- [ ] Add exact RED tests
+  `test_remote_observation_separates_desired_observed_unverified_and_proposed`,
+  `test_remote_required_context_drift_is_exact_set_difference`, and
+  `test_canonical_audit_records_typed_gate_control_plane` to
+  `AgentGovernanceRoutingTests`. They distinguish tracked desired state,
+  observed remote state, unverified cause, proposed future synchronization,
+  and the four-context set difference without claiming that remote checks
+  failed to run. The audit assertion covers the delta checker, README
   convergence, version synchronization, schema-v2 typed gate registry,
   structural CI ownership boundary, CI pre-commit route, and remaining
   remote/CD/runtime gaps.
-- [ ] Record expected failures before evidence edits.
+- [ ] Run and record the behavior-specific RED before any observation, audit,
+  generator, or manifest edit:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_remote_observation_separates_desired_observed_unverified_and_proposed \
+  tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_remote_required_context_drift_is_exact_set_difference \
+  tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_canonical_audit_records_typed_gate_control_plane \
+  -v
+```
+
+  Expected RED: all three named tests import and fail on stale tracked facts;
+  a missing test or import failure is not accepted as RED evidence.
+
 - [ ] Update the observation using only sanitized metadata already obtained;
   do not perform another remote call or read raw logs.
 - [ ] Reconcile only audit rows whose implementation truth changed. Keep CD,
@@ -1810,9 +1971,26 @@ Expected completion evidence:
   to evidence.
 - [ ] Preserve the 2026-07-07 pack as superseded mapping-only evidence; do not
   revive or duplicate it.
-- [ ] Regenerate the audit matrix and metadata inventory with canonical
-  owners.
-- [ ] Update delta manifest review/evidence rows and regenerate its summary.
+- [ ] Regenerate the audit matrix and metadata inventory through these exact
+  write commands, then prove byte-for-byte freshness with their `--check`
+  forms:
+
+```bash
+bash scripts/validation/generate-audit-implementation-matrix.sh
+python3 scripts/validation/check-document-metadata.py \
+  --mode report \
+  --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+```
+
+- [ ] Update only the applicable delta-manifest review/evidence rows and
+  regenerate only its derived summary through:
+
+```bash
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory \
+  --write-summary
+```
+
 - [ ] Run:
 
 ```bash
@@ -1938,30 +2116,23 @@ and repository contracts are green.
 - [ ] If any command is unavailable, record the exact environment limitation
   and leave the corresponding result `unverified`; never convert it to pass.
 - [ ] Do not run direct all-files pre-commit.
-- [ ] If the user separately approves one exact final wrapper attempt, run
-  only:
-
-```bash
-bash scripts/validation/run-agent-precommit-all-files.sh \
-  --allow-prefix .github \
-  --allow-prefix archive \
-  --allow-prefix examples \
-  --allow-prefix infra \
-  --allow-prefix projects \
-  --allow-prefix scripts \
-  --allow-prefix secrets \
-  --allow-prefix tests \
-  --allow-prefix docs/00.agent-governance \
-  --allow-prefix docs/03.specs/135-target-surface-delta-convergence \
-  --allow-prefix docs/04.execution \
-  --allow-prefix docs/05.operations \
-  --allow-prefix docs/90.references \
-  --allow-prefix docs/99.templates
-```
+- [ ] Do not pre-authorize or publish a wrapper command with broad repository
+  roots. At the clean Task 5 checkpoint, compute the exact Git-visible
+  branch-delta path set. For every changed path, use the full file path as an
+  `--allow-prefix` unless a proposed directory prefix contains no other
+  tracked or untracked Git-visible path. Append that literal, path-by-path
+  command and its reviewed path set to the Task ledger, then request a new
+  user approval for that exact one-attempt command.
+- [ ] Only after that separate approval, run the exact literal command recorded
+  in the Task ledger. No command substitution, generated shell fragment,
+  wildcard, root-level target prefix, direct `pre-commit run`, or second
+  attempt is admitted.
 
 Expected controlled result, if separately authorized: the wrapper records a
 value-free pass/fail, exit status, snapshot result, and exact Git-visible path
-sets. One approval authorizes one attempt only.
+sets. One approval authorizes one attempt only. Without that exact future
+approval, record `NOT AUTHORIZED / NOT RUN` and continue only with the other
+Plan gates.
 
 - [ ] Assign a fresh whole-branch correctness/specification reviewer.
 - [ ] Assign a different fresh whole-branch security/quality reviewer.
@@ -1985,7 +2156,7 @@ Every task must provide:
 3. the smallest GREEN implementation;
 4. native syntax and focused contract checks;
 5. value-free evidence in the Task ledger;
-6. one logical commit;
+6. one independently revertible commit per logical implementation unit;
 7. independent specification review;
 8. independent quality/security review;
 9. remediation and re-review for all Critical and Important findings.
@@ -2007,6 +2178,10 @@ Every task must provide:
 - Required-quality `run` steps are exact static gate-runner invocations.
 - CI and local profiles share node definitions and differ only in registered
   roots.
+- CI-only Compose setup is unreachable from local profiles, and local
+  execution preserves an existing ignored `.env` byte-for-byte.
+- Stateful setup/leaf chains such as Storybook coverage execute under one
+  complete runner lifetime and one fresh HOME.
 - The runner uses `shell=False`, descriptor-bound repository paths, tracked
   executable provenance, bounded timeouts, minimal environment, and no ambient
   `GIT_*`.
@@ -2028,9 +2203,13 @@ Every task must provide:
 | Workflow privilege widening | typed permission/trigger validator | revert Task 4 and keep remote unchanged |
 | Action dependency drift | full-SHA registry and runtime check | revert Action consumer and registry together |
 | Registry bootstrap depends on an uninstalled YAML package | strict JSON serialization in the one `.yml` registry and standard-library reader | revert the R3 cutover; keep current workflow active |
+| Wave A runner is exercised before schema-v2 cutover | temporary strict-JSON fixtures only in R2; first canonical runner command occurs after the atomic R3 conversion | revert R2 if fixture-bound CLI tests are not isolated |
 | Gate graph duplicates or omits a suite | unique `suite_key`, root reachability, cycle/orphan checks, and fake executor | revert the owning R1/R3 unit |
 | Workflow bypasses typed execution | exact single-line projection and Action registry | revert R3 before remote use |
 | Entrypoint or cwd is redirected | descriptor-relative no-follow traversal, tracked mode, verified identity, and fail-closed `/proc/self/fd` requirement | revert R2 and block cutover |
+| Descriptor execution changes script-relative root or imports | fixed runner-created root/Python path plus exact compatibility migrations and descriptor smoke tests | revert the compatibility edits and block R3 |
+| Local Compose setup overwrites ignored `.env` | local-only aggregates exclude CI setup; byte-preservation regression | stop local cutover and restore prior local routing |
+| Stateful setup data disappears between workflow steps | one root invocation and one HOME for each stateful plan | revert the affected job projection |
 | Ambient Git or secret-shaped environment changes execution | construct minimal environment, clear ambient `GIT_*`, reject secret-shaped keys | stop execution and correct the node contract |
 | Old semantic interpreter remains authoritative | R4 independent cutover approval followed by R5 symbol-removal gate | leave Task 4R blocked; do not start Task 5 |
 | Audit overclaim | local/remote/unverified schema | correct the affected audit row and regenerate owners |
@@ -2047,11 +2226,12 @@ is not applicable because neither surface is mutated.
 - The typed CI design at Spec commit `a0f91bb5` is approved.
 - The 2026-07-28 Plan approval does not authorize T-TSDC-004R after the
   exhausted five-round breaker.
-- The user approved this exact Revision R1 on 2026-07-29. An independent
-  C0/I0 Plan review remains the final gate before any R1 production or test
-  file is created or modified.
-- After that review, protected local workflow, contract, governance, and test
-  changes listed under T-TSDC-004R are within the Plan-bounded class.
+- The user approved Revision R1 on 2026-07-29. Its first independent reviews
+  returned blocking findings; independent specification and quality/security
+  C0/I0 re-reviews of the corrected range remain the final gate before any R1
+  production or test file is created or modified.
+- After both re-reviews, protected local workflow, contract, governance, and
+  test changes listed under T-TSDC-004R are within the Plan-bounded class.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
