@@ -1608,50 +1608,63 @@ git commit -m "docs(task): record typed gate runner review"
 
 ##### Task 4.2R / Wave A design reset: Descriptor-root and invocation-lifecycle remediation
 
-**Status:** Required before any further Task 4.2 production or test change.
-The two fresh reviews of `5819c8ab..17bb5cdd` found specification
-`C0/I2/M0` (`SPEC_COMPLIANCE NO`, `COMMIT_READY NO`) and quality/security
-`C0/I2/M1` (`CHANGES_REQUIRED`, `COMMIT_READY NO`). The earlier remediation
-claim is therefore historical implementation evidence, not a pass or a Wave B
-authorization. Manifest review verdicts remain `pending`.
+**Status:** The design-reset commit `5f5c746e` received independent Plan
+reviews of specification `C0/I3/M0` and quality/security `C0/I5/M1`; both are
+`CHANGES_REQUIRED` / `COMMIT_READY NO`. Those findings supersede its earlier
+design. The previous remediation evidence at `17bb5cdd` remains historical,
+not a pass or Wave B authorization. Manifest review verdicts remain `pending`.
 
-**Bounded scope:** amend only the Task 4.2 runner, adapters, contract parsing
-where required for immutable environment keys, focused runner/adapter/contract
-tests, factual manifest consumer edges and generated summary, and this Task
-ledger. Do not alter workflows, local profile roots, schema-v2 topology, Wave
-B/C code, runtime/Compose services, remote state, dependencies, secrets, the
-controlled wrapper, or direct `pre-commit` execution.
+**Exact implementation allowlist:** after this corrected Plan is committed,
+the sole non-document implementation paths are
+`scripts/validation/ci_gate_runner.py`, `scripts/validation/ci_gate_adapters.py`,
+`tests/validation/test_ci_gate_runner.py`,
+`tests/validation/test_ci_gate_adapters.py`, and this Task ledger. Extend
+existing test methods; do not add tests or alter contracts, manifests, summary,
+workflow, profiles, or schema topology. `.github/workflow-contract.yml` and
+`.github/workflows/ci-quality.yml` must be byte-identical to `17bb5cdd`; the
+manifest and generated summary must remain unmodified. All other runtime,
+Compose, remote, dependency, secret, wrapper, direct-`pre-commit`, and Wave
+B/C work remains excluded.
 
 - [ ] **Step R1: Write behavior-specific RED tests before implementation.**
 
   The test design must establish all of the following without running a real
   CI suite or network operation:
 
-  1. The runner passes one already-open root directory descriptor to each
-     adapter invocation. For a `/proc/self/fd/N` root, adapter `_open_root`
-     must `fstat` that inherited descriptor, require a directory, duplicate it
-     with `FD_CLOEXEC`, and use only the duplicate for traversal; it must never
-     path-open the procfs magic link. Physical roots remain canonical and use
-     `O_NOFOLLOW`. Integrated runner tests exercise registered
-     `setup.compose-env` and `leaf.zizmor` through this descriptor root, then
-     replace the named repository root and prove the original descriptor is
-     retained. A sibling `sitecustomize.py` injection witness must fail closed
-     rather than become importable.
-  2. The runner creates exactly one new-session process group for an adapter
-     invocation. It owns the group through completion: on timeout, send TERM,
-     wait a bounded interval, then send KILL; after *every* normal or nonzero
-     adapter result, perform the same bounded descendant-finalization before
-     returning. Adapters must not set `start_new_session` or create a nested
-     session. Integration tests cover timeout, output overflow, read error,
-     and nonzero child cases where a child creates a grandchild; each proves
-     both PIDs are gone before return (with deterministic cleanup of test PIDs
-     if an assertion fails).
-  3. HOME teardown retries for a bounded, documented number of attempts.
-     One fixture proves a transient cleanup failure then success; one proves a
-     persistent failure becomes a typed, value-free error. Preserve the
-     existing minimal environment, immutable/dangerous environment-key denial,
-     bounded stdout/stderr capture, SARIF cleanup/retry, and Compose
-     staged-blob identity properties.
+  1. For `/proc/self/fd/N`, adapter `_open_root` must `fstat(N)`, require a
+     directory, make one non-inheritable `F_DUPFD_CLOEXEC` (or equivalent)
+     duplicate `M`, then rewrite every adapter root/cwd use and every explicit
+     adapter-descendant `pass_fds` entry to `M`. It closes inherited `N`
+     immediately after adoption and closes owned `M` in one top-level `finally`
+     on every result and error. It must never pathname-open the procfs link.
+     A physical root opens exactly one `O_NOFOLLOW` directory FD and follows
+     the same adopted-capability lifetime. Cwd and entrypoint FDs are *not*
+     included in adapter-descendant `pass_fds`. FD inventory/leak tests prove
+     only `M` is explicitly inherited and every owned duplicate closes.
+     Integrated runner tests cover registered `setup.compose-env` and
+     `leaf.zizmor`, root replacement, and `sitecustomize.py` injection without
+     importing the replacement path.
+  2. The runner creates one adapter process group via exactly one
+     `start_new_session=True` invocation. Adapter children never start a
+     session or group. On timeout and after every normal or nonzero adapter
+     result, the runner sends `TERM`, waits for group existence using
+     `killpg(pgid, 0)`-equivalent group observation (never leader polling),
+     sends `KILL` if still present, then boundedly confirms group absence. It
+     returns the product exit code only after successful finalization; a failed
+     finalization is a typed value-free error.
+  3. Child/grandchild tests for timeout, output overflow, read error, nonzero,
+     and safe normal completion capture Linux pidfds while each process is
+     alive using `os.pidfd_open`. They use poll/select readiness to prove exit,
+     and `signal.pidfd_send_signal` only for test cleanup. They must not use
+     `kill(pid, 0)`, raw-PID cleanup, or wall-clock upper-bound assertions, and
+     close every pidfd.
+  4. HOME teardown performs exactly three total `rmtree` attempts, sleeping
+     exactly 50ms only after failures one and two. Tests assert exact rmtree
+     and sleep call counts for a transient second-attempt success and a
+     persistent three-attempt typed, value-free failure. Preserve minimal
+     environment, immutable-key denial, bounded two-stream output, SARIF
+     cleanup/retry, Compose staged-blob identity, and registered product
+     timeouts.
 
   RED command and accounting:
 
@@ -1665,22 +1678,17 @@ python3 -m unittest \
   -v
 ```
 
-  Expected RED: each new descriptor, group-lifecycle, or HOME-cleanup witness
-  fails on its named assertion, not by import failure. The committed GREEN
-  accounting must remain exactly `94` discovered tests: `83` pass and `11`
-  documented Wave-C skips; a proposed count change requires an exact test
-  oracle and a Plan/Task correction before GREEN evidence is recorded.
+  Expected RED: each new descriptor-adoption, group-finalization, pidfd, or
+  HOME-cleanup witness fails on its named assertion, not by import failure.
+  GREEN remains exactly `94` discovered tests: `83` pass and `11` documented
+  Wave-C skips. No count change is authorized.
 
 - [ ] **Step R2: Implement only the revised ownership boundaries.**
 
-  The runner, not an adapter, owns the invocation session/process group. It
-  supplies the inherited descriptor through `pass_fds`, uses descriptor-bound
-  import/root resolution, and finalizes descendants on all result paths. The
-  adapter receives that descriptor and duplicates it with CLOEXEC after
-  validating its directory identity. It must not re-open `/proc/self/fd/N` by
-  pathname and must not create a nested session. Cleanup failures are typed and
-  value-free. Preserve registered product timeouts and all existing safe-env,
-  bounded-output, Compose source-identity, and SARIF-atomicity constraints.
+  Implement exactly the R1 ownership model: runner-owned session/PGID and
+  adapter-owned adopted root capability `M`. Do not introduce nested sessions,
+  broad descriptor inheritance, raw PID liveness checks, or a path-based
+  fallback. Group and FD cleanup failures are typed and value-free.
 
 - [ ] **Step R3: Run GREEN and invariant gates.**
 
@@ -1696,17 +1704,37 @@ python3 scripts/validation/check-github-workflow-contract.py
 python3 scripts/validation/run-ci-gate.py --profile local-harness --list
 python3 scripts/validation/run-ci-gate.py --profile local-harness --dry-run --all
 python3 scripts/validation/run-ci-gate.py --profile local-all-profiles --dry-run --all
-python3 -m compileall -q scripts/validation/ci_gate_contract.py scripts/validation/ci_gate_runner.py scripts/validation/run-ci-gate.py scripts/validation/ci_gate_adapters.py
-git diff --exit-code 0d833563 -- .github/workflows/ci-quality.yml
+python3 -m ruff check \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+python3 -m compileall -q \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+git diff --exit-code 17bb5cdd -- .github/workflow-contract.yml .github/workflows/ci-quality.yml
+git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surface-delta-manifest.yaml docs/90.references/data/governance/target-surface-delta-summary.md
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+bash scripts/validation/check-doc-traceability.sh
+TASK_4_2R_DESIGN_COMMIT="$(git log -1 --format=%H --grep='^docs(plan): harden typed gate runner redesign$')"
+test -n "$TASK_4_2R_DESIGN_COMMIT"
+test "$(git diff --name-only "$TASK_4_2R_DESIGN_COMMIT"..HEAD | sort)" = "$(printf '%s\\n' \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py | sort)"
 git diff --check
 ```
 
-  GREEN requires the exact `94 = 83 pass + 11 skip` accounting, schema-v2
-  workflow projection (`7/23/8`), both execution-free local projections,
-  byte-identical workflow boundary, factual manifest/summary consistency, and
-  static/byte invariants. It must also prove no orphan child or grandchild
-  survives any exercised result path.
+  GREEN requires exact `94 = 83 pass + 11 skip`, workflow projection `7/23/8`,
+  both execution-free projections, the stated `17bb5cdd` byte freezes,
+  unchanged manifest/summary, the exact changed-path oracle, and static/byte
+  invariants. pidfd evidence must prove no child or grandchild survives every
+  exercised exceptional path and safe normal completion.
 
 - [ ] **Step R4: Commit, independent review, and gate.**
 
