@@ -1787,39 +1787,64 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2S_DESIGN_SUBJECT='docs(plan): record bounded typed gate identity checkpoint'
+TASK_4_2S_DESIGN_SUBJECT='docs(plan): record scoped typed gate identity checkpoint'
 TASK_4_2S_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2S_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2S_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2S_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
 test "$(git show -s --format=%s "$TASK_4_2S_DESIGN_COMMIT")" = "$TASK_4_2S_DESIGN_SUBJECT"
-test "$(git diff --name-only "$TASK_4_2S_DESIGN_COMMIT"..HEAD | sort)" = "$(printf '%s\\n' \
+TASK_4_2S_EXPECTED_PATHS="$(printf '%s\\n' \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
   scripts/validation/ci_gate_adapters.py \
   scripts/validation/ci_gate_runner.py \
   tests/validation/test_ci_gate_adapters.py \
   tests/validation/test_ci_gate_runner.py | sort)"
+test "$(git diff --name-only "$TASK_4_2S_DESIGN_COMMIT" -- | sort)" = "$TASK_4_2S_EXPECTED_PATHS"
+test -z "$(git ls-files --others --exclude-standard)"
 git diff --check
 ```
 
   GREEN requires exact `94 = 83 pass + 11 skip`, workflow projection `7/23/8`,
   both execution-free projections, all four stated `17bb5cdd` byte freezes,
-  unchanged manifest/summary, the exact changed-path oracle, and static/byte
-  invariants. pidfd evidence must prove no child or grandchild survives every
-  exercised exceptional path and safe normal completion, with identity-safe
-  finalization ordering rather than an absence check after reaping.
+  unchanged manifest/summary, the exact checkpoint-to-working-tree path oracle,
+  zero non-ignored untracked paths, and static/byte invariants. The pre-commit
+  oracle deliberately compares the checkpoint directly to the working tree so
+  staged and unstaged tracked changes are both visible. pidfd evidence must
+  prove no child or grandchild survives every exercised exceptional path and
+  safe normal completion, with identity-safe finalization ordering rather than
+  an absence check after reaping.
 
 - [ ] **Step S4: Commit, independent review, and gate.**
 
   Commit the bounded implementation as `fix(ci): finalize typed gate identity
   cleanup`. The implementation must begin after the unique controller commit
-  whose exact subject is `docs(plan): record bounded typed gate identity
+  whose exact subject is `docs(plan): record scoped typed gate identity
   checkpoint`; that commit is the changed-path oracle baseline above. Assign
   new independent specification and quality/security reviewers to the exact
-  checkpoint-through-implementation range. Both must return `C0/I0`; otherwise
-  return to design/plan without another implementation attempt. This subtask
-  permits **one** implementation attempt and **one** independent review pair.
-  Only a controller-owned review-evidence commit after that pair may unblock
-  Wave B.
+  checkpoint-through-implementation range. Immediately after the implementation
+  commit and before review, re-resolve the unique subject, repeat the exact
+  five-path comparison with `git diff --name-only "$TASK_4_2S_DESIGN_COMMIT"..HEAD`,
+  reject any `git status --porcelain=v1 --untracked-files=all` output, and
+  record those results in the Task ledger:
+
+```bash
+TASK_4_2S_DESIGN_SUBJECT='docs(plan): record scoped typed gate identity checkpoint'
+TASK_4_2S_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2S_DESIGN_SUBJECT}$")"
+test -n "$TASK_4_2S_DESIGN_COMMIT"
+test "$(printf '%s\n' "$TASK_4_2S_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+TASK_4_2S_EXPECTED_PATHS="$(printf '%s\\n' \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py | sort)"
+test "$(git diff --name-only "$TASK_4_2S_DESIGN_COMMIT"..HEAD | sort)" = "$TASK_4_2S_EXPECTED_PATHS"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  Both reviewers must return `C0/I0`; otherwise return to design/plan without
+  another implementation attempt. This subtask permits **one** implementation
+  attempt and **one** independent review pair. Only a controller-owned
+  review-evidence commit after that pair may unblock Wave B.
 
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
