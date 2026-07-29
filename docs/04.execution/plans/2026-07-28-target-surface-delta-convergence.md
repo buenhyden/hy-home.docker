@@ -46,11 +46,13 @@ correction then received final independent specification and quality/security
 T-TSDC-004R implementation reached the Task 4.4 review gate, but its two
 implementation-remediation attempts exhausted with one remaining Important
 option-bearing wrapper bypass. The user approved the bounded
-T-TSDC-004R-4W design return on 2026-07-30. No T-TSDC-004R-4W implementation
-authority exists until its Plan-only checkpoint receives fresh independent
-specification and quality/security `C0/I0/M0` reviews. Remote, runtime,
-dependency, secret, direct pre-commit, and controlled-wrapper authority remain
-unchanged.
+T-TSDC-004R-4W design return on 2026-07-30. Its first Plan review returned
+specification `C0/I4/M0` and quality/security `C0/I3/M0`; one bounded Plan
+correction is active. No T-TSDC-004R-4W implementation authority exists until
+the corrected Plan receives final fresh independent specification and
+quality/security `C0/I0/M0` reviews and the exact review-evidence checkpoint
+is recorded. Remote, runtime, dependency, secret, direct pre-commit, and
+controlled-wrapper authority remain unchanged.
 
 ## Global Constraints
 
@@ -2734,9 +2736,16 @@ two-attempt loops; exhaustion blocks Task 4R.
   ledger. It grants no implementation authority until a fresh read-only
   specification reviewer and a different fresh read-only quality/security
   reviewer both return `C0/I0/M0`.
-- After those Plan reviews are recorded in a separate evidence-only commit,
-  one implementation agent receives exactly one attempt. That attempt may
-  modify only:
+- The corrected Plan commit subject is exactly
+  `docs(plan): correct option-aware cutover proof`. The final reviewers inspect
+  the complete net design from `1b054313` through that unique correction.
+  After both final reviews return `C0/I0/M0`, the controller records them in a
+  Task-ledger-only commit whose exact unique subject is
+  `docs(task): record option-aware proof plan reviews`. That commit must be
+  `HEAD`, must descend from the unique corrected Plan commit, and becomes the
+  immutable implementation base.
+- Only after that executable checkpoint does one implementation agent receive
+  exactly one attempt. That attempt may modify only:
   `tests/validation/test_agent_governance_ci_routing.py` and
   `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`.
 - Freeze `.github/workflow-contract.yml`,
@@ -2760,26 +2769,50 @@ two-attempt loops; exhaustion blocks Task 4R.
   Python/Bash, direct executable, quoted, variable-mediated,
   helper-indirection, Python heredoc `subprocess`, and `os.system` evidence
   families.
-- Parse a wrapper chain until it reaches one real command sink. Recursion must
-  be deterministically bounded by the input token count and must never invoke
-  a shell, wrapper, sibling entrypoint, or repository gate.
-- For `command`, accept `-p`, `--`, and valid short-option clusters. `-p`
+- Parse a wrapper chain until it reaches one real command sink. Initialize one
+  work budget as `8 * (1 + original token count + total source-token character
+  count)`. Charge every wrapper/option token and every
+  split-string character against that budget; token expansion never adds
+  credit. Budget exhaustion is ambiguous and fails closed. The parser must
+  never invoke a shell, wrapper, sibling entrypoint, or repository gate.
+- For the
+  [Bash `command` builtin](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html),
+  accept `-p`, `--`, and valid short-option clusters. `-p`
   continues to the wrapped command. Any `-v` or `-V` occurrence is a
   query-only form and therefore is not a dispatch. Unknown or malformed
   options are ambiguous and fail closed when a registered sibling path is
   present.
-- For `exec`, accept `-c`, `-l`, their valid short-option clusters, `-a NAME`
+- For the
+  [Bash `exec` builtin](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html),
+  accept `-c`, `-l`, their valid short-option clusters, `-a NAME`
   (including an attached short argument when unambiguous), and `--`.
   Option operands are consumed before recursively parsing the wrapped
   command. Missing operands and unknown options are ambiguous and fail closed.
-- For GNU `env`, accept flag-only `-i`/`--ignore-environment`,
-  `-0`/`--null`, and `-v`/`--debug`; consume exactly one operand for
-  `-u`/`--unset`, `-C`/`--chdir`, and `-a`/`--argv0`, including supported
-  attached or `--name=value` forms; recognize `--`; and then consume only
-  syntactically valid environment assignments. `-S`/`--split-string` consumes
-  one static string, applies `shlex.split`, inserts the resulting tokens at
-  that point, and resumes the same bounded parser. Invalid split strings,
-  missing operands, and unknown options are ambiguous and fail closed.
+- For GNU `env`, follow the
+  [Coreutils 9.11 `env` grammar](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html).
+  Accept flag-only `-`, `-i`/`--ignore-environment`, `-v`/`--debug`, and
+  `--list-signal-handling`; accept the optional-equals signal forms
+  `--block-signal[=SIG]`, `--default-signal[=SIG]`, and
+  `--ignore-signal[=SIG]`; consume exactly one operand for
+  `-u`/`--unset`, `-C`/`--chdir`, and `-a`/`--argv0`, including valid
+  attached and long-equals forms; and treat `--help`/`--version` as
+  query-only. `-0`/`--null` is no-dispatch: without a command it changes
+  environment-list output, and with a command GNU `env` exits `125` rather
+  than invoking it. Before `--`, every operand containing `=` is an environment
+  assignment and the first operand without `=` is the command. After `--`,
+  the immediately following token is the command even when it contains `=`.
+- Do not substitute POSIX shell `shlex.split` for GNU
+  `env -S`/`--split-string`. Use a small pure lexer for the documented static
+  grammar: unquoted whitespace, single/double quotes, `\c`, `\f`, `\n`,
+  `\r`, `\t`, `\v`, `\#`, `\$`, `\_`, `\"`, `\'`, `\\`, and a comment only
+  when `#` begins an argument. Outside quotes `\_` is an argument separator;
+  inside double quotes it is a space. `\c` outside quotes discards the
+  remainder. Insert the resulting tokens at the `-S` position and resume the
+  same bounded `env` parser. The parser must not read the ambient environment:
+  `${VARNAME}`, unsupported/dangling escapes, malformed quotes, missing
+  operands, and unknown options are ambiguous and fail closed
+  deterministically by returning the complete registered sibling set. This is
+  stricter than runtime expansion and keeps the proof environment-independent.
 - Wrapper nesting is recursive, including combinations such as
   `env -u HOME command -p exec -a gate python3 <sibling>`. A registered
   sibling path consumed solely as the operand of a recognized option is not a
@@ -2790,8 +2823,26 @@ two-attempt loops; exhaustion blocks Task 4R.
   command text, or exception payloads. Existing value-free assertion output
   remains unchanged.
 
-- [ ] **Step 1: Prove the exact predecessor and clean two-path design
-  checkpoint.**
+- [ ] **Step 1: Prove the exact corrected Plan and Plan-review evidence
+  checkpoints, then bind the clean implementation base.**
+
+  Before this step, final read-only Plan reviewers inspect the complete
+  `1b054313..$plan_checkpoint` net range. After both return `C0/I0/M0`, the
+  controller changes only the Task ledger, records both reports and the exact
+  range, and creates:
+
+```bash
+test -z "$(git ls-files --others --exclude-standard)"
+test "$(git diff --name-only | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git diff --cached --name-only | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record option-aware proof plan reviews"
+```
+
+  The implementation agent then runs this executable prerequisite:
 
 ```bash
 expected_predecessor="$(git rev-parse 1b054313)"
@@ -2800,24 +2851,80 @@ test "$(git log -1 --format=%H \
   "$expected_predecessor"
 test "$(git log --format=%H \
   --grep='^docs(task): record exhausted typed cutover review$' | wc -l)" -eq 1
-git merge-base --is-ancestor 1b054313 HEAD
-git status --short
+test "$(git log --format=%H \
+  --grep='^docs(plan): correct option-aware cutover proof$' | wc -l)" -eq 1
+plan_checkpoint="$(git log -1 --format=%H \
+  --grep='^docs(plan): correct option-aware cutover proof$')"
+initial_plan="$(git rev-parse 98a3558d)"
+git merge-base --is-ancestor "$initial_plan" "$plan_checkpoint"
+test "$(git rev-list --count "$initial_plan..$plan_checkpoint")" -eq 1
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$plan_checkpoint" | sort)" = "$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test "$(git log --format=%H \
+  --grep='^docs(task): record option-aware proof plan reviews$' | wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record option-aware proof plan reviews$')"
+test "$(git rev-parse HEAD)" = "$implementation_base"
+git merge-base --is-ancestor "$expected_predecessor" "$plan_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+test "$(git rev-list --count "$plan_checkpoint..$implementation_base")" -eq 1
+test "$(git diff --name-only \
+  "$expected_predecessor..$implementation_base" | sort)" = "$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$implementation_base" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
 ```
 
 - [ ] **Step 2: Add the complete RED mutation matrix before changing the
   parser.**
 
-  Extend `test_repository_umbrella_is_wiring_only` or add focused sibling
-  tests covering:
+  Put every new case in
+  `test_repository_umbrella_is_wiring_only`; do not hide required cases in a
+  sibling method that the named RED command does not execute. The exact
+  minimum matrix is:
 
-  - dispatch-positive `command -p`, `command --`, `env -u`,
-    `env --unset=`, `env -C`, `env --chdir=`, `env -a`,
-    `env --argv0=`, `env -S`, `env --split-string=`, `env --`,
-    valid assignments, `exec -a`, `exec -c`, `exec -l`, `exec --`, and nested
-    wrapper forms;
-  - query-only `command -v` and `command -V` negatives;
+  - dispatch-positive `command -p`, `command -pp`, and `command --`;
+  - query-only `command -v`, `command -V`, `command -pv`, `command -pV`, and
+    `command -vp` negatives;
+  - dispatch-positive `exec -a NAME`, `exec -aNAME`, `exec -c`, `exec -l`,
+    `exec -cl`, `exec -claNAME`, and `exec --`;
+  - dispatch-positive GNU `env -`, `-i`, `--ignore-environment`, `-v`,
+    `--debug`, `--list-signal-handling`,
+    `--block-signal`, `--block-signal=PIPE`, `--default-signal`,
+    `--default-signal=PIPE`, `--ignore-signal`,
+    `--ignore-signal=PIPE`, `-u NAME`, `-uNAME`, `--unset NAME`,
+    `--unset=NAME`, `-C DIR`, `-CDIR`, `--chdir DIR`, `--chdir=DIR`,
+    `-a ARG`, `-aARG`, `--argv0 ARG`, `--argv0=ARG`, short clusters
+    `-iv`, `-vSSTRING`, ordinary `-S STRING`, `-SSTRING`,
+    `--split-string STRING`, `--split-string=STRING`, pre-command
+    assignments, and `--`;
+  - non-dispatch `env -0`, `env --null`, `env --help`, and `env --version`
+    negatives with the sibling positioned where a command would otherwise
+    appear;
+  - GNU split-string positives for ordinary whitespace, quoted whitespace,
+    and `\_`; negatives proving `\c` and a comment discard a later sibling;
+    an environment-expansion case that deterministically fails closed without
+    reading ambient state; and invalid-escape plus malformed-quote cases that
+    fail closed;
+  - at least one `-S` expansion whose inserted tokens are another wrapper
+    chain, plus one nested input that exhausts the fixed no-credit work budget
+    and deterministically fails closed without unbounded recursion;
+  - the nested dispatch
+    `env -u HOME command -p exec -a gate python3 <sibling>`;
   - recognized option operands equal to a registered sibling path without an
-    executable sibling sink, which must remain negative;
+    executable sibling sink for `env -u`, `env -C`, `env -a`, and `exec -a`,
+    all of which must remain negative;
   - missing-operand, invalid split-string, and unknown-option forms for all
     three wrappers, which must fail closed when a sibling path remains in the
     ambiguous token stream; and
@@ -2894,30 +3001,64 @@ git diff --check
   implementation attempt.**
 
 ```bash
-git diff --exit-code 1b054313 -- \
-  .github/workflow-contract.yml \
-  .github/workflows/ci-quality.yml \
-  scripts/validation/check-repo-contracts.sh \
-  scripts/validation/ci_gate_contract.py \
-  scripts/validation/ci_gate_runner.py \
-  scripts/validation/ci_gate_adapters.py
-git diff --name-only HEAD -- \
+test "$(git rev-parse HEAD)" = "$implementation_base"
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+actual_paths="$(
+  {
+    git diff --name-only "$implementation_base" --
+    git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base" -- . \
   ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
   ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
-git ls-files -s \
-  tests/validation/test_agent_governance_ci_routing.py \
-  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git ls-files -s \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test "$(git ls-files -s \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
 git diff --check
 git add \
   tests/validation/test_agent_governance_ci_routing.py \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git diff --cached --name-only | sort)" = "$expected_paths"
 git commit -m "fix(ci): close option-bearing wrapper proof"
+implementation_commit="$(git rev-parse HEAD)"
+test "$(git log --format=%H \
+  --grep='^fix(ci): close option-bearing wrapper proof$' | wc -l)" -eq 1
+test "$(git log -1 --format=%H \
+  --grep='^fix(ci): close option-bearing wrapper proof$')" = \
+  "$implementation_commit"
+test "$(git rev-list --count \
+  "$implementation_base..$implementation_commit")" -eq 1
+test "$(git diff --name-only \
+  "$implementation_base..$implementation_commit" | sort)" = \
+  "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test "$(git ls-tree "$implementation_commit" \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$implementation_commit" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
 ```
 
 - [ ] **Step 6: Require one fresh implementation review pair and record it
   separately.**
 
-  Both reviewers must verify every wrapper family, option arity, nested
+  The reviewers inspect the exact
+  `$implementation_base..$implementation_commit` range. Both must verify every
+  wrapper family, option arity, nested
   recursion, query-only negative, option-operand false-positive negative,
   malformed/unknown fail-closed case, deterministic bound, value-free output,
   frozen production paths, exact two-path scope, and all recorded validation
@@ -2925,14 +3066,50 @@ git commit -m "fix(ci): close option-bearing wrapper proof"
   evidence-only commit:
 
 ```bash
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+# After recording the two C0/I0 reports and exact range in the Task ledger:
+test -z "$(git ls-files --others --exclude-standard)"
+test "$(git diff --name-only | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
 git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git diff --cached --name-only | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
 git commit -m "docs(task): record option-aware cutover review"
+review_checkpoint="$(git rev-parse HEAD)"
+test "$(git rev-list --count \
+  "$implementation_commit..$review_checkpoint")" -eq 1
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$review_checkpoint" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
 ```
 
   Only that accepted review checkpoint authorizes Task 4.5 Wave C. A failed
   review grants no retry and no downstream authority.
 
 #### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Prove the exact accepted wrapper-proof review checkpoint.**
+
+```bash
+test "$(git log --format=%H \
+  --grep='^fix(ci): close option-bearing wrapper proof$' | wc -l)" -eq 1
+wrapper_implementation="$(git log -1 --format=%H \
+  --grep='^fix(ci): close option-bearing wrapper proof$')"
+test "$(git log --format=%H \
+  --grep='^docs(task): record option-aware cutover review$' | wc -l)" -eq 1
+wrapper_review="$(git log -1 --format=%H \
+  --grep='^docs(task): record option-aware cutover review$')"
+test "$(git rev-parse HEAD)" = "$wrapper_review"
+git merge-base --is-ancestor "$wrapper_implementation" "$wrapper_review"
+test "$(git rev-list --count \
+  "$wrapper_implementation..$wrapper_review")" -eq 1
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$wrapper_review" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
 
 **Files:**
 
