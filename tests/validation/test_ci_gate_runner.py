@@ -12,6 +12,7 @@ import signal
 import subprocess
 import tempfile
 import threading
+import traceback
 import unittest
 from unittest import mock
 
@@ -1021,7 +1022,9 @@ class DescriptorExecutionTests(unittest.TestCase):
             cwd_fd=43,
             interpreter="python",
         )
+        self._assert_runner_pre_bind_taxonomy(item)
         self._assert_runner_phase_owned_transitions(item)
+        self._assert_runner_recovery_owned_transitions(item)
         for outcome, expected in ((0, 0), (17, 17), ("timeout", 124)):
             with self.subTest(outcome=outcome):
                 process = mock.Mock(pid=43210)
@@ -1158,6 +1161,68 @@ class DescriptorExecutionTests(unittest.TestCase):
                         self.assertLess(index, wait_index)
         self._assert_runner_recovery_and_proc_contracts(item)
 
+    def _assert_runner_pre_bind_taxonomy(
+        self,
+        item: runner._VerifiedInvocation,
+    ) -> None:
+        for ordinary_error in (
+            OSError("private pre-bind os payload"),
+            RuntimeError("private pre-bind runtime payload"),
+        ):
+            with (
+                self.subTest(pre_bind_error=type(ordinary_error).__name__),
+                mock.patch.object(
+                    runner.subprocess,
+                    "Popen",
+                    side_effect=ordinary_error,
+                ),
+            ):
+                try:
+                    runner._run_verified_child(
+                        41,
+                        item,
+                        {"PATH": "/usr/bin"},
+                    )
+                except BaseException as caught:
+                    self.assertIsInstance(
+                        caught,
+                        contract.GateContractError,
+                    )
+                    self.assertEqual(
+                        "ci-gate-child-exec",
+                        getattr(caught, "code", None),
+                    )
+                    rendered = "".join(
+                        traceback.format_exception(caught)
+                    )
+                    self.assertNotIn("private", rendered)
+                else:
+                    self.fail("ordinary pre-bind failure did not fail closed")
+
+        for control_flow in (
+            KeyboardInterrupt("private pre-bind interrupt"),
+            SystemExit("private pre-bind exit"),
+            GeneratorExit("private pre-bind generator"),
+        ):
+            with (
+                self.subTest(pre_bind_control_flow=type(control_flow).__name__),
+                mock.patch.object(
+                    runner.subprocess,
+                    "Popen",
+                    side_effect=control_flow,
+                ),
+            ):
+                try:
+                    runner._run_verified_child(
+                        41,
+                        item,
+                        {"PATH": "/usr/bin"},
+                    )
+                except BaseException as caught:
+                    self.assertIs(control_flow, caught)
+                else:
+                    self.fail("pre-bind control flow was not re-raised")
+
     def _assert_runner_phase_owned_transitions(
         self,
         item: runner._VerifiedInvocation,
@@ -1224,7 +1289,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             "close-started-interruption": "pidfd-close-started",
         }.get(phase)
         transition_methods = {
-            "bind_process": "process-bound",
+            "start_process": "process-bound",
             "acquire_pidfd": "pidfd-acquired",
             "mark_group_finalized": "group-finalized",
             "mark_reap_started": "reap-started",
@@ -1248,7 +1313,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             ) -> object:
                 result = original(state, *args, **kwargs)
                 if event_name == "process-bound":
-                    self.assertIs(getattr(state, "process"), args[0])
+                    self.assertIs(getattr(state, "process"), process)
                 elif event_name == "pidfd-acquired":
                     self.assertTrue(getattr(state, "pidfd_acquired"))
                     self.assertEqual(91, getattr(state, "pidfd"))
@@ -1413,6 +1478,252 @@ class DescriptorExecutionTests(unittest.TestCase):
                 labels.index("pidfd-close-started"),
             )
             self.assertNotIn("close", labels)
+        process.poll.assert_not_called()
+        process.communicate.assert_not_called()
+
+    def _assert_runner_recovery_owned_transitions(
+        self,
+        item: runner._VerifiedInvocation,
+    ) -> None:
+        lifecycle_type = getattr(runner, "_ProcessLifecycle", None)
+        if lifecycle_type is None:
+            self.fail("the runner lacks recovery-owned lifecycle state")
+        required_methods = {
+            "mark_recovery_kill_completed": "recovery-kill-completed",
+            "mark_recovery_readiness_completed": (
+                "recovery-readiness-completed"
+            ),
+            "mark_reap_completed": "reap-completed",
+        }
+        missing = [
+            name
+            for name in required_methods
+            if not hasattr(lifecycle_type, name)
+        ]
+        if missing:
+            self.fail(
+                "the runner lacks recovery-owned transitions: "
+                + ", ".join(sorted(missing))
+            )
+
+        for phase in (
+            "no-pidfd-kill-completed",
+            "pidfd-kill-completed",
+            "recovery-readiness-completed",
+            "reap-completed-before-close",
+        ):
+            with self.subTest(recovery_owned_transition=phase):
+                self._exercise_runner_recovery_owned_transition(
+                    item,
+                    lifecycle_type,
+                    required_methods,
+                    phase,
+                )
+
+    def _exercise_runner_recovery_owned_transition(
+        self,
+        item: runner._VerifiedInvocation,
+        lifecycle_type: type[object],
+        transition_methods: dict[str, str],
+        phase: str,
+    ) -> None:
+        process = mock.Mock(pid=43210)
+        process.poll.side_effect = AssertionError("forbidden poll")
+        process.communicate.side_effect = AssertionError(
+            "forbidden communicate"
+        )
+        trace: list[tuple[str, object]] = []
+        interruption = KeyboardInterrupt(f"private {phase} interruption")
+        transition_for_phase = {
+            "no-pidfd-kill-completed": "recovery-kill-completed",
+            "pidfd-kill-completed": "recovery-kill-completed",
+            "recovery-readiness-completed": (
+                "recovery-readiness-completed"
+            ),
+            "reap-completed-before-close": "reap-completed",
+        }[phase]
+        originals = {
+            name: getattr(lifecycle_type, name)
+            for name in transition_methods
+        }
+
+        def transition_wrapper(
+            method_name: str,
+            event_name: str,
+        ):
+            original = originals[method_name]
+
+            def wrapped(
+                state: object,
+                *args: object,
+                **kwargs: object,
+            ) -> object:
+                result = original(state, *args, **kwargs)
+                if event_name == "recovery-kill-completed":
+                    self.assertTrue(
+                        getattr(state, "recovery_kill_completed")
+                    )
+                elif event_name == "recovery-readiness-completed":
+                    self.assertTrue(
+                        getattr(state, "recovery_readiness_completed")
+                    )
+                    self.assertTrue(
+                        getattr(state, "recovery_leader_ready")
+                    )
+                else:
+                    self.assertTrue(getattr(state, "reap_completed"))
+                trace.append((event_name, True))
+                if transition_for_phase == event_name:
+                    raise interruption
+                return result
+
+            return wrapped
+
+        ready_effects: list[bool | BaseException]
+        if phase in {
+            "pidfd-kill-completed",
+            "recovery-readiness-completed",
+        }:
+            ready_effects = [
+                contract.GateContractError(
+                    "ci-gate-runner-pidfd-readiness",
+                    "pidfd",
+                    "the adapter leader readiness could not be observed",
+                ),
+                True,
+            ]
+        else:
+            ready_effects = [True]
+
+        def ready(descriptor: int, _timeout: float) -> bool:
+            trace.append(("ready", descriptor))
+            effect = ready_effects.pop(0)
+            if isinstance(effect, BaseException):
+                raise effect
+            return effect
+
+        def signal_group(pgid: int, signum: int) -> None:
+            self.assertEqual(43210, pgid)
+            trace.append(("signal", signum))
+
+        def wait(*, timeout: float) -> int:
+            trace.append(("wait", timeout))
+            return 0
+
+        def close(descriptor: int) -> None:
+            trace.append(("close", descriptor))
+
+        process.wait.side_effect = wait
+        pidfd_effect: object = (
+            OSError("private pidfd acquisition payload")
+            if phase == "no-pidfd-kill-completed"
+            else 91
+        )
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(
+                mock.patch.object(
+                    runner.subprocess,
+                    "Popen",
+                    return_value=process,
+                )
+            )
+            stack.enter_context(
+                mock.patch.object(
+                    runner.os,
+                    "pidfd_open",
+                    side_effect=(
+                        pidfd_effect
+                        if isinstance(pidfd_effect, BaseException)
+                        else None
+                    ),
+                    return_value=(
+                        None
+                        if isinstance(pidfd_effect, BaseException)
+                        else pidfd_effect
+                    ),
+                )
+            )
+            stack.enter_context(
+                mock.patch.object(
+                    runner,
+                    "_pidfd_ready",
+                    side_effect=ready,
+                )
+            )
+            stack.enter_context(
+                mock.patch.object(
+                    runner,
+                    "_same_pgid_members",
+                    return_value=(),
+                )
+            )
+            stack.enter_context(
+                mock.patch.object(
+                    runner.os,
+                    "killpg",
+                    side_effect=signal_group,
+                )
+            )
+            stack.enter_context(
+                mock.patch.object(
+                    runner.os,
+                    "close",
+                    side_effect=close,
+                )
+            )
+            for method_name, event_name in transition_methods.items():
+                stack.enter_context(
+                    mock.patch.object(
+                        lifecycle_type,
+                        method_name,
+                        new=transition_wrapper(method_name, event_name),
+                    )
+                )
+            try:
+                runner._run_verified_child(
+                    41,
+                    item,
+                    {"PATH": "/usr/bin"},
+                )
+            except BaseException as caught:
+                self.assertIsInstance(caught, contract.GateContractError)
+                self.assertEqual(
+                    "ci-gate-runner-cleanup",
+                    getattr(caught, "code", None),
+                )
+                self.assertNotIn("private", str(caught))
+            else:
+                self.fail("recovery transition did not fail closed")
+
+        labels = [entry[0] for entry in trace]
+        self.assertEqual(1, labels.count("wait"))
+        self.assertLessEqual(labels.count("close"), 1)
+        if phase == "no-pidfd-kill-completed":
+            self.assertLess(
+                labels.index("signal"),
+                labels.index("recovery-kill-completed"),
+            )
+            self.assertLess(
+                labels.index("recovery-kill-completed"),
+                labels.index("wait"),
+            )
+            self.assertNotIn("close", labels)
+        elif phase == "pidfd-kill-completed":
+            kill_index = labels.index("recovery-kill-completed")
+            self.assertLess(labels.index("signal"), kill_index)
+            self.assertLess(kill_index, labels.index("ready", 1))
+            self.assertLess(labels.index("ready", 1), labels.index("wait"))
+            self.assertEqual("close", labels[-1])
+        elif phase == "recovery-readiness-completed":
+            ready_index = labels.index("recovery-readiness-completed")
+            self.assertLess(labels.index("ready", 1), ready_index)
+            self.assertLess(ready_index, labels.index("wait"))
+            self.assertEqual("close", labels[-1])
+        else:
+            reap_index = labels.index("reap-completed")
+            self.assertLess(labels.index("wait"), reap_index)
+            self.assertLess(reap_index, labels.index("close"))
+            self.assertEqual("close", labels[-1])
         process.poll.assert_not_called()
         process.communicate.assert_not_called()
 

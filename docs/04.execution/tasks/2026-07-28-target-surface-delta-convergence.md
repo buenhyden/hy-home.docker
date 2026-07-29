@@ -277,6 +277,9 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-2 recovery-owned finalization design return | Controller / bounded future implementer | Correction `28685a1b` passed changed-document metadata `15/0` with five registered legacy exceptions, documentation traceability `46/0`, and diff hygiene. Task 4.2V moves normal and error finalization under one actual `finally`, nests KILL/readiness/conditional-reap/close ownership so every interruption reaches later state-permitted cleanup, makes the lifecycle object the sole bound-process identity, and fixes the pre-bind ordinary-exception taxonomy. The successor preserves the same three-path implementation boundary, adapter pair, four freezes, discovery/projection invariants, and one-attempt review gate. |
 | 2026-07-30 | T-TSDC-004R-2 recovery-owned runner checkpoint | Controller | This checkpoint changes only this Task ledger and is identified by exact unique subject `docs(plan): record recovery-owned runner checkpoint`. It starts after rejected implementation `ad2df527`, freezes the accepted adapter pair at `483d3a47`, limits the successor to three paths, and requires a fresh specification and quality/security `C0/I0` Plan pair before the sole Task 4.2V implementation attempt. |
 | 2026-07-30 | T-TSDC-004R-2 recovery-owned Plan final reviews | Fresh independent specification and quality/security reviewers | Both read-only reviews of exact range `ad2df527..5274f58b` returned `C0/I0/M0` and `IMPLEMENTATION_READY YES`; specification returned `SPEC_COMPLIANCE YES` and quality/security returned `QUALITY_SECURITY PASS`. They confirmed one lifecycle process identity, pre-bind fixed taxonomy, one actual outer finalizer, nested no-pidfd and pidfd cleanup ownership, post-reap prohibitions, behavior-faithful after-completed-recovery-transition RED, exact three-path scope, freezes, discovery/projections, one attempt, and the Wave B block. The sole Task 4.2V implementation attempt is authorized from checkpoint `5274f58b`; no other scope is opened. |
+| 2026-07-30 | T-TSDC-004R-2 recovery-owned runner RED | Task 4.2V replacement implementation agent, sole attempt | The authoritative test-only exact five-module RED preserved all 94 discovered tests and 11 planned Wave-C skips: 81 passed and two behavior-specific witnesses failed. One failure proved that an ordinary pre-bind `RuntimeError` still exposed its private original object; the other proved that recovery kill, readiness, and completed-reap production state transitions were absent. Both failures remained inside the existing runner top-level method. Production was unchanged, and there was no import, discovery, network, Compose, runtime, or dependency failure. |
+| 2026-07-30 | T-TSDC-004R-2 recovery-owned runner implementation | Task 4.2V replacement implementation agent, sole attempt | `_ProcessLifecycle` now performs and stores the `Popen` bind and is the only bound-process identity. The primary body records product errors and one actual outer `finally` invokes a single lifecycle finalizer. Nested finalizers own KILL, pidfd readiness, readiness-conditional sole bounded reap, and the one pidfd-close attempt; completed kill, readiness, reap, reap-started, and close-started transitions are production state. No-pidfd acquisition failure still reaches one reap, every acquired-pidfd path reaches one close attempt, and post-reap paths cannot signal, observe readiness, scan `/proc`, or wait again. Cleanup failure is fixed value-free runner cleanup; successful cleanup preserves typed errors, normalizes all pre-bind ordinary exceptions to fixed child-exec, normalizes bound ordinary exceptions by phase, and re-raises control-flow objects. |
+| 2026-07-30 | T-TSDC-004R-2 recovery-owned runner GREEN and invariant gates | Task 4.2V replacement implementation agent, sole attempt | Focused runner/adapter GREEN passes 28/28 in 3.153 seconds. The exact five-module GREEN passes `94 = 83 pass + 11 planned Wave-C skip` in 27.3 seconds with zero failure or error. The workflow checker reports exactly `7/23/8`; execution-free projections remain `32/32/35`. Exact four-file Ruff through the pre-existing uv Ruff 0.15.12 artifact, exact four-file compileall, advisory delta validation, changed-document metadata `15/0` with five registered legacy exceptions, documentation traceability `46/0`, and diff hygiene pass. The unique recovery-owned checkpoint scope is exactly this Task ledger, runner, and existing runner test with zero non-ignored untracked paths. The accepted adapter pair and all four `17bb5cdd` surfaces remain byte-frozen. No network, installation, child gate, real Compose, runtime, remote, secret, wrapper, direct pre-commit, or Wave B action ran. Fresh implementation reviews remain required. |
 
 ## Verification Evidence
 
@@ -768,6 +771,42 @@ have no unresolved Critical or Important findings.
   returned specification `C0/I0` but quality/security `C0/I2`; the
   implementation is rejected and grants no Wave B authority.
 
+### T-TSDC-004R-2 recovery-owned runner implementation evidence
+
+- The unique recovery-owned design checkpoint resolves to `5274f58b`. The
+  implementation scope is exactly the runner, its existing test, and this
+  Task ledger; the accepted adapter pair remains frozen at `483d3a47`.
+- Test-only RED preserved 94-test discovery and the 11 planned Wave-C skips:
+  81 passed and two intended witnesses failed. One witness exposed private
+  pre-bind ordinary-exception data, and one exposed the missing
+  recovery-owned kill/readiness/reap transition state. No import, discovery,
+  network, Compose, runtime, or dependency failure occurred.
+- `_ProcessLifecycle.start_process` performs the `Popen` call and immediately
+  stores its result; no independent process reference remains authoritative.
+  The primary body records a product error, while its actual outer `finally`
+  invokes the same finalizer on success and failure.
+- The finalizer installs nested ownership before recovery actions: KILL owns
+  pidfd readiness, readiness owns the conditional sole bounded reap, and reap
+  owns the sole pidfd-close attempt. Real production state records completed
+  kill, completed readiness and its result, reap start, completed reap and
+  return code, and close attempt. Test wrappers invoke and verify those real
+  mutations before interrupting.
+- After `reap_started`, neither signaling, readiness, `/proc` observation, nor
+  another wait is reachable. `_bounded_reap` is the single bounded wait source
+  site, and `_close_pidfd_once` marks close attempted before `os.close`, so an
+  interrupted or ambiguous close is not retried.
+- Focused runner/adapter GREEN is 28/28 in 3.153 seconds. Authoritative GREEN
+  is `94 = 83 pass + 11 planned Wave-C skip` in 27.3 seconds; workflow
+  inventory is `7/23/8`, and execution-free projections are `32/32/35`.
+  Exact four-file Ruff 0.15.12 and compileall, advisory delta validation,
+  changed metadata `15/0` with five registered legacy exceptions,
+  traceability `46/0`, and diff hygiene pass.
+- Graphify `f8a72211` remains stale advisory evidence and was corroborated
+  against the tracked Plan, Spec 135, Stage 00, runner source, and tests. No
+  network, installation, child gate, real Compose, runtime, remote, secret,
+  controlled wrapper, direct pre-commit, or Wave B action ran. Fresh
+  implementation specification and quality/security reviews remain required.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -828,9 +867,10 @@ consume or create Agent authorization.
 | T-TSDC-004R-2 reconciled phase-owned runner design | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `483d3a47..5dc49631` | sole implementation attempt authorized; Wave B blocked | Task 4.2U freezes the accepted adapter pair and permits only runner, runner-test, and Task-ledger changes for one outer phase-owning controller with transition-specific witnesses. |
 | T-TSDC-004R-2 phase-owned runner implementation | Task 4.2U implementation agent, sole attempt | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I2/M0; QUALITY_SECURITY CHANGES_REQUIRED; COMMIT_READY NO | `5dc49631..ad2df527` | returned to recovery-owned design; Wave B blocked | Local gates pass, but recovery transitions remain outside one finalization owner and ordinary pre-bind `Popen` exceptions can expose private values. No manifest verdict is promoted. |
 | T-TSDC-004R-2 recovery-owned finalization design | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `ad2df527..5274f58b` | sole implementation attempt authorized; Wave B blocked | Task 4.2V preserves the three-path allowlist and requires one lifecycle identity, nested cleanup finalizers, fixed pre-bind taxonomy, and recovery-transition RED witnesses. |
+| T-TSDC-004R-2 recovery-owned runner implementation | Task 4.2V replacement implementation agent, sole attempt | pending fresh review | pending different fresh reviewer | starts after `5274f58b`; exact implementation commit resolved by subject `fix(ci): close recovery ownership transitions` | implementation committed; fresh review required; Wave B blocked | Local RED/GREEN, exact discovery, workflow/projection, static, metadata, traceability, freeze, scope, and diff gates pass. No manifest verdict is promoted before both fresh implementation reviews return `C0/I0`. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Task 4.2U is review-rejected and exhausted; the recovery-owned Task 4.2V Plan is approved. Wave B remains blocked until its sole runner-only implementation receives fresh specification and quality/security `C0/I0` reviews and controller-owned review evidence is committed. |
+| Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Task 4.2U is review-rejected and exhausted; the sole recovery-owned Task 4.2V implementation is committed locally. Wave B remains blocked until fresh specification and quality/security `C0/I0` reviews and controller-owned review evidence are committed. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -898,6 +938,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 recovery-owned finalization Plan correction | Own cleanup transitions and pre-bind taxonomy | `docs(plan): define recovery-owned runner finalization` | `28685a1b` | Requires one lifecycle process identity, actual outer and nested finalizers, after-completed-recovery-transition witnesses, fixed value-free `Popen` ordinary-exception handling, the same three-path allowlist, and all prior freezes. |
 | T-TSDC-004R-2 recovery-owned runner checkpoint | Freeze the recovery-owned successor scope | `docs(plan): record recovery-owned runner checkpoint` | resolved by this exact unique subject | The implementation oracle requires one matching commit after the corrected Plan and supersedes no accepted adapter behavior. |
 | T-TSDC-004R-2 recovery-owned Plan review evidence | Record the final C0/I0 Plan approval pair | `docs(task): record recovery-owned plan reviews` | resolved by this exact unique subject | Read-only specification and quality/security reviewers authorize the sole three-path Task 4.2V implementation attempt; Wave B remains blocked. |
+| T-TSDC-004R-2 recovery-owned runner implementation | Close recovery ownership and pre-bind taxonomy | `fix(ci): close recovery ownership transitions` | resolved by this exact unique subject | RED `81/11/2/0`; GREEN focused `28/28` and full `83/11/0/0`; workflow `7/23/8`; projections `32/32/35`; exact Ruff, compileall, advisory, metadata, traceability, adapter/four-surface freezes, three-path scope, zero-untracked, and diff gates pass. Fresh implementation reviews remain required and Wave B stays blocked. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -906,7 +947,7 @@ finding and must not be silently accepted as independent review evidence.
 | Item | State | Reason | Destination |
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
-| T-TSDC-004R-2 typed gate runner | approved recovery-owned implementation pending | The sole Task 4.2U attempt failed fresh quality/security review, while the Task 4.2V recovery-owned Plan now has a fresh `C0/I0` approval pair. The accepted adapter pair remains frozen, all manifest verdicts remain pending, and Wave B has no authority. | complete the sole bounded Task 4.2V implementation attempt, obtain a fresh implementation C0/I0 pair, then commit controller-owned evidence |
+| T-TSDC-004R-2 typed gate runner | recovery-owned implementation review pending | The sole Task 4.2V implementation passes its bounded local gates. The accepted adapter pair remains frozen, all manifest verdicts remain pending, and Wave B has no authority. | obtain a fresh implementation C0/I0 pair, then commit controller-owned evidence |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -928,10 +969,10 @@ return that freezes the accepted adapter pair. Its reconciled checkpoint
 received a fresh Plan C0/I0 pair, but its sole implementation attempt failed
 fresh quality/security review on recovery-transition ownership and pre-bind
 ordinary-exception normalization. Task 4.2V is the bounded recovery-owned
-design return. Its corrected checkpoint has a fresh Plan C0/I0 pair and
-authorizes one implementation attempt. Wave B and Tasks 5–6 remain blocked
-until that implementation receives a fresh implementation C0/I0 pair and
-controller-owned review evidence is committed.
+design return. Its corrected checkpoint received a fresh Plan C0/I0 pair,
+and its sole implementation attempt passes the bounded local gates. Wave B
+and Tasks 5–6 remain blocked until that implementation receives a fresh
+implementation C0/I0 pair and controller-owned review evidence is committed.
 The original five-round
 implementation blocker, exhausted Revision R1 Plan reviews, and superseded
 `5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
