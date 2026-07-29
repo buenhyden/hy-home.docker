@@ -1942,6 +1942,7 @@ TASK_4_2T_DESIGN_SUBJECT='docs(plan): record typed interruption design checkpoin
 TASK_4_2T_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2T_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2T_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2T_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+test "$(git show -s --format=%s "$TASK_4_2T_DESIGN_COMMIT")" = "$TASK_4_2T_DESIGN_SUBJECT"
 TASK_4_2T_EXPECTED_PATHS="$(printf '%s\n' \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
   scripts/validation/ci_gate_adapters.py \
@@ -1958,6 +1959,12 @@ git diff --check
   unchanged manifest/summary, exact metadata and traceability evidence, the
   checkpoint-to-working-tree path oracle, zero non-ignored untracked paths, and
   static/byte invariants.
+
+  After the successor implementation commit, repeat the same unique checkpoint
+  resolution and compare `git diff --name-only "$TASK_4_2T_DESIGN_COMMIT"..HEAD`
+  to the exact five paths above. Reject any
+  `git status --porcelain=v1 --untracked-files=all` output before assigning
+  reviewers.
 
 - [ ] **Step T4: Commit, independent review, and gate.**
 
