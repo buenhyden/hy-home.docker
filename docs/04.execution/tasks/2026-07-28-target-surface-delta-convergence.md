@@ -260,6 +260,7 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-2 interruption-safe design checkpoint | Controller | Correction `b3166ef7` passed changed-document metadata `15/0` with five registered legacy exceptions, documentation traceability `46/0`, and diff hygiene. This checkpoint changes only this Task ledger and is identified by the exact unique subject `docs(plan): record interruption-safe typed gate checkpoint`. Fresh specification and quality/security `C0/I0` Plan reviews remain mandatory before the one Task 4.2T implementation attempt. |
 | 2026-07-30 | T-TSDC-004R-2 interruption-safe checkpoint reviews | Fresh independent specification and quality/security reviewers | Exact range `17645f2a..b73d2a99` returned specification `C0/I0/M0`, `SPEC_COMPLIANCE YES`, `IMPLEMENTATION_READY YES`, but quality/security `C0/I1/M0`, `QUALITY_SECURITY CHANGES_REQUIRED`, `IMPLEMENTATION_READY NO`. The missing witness begins at the inherited-root `N` close after owned `M` duplication: a control-flow interruption can bypass `_AdoptedRootCleanupError` and leak `M`. Implementation remains blocked until a corrected Plan requires fixed value-free root cleanup and exactly one `M` close attempt. |
 | 2026-07-30 | T-TSDC-004R-2 adopted-root interruption checkpoint | Controller | Correction `16de8939` passed changed-document metadata `15/0` with five registered legacy exceptions, documentation traceability `46/0`, and diff hygiene. This checkpoint changes only this Task ledger and is identified by the exact unique subject `docs(plan): record adopted-root interruption checkpoint`. Fresh specification and quality/security `C0/I0` Plan reviews remain mandatory before the one Task 4.2T implementation attempt. |
+| 2026-07-30 | T-TSDC-004R-2 adopted-root Plan final reviews | Fresh independent specification and quality/security reviewers | Both read-only reviews of exact range `17645f2a..5cd98c7b` returned `C0/I0/M0` and `IMPLEMENTATION_READY YES`; specification returned `SPEC_COMPLIANCE YES` and quality/security returned `QUALITY_SECURITY PASS`. They confirmed cleanup ownership starts at the `N`-to-`M` transfer, all adapter and runner interruption phases are bounded and value-free, the exact five-path and four-freeze oracles are executable, top-level discovery remains 94, and Wave B stays blocked. The one Task 4.2T implementation attempt is now authorized from checkpoint `5cd98c7b`; no other scope is opened. |
 
 ## Verification Evidence
 
@@ -751,7 +752,7 @@ consume or create Agent authorization.
 | T-TSDC-004R-2 executable identity-cleanup Plan | bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; PASS; IMPLEMENTATION_READY YES | `8df1b9cd..86146050` | one implementation attempt authorized; Wave B still blocked | The successor begins after the exact unique `docs(plan): record executable typed gate identity checkpoint` commit and must satisfy both executable scope oracles before one fresh implementation review pair. |
 | T-TSDC-004R-2 identity-cleanup implementation | Task 4.2S implementation agent, sole attempt | C0/I3/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I1/M0; CHANGES_REQUIRED; COMMIT_READY NO | `86146050..17645f2a` | returned to design; Wave B blocked | The five-path implementation passed local RED/GREEN, freeze, and scope gates, but fresh reviews found that adapter ordinary `Exception` payloads can cross the boundary, runner post-`Popen` `BaseException` interruption can bypass cleanup, later-recovery ledger wording overstates unconditional reap, and post-implementation metadata/traceability evidence was omitted from this ledger. No manifest verdict is promoted. |
 | T-TSDC-004R-2 typed-interruption design return | Controller / bounded future implementer | pending fresh review | pending fresh review | starts after `17645f2a` | corrected checkpoint pending; Wave B blocked | Successor Plan Task 4.2T preserves the same five-path implementation boundary and four `17bb5cdd` freezes while requiring adapter ordinary-exception normalization, BaseException-safe runner cleanup, conditional-reap wording, and explicit metadata/traceability evidence. |
-| T-TSDC-004R-2 typed-interruption design checkpoint | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I1/M0; QUALITY_SECURITY CHANGES_REQUIRED; IMPLEMENTATION_READY NO | `17645f2a..b73d2a99` | adopted-root interruption correction and fresh review required; Wave B blocked | The implementation oracle now requires one matching `docs(plan): record adopted-root interruption checkpoint` commit. The superseded `b73d2a99` checkpoint granted no authority because it did not cover control-flow interruption while closing inherited `N` after duplicating owned `M`. |
+| T-TSDC-004R-2 typed-interruption design checkpoint | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `17645f2a..5cd98c7b` | one implementation attempt authorized; Wave B still blocked | The successor begins after the exact unique `docs(plan): record adopted-root interruption checkpoint` commit and must satisfy both executable scope oracles before one fresh implementation review pair. Earlier checkpoints remain superseded history. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
 | Whole branch | not applicable | pending fresh reviewer | pending different fresh reviewer | not available | pending | Task 4.2S returned to design after fresh review findings; Task 4.2T must receive fresh Plan/implementation approval before Wave B can start. |
@@ -811,6 +812,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 interruption-safe design checkpoint | Freeze the first corrected successor scope | `docs(plan): record interruption-safe typed gate checkpoint` | `b73d2a99` | Superseded after quality/security review found the adopted-root `N`-close interruption gap; no implementation authority followed. |
 | T-TSDC-004R-2 adopted-root interruption Plan correction | Start cleanup ownership at the exact `N`-to-`M` transfer | `docs(plan): close adopted-root interruption gap` | `16de8939` | Requires fixed root-cleanup precedence, exactly one `M` close attempt, and behavior-specific control-flow witnesses before a new checkpoint. |
 | T-TSDC-004R-2 adopted-root interruption checkpoint | Freeze the final corrected successor scope | `docs(plan): record adopted-root interruption checkpoint` | resolved by this exact unique subject | The implementation oracle requires one matching commit and supersedes `b73d2a99` while retaining its review history. |
+| T-TSDC-004R-2 adopted-root Plan review evidence | Record the final C0/I0 approval pair | `docs(task): record adopted-root plan reviews` | resolved by this exact unique subject | Read-only specification and quality/security reviewers authorize one bounded five-path Task 4.2T implementation attempt; Wave B remains blocked. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -834,14 +836,14 @@ implementation, remediation, and review-evidence correction are committed and
 approved. Task 4.2S exhausted its one five-path attempt and failed fresh
 implementation review. Task 4.2T is a separately bounded design return; its
 first corrected checkpoint was also review-rejected and grants no authority.
-Wave B and Tasks 5–6 remain blocked until the adopted-root interruption
-checkpoint receives a fresh Plan C0/I0 pair, its one successor implementation
-receives a fresh implementation C0/I0 pair, and controller-owned review
-evidence is committed. The original five-round implementation blocker,
-exhausted Revision R1 Plan reviews, and superseded `5d089dd4` and `b73d2a99`
-checkpoints remain historical evidence and grant no authority. The remaining
-items prevent only their corresponding external, runtime, or approval-gated
-claim.
+The adopted-root interruption checkpoint now has a fresh Plan C0/I0 pair and
+authorizes one Task 4.2T implementation attempt. Wave B and Tasks 5–6 remain
+blocked until that implementation receives a fresh implementation C0/I0 pair
+and controller-owned review evidence is committed. The original five-round
+implementation blocker, exhausted Revision R1 Plan reviews, and superseded
+`5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
+authority. The remaining items prevent only their corresponding external,
+runtime, or approval-gated claim.
 
 ## Related Documents
 
