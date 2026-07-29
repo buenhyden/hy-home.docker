@@ -1658,17 +1658,26 @@ B/C work remains excluded.
      one `process.wait` reaps the leader and the pidfd closes. Return a normal
      or nonzero product code, or timeout `124`, only after this cleanup
      succeeds. Any pidfd, proc-scan, signal, reap, or close failure is typed
-     and value-free. Adapters create no session or process group.
+     and value-free. If initial `pidfd_open` fails, the still-unreaped leader
+     reserves the identity while the runner immediately signals `KILL` to the
+     group, reaps the leader once, and returns the typed acquisition error.
+     Any later scan or cleanup failure still attempts group `KILL`, leader
+     readiness, one reap, and pidfd close before returning its typed error;
+     it never signals the numeric PGID after reaping. Adapters create no
+     session or process group.
   3. `/proc/<pid>/stat` scanning is strict, no-follow, disappearance-safe, and
-     bounded by exact maximum numeric entries and bytes. A transient vanished
-     process is absent; permission, malformed content, non-numeric name,
-     symlink, overflow, read, or directory failure is fail-closed. No test may
+     bounded to at most `65,536` strictly decimal PID entries and `4,096` bytes
+     per `stat` file. Expected non-numeric procfs metadata entries are ignored;
+     a transient vanished numeric process is absent. Permission, malformed
+     numeric-entry content, numeric-entry symlink, entry-count overflow,
+     byte overflow, read, or directory failure is fail-closed. No test may
      assert `killpg` absence after reaping, leader `poll`, or numeric signaling
      after reaping. Tests prove ordering (no wait/poll/reap before final
      signals and member-empty confirmation), safe normal and nonzero, timeout,
      output-overflow, read-error, child/grandchild cleanup, pidfd/reap/close
-     failures, malformed/oversize/permission/disappearance proc entries, and
-     a simulated PGID-reuse target that cannot be signaled.
+     failures, malformed/oversize/permission/disappearance numeric proc
+     entries, expected non-numeric entry tolerance, and a simulated
+     PGID-reuse target that cannot be signaled.
   4. Preserve exact HOME teardown behavior: at most three `rmtree` attempts,
      with exactly 50 ms sleeps after failures one and two. Preserve minimal
      environment, immutable-key denial, bounded two-stream output, SARIF
