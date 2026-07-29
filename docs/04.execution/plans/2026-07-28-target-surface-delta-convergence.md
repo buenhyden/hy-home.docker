@@ -1846,6 +1846,128 @@ test -z "$(git status --porcelain=v1 --untracked-files=all)"
   attempt and **one** independent review pair. Only a controller-owned
   review-evidence commit after that pair may unblock Wave B.
 
+##### Task 4.2T / Wave A design return: typed interruption and evidence finalization
+
+**Status:** The Task 4.2S implementation commit `17645f2a` was reviewed over
+the exact range `86146050..17645f2a`. The fresh specification review returned
+`C0/I3/M0`, `SPEC_COMPLIANCE NO`, `COMMIT_READY NO`; the fresh
+quality/security review returned `C0/I1/M0`, `CHANGES_REQUIRED`,
+`COMMIT_READY NO`. The 4.2S one-attempt allowance is exhausted, Wave B remains
+blocked, and no manifest verdict is promoted. This subsection is the only
+successor design authority for the next bounded implementation attempt.
+
+**Exact implementation allowlist:** after the uniquely named controller design
+checkpoint for this subsection is committed and independently approved, the
+successor implementation paths remain exactly
+`scripts/validation/ci_gate_runner.py`,
+`scripts/validation/ci_gate_adapters.py`,
+`tests/validation/test_ci_gate_runner.py`,
+`tests/validation/test_ci_gate_adapters.py`, and this Task ledger. Do not alter
+schema, workflow, manifest, generated summary, Stage 00 contract, runtime,
+Compose, remote, secret, wrapper, direct-`pre-commit`, or Wave B/C files.
+
+- [ ] **Step T1: Add behavior-specific RED witnesses inside existing tests.**
+
+  Keep top-level discovery exactly `94` tests. Extend existing methods only.
+  Required new or corrected witnesses:
+
+  1. Adapter boundary taxonomy: any ordinary `Exception` raised while copying
+     `dict(environ)` or dispatching a subcommand becomes the fixed value-free
+     `AdapterError` code `ci-gate-adapter-operation` after the owned root
+     capability `M` cleanup runs. `OSError` remains the same fixed operation
+     error. `BaseException` interruption (`KeyboardInterrupt`, `SystemExit`, or
+     equivalent) still triggers `M` cleanup and is then re-raised unless a root,
+     Compose, or SARIF cleanup failure wins by the existing cleanup-precedence
+     order. No exception message may leak a private environment value, path,
+     descriptor number, or raw payload.
+  2. Runner post-`Popen` ownership: after `Popen(start_new_session=True)`
+     succeeds and before the pidfd is closed, every `BaseException` from
+     pidfd readiness, process-group finalization, bounded reap, or close enters
+     the same cleanup controller as ordinary runner failures. The runner sends
+     best-effort group `KILL`, performs bounded pidfd readiness when the pidfd is
+     usable, reaps only after readiness is confirmed, attempts pidfd close, and
+     re-raises the original interruption only if cleanup succeeds. Any cleanup
+     failure takes precedence as fixed value-free `ci-gate-runner-cleanup`.
+  3. Evidence wording: later runner recovery performs a single bounded
+     `process.wait(timeout=grace)` only when readiness is confirmed; if
+     readiness is unavailable or not reached, the runner skips wait, records
+     cleanup failure, and still attempts pidfd close. Prohibit `process.poll`,
+     `communicate`, and any reaping primitive before identity-safe finalization;
+     do not state a broader "no poll" ban that could be confused with bounded
+     pidfd polling.
+  4. Post-implementation evidence: Task ledger evidence must explicitly record
+     the changed-document metadata check result and documentation traceability
+     result, or state `unverified` if a command was not run. Existing Ruff,
+     compileall, advisory, diff, freeze, workflow, projection, and exact
+     five-path evidence remains required.
+
+- [ ] **Step T2: Implement only the typed boundary corrections.**
+
+  Preserve the accepted 4.2S descriptor ownership, Compose/SARIF cleanup order,
+  pidfd identity, `/proc` bounds, `ESRCH`, HOME teardown, output bounds,
+  minimal environment, and four `17bb5cdd` byte freezes. Do not introduce a
+  second cleanup authority, raw PID liveness probe, post-reap PGID observation,
+  pathname fallback, nested session, or added test method.
+
+- [ ] **Step T3: Run GREEN and invariant gates.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_target_surface_delta_contracts \
+  -v
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile local-harness --list
+python3 scripts/validation/run-ci-gate.py --profile local-harness --dry-run --all
+python3 scripts/validation/run-ci-gate.py --profile local-all-profiles --dry-run --all
+python3 -m ruff check \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+python3 -m compileall -q \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py
+git diff --exit-code 17bb5cdd -- .github/workflow-contract.yml .github/workflows/ci-quality.yml
+git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surface-delta-manifest.yaml docs/90.references/data/governance/target-surface-delta-summary.md
+python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+bash scripts/validation/check-doc-traceability.sh
+TASK_4_2T_DESIGN_SUBJECT='docs(plan): record typed interruption design checkpoint'
+TASK_4_2T_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2T_DESIGN_SUBJECT}$")"
+test -n "$TASK_4_2T_DESIGN_COMMIT"
+test "$(printf '%s\n' "$TASK_4_2T_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+TASK_4_2T_EXPECTED_PATHS="$(printf '%s\n' \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+  scripts/validation/ci_gate_adapters.py \
+  scripts/validation/ci_gate_runner.py \
+  tests/validation/test_ci_gate_adapters.py \
+  tests/validation/test_ci_gate_runner.py | sort)"
+test "$(git diff --name-only "$TASK_4_2T_DESIGN_COMMIT" -- | sort)" = "$TASK_4_2T_EXPECTED_PATHS"
+test -z "$(git ls-files --others --exclude-standard)"
+git diff --check
+```
+
+  GREEN requires exact `94 = 83 pass + 11 skip`, workflow projection `7/23/8`,
+  both execution-free projections, all four stated `17bb5cdd` byte freezes,
+  unchanged manifest/summary, exact metadata and traceability evidence, the
+  checkpoint-to-working-tree path oracle, zero non-ignored untracked paths, and
+  static/byte invariants.
+
+- [ ] **Step T4: Commit, independent review, and gate.**
+
+  Commit the bounded correction with a distinct subject, then assign fresh
+  independent specification and quality/security reviewers to the exact
+  checkpoint-through-implementation range. Both reviewers must return `C0/I0`.
+  If either reviewer reports an Important or Critical finding, return to
+  design/plan again. Only a controller-owned review-evidence commit after a
+  passing pair may unblock Wave B.
+
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
 **Files:**
