@@ -43,8 +43,14 @@ approved Revision R2 on 2026-07-29. Its first fresh review attempt returned
 specification `C0/I5/M0` and quality/security `C0/I0/M0`; the bounded
 correction then received final independent specification and quality/security
 `C0/I0/M0` approvals over `e97b7966..8f82e88b`. Local Plan-bounded
-T-TSDC-004R implementation is active; remote, runtime, dependency, secret,
-direct pre-commit, and controlled-wrapper authority remain unchanged.
+T-TSDC-004R implementation reached the Task 4.4 review gate, but its two
+implementation-remediation attempts exhausted with one remaining Important
+option-bearing wrapper bypass. The user approved the bounded
+T-TSDC-004R-4W design return on 2026-07-30. No T-TSDC-004R-4W implementation
+authority exists until its Plan-only checkpoint receives fresh independent
+specification and quality/security `C0/I0/M0` reviews. Remote, runtime,
+dependency, secret, direct pre-commit, and controlled-wrapper authority remain
+unchanged.
 
 ## Global Constraints
 
@@ -2716,6 +2722,215 @@ git commit -m "docs(task): record typed CI cutover review"
 If either reviewer finds a design-contract defect, stop and return to
 design/plan. For an implementation defect, use only the canonical
 two-attempt loops; exhaustion blocks Task 4R.
+
+#### Task 4.4W / T-TSDC-004R-4W: Option-Aware Wrapper-Proof Design Return
+
+**Design-return prerequisite and authority boundary:**
+
+- The exact unique `docs(task): record exhausted typed cutover review` commit
+  must resolve to `1b054313` and be an ancestor of the implementation
+  checkpoint.
+- The Plan-only design commit may modify only this Plan and the sibling Task
+  ledger. It grants no implementation authority until a fresh read-only
+  specification reviewer and a different fresh read-only quality/security
+  reviewer both return `C0/I0/M0`.
+- After those Plan reviews are recorded in a separate evidence-only commit,
+  one implementation agent receives exactly one attempt. That attempt may
+  modify only:
+  `tests/validation/test_agent_governance_ci_routing.py` and
+  `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`.
+- Freeze `.github/workflow-contract.yml`,
+  `.github/workflows/ci-quality.yml`,
+  `scripts/validation/check-repo-contracts.sh`, every typed gate runner and
+  adapter, all target-delta artifacts, and every other tracked path. The
+  missing proof is confined to the static test oracle; production behavior is
+  already frozen.
+- The implementation commit subject is exactly
+  `fix(ci): close option-bearing wrapper proof`. A fresh specification
+  reviewer and a different fresh quality/security reviewer inspect the exact
+  checkpoint-to-implementation range. Any non-`C0/I0/M0` result ends this
+  one-attempt successor without a retry, keeps Task 4R blocked, and requires a
+  new user-approved design return.
+
+**Required parser contract:**
+
+- Replace only the narrow wrapper-prefix handling inside
+  `_registered_sibling_dispatches` with a dependency-free, option-arity-aware
+  recursive token parser. It must continue to preserve the existing literal
+  Python/Bash, direct executable, quoted, variable-mediated,
+  helper-indirection, Python heredoc `subprocess`, and `os.system` evidence
+  families.
+- Parse a wrapper chain until it reaches one real command sink. Recursion must
+  be deterministically bounded by the input token count and must never invoke
+  a shell, wrapper, sibling entrypoint, or repository gate.
+- For `command`, accept `-p`, `--`, and valid short-option clusters. `-p`
+  continues to the wrapped command. Any `-v` or `-V` occurrence is a
+  query-only form and therefore is not a dispatch. Unknown or malformed
+  options are ambiguous and fail closed when a registered sibling path is
+  present.
+- For `exec`, accept `-c`, `-l`, their valid short-option clusters, `-a NAME`
+  (including an attached short argument when unambiguous), and `--`.
+  Option operands are consumed before recursively parsing the wrapped
+  command. Missing operands and unknown options are ambiguous and fail closed.
+- For GNU `env`, accept flag-only `-i`/`--ignore-environment`,
+  `-0`/`--null`, and `-v`/`--debug`; consume exactly one operand for
+  `-u`/`--unset`, `-C`/`--chdir`, and `-a`/`--argv0`, including supported
+  attached or `--name=value` forms; recognize `--`; and then consume only
+  syntactically valid environment assignments. `-S`/`--split-string` consumes
+  one static string, applies `shlex.split`, inserts the resulting tokens at
+  that point, and resumes the same bounded parser. Invalid split strings,
+  missing operands, and unknown options are ambiguous and fail closed.
+- Wrapper nesting is recursive, including combinations such as
+  `env -u HOME command -p exec -a gate python3 <sibling>`. A registered
+  sibling path consumed solely as the operand of a recognized option is not a
+  dispatch. A sibling path in an unknown or malformed wrapper form is
+  returned as a finding because execution position cannot be proved.
+- The oracle returns only a deterministic set of registered sibling paths.
+  It must not emit source statements, option values, environment values, raw
+  command text, or exception payloads. Existing value-free assertion output
+  remains unchanged.
+
+- [ ] **Step 1: Prove the exact predecessor and clean two-path design
+  checkpoint.**
+
+```bash
+expected_predecessor="$(git rev-parse 1b054313)"
+test "$(git log -1 --format=%H \
+  --grep='^docs(task): record exhausted typed cutover review$')" = \
+  "$expected_predecessor"
+test "$(git log --format=%H \
+  --grep='^docs(task): record exhausted typed cutover review$' | wc -l)" -eq 1
+git merge-base --is-ancestor 1b054313 HEAD
+git status --short
+```
+
+- [ ] **Step 2: Add the complete RED mutation matrix before changing the
+  parser.**
+
+  Extend `test_repository_umbrella_is_wiring_only` or add focused sibling
+  tests covering:
+
+  - dispatch-positive `command -p`, `command --`, `env -u`,
+    `env --unset=`, `env -C`, `env --chdir=`, `env -a`,
+    `env --argv0=`, `env -S`, `env --split-string=`, `env --`,
+    valid assignments, `exec -a`, `exec -c`, `exec -l`, `exec --`, and nested
+    wrapper forms;
+  - query-only `command -v` and `command -V` negatives;
+  - recognized option operands equal to a registered sibling path without an
+    executable sibling sink, which must remain negative;
+  - missing-operand, invalid split-string, and unknown-option forms for all
+    three wrappers, which must fail closed when a sibling path remains in the
+    ambiguous token stream; and
+  - existing bare-wrapper and non-wrapper families, which must remain green.
+
+  Run the focused test and record a behavior-specific RED in the Task ledger.
+  Import or syntax errors, a missing test, or failure unrelated to the new
+  option-bearing mutations do not count as RED:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_repository_umbrella_is_wiring_only \
+  -v
+```
+
+- [ ] **Step 3: Implement the bounded parser and run focused GREEN.**
+
+  Use small pure helpers with explicit parse outcomes for executable,
+  query-only, absent-command, and ambiguous forms. Consume option arity before
+  evaluating a command position, preserve the existing path-resolution and
+  heredoc evidence, and keep diagnostics value-free.
+
+```bash
+python3 -m unittest \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+python3 -m unittest \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+```
+
+- [ ] **Step 4: Run the full frozen cutover regression and static evidence
+  ladder.**
+
+```bash
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/run-ci-gate.py --profile ci --list
+python3 scripts/validation/run-ci-gate.py --profile ci --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-script-backed --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-harness --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-all-profiles --dry-run --all
+python3 -m ruff check \
+  tests/validation/test_agent_governance_ci_routing.py
+python3 -m compileall -q \
+  tests/validation/test_agent_governance_ci_routing.py
+git diff --check
+```
+
+  Ruff absence is recorded as `unverified`; dependency installation is
+  prohibited. The repository umbrella, registered typed child gates, direct
+  pre-commit, controlled wrapper, Compose/runtime, network, secrets,
+  credentials, remote state, and Graphify update remain prohibited. The
+  named standalone static validators and execution-free `--list`/`--dry-run`
+  projections above are the only authorized child-gate evidence; neither the
+  repository umbrella nor a typed leaf executes. Bash and ShellCheck are not
+  rerun because this successor freezes all shell files.
+
+- [ ] **Step 5: Prove freezes, exact scope, modes, and commit the sole
+  implementation attempt.**
+
+```bash
+git diff --exit-code 1b054313 -- \
+  .github/workflow-contract.yml \
+  .github/workflows/ci-quality.yml \
+  scripts/validation/check-repo-contracts.sh \
+  scripts/validation/ci_gate_contract.py \
+  scripts/validation/ci_gate_runner.py \
+  scripts/validation/ci_gate_adapters.py
+git diff --name-only HEAD -- \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+git ls-files -s \
+  tests/validation/test_agent_governance_ci_routing.py \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git diff --check
+git add \
+  tests/validation/test_agent_governance_ci_routing.py \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "fix(ci): close option-bearing wrapper proof"
+```
+
+- [ ] **Step 6: Require one fresh implementation review pair and record it
+  separately.**
+
+  Both reviewers must verify every wrapper family, option arity, nested
+  recursion, query-only negative, option-operand false-positive negative,
+  malformed/unknown fail-closed case, deterministic bound, value-free output,
+  frozen production paths, exact two-path scope, and all recorded validation
+  evidence. On `C0/I0/M0`, record the exact range and verdicts in an
+  evidence-only commit:
+
+```bash
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git commit -m "docs(task): record option-aware cutover review"
+```
+
+  Only that accepted review checkpoint authorizes Task 4.5 Wave C. A failed
+  review grants no retry and no downstream authority.
 
 #### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
 
