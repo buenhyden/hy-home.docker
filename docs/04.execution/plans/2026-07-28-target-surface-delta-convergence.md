@@ -1671,10 +1671,12 @@ B/C work remains excluded.
      leader. If members remain, or the leader is not ready by grace expiry, it
      sends `KILL` to the PGID; it then requires leader readiness and zero
      remaining same-PGID members except the pinned leader before one and only
-     one `process.wait` reaps the leader and the pidfd closes. Return a normal
-     or nonzero product code, or timeout `124`, only after this cleanup
-     succeeds. Any pidfd, proc-scan, non-`ESRCH` signal, reap, or close failure
-     is typed and value-free. `TERM` or `KILL` returning `ESRCH` is the normal
+     one timeout-bounded `process.wait` reaps the leader and the pidfd closes.
+     The wait is invoked only after pidfd readiness and can never be
+     unbounded. Return a normal or nonzero product code, or timeout `124`, only
+     after this cleanup succeeds. Any pidfd, proc-scan, non-`ESRCH` signal,
+     readiness, reap-attempt timeout, reap, or close failure is typed and
+     value-free. `TERM` or `KILL` returning `ESRCH` is the normal
      disappeared-target race between observation and signaling; it is not a
      cleanup failure and the runner must continue bounded leader-readiness and
      same-PGID-member validation.
@@ -1682,18 +1684,26 @@ B/C work remains excluded.
      If initial `pidfd_open` fails, the still-unreaped leader reserves the
      identity while the runner records the fixed
      `ci-gate-runner-pidfd-acquisition` error, attempts group `KILL`, and then
-     attempts exactly one `process.wait` even when `KILL` fails. `ESRCH` is
-     safe in that recovery path. A non-`ESRCH` signal failure or reap failure
-     takes precedence as fixed value-free `ci-gate-runner-cleanup`; otherwise
-     the recorded acquisition error is returned. Any later scan or cleanup
-     failure records its first typed error, then independently attempts group
-     `KILL`, bounded leader readiness where pidfd remains usable, exactly one
-     reap, and pidfd close. Every recovery action is attempted in that order;
-     any recovery-action failure collapses to
+     makes exactly one `process.wait(timeout=grace)` reap attempt even when
+     `KILL` fails. `ESRCH` is safe in that recovery path. `TimeoutExpired`, a
+     non-`ESRCH` signal failure, or a reap failure takes precedence as fixed
+     value-free `ci-gate-runner-cleanup`; otherwise the recorded acquisition
+     error is returned. This acquisition-failure path has no pidfd to close
+     and never performs an unbounded wait.
+
+     Any later scan or cleanup failure records its first typed error, then
+     independently attempts group `KILL`, bounded leader readiness when the
+     pidfd remains usable, a single bounded reap only if readiness was
+     confirmed, and pidfd close. If readiness is unavailable or not reached,
+     the runner records cleanup failure, skips `process.wait` rather than
+     risking an unbounded wait, and still attempts pidfd close. If readiness
+     was confirmed, `process.wait(timeout=grace)` is called exactly once; its
+     timeout or failure does not prevent pidfd close. Every recovery action is
+     attempted in that order, and any recovery-action failure collapses to
      `ci-gate-runner-cleanup` and takes precedence over the recorded scan,
      product, nonzero, or timeout result. The runner never observes or signals
-     the numeric PGID after the sole reap. Adapters create no session or
-     process group.
+     the numeric PGID after the sole successful reap or bounded reap attempt.
+     Adapters create no session or process group.
   3. `/proc/<pid>/stat` scanning is strict, no-follow, disappearance-safe, and
      bounded to at most `65,536` strictly decimal PID entries and `4,096` bytes
      per `stat` file. Expected non-numeric procfs metadata entries are ignored;
@@ -1702,14 +1712,17 @@ B/C work remains excluded.
      byte overflow, read, or directory failure is fail-closed. Tests must not
      use a post-reap `killpg(..., 0)` absence probe as identity evidence.
      Instead, an ordered call trace proves that every numeric-PGID observation
-     and signal precedes the sole `process.wait`; the harness is configured to
-     fail if either is invoked after that wait. Tests prove no
-     wait/poll/communicate/reap before final signals and member-empty
+     and signal precedes any bounded `process.wait` attempt; the harness is
+     configured to fail if either is invoked after that attempt. Tests prove
+     no wait/poll/communicate/reap before final signals and member-empty
      confirmation, safe normal and nonzero, timeout, output-overflow,
-     read-error, child/grandchild cleanup, pidfd/reap/close failures, TERM and
-     KILL `ESRCH` races, malformed/oversize/permission/disappearance numeric
-     proc entries, expected non-numeric entry tolerance, and a simulated
-     PGID-reuse target that cannot be observed or signaled after reap.
+     read-error, child/grandchild cleanup, pidfd/reap/close failures, initial
+     pidfd-acquisition plus non-`ESRCH` KILL failure with a bounded wait
+     timeout, later readiness failure that skips wait but still closes pidfd,
+     ready-then-wait-timeout that still closes pidfd, TERM and KILL `ESRCH`
+     races, malformed/oversize/permission/disappearance numeric proc entries,
+     expected non-numeric entry tolerance, and a simulated PGID-reuse target
+     that cannot be observed or signaled after a reap attempt.
   4. Preserve exact HOME teardown behavior: at most three `rmtree` attempts,
      with exactly 50 ms sleeps after failures one and two. Preserve minimal
      environment, immutable-key denial, bounded two-stream output, SARIF
@@ -1774,7 +1787,7 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2S_DESIGN_SUBJECT='docs(plan): record typed gate identity design checkpoint'
+TASK_4_2S_DESIGN_SUBJECT='docs(plan): record bounded typed gate identity checkpoint'
 TASK_4_2S_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2S_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2S_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2S_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
@@ -1799,7 +1812,7 @@ git diff --check
 
   Commit the bounded implementation as `fix(ci): finalize typed gate identity
   cleanup`. The implementation must begin after the unique controller commit
-  whose exact subject is `docs(plan): record typed gate identity design
+  whose exact subject is `docs(plan): record bounded typed gate identity
   checkpoint`; that commit is the changed-path oracle baseline above. Assign
   new independent specification and quality/security reviewers to the exact
   checkpoint-through-implementation range. Both must return `C0/I0`; otherwise
