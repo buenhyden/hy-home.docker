@@ -40,9 +40,11 @@ unittest, Git, and repository-owned generators.
 **Revision R2 status:** Revision R1 exhausted its two-attempt Plan review loop
 with unresolved Important findings and returned to design/plan. The user
 approved Revision R2 on 2026-07-29. Its first fresh review attempt returned
-specification `C0/I5/M0` and quality/security `C0/I0/M0`; implementation
-remains blocked while this bounded correction receives the final second
-independent specification and quality/security `C0/I0` review pair.
+specification `C0/I5/M0` and quality/security `C0/I0/M0`; the bounded
+correction then received final independent specification and quality/security
+`C0/I0/M0` approvals over `e97b7966..8f82e88b`. Local Plan-bounded
+T-TSDC-004R implementation is active; remote, runtime, dependency, secret,
+direct pre-commit, and controlled-wrapper authority remain unchanged.
 
 ## Global Constraints
 
@@ -1146,13 +1148,16 @@ parity for this exact set before workflow cutover.
   approved external-authority boundary.
 - [x] Assign one final fresh specification reviewer plus one different
   quality/security reviewer to the complete corrected R2 range.
-- [ ] Require both final R2 reviews to map TSDC-010 through TSDC-017, verify
+- [x] Require both final R2 reviews to map TSDC-010 through TSDC-017, verify
   exact file ownership and commands, and return C0/I0 before implementation.
 
 Expected gate: only after Revision R2 approval and both final corrected R2
 reviews return C0/I0 does the Task ledger change from
 `blocked pending corrected Revision R2 Plan reviews` to `active recovery`; no
 production or test file changes before that transition.
+
+Gate satisfied: the final specification and quality/security reviews of
+`e97b7966..8f82e88b` each returned `C0/I0/M0` and `COMMIT_READY YES`.
 
 #### Task 4.1 / Wave A / T-TSDC-004R-1: Typed Gate Contract
 

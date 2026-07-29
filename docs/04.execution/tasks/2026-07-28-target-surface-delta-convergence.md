@@ -92,9 +92,10 @@ read-only observation only.
 - On 2026-07-29 the user explicitly approved Revision R2 at Plan commit
   `7d36fe3b`. Local T-TSDC-004R implementation remains gated by fresh
   independent specification and quality/security C0/I0 Plan reviews. The
-  first review attempt required this bounded correction, so only the final
-  corrected C0/I0 pair can activate implementation. This approval does not
-  authorize remote, runtime, secret-payload,
+  first review attempt required a bounded correction. The final corrected
+  reviews over `e97b7966..8f82e88b` each returned C0/I0/M0 and activated local
+  Plan-bounded implementation. This approval does not authorize remote,
+  runtime, secret-payload,
   dependency-installation, controlled-wrapper, or direct pre-commit actions.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
@@ -111,7 +112,7 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | original agents remain historical; fresh R2 agents only after final corrected Plan reviews | blocked pending corrected Revision R2 Plan reviews |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active recovery |
 | T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | pending |
 | T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | pending |
 
@@ -215,6 +216,7 @@ have no unresolved Critical or Important findings.
 | 2026-07-29 | T-TSDC-004R Revision R2 approval | User / Controller | The user explicitly approved Revision R2 at `7d36fe3b`. The approval authorizes fresh independent Plan reviews and, only after both return C0/I0, local Plan-bounded T-TSDC-004R implementation. No production/test implementation, remote/runtime mutation, dependency installation, wrapper run, or direct pre-commit action has started. |
 | 2026-07-29 | T-TSDC-004R Revision R2 first Plan reviews | Independent specification and quality/security reviewers | Exact range `e97b7966..5b7388d0` returned specification C0/I5/M0, SPEC_COMPLIANCE NO, COMMIT_READY NO and quality/security C0/I0/M0, APPROVED, COMMIT_READY YES. A separate read-only specification corroboration returned C0/I4/M0. The union found the three-profile Spec mismatch, a parallel code-owned command authority, deferred executable modes, the wrong Wave B freeze checkpoint, incomplete Bash static coverage, and a dirty-worktree wrapper order. Implementation remained blocked. |
 | 2026-07-29 | T-TSDC-004R Revision R2 bounded correction | Controller plus bounded documentation implementers | Synchronized the already approved third local profile into Spec 135 without expanding authority; moved executable-mode provenance into Wave A; made schema v2 the sole ownership authority; bound Wave B to the Task 4.2 review checkpoint; added exact shell static gates; and moved optional wrapper handling to clean committed pre-Task-6 boundaries. Production, tests, workflows, runtime, remote state, dependencies, secrets, the wrapper, and direct pre-commit remained untouched. Final corrected R2 reviews are pending. |
+| 2026-07-29 | T-TSDC-004R Revision R2 final Plan reviews | Fresh independent specification and quality/security reviewers | Exact corrected range `e97b7966..8f82e88b` returned specification C0/I0/M0, SPEC_COMPLIANCE YES, COMMIT_READY YES and quality/security C0/I0/M0, APPROVED, COMMIT_READY YES. Both reviewers were read-only, found no issues, and confirmed the three-profile contract, single schema-v2 authority, Wave A mode/count order, Task 4.2 freeze, shell gates, clean wrapper boundaries, and unchanged authority scope. Local T-TSDC-004R implementation became eligible for activation. |
 
 ## Verification Evidence
 
@@ -632,6 +634,7 @@ consume or create Agent authorization.
 | T-TSDC-004R Plan R1 | Controller | C0/I4/M1; SPEC_COMPLIANCE NO; COMMIT_READY NO | C1/I2/M1; CHANGES_REQUIRED; COMMIT_READY NO | `a0f91bb5..1a86f929` | correction and re-review required | Schema bootstrap, descriptor compatibility, duplicate suite execution, Task 5 executability, wrapper scope, local `.env`, Storybook state lifetime, Bash static gates, and behavior-specific RED evidence required correction before implementation. |
 | T-TSDC-004R Plan R1 correction | Controller | C0/I3/M1; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I2/M1; CHANGES_REQUIRED; COMMIT_READY NO | `a0f91bb5..e97b7966` | two-attempt review loop exhausted; returned to design/plan | Spec Wave-1 schema order, registered all-profile projection, full-row review promotion, post-review evidence commits, and wrapper-ledger wording required Revision R2. |
 | T-TSDC-004R Plan R2 first review | Controller plus bounded documentation implementers | C0/I5/M0; SPEC_COMPLIANCE NO; COMMIT_READY NO | C0/I0/M0; APPROVED; COMMIT_READY YES | `e97b7966..5b7388d0` | bounded correction and one final review pair required | The approved third profile was absent from Spec 135; schema-v2 conversion retained a parallel code-owned command authority; seven executable modes were deferred; Wave B froze the Task 4.1 rather than Task 4.2 checkpoint; two changed shell paths lacked exact static gates; and the optional wrapper was ordered after dirty Task 6 edits. A separate specification reviewer corroborated four of these findings at C0/I4/M0. |
+| T-TSDC-004R Plan R2 correction | Controller plus bounded documentation implementers | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `e97b7966..8f82e88b` | approved; active recovery | Fresh independent reviewers found no unresolved issue and authorized local Plan-bounded T-TSDC-004R implementation. External, runtime, dependency, secret, direct pre-commit, and controlled-wrapper boundaries remain separately gated. |
 | T-TSDC-001 | Task 1 implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `72eef68c..43f78ad5` | approved; completed | Fresh independent reviewers found no unresolved issues. Per-row manifest verdicts remain pending for Task 6 blocking promotion. |
 | T-TSDC-002 | Task 2 documentation-surface implementation agent | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; APPROVED; COMMIT_READY YES | `78af8462..b28764a9` | approved; completed | Fresh independent reviewers found no unresolved issues after canonical-contract remediation. All 136 manifest row verdict pairs remain pending for Task 6. |
 | T-TSDC-003 | Task 3 static-version implementation agent / replacement remediation implementers | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I0/M0; PASS; COMMIT_READY YES | `b1e62873..60e0313c` | approved; completed | Fresh independent reviewers found no unresolved issues across all four pinned implementation commits. Exact stale-absence protects all 15 mappings, global dequoted service-name uniqueness prevents ambiguity, and all 141 manifest verdict pairs remain pending for Task 6. |
@@ -677,7 +680,7 @@ finding and must not be silently accepted as independent review evidence.
 
 | Item | State | Reason | Destination |
 | --- | --- | --- | --- |
-| T-TSDC-004 semantic ownership proof | blocked pending corrected Revision R2 Plan reviews | Five original remediation rounds and the two-attempt Revision R1 Plan review loop remain exhausted. Revision R2 is approved; its first fresh specification review found five Important defects while quality/security passed. Implementation cannot start until the bounded correction receives a final independent specification and quality/security C0/I0 pair. | final corrected C0/I0 Plan review pair, then T-TSDC-004R activation |
+| T-TSDC-004 semantic ownership proof | active recovery | Historical five-round implementation and Revision R1 Plan loops remain exhausted and unwaived. Approved Revision R2 plus the final corrected C0/I0 Plan review pair create the new bounded structural recovery path. | execute T-TSDC-004R-1 under Subagent-Driven review gates |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -687,11 +690,12 @@ finding and must not be silently accepted as independent review evidence.
 | Broad dependency/container vulnerability scanning | partial gap | Existing scoped checks do not establish broad SCA/image coverage | Spec 126 successor work |
 | Controlled Agent all-files pre-commit | blocked by approval | No exact one-attempt approval for this wave | final Task 6 gate if separately approved |
 
-The T-TSDC-004R Revision R2 Plan-review gate blocks Tasks 4 through 6. The
-original five-round implementation blocker and exhausted
-Revision R1 Plan reviews remain historical evidence and are neither waived nor
-counted as extra attempts. The remaining items prevent only their
-corresponding external, runtime, or approval-gated claim.
+The T-TSDC-004R Revision R2 Plan-review gate is satisfied and Task 4 is in
+active recovery. Tasks 5 and 6 remain serially blocked by Task 4 completion.
+The original five-round implementation blocker and exhausted Revision R1 Plan
+reviews remain historical evidence and are neither waived nor counted as extra
+attempts. The remaining items prevent only their corresponding external,
+runtime, or approval-gated claim.
 
 ## Related Documents
 
