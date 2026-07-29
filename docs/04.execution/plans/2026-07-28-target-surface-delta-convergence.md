@@ -2081,8 +2081,13 @@ secret, wrapper, direct-pre-commit, and Wave B/C changes remain excluded.
 
 - [ ] **Step U0: Commit and independently approve the phase-owned design.**
 
-  Commit the correction and then a Task-ledger-only checkpoint with exact
-  unique subject `docs(plan): record phase-owned runner checkpoint`. Fresh
+  The first checkpoint `ce4111d8` is retained as superseded review history:
+  its specification review returned `C0/I1` because the Task review matrix
+  still named exhausted Task 4.2T as the Wave B prerequisite. Commit that
+  controller-owned reconciliation with exact subject
+  `docs(plan): reconcile phase-owned runner gate`, then create a new
+  Task-ledger-only checkpoint with exact unique subject
+  `docs(plan): record reconciled phase-owned runner checkpoint`. Fresh
   specification and quality/security reviewers inspect the exact
   `483d3a47`-through-checkpoint range. Both must return `C0/I0` and
   `IMPLEMENTATION_READY YES`. The design commits run only changed-document
@@ -2178,7 +2183,7 @@ git diff --exit-code 17bb5cdd -- \
   .github/workflows/ci-quality.yml \
   docs/90.references/data/governance/target-surface-delta-manifest.yaml \
   docs/90.references/data/governance/target-surface-delta-summary.md
-TASK_4_2U_DESIGN_SUBJECT='docs(plan): record phase-owned runner checkpoint'
+TASK_4_2U_DESIGN_SUBJECT='docs(plan): record reconciled phase-owned runner checkpoint'
 TASK_4_2U_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2U_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2U_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2U_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
@@ -2199,7 +2204,7 @@ git diff --check
   `fix(ci): close runner ownership transitions`. Before review, run:
 
 ```bash
-TASK_4_2U_DESIGN_SUBJECT='docs(plan): record phase-owned runner checkpoint'
+TASK_4_2U_DESIGN_SUBJECT='docs(plan): record reconciled phase-owned runner checkpoint'
 TASK_4_2U_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2U_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2U_DESIGN_COMMIT"
 test "$(printf '%s\n' "$TASK_4_2U_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
