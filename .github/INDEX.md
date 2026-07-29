@@ -9,7 +9,7 @@ evidence.
 ## Surface Map
 
 - [CI quality workflow](./workflows/ci-quality.yml)
-- [Typed workflow contract](./workflow-contract.yml)
+- [Typed workflow and gate registry](./workflow-contract.yml)
 - [Document corpus lifecycle workflow](./workflows/document-corpus-lifecycle.yml)
 - [Contributor greeting workflow](./workflows/greetings.yml)
 - [Pull request labeler workflow](./workflows/pr-labeler.yml)
@@ -28,7 +28,8 @@ evidence.
 
 ## Verification
 
-- [Local QA gate runner](../scripts/validation/run-local-qa-gates.sh)
+- [Typed gate CLI](../scripts/validation/run-ci-gate.py)
+- [Local QA profile wrapper](../scripts/validation/run-local-qa-gates.sh)
 - [Repository contract checker](../scripts/validation/check-repo-contracts.sh)
 - [Focused workflow checker](../scripts/validation/check-github-workflow-contract.py)
 

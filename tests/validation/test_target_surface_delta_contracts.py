@@ -152,6 +152,12 @@ TASK42_MODE_UPDATE_PATHS = frozenset(
     }
 )
 TASK42_UPDATE_PATHS = TASK42_NEW_UPDATE_PATHS | TASK42_MODE_UPDATE_PATHS
+TASK43_NEW_UPDATE_PATHS = frozenset(
+    {
+        "scripts/operations/sync-provider-surfaces.sh",
+        "scripts/operations/sync-tech-stack-versions.sh",
+    }
+)
 EXPECTED_UPDATE_PATHS = (
     PRE_TASK2_UPDATE_PATHS
     | TASK2_UPDATE_PATHS
@@ -159,6 +165,7 @@ EXPECTED_UPDATE_PATHS = (
     | TASK4_UPDATE_PATHS
     | TASK41_UPDATE_PATHS
     | TASK42_UPDATE_PATHS
+    | TASK43_NEW_UPDATE_PATHS
 )
 
 
@@ -1201,7 +1208,7 @@ class RepositoryManifestTests(unittest.TestCase):
         self.assertEqual(PREDECESSOR_CLOSURE, document.predecessor_closure)
         self.assertEqual(IMPLEMENTATION_BASE, document.implementation_base)
         self.assertEqual("advisory", document.enforcement)
-        self.assertEqual(156, len(document.entries))
+        self.assertEqual(158, len(document.entries))
         self.assertEqual(
             contract.changed_target_paths(ROOT, PREDECESSOR_CLOSURE),
             tuple(row.path for row in document.entries),
@@ -1215,7 +1222,7 @@ class RepositoryManifestTests(unittest.TestCase):
             },
         )
         self.assertEqual(
-            {"preserve": 85, "update": 71},
+            {"preserve": 85, "update": 73},
             {
                 disposition: sum(
                     row.disposition == disposition for row in document.entries
@@ -1267,11 +1274,10 @@ class RepositoryManifestTests(unittest.TestCase):
                 "scripts/validation/github_workflow_contract.py",
             ),
             "scripts/requirements-pre-commit.txt": (
-                ".github/workflows/ci-quality.yml",
+                ".github/workflow-contract.yml",
             ),
             "scripts/validation/check-github-workflow-contract.py": (
-                "scripts/validation/check-repo-contracts.sh",
-                "scripts/validation/run-local-qa-gates.sh",
+                ".github/workflow-contract.yml",
             ),
             "scripts/validation/github_workflow_contract.py": (
                 "scripts/validation/check-github-workflow-contract.py",
@@ -1279,17 +1285,17 @@ class RepositoryManifestTests(unittest.TestCase):
                 "tests/validation/test_github_workflow_contract.py",
             ),
             "scripts/validation/run-ci-precommit.sh": (
-                ".github/workflows/ci-quality.yml",
+                ".github/workflow-contract.yml",
                 "tests/validation/test_run_ci_precommit.sh",
             ),
             "tests/validation/test_github_workflow_contract.py": (
-                "scripts/validation/run-local-qa-gates.sh",
+                ".github/workflow-contract.yml",
             ),
             "tests/validation/test_run_ci_precommit.sh": (
-                "scripts/validation/run-local-qa-gates.sh",
+                ".github/workflow-contract.yml",
             ),
             "tests/validation/test_agent_governance_ci_routing.py": (
-                ".github/workflows/ci-quality.yml",
+                ".github/workflow-contract.yml",
             ),
         }
         for path in TASK4_UPDATE_PATHS:
@@ -1345,13 +1351,20 @@ class RepositoryManifestTests(unittest.TestCase):
                 "tests/validation/test_ci_gate_runner.py",
             ),
             "scripts/validation/run-ci-gate.py": (
+                ".github/workflows/ci-quality.yml",
+                "scripts/validation/run-local-qa-gates.sh",
                 "tests/validation/test_ci_gate_runner.py",
             ),
             "scripts/validation/ci_gate_adapters.py": (
+                ".github/workflow-contract.yml",
                 "tests/validation/test_ci_gate_adapters.py",
             ),
-            "tests/validation/test_ci_gate_runner.py": (),
-            "tests/validation/test_ci_gate_adapters.py": (),
+            "tests/validation/test_ci_gate_runner.py": (
+                ".github/workflow-contract.yml",
+            ),
+            "tests/validation/test_ci_gate_adapters.py": (
+                ".github/workflow-contract.yml",
+            ),
         }
         for path in TASK42_UPDATE_PATHS:
             with self.subTest(task42_path=path):
@@ -1371,6 +1384,48 @@ class RepositoryManifestTests(unittest.TestCase):
                 self.assertEqual(path, rows[path].canonical_owner)
         for path, consumers in task42_consumers.items():
             with self.subTest(task42_consumers=path):
+                self.assertEqual(consumers, rows[path].direct_consumers)
+        task43_consumers = {
+            "scripts/hardening/check-all-hardening.sh": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+                "tests/validation/test_tech_stack_version_contract.py",
+            ),
+            "scripts/operations/sync-provider-surfaces.sh": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+            ),
+            "scripts/operations/sync-tech-stack-versions.sh": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+            ),
+            "scripts/validation/check-agent-governance-contract.py": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+            ),
+            "scripts/validation/check-document-corpus-lifecycle.py": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+                "tests/validation/test_document_corpus_lifecycle.py",
+                "tests/validation/test_target_surface_contracts.py",
+            ),
+            "scripts/validation/check-document-metadata.py": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+                "tests/validation/test_document_metadata.py",
+                "tests/validation/test_target_surface_contracts.py",
+            ),
+            "scripts/validation/check-supply-chain-policy.py": (
+                ".github/workflow-contract.yml",
+                "tests/validation/test_agent_governance_ci_routing.py",
+            ),
+        }
+        for path in TASK43_NEW_UPDATE_PATHS:
+            with self.subTest(task43_new_owner=path):
+                self.assertEqual("update", rows[path].disposition)
+                self.assertEqual(path, rows[path].canonical_owner)
+        for path, consumers in task43_consumers.items():
+            with self.subTest(task43_consumers=path):
                 self.assertEqual(consumers, rows[path].direct_consumers)
         self.assertFalse(
             any(

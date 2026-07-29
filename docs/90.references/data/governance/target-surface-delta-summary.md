@@ -6,7 +6,7 @@
 - Predecessor closure: `63039b5b0b20c99a10aae7162627afefcd7a1d8b`
 - Implementation base: `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74`
 - Enforcement: `advisory`
-- Delta entries: 156
+- Delta entries: 158
 - Current tracked target paths: 492
 - Current Markdown/MDX paths: 82
 - Current README paths: 75
@@ -27,7 +27,7 @@
 ## Dispositions
 
 - `preserve`: 85
-- `update`: 71
+- `update`: 73
 - `migrate`: 0
 - `delete`: 0
 
@@ -107,6 +107,8 @@
 | `scripts/hardening/check-all-hardening.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/provider_surface_renderer.py` | `python-source` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
 | `scripts/operations/rehearse-sample-service-delivery.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |
+| `scripts/operations/sync-provider-surfaces.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
+| `scripts/operations/sync-tech-stack-versions.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/requirements-pre-commit.txt` | `native-file` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/generate-supply-chain-sample-service-summary.sh` | `executable-script` | `none` | `update` | `not-applicable` | `pending` | `pending` |
 | `scripts/security/seed-grype-db-cache.sh` | `executable-script` | `none` | `preserve` | `not-applicable` | `pending` | `pending` |

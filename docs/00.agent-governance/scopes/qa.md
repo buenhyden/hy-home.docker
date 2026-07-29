@@ -20,7 +20,8 @@ layer: qa
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Execution Boundary (Local vs Remote)**:
   - **Local**: Fail-fast validation (e.g.,
-    `scripts/validation/run-local-qa-gates.sh` for script-backed QA/CI gates,
+    `scripts/validation/run-local-qa-gates.sh` for registry-defined local
+    profiles,
     automatic commit hooks for formatting/linting, and pre-push structural
     contract scripts). Agents must not invoke `pre-commit run` directly.
     Approved final QA all-files execution uses only
@@ -90,9 +91,13 @@ optional cleanup.
 ## 3.3 Local QA/CI Orchestration
 
 Use `bash scripts/validation/run-local-qa-gates.sh --list` to distinguish
-locally reproducible script-backed gates from CI/local-tooling and remote-only
-responsibilities. The default mode runs local script-backed checks only; it does
-not upload SARIF, verify remote branch protection, install npm dependencies, or
+the deterministic `local-script-backed` expansion from remote-only
+responsibilities. The wrapper contains no child-command inventory: default,
+`--harness`, and `--all-profiles` each delegate once to their registered
+profile root. `--list` is execution-free. Local roots exclude
+`setup.compose-env`; Compose leaves retain their own create-only cleanup
+contract and preserve an existing `.env` byte-for-byte. These routes do not
+upload SARIF, verify remote branch protection, install CI-only dependencies, or
 declare protected-branch readiness. The `repo-contracts` gate also blocks
 stage-document runtime version drift for implementation-pinned images and
 components, so docs-only changes that mention service versions must keep those

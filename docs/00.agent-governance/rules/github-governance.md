@@ -144,8 +144,14 @@ If any gate is unmet, the task status is "blocked" not "done."
 ## 8. CI/CD Job Taxonomy
 
 `ci-quality.yml` defines required quality gates and separate GitHub-native
-automation. Required job IDs must stay in sync with
-`check-repo-contracts.sh` and `.github/rulesets/main-protection.md`.
+automation. `.github/workflow-contract.yml` is the typed registry for required
+job IDs, job roots, gate DAGs, profiles, admitted environment keys, and direct
+external Actions. Every required-quality `run:` step is one static
+`run-ci-gate.py --profile ci --gate <id>` projection. The focused workflow
+checker requires the ordered expansion of those projections to equal the
+registered job root exactly once while retaining trigger, permission, timeout,
+Action, and workflow-shape checks. Required job IDs must stay in sync with
+`.github/rulesets/main-protection.md`.
 Archive/tombstone validation is part of the `repo-contracts` gate: active
 target-stage truth checks stay separate from `docs/98.archive` tombstone
 template/status checks. The same gate also blocks stage-document runtime version
@@ -170,24 +176,24 @@ job; it does not create or require another CI job.
 
 ### Required Quality Gates
 
-| Job ID                            | Execution Surface                                      |
-| --------------------------------- | ------------------------------------------------------ |
-| `docs-traceability`               | `scripts/validation/check-doc-traceability.sh`         |
-| `docs-implementation-alignment`   | `scripts/validation/check-doc-implementation-alignment.sh` |
-| `repo-contracts`                  | `scripts/validation/check-repo-contracts.sh`           |
-| `agent-output-eval-fixture-gate`  | `scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` |
-| `supply-chain-fixture-policy`     | Five focused operational-readiness unittest modules, the deterministic supply-chain policy check, and the supply-chain summary freshness check |
-| `dependency-vulnerability-audit`  | `npm audit --audit-level=high --prefix projects/storybook/nextjs` |
-| `git-flow-contract`               | inline PR title and source-branch shell check          |
-| `compose-validation`              | `scripts/validation/validate-docker-compose.sh`        |
-| `compose-all-profiles-validation` | `validate-docker-compose.sh` with all governed profiles |
-| `infrastructure-hardening`        | `scripts/hardening/check-all-hardening.sh`             |
-| `template-security-baseline`      | `scripts/validation/check-template-security-baseline.sh` |
-| `quickwin-baseline`               | `scripts/validation/check-quickwin-baseline.sh`        |
-| `pre-commit`                      | pre-commit hook suite with project-specific skips      |
-| `frontend-quality`                | Storybook Next.js lint, typecheck, app build, and static build |
-| `storybook-coverage`              | Storybook Next.js coverage via npm script              |
-| `zizmor`                          | GitHub Actions security scan with SARIF upload; GitHub-only gate |
+| Job ID                            | Registered root                              |
+| --------------------------------- | -------------------------------------------- |
+| `docs-traceability`               | `ci.docs-traceability`                       |
+| `docs-implementation-alignment`   | `ci.docs-implementation-alignment`           |
+| `repo-contracts`                  | `ci.repo-contracts`                          |
+| `agent-output-eval-fixture-gate`  | `ci.agent-output-eval-fixture-gate`          |
+| `supply-chain-fixture-policy`     | `ci.supply-chain-fixture-policy`             |
+| `dependency-vulnerability-audit`  | `ci.dependency-vulnerability-audit`          |
+| `git-flow-contract`               | `ci.git-flow-contract`                       |
+| `compose-validation`              | `ci.compose-validation`                      |
+| `compose-all-profiles-validation` | `ci.compose-all-profiles-validation`         |
+| `infrastructure-hardening`        | `ci.infrastructure-hardening`                |
+| `template-security-baseline`      | `ci.template-security-baseline`              |
+| `quickwin-baseline`               | `ci.quickwin-baseline`                       |
+| `pre-commit`                      | `ci.pre-commit`                              |
+| `frontend-quality`                | `ci.frontend-quality`                        |
+| `storybook-coverage`              | `ci.storybook-coverage`                      |
+| `zizmor`                          | `ci.zizmor`                                  |
 
 `zizmor` is intentionally GitHub-only because its gate uploads SARIF with
 GitHub security permissions. Do not duplicate it inside the local pre-commit
@@ -205,19 +211,21 @@ runner.
 | `tech-stack-version-sync.yml` | check curated version-registry drift for governed Compose/version changes |
 
 The `pre-commit` job installs the exact version from
-`scripts/requirements-pre-commit.txt` and calls
-`scripts/validation/run-ci-precommit.sh` with `SKIP=eslint-nextjs`. That
-CI-only entry point requires GitHub Actions and CI markers and grants no Agent
-authorization. Agent all-files execution remains limited to the separately
-approved controlled wrapper.
+`scripts/requirements-pre-commit.txt` and reaches
+`scripts/validation/run-ci-precommit.sh` through its typed root with
+`SKIP=eslint-nextjs`. That CI-only leaf requires GitHub Actions and CI markers
+and grants no Agent authorization. Agent all-files execution remains limited
+to the separately approved controlled wrapper.
 
 **Coupling constraint:** when adding, removing, or renaming a required job,
-update all four places together:
+update all three tracked surfaces together:
 
 1. `.github/workflow-contract.yml`
 2. `.github/workflows/ci-quality.yml`
 3. `.github/rulesets/main-protection.md` Required Status Checks
-4. this section's Required Quality Gates table
+
+Then update this explanatory table. Local validation does not prove that any
+of these checks ran remotely or that GitHub applies the proposed protection.
 
 ## Related Documents
 

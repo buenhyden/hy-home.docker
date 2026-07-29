@@ -1541,10 +1541,10 @@ entries:
   disposition: update
   canonical_owner: scripts/hardening/check-all-hardening.sh
   direct_consumers:
-  - .github/workflows/ci-quality.yml
-  - scripts/validation/run-local-qa-gates.sh
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_tech_stack_version_contract.py
-  finding: Updated the Keycloak assertion to resolve its expected image from the curated registry and the Dozzle assertion to resolve its expected image from Compose while retaining every security assertion.
+  finding: Retained the version-aware hardening assertions and added descriptor-compatible typed-runner root selection without changing direct execution.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1599,6 +1599,48 @@ entries:
   - git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:scripts/operations/rehearse-sample-service-delivery.sh
   spec_verdict: pending
   quality_verdict: pending
+- path: scripts/operations/sync-provider-surfaces.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/operations/sync-provider-surfaces.sh
+  direct_consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
+  finding: Added descriptor-compatible typed-runner root selection while retaining the provider renderer compatibility wrapper's direct execution.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
+- path: scripts/operations/sync-tech-stack-versions.sh
+  surface_class: executable-script
+  profile: null
+  changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
+  disposition: update
+  canonical_owner: scripts/operations/sync-tech-stack-versions.sh
+  direct_consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
+  finding: Added descriptor-compatible typed-runner root selection while retaining direct tech-stack synchronization behavior.
+  replacement: null
+  secret_safety: not-applicable
+  validators:
+  - scripts/validation/check-target-surface-delta-contract.py
+  tests:
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_target_surface_delta_contracts.py
+  provenance: []
+  rollback: []
+  spec_verdict: pending
+  quality_verdict: pending
 - path: scripts/requirements-pre-commit.txt
   surface_class: native-file
   profile: null
@@ -1606,7 +1648,7 @@ entries:
   disposition: update
   canonical_owner: scripts/requirements-pre-commit.txt
   direct_consumers:
-  - .github/workflows/ci-quality.yml
+  - .github/workflow-contract.yml
   finding: Added the exact pre-commit 4.6.1 dependency pin consumed only by the CI pre-commit job.
   replacement: null
   secret_safety: not-applicable
@@ -1731,8 +1773,10 @@ entries:
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
   disposition: update
   canonical_owner: scripts/validation/check-agent-governance-contract.py
-  direct_consumers: []
-  finding: Registered the Agent governance CLI as a tracked mode-100755 Python entrypoint for the typed gate registry.
+  direct_consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
+  finding: Retained the typed gate registration and added descriptor-compatible runner root selection without changing direct execution.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1771,9 +1815,11 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/check-document-corpus-lifecycle.py
   direct_consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_document_corpus_lifecycle.py
   - tests/validation/test_target_surface_contracts.py
-  finding: Retained the successor-owned draft Service contract and normalized this registered Python entrypoint to tracked mode 100755 without changing its content.
+  finding: Retained the successor-owned draft Service contract and added descriptor-compatible typed-runner root selection without changing direct execution.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1796,9 +1842,11 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/check-document-metadata.py
   direct_consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_document_metadata.py
   - tests/validation/test_target_surface_contracts.py
-  finding: Retained the sample-fixture metadata checks and normalized this registered Python entrypoint to tracked mode 100755 without changing its content.
+  finding: Retained sample-fixture metadata checks and added descriptor-root-aware sibling imports without changing direct execution.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1821,8 +1869,7 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/check-github-workflow-contract.py
   direct_consumers:
-  - scripts/validation/check-repo-contracts.sh
-  - scripts/validation/run-local-qa-gates.sh
+  - .github/workflow-contract.yml
   finding: Added the focused command-line entry point for deterministic GitHub workflow contract validation.
   replacement: null
   secret_safety: not-applicable
@@ -1843,11 +1890,10 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/check-repo-contracts.sh
   direct_consumers:
-  - .github/workflows/ci-quality.yml
+  - .github/workflow-contract.yml
   - .pre-commit-config.yaml
-  - scripts/validation/run-local-qa-gates.sh
   - tests/validation/test_tech_stack_version_contract.py
-  finding: Retained prior static-version assertions, removed overlapping inline workflow parsing, and delegated workflow semantics exactly once to the focused checker while preserving separate Stage 00 routing assertions.
+  finding: Retained repository wiring checks while removing the duplicate focused workflow-checker dispatch now owned by its typed leaf.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1871,8 +1917,10 @@ entries:
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
   disposition: update
   canonical_owner: scripts/validation/check-supply-chain-policy.py
-  direct_consumers: []
-  finding: Normalized the registered Python entrypoint to tracked mode 100755 without changing its content.
+  direct_consumers:
+  - .github/workflow-contract.yml
+  - tests/validation/test_agent_governance_ci_routing.py
+  finding: Retained the deterministic supply-chain policy CLI and added descriptor-compatible typed-runner root selection without changing direct execution.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -1893,8 +1941,8 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/target_surface_delta_contract.py
   direct_consumers:
+  - .github/workflow-contract.yml
   - scripts/validation/check-repo-contracts.sh
-  - scripts/validation/run-local-qa-gates.sh
   finding: Normalized the registered target-delta CLI entrypoint to tracked mode 100755 without changing its content.
   replacement: null
   secret_safety: not-applicable
@@ -1916,6 +1964,7 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/ci_gate_adapters.py
   direct_consumers:
+  - .github/workflow-contract.yml
   - tests/validation/test_ci_gate_adapters.py
   finding: Added the closed twelve-subcommand adapter grammar with literal argument vectors, minimal environments, and fail-closed output handling.
   replacement: null
@@ -2023,7 +2072,7 @@ entries:
   - scripts/validation/check-github-workflow-contract.py
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_github_workflow_contract.py
-  finding: Converted the bounded workflow validator to load the canonical typed gate registry, enforce schema-v2 structure and provenance, and retain workflow, permission, and Action contracts without active semantic-command ownership.
+  finding: Activated exact static workflow-to-root DAG projection with admitted environment checks while retaining workflow, permission, trigger, timeout, and Action contracts.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -2128,6 +2177,8 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/run-ci-gate.py
   direct_consumers:
+  - .github/workflows/ci-quality.yml
+  - scripts/validation/run-local-qa-gates.sh
   - tests/validation/test_ci_gate_runner.py
   finding: Added the executable dependency-free CLI wrapper for list, dry-run, single-gate, and full-profile typed gate plans.
   replacement: null
@@ -2148,7 +2199,7 @@ entries:
   disposition: update
   canonical_owner: scripts/validation/run-ci-precommit.sh
   direct_consumers:
-  - .github/workflows/ci-quality.yml
+  - .github/workflow-contract.yml
   - tests/validation/test_run_ci_precommit.sh
   finding: Added a CI-only fail-closed wrapper that requires exact GitHub Actions markers, rejects arguments and Agent authority variables, preserves the dedicated skip, and executes the exact pinned pre-commit command.
   replacement: null
@@ -2965,8 +3016,8 @@ entries:
   disposition: update
   canonical_owner: tests/validation/test_agent_governance_ci_routing.py
   direct_consumers:
-  - .github/workflows/ci-quality.yml
-  finding: Replaced duplicated inline workflow-parser fixtures with the focused typed validator, retained separate Stage 00 assertions, and covered local workflow and CI-wrapper test routing.
+  - .github/workflow-contract.yml
+  finding: Covers static workflow projections, descriptor compatibility, local-profile environment safety, and repository-umbrella uniqueness under the typed registry.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -3031,7 +3082,8 @@ entries:
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
   disposition: update
   canonical_owner: tests/validation/test_ci_gate_adapters.py
-  direct_consumers: []
+  direct_consumers:
+  - .github/workflow-contract.yml
   finding: Added focused fake-executor regressions for all twelve closed adapters and their path, grammar, environment, creation, and SARIF safety boundaries.
   replacement: null
   secret_safety: not-applicable
@@ -3068,7 +3120,8 @@ entries:
   changed_since: 63039b5b0b20c99a10aae7162627afefcd7a1d8b
   disposition: update
   canonical_owner: tests/validation/test_ci_gate_runner.py
-  direct_consumers: []
+  direct_consumers:
+  - .github/workflow-contract.yml
   finding: Added focused execution-plan, CLI, descriptor-provenance, environment, timeout, cleanup, and path-replacement regressions for the typed gate runner.
   replacement: null
   secret_safety: not-applicable
@@ -3109,8 +3162,8 @@ entries:
   disposition: update
   canonical_owner: tests/validation/test_document_corpus_lifecycle.py
   direct_consumers:
+  - .github/workflow-contract.yml
   - scripts/validation/check-repo-contracts.sh
-  - scripts/validation/run-local-qa-gates.sh
   finding: Updated tests/validation/test_document_corpus_lifecycle.py with exact positive and fail-closed successor handoff regressions for the sample fixture.
   replacement: null
   secret_safety: not-applicable
@@ -3158,8 +3211,8 @@ entries:
   disposition: update
   canonical_owner: tests/validation/test_github_workflow_contract.py
   direct_consumers:
-  - scripts/validation/run-local-qa-gates.sh
-  finding: Added schema-v2 load, parse, validate, expand, provenance, duplicate-authority, workflow-baseline, parser-boundary, diagnostic, and mutation regressions while retaining inactive semantic-parser evidence for Wave C removal.
+  - .github/workflow-contract.yml
+  finding: Added exact static gate projection, co-mutation, profile-parity, environment, and stateful-root regressions while retaining inactive semantic-parser evidence for Wave C removal.
   replacement: null
   secret_safety: not-applicable
   validators:
@@ -3284,7 +3337,7 @@ entries:
   disposition: update
   canonical_owner: tests/validation/test_run_ci_precommit.sh
   direct_consumers:
-  - scripts/validation/run-local-qa-gates.sh
+  - .github/workflow-contract.yml
   finding: Added fake-binary shell regressions for exact CI markers, argument and Agent-variable rejection, skip preservation, exact argv, and child exit propagation without running real pre-commit.
   replacement: null
   secret_safety: not-applicable

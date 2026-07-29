@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import contextlib
+import importlib.util
+import json
 import os
 import pathlib
 import re
@@ -70,8 +72,7 @@ REQUIRED_CI_JOBS = frozenset(
     }
 )
 SUPPLY_CHAIN_GOVERNANCE_DESCRIPTION = (
-    "Five focused operational-readiness unittest modules, the deterministic "
-    "supply-chain policy check, and the supply-chain summary freshness check"
+    "`ci.supply-chain-fixture-policy`"
 )
 GITHUB_INDEX_SECTIONS = (
     "Purpose",
@@ -202,11 +203,22 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn(TARGET_CLI_COMMAND, result.stdout)
-        self.assertIn(TARGET_TEST_COMMAND, result.stdout)
+        self.assertIn(
+            "leaf.local-target-surface-regressions\t"
+            "scripts/validation/ci_gate_adapters.py",
+            result.stdout,
+        )
+        self.assertIn(
+            "leaf.local-target-surface-contract\t"
+            "scripts/validation/check-target-surface-contract.py",
+            result.stdout,
+        )
         local_text = LOCAL_QA.read_text(encoding="utf-8")
-        self.assertIn(TARGET_CLI_COMMAND, local_text)
-        self.assertIn(TARGET_TEST_COMMAND, local_text)
+        self.assertIn("--profile local-script-backed", local_text)
+        self.assertIn("--profile local-harness", local_text)
+        self.assertIn("--profile local-all-profiles", local_text)
+        self.assertNotIn(TARGET_CLI_COMMAND, local_text)
+        self.assertNotIn(TARGET_TEST_COMMAND, local_text)
         tool_bootstrap = (ROOT / "scripts/operations/use-qa-ci-tools.sh").read_text(
             encoding="utf-8"
         )
@@ -246,8 +258,9 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )
         self.assertIn('python3 "$target_surface_checker"', aggregate)
         local_qa = LOCAL_QA.read_text(encoding="utf-8")
-        self.assertIn(TARGET_CLI_COMMAND, local_qa)
-        self.assertIn(TARGET_TEST_COMMAND, local_qa)
+        self.assertIn("--profile local-script-backed", local_qa)
+        self.assertNotIn(TARGET_CLI_COMMAND, local_qa)
+        self.assertNotIn(TARGET_TEST_COMMAND, local_qa)
 
     def test_ci_quality_has_exact_sixteen_job_ids(self) -> None:
         workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
@@ -262,42 +275,29 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             for step in workflow["jobs"]["zizmor"]["steps"]
             if isinstance(step, dict)
         ]
-        commands = [
-            step.get("run")
-            for step in zizmor_steps
-            if isinstance(step.get("run"), str)
-        ]
         self.assertEqual(
             [
-                "uvx --from 'zizmor==1.28.0' "
-                "zizmor . --format sarif . > results.sarif"
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.zizmor"
             ],
             [
-                command
-                for command in commands
-                if command is not None and "zizmor" in command
+                step["run"]
+                for step in zizmor_steps
+                if isinstance(step.get("run"), str)
             ],
         )
-        self.assertNotIn(
-            "zizmor==1.27.0",
-            "\n".join(command for command in commands if command is not None),
-            "the yanked credential-logging release must be rejected",
-        )
-        run_steps = [
-            step
-            for step in zizmor_steps
-            if step.get("run")
-            == (
-                "uvx --from 'zizmor==1.28.0' "
-                "zizmor . --format sarif . > results.sarif"
-            )
-        ]
+        run_steps = [step for step in zizmor_steps if "run" in step]
         self.assertEqual(1, len(run_steps))
         self.assertNotIn(
             "env",
             run_steps[0],
             "offline zizmor must not receive a credential environment",
         )
+        adapter = (
+            ROOT / "scripts/validation/ci_gate_adapters.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("zizmor==1.28.0", adapter)
+        self.assertNotIn("zizmor==1.27.0", adapter)
 
     def test_github_index_is_navigation_only_and_not_readme(self) -> None:
         self.assertTrue(GITHUB_INDEX.is_file(), "missing .github/INDEX.md")
@@ -458,32 +458,31 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             step
             for step in job["steps"]
             if isinstance(step, dict)
-            and step.get("run") == OPERATIONAL_READINESS_TEST_COMMAND
+            and step.get("run")
+            == (
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.supply-chain-fixture-policy"
+            )
         ]
         self.assertEqual(1, len(matching))
         self.assertEqual(
-            "Run focused operational readiness regressions",
+            "Check supply-chain fixture policy",
             matching[0].get("name"),
         )
-        contract = yaml.safe_load(
+        contract = json.loads(
             (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
         )
-        command_owners = contract["expensive_commands"]
         self.assertEqual(
-            1,
-            sum(
-                owner["job"] == "supply-chain-fixture-policy"
-                and owner["command"] == OPERATIONAL_READINESS_TEST_COMMAND
-                for owner in command_owners
+            (
+                "leaf.supply-chain-fixture-policy",
+                "leaf.supply-chain-deterministic-policy",
+                "leaf.supply-chain-summary-freshness",
             ),
-        )
-        self.assertEqual(
-            1,
-            len(
-                re.findall(
-                    r"(?m)^if ! python3 scripts/validation/"
-                    r"check-github-workflow-contract\.py; then$",
-                    REPO_CONTRACT.read_text(encoding="utf-8"),
+            tuple(
+                next(
+                    node["children"]
+                    for node in contract["gate_nodes"]
+                    if node["gate_id"] == "ci.supply-chain-fixture-policy"
                 )
             ),
         )
@@ -504,10 +503,10 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         with self._workflow_fixture() as root:
             workflow_path = root / ".github/workflows/ci-quality.yml"
             text = workflow_path.read_text(encoding="utf-8")
-            old = "          tests.validation.test_grype_db_seed\n"
+            old = "--gate ci.supply-chain-fixture-policy"
             self.assertIn(old, text)
             workflow_path.write_text(
-                text.replace(old, "", 1),
+                text.replace(old, "--gate ci.docs-traceability", 1),
                 encoding="utf-8",
             )
             result = subprocess.run(
@@ -519,7 +518,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             )
         self.assertEqual(1, result.returncode, result.stderr)
         self.assertIn(
-            "semantic owner command must occur exactly once",
+            "does not project its root exactly once",
             result.stderr,
         )
 
@@ -557,25 +556,25 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             ),
             (
                 "untrusted-run-input",
-                "run: bash scripts/validation/check-repo-contracts.sh",
-                "run: bash scripts/validation/check-repo-contracts.sh '${{ github.event.pull_request.title }}'",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.repo-contracts",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate '${{ github.event.pull_request.title }}'",
                 "interpolates an Actions expression directly in run",
             ),
             (
                 "untrusted-direct-ref",
-                "run: bash scripts/validation/check-repo-contracts.sh",
-                "run: bash scripts/validation/check-repo-contracts.sh '${{ github.ref }}'",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.repo-contracts",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate '${{ github.ref }}'",
                 "interpolates an Actions expression directly in run",
             ),
             (
                 "zizmor-credential-env",
                 (
-                    "        run: uvx --from 'zizmor==1.28.0' "
-                    "zizmor . --format sarif . > results.sarif"
+                    "        run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.zizmor"
                 ),
                 (
-                    "        run: uvx --from 'zizmor==1.28.0' "
-                    "zizmor . --format sarif . > results.sarif\n"
+                    "        run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.zizmor\n"
                     "        env:\n"
                     "          AUTH_CONTEXT: synthetic-value"
                 ),
@@ -624,16 +623,20 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertIn(expected, result.stderr)
 
         with (
-            self.subTest(label="ref-env-indirection-is-safe"),
+            self.subTest(label="ref-env-indirection-fails-projection"),
             self._workflow_fixture() as root,
         ):
             workflow_path = root / ".github/workflows/ci-quality.yml"
             text = workflow_path.read_text(encoding="utf-8")
-            old = "        run: bash scripts/validation/check-repo-contracts.sh"
+            old = (
+                "        run: python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.repo-contracts"
+            )
             new = (
                 "        env:\n"
                 "          SAFE_REF: ${{ github.ref }}\n"
-                '        run: bash scripts/validation/check-repo-contracts.sh "$SAFE_REF"'
+                "        run: python3 scripts/validation/run-ci-gate.py "
+                '--profile ci --gate "$SAFE_REF"'
             )
             self.assertIn(old, text)
             workflow_path.write_text(text.replace(old, new, 1), encoding="utf-8")
@@ -645,7 +648,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 check=False,
             )
             self.assertEqual(1, result.returncode, result.stderr)
-            self.assertIn("semantic owner command must occur exactly once", result.stderr)
+            self.assertIn("non-static gate program", result.stderr)
 
         safe_actions = (
             "actions/download-artifact@0000000000000000000000000000000000000000",
@@ -878,87 +881,45 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )
 
     def test_repository_metadata_stage00_mutations_fail_closed(self) -> None:
-        preflight = (
-            "      - name: Verify document metadata comparison base\n"
-            "        if: github.event_name == 'pull_request' || "
-            "github.event_name == 'push'\n"
-            "        shell: bash\n"
-            "        run: |\n"
-            "          set -euo pipefail\n"
-            '          git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
-            '          git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
         )
-        metadata = (
-            "      - name: Check changed and new document metadata\n"
-            "        run: python3 scripts/validation/"
-            "check-document-metadata.py --mode check-changed\n"
+        repo_root = next(
+            node
+            for node in contract["gate_nodes"]
+            if node["gate_id"] == "ci.repo-contracts"
         )
-        cases = (
-            (
-                "event-binding",
-                "github.event_name == 'push' && github.event.before || ''",
-                "github.event_name == 'push' && github.sha || ''",
-                "repository metadata base binding differs from the exact contract",
-            ),
-            (
-                "preflight",
-                '          git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n',
-                "          true\n",
-                "repository metadata preflight differs from the exact contract",
-            ),
-            (
-                "ordering",
-                preflight + (
-                    "      - name: Set up Python for repository contracts\n"
-                    "        uses: actions/setup-python@"
-                    "5fda3b95a4ea91299a34e894583c3862153e4b97\n"
-                    "        with:\n"
-                    "          python-version: '3.12'\n"
-                    "      - name: Install repository contract Python "
-                    "dependencies\n"
-                    "        run: python -m pip install -r "
-                    "scripts/requirements.txt\n"
-                )
-                + metadata,
-                metadata
-                + preflight
-                + (
-                    "      - name: Set up Python for repository contracts\n"
-                    "        uses: actions/setup-python@"
-                    "5fda3b95a4ea91299a34e894583c3862153e4b97\n"
-                    "        with:\n"
-                    "          python-version: '3.12'\n"
-                    "      - name: Install repository contract Python "
-                    "dependencies\n"
-                    "        run: python -m pip install -r "
-                    "scripts/requirements.txt\n"
-                ),
-                "repository metadata steps are out of order",
-            ),
+        children = tuple(repo_root["children"])
+        self.assertLess(
+            children.index("leaf.repo-metadata-base"),
+            children.index("setup.repo-python-dependencies"),
         )
-        program = self._stage00_github_program()
-        for label, old, new, expected in cases:
-            with self.subTest(label=label), self._workflow_fixture() as root:
-                workflow = root / WORKFLOW.relative_to(ROOT)
-                text = workflow.read_text(encoding="utf-8")
-                self.assertIn(old, text)
-                workflow.write_text(
-                    text.replace(old, new, 1),
-                    encoding="utf-8",
-                )
-                result = subprocess.run(
-                    [sys.executable, "-c", program],
-                    cwd=root,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                self.assertEqual(1, result.returncode, result.stderr)
-                self.assertIn(expected, result.stderr)
+        self.assertLess(
+            children.index("setup.repo-python-dependencies"),
+            children.index("leaf.repo-document-metadata"),
+        )
+        metadata = next(
+            node
+            for node in contract["gate_nodes"]
+            if node["gate_id"] == "leaf.repo-document-metadata"
+        )
+        self.assertEqual(["TEMPLATE_GATE_BASE"], metadata["allowed_env_keys"])
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        self.assertEqual(
+            (
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.repo-contracts"
+            ),
+            workflow["jobs"]["repo-contracts"]["steps"][-1]["run"],
+        )
 
     def test_repo_memory_contract_rejects_exact_current_profile_mutation(
         self,
     ) -> None:
+        if importlib.util.find_spec("html5lib") is None:
+            self.skipTest("html5lib is not installed in the local test runtime")
         program = self._repo_python_program("Governance memory contract")
         sentinel = "private-current-profile-sentinel"
         load_sentinel = "private-contract-load-sentinel"
@@ -1057,18 +1018,23 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
         jobs = workflow["jobs"]
 
-        repo_steps = jobs["repo-contracts"]["steps"]
-        repo_commands = "\n".join(
-            str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
-        )
-        self.assertNotIn(
-            "check-agent-governance-contract.py --mode repository --section all",
-            repo_commands,
+        self.assertIn(
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.repo-contracts",
+            "\n".join(
+                str(step.get("run", ""))
+                for step in jobs["repo-contracts"]["steps"]
+                if isinstance(step, dict)
+            ),
         )
         self.assertIn(
-            "python3 -m unittest "
-            "tests.validation.test_agent_governance_ci_routing -v",
-            repo_commands,
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.agent-output-eval-fixture-gate",
+            "\n".join(
+                str(step.get("run", ""))
+                for step in jobs["agent-output-eval-fixture-gate"]["steps"]
+                if isinstance(step, dict)
+            ),
         )
         aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
         self.assertRegex(
@@ -1076,22 +1042,6 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             r"python3 scripts/validation/check-agent-governance-contract\.py \\\n"
             r"\s+--mode repository --section all",
         )
-
-        eval_steps = jobs["agent-output-eval-fixture-gate"]["steps"]
-        eval_commands = "\n".join(
-            str(step.get("run", "")) for step in eval_steps if isinstance(step, dict)
-        )
-        self.assertIn(
-            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
-            eval_commands,
-        )
-        self.assertIn(
-            "python3 -m unittest "
-            "tests.validation.test_agent_output_eval_fixtures -v",
-            eval_commands,
-        )
-        self.assertIn("fixtures_check=pass", eval_commands)
-        self.assertIn("regressions_check=pass", eval_commands)
         self.assertNotRegex(
             aggregate,
             r"(?m)^if ! bash scripts/hardening/check-all-hardening\.sh ",
@@ -1102,31 +1052,9 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             r"run-agent-output-eval-fixtures\.sh ",
         )
         local_qa = LOCAL_QA.read_text(encoding="utf-8")
-        self.assertIn(
-            "bash scripts/validation/run-agent-output-eval-fixtures.sh "
-            "--check-fixtures --check-regressions",
-            local_qa,
-        )
-        self.assertIn(
-            "bash scripts/hardening/check-all-hardening.sh",
-            local_qa,
-        )
-        for command in (
-            "python3 -m unittest "
-            "tests.validation.test_agent_governance_ci_routing -v",
-            "python3 -m unittest "
-            "tests.validation.test_agent_output_eval_fixtures -v",
-        ):
-            with self.subTest(local_owner=command):
-                self.assertEqual(
-                    1,
-                    len(
-                        re.findall(
-                            rf"(?m)^  run_step .+ {re.escape(command)}$",
-                            local_qa,
-                        )
-                    ),
-                )
+        self.assertNotIn("run-agent-output-eval-fixtures.sh", local_qa)
+        self.assertNotIn("check-all-hardening.sh", local_qa)
+        self.assertEqual(4, local_qa.count("scripts/validation/run-ci-gate.py"))
         self.assertEqual({"contents": "read"}, jobs["repo-contracts"]["permissions"])
         self.assertEqual(
             {"contents": "read"},
@@ -1188,10 +1116,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertIn(fragment, result.stdout)
         self.assertNotIn("locally use pre-commit", result.stdout)
         self.assertNotIn("pre-commit run --all-files", result.stdout)
-        self.assertIn(
-            "- bash tests/validation/test_run_ci_precommit.sh",
-            result.stdout,
-        )
+        self.assertIn("leaf.ci-precommit-regressions", result.stdout)
 
     def test_semantic_local_qa_bypass_guard_is_selector_coupled(self) -> None:
         for path in (
@@ -1913,6 +1838,101 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             r"grep .*validate-harness",
         )
 
+    def test_local_profiles_exclude_compose_env_setup(self) -> None:
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        node_by_id = {
+            node["gate_id"]: node for node in contract["gate_nodes"]
+        }
+
+        def expand(roots):
+            expanded = []
+            seen = set()
+
+            def visit(gate_id):
+                if gate_id in seen:
+                    return
+                seen.add(gate_id)
+                node = node_by_id[gate_id]
+                if node["kind"] == "aggregate":
+                    for child in node["children"]:
+                        visit(child)
+                else:
+                    expanded.append(gate_id)
+
+            for root in roots:
+                visit(root)
+            return expanded
+
+        for profile in contract["profile_roots"]:
+            with self.subTest(profile=profile["profile"]):
+                self.assertNotIn(
+                    "setup.compose-env",
+                    expand(profile["root_gate_ids"]),
+                )
+
+    def test_local_wrapper_preserves_existing_env_bytes(self) -> None:
+        source = (
+            ROOT / "scripts/validation/run-local-qa-gates.sh"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("cp .env.example .env", source)
+        self.assertNotRegex(source, r"(?:>|>>)\s*\.env(?:\s|$)")
+        self.assertNotIn("rm .env", source)
+
+    def test_descriptor_mode_root_and_import_compatibility_set_is_exact(
+        self,
+    ) -> None:
+        expected = {
+            "scripts/hardening/check-all-hardening.sh",
+            "scripts/operations/sync-provider-surfaces.sh",
+            "scripts/operations/sync-tech-stack-versions.sh",
+            "scripts/validation/check-agent-governance-contract.py",
+            "scripts/validation/check-document-corpus-lifecycle.py",
+            "scripts/validation/check-document-metadata.py",
+            "scripts/validation/check-supply-chain-policy.py",
+        }
+        for relative in sorted(expected):
+            with self.subTest(relative=relative):
+                source = (ROOT / relative).read_text(encoding="utf-8")
+                self.assertIn("HYHOME_CI_GATE_ROOT", source)
+        references = {
+            path.relative_to(ROOT).as_posix()
+            for root in (ROOT / "scripts",)
+            for path in root.rglob("*")
+            if path.is_file()
+            and "__pycache__" not in path.parts
+            and "HYHOME_CI_GATE_ROOT" in path.read_text(
+                encoding="utf-8",
+                errors="ignore",
+            )
+            and path.name
+            not in {
+                "ci_gate_adapters.py",
+                "ci_gate_runner.py",
+                "test_ci_gate_runner.py",
+            }
+        }
+        self.assertEqual(expected, references)
+
+    def test_repository_umbrella_is_wiring_only(self) -> None:
+        source = (
+            ROOT / "scripts/validation/check-repo-contracts.sh"
+        ).read_text(encoding="utf-8")
+        forbidden_patterns = (
+            r'(?m)^section "GitHub workflow contract"$',
+            r"(?m)^if ! python3 scripts/validation/"
+            r"check-github-workflow-contract\.py; then$",
+            r"(?m)^if ! python3 -m unittest "
+            r"tests\.validation\.test_github_workflow_contract",
+            r"(?m)^if ! bash tests/validation/test_run_ci_precommit\.sh",
+        )
+        for pattern in forbidden_patterns:
+            with self.subTest(pattern=pattern):
+                self.assertIsNone(re.search(pattern, source))
+
     @staticmethod
     def _repo_python_program(section: str) -> str:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
@@ -2018,6 +2038,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 GITHUB_GOVERNANCE,
                 ARTIFACT_CONTRACT,
                 GITHUB_OBSERVATION,
+                ROOT / "scripts/validation/ci_gate_contract.py",
                 ROOT / "scripts/validation/github_workflow_contract.py",
                 ROOT / "scripts/validation/check-repo-contracts.sh",
             ):

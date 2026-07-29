@@ -28,7 +28,7 @@ case "${1:-}" in
   ;;
 esac
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+repo_root="${HYHOME_CI_GATE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 cd "$repo_root"
 
 SYNC_MODE="$MODE" python3 - <<'PY'

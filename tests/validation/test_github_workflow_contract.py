@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -234,16 +235,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
             steps[1]["uses"],
         )
         self.assertEqual(
-            "python -m pip install -r scripts/requirements-pre-commit.txt",
-            steps[2]["run"],
-        )
-        self.assertEqual(
             {
                 "name": "Run pre-commit hooks",
                 "env": {"SKIP": "eslint-nextjs"},
-                "run": "bash scripts/validation/run-ci-precommit.sh",
+                "run": (
+                    "python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.pre-commit"
+                ),
             },
-            steps[3],
+            steps[2],
         )
         self.assertFalse(
             any(
@@ -283,6 +283,218 @@ class GithubWorkflowContractTests(unittest.TestCase):
         codes = {finding.code for finding in findings}
         self.assertIn("workflow-trigger-forbidden", codes)
         self.assertIn("action-ref-mutable", codes)
+
+    @staticmethod
+    def _required_quality_jobs(module, root: pathlib.Path):
+        workflows = {
+            workflow.path: workflow
+            for workflow in module.load_workflows(root)
+        }
+        jobs = workflows[".github/workflows/ci-quality.yml"].data["jobs"]
+        if not isinstance(jobs, dict):
+            raise AssertionError("required-quality jobs must be a mapping")
+        return jobs
+
+    @staticmethod
+    def _static_gate_id(program: str) -> str:
+        match = re.fullmatch(
+            r"python3 scripts/validation/run-ci-gate\.py "
+            r"--profile ci --gate ([a-z0-9.-]+)",
+            program,
+        )
+        if match is None:
+            raise AssertionError(f"non-static gate program: {program!r}")
+        return match.group(1)
+
+    def required_quality_run_programs(self) -> tuple[str, ...]:
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        return tuple(
+            step["run"]
+            for job in jobs.values()
+            for step in job.get("steps", [])
+            if isinstance(step, dict) and isinstance(step.get("run"), str)
+        )
+
+    def test_required_run_steps_use_only_static_gate_invocations(self) -> None:
+        programs = self.required_quality_run_programs()
+        for program in programs:
+            self.assertRegex(
+                program,
+                r"\Apython3 scripts/validation/run-ci-gate\.py "
+                r"--profile ci --gate [a-z0-9.-]+\Z",
+            )
+
+    def test_required_jobs_project_their_registered_roots_once(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        roots = {
+            root.job_id: root.root_gate_id
+            for root in contract.gate_registry.job_roots
+        }
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        self.assertEqual(set(roots), set(jobs))
+        for job_id, job in jobs.items():
+            programs = tuple(
+                step["run"]
+                for step in job.get("steps", [])
+                if isinstance(step, dict) and isinstance(step.get("run"), str)
+            )
+            projected: list[str] = []
+            for program in programs:
+                gate_id = self._static_gate_id(program)
+                projected.extend(
+                    self.module.expand_gate_ids(
+                        contract.gate_registry,
+                        "ci",
+                        gate_id,
+                        False,
+                    )
+                )
+            expected = self.module.expand_gate_ids(
+                contract.gate_registry,
+                "ci",
+                roots[job_id],
+                False,
+            )
+            with self.subTest(job_id=job_id):
+                self.assertEqual(expected, tuple(projected))
+                self.assertEqual(len(projected), len(set(projected)))
+
+    def test_workflow_projection_rejects_dynamic_ids_and_free_form_shell(
+        self,
+    ) -> None:
+        mutations = {
+            "multiline": (
+                "python3 scripts/validation/run-ci-gate.py --profile ci "
+                "--gate ci.docs-traceability\ntrue"
+            ),
+            "expression": (
+                "python3 scripts/validation/run-ci-gate.py --profile ci "
+                "--gate ${{ matrix.gate }}"
+            ),
+            "variable": (
+                "gate=ci.docs-traceability\n"
+                "python3 scripts/validation/run-ci-gate.py --profile ci "
+                '--gate "$gate"'
+            ),
+            "heredoc": "python3 - <<'PY'\nprint('gate')\nPY",
+            "substitution": "python3 $(printf scripts/validation/run-ci-gate.py)",
+            "eval": "eval python3 scripts/validation/run-ci-gate.py",
+            "source": "source scripts/validation/run-local-qa-gates.sh",
+            "shell-c": "bash -c 'true'",
+            "direct-script": "bash scripts/validation/check-doc-traceability.sh",
+        }
+        for label, program in mutations.items():
+            with self.subTest(label=label), self.workflow_fixture() as root:
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                text = text.replace(
+                    "run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.docs-traceability",
+                    "run: " + program.replace("\n", "\n          "),
+                    1,
+                )
+                workflow.write_text(text, encoding="utf-8")
+                codes = {
+                    finding.code
+                    for finding in self.module.validate_workflows(
+                        root,
+                        self.module.load_workflow_contract(root),
+                    )
+                }
+                self.assertIn("workflow-gate-projection-invalid", codes)
+
+    def test_workflow_and_registry_co_mutations_fail_closed(self) -> None:
+        with self.workflow_fixture() as root:
+            workflow = root / ".github/workflows/ci-quality.yml"
+            workflow.write_text(
+                workflow.read_text(encoding="utf-8").replace(
+                    "run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.docs-traceability",
+                    "run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate leaf.docs-implementation-alignment",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            document = self.load_contract_document(root)
+            for record in document["job_roots"]:
+                if record["job_id"] == "docs-traceability":
+                    record["root_gate_id"] = "leaf.docs-implementation-alignment"
+                    break
+            self.write_contract_document(root, document)
+            findings = self.module.validate_workflows(
+                root,
+                self.module.load_workflow_contract(root),
+            )
+        self.assertIn(
+            "ci-gate-required-job-roots",
+            {finding.code for finding in findings},
+        )
+
+    def test_ci_and_local_profiles_share_node_definitions(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        node_by_id = {
+            node.gate_id: node for node in contract.gate_registry.nodes
+        }
+        ci_ids = set(
+            self.module.expand_gate_ids(
+                contract.gate_registry,
+                "ci",
+                None,
+                True,
+            )
+        )
+        for profile in (
+            "local-script-backed",
+            "local-harness",
+            "local-all-profiles",
+        ):
+            local_ids = set(
+                self.module.expand_gate_ids(
+                    contract.gate_registry,
+                    profile,
+                    None,
+                    True,
+                )
+            )
+            for gate_id in sorted(ci_ids & local_ids):
+                with self.subTest(profile=profile, gate_id=gate_id):
+                    self.assertIs(
+                        node_by_id[gate_id],
+                        node_by_id[gate_id],
+                    )
+
+    def test_storybook_root_runs_setup_and_coverage_in_one_runner_lifetime(
+        self,
+    ) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        programs = tuple(
+            step["run"]
+            for step in jobs["storybook-coverage"]["steps"]
+            if isinstance(step, dict) and isinstance(step.get("run"), str)
+        )
+        self.assertEqual(
+            (
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.storybook-coverage",
+            ),
+            programs,
+        )
+        expanded = self.module.expand_gate_ids(
+            contract.gate_registry,
+            "ci",
+            "ci.storybook-coverage",
+            False,
+        )
+        self.assertEqual(
+            (
+                "setup.storybook-node-dependencies",
+                "setup.storybook-playwright",
+                "leaf.storybook-coverage",
+            ),
+            expanded,
+        )
 
     @contextlib.contextmanager
     def workflow_fixture(self):
@@ -484,7 +696,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "unsafe-run-interpolation",
                 ".github/workflows/ci-quality.yml",
-                "        run: bash scripts/validation/check-doc-traceability.sh\n",
+                "        run: python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.docs-traceability\n",
                 f'        run: echo "${{{{ github.event.pull_request.title }}}}-{sentinel}"\n',
                 "workflow-run-interpolation-unsafe",
             ),

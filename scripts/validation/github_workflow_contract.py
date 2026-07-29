@@ -988,6 +988,163 @@ def _job_programs(job: dict[object, object]) -> tuple[str, ...]:
     return tuple(programs)
 
 
+_STATIC_GATE_PROGRAM_RE: Final = re.compile(
+    r"python3 scripts/validation/run-ci-gate\.py "
+    r"--profile ci --gate ([a-z0-9.-]+)\Z"
+)
+
+
+def _static_gate_id(program: str) -> str | None:
+    match = _STATIC_GATE_PROGRAM_RE.fullmatch(program)
+    return match.group(1) if match is not None else None
+
+
+def _environment_keys(value: object) -> set[str] | None:
+    if value is None:
+        return set()
+    if not isinstance(value, dict) or any(
+        not isinstance(key, str) for key in value
+    ):
+        return None
+    return set(value)
+
+
+def _workflow_projection_findings(
+    path: str,
+    raw_jobs: dict[object, object],
+    contract: WorkflowContract,
+) -> tuple[WorkflowFinding, ...]:
+    findings: list[WorkflowFinding] = []
+    root_by_job = {
+        record.job_id: record.root_gate_id
+        for record in contract.gate_registry.job_roots
+        if record.workflow == path
+    }
+    node_by_id = {
+        node.gate_id: node for node in contract.gate_registry.nodes
+    }
+    for raw_job_id, raw_job in raw_jobs.items():
+        if not isinstance(raw_job_id, str) or not isinstance(raw_job, dict):
+            continue
+        root_gate_id = root_by_job.get(raw_job_id)
+        if root_gate_id is None:
+            continue
+        steps = raw_job.get("steps")
+        if not isinstance(steps, list):
+            findings.append(
+                _finding(
+                    "workflow-gate-projection-invalid",
+                    path,
+                    f"job {raw_job_id} has no projected steps",
+                )
+            )
+            continue
+        projected: list[str] = []
+        admitted_job_environment: set[str] = set()
+        for step in steps:
+            if not isinstance(step, dict):
+                continue
+            program = step.get("run")
+            if program is None:
+                continue
+            if not isinstance(program, str):
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-invalid",
+                        path,
+                        f"job {raw_job_id} contains a non-string run program",
+                    )
+                )
+                continue
+            gate_id = _static_gate_id(program)
+            if gate_id is None:
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-invalid",
+                        path,
+                        f"job {raw_job_id} contains a non-static gate program",
+                    )
+                )
+                continue
+            try:
+                expanded = expand_gate_ids(
+                    contract.gate_registry,
+                    "ci",
+                    gate_id,
+                    False,
+                )
+                root_expanded = expand_gate_ids(
+                    contract.gate_registry,
+                    "ci",
+                    root_gate_id,
+                    False,
+                )
+            except GateContractError:
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-invalid",
+                        path,
+                        f"job {raw_job_id} selects an invalid gate",
+                    )
+                )
+                continue
+            if not set(expanded).issubset(root_expanded):
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-invalid",
+                        path,
+                        f"job {raw_job_id} selects a gate outside its root",
+                    )
+                )
+                continue
+            step_admitted = {
+                key
+                for selected_id in expanded
+                for key in node_by_id[selected_id].allowed_env_keys
+            }
+            step_environment = _environment_keys(step.get("env"))
+            if (
+                step_environment is None
+                or not step_environment.issubset(step_admitted)
+            ):
+                findings.append(
+                    _finding(
+                        "workflow-gate-environment-invalid",
+                        path,
+                        f"job {raw_job_id} step environment is not admitted",
+                    )
+                )
+            admitted_job_environment.update(step_admitted)
+            projected.extend(expanded)
+        expected = expand_gate_ids(
+            contract.gate_registry,
+            "ci",
+            root_gate_id,
+            False,
+        )
+        if tuple(projected) != expected or len(projected) != len(set(projected)):
+            findings.append(
+                _finding(
+                    "workflow-gate-projection-mismatch",
+                    path,
+                    f"job {raw_job_id} does not project its root exactly once",
+                )
+            )
+        job_environment = _environment_keys(raw_job.get("env"))
+        if (
+            job_environment is None
+            or not job_environment.issubset(admitted_job_environment)
+        ):
+            findings.append(
+                _finding(
+                    "workflow-gate-environment-invalid",
+                    path,
+                    f"job {raw_job_id} environment is not admitted",
+                )
+            )
+    return tuple(findings)
+
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class _ShellSubstitution:
     placeholder: str
@@ -2382,6 +2539,14 @@ def validate_workflows(
                     "workflow-job-set-mismatch",
                     path,
                     "job IDs differ from the contract",
+                )
+            )
+        if spec.classification == "required-quality":
+            findings.extend(
+                _workflow_projection_findings(
+                    path,
+                    raw_jobs,
+                    contract,
                 )
             )
         for job_id, raw_job in raw_jobs.items():

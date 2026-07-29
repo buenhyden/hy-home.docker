@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import sys
 
@@ -16,7 +17,12 @@ from agent_governance_contract import (
 )
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+_ROOT_OVERRIDE = os.environ.get("HYHOME_CI_GATE_ROOT")
+ROOT = (
+    pathlib.Path(_ROOT_OVERRIDE)
+    if _ROOT_OVERRIDE
+    else pathlib.Path(__file__).resolve().parents[2]
+)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

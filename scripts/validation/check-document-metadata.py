@@ -19,7 +19,13 @@ from collections.abc import Mapping, Sequence
 import yaml
 
 
-_VALIDATION_DIRECTORY = str(pathlib.Path(__file__).resolve().parent)
+_ROOT_OVERRIDE = os.environ.get("HYHOME_CI_GATE_ROOT")
+ROOT = (
+    pathlib.Path(_ROOT_OVERRIDE)
+    if _ROOT_OVERRIDE
+    else pathlib.Path(__file__).resolve().parents[2]
+)
+_VALIDATION_DIRECTORY = str(ROOT / "scripts/validation")
 if _VALIDATION_DIRECTORY not in sys.path:
     sys.path.insert(0, _VALIDATION_DIRECTORY)
 
@@ -31,7 +37,6 @@ from agent_governance_contract import (  # noqa: E402
 )
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_AGENT_GOVERNANCE_ARTIFACTS = (
     ROOT / "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"

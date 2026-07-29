@@ -824,11 +824,6 @@ PY
   failures=$((failures + 1))
 fi
 
-section "GitHub workflow contract"
-if ! python3 scripts/validation/check-github-workflow-contract.py; then
-  failures=$((failures + 1))
-fi
-
 section "Stage 00 GitHub routing contracts"
 if ! python3 - <<'PY'; then
 from __future__ import annotations

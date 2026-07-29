@@ -21,7 +21,12 @@ from typing import Any
 import zlib
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+_ROOT_OVERRIDE = os.environ.get("HYHOME_CI_GATE_ROOT")
+ROOT = (
+    pathlib.Path(_ROOT_OVERRIDE)
+    if _ROOT_OVERRIDE
+    else pathlib.Path(__file__).resolve().parents[2]
+)
 FIXTURES = ROOT / "tests/fixtures/supply-chain"
 TOOL_REGISTRY_PATH = ROOT / "infra/supply-chain.tool-images.json"
 POLICY_PATH = ROOT / "infra/supply-chain.sample-service-policy.json"

@@ -4,10 +4,12 @@
 
 set -euo pipefail
 
-# Source the library
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Source the library. The typed gate runner supplies a verified descriptor
+# root; direct execution retains the script-relative fallback.
+REPO_ROOT="${HYHOME_CI_GATE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
+SCRIPT_DIR="${REPO_ROOT}/scripts/hardening"
 LIB_PATH="${SCRIPT_DIR}/../lib/hardening-lib.sh"
-TECH_STACK_REGISTRY="${SCRIPT_DIR}/../../infra/tech-stack.versions.json"
+TECH_STACK_REGISTRY="${REPO_ROOT}/infra/tech-stack.versions.json"
 
 if [[ ! -f "$LIB_PATH" ]]; then
   echo "Error: Hardening library not found at $LIB_PATH"

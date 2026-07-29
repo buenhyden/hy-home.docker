@@ -24,7 +24,12 @@ from typing import Any
 import yaml
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+_ROOT_OVERRIDE = os.environ.get("HYHOME_CI_GATE_ROOT")
+ROOT = (
+    pathlib.Path(_ROOT_OVERRIDE)
+    if _ROOT_OVERRIDE
+    else pathlib.Path(__file__).resolve().parents[2]
+)
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"

@@ -205,11 +205,15 @@ Use `--check` or `POST_TOOL_VALIDATE_CHECK_ONLY=1` to run non-mutating
 validation; check-only mode disables whitespace writes and `shfmt -w` while
 preserving diff, syntax, and repo checks.
 
-`scripts/validation/run-local-qa-gates.sh` is the local script-backed QA/CI
-orchestrator. Default mode runs only checks that are safe to execute locally.
-Use `--list` to see local, CI/local-tooling, and remote-only responsibilities.
-Use `--all-profiles` to run the same local gates with the governed all-profile
-Compose set unless `HYHOME_COMPOSE_PROFILES` is already set.
+`scripts/validation/run-ci-gate.py` is the dependency-free typed-gate CLI. It
+loads `.github/workflow-contract.yml`, expands one gate or one registered
+profile deterministically, and keeps `--list` and `--dry-run` execution-free.
+
+`scripts/validation/run-local-qa-gates.sh` is a thin local-profile wrapper.
+Default, `--harness`, and `--all-profiles` each delegate exactly once to
+`local-script-backed`, `local-harness`, or `local-all-profiles`; the wrapper
+does not retain its own child-command list or mutate `.env`. Use `--list` to
+show the default profile's registered order without execution.
 
 `scripts/validation/recommend-qa-gates.sh` is an advisory changed-path report.
 It prints recommended local gates and remote/manual responsibilities without

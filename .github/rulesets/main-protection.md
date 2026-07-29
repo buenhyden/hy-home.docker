@@ -31,8 +31,8 @@ itself.
 
 Use the CI Quality Gates workflow job names as required checks:
 `.github/workflow-contract.yml` owns their exact machine identity, and
-`scripts/validation/check-repo-contracts.sh` retains the Stage 00 desired-state
-comparison through the focused workflow checker.
+the focused workflow checker proves that every required job projects its
+registered root DAG exactly once through static typed-gate invocations.
 
 - `docs-traceability`
 - `docs-implementation-alignment`
@@ -58,3 +58,6 @@ be performed through GitHub UI or an audited `gh api` command, then re-check:
 
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
+
+Until that separately approved readback succeeds, all 16 checks above remain
+tracked desired state rather than evidence of remote enforcement.

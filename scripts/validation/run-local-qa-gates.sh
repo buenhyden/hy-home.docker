@@ -8,229 +8,53 @@ usage() {
   cat <<'EOF'
 Usage: bash scripts/validation/run-local-qa-gates.sh [--help|--list|--script-backed|--all-profiles|--harness]
 
-Run the repository QA gates that are safe and meaningful in a local shell.
+Run the typed local QA profile selected from .github/workflow-contract.yml.
 
 Modes:
-  --script-backed  Default. Run local script-backed gates that correspond to
-                   CI quality jobs or CI drift checks.
-  --all-profiles   Run the same gates, but validate Docker Compose with the
-                   governed all-profile set unless HYHOME_COMPOSE_PROFILES is
-                   already set.
-  --harness        Run only the harness-change-scoped subset of script-backed
-                   gates (diff hygiene, shell syntax, doc traceability and
-                   implementation alignment, Docker Compose, hardening,
-                   template/security baseline, repository contracts). Use this
-                   as a fast gate when changing harness surfaces such as
-                   governance docs, scripts, templates, or the PR template.
-  --list           Print local and remote-only QA/CI responsibilities.
+  --script-backed  Default. Execute the local-script-backed profile once.
+  --all-profiles   Execute the local-all-profiles profile once.
+  --harness        Execute the local-harness profile once.
+  --list           List the local-script-backed profile without execution.
 
 Remote-only gates such as SARIF upload, protected-branch enforcement, and
-GitHub-hosted required-check status are intentionally listed, not executed.
+GitHub-hosted required-check status are not executed. Approved Agent all-files
+QA uses only scripts/validation/run-agent-precommit-all-files.sh from an
+initially clean linked worktree with tracked Task evidence and explicit
+--allow-prefix values; this local runner never invokes that controlled route.
 EOF
 }
-
-ALL_COMPOSE_PROFILES="${HYHOME_ALL_COMPOSE_PROFILES:-core data obs workflow ai tooling messaging security communication service storage admin iac registry sast sync testing graph mng ksql nginx}"
-MODE="script-backed"
-
-case "${1:-}" in
-"")
-  ;;
---script-backed)
-  MODE="script-backed"
-  ;;
---all-profiles)
-  MODE="all-profiles"
-  ;;
---harness)
-  MODE="harness"
-  ;;
---list)
-  MODE="list"
-  ;;
---help | -h)
-  usage
-  exit 0
-  ;;
-*)
-  usage >&2
-  exit 2
-  ;;
-esac
 
 if [[ "$#" -gt 1 ]]; then
   usage >&2
   exit 2
 fi
 
-list_gates() {
-  cat <<'EOF'
-Local script-backed gates:
-- git diff --check
-- bash -n for scripts/**/*.sh and .claude/hooks/*.sh
-- scripts/validation/recommend-qa-gates.sh (advisory; recommends gates, does not execute them)
-- scripts/operations/sync-provider-surfaces.sh --check
-- scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
-- python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v
-- scripts/validation/check-agent-governance-contract.py --mode repository --section all
-- scripts/operations/sync-tech-stack-versions.sh --check
-- scripts/validation/check-doc-traceability.sh
-- scripts/validation/check-doc-implementation-alignment.sh
-- tests/validation/test_document_corpus_lifecycle.py
-- scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
-- scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
-- python3 scripts/validation/check-supply-chain-policy.py --check
-- bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
-- python3 -m unittest tests.validation.test_target_surface_contracts -v
-- python3 scripts/validation/check-target-surface-contract.py
-- python3 -m unittest tests.validation.test_target_surface_delta_contracts -v
-- python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
-- python3 -m unittest tests.validation.test_github_workflow_contract -v
-- python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
-- python3 scripts/validation/check-github-workflow-contract.py
-- bash tests/validation/test_run_ci_precommit.sh
-- scripts/validation/validate-docker-compose.sh
-- scripts/hardening/check-all-hardening.sh
-- scripts/validation/check-template-security-baseline.sh
-- scripts/validation/check-quickwin-baseline.sh
-- bash scripts/validation/generate-security-automation-readiness.sh --check
-- bash scripts/validation/generate-audit-implementation-matrix.sh --check
-- bash scripts/knowledge/generate-llm-wiki-index.sh --check
-- bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
-- scripts/validation/check-repo-contracts.sh
-
-CI/local-tooling gates:
-- pre-commit job: run in GitHub Actions. Approved local all-files execution uses
-  only scripts/validation/run-agent-precommit-all-files.sh from an initially clean linked worktree
-  with tracked Task evidence and explicit --allow-prefix values; this local QA
-  runner never invokes the real all-files gate and exercises the CI wrapper
-  only through its fake-binary contract test.
-- frontend-quality and storybook-coverage: run in GitHub Actions after npm ci.
-
-Remote-only gates:
-- zizmor SARIF upload with GitHub security permissions.
-- PR required-check status, branch protection, CODEOWNERS review, and merge readiness.
-- stale/greetings/pr-labeler/generate-changelog/document-corpus-lifecycle/
-  tech-stack-version-sync workflows are non-gating GitHub automation, not local
-  script-backed quality gates.
-EOF
-}
-
-run_step() {
-  local label="$1"
-  shift
-  printf '\n==> %s\n' "$label"
-  "$@"
-}
-
-run_bash_syntax() {
-  local bash_files=()
-  shopt -s nullglob globstar
-  bash_files=(scripts/**/*.sh .claude/hooks/*.sh)
-  shopt -u nullglob globstar
-
-  if [[ "${#bash_files[@]}" -eq 0 ]]; then
-    echo "No shell scripts found for syntax validation."
-    return 0
-  fi
-
-  bash -n "${bash_files[@]}"
-}
-
-run_lifecycle_gates() {
-  run_step "Document corpus lifecycle tests" python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v
-  run_step "Document corpus lifecycle contract" python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
-  run_step "Promoted document corpus lifecycle manifests" python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
-}
-
-run_target_surface_gates() {
-  run_step "Target surface contract tests" python3 -m unittest tests.validation.test_target_surface_contracts -v
-  run_step "Target surface contracts" python3 scripts/validation/check-target-surface-contract.py
-  run_step "Target surface delta contract tests" python3 -m unittest tests.validation.test_target_surface_delta_contracts -v
-  run_step "Target surface delta contracts" python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
-}
-
-run_github_workflow_gates() {
-  run_step "GitHub workflow contract tests" python3 -m unittest tests.validation.test_github_workflow_contract -v
-  run_step "Agent governance CI routing tests" python3 -m unittest tests.validation.test_agent_governance_ci_routing -v
-  run_step "GitHub workflow contracts" python3 scripts/validation/check-github-workflow-contract.py
-  run_step "CI-only pre-commit wrapper tests" bash tests/validation/test_run_ci_precommit.sh
-}
-
-run_generated_freshness_gates() {
-  run_step "Security automation readiness freshness" bash scripts/validation/generate-security-automation-readiness.sh --check
-  run_step "Audit implementation matrix freshness" bash scripts/validation/generate-audit-implementation-matrix.sh --check
-  run_step "LLM Wiki freshness" bash scripts/knowledge/generate-llm-wiki-index.sh --check
-  run_step "LLM Wiki coverage freshness" bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
-}
-
-run_supply_chain_fixture_gates() {
-  run_step "Supply-chain fixture policy" python3 scripts/validation/check-supply-chain-policy.py --check
-  run_step "Supply-chain summary freshness" bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
-}
-
-run_agent_semantic_eval_gates() {
-  run_step "Agent semantic eval fixtures" bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
-  run_step "Agent semantic eval fixture tests" python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v
-}
-
-run_script_backed_gates() {
-  if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
-    # shellcheck source=../operations/use-qa-ci-tools.sh
-    source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
-  fi
-
-  run_step "Diff whitespace hygiene" git diff --check
-  run_step "Shell syntax" run_bash_syntax
-  run_step "Provider surface drift" bash scripts/operations/sync-provider-surfaces.sh --check
-  run_agent_semantic_eval_gates
-  run_step "Typed agent governance repository contract" python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
-  run_step "Tech-stack version drift" bash scripts/operations/sync-tech-stack-versions.sh --check
-  run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
-  run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
-  run_lifecycle_gates
-  run_target_surface_gates
-  run_github_workflow_gates
-  run_supply_chain_fixture_gates
-  run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
-  run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
-  run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
-  run_step "QuickWin baseline" bash scripts/validation/check-quickwin-baseline.sh
-  run_generated_freshness_gates
-  run_step "Repository contracts" bash scripts/validation/check-repo-contracts.sh
-}
-
-run_harness_gates() {
-  run_step "Diff whitespace hygiene" git diff --check
-  run_step "Shell syntax" run_bash_syntax
-  run_step "Provider surface drift" bash scripts/operations/sync-provider-surfaces.sh --check
-  run_agent_semantic_eval_gates
-  run_step "Typed agent governance repository contract" python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
-  run_step "Documentation traceability" bash scripts/validation/check-doc-traceability.sh
-  run_step "Documentation implementation alignment" bash scripts/validation/check-doc-implementation-alignment.sh
-  run_lifecycle_gates
-  run_target_surface_gates
-  run_github_workflow_gates
-  run_supply_chain_fixture_gates
-  run_step "Docker Compose validation" bash scripts/validation/validate-docker-compose.sh
-  run_step "Infrastructure hardening" bash scripts/hardening/check-all-hardening.sh
-  run_step "Template/security baseline" bash scripts/validation/check-template-security-baseline.sh
-  run_generated_freshness_gates
-  run_step "Repository contracts" bash scripts/validation/check-repo-contracts.sh
-}
-
-case "$MODE" in
-list)
-  list_gates
+case "${1:---script-backed}" in
+--script-backed)
+  exec python3 scripts/validation/run-ci-gate.py \
+    --profile local-script-backed \
+    --all
   ;;
-script-backed)
-  run_script_backed_gates
+--all-profiles)
+  exec python3 scripts/validation/run-ci-gate.py \
+    --profile local-all-profiles \
+    --all
   ;;
-all-profiles)
-  export HYHOME_COMPOSE_PROFILES="${HYHOME_COMPOSE_PROFILES:-$ALL_COMPOSE_PROFILES}"
-  run_script_backed_gates
+--harness)
+  exec python3 scripts/validation/run-ci-gate.py \
+    --profile local-harness \
+    --all
   ;;
-harness)
-  run_harness_gates
+--list)
+  usage
+  echo
+  echo "Registered local-script-backed execution order:"
+  exec python3 scripts/validation/run-ci-gate.py \
+    --profile local-script-backed \
+    --list
+  ;;
+--help | -h)
+  usage
   ;;
 *)
   usage >&2

@@ -814,6 +814,48 @@ have no unresolved Critical or Important findings.
   `46/0`, and diff hygiene. Task 4.2V is accepted, so the clean
   controller-owned evidence checkpoint opens only Task 4.3 Wave B.
 
+### T-TSDC-004R-3 atomic projection cutover evidence
+
+- The test-first focused RED against the reviewed schema-v2 registry exposed
+  the expected unconverted workflow programs and compatibility routes:
+  75 tests produced 36 failures, two errors, and 11 planned Wave-C skips before
+  production edits. The registry itself remained frozen.
+- Every required-quality executable step now uses one exact static
+  `run-ci-gate.py --profile ci --gate <id>` invocation. The focused validator
+  reports exactly seven workflows, 23 jobs, and eight registered Actions, and
+  the structural projection tests retain all 16 required status IDs.
+- The repository umbrella no longer dispatches the focused workflow checker.
+  Local default, harness, and all-profile modes each delegate once to their
+  registered profile; list and dry-run projections execute no child gate.
+  Local profiles exclude `setup.compose-env`, and `.env` preservation has a
+  focused regression.
+- The seven descriptor-compatibility consumers retain their direct-execution
+  fallback and accept only the runner-created `HYHOME_CI_GATE_ROOT` override.
+  Focused descriptor, sibling-import, exact-set, and direct-execution
+  regressions pass.
+- Final core GREEN is 110 tests: 98 passed with 11 intentional inactive
+  semantic-parser Wave-C skips and one local `html5lib` dependency skip. The
+  target-delta suite passes 30/30; the fake CI pre-commit contract, four
+  execution-free CI/local profile projections, Bash syntax, warning-level
+  ShellCheck, actionlint, compileall, advisory delta validation, and diff
+  hygiene all pass. Document alignment passes with 5,666 links and zero
+  failures, traceability passes 46/0, and changed metadata passes 15/0 with
+  five registered legacy exceptions. Ruff is `unverified` because the local
+  interpreter has no `ruff` module and dependency installation is outside this
+  wave.
+- The delta oracle is exactly 158 rows: 85 `preserve`, 73 `update`, zero
+  `migrate`, and zero `delete`. All review verdicts remain `pending`.
+  `.github/workflow-contract.yml` remains byte-frozen at SHA-256
+  `21dcc9a59b4c7fe087431c647e8d385d64125021dfa583542818a68ed84c9d20`;
+  the CI-only pre-commit wrapper, its fake test, its requirements pin, and
+  `.pre-commit-config.yaml` are also unchanged.
+- Graphify `f8a72211` remains stale advisory evidence and was corroborated
+  against the tracked Plan, Spec 135, Stage 00, workflow, registry, source, and
+  tests. No child gate, real Compose, dependency installation, network,
+  runtime, remote, secret, controlled-wrapper, direct pre-commit, or Wave-C
+  action ran. Remote required-check and ruleset enforcement remain
+  `unverified`; independent Task 4.4 reviews are still required.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -947,6 +989,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-2 recovery-owned Plan review evidence | Record the final C0/I0 Plan approval pair | `docs(task): record recovery-owned plan reviews` | resolved by this exact unique subject | Read-only specification and quality/security reviewers authorize the sole three-path Task 4.2V implementation attempt; Wave B remains blocked. |
 | T-TSDC-004R-2 recovery-owned runner implementation | Close recovery ownership and pre-bind taxonomy | `fix(ci): close recovery ownership transitions` | `cdae7523` | RED `81/11/2/0`; GREEN focused `28/28` and full `83/11/0/0`; workflow `7/23/8`; projections `32/32/35`; exact Ruff, compileall, advisory, metadata, traceability, adapter/four-surface freezes, three-path scope, zero-untracked, and diff gates pass. Fresh implementation reviews returned C0/I0. |
 | T-TSDC-004R-2 recovery-owned implementation review evidence | Record the fresh C0/I0 implementation review pair | `docs(task): record recovery-owned implementation reviews` | resolved by this exact unique subject | Both independent read-only reviews approve `5274f58b..cdae7523`; controller revalidation passes and Task 4.3 Wave B becomes the next authorized boundary. |
+| T-TSDC-004R-3 atomic workflow/local projection cutover | Project required jobs and local profiles through the frozen typed gate registry | `ci(governance): cut over to typed gate projections` | resolved by this exact unique subject | RED captured the old direct programs; core GREEN is 98 pass plus 12 explained skips, target-delta is 30/30, workflow inventory is 7/23/8 with 16 required IDs, four execution-free profiles pass, manifest is 158/85/73/0/0, and independent Task 4.4 review remains pending. |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4 review pending |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
@@ -956,6 +999,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
+| T-TSDC-004R-3 atomic projection cutover | implementation-complete / review-pending | The frozen registry now owns exact required-workflow and local-profile projections; all bounded local gates pass except unavailable Ruff, and remote state remains unverified. | run the fresh independent Task 4.4 specification and quality/security review pair before Wave C |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -979,9 +1023,10 @@ fresh quality/security review on recovery-transition ownership and pre-bind
 ordinary-exception normalization. Task 4.2V is the bounded recovery-owned
 design return. Its corrected checkpoint received a fresh Plan C0/I0 pair,
 and its sole implementation attempt passes the bounded local gates and fresh
-implementation C0/I0 pair. The controller-owned evidence checkpoint opens
-Task 4.3 Wave B only; Wave C, Tasks 5–6, and final whole-branch review remain
-blocked by their canonical prerequisites.
+implementation C0/I0 pair. Task 4.3 Wave B has completed its bounded local
+implementation and awaits the independent Task 4.4 review pair; Wave C,
+Tasks 5–6, and final whole-branch review remain blocked by their canonical
+prerequisites.
 The original five-round
 implementation blocker, exhausted Revision R1 Plan reviews, and superseded
 `5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
