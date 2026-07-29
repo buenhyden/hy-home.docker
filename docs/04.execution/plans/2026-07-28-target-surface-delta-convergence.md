@@ -1617,8 +1617,8 @@ They do not reopen schema-v2, workflow projection, or the historical
 `17bb5cdd` remediation. Wave B remains blocked and all manifest verdicts
 remain `pending`.
 
-**Exact implementation allowlist:** after this design return is committed,
-the sole non-document implementation paths are
+**Exact implementation allowlist:** after the uniquely named controller design
+checkpoint is committed, the sole successor implementation paths are
 `scripts/validation/ci_gate_runner.py`, `scripts/validation/ci_gate_adapters.py`,
 `tests/validation/test_ci_gate_runner.py`,
 `tests/validation/test_ci_gate_adapters.py`, and this Task ledger. Extend
@@ -1634,17 +1634,33 @@ B/C work remains excluded.
   The test design must establish all of the following without running a real
   CI suite or network operation:
 
-  1. Adapter ownership begins immediately after `_adopt_root`. Every operation,
-     including `dict(environ)`, occurs inside one top-level `try`/`finally`
-     governing adopted capability `M`. An `M` close failure is a fixed typed,
-     value-free `AdapterError`; an `N` close failure still attempts and
-     normalizes `M` cleanup. The same fail-closed independent-cleanup rule
-     applies to all owned Compose and SARIF source/output descriptors: each
-     required close and unlink is attempted even if an earlier one fails; any
-     close failure fails the operation typed/value-free; a newly created
-     `.env` or `results.sarif` is removed on operation or close failure.
-     Existing test methods add success, operation-error, close-error, and
-     unlink-error witnesses without changing top-level test discovery.
+  1. Adapter ownership begins immediately after `_adopt_root` duplicates
+     inherited capability `N` as owned CLOEXEC capability `M`, before it tries
+     to close `N`. Every later operation, including `dict(environ)`, occurs
+     inside one top-level cleanup controller governing `M`. If closing `N`
+     fails, the controller still attempts to close `M`. For Compose, cleanup
+     order is destination close, source close, conditional unlink of the
+     created `.env`, then the top-level `M` close. For SARIF, cleanup order is
+     output close, conditional unlink of the created `results.sarif`, then the
+     top-level `M` close. A created artifact must be unlinked when the
+     operation, either owned-descriptor close, or output close fails. Every
+     applicable cleanup action is attempted independently even after an
+     earlier action fails.
+
+     The controller preserves the first typed product/operation error while
+     cleanup proceeds. If every cleanup action succeeds, it returns that
+     original error or product result. If any cleanup action fails, the first
+     cleanup domain in the fixed order takes precedence because a safe state
+     was not established; later cleanup failures are still attempted and
+     collapse into that deterministic result. Root-capability, Compose, and
+     SARIF cleanup failures use the fixed value-free codes
+     `ci-gate-adapter-root-cleanup`,
+     `ci-gate-adapter-compose-cleanup`, and
+     `ci-gate-adapter-sarif-cleanup`, respectively. No `OSError` value, path,
+     descriptor number, or environment value crosses the adapter boundary.
+     Existing test methods add success, operation-error, simultaneous
+     operation/close/unlink-error, and deterministic-priority witnesses
+     without changing top-level test discovery.
   2. The runner opens a pidfd for the adapter leader immediately after
      `Popen`. It never calls `process.wait`, `poll`, `communicate`, or another
      reaping primitive before descendant cleanup. It waits for normal exit or
@@ -1657,27 +1673,43 @@ B/C work remains excluded.
      remaining same-PGID members except the pinned leader before one and only
      one `process.wait` reaps the leader and the pidfd closes. Return a normal
      or nonzero product code, or timeout `124`, only after this cleanup
-     succeeds. Any pidfd, proc-scan, signal, reap, or close failure is typed
-     and value-free. If initial `pidfd_open` fails, the still-unreaped leader
-     reserves the identity while the runner immediately signals `KILL` to the
-     group, reaps the leader once, and returns the typed acquisition error.
-     Any later scan or cleanup failure still attempts group `KILL`, leader
-     readiness, one reap, and pidfd close before returning its typed error;
-     it never signals the numeric PGID after reaping. Adapters create no
-     session or process group.
+     succeeds. Any pidfd, proc-scan, non-`ESRCH` signal, reap, or close failure
+     is typed and value-free. `TERM` or `KILL` returning `ESRCH` is the normal
+     disappeared-target race between observation and signaling; it is not a
+     cleanup failure and the runner must continue bounded leader-readiness and
+     same-PGID-member validation.
+
+     If initial `pidfd_open` fails, the still-unreaped leader reserves the
+     identity while the runner records the fixed
+     `ci-gate-runner-pidfd-acquisition` error, attempts group `KILL`, and then
+     attempts exactly one `process.wait` even when `KILL` fails. `ESRCH` is
+     safe in that recovery path. A non-`ESRCH` signal failure or reap failure
+     takes precedence as fixed value-free `ci-gate-runner-cleanup`; otherwise
+     the recorded acquisition error is returned. Any later scan or cleanup
+     failure records its first typed error, then independently attempts group
+     `KILL`, bounded leader readiness where pidfd remains usable, exactly one
+     reap, and pidfd close. Every recovery action is attempted in that order;
+     any recovery-action failure collapses to
+     `ci-gate-runner-cleanup` and takes precedence over the recorded scan,
+     product, nonzero, or timeout result. The runner never observes or signals
+     the numeric PGID after the sole reap. Adapters create no session or
+     process group.
   3. `/proc/<pid>/stat` scanning is strict, no-follow, disappearance-safe, and
      bounded to at most `65,536` strictly decimal PID entries and `4,096` bytes
      per `stat` file. Expected non-numeric procfs metadata entries are ignored;
      a transient vanished numeric process is absent. Permission, malformed
      numeric-entry content, numeric-entry symlink, entry-count overflow,
-     byte overflow, read, or directory failure is fail-closed. No test may
-     assert `killpg` absence after reaping, leader `poll`, or numeric signaling
-     after reaping. Tests prove ordering (no wait/poll/reap before final
-     signals and member-empty confirmation), safe normal and nonzero, timeout,
-     output-overflow, read-error, child/grandchild cleanup, pidfd/reap/close
-     failures, malformed/oversize/permission/disappearance numeric proc
-     entries, expected non-numeric entry tolerance, and a simulated
-     PGID-reuse target that cannot be signaled.
+     byte overflow, read, or directory failure is fail-closed. Tests must not
+     use a post-reap `killpg(..., 0)` absence probe as identity evidence.
+     Instead, an ordered call trace proves that every numeric-PGID observation
+     and signal precedes the sole `process.wait`; the harness is configured to
+     fail if either is invoked after that wait. Tests prove no
+     wait/poll/communicate/reap before final signals and member-empty
+     confirmation, safe normal and nonzero, timeout, output-overflow,
+     read-error, child/grandchild cleanup, pidfd/reap/close failures, TERM and
+     KILL `ESRCH` races, malformed/oversize/permission/disappearance numeric
+     proc entries, expected non-numeric entry tolerance, and a simulated
+     PGID-reuse target that cannot be observed or signaled after reap.
   4. Preserve exact HOME teardown behavior: at most three `rmtree` attempts,
      with exactly 50 ms sleeps after failures one and two. Preserve minimal
      environment, immutable-key denial, bounded two-stream output, SARIF
@@ -1705,10 +1737,13 @@ python3 -m unittest \
 
 - [ ] **Step S2: Implement only the identity-safe cleanup boundaries.**
 
-  Implement only the S1 ownership, cleanup, pidfd, and bounded-proc design.
-  Do not introduce nested sessions, broad descriptor inheritance, raw-PID
-  liveness checks, pathname fallback, numeric group signaling after reaping,
-  or a second cleanup authority. Cleanup failures are typed and value-free.
+  Implement only the S1 ownership, deterministic cleanup-priority, pidfd,
+  `ESRCH`, and bounded-proc design. Do not introduce nested sessions, broad
+  descriptor inheritance, raw-PID liveness checks, pathname fallback, numeric
+  group observation or signaling after reaping, or a second cleanup authority.
+  Every applicable cleanup action runs even after a prior failure; cleanup
+  failure takes precedence over product/operation outcome and is normalized to
+  the fixed domain code defined in S1.
 
 - [ ] **Step S3: Run GREEN and invariant gates.**
 
@@ -1739,8 +1774,11 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2S_DESIGN_COMMIT="$(git log -1 --format=%H --grep='^docs(plan): redesign typed gate identity cleanup$')"
+TASK_4_2S_DESIGN_SUBJECT='docs(plan): record typed gate identity design checkpoint'
+TASK_4_2S_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2S_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2S_DESIGN_COMMIT"
+test "$(printf '%s\n' "$TASK_4_2S_DESIGN_COMMIT" | wc -l | tr -d ' ')" = "1"
+test "$(git show -s --format=%s "$TASK_4_2S_DESIGN_COMMIT")" = "$TASK_4_2S_DESIGN_SUBJECT"
 test "$(git diff --name-only "$TASK_4_2S_DESIGN_COMMIT"..HEAD | sort)" = "$(printf '%s\\n' \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
   scripts/validation/ci_gate_adapters.py \
@@ -1760,11 +1798,15 @@ git diff --check
 - [ ] **Step S4: Commit, independent review, and gate.**
 
   Commit the bounded implementation as `fix(ci): finalize typed gate identity
-  cleanup`. Assign new independent specification and quality/security reviewers
-  to the exact commit range. Both must return `C0/I0`; otherwise return to
-  design/plan without another implementation attempt. This subtask permits
-  **one** implementation attempt and **one** independent review pair. Only a
-  controller-owned review-evidence commit after that pair may unblock Wave B.
+  cleanup`. The implementation must begin after the unique controller commit
+  whose exact subject is `docs(plan): record typed gate identity design
+  checkpoint`; that commit is the changed-path oracle baseline above. Assign
+  new independent specification and quality/security reviewers to the exact
+  checkpoint-through-implementation range. Both must return `C0/I0`; otherwise
+  return to design/plan without another implementation attempt. This subtask
+  permits **one** implementation attempt and **one** independent review pair.
+  Only a controller-owned review-evidence commit after that pair may unblock
+  Wave B.
 
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
