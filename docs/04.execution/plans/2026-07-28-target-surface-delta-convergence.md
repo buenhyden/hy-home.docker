@@ -1606,15 +1606,18 @@ git commit -m "docs(task): record typed gate runner review"
 
   Wave B starts only from this clean committed evidence boundary.
 
-##### Task 4.2R / Wave A design reset: Descriptor-root and invocation-lifecycle remediation
+##### Task 4.2S / Wave A design return: capability cleanup and pidfd identity finalization
 
-**Status:** The design-reset commit `5f5c746e` received independent Plan
-reviews of specification `C0/I3/M0` and quality/security `C0/I5/M0`; both are
-`CHANGES_REQUIRED` / `COMMIT_READY NO`. Those findings supersede its earlier
-design. The previous remediation evidence at `17bb5cdd` remains historical,
-not a pass or Wave B authorization. Manifest review verdicts remain `pending`.
+**Status:** The sole redesigned lifecycle implementation at `8df1b9cd` was
+reviewed over the exact range `e6fefb69..8df1b9cd`. The fresh specification
+review returned `C0/I1/M0`, `SPEC_COMPLIANCE NO`, `COMMIT_READY NO`; the fresh
+quality/security review returned `C0/I3/M0`, `CHANGES_REQUIRED`,
+`COMMIT_READY NO`. These reviews supersede the prior “review pending” state.
+They do not reopen schema-v2, workflow projection, or the historical
+`17bb5cdd` remediation. Wave B remains blocked and all manifest verdicts
+remain `pending`.
 
-**Exact implementation allowlist:** after this corrected Plan is committed,
+**Exact implementation allowlist:** after this design return is committed,
 the sole non-document implementation paths are
 `scripts/validation/ci_gate_runner.py`, `scripts/validation/ci_gate_adapters.py`,
 `tests/validation/test_ci_gate_runner.py`,
@@ -1626,45 +1629,52 @@ manifest and generated summary must remain unmodified. All other runtime,
 Compose, remote, dependency, secret, wrapper, direct-`pre-commit`, and Wave
 B/C work remains excluded.
 
-- [ ] **Step R1: Write behavior-specific RED tests before implementation.**
+- [ ] **Step S1: Write behavior-specific RED tests before implementation.**
 
   The test design must establish all of the following without running a real
   CI suite or network operation:
 
-  1. For `/proc/self/fd/N`, adapter `_open_root` must `fstat(N)`, require a
-     directory, make one non-inheritable `F_DUPFD_CLOEXEC` (or equivalent)
-     duplicate `M`, then rewrite every adapter root/cwd use and every explicit
-     adapter-descendant `pass_fds` entry to `M`. It closes inherited `N`
-     immediately after adoption and closes owned `M` in one top-level `finally`
-     on every result and error. It must never pathname-open the procfs link.
-     A physical root opens exactly one `O_NOFOLLOW` directory FD and follows
-     the same adopted-capability lifetime. Cwd and entrypoint FDs are *not*
-     included in adapter-descendant `pass_fds`. FD inventory/leak tests prove
-     only `M` is explicitly inherited and every owned duplicate closes.
-     Integrated runner tests cover registered `setup.compose-env` and
-     `leaf.zizmor`, root replacement, and `sitecustomize.py` injection without
-     importing the replacement path.
-  2. The runner creates one adapter process group via exactly one
-     `start_new_session=True` invocation. Adapter children never start a
-     session or group. On timeout and after every normal or nonzero adapter
-     result, the runner sends `TERM`, waits for group existence using
-     `killpg(pgid, 0)`-equivalent group observation (never leader polling),
-     sends `KILL` if still present, then boundedly confirms group absence. It
-     returns the product exit code only after successful finalization; a failed
-     finalization is a typed value-free error.
-  3. Child/grandchild tests for timeout, output overflow, read error, nonzero,
-     and safe normal completion capture Linux pidfds while each process is
-     alive using `os.pidfd_open`. They use poll/select readiness to prove exit,
-     and `signal.pidfd_send_signal` only for test cleanup. They must not use
-     `kill(pid, 0)`, raw-PID cleanup, or wall-clock upper-bound assertions, and
-     close every pidfd.
-  4. HOME teardown performs exactly three total `rmtree` attempts, sleeping
-     exactly 50ms only after failures one and two. Tests assert exact rmtree
-     and sleep call counts for a transient second-attempt success and a
-     persistent three-attempt typed, value-free failure. Preserve minimal
+  1. Adapter ownership begins immediately after `_adopt_root`. Every operation,
+     including `dict(environ)`, occurs inside one top-level `try`/`finally`
+     governing adopted capability `M`. An `M` close failure is a fixed typed,
+     value-free `AdapterError`; an `N` close failure still attempts and
+     normalizes `M` cleanup. The same fail-closed independent-cleanup rule
+     applies to all owned Compose and SARIF source/output descriptors: each
+     required close and unlink is attempted even if an earlier one fails; any
+     close failure fails the operation typed/value-free; a newly created
+     `.env` or `results.sarif` is removed on operation or close failure.
+     Existing test methods add success, operation-error, close-error, and
+     unlink-error witnesses without changing top-level test discovery.
+  2. The runner opens a pidfd for the adapter leader immediately after
+     `Popen`. It never calls `process.wait`, `poll`, `communicate`, or another
+     reaping primitive before descendant cleanup. It waits for normal exit or
+     timeout only by bounded pidfd `poll`/`select`, retaining an exited leader
+     unreaped so its PID and PGID cannot be reused. It sends `TERM` to that
+     still-reserved PGID, then—only after the leader pidfd is ready—uses a
+     bounded `/proc` scan to enumerate same-PGID members excluding the pinned
+     leader. If members remain, or the leader is not ready by grace expiry, it
+     sends `KILL` to the PGID; it then requires leader readiness and zero
+     remaining same-PGID members except the pinned leader before one and only
+     one `process.wait` reaps the leader and the pidfd closes. Return a normal
+     or nonzero product code, or timeout `124`, only after this cleanup
+     succeeds. Any pidfd, proc-scan, signal, reap, or close failure is typed
+     and value-free. Adapters create no session or process group.
+  3. `/proc/<pid>/stat` scanning is strict, no-follow, disappearance-safe, and
+     bounded by exact maximum numeric entries and bytes. A transient vanished
+     process is absent; permission, malformed content, non-numeric name,
+     symlink, overflow, read, or directory failure is fail-closed. No test may
+     assert `killpg` absence after reaping, leader `poll`, or numeric signaling
+     after reaping. Tests prove ordering (no wait/poll/reap before final
+     signals and member-empty confirmation), safe normal and nonzero, timeout,
+     output-overflow, read-error, child/grandchild cleanup, pidfd/reap/close
+     failures, malformed/oversize/permission/disappearance proc entries, and
+     a simulated PGID-reuse target that cannot be signaled.
+  4. Preserve exact HOME teardown behavior: at most three `rmtree` attempts,
+     with exactly 50 ms sleeps after failures one and two. Preserve minimal
      environment, immutable-key denial, bounded two-stream output, SARIF
      cleanup/retry, Compose staged-blob identity, and registered product
-     timeouts.
+     timeouts. No test performs a real CI, network, Compose, or external
+     dependency action.
 
   RED command and accounting:
 
@@ -1678,19 +1688,20 @@ python3 -m unittest \
   -v
 ```
 
-  Expected RED: each new descriptor-adoption, group-finalization, pidfd, or
-  HOME-cleanup witness fails on its named assertion, not by import failure.
+  Expected RED: each new adopted-cleanup, pidfd-identity, bounded-proc, or
+  output/source-cleanup witness fails on its named assertion, not by import
+  failure.
   GREEN remains exactly `94` discovered tests: `83` pass and `11` documented
   Wave-C skips. No count change is authorized.
 
-- [ ] **Step R2: Implement only the revised ownership boundaries.**
+- [ ] **Step S2: Implement only the identity-safe cleanup boundaries.**
 
-  Implement exactly the R1 ownership model: runner-owned session/PGID and
-  adapter-owned adopted root capability `M`. Do not introduce nested sessions,
-  broad descriptor inheritance, raw PID liveness checks, or a path-based
-  fallback. Group and FD cleanup failures are typed and value-free.
+  Implement only the S1 ownership, cleanup, pidfd, and bounded-proc design.
+  Do not introduce nested sessions, broad descriptor inheritance, raw-PID
+  liveness checks, pathname fallback, numeric group signaling after reaping,
+  or a second cleanup authority. Cleanup failures are typed and value-free.
 
-- [ ] **Step R3: Run GREEN and invariant gates.**
+- [ ] **Step S3: Run GREEN and invariant gates.**
 
 ```bash
 python3 -m unittest \
@@ -1719,9 +1730,9 @@ git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surfa
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
-TASK_4_2R_DESIGN_COMMIT="$(git log -1 --format=%H --grep='^docs(plan): harden typed gate runner redesign$')"
-test -n "$TASK_4_2R_DESIGN_COMMIT"
-test "$(git diff --name-only "$TASK_4_2R_DESIGN_COMMIT"..HEAD | sort)" = "$(printf '%s\\n' \
+TASK_4_2S_DESIGN_COMMIT="$(git log -1 --format=%H --grep='^docs(plan): redesign typed gate identity cleanup$')"
+test -n "$TASK_4_2S_DESIGN_COMMIT"
+test "$(git diff --name-only "$TASK_4_2S_DESIGN_COMMIT"..HEAD | sort)" = "$(printf '%s\\n' \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
   scripts/validation/ci_gate_adapters.py \
   scripts/validation/ci_gate_runner.py \
@@ -1731,20 +1742,20 @@ git diff --check
 ```
 
   GREEN requires exact `94 = 83 pass + 11 skip`, workflow projection `7/23/8`,
-  both execution-free projections, the stated `17bb5cdd` byte freezes,
+  both execution-free projections, all four stated `17bb5cdd` byte freezes,
   unchanged manifest/summary, the exact changed-path oracle, and static/byte
   invariants. pidfd evidence must prove no child or grandchild survives every
-  exercised exceptional path and safe normal completion.
+  exercised exceptional path and safe normal completion, with identity-safe
+  finalization ordering rather than an absence check after reaping.
 
-- [ ] **Step R4: Commit, independent review, and gate.**
+- [ ] **Step S4: Commit, independent review, and gate.**
 
-  Commit the bounded implementation as `fix(ci): finalize typed gate runner
-  lifecycle`. Assign new independent specification and quality/security
-  reviewers to the exact commit range. Both must return `C0/I0`; otherwise
-  return to design/plan without another implementation attempt. This redesigned
-  subtask permits **one** implementation attempt and **one** independent review
-  pair. Only a controller-owned review-evidence commit after that pair may
-  unblock Wave B.
+  Commit the bounded implementation as `fix(ci): finalize typed gate identity
+  cleanup`. Assign new independent specification and quality/security reviewers
+  to the exact commit range. Both must return `C0/I0`; otherwise return to
+  design/plan without another implementation attempt. This subtask permits
+  **one** implementation attempt and **one** independent review pair. Only a
+  controller-owned review-evidence commit after that pair may unblock Wave B.
 
 #### Task 4.3 / Wave B / T-TSDC-004R-3: Atomic Workflow and Local Projection Cutover
 
