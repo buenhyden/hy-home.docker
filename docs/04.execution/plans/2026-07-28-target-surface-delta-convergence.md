@@ -39,8 +39,8 @@ unittest, Git, and repository-owned generators.
 
 **Revision R2 status:** Revision R1 exhausted its two-attempt Plan review loop
 with unresolved Important findings and returned to design/plan. This Revision
-R2 remains blocked pending explicit user approval and fresh independent
-specification and quality/security C0/I0 reviews.
+R2 was explicitly approved by the user on 2026-07-29 and remains blocked
+pending fresh independent specification and quality/security C0/I0 reviews.
 
 ## Global Constraints
 
@@ -1132,16 +1132,16 @@ parity for this exact set before workflow cutover.
 - [x] Record that approval in the Task ledger without changing old work-log
   rows or treating it as controlled-wrapper, remote, runtime, or secret
   authority.
-- [ ] Obtain explicit user approval of this Revision R2.
+- [x] Record the user's 2026-07-29 explicit approval of this Revision R2.
 - [ ] After that approval, assign fresh independent specification and
   quality/security Plan reviewers to the complete R2 range.
 - [ ] Require both R2 reviews to map TSDC-010 through TSDC-017, verify exact
   file ownership and commands, and return C0/I0 before implementation.
 
 Expected gate: only after Revision R2 approval and both fresh R2 reviews return
-C0/I0 does the Task ledger change from `blocked pending Revision R2 approval`
-to
-`active recovery`; no production or test file changes before that transition.
+C0/I0 does the Task ledger change from
+`blocked pending Revision R2 Plan reviews` to `active recovery`; no production
+or test file changes before that transition.
 
 #### Task 4.1 / Wave A / T-TSDC-004R-1: Typed Gate Contract
 
