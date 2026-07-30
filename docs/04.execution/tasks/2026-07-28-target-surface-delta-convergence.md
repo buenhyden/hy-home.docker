@@ -152,6 +152,18 @@ read-only observation only.
   controlled-wrapper, and Graphify-update authority remain blocked until two
   fresh independent 4AE Plan reviews return `C0/I0/M0` and their accepted
   Task-only evidence checkpoint is committed.
+- The 4AE Plan committed as
+  `8abea15a1ebafdf607be801789a409e6f312c099`. Both fresh reviewers reported
+  exact range
+  `5644c4a301e38d3f0c32efe99e80f879df6e1ac8..8abea15a1ebafdf607be801789a409e6f312c099`.
+  Specification returned `C0/I0/M0`, `SPEC_COMPLIANCE YES`, and
+  `IMPLEMENTATION_READY YES`; quality/security returned `C0/I2/M0`,
+  `QUALITY_SECURITY FAIL`, and `IMPLEMENTATION_READY NO`. The quality review
+  found that a duplicate no-leading-pipe GFM row can evade candidate counting
+  and that downstream sessions do not reassert bound authority-subject
+  uniqueness. The no-correction 4AE Plan loop is exhausted. No accepted
+  Plan-review evidence, implementation, test execution, Wave C, Tasks 5–6, or
+  whole-branch authority follows.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
   is one exact attempt from one clean committed checkpoint.
@@ -167,8 +179,8 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active 4AE Plan review |
-| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | blocked pending the 4AE review chain |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | blocked; 4AE Plan review exhausted |
+| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | blocked pending a newly approved Task 4 design |
 | T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | pending |
 
 Tasks are serial at their commit/review boundaries. A task may not advance
@@ -345,6 +357,7 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-4AE exact-cell design approval | User / Controller | The user approved one Plan-only successor from exact clean base `5644c4a301e38d3f0c32efe99e80f879df6e1ac8`. Scope is limited to exact seven-cell review-range parsing, the missing predecessor path/range and base-mode assertions in three sessions, and current-state synchronization. Implementation, tests, Wave C, Tasks 5–6, runtime, remote, wrapper, direct pre-commit, and Graphify-update authority remain blocked. |
 | 2026-07-30 | T-TSDC-004R-4AE independent design audits | Two fresh read-only design agents | Both bounded design audits returned `C0/I0/M0` and ready verdicts. They selected in-place correction of the eight active helper copies, eleven calls, and three incomplete sessions; preserved immutable 4AC behavior and historical 4AD evidence; and rejected a new helper surface or full copied overlay as scope expansion. |
 | 2026-07-30 | T-TSDC-004R-4AE exact-cell Plan checkpoint | Controller | This exact Plan-and-Task checkpoint is identified by unique subject `docs(plan): define exact-cell review-range proof`, has parent `5644c4a301e38d3f0c32efe99e80f879df6e1ac8`, and preserves both modes as `100644`. Fresh independent specification and quality/security Plan reviews remain pending; no implementation or test authority exists. |
+| 2026-07-30 | T-TSDC-004R-4AE exact-cell Plan reviews | Fresh independent specification and quality/security reviewers | Both reviewers reported exact full-OID range `5644c4a301e38d3f0c32efe99e80f879df6e1ac8..8abea15a1ebafdf607be801789a409e6f312c099`. Specification returned `C0/I0/M0`, `SPEC_COMPLIANCE YES`, `IMPLEMENTATION_READY YES`. Quality/security returned `C0/I2/M0`, `QUALITY_SECURITY FAIL`, `IMPLEMENTATION_READY NO`: a duplicate no-leading-pipe GFM row can evade candidate counting, and downstream authority sessions do not reassert fixed whole-line uniqueness for accepted evidence and implementation subjects. The no-correction 4AE loop is exhausted without implementation or downstream authority. |
 
 ## Verification Evidence
 
@@ -370,8 +383,8 @@ have no unresolved Critical or Important findings.
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
 | T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression. Review remediations produced 17 resolver/static failures, six quoted-key failures, five global-uniqueness/Dozzle failures, and the exact `141 != 140` manifest-oracle failure. | Initial focused tests passed 7/7. Successive remediation suites passed 11/11, 16/16, and finally 17/17; the exact 141-row manifest oracle passes 1/1 with Dozzle path-specific owner, consumer, update, and pending-verdict assertions. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff gates pass. Final independent specification and quality/security reviews of `b1e62873..60e0313c` each returned C0/I0/M0 and COMMIT_READY YES; all 141 manifest verdict pairs remain pending for Task 6. | completed |
-| T-TSDC-004 | Missing wrapper; four missing-module errors; bounded reader 2 failures/1 error; `148 != 141`; missing local wrapper-test route; missing purpose-folder registration; mixed quoted/unquoted `on` failed both orderings; seven required permission co-mutations returned no baseline finding; round 3 produced 15 failures across five methods; round 4 produced 13 failures across four methods; final round 5 produced 29 failures across eight methods. | Successive workflow suites pass 9/9, 11/11, 14/14, 17/17, 20/20, and 27/27. Final round 5 focused methods pass 8/8, eval tests 38/38, and Stage 00 mutations 4/4. Focused CLI 7/23/8, exact manifest 148/89/59/0, and advisory remain green. | The 4AD Plan review returned specification C0/I2/M1 and quality/security C0/I0/M0; rejected evidence is committed. The approved 4AE Plan-only repair now binds exact-cell parsing and complete predecessor proof. Every manifest review pair remains pending. | active 4AE Plan review |
-| T-TSDC-005 | Not run — blocked pending 4AE | Not run — blocked pending 4AE | Not run — the accepted 4AE Plan and implementation review chain is required | blocked |
+| T-TSDC-004 | Missing wrapper; four missing-module errors; bounded reader 2 failures/1 error; `148 != 141`; missing local wrapper-test route; missing purpose-folder registration; mixed quoted/unquoted `on` failed both orderings; seven required permission co-mutations returned no baseline finding; round 3 produced 15 failures across five methods; round 4 produced 13 failures across four methods; final round 5 produced 29 failures across eight methods. | Successive workflow suites pass 9/9, 11/11, 14/14, 17/17, 20/20, and 27/27. Final round 5 focused methods pass 8/8, eval tests 38/38, and Stage 00 mutations 4/4. Focused CLI 7/23/8, exact manifest 148/89/59/0, and advisory remain green. | The 4AE Plan review returned specification C0/I0/M0 and quality/security C0/I2/M0. Duplicate-row detection and downstream subject-uniqueness proof remain unresolved; every manifest review pair remains pending. | blocked after 4AE Plan review |
+| T-TSDC-005 | Not run — 4AE exhausted at Plan review | Not run — 4AE exhausted at Plan review | Not run — a newly approved Task 4 design is required | blocked |
 | T-TSDC-006 | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | pending |
 
 ### T-TSDC-001 bounded implementation evidence
@@ -1613,10 +1626,13 @@ have no unresolved Critical or Important findings.
   `I` changes only the Task and routing test; `XI` and `R` are Task-only,
   single-parent successors of `I`; only `R` authorizes Task 4.5.
 - The committed Plan checkpoint uses exact unique subject
-  `docs(plan): define exact-cell review-range proof`; fresh independent Plan
-  reviews are pending. The Plan matrix begins at `5644c4a3` until both
-  reviewers report their identical full-OID range. Implementation and tests
-  remain blocked.
+  `docs(plan): define exact-cell review-range proof` at `8abea15a`. Its exact
+  full-OID review range returned specification `C0/I0/M0` and
+  quality/security `C0/I2/M0`. The quality review rejected candidate counting
+  that ignores a duplicate no-leading-pipe GFM row and downstream sessions
+  that do not reassert accepted-evidence and implementation-subject
+  uniqueness. The no-correction 4AE Plan loop is exhausted. Implementation,
+  tests, Wave C, Tasks 5–6, and whole-branch review remain blocked.
 - Each session must bind full OIDs, exact subjects, one parent/first parent,
   ancestry, distance one, exact commit and predecessor-range paths, applicable
   `100644` modes, permitted dirty scope before a commit, and clean state after a
@@ -1698,11 +1714,11 @@ consume or create Agent authorization.
 | T-TSDC-004R-4AC candidate-closed proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I1/M1; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `997719ff..5bc5ab85` | no-correction Plan loop exhausted; returned to design/plan | Candidate union, dynamic-target/query precedence, GNU `env` split re-entry, and signal-option handling passed. Terminal evidence sessions do not each rebind the complete reviewed lineage, distance, scope, and modes, so same-subject lineage substitution remains possible; the stale pending-checkpoint Task wording is synchronized by this evidence commit. No implementation or Wave C authority follows. |
 | T-TSDC-004R-4AD review-range-bound proof Plan | Controller / bounded future implementer | C0/I2/M1; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `3510e9944655ee89077a295712e759d116e2e87f..9de469a52c4b05d2490d36d37b95b1277442f725` | no-correction Plan loop exhausted; returned to design/plan | Range extraction is not exact-cell anchored; three pre-terminal sessions omit required predecessor range/path or base-mode assertions; and checkpoint-status text was stale. Quality/security found no additional issue, but both required C0/I0/M0 reviews did not pass. No implementation or Wave C authority follows. |
 | T-TSDC-004R-4AD review-range-bound implementation | superseded uncreated attempt | not applicable | not applicable | not available | blocked; 4AD exhausted at Plan review | The exact two-path implementation was never authorized or started because the specification Plan review failed. |
-| T-TSDC-004R-4AE exact-cell proof Plan | Controller / bounded future implementer | pending fresh independent review | pending fresh independent review | starts at 5644c4a301e38d3f0c32efe99e80f879df6e1ac8 | Plan checkpoint committed; fresh Plan reviews pending | 4AE is the user-approved Plan-only repair: exact seven-cell range parsing and complete predecessor proof. Implementation and tests remain blocked. |
-| T-TSDC-004R-4AE exact-cell implementation | bounded future implementer | blocked | blocked | not available | blocked pending accepted 4AE Plan evidence | Only accepted Plan-review evidence can authorize the one implementation attempt. |
-| T-TSDC-005 | pending | pending | pending | not available | blocked | Blocked pending the accepted 4AE Plan, implementation, and implementation-review evidence chain |
+| T-TSDC-004R-4AE exact-cell proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I2/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `5644c4a301e38d3f0c32efe99e80f879df6e1ac8..8abea15a1ebafdf607be801789a409e6f312c099` | no-correction Plan loop exhausted; returned to design/plan | Duplicate no-leading-pipe rows can evade candidate counting, and downstream sessions do not reassert authority-subject uniqueness. No implementation or Wave C authority follows. |
+| T-TSDC-004R-4AE exact-cell implementation | superseded uncreated attempt | not applicable | not applicable | not available | blocked; 4AE exhausted at Plan review | The exact two-path implementation was never authorized or started because the quality/security Plan review failed. |
+| T-TSDC-005 | pending | pending | pending | not available | blocked | 4AE exhausted at Plan review; a newly approved Task 4 design is required |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | 4AD is exhausted history. The active 4AE Plan and its complete accepted review chain must finish before Wave C, Tasks 5–6, or final branch review. |
+| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | The 4AE quality/security Plan review failed and exhausted the no-correction loop. No implementation exists; Wave C, Tasks 5–6, and final branch review require a newly approved Task 4 design. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -1821,12 +1837,12 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4AD implementation review evidence | Superseded uncreated checkpoint | `docs(task): record review-range-bound parser outcome review` | not created | No 4AD implementation exists to review |
 | T-TSDC-004R-4AD exhausted implementation-review evidence | Superseded uncreated checkpoint | `docs(task): record exhausted review-range-bound parser outcome review` | not created | No implementation exists to reject; 4AD exhausted at Plan review |
 | T-TSDC-004R-4AE Plan checkpoint | Define exact-cell review-range proof | `docs(plan): define exact-cell review-range proof` | resolved by this exact unique subject | Plan and Task only; parent exactly `5644c4a301e38d3f0c32efe99e80f879df6e1ac8`; both modes `100644` |
-| T-TSDC-004R-4AE Plan review evidence | Record accepted Plan reviews | `docs(task): record exact-cell review-range plan reviews` | not created | Task only; parent exactly P; only B authorizes implementation |
-| T-TSDC-004R-4AE exhausted Plan-review evidence | Record rejected Plan reviews | `docs(task): record exhausted exact-cell review-range plan review` | not created | Task only; parent exactly P; terminal rejected path XP |
-| T-TSDC-004R-4AE implementation | Close exact-cell parser proof | `fix(ci): close exact-cell review-range parser proof` | not created | Task and routing test only; parent exactly B; both modes `100644` |
-| T-TSDC-004R-4AE implementation review evidence | Record accepted implementation review | `docs(task): record exact-cell review-range review` | not created | Task only; parent exactly I; only R authorizes Task 4.5 |
-| T-TSDC-004R-4AE exhausted implementation-review evidence | Record rejected implementation review | `docs(task): record exhausted exact-cell review-range review` | not created | Task only; parent exactly I; terminal rejected path XI |
-| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R remains blocked until the accepted 4AE implementation-review checkpoint |
+| T-TSDC-004R-4AE Plan review evidence | Superseded uncreated checkpoint | `docs(task): record exact-cell review-range plan reviews` | not created | Non-executable because the quality/security Plan review returned C0/I2/M0 |
+| T-TSDC-004R-4AE exhausted Plan-review evidence | Record the rejected Plan pair and return to design | `docs(task): record exhausted exact-cell review-range plan review` | resolved by this exact unique subject | Exact range `5644c4a301e38d3f0c32efe99e80f879df6e1ac8..8abea15a1ebafdf607be801789a409e6f312c099`; specification C0/I0/M0 and quality/security C0/I2/M0 exhaust 4AE without correction, implementation, tests, or Wave C authority |
+| T-TSDC-004R-4AE implementation | Superseded uncreated attempt | `fix(ci): close exact-cell review-range parser proof` | not created | Non-executable because the 4AE no-correction Plan review failed |
+| T-TSDC-004R-4AE implementation review evidence | Superseded uncreated checkpoint | `docs(task): record exact-cell review-range review` | not created | No 4AE implementation exists to review |
+| T-TSDC-004R-4AE exhausted implementation-review evidence | Superseded uncreated checkpoint | `docs(task): record exhausted exact-cell review-range review` | not created | No implementation exists to reject; 4AE exhausted at Plan review |
+| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R remains blocked pending a newly approved Task 4 design |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
 ## Deferred and Blocked Items
@@ -1835,7 +1851,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked / active 4AE Plan review | Attempt 2/2 closed the frozen-node and dual-FD findings, the sole 4AA implementation failed review, and the no-correction 4AB–4AD Plans failed review. The approved 4AE Plan-only repair now addresses exact-cell range parsing, complete predecessor range/path and base-mode assertions, and status synchronization. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | require two fresh independent 4AE Plan reviews at C0/I0/M0 and accepted Task-only evidence before one bounded implementation attempt |
+| T-TSDC-004R-3 atomic projection cutover | blocked / 4AE Plan review exhausted | Attempt 2/2 closed the frozen-node and dual-FD findings, the sole 4AA implementation failed review, and the no-correction 4AB–4AE Plans failed review. 4AE closed the exact-cell and predecessor-assertion findings, but duplicate no-leading-pipe row detection and downstream authority-subject uniqueness remain unresolved. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | return to design/plan and require explicit user approval for a new bounded successor before any implementation or test execution |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -1928,10 +1944,14 @@ Plan review returned specification `C0/I2/M1` and quality/security
 base-mode assertions in three sessions, and stale status text exhaust the 4AD
 no-correction Plan loop. Rejected evidence committed at `5644c4a3`. The user
 approved 4AE as the bounded Plan-only repair. Its checkpoint is identified by
-exact unique subject `docs(plan): define exact-cell review-range proof`;
-fresh specification and quality/security Plan reviews remain pending.
+exact unique subject `docs(plan): define exact-cell review-range proof`.
+Exact range
+`5644c4a301e38d3f0c32efe99e80f879df6e1ac8..8abea15a1ebafdf607be801789a409e6f312c099`
+returned specification `C0/I0/M0` and quality/security `C0/I2/M0`.
+Duplicate no-leading-pipe row detection and downstream authority-subject
+uniqueness remain open, so the 4AE no-correction Plan loop is exhausted.
 Implementation, test execution, Wave C, Tasks 5–6, and whole-branch authority
-remain blocked until the complete accepted 4AE chain exists. The original
+remain blocked pending a newly approved design return. The original
 five-round implementation blocker, exhausted Revision R1 Plan reviews, and
 superseded `5d089dd4` and `b73d2a99` checkpoints remain historical evidence
 and grant no authority. The remaining items prevent only their corresponding
