@@ -1208,6 +1208,20 @@ have no unresolved Critical or Important findings.
   test execution, manifest promotion, Wave C, Tasks 5–6, or whole-branch
   review is authorized. Remote, runtime, dependency, secret, direct
   pre-commit, controlled-wrapper, and Graphify authority remain unchanged.
+- The Plan committed as `861c0e33`. Fresh read-only specification review and
+  a different fresh read-only quality/security review over
+  `355a1db5..861c0e33` both returned `C0/I0/M0`,
+  `IMPLEMENTATION_READY YES`; the role-specific verdicts are
+  `SPEC_COMPLIANCE YES` and `QUALITY_SECURITY PASS`.
+- Reviewers found no unresolved issue in the 112 immediate capture/test pairs,
+  sole RED status exception, strict sessions, parser and GNU `env --`
+  contract, full Task 4.5 lineage/scope/mode gate, freezes, prohibitions, or
+  downstream authorization.
+- This Task-ledger-only evidence checkpoint authorizes one 4AA implementation
+  agent to make the exact two-path attempt defined by the Plan. Wave C,
+  manifest promotion, Tasks 5–6, whole-branch review, runtime, network,
+  secrets, direct pre-commit, controlled wrapper, and Graphify update remain
+  blocked.
 
 ### Current evidence boundaries
 
@@ -1278,10 +1292,10 @@ consume or create Agent authorization.
 | T-TSDC-004R-4X session-local option-proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I2/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `7b792a37..4c7c9c4b` | no-correction Plan loop exhausted; returned to design/plan | GNU `env --` and session-local variable defects are closed, but proof blocks can mask earlier failures without fail-fast execution and Task 4.5 does not rebind the 4X base, exact implementation scope, or file modes. No implementation authority followed. |
 | T-TSDC-004R-4Y fail-fast lineage-proof Plan | Controller / bounded future implementer | interrupted after quality blocker; no verdict | C0/I1/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `481b1a8e..a8cc9751` | no-correction Plan loop exhausted; returned to design/plan | Strict sessions and complete Task 4.5 rebinding are substantially correct, but fallible substitutions embedded in `test` can still lose the command status and pass on empty output. No implementation authority followed. |
 | T-TSDC-004R-4Z status-preserving proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I1/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `0177006c..9968bb6d` | no-correction Plan loop exhausted; returned to design/plan | Standalone capture preserves failure status, but some captured values are not tested by the immediately following command as the normative 4Z contract requires. No implementation authority followed. |
-| T-TSDC-004R-4AA immediate-consumption proof Plan | Controller / bounded future implementer | pending fresh read-only review | pending different fresh read-only review | `355a1db5..docs(plan): define immediate-consumption proof` | Plan review pending; no implementation authority | User-approved successor pairs every non-RED capture with an immediately following same-variable test while preserving all accepted parser, strict, lineage, scope, mode, freeze, and prohibition requirements. |
+| T-TSDC-004R-4AA immediate-consumption proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `355a1db5..861c0e33` | sole two-path implementation attempt authorized from the separate evidence checkpoint | Reviewers found no unresolved issue in immediate capture/test pairing, strict status propagation, the RED exception, accepted parser contract, complete downstream lineage/scope/mode proof, freezes, or prohibitions. Wave C remains blocked. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | Task 4.4 retains one load-bearing Important. T-TSDC-004R-4AA is Plan-only and awaits its fresh C0/I0 review pair before implementation, Wave C, Tasks 5–6, or final branch review. |
+| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | T-TSDC-004R-4AA Plan review passed C0/I0 and authorizes one exact two-path implementation attempt after this evidence checkpoint. Wave C, Tasks 5–6, and final branch review remain blocked pending implementation and fresh implementation reviews. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -1376,8 +1390,8 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4Z Plan review evidence | Superseded uncreated checkpoint | `docs(task): record status-preserving plan reviews` | not created | non-executable because the 4Z no-correction Plan review failed |
 | T-TSDC-004R-4Z implementation | Superseded uncreated attempt | `fix(ci): close status-preserving wrapper proof` | not created | non-executable because the 4Z no-correction Plan review failed |
 | T-TSDC-004R-4Z implementation review evidence | Superseded uncreated checkpoint | `docs(task): record status-preserving wrapper review` | not created | non-executable because the 4Z no-correction Plan review failed |
-| T-TSDC-004R-4AA immediate-consumption proof Plan | Define the user-approved one-finding design return | `docs(plan): define immediate-consumption proof` | resolved by this exact unique subject | Plan-only checkpoint; no implementation authority until two fresh independent C0/I0 reviews are recorded |
-| T-TSDC-004R-4AA Plan review evidence | Record the fresh C0/I0 Plan approval pair | `docs(task): record immediate-consumption plan reviews` | not started | required immutable implementation base for the sole two-path attempt |
+| T-TSDC-004R-4AA immediate-consumption proof Plan | Define the user-approved one-finding design return | `docs(plan): define immediate-consumption proof` | `861c0e33` | metadata selected 15/0 with five unchanged legacy exceptions, traceability 46/0, ten strict blocks, Bash syntax, 112/112 capture/test pairs, exact two-path scope/mode/clean proof, and diff hygiene passed; fresh specification and quality/security reviews both returned C0/I0 |
+| T-TSDC-004R-4AA Plan review evidence | Record the fresh C0/I0 Plan approval pair | `docs(task): record immediate-consumption plan reviews` | resolved by this exact unique subject | Task-ledger-only immutable implementation base authorizes the sole exact two-path attempt; Wave C remains blocked |
 | T-TSDC-004R-4AA implementation | Close the option-aware wrapper proof under immediate capture/test gates | `fix(ci): close immediate-consumption wrapper proof` | not started | one attempt only after Plan-review evidence; exact RED/GREEN, freezes, scope, modes, and fresh implementation reviews required |
 | T-TSDC-004R-4AA implementation review evidence | Record the fresh C0/I0 implementation approval pair | `docs(task): record immediate-consumption wrapper review` | not started | required before Task 4.5 Wave C |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R blocked pending 4AA Plan and implementation review acceptance |
@@ -1389,7 +1403,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked / 4AA Plan review pending | Attempt 2/2 closed the frozen-node and dual-FD findings, but quality/security retains one Important option-bearing wrapper bypass. The 4W through 4Z Plan successors exhausted without implementation authority; the user-approved 4AA Plan places a same-variable test immediately after every non-RED substitution capture. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | obtain fresh independent C0/I0 reviews for the exact 4AA Plan checkpoint, record the evidence checkpoint, and only then authorize the sole bounded implementation attempt |
+| T-TSDC-004R-3 atomic projection cutover | blocked / 4AA implementation authorized | Attempt 2/2 closed the frozen-node and dual-FD findings, but quality/security retains one Important option-bearing wrapper bypass. The 4AA Plan received fresh specification and quality/security C0/I0 approval and this Task-only evidence checkpoint binds the sole two-path implementation base. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | execute the one approved test-oracle plus Task-ledger attempt, then require a fresh implementation C0/I0 pair before Wave C |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -1439,10 +1453,11 @@ reviewer returned `C0/I1/M0` because some captured values are not tested by the
 immediately following command as the 4Z contract requires. The 4Z
 no-correction loop is exhausted and created no implementation authority. The
 user approved T-TSDC-004R-4AA to add explicit adjacent same-variable tests and
-a static capture/test-pair audit. Its Plan awaits fresh independent
-specification and quality/security `C0/I0/M0` reviews; no implementation
-authority exists yet. Wave C, Tasks 5–6, and final whole-branch review remain
-blocked.
+a static capture/test-pair audit. Fresh independent specification and
+quality/security reviews both returned `C0/I0/M0`; this Task-only evidence
+checkpoint authorizes one exact two-path implementation attempt. Wave C,
+Tasks 5–6, and final whole-branch review remain blocked pending that
+implementation and a fresh implementation C0/I0 pair.
 The original five-round
 implementation blocker, exhausted Revision R1 Plan reviews, and superseded
 `5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
