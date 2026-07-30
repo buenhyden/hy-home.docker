@@ -1223,6 +1223,47 @@ have no unresolved Critical or Important findings.
   secrets, direct pre-commit, controlled wrapper, and Graphify update remain
   blocked.
 
+### T-TSDC-004R-4AA immediate-consumption implementation evidence
+
+- The immutable implementation base is
+  `194b7d1675eed86911092ea8e7cbe70ac6f94de0`, the exact unique
+  `docs(task): record immediate-consumption plan reviews` checkpoint. The
+  implementation touched only
+  `tests/validation/test_agent_governance_ci_routing.py` and this Task ledger.
+- RED added the complete 4W option-aware wrapper matrix and 4X GNU `env --`
+  assignment transitions inside
+  `test_repository_umbrella_is_wiring_only`. The focused RED command exited
+  nonzero after importing and reaching the named test: one test ran with 41
+  behavior-specific subtest failures across `command`, `exec`, GNU `env`,
+  `env -S`, query/no-dispatch, and fail-closed cases. The fixed assertion
+  marker `GNU env -- assignment scan must reach command` is present in the
+  added test oracle.
+- GREEN implements one dependency-free bounded recursive parser for Bash
+  `command`, Bash `exec`, and GNU `env`. It consumes recognized option arity
+  before command-position evaluation, implements the corrected post-`--`
+  assignment scan, uses a static GNU `env -S` lexer without ambient environment
+  reads, treats unsupported expansion, malformed split strings, unknown
+  options, and budget exhaustion as deterministic fail-closed outcomes, and
+  preserves existing literal, quoted, variable, helper, Python heredoc
+  `subprocess`, and `os.system` dispatch families.
+- Focused GREEN passed:
+  `test_repository_umbrella_is_wiring_only` `1/1`; full routing passed
+  `42` tests with one planned local `html5lib` skip; workflow plus routing
+  passed `81` tests with 12 planned Wave-A skips; the full five-module frozen
+  regression passed `116` tests with 12 planned Wave-A skips.
+- Static and projection evidence passed:
+  workflow contract `workflows=7, jobs=23, actions=8`; target-surface delta
+  advisory exit 0; changed metadata `selected=15 violations=0
+  legacy_exceptions=5`; traceability `catalog_pairs_total=46 failures=0`;
+  execution-free projections for `ci --list`, `ci --dry-run --all`,
+  `local-script-backed --dry-run --all`, `local-harness --dry-run --all`, and
+  `local-all-profiles --dry-run --all`; compileall; and diff hygiene.
+- Ruff is `unverified` because `python3 -c 'import ruff'` failed with
+  `ModuleNotFoundError` and dependency installation is prohibited. The
+  repository umbrella, registered typed child gates, direct pre-commit,
+  controlled wrapper, Compose/runtime, network, secrets, credentials, remote
+  state, and Graphify update were not run.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -1392,7 +1433,7 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4Z implementation review evidence | Superseded uncreated checkpoint | `docs(task): record status-preserving wrapper review` | not created | non-executable because the 4Z no-correction Plan review failed |
 | T-TSDC-004R-4AA immediate-consumption proof Plan | Define the user-approved one-finding design return | `docs(plan): define immediate-consumption proof` | `861c0e33` | metadata selected 15/0 with five unchanged legacy exceptions, traceability 46/0, ten strict blocks, Bash syntax, 112/112 capture/test pairs, exact two-path scope/mode/clean proof, and diff hygiene passed; fresh specification and quality/security reviews both returned C0/I0 |
 | T-TSDC-004R-4AA Plan review evidence | Record the fresh C0/I0 Plan approval pair | `docs(task): record immediate-consumption plan reviews` | resolved by this exact unique subject | Task-ledger-only immutable implementation base authorizes the sole exact two-path attempt; Wave C remains blocked |
-| T-TSDC-004R-4AA implementation | Close the option-aware wrapper proof under immediate capture/test gates | `fix(ci): close immediate-consumption wrapper proof` | not started | one attempt only after Plan-review evidence; exact RED/GREEN, freezes, scope, modes, and fresh implementation reviews required |
+| T-TSDC-004R-4AA implementation | Close the option-aware wrapper proof under immediate capture/test gates | `fix(ci): close immediate-consumption wrapper proof` | resolves by exact unique subject | RED captured 41 behavior-specific subtest failures in the named test; focused, routing, workflow+routing, five-module frozen regression, static validators, execution-free projections, compileall, scope, mode, and diff gates pass. Ruff remains unverified because it is unavailable and installation is prohibited. Fresh implementation reviews remain required before Wave C. |
 | T-TSDC-004R-4AA implementation review evidence | Record the fresh C0/I0 implementation approval pair | `docs(task): record immediate-consumption wrapper review` | not started | required before Task 4.5 Wave C |
 | T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R blocked pending 4AA Plan and implementation review acceptance |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |

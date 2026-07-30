@@ -2195,6 +2195,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         )
         self.assertEqual(set(), dispatched)
         sibling = "scripts/validation/check-target-surface-contract.py"
+        assignment_sibling = "scripts/validation/check-document-metadata.py"
         dispatch_mutations = {
             "literal-python": f"\npython3 {sibling}\n",
             "literal-bash": f"\nbash {sibling}\n",
@@ -2204,8 +2205,95 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 f'\nregistered_gate="{sibling}"\npython3 "$registered_gate"\n'
             ),
             "command-wrapper": f"\ncommand python3 {sibling}\n",
+            "command-p-wrapper": f"\ncommand -p python3 {sibling}\n",
+            "command-pp-wrapper": f"\ncommand -pp python3 {sibling}\n",
+            "command-stop-wrapper": f"\ncommand -- python3 {sibling}\n",
             "env-wrapper": f"\nenv LANG=C python3 {sibling}\n",
+            "env-dash-wrapper": f"\nenv - python3 {sibling}\n",
+            "env-ignore-short-wrapper": f"\nenv -i python3 {sibling}\n",
+            "env-ignore-long-wrapper": (
+                f"\nenv --ignore-environment python3 {sibling}\n"
+            ),
+            "env-debug-short-wrapper": f"\nenv -v python3 {sibling}\n",
+            "env-debug-long-wrapper": f"\nenv --debug python3 {sibling}\n",
+            "env-list-signal-wrapper": (
+                f"\nenv --list-signal-handling python3 {sibling}\n"
+            ),
+            "env-block-signal-wrapper": (
+                f"\nenv --block-signal python3 {sibling}\n"
+            ),
+            "env-block-signal-equals-wrapper": (
+                f"\nenv --block-signal=PIPE python3 {sibling}\n"
+            ),
+            "env-default-signal-wrapper": (
+                f"\nenv --default-signal python3 {sibling}\n"
+            ),
+            "env-default-signal-equals-wrapper": (
+                f"\nenv --default-signal=PIPE python3 {sibling}\n"
+            ),
+            "env-ignore-signal-wrapper": (
+                f"\nenv --ignore-signal python3 {sibling}\n"
+            ),
+            "env-ignore-signal-equals-wrapper": (
+                f"\nenv --ignore-signal=PIPE python3 {sibling}\n"
+            ),
+            "env-unset-short-wrapper": f"\nenv -u NAME python3 {sibling}\n",
+            "env-unset-attached-wrapper": f"\nenv -uNAME python3 {sibling}\n",
+            "env-unset-long-wrapper": f"\nenv --unset NAME python3 {sibling}\n",
+            "env-unset-equals-wrapper": (
+                f"\nenv --unset=NAME python3 {sibling}\n"
+            ),
+            "env-chdir-short-wrapper": f"\nenv -C DIR python3 {sibling}\n",
+            "env-chdir-attached-wrapper": f"\nenv -CDIR python3 {sibling}\n",
+            "env-chdir-long-wrapper": f"\nenv --chdir DIR python3 {sibling}\n",
+            "env-chdir-equals-wrapper": f"\nenv --chdir=DIR python3 {sibling}\n",
+            "env-argv0-short-wrapper": f"\nenv -a ARG python3 {sibling}\n",
+            "env-argv0-attached-wrapper": f"\nenv -aARG python3 {sibling}\n",
+            "env-argv0-long-wrapper": f"\nenv --argv0 ARG python3 {sibling}\n",
+            "env-argv0-equals-wrapper": (
+                f"\nenv --argv0=ARG python3 {sibling}\n"
+            ),
+            "env-short-cluster-wrapper": f"\nenv -iv python3 {sibling}\n",
+            "env-split-short-cluster-wrapper": (
+                f"\nenv -vS'python3 {sibling}'\n"
+            ),
+            "env-split-short-wrapper": f"\nenv -S 'python3 {sibling}'\n",
+            "env-split-attached-wrapper": f"\nenv -S'python3 {sibling}'\n",
+            "env-split-long-wrapper": (
+                f"\nenv --split-string 'python3 {sibling}'\n"
+            ),
+            "env-split-equals-wrapper": (
+                f"\nenv --split-string='python3 {sibling}'\n"
+            ),
+            "env-assignment-wrapper": f"\nenv LANG=C python3 {sibling}\n",
+            "env-stop-assignment-wrapper": (
+                f"\nenv -- NAME=VALUE python3 {sibling}\n"
+            ),
+            "env-stop-two-assignments-wrapper": (
+                f"\nenv -- A=1 B=2 python3 {sibling}\n"
+            ),
+            "env-stop-assignment-then-command-wrapper": (
+                f"\nenv -- NAME={assignment_sibling} python3 {sibling}\n"
+            ),
+            "env-split-whitespace-wrapper": f"\nenv -S 'python3 {sibling}'\n",
+            "env-split-quoted-whitespace-wrapper": (
+                f"\nenv -S 'python3 \"{sibling}\"'\n"
+            ),
+            "env-split-underscore-wrapper": f"\nenv -S 'python3\\_{sibling}'\n",
+            "env-split-nested-wrapper": (
+                f"\nenv -S 'command -p exec -a gate python3 {sibling}'\n"
+            ),
+            "env-nested-chain-wrapper": (
+                f"\nenv -u HOME command -p exec -a gate python3 {sibling}\n"
+            ),
             "exec-wrapper": f"\nexec python3 {sibling}\n",
+            "exec-argv0-wrapper": f"\nexec -a NAME python3 {sibling}\n",
+            "exec-argv0-attached-wrapper": f"\nexec -aNAME python3 {sibling}\n",
+            "exec-clear-wrapper": f"\nexec -c python3 {sibling}\n",
+            "exec-login-wrapper": f"\nexec -l python3 {sibling}\n",
+            "exec-cluster-wrapper": f"\nexec -cl python3 {sibling}\n",
+            "exec-cluster-argv0-wrapper": f"\nexec -claNAME python3 {sibling}\n",
+            "exec-stop-wrapper": f"\nexec -- python3 {sibling}\n",
             "helper-indirection": (
                 '\nrun_registered_gate() { python3 "$1"; }\n'
                 f"run_registered_gate {sibling}\n"
@@ -2242,6 +2330,68 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         ):
             with self.subTest(retired=retired):
                 self.assertNotIn(retired, source)
+        query_or_absent_mutations = {
+            "command-query-v": f"\ncommand -v python3 {sibling}\n",
+            "command-query-V": f"\ncommand -V python3 {sibling}\n",
+            "command-query-pv": f"\ncommand -pv python3 {sibling}\n",
+            "command-query-pV": f"\ncommand -pV python3 {sibling}\n",
+            "command-query-vp": f"\ncommand -vp python3 {sibling}\n",
+            "env-null-short": f"\nenv -0 python3 {sibling}\n",
+            "env-null-long": f"\nenv --null python3 {sibling}\n",
+            "env-help": f"\nenv --help python3 {sibling}\n",
+            "env-version": f"\nenv --version python3 {sibling}\n",
+            "env-stop-assignment-only": f"\nenv -- NAME={sibling}\n",
+            "env-stop-dash-command": f"\nenv -- -command {sibling}\n",
+            "env-split-c-discard": f"\nenv -S 'python3\\c {sibling}'\n",
+            "env-split-comment-discard": f"\nenv -S '# python3 {sibling}'\n",
+            "env-unset-sibling-operand": f"\nenv -u {sibling}\n",
+            "env-chdir-sibling-operand": f"\nenv -C {sibling}\n",
+            "env-argv0-sibling-operand": f"\nenv -a {sibling}\n",
+            "exec-argv0-sibling-operand": f"\nexec -a {sibling}\n",
+        }
+        for family, mutation in query_or_absent_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                )
+        fail_closed_mutations = {
+            "command-unknown-option": f"\ncommand --bad {sibling}\n",
+            "exec-missing-a-operand": "\nexec -a\n",
+            "exec-unknown-option": f"\nexec --bad {sibling}\n",
+            "env-missing-unset-operand": "\nenv -u\n",
+            "env-missing-chdir-operand": "\nenv -C\n",
+            "env-missing-argv0-operand": "\nenv -a\n",
+            "env-unknown-option": f"\nenv --bad {sibling}\n",
+            "env-split-env-expansion": f"\nenv -S '${{GATE}} {sibling}'\n",
+            "env-split-invalid-escape": f"\nenv -S 'python3\\x {sibling}'\n",
+            "env-split-malformed-quote": f"\nenv -S \"'python3 {sibling}\"\n",
+            "env-budget-exhaustion": (
+                "\n"
+                + " ".join(["env -S '"] + ["env -S "] * 80)
+                + f"python3 {sibling}'\n"
+            ),
+        }
+        for family, mutation in fail_closed_mutations.items():
+            with self.subTest(family=family):
+                self.assertIn(
+                    sibling,
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                )
+        self.assertIn(
+            sibling,
+            self._registered_sibling_dispatches(
+                source + f"\nenv -- NAME=VALUE python3 {sibling}\n",
+                sibling_entrypoints,
+            ),
+            "GNU env -- assignment scan must reach command",
+        )
 
     @staticmethod
     def _registered_sibling_dispatches(
@@ -2424,23 +2574,306 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "}",
             }:
                 tokens.pop(0)
-            while tokens and tokens[0] in {"command", "exec"}:
-                tokens.pop(0)
-            if tokens and tokens[0] == "env":
-                tokens.pop(0)
-                while tokens and (
-                    tokens[0].startswith("-") or "=" in tokens[0]
+            budget = 8 * (
+                1
+                + len(tokens)
+                + sum(len(token) for token in tokens)
+            )
+
+            def fail_closed(items: list[str]) -> set[str]:
+                found = {
+                    path
+                    for token in items
+                    for path in (resolved_path(token, positional),)
+                    if path is not None
+                }
+                if found:
+                    return found
+                if any(
+                    path in token
+                    for token in items
+                    for path in sibling_entrypoints
                 ):
-                    tokens.pop(0)
-            if not tokens:
-                return set()
-            interpreter = tokens[0] in {"python3", "bash"}
-            if interpreter:
-                tokens.pop(0)
-            if not tokens:
-                return set()
-            path = resolved_path(tokens[0], positional)
-            return {path} if path is not None else set()
+                    return {
+                        path
+                        for token in items
+                        for path in sibling_entrypoints
+                        if path in token
+                    }
+                return set(sibling_entrypoints)
+
+            def charge(amount: int = 1) -> bool:
+                nonlocal budget
+                budget -= amount
+                return budget >= 0
+
+            def split_env_static(value: str) -> list[str] | None:
+                result: list[str] = []
+                current: list[str] = []
+                quote: str | None = None
+                index = 0
+                started = False
+                while index < len(value):
+                    if not charge():
+                        return None
+                    character = value[index]
+                    if quote is None and character in " \t\n\r\v\f":
+                        if started:
+                            result.append("".join(current))
+                            current = []
+                            started = False
+                        index += 1
+                        continue
+                    if quote is None and character == "#":
+                        if not started:
+                            break
+                        current.append(character)
+                        started = True
+                        index += 1
+                        continue
+                    if character in {"'", '"'}:
+                        if quote is None:
+                            quote = character
+                        elif quote == character:
+                            quote = None
+                        else:
+                            current.append(character)
+                        started = True
+                        index += 1
+                        continue
+                    if character == "\\":
+                        if index + 1 >= len(value):
+                            return None
+                        escape = value[index + 1]
+                        if quote == "'" and escape != "'":
+                            current.append(character)
+                            index += 1
+                            continue
+                        if escape == "c" and quote is None:
+                            break
+                        escapes = {
+                            "f": "\f",
+                            "n": "\n",
+                            "r": "\r",
+                            "t": "\t",
+                            "v": "\v",
+                            "#": "#",
+                            "$": "$",
+                            '"': '"',
+                            "'": "'",
+                            "\\": "\\",
+                        }
+                        if escape == "_":
+                            if quote == '"':
+                                current.append(" ")
+                                started = True
+                            elif quote is None:
+                                if started:
+                                    result.append("".join(current))
+                                    current = []
+                                    started = False
+                            else:
+                                current.append("_")
+                                started = True
+                            index += 2
+                            continue
+                        if escape not in escapes:
+                            return None
+                        current.append(escapes[escape])
+                        started = True
+                        index += 2
+                        continue
+                    if character == "$" and index + 1 < len(value) and value[index + 1] == "{":
+                        return None
+                    current.append(character)
+                    started = True
+                    index += 1
+                if quote is not None:
+                    return None
+                if started:
+                    result.append("".join(current))
+                return result
+
+            def parse_chain(items: list[str]) -> set[str]:
+                if not charge(len(items)):
+                    return fail_closed(items)
+                if not items:
+                    return set()
+                head = items[0]
+                if head == "command":
+                    return parse_command(items[1:])
+                if head == "exec":
+                    return parse_exec(items[1:])
+                if head == "env":
+                    return parse_env(items[1:])
+                if head in {"python3", "bash"}:
+                    if len(items) < 2:
+                        return set()
+                    path = resolved_path(items[1], positional)
+                    return {path} if path is not None else set()
+                path = resolved_path(head, positional)
+                return {path} if path is not None else set()
+
+            def parse_command(items: list[str]) -> set[str]:
+                index = 0
+                query = False
+                while index < len(items):
+                    token = items[index]
+                    if token == "--":
+                        index += 1
+                        break
+                    if not token.startswith("-") or token == "-":
+                        break
+                    options = token[1:]
+                    if not options or any(option not in "pVv" for option in options):
+                        return fail_closed(items[index:])
+                    if "v" in options or "V" in options:
+                        query = True
+                    index += 1
+                if query:
+                    return set()
+                return parse_chain(items[index:])
+
+            def parse_exec(items: list[str]) -> set[str]:
+                index = 0
+                while index < len(items):
+                    token = items[index]
+                    if token == "--":
+                        index += 1
+                        break
+                    if not token.startswith("-") or token == "-":
+                        break
+                    options = token[1:]
+                    offset = 0
+                    while offset < len(options):
+                        option = options[offset]
+                        if option in {"c", "l"}:
+                            offset += 1
+                            continue
+                        if option != "a":
+                            return fail_closed(items[index:])
+                        attached = options[offset + 1 :]
+                        if attached:
+                            offset = len(options)
+                        else:
+                            index += 1
+                            if index >= len(items):
+                                return fail_closed(items)
+                            offset = len(options)
+                    index += 1
+                return parse_chain(items[index:])
+
+            def env_split_insert(
+                items: list[str],
+                index: int,
+                split_value: str,
+            ) -> tuple[list[str], int] | None:
+                split_tokens = split_env_static(split_value)
+                if split_tokens is None:
+                    return None
+                return items[:index] + split_tokens + items[index + 1 :], index
+
+            def parse_env(items: list[str]) -> set[str]:
+                index = 0
+                while index < len(items):
+                    token = items[index]
+                    if token == "--":
+                        index += 1
+                        break
+                    if token in {"--help", "--version", "-0", "--null"}:
+                        return set()
+                    if token == "-":
+                        index += 1
+                        continue
+                    if token in {
+                        "--ignore-environment",
+                        "--debug",
+                        "--list-signal-handling",
+                    }:
+                        index += 1
+                        continue
+                    if token.startswith((
+                        "--block-signal",
+                        "--default-signal",
+                        "--ignore-signal",
+                    )):
+                        if "=" in token or token in {
+                            "--block-signal",
+                            "--default-signal",
+                            "--ignore-signal",
+                        }:
+                            index += 1
+                            continue
+                        return fail_closed(items[index:])
+                    consumed_long_operand = False
+                    for option in ("--unset", "--chdir", "--argv0"):
+                        if token == option:
+                            index += 1
+                            if index >= len(items):
+                                return fail_closed(items)
+                            consumed_long_operand = True
+                            break
+                        if token.startswith(option + "="):
+                            consumed_long_operand = True
+                            break
+                    if consumed_long_operand:
+                        index += 1
+                        continue
+                    split_value: str | None = None
+                    if token == "--split-string":
+                        index += 1
+                        if index >= len(items):
+                            return fail_closed(items)
+                        split_value = items[index]
+                    elif token.startswith("--split-string="):
+                        split_value = token.split("=", 1)[1]
+                    if split_value is not None:
+                        inserted = env_split_insert(items, index, split_value)
+                        if inserted is None:
+                            return fail_closed(items[index:])
+                        items, index = inserted
+                        continue
+                    if token.startswith("--"):
+                        return fail_closed(items[index:])
+                    if token.startswith("-") and token != "-":
+                        options = token[1:]
+                        offset = 0
+                        while offset < len(options):
+                            option = options[offset]
+                            if option in {"i", "v"}:
+                                offset += 1
+                                continue
+                            if option in {"u", "C", "a", "S"}:
+                                attached = options[offset + 1 :]
+                                if attached:
+                                    operand = attached
+                                else:
+                                    index += 1
+                                    if index >= len(items):
+                                        return fail_closed(items)
+                                    operand = items[index]
+                                if option == "S":
+                                    inserted = env_split_insert(
+                                        items,
+                                        index,
+                                        operand,
+                                    )
+                                    if inserted is None:
+                                        return fail_closed(items[index:])
+                                    items, index = inserted
+                                offset = len(options)
+                                continue
+                            if option == "0":
+                                return set()
+                            return fail_closed(items[index:])
+                        index += 1
+                        continue
+                    break
+                while index < len(items) and "=" in items[index]:
+                    index += 1
+                return parse_chain(items[index:])
+
+            return parse_chain(tokens)
 
         helper_names: set[str] = set()
         helper_re = re.compile(
