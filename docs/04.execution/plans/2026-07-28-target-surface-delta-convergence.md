@@ -69,11 +69,18 @@ option near-prefixes could be accepted. The user approved
 T-TSDC-004R-4AB on 2026-07-30 as a Plan-only bounded successor that makes
 `dispatch`, `no-dispatch`, and `ambiguous` explicit, re-enters the same
 budgeted `env` parser at the first split token, and recognizes only exact
-signal option spellings. No 4AB implementation authority exists until its Plan
-receives fresh independent specification and quality/security `C0/I0/M0`
-reviews and the exact review-evidence checkpoint is recorded. Remote, runtime,
-dependency, secret, direct pre-commit, controlled-wrapper, and Graphify-update
-authority remain unchanged.
+signal option spellings. Its fresh Plan reviews each returned `C0/I2/M0`
+because long split-string and no-relevant dynamic witnesses were missing,
+ambiguous candidate collection could drop an embedded sibling, and unresolved
+positional targets were excluded. The user approved T-TSDC-004R-4AC on
+2026-07-30 as a bounded in-place successor that unions every exact and
+embedded candidate, covers named and positional dynamic targets in both
+positive and negative directions, and proves both long split-string forms.
+No 4AC implementation authority exists until its Plan receives fresh
+independent specification and quality/security `C0/I0/M0` reviews and the
+exact review-evidence checkpoint is recorded. Remote, runtime, dependency,
+secret, direct pre-commit, controlled-wrapper, and Graphify-update authority
+remain unchanged.
 
 ## Global Constraints
 
@@ -5265,6 +5272,10 @@ test -z "$clean_state"
 
 #### Task 4.4AB / T-TSDC-004R-4AB: Explicit Parser-Outcome Proof Design Return
 
+> **Superseded for execution by Task 4.4AC.** Retain this section as failed
+> Plan-review evidence only. Do not execute a 4AB command block or create an
+> uncreated 4AB implementation subject.
+
 **Authority boundary and supersession:**
 
 - The exact unique
@@ -6360,73 +6371,1358 @@ test -z "$clean_state"
 ```
 
   The rejected checkpoint grants no implementation retry or downstream
-  authority. Only the accepted
-  `docs(task): record explicit parser outcome review` checkpoint authorizes
-  Task 4.5 Wave C.
+  authority. The uncreated
+  `docs(task): record explicit parser outcome review` checkpoint would have
+  authorized Task 4.5 only under 4AB, but 4AC supersedes this section for
+  execution and this historical block grants no current authority.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### Task 4.4AC / T-TSDC-004R-4AC: Candidate-Closed Parser-Outcome Proof
 
-- [ ] **Step 0: Prove the exact accepted explicit-outcome review
-  checkpoint.**
+**Authority boundary and supersession:**
+
+- The exact unique
+  `docs(task): record exhausted explicit parser outcome plan review` commit
+  must resolve to
+  `997719ff22cbaa9f4bc0c160f0e6c56fc76d54ba`, be `HEAD` when this
+  design is authored, and remain an ancestor of every 4AC checkpoint.
+- This Plan-only successor may modify only this Plan and the sibling Task
+  ledger. Its exact unique subject is
+  `docs(plan): define candidate-closed parser outcome proof`.
+- Two fresh read-only reviewers inspect the complete
+  `997719ff..$plan_checkpoint` range: one specification reviewer and a
+  different quality/security reviewer. Both must return `C0/I0/M0`. Any other
+  result is recorded in the exact Task-only
+  `docs(task): record exhausted candidate-closed parser outcome plan review`
+  checkpoint and returns to design; there is no Plan correction inside 4AC.
+- After both approvals, the controller records the reports and exact range in
+  a Task-ledger-only commit with the exact unique subject
+  `docs(task): record candidate-closed parser outcome plan reviews`. That clean
+  commit is the immutable implementation base.
+- One fresh implementation agent then receives exactly one attempt. It may
+  modify only
+  `tests/validation/test_agent_governance_ci_routing.py` and the sibling Task
+  ledger. Its exact unique subject is
+  `fix(ci): close candidate-closed parser outcome proof`.
+- Freeze `.github/workflow-contract.yml`,
+  `.github/workflows/ci-quality.yml`,
+  `scripts/validation/check-repo-contracts.sh`, every typed gate contract,
+  runner, adapter, and test outside the allowed routing test, every
+  target-delta artifact, and every other tracked path.
+- A fresh read-only specification reviewer and a different fresh read-only
+  quality/security reviewer inspect the exact implementation-base-to-commit
+  range. Both must return `C0/I0/M0`. The controller then records the accepted
+  pair in a Task-ledger-only commit with the exact unique subject
+  `docs(task): record candidate-closed parser outcome review`.
+- Any non-`C0/I0/M0` implementation review exhausts 4AC without retry. The
+  controller records the rejected pair in a Task-ledger-only commit with the
+  exact unique subject
+  `docs(task): record exhausted candidate-closed parser outcome review`;
+  Task 4R, Wave C, Tasks 5–6, and final branch review remain blocked.
+- 4AC supersedes 4AB for execution and incorporates every accepted 4W parser,
+  matrix, budget, and evidence requirement; the corrected 4X GNU `env --` and
+  session-local contract; the 4Y strict/full-lineage contract; the 4Z
+  status-preserving contract; the 4AA immediate capture/test contract; and
+  the 4AB explicit three-outcome boundary. Every earlier command block and
+  uncreated subject is historical and non-executable.
+
+**Files and interfaces:**
+
+- Modify
+  `tests/validation/test_agent_governance_ci_routing.py` only inside
+  `test_repository_umbrella_is_wiring_only` and its existing
+  `_registered_sibling_dispatches` static oracle.
+- Modify
+  `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`
+  only for bounded RED, GREEN, validation, commit, and review evidence.
+- Do not create a parser module, helper script, workflow, contract field,
+  generated artifact, dependency, or production runtime surface.
+- Preserve the accepted static-oracle statement boundary. This successor does
+  not add arbitrary shell interpretation for `&&`, `||`, pipelines, or
+  `bash -c`; Spec 135 explicitly excludes inference of arbitrary shell
+  semantics. A future expansion would require its own approved design and
+  behavior-specific proof.
+- Inside `command_sink`, the recursive parser consumes and produces one local
+  `ParseResult = tuple[str, frozenset[str]]`. The tag is exactly one of
+  `dispatch`, `no-dispatch`, or `ambiguous`. `dispatch` contains every
+  statically proven registered sibling sink; `no-dispatch` contains no paths;
+  and `ambiguous` contains the union of every exact and embedded recoverable
+  registered sibling, falling back to the complete registered set only when
+  syntax is ambiguous and no candidate is recoverable.
+- Convert a `ParseResult` to the existing public `set[str]` only once at the
+  outer `command_sink` boundary: materialize both `dispatch` and `ambiguous`
+  paths as findings and materialize `no-dispatch` as the empty set. Existing
+  callers, messages, and value-free diagnostics remain unchanged.
+
+**Candidate-closed parser contract:**
+
+- `candidate_paths(items)` scans every item before returning. For each token,
+  union the path returned by `resolved_path(token, positional)`, when present,
+  with every registered sibling whose literal path is embedded in that token.
+  Never return early after finding an exact path.
+- `ambiguous(items)` stores `candidate_paths(items)` when nonempty and stores
+  the complete registered sibling set only when that union is empty.
+  `has_relevant_sibling(items)` is true only when `candidate_paths(items)` is
+  nonempty; it never uses the all-registered ambiguity fallback.
+- A dynamic target is a named variable matched by `variable_re` or one of
+  `$1` and `${1}` whose `resolved_path(token, positional)` is unresolved.
+  A helper invocation that binds `positional` therefore resolves `$1` and
+  `${1}` normally instead of marking them ambiguous.
+- At a direct, `command`, `python3`, or `bash` command position, an unresolved
+  dynamic target is `ambiguous` only when later tokens have a relevant
+  sibling. The same unresolved target without a relevant later sibling is
+  `no-dispatch`. `command -v` and `command -V`, including valid clusters,
+  return `no-dispatch` before target evaluation.
+- The original work budget remains exactly
+  `8 * (1 + original token count + total source-token character count)`.
+  Every wrapper/option token and every GNU split-string character charges that
+  one closure-owned budget. Recursive parsing and inserted tokens never reset
+  or add credit. Budget exhaustion is `ambiguous`.
+- Follow the
+  [Coreutils 9.11 `env` grammar](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html)
+  and keep the existing static lexer. Separated `-S STRING` and
+  `--split-string STRING`, attached `-SSTRING` and
+  `--split-string=STRING`, and clustered forms such as `-vSSTRING` all lex
+  once, combine split tokens with only the untouched original tail, and
+  immediately re-enter the same `parse_env` function at the first combined
+  token. There is no post-insertion index increment.
+- Preserve the documented static `env -S` quotes, whitespace, comment,
+  `\c`, `\f`, `\n`, `\r`, `\t`, `\v`, `\#`, `\$`, `\_`, `\"`, `\'`, and
+  `\\` behavior. Do not read `os.environ`, invoke a shell, expand a variable,
+  execute a wrapper, or execute any sibling entrypoint.
+- Recognize signal options only when the token equals
+  `--block-signal`, `--default-signal`, or `--ignore-signal`, or begins with
+  that exact name followed immediately by `=`. A token that merely starts
+  with one of those names is `ambiguous`. A two-sibling regression must prove
+  that ambiguity retains both an embedded option-value sibling and a different
+  exact remaining sibling.
+- Preserve the accepted Bash
+  [`command`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html)
+  and
+  [`exec`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html)
+  option arities, GNU `env --` assignment transition, option-operand
+  no-dispatch behavior, nested wrapper recursion, deterministic value-free
+  fallback, and all literal, quoted, variable-mediated, helper, Python
+  heredoc `subprocess`, and `os.system` dispatch families.
+
+**Strict proof contract:**
+
+- Every 4AC fenced Bash block begins with `set -euo pipefail` and
+  `shopt -s inherit_errexit`.
+- Every non-RED `$()` is the complete right-hand side of a standalone simple
+  assignment. The immediately following command is a `test` naming that exact
+  variable. Count, distance, path, mode, and clean-state captures use their
+  full semantic assertion as that immediate test.
+- The focused RED is the sole exception: `red_output` is immediately followed
+  by `red_status="$?"`; `errexit` is restored before output and assertions.
+- Before committing this Plan, statically extract every 4AC and Task 4.5
+  Step 0 Bash block; require strict first two lines, Bash syntax, adjacent
+  capture consumption, the sole RED exception, exact two-path scope, exact
+  `100644` modes, metadata, traceability, and diff hygiene.
+
+- [ ] **Step 1: Commit and independently review the 4AC Plan.**
+
+  Immediately after the Plan commit and before either review, the controller
+  runs:
 
 ```bash
 set -euo pipefail
 shopt -s inherit_errexit
-design_base="$(git rev-parse 25524ce1)"
+design_base="$(git rev-parse 997719ff)"
 test -n "$design_base"
 failure_subject_count="$(
   git log --format=%H \
-    --grep='^docs(task): record exhausted immediate-consumption wrapper review$' |
+    --grep='^docs(task): record exhausted explicit parser outcome plan review$' |
     wc -l
 )"
 test "$failure_subject_count" -eq 1
 failure_checkpoint="$(
   git log -1 --format=%H \
-    --grep='^docs(task): record exhausted immediate-consumption wrapper review$'
+    --grep='^docs(task): record exhausted explicit parser outcome plan review$'
 )"
 test "$failure_checkpoint" = "$design_base"
 plan_subject_count="$(
   git log --format=%H \
-    --grep='^docs(plan): define explicit parser outcome proof$' |
+    --grep='^docs(plan): define candidate-closed parser outcome proof$' |
     wc -l
 )"
 test "$plan_subject_count" -eq 1
 plan_checkpoint="$(
   git log -1 --format=%H \
-    --grep='^docs(plan): define explicit parser outcome proof$'
+    --grep='^docs(plan): define candidate-closed parser outcome proof$'
 )"
 test -n "$plan_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$plan_checkpoint"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+plan_distance="$(
+  git rev-list --count "$design_base..$plan_checkpoint"
+)"
+test "$plan_distance" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+task_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  If either Plan reviewer is not `C0/I0/M0`, edit only the Task ledger and
+  terminate 4AC with this exact rejected-Plan checkpoint:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$plan_checkpoint"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record exhausted candidate-closed parser outcome plan review"
+review_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record exhausted candidate-closed parser outcome plan review$' |
+    wc -l
+)"
+test "$review_subject_count" -eq 1
+review_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record exhausted candidate-closed parser outcome plan review$'
+)"
+test -n "$review_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$review_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$review_checkpoint"
+review_distance="$(
+  git rev-list --count "$plan_checkpoint..$review_checkpoint"
+)"
+test "$review_distance" -eq 1
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  This rejected-Plan checkpoint grants no correction, implementation, or
+  downstream authority.
+
+  After both Plan reviewers return `C0/I0/M0`, edit only the Task ledger and
+  run this separate strict session:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 997719ff)"
+test -n "$design_base"
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$plan_checkpoint"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+plan_distance="$(
+  git rev-list --count "$design_base..$plan_checkpoint"
+)"
+test "$plan_distance" -eq 1
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record candidate-closed parser outcome plan reviews"
 base_subject_count="$(
   git log --format=%H \
-    --grep='^docs(task): record explicit parser outcome plan reviews$' |
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$' |
     wc -l
 )"
 test "$base_subject_count" -eq 1
 implementation_base="$(
   git log -1 --format=%H \
-    --grep='^docs(task): record explicit parser outcome plan reviews$'
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_base"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+base_distance="$(
+  git rev-list --count "$plan_checkpoint..$implementation_base"
+)"
+test "$base_distance" -eq 1
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+base_task_mode="$(
+  git ls-tree "$implementation_base" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$base_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 2: Rebind the implementation session and add the complete
+  fallback-resistant RED matrix.**
+
+  The implementation agent first proves the complete authority chain:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 997719ff)"
+test -n "$design_base"
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_base"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+plan_distance="$(
+  git rev-list --count "$design_base..$plan_checkpoint"
+)"
+test "$plan_distance" -eq 1
+base_distance="$(
+  git rev-list --count "$plan_checkpoint..$implementation_base"
+)"
+test "$base_distance" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+base_task_mode="$(
+  git ls-tree "$implementation_base" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$base_task_mode" = "100644"
+base_test_mode="$(
+  git ls-tree "$implementation_base" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$base_test_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  Add these exact behavior families inside
+  `test_repository_umbrella_is_wiring_only`. `assignment_sibling` is the
+  existing second distinct registered path. Exact singleton, two-path, and
+  empty-set assertions prevent all-registered fallback, direct-head
+  misclassification, or early-return candidate loss from satisfying RED:
+
+```python
+split_transition_dispatch = {
+    "env-split-direct-separated": f"\nenv -S '{sibling}'\n",
+    "env-split-direct-attached": f"\nenv -S'{sibling}'\n",
+    "env-split-direct-clustered": f"\nenv -vS'{sibling}'\n",
+    "env-split-long-separated": (
+        f"\nenv --split-string '{sibling}'\n"
+    ),
+    "env-split-long-equals": (
+        f"\nenv --split-string='{sibling}'\n"
+    ),
+    "env-split-long-python-separated": (
+        f"\nenv --split-string 'python3 {sibling}'\n"
+    ),
+    "env-split-long-python-equals": (
+        f"\nenv --split-string='python3 {sibling}'\n"
+    ),
+    "env-split-nested-dispatch": (
+        f"\nenv -S 'command -p exec -a gate python3 {sibling}'\n"
+    ),
+}
+for family, mutation in split_transition_dispatch.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+split_transition_no_dispatch = {
+    "env-split-query-separated": (
+        f"\nenv -S 'command -v python3 {sibling}'\n"
+    ),
+    "env-split-query-attached": (
+        f"\nenv -S'command -v python3 {sibling}'\n"
+    ),
+    "env-split-query-clustered": (
+        f"\nenv -vS'command -v python3 {sibling}'\n"
+    ),
+    "env-split-query-long-separated": (
+        f"\nenv --split-string 'command -v python3 {sibling}'\n"
+    ),
+    "env-split-query-long-equals": (
+        f"\nenv --split-string='command -v python3 {sibling}'\n"
+    ),
+}
+for family, mutation in split_transition_no_dispatch.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            set(),
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+dynamic_relevant_mutations = {
+    "direct-named-dynamic-target": f'\n"$RUNNER" {sibling}\n',
+    "direct-braced-named-dynamic-target": (
+        f'\n"${{RUNNER}}" {sibling}\n'
+    ),
+    "command-named-dynamic-target": (
+        f'\ncommand "$RUNNER" {sibling}\n'
+    ),
+    "command-braced-named-dynamic-target": (
+        f'\ncommand "${{RUNNER}}" {sibling}\n'
+    ),
+    "python-named-dynamic-script": (
+        f'\npython3 "$SCRIPT" {sibling}\n'
+    ),
+    "python-braced-named-dynamic-script": (
+        f'\npython3 "${{SCRIPT}}" {sibling}\n'
+    ),
+    "bash-named-dynamic-script": f'\nbash "$SCRIPT" {sibling}\n',
+    "bash-braced-named-dynamic-script": (
+        f'\nbash "${{SCRIPT}}" {sibling}\n'
+    ),
+    "direct-positional-target": f'\n"$1" {sibling}\n',
+    "direct-braced-positional-target": f'\n"${{1}}" {sibling}\n',
+    "command-positional-target": f'\ncommand "$1" {sibling}\n',
+    "command-braced-positional-target": (
+        f'\ncommand "${{1}}" {sibling}\n'
+    ),
+    "python-positional-script": f'\npython3 "$1" {sibling}\n',
+    "python-braced-positional-script": (
+        f'\npython3 "${{1}}" {sibling}\n'
+    ),
+    "bash-positional-script": f'\nbash "$1" {sibling}\n',
+    "bash-braced-positional-script": f'\nbash "${{1}}" {sibling}\n',
+}
+for family, mutation in dynamic_relevant_mutations.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+harmless = "not-a-registered-sibling"
+dynamic_no_relevant_mutations = {
+    "direct-named-no-relevant": f'\n"$RUNNER" {harmless}\n',
+    "direct-braced-named-no-relevant": (
+        f'\n"${{RUNNER}}" {harmless}\n'
+    ),
+    "command-named-no-relevant": (
+        f'\ncommand "$RUNNER" {harmless}\n'
+    ),
+    "command-braced-named-no-relevant": (
+        f'\ncommand "${{RUNNER}}" {harmless}\n'
+    ),
+    "python-named-no-relevant": f'\npython3 "$SCRIPT" {harmless}\n',
+    "python-braced-named-no-relevant": (
+        f'\npython3 "${{SCRIPT}}" {harmless}\n'
+    ),
+    "bash-named-no-relevant": f'\nbash "$SCRIPT" {harmless}\n',
+    "bash-braced-named-no-relevant": (
+        f'\nbash "${{SCRIPT}}" {harmless}\n'
+    ),
+    "direct-positional-no-relevant": f'\n"$1" {harmless}\n',
+    "direct-braced-positional-no-relevant": (
+        f'\n"${{1}}" {harmless}\n'
+    ),
+    "command-positional-no-relevant": f'\ncommand "$1" {harmless}\n',
+    "command-braced-positional-no-relevant": (
+        f'\ncommand "${{1}}" {harmless}\n'
+    ),
+    "python-positional-no-relevant": f'\npython3 "$1" {harmless}\n',
+    "python-braced-positional-no-relevant": (
+        f'\npython3 "${{1}}" {harmless}\n'
+    ),
+    "bash-positional-no-relevant": f'\nbash "$1" {harmless}\n',
+    "bash-braced-positional-no-relevant": (
+        f'\nbash "${{1}}" {harmless}\n'
+    ),
+}
+for family, mutation in dynamic_no_relevant_mutations.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            set(),
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+dynamic_query_mutations = {
+    "command-named-query-v": f'\ncommand -v "$RUNNER" {sibling}\n',
+    "command-named-query-V": f'\ncommand -V "$RUNNER" {sibling}\n',
+    "command-named-query-cluster": (
+        f'\ncommand -pv "$RUNNER" {sibling}\n'
+    ),
+    "command-braced-named-query-cluster": (
+        f'\ncommand -pV "${{RUNNER}}" {sibling}\n'
+    ),
+    "command-positional-query-v": f'\ncommand -v "$1" {sibling}\n',
+    "command-positional-query-cluster": (
+        f'\ncommand -pV "$1" {sibling}\n'
+    ),
+    "command-braced-positional-query-cluster": (
+        f'\ncommand -vp "${{1}}" {sibling}\n'
+    ),
+}
+for family, mutation in dynamic_query_mutations.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            set(),
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+candidate_union_mutations = {
+    "env-block-signal-candidate-union": (
+        f"\nenv --block-signalX={assignment_sibling} "
+        f"python3 {sibling}\n"
+    ),
+    "env-default-signal-candidate-union": (
+        f"\nenv --default-signalX={assignment_sibling} "
+        f"python3 {sibling}\n"
+    ),
+    "env-ignore-signal-candidate-union": (
+        f"\nenv --ignore-signalX={assignment_sibling} "
+        f"python3 {sibling}\n"
+    ),
+}
+for family, mutation in candidate_union_mutations.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {assignment_sibling, sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+valid_signal_operands = {
+    "env-block-signal-exact-value": (
+        f"\nenv --block-signal={assignment_sibling} true\n"
+    ),
+    "env-default-signal-exact-value": (
+        f"\nenv --default-signal={assignment_sibling} true\n"
+    ),
+    "env-ignore-signal-exact-value": (
+        f"\nenv --ignore-signal={assignment_sibling} true\n"
+    ),
+}
+for family, mutation in valid_signal_operands.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            set(),
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+
+valid_signal_commands = {
+    "env-block-signal-exact-command": (
+        f"\nenv --block-signal={assignment_sibling} "
+        f"python3 {sibling}\n"
+    ),
+    "env-default-signal-exact-command": (
+        f"\nenv --default-signal={assignment_sibling} "
+        f"python3 {sibling}\n"
+    ),
+    "env-ignore-signal-exact-command": (
+        f"\nenv --ignore-signal={assignment_sibling} "
+        f"python3 {sibling}\n"
+    ),
+}
+for family, mutation in valid_signal_commands.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "candidate-closed parser outcome matrix must hold",
+        )
+```
+
+  Run the focused RED as the sole non-errexit exception:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+set +e
+red_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_repository_umbrella_is_wiring_only \
+    -v 2>&1
+)"
+red_status="$?"
+set -e
+printf '%s\n' "$red_output"
+test "$red_status" -ne 0
+case "$red_output" in
+  *"candidate-closed parser outcome matrix must hold"*) ;;
+  *) exit 1 ;;
+esac
+```
+
+  Valid RED imports and reaches exactly the named test, fails on one or more
+  new behavior-specific assertions, and includes the fixed marker. Import
+  errors, missing tests, unrelated failures, or another marker do not count.
+  Record the exact status and subtest families in the Task ledger.
+
+- [ ] **Step 3: Implement the candidate-closed three-outcome parser and run
+  focused GREEN.**
+
+  Within the existing local oracle, replace early-return candidate collection
+  with this exact union and tagged return interface:
+
+```python
+ParseResult = tuple[str, frozenset[str]]
+
+def candidate_paths(items: list[str]) -> set[str]:
+    found: set[str] = set()
+    for token in items:
+        exact = resolved_path(token, positional)
+        if exact is not None:
+            found.add(exact)
+        found.update(
+            path
+            for path in sibling_entrypoints
+            if path in token
+        )
+    return found
+
+def dispatch(paths: set[str]) -> ParseResult:
+    return ("dispatch", frozenset(paths))
+
+def no_dispatch() -> ParseResult:
+    return ("no-dispatch", frozenset())
+
+def ambiguous(items: list[str]) -> ParseResult:
+    candidates = candidate_paths(items)
+    if not candidates:
+        candidates = set(sibling_entrypoints)
+    return ("ambiguous", frozenset(candidates))
+
+def materialize(result: ParseResult) -> set[str]:
+    kind, paths = result
+    if kind == "no-dispatch":
+        return set()
+    if kind in {"dispatch", "ambiguous"}:
+        return set(paths)
+    raise AssertionError("invalid parser outcome")
+```
+
+  Define the exact relevant-sibling and dynamic-target predicates. The
+  positional binding check prevents helper-bound `$1` and `${1}` from being
+  treated as unresolved:
+
+```python
+def has_relevant_sibling(items: list[str]) -> bool:
+    return bool(candidate_paths(items))
+
+def is_unresolved_dynamic_target(token: str) -> bool:
+    is_supported_dynamic = (
+        token in {"$1", "${1}"}
+        or variable_re.fullmatch(token) is not None
+    )
+    return (
+        is_supported_dynamic
+        and resolved_path(token, positional) is None
+    )
+```
+
+  Change `parse_chain`, `parse_command`, `parse_exec`, and `parse_env` to
+  return `ParseResult`. After query-only handling, evaluate a direct or
+  wrapper-selected dynamic target with this exact branch:
+
+```python
+if is_unresolved_dynamic_target(target):
+    if has_relevant_sibling(remaining):
+        return ambiguous([target, *remaining])
+    return no_dispatch()
+```
+
+  A registered resolved target is `dispatch`; a proved static non-sibling
+  target is `no_dispatch`. Apply the same branch to the script operand and
+  remaining arguments after `python3` or `bash`.
+
+  Use one same-parser transition for every split form:
+
+```python
+def parse_env_split(
+    split_value: str,
+    tail: list[str],
+) -> ParseResult:
+    split_tokens = split_env_static(split_value)
+    if split_tokens is None:
+        return ambiguous([split_value, *tail])
+    return parse_env([*split_tokens, *tail])
+
+if token == "--split-string":
+    if index + 1 >= len(items):
+        return ambiguous(items[index:])
+    return parse_env_split(items[index + 1], items[index + 2 :])
+if token.startswith("--split-string="):
+    return parse_env_split(token.split("=", 1)[1], items[index + 1 :])
+```
+
+  In the short-option loop, after consuming preceding `i` or `v`, treat `S`
+  as terminal in that token. Attached/clustered forms pass the characters
+  after `S` with `items[index + 1 :]`; separated forms pass
+  `items[index + 1]` with `items[index + 2 :]`. Return
+  `parse_env_split(...)` immediately with no index increment.
+
+  Evaluate exact signal names before near-prefix ambiguity:
+
+```python
+signal_options = (
+    "--block-signal",
+    "--default-signal",
+    "--ignore-signal",
+)
+
+def is_exact_signal_option(token: str) -> bool:
+    return token in signal_options or any(
+        token.startswith(option + "=")
+        for option in signal_options
+    )
+
+def is_signal_near_prefix(token: str) -> bool:
+    return any(token.startswith(option) for option in signal_options)
+```
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+focused_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_repository_umbrella_is_wiring_only \
+    -v 2>&1
+)"
+test -n "$focused_output"
+printf '%s\n' "$focused_output"
+case "$focused_output" in
+  *"Ran 1 test"*"OK"*) ;;
+  *) exit 1 ;;
+esac
+routing_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing \
+    -v 2>&1
+)"
+test -n "$routing_output"
+printf '%s\n' "$routing_output"
+case "$routing_output" in
+  *"OK"*) ;;
+  *) exit 1 ;;
+esac
+```
+
+  GREEN must preserve the planned local `html5lib` skip exactly as a skip;
+  it must not convert a failure into a skip or xfail.
+
+- [ ] **Step 4: Run the frozen regression and static evidence ladder.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+regression_output="$(
+  python3 -m unittest \
+    tests.validation.test_ci_gate_contract \
+    tests.validation.test_ci_gate_runner \
+    tests.validation.test_ci_gate_adapters \
+    tests.validation.test_github_workflow_contract \
+    tests.validation.test_agent_governance_ci_routing \
+    -v 2>&1
+)"
+test -n "$regression_output"
+printf '%s\n' "$regression_output"
+case "$regression_output" in
+  *"OK"*) ;;
+  *) exit 1 ;;
+esac
+workflow_output="$(
+  python3 scripts/validation/check-github-workflow-contract.py 2>&1
+)"
+test -n "$workflow_output"
+printf '%s\n' "$workflow_output"
+delta_output="$(
+  python3 scripts/validation/check-target-surface-delta-contract.py \
+    --mode advisory 2>&1
+)"
+test -n "$delta_output"
+printf '%s\n' "$delta_output"
+metadata_output="$(
+  python3 scripts/validation/check-document-metadata.py \
+    --mode check-changed 2>&1
+)"
+test -n "$metadata_output"
+printf '%s\n' "$metadata_output"
+traceability_output="$(
+  bash scripts/validation/check-doc-traceability.sh 2>&1
+)"
+test -n "$traceability_output"
+printf '%s\n' "$traceability_output"
+ci_list_output="$(
+  python3 scripts/validation/run-ci-gate.py --profile ci --list 2>&1
+)"
+test -n "$ci_list_output"
+printf '%s\n' "$ci_list_output"
+ci_dry_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile ci --dry-run --all 2>&1
+)"
+test -n "$ci_dry_output"
+printf '%s\n' "$ci_dry_output"
+script_backed_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile local-script-backed --dry-run --all 2>&1
+)"
+test -n "$script_backed_output"
+printf '%s\n' "$script_backed_output"
+local_harness_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile local-harness --dry-run --all 2>&1
+)"
+test -n "$local_harness_output"
+printf '%s\n' "$local_harness_output"
+all_profiles_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile local-all-profiles --dry-run --all 2>&1
+)"
+test -n "$all_profiles_output"
+printf '%s\n' "$all_profiles_output"
+if python3 -c 'import ruff' >/dev/null 2>&1; then
+  python3 -m ruff check \
+    tests/validation/test_agent_governance_ci_routing.py
+else
+  printf '%s\n' 'UNVERIFIED: Ruff is unavailable; installation prohibited'
+fi
+python3 -m compileall -q \
+  tests/validation/test_agent_governance_ci_routing.py
+git diff --check
+```
+
+  The repository umbrella, registered typed child gates, direct pre-commit,
+  controlled wrapper, Compose/runtime, network, secrets, credentials, remote
+  state, and Graphify update remain prohibited. The listed standalone static
+  validators and execution-free `--list`/`--dry-run` projections are the only
+  authorized child-gate evidence.
+
+- [ ] **Step 5: Re-resolve the implementation base, prove exact scope and
+  freezes, then commit the sole attempt.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_base"
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+test -n "$expected_paths"
+actual_paths="$(
+  {
+    git diff --name-only "$implementation_base" -- &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_mode="$(
+  git ls-files -s \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$test_mode" = "100644"
+task_mode="$(
+  git ls-files -s \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+git diff --check
+git add \
+  tests/validation/test_agent_governance_ci_routing.py \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$expected_paths"
+git commit -m "fix(ci): close candidate-closed parser outcome proof"
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+implementation_distance="$(
+  git rev-list --count "$implementation_base..$implementation_commit"
+)"
+test "$implementation_distance" -eq 1
+implementation_paths="$(
+  git diff --name-only \
+    "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+committed_test_mode="$(
+  git ls-tree "$implementation_commit" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$committed_test_mode" = "100644"
+committed_task_mode="$(
+  git ls-tree "$implementation_commit" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$committed_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 6: Independently review the exact implementation range and
+  record one terminal review checkpoint.**
+
+  Each fresh reviewer independently runs:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$'
 )"
 test -n "$implementation_base"
 implementation_subject_count="$(
   git log --format=%H \
-    --grep='^fix(ci): close explicit parser outcome proof$' |
+    --grep='^fix(ci): close candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+implementation_distance="$(
+  git rev-list --count "$implementation_base..$implementation_commit"
+)"
+test "$implementation_distance" -eq 1
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+test -n "$expected_paths"
+implementation_paths="$(
+  git diff --name-only \
+    "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+task_mode="$(
+  git ls-tree "$implementation_commit" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+test_mode="$(
+  git ls-tree "$implementation_commit" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$test_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  If and only if both reports are `C0/I0/M0`, edit only the Task ledger and
+  create the accepted checkpoint:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record candidate-closed parser outcome review"
+review_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome review$' |
+    wc -l
+)"
+test "$review_subject_count" -eq 1
+review_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome review$'
+)"
+test -n "$review_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$review_checkpoint"
+git merge-base --is-ancestor "$implementation_commit" "$review_checkpoint"
+review_distance="$(
+  git rev-list --count "$implementation_commit..$review_checkpoint"
+)"
+test "$review_distance" -eq 1
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  If either report is not `C0/I0/M0`, edit only the Task ledger and create the
+  mutually exclusive rejected-review checkpoint:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record exhausted candidate-closed parser outcome review"
+review_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record exhausted candidate-closed parser outcome review$' |
+    wc -l
+)"
+test "$review_subject_count" -eq 1
+review_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record exhausted candidate-closed parser outcome review$'
+)"
+test -n "$review_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$review_checkpoint"
+git merge-base --is-ancestor "$implementation_commit" "$review_checkpoint"
+review_distance="$(
+  git rev-list --count "$implementation_commit..$review_checkpoint"
+)"
+test "$review_distance" -eq 1
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  The rejected checkpoint grants no implementation retry or downstream
+  authority. Only the accepted
+  `docs(task): record candidate-closed parser outcome review` checkpoint
+  authorizes Task 4.5 Wave C.
+
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Prove the exact accepted candidate-closed review
+  checkpoint.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 997719ff)"
+test -n "$design_base"
+failure_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record exhausted explicit parser outcome plan review$' |
+    wc -l
+)"
+test "$failure_subject_count" -eq 1
+failure_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record exhausted explicit parser outcome plan review$'
+)"
+test "$failure_checkpoint" = "$design_base"
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define candidate-closed parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record candidate-closed parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close candidate-closed parser outcome proof$' |
     wc -l
 )"
 test "$implementation_subject_count" -eq 1
 wrapper_implementation="$(
   git log -1 --format=%H \
-    --grep='^fix(ci): close explicit parser outcome proof$'
+    --grep='^fix(ci): close candidate-closed parser outcome proof$'
 )"
 test -n "$wrapper_implementation"
 review_subject_count="$(
   git log --format=%H \
-    --grep='^docs(task): record explicit parser outcome review$' |
+    --grep='^docs(task): record candidate-closed parser outcome review$' |
     wc -l
 )"
 test "$review_subject_count" -eq 1
 wrapper_review="$(
   git log -1 --format=%H \
-    --grep='^docs(task): record explicit parser outcome review$'
+    --grep='^docs(task): record candidate-closed parser outcome review$'
 )"
 test -n "$wrapper_review"
 head_commit="$(git rev-parse HEAD)"
