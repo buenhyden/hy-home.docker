@@ -2320,6 +2320,257 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                         sibling_entrypoints,
                     ),
                 )
+        split_transition_dispatch = {
+            "env-split-direct-separated": f"\nenv -S '{sibling}'\n",
+            "env-split-direct-attached": f"\nenv -S'{sibling}'\n",
+            "env-split-direct-clustered": f"\nenv -vS'{sibling}'\n",
+            "env-split-long-separated": (
+                f"\nenv --split-string '{sibling}'\n"
+            ),
+            "env-split-long-equals": (
+                f"\nenv --split-string='{sibling}'\n"
+            ),
+            "env-split-long-python-separated": (
+                f"\nenv --split-string 'python3 {sibling}'\n"
+            ),
+            "env-split-long-python-equals": (
+                f"\nenv --split-string='python3 {sibling}'\n"
+            ),
+            "env-split-nested-dispatch": (
+                f"\nenv -S 'command -p exec -a gate python3 {sibling}'\n"
+            ),
+        }
+        for family, mutation in split_transition_dispatch.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        split_transition_no_dispatch = {
+            "env-split-query-separated": (
+                f"\nenv -S 'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-attached": (
+                f"\nenv -S'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-clustered": (
+                f"\nenv -vS'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-long-separated": (
+                f"\nenv --split-string 'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-long-equals": (
+                f"\nenv --split-string='command -v python3 {sibling}'\n"
+            ),
+        }
+        for family, mutation in split_transition_no_dispatch.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        dynamic_relevant_mutations = {
+            "direct-named-dynamic-target": f'\n"$RUNNER" {sibling}\n',
+            "direct-braced-named-dynamic-target": (
+                f'\n"${{RUNNER}}" {sibling}\n'
+            ),
+            "command-named-dynamic-target": (
+                f'\ncommand "$RUNNER" {sibling}\n'
+            ),
+            "command-braced-named-dynamic-target": (
+                f'\ncommand "${{RUNNER}}" {sibling}\n'
+            ),
+            "python-named-dynamic-script": (
+                f'\npython3 "$SCRIPT" {sibling}\n'
+            ),
+            "python-braced-named-dynamic-script": (
+                f'\npython3 "${{SCRIPT}}" {sibling}\n'
+            ),
+            "bash-named-dynamic-script": f'\nbash "$SCRIPT" {sibling}\n',
+            "bash-braced-named-dynamic-script": (
+                f'\nbash "${{SCRIPT}}" {sibling}\n'
+            ),
+            "direct-positional-target": f'\n"$1" {sibling}\n',
+            "direct-braced-positional-target": f'\n"${{1}}" {sibling}\n',
+            "command-positional-target": f'\ncommand "$1" {sibling}\n',
+            "command-braced-positional-target": (
+                f'\ncommand "${{1}}" {sibling}\n'
+            ),
+            "python-positional-script": f'\npython3 "$1" {sibling}\n',
+            "python-braced-positional-script": (
+                f'\npython3 "${{1}}" {sibling}\n'
+            ),
+            "bash-positional-script": f'\nbash "$1" {sibling}\n',
+            "bash-braced-positional-script": f'\nbash "${{1}}" {sibling}\n',
+        }
+        for family, mutation in dynamic_relevant_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        harmless = "not-a-registered-sibling"
+        dynamic_no_relevant_mutations = {
+            "direct-named-no-relevant": f'\n"$RUNNER" {harmless}\n',
+            "direct-braced-named-no-relevant": (
+                f'\n"${{RUNNER}}" {harmless}\n'
+            ),
+            "command-named-no-relevant": (
+                f'\ncommand "$RUNNER" {harmless}\n'
+            ),
+            "command-braced-named-no-relevant": (
+                f'\ncommand "${{RUNNER}}" {harmless}\n'
+            ),
+            "python-named-no-relevant": f'\npython3 "$SCRIPT" {harmless}\n',
+            "python-braced-named-no-relevant": (
+                f'\npython3 "${{SCRIPT}}" {harmless}\n'
+            ),
+            "bash-named-no-relevant": f'\nbash "$SCRIPT" {harmless}\n',
+            "bash-braced-named-no-relevant": (
+                f'\nbash "${{SCRIPT}}" {harmless}\n'
+            ),
+            "direct-positional-no-relevant": f'\n"$1" {harmless}\n',
+            "direct-braced-positional-no-relevant": (
+                f'\n"${{1}}" {harmless}\n'
+            ),
+            "command-positional-no-relevant": f'\ncommand "$1" {harmless}\n',
+            "command-braced-positional-no-relevant": (
+                f'\ncommand "${{1}}" {harmless}\n'
+            ),
+            "python-positional-no-relevant": f'\npython3 "$1" {harmless}\n',
+            "python-braced-positional-no-relevant": (
+                f'\npython3 "${{1}}" {harmless}\n'
+            ),
+            "bash-positional-no-relevant": f'\nbash "$1" {harmless}\n',
+            "bash-braced-positional-no-relevant": (
+                f'\nbash "${{1}}" {harmless}\n'
+            ),
+        }
+        for family, mutation in dynamic_no_relevant_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        dynamic_query_mutations = {
+            "command-named-query-v": f'\ncommand -v "$RUNNER" {sibling}\n',
+            "command-named-query-V": f'\ncommand -V "$RUNNER" {sibling}\n',
+            "command-named-query-cluster": (
+                f'\ncommand -pv "$RUNNER" {sibling}\n'
+            ),
+            "command-braced-named-query-cluster": (
+                f'\ncommand -pV "${{RUNNER}}" {sibling}\n'
+            ),
+            "command-positional-query-v": f'\ncommand -v "$1" {sibling}\n',
+            "command-positional-query-cluster": (
+                f'\ncommand -pV "$1" {sibling}\n'
+            ),
+            "command-braced-positional-query-cluster": (
+                f'\ncommand -vp "${{1}}" {sibling}\n'
+            ),
+        }
+        for family, mutation in dynamic_query_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        candidate_union_mutations = {
+            "env-block-signal-candidate-union": (
+                f"\nenv --block-signalX={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-default-signal-candidate-union": (
+                f"\nenv --default-signalX={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-ignore-signal-candidate-union": (
+                f"\nenv --ignore-signalX={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+        }
+        for family, mutation in candidate_union_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {assignment_sibling, sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        valid_signal_operands = {
+            "env-block-signal-exact-value": (
+                f"\nenv --block-signal={assignment_sibling} true\n"
+            ),
+            "env-default-signal-exact-value": (
+                f"\nenv --default-signal={assignment_sibling} true\n"
+            ),
+            "env-ignore-signal-exact-value": (
+                f"\nenv --ignore-signal={assignment_sibling} true\n"
+            ),
+        }
+        for family, mutation in valid_signal_operands.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        valid_signal_commands = {
+            "env-block-signal-exact-command": (
+                f"\nenv --block-signal={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-default-signal-exact-command": (
+                f"\nenv --default-signal={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-ignore-signal-exact-command": (
+                f"\nenv --ignore-signal={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+        }
+        for family, mutation in valid_signal_commands.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
         for retired in (
             "lifecycle_gate_commands",
             "workflow_gate_commands",
@@ -2580,27 +2831,53 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 + sum(len(token) for token in tokens)
             )
 
-            def fail_closed(items: list[str]) -> set[str]:
-                found = {
-                    path
-                    for token in items
-                    for path in (resolved_path(token, positional),)
-                    if path is not None
-                }
-                if found:
-                    return found
-                if any(
-                    path in token
-                    for token in items
-                    for path in sibling_entrypoints
-                ):
-                    return {
+            ParseResult = tuple[str, frozenset[str]]
+
+            def candidate_paths(items: list[str]) -> set[str]:
+                found: set[str] = set()
+                for token in items:
+                    exact = resolved_path(token, positional)
+                    if exact is not None:
+                        found.add(exact)
+                    found.update(
                         path
-                        for token in items
                         for path in sibling_entrypoints
                         if path in token
-                    }
-                return set(sibling_entrypoints)
+                    )
+                return found
+
+            def dispatch(paths: set[str]) -> ParseResult:
+                return ("dispatch", frozenset(paths))
+
+            def no_dispatch() -> ParseResult:
+                return ("no-dispatch", frozenset())
+
+            def ambiguous(items: list[str]) -> ParseResult:
+                candidates = candidate_paths(items)
+                if not candidates:
+                    candidates = set(sibling_entrypoints)
+                return ("ambiguous", frozenset(candidates))
+
+            def materialize(result: ParseResult) -> set[str]:
+                kind, paths = result
+                if kind == "no-dispatch":
+                    return set()
+                if kind in {"dispatch", "ambiguous"}:
+                    return set(paths)
+                raise AssertionError("invalid parser outcome")
+
+            def has_relevant_sibling(items: list[str]) -> bool:
+                return bool(candidate_paths(items))
+
+            def is_unresolved_dynamic_target(token: str) -> bool:
+                is_supported_dynamic = (
+                    token in {"$1", "${1}"}
+                    or variable_re.fullmatch(token) is not None
+                )
+                return (
+                    is_supported_dynamic
+                    and resolved_path(token, positional) is None
+                )
 
             def charge(amount: int = 1) -> bool:
                 nonlocal budget
@@ -2694,11 +2971,11 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     result.append("".join(current))
                 return result
 
-            def parse_chain(items: list[str]) -> set[str]:
+            def parse_chain(items: list[str]) -> ParseResult:
                 if not charge(len(items)):
-                    return fail_closed(items)
+                    return ambiguous(items)
                 if not items:
-                    return set()
+                    return no_dispatch()
                 head = items[0]
                 if head == "command":
                     return parse_command(items[1:])
@@ -2708,13 +2985,29 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     return parse_env(items[1:])
                 if head in {"python3", "bash"}:
                     if len(items) < 2:
-                        return set()
-                    path = resolved_path(items[1], positional)
-                    return {path} if path is not None else set()
-                path = resolved_path(head, positional)
-                return {path} if path is not None else set()
+                        return no_dispatch()
+                    target = items[1]
+                    remaining = items[2:]
+                    if is_unresolved_dynamic_target(target):
+                        if has_relevant_sibling(remaining):
+                            return ambiguous([target, *remaining])
+                        return no_dispatch()
+                    path = resolved_path(target, positional)
+                    if path is not None:
+                        return dispatch({path})
+                    return no_dispatch()
+                target = head
+                remaining = items[1:]
+                if is_unresolved_dynamic_target(target):
+                    if has_relevant_sibling(remaining):
+                        return ambiguous([target, *remaining])
+                    return no_dispatch()
+                path = resolved_path(target, positional)
+                if path is not None:
+                    return dispatch({path})
+                return no_dispatch()
 
-            def parse_command(items: list[str]) -> set[str]:
+            def parse_command(items: list[str]) -> ParseResult:
                 index = 0
                 query = False
                 while index < len(items):
@@ -2726,15 +3019,15 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                         break
                     options = token[1:]
                     if not options or any(option not in "pVv" for option in options):
-                        return fail_closed(items[index:])
+                        return ambiguous(items[index:])
                     if "v" in options or "V" in options:
                         query = True
                     index += 1
                 if query:
-                    return set()
+                    return no_dispatch()
                 return parse_chain(items[index:])
 
-            def parse_exec(items: list[str]) -> set[str]:
+            def parse_exec(items: list[str]) -> ParseResult:
                 index = 0
                 while index < len(items):
                     token = items[index]
@@ -2751,29 +3044,43 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                             offset += 1
                             continue
                         if option != "a":
-                            return fail_closed(items[index:])
+                            return ambiguous(items[index:])
                         attached = options[offset + 1 :]
                         if attached:
                             offset = len(options)
                         else:
                             index += 1
                             if index >= len(items):
-                                return fail_closed(items)
+                                return ambiguous(items)
                             offset = len(options)
                     index += 1
                 return parse_chain(items[index:])
 
-            def env_split_insert(
-                items: list[str],
-                index: int,
+            def parse_env_split(
                 split_value: str,
-            ) -> tuple[list[str], int] | None:
+                tail: list[str],
+            ) -> ParseResult:
                 split_tokens = split_env_static(split_value)
                 if split_tokens is None:
-                    return None
-                return items[:index] + split_tokens + items[index + 1 :], index
+                    return ambiguous([split_value, *tail])
+                return parse_env([*split_tokens, *tail])
 
-            def parse_env(items: list[str]) -> set[str]:
+            signal_options = (
+                "--block-signal",
+                "--default-signal",
+                "--ignore-signal",
+            )
+
+            def is_exact_signal_option(token: str) -> bool:
+                return token in signal_options or any(
+                    token.startswith(option + "=")
+                    for option in signal_options
+                )
+
+            def is_signal_near_prefix(token: str) -> bool:
+                return any(token.startswith(option) for option in signal_options)
+
+            def parse_env(items: list[str]) -> ParseResult:
                 index = 0
                 while index < len(items):
                     token = items[index]
@@ -2781,7 +3088,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                         index += 1
                         break
                     if token in {"--help", "--version", "-0", "--null"}:
-                        return set()
+                        return no_dispatch()
                     if token == "-":
                         index += 1
                         continue
@@ -2792,25 +3099,17 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     }:
                         index += 1
                         continue
-                    if token.startswith((
-                        "--block-signal",
-                        "--default-signal",
-                        "--ignore-signal",
-                    )):
-                        if "=" in token or token in {
-                            "--block-signal",
-                            "--default-signal",
-                            "--ignore-signal",
-                        }:
-                            index += 1
-                            continue
-                        return fail_closed(items[index:])
+                    if is_exact_signal_option(token):
+                        index += 1
+                        continue
+                    if is_signal_near_prefix(token):
+                        return ambiguous(items[index:])
                     consumed_long_operand = False
                     for option in ("--unset", "--chdir", "--argv0"):
                         if token == option:
                             index += 1
                             if index >= len(items):
-                                return fail_closed(items)
+                                return ambiguous(items)
                             consumed_long_operand = True
                             break
                         if token.startswith(option + "="):
@@ -2819,22 +3118,20 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     if consumed_long_operand:
                         index += 1
                         continue
-                    split_value: str | None = None
                     if token == "--split-string":
-                        index += 1
-                        if index >= len(items):
-                            return fail_closed(items)
-                        split_value = items[index]
-                    elif token.startswith("--split-string="):
-                        split_value = token.split("=", 1)[1]
-                    if split_value is not None:
-                        inserted = env_split_insert(items, index, split_value)
-                        if inserted is None:
-                            return fail_closed(items[index:])
-                        items, index = inserted
-                        continue
+                        if index + 1 >= len(items):
+                            return ambiguous(items[index:])
+                        return parse_env_split(
+                            items[index + 1],
+                            items[index + 2 :],
+                        )
+                    if token.startswith("--split-string="):
+                        return parse_env_split(
+                            token.split("=", 1)[1],
+                            items[index + 1 :],
+                        )
                     if token.startswith("--"):
-                        return fail_closed(items[index:])
+                        return ambiguous(items[index:])
                     if token.startswith("-") and token != "-":
                         options = token[1:]
                         offset = 0
@@ -2843,29 +3140,30 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                             if option in {"i", "v"}:
                                 offset += 1
                                 continue
-                            if option in {"u", "C", "a", "S"}:
+                            if option == "S":
                                 attached = options[offset + 1 :]
                                 if attached:
-                                    operand = attached
-                                else:
+                                    return parse_env_split(
+                                        attached,
+                                        items[index + 1 :],
+                                    )
+                                if index + 1 >= len(items):
+                                    return ambiguous(items[index:])
+                                return parse_env_split(
+                                    items[index + 1],
+                                    items[index + 2 :],
+                                )
+                            if option in {"u", "C", "a"}:
+                                attached = options[offset + 1 :]
+                                if not attached:
                                     index += 1
                                     if index >= len(items):
-                                        return fail_closed(items)
-                                    operand = items[index]
-                                if option == "S":
-                                    inserted = env_split_insert(
-                                        items,
-                                        index,
-                                        operand,
-                                    )
-                                    if inserted is None:
-                                        return fail_closed(items[index:])
-                                    items, index = inserted
+                                        return ambiguous(items)
                                 offset = len(options)
                                 continue
                             if option == "0":
-                                return set()
-                            return fail_closed(items[index:])
+                                return no_dispatch()
+                            return ambiguous(items[index:])
                         index += 1
                         continue
                     break
@@ -2873,7 +3171,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     index += 1
                 return parse_chain(items[index:])
 
-            return parse_chain(tokens)
+            return materialize(parse_chain(tokens))
 
         helper_names: set[str] = set()
         helper_re = re.compile(
