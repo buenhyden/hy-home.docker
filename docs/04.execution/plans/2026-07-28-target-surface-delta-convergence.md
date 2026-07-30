@@ -82,14 +82,19 @@ reviewed predecessor chain, distances, exact scopes, and modes, so a
 same-subject substituted lineage could receive evidence for a range the
 reviewers did not inspect. The no-correction 4AC loop is exhausted without an
 implementation attempt. The user approved T-TSDC-004R-4AD on 2026-07-30 as a
-Plan-only bounded successor. It preserves the accepted 4AC parser, test, and
-validation design and adds reviewer-range attestations plus complete
-session-local lineage proof to every terminal evidence path and Task 4.5
-re-entry. No 4AD implementation authority exists until its Plan receives
-fresh independent specification and quality/security `C0/I0/M0` reviews and
-the exact accepted review-evidence checkpoint is recorded. Remote, runtime,
-dependency, secret, direct pre-commit, controlled-wrapper, and Graphify-update
-authority remain unchanged.
+Plan-only bounded successor. Its Plan committed as `9de469a5`, and fresh
+reviewers inspected exact range
+`3510e9944655ee89077a295712e759d116e2e87f..9de469a52c4b05d2490d36d37b95b1277442f725`.
+Specification returned `C0/I2/M1`; quality/security returned `C0/I0/M0`.
+Rejected Task-only evidence committed as `5644c4a3`, so 4AD is
+non-executable history. The user then approved T-TSDC-004R-4AE as a Plan-only
+bounded repair for exact seven-cell review-range parsing, the missing
+predecessor path/range and base-mode assertions, and current-state
+synchronization. Implementation and tests remain blocked until two fresh
+independent 4AE Plan reviews both return `C0/I0/M0` and the exact accepted
+Task-only evidence checkpoint is recorded. Remote, runtime, dependency,
+secret, direct pre-commit, controlled-wrapper, and Graphify-update authority
+remain unchanged.
 
 ## Global Constraints
 
@@ -7669,33 +7674,34 @@ test -z "$clean_state"
   `docs(task): record candidate-closed parser outcome review` checkpoint
   authorizes Task 4.5 Wave C.
 
-#### Task 4.4AD / T-TSDC-004R-4AD: Review-Range-Bound Parser Proof
+#### Task 4.4AE / T-TSDC-004R-4AE: Exact-Cell Review-Range Proof
 
-**Design return:** The 4AC Plan review accepted the candidate-closed parser,
-dynamic-target, GNU `env`, signal-option, RED/GREEN, scope, and validation
-design, but rejected terminal evidence sessions that could attach a review to
-a substituted same-subject lineage. 4AD changes only authority binding. It
-  inherits the immutable 4AC behavior and implementation requirements from Plan
-  commit `5bc5ab85e9d8841761ae00b7a169e899e3f8f515`: `Files and
-  interfaces`, `Candidate-closed parser contract`, the Step 2 content beginning
-  `Add these exact behavior families`, and all of Steps 3–4. The earlier Step
-  2 authority block and every 4AC Plan, commit, review, and Task 4.5 block
-  remain historical and non-executable.
+**Design return:** The 4AD Plan preserved the accepted candidate-closed
+parser, dynamic-target, GNU `env`, signal-option, RED/GREEN, scope, and
+validation design, but its specification review found row-wide review-range
+parsing, missing predecessor path/range and base-mode assertions in three
+sessions, and stale current-state text. 4AE changes only those three approved
+deltas. It inherits the immutable 4AC behavior and implementation requirements
+from Plan commit `5bc5ab85e9d8841761ae00b7a169e899e3f8f515`: `Files and
+interfaces`, `Candidate-closed parser contract`, the Step 2 content beginning
+`Add these exact behavior families`, and all of Steps 3–4. Every earlier 4AC
+or 4AD authority, commit, review, and Task 4.5 block remains historical and
+non-executable.
 
 **Authority boundary and review attestation:**
 
 - Exact base
-  `3510e9944655ee89077a295712e759d116e2e87f` is the sole 4AD design
+  `5644c4a301e38d3f0c32efe99e80f879df6e1ac8` is the sole 4AE design
   predecessor. It must have exact subject
-  `docs(task): record exhausted candidate-closed parser outcome plan review`,
-  change only the Task ledger, retain mode `100644`, and be `HEAD` before 4AD
+  `docs(task): record exhausted review-range-bound parser outcome plan review`,
+  change only the Task ledger, retain mode `100644`, and be `HEAD` before 4AE
   drafting.
 - This Plan-only checkpoint may change only this Plan and the sibling Task
   ledger. Its exact unique subject is
-  `docs(plan): define review-range-bound parser outcome proof`.
+  `docs(plan): define exact-cell review-range proof`.
 - Each reviewer must report both reviewed endpoints as full 40-hex OIDs. The
   specification and quality/security reports must name the same endpoints.
-  The controller copies that one full range into the canonical 4AD review
+  The controller copies that one full range into the canonical 4AE review
   matrix row in the Task ledger before any terminal evidence commit.
 - A terminal session extracts the range from exactly one named Task matrix
   row. Missing, abbreviated, duplicated, malformed, or divergent review
@@ -7704,22 +7710,22 @@ a substituted same-subject lineage. 4AD changes only authority binding. It
   first parent equals the expected predecessor, ancestry holds, and the
   predecessor-to-child distance is exactly one.
 - Two fresh read-only reviewers inspect exact
-  `3510e994..$plan_checkpoint`. Both must return `C0/I0/M0`. Any other result
+  `5644c4a3..$plan_checkpoint`. Both must return `C0/I0/M0`. Any other result
   is recorded in exact Task-only
-  `docs(task): record exhausted review-range-bound parser outcome plan review`
-  and exhausts 4AD without correction.
+  `docs(task): record exhausted exact-cell review-range plan review`
+  and exhausts 4AE without correction.
 - Only exact Task-only
-  `docs(task): record review-range-bound parser outcome plan reviews`
+  `docs(task): record exact-cell review-range plan reviews`
   authorizes one implementation attempt. The implementation may change only
   `tests/validation/test_agent_governance_ci_routing.py` and the Task ledger
   and uses exact subject
-  `fix(ci): close review-range-bound parser outcome proof`.
+  `fix(ci): close exact-cell review-range parser proof`.
 - Fresh specification and quality/security reviewers inspect the exact
   accepted-Plan-evidence-to-implementation range and report identical full
   endpoints. Only exact Task-only
-  `docs(task): record review-range-bound parser outcome review` authorizes
+  `docs(task): record exact-cell review-range review` authorizes
   Wave C. Exact Task-only
-  `docs(task): record exhausted review-range-bound parser outcome review`
+  `docs(task): record exhausted exact-cell review-range review`
   exhausts the sole attempt.
 - Freeze every path frozen by 4AC. Do not run the repository umbrella, direct
   pre-commit, controlled wrapper, Compose/runtime, network, secret, remote, or
@@ -7727,7 +7733,7 @@ a substituted same-subject lineage. 4AD changes only authority binding. It
 
 **Strict proof contract:**
 
-- Every 4AD and rebound Task 4.5 Bash block begins with
+- Every 4AE and rebound Task 4.5 Bash block begins with
   `set -euo pipefail` and `shopt -s inherit_errexit`.
 - Every `$()` is the complete right-hand side of a standalone assignment and
   the immediately following command tests that exact variable. The inherited
@@ -7739,7 +7745,7 @@ a substituted same-subject lineage. 4AD changes only authority binding. It
   predecessor edge, exact commit and range path sets, all applicable
   `100644` modes, and clean tracked, staged, and untracked state.
 
-- [ ] **Step 1: Commit and independently review the 4AD Plan checkpoint.**
+- [ ] **Step 1: Commit and independently review the 4AE Plan checkpoint.**
 
   Immediately after the Plan commit, and independently inside each reviewer
   session, run:
@@ -7770,15 +7776,15 @@ assert_edge() {
 }
 design_base="$(
   git rev-parse --verify \
-    '3510e9944655ee89077a295712e759d116e2e87f^{commit}'
+    '5644c4a301e38d3f0c32efe99e80f879df6e1ac8^{commit}'
 )"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 base_paths="$(
   git diff-tree --no-commit-id --name-only -r "$design_base" |
     sort
@@ -7799,11 +7805,11 @@ plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 plan_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(plan): define review-range-bound parser outcome proof'
+      'docs(plan): define exact-cell review-range proof'
 )"
 test "$plan_subject_count" -eq 1
 assert_edge "$design_base" "$plan_checkpoint"
@@ -7847,10 +7853,10 @@ test -z "$clean_state"
 ```
 
   Each reviewer returns the full
-  `3510e9944655ee89077a295712e759d116e2e87f..$plan_checkpoint`
+  `5644c4a301e38d3f0c32efe99e80f879df6e1ac8..$plan_checkpoint`
   range with its verdict. Before either terminal path, the controller records
   that identical full range in the
-  `T-TSDC-004R-4AD review-range-bound proof Plan` matrix row.
+  `T-TSDC-004R-4AE exact-cell proof Plan` matrix row.
 
   If either reviewer is not `C0/I0/M0`, edit only the Task ledger and run this
   exact rejected terminal session:
@@ -7865,15 +7871,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -7899,12 +7933,12 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 verified_design_base="$(
@@ -7919,16 +7953,16 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 plan_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(plan): define review-range-bound parser outcome proof'
+      'docs(plan): define exact-cell review-range proof'
 )"
 test "$plan_subject_count" -eq 1
 assert_edge "$design_base" "$plan_checkpoint"
@@ -7991,7 +8025,7 @@ cached_paths="$(
 )"
 test "$cached_paths" = "$task_file"
 git commit -m \
-  "docs(task): record exhausted review-range-bound parser outcome plan review"
+  "docs(task): record exhausted exact-cell review-range plan review"
 review_checkpoint="$(
   git rev-parse --verify 'HEAD^{commit}'
 )"
@@ -8000,11 +8034,11 @@ review_subject="$(
   git show -s --format=%s "$review_checkpoint"
 )"
 test "$review_subject" = \
-  "docs(task): record exhausted review-range-bound parser outcome plan review"
+  "docs(task): record exhausted exact-cell review-range plan review"
 review_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(task): record exhausted review-range-bound parser outcome plan review'
+      'docs(task): record exhausted exact-cell review-range plan review'
 )"
 test "$review_subject_count" -eq 1
 assert_edge "$plan_checkpoint" "$review_checkpoint"
@@ -8045,15 +8079,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -8079,12 +8141,12 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 verified_design_base="$(
@@ -8099,16 +8161,16 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 plan_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(plan): define review-range-bound parser outcome proof'
+      'docs(plan): define exact-cell review-range proof'
 )"
 test "$plan_subject_count" -eq 1
 assert_edge "$design_base" "$plan_checkpoint"
@@ -8170,7 +8232,7 @@ cached_paths="$(
 )"
 test "$cached_paths" = "$task_file"
 git commit -m \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 implementation_base="$(
   git rev-parse --verify 'HEAD^{commit}'
 )"
@@ -8179,11 +8241,11 @@ base_review_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$base_review_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 base_review_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(task): record review-range-bound parser outcome plan reviews'
+      'docs(task): record exact-cell review-range plan reviews'
 )"
 test "$base_review_subject_count" -eq 1
 assert_edge "$plan_checkpoint" "$implementation_base"
@@ -8217,7 +8279,7 @@ test -z "$clean_state"
 - [ ] **Step 2: Rebind the accepted Plan chain and execute the inherited 4AC
   behavior proof.**
 
-  The fresh implementation agent receives a brief composed from this 4AD
+  The fresh implementation agent receives a brief composed from this 4AE
   section and, at immutable commit `5bc5ab85`, the 4AC Step 2 content beginning
   `Add these exact behavior families` plus all of Steps 3–4. It does not
   execute the earlier 4AC Step 2 authority block or any 4AC commit/review
@@ -8233,15 +8295,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -8267,12 +8357,12 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 verified_design_base="$(
@@ -8291,19 +8381,24 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 implementation_base_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$implementation_base_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 assert_edge "$design_base" "$plan_checkpoint"
 assert_edge "$plan_checkpoint" "$implementation_base"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
 expected_plan_paths="$(
   printf '%s\n' \
     docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
@@ -8316,11 +8411,26 @@ plan_paths="$(
     sort
 )"
 test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
 base_review_paths="$(
   git diff-tree --no-commit-id --name-only -r "$implementation_base" |
     sort
 )"
 test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
 plan_mode="$(
   git ls-tree "$plan_checkpoint" \
     docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
@@ -8369,15 +8479,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -8403,12 +8541,12 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 verified_design_base="$(
@@ -8427,17 +8565,17 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 implementation_base_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$implementation_base_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 assert_edge "$design_base" "$plan_checkpoint"
 assert_edge "$plan_checkpoint" "$implementation_base"
 base_paths="$(
@@ -8457,11 +8595,21 @@ plan_paths="$(
     sort
 )"
 test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
 base_review_paths="$(
   git diff-tree --no-commit-id --name-only -r "$implementation_base" |
     sort
 )"
 test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
 base_mode="$(
   git ls-tree "$design_base" "$task_file" |
     awk '{print $1}'
@@ -8524,7 +8672,7 @@ cached_paths="$(
 )"
 test "$cached_paths" = "$expected_implementation_paths"
 git commit -m \
-  "fix(ci): close review-range-bound parser outcome proof"
+  "fix(ci): close exact-cell review-range parser proof"
 implementation_commit="$(
   git rev-parse --verify 'HEAD^{commit}'
 )"
@@ -8533,11 +8681,11 @@ implementation_subject="$(
   git show -s --format=%s "$implementation_commit"
 )"
 test "$implementation_subject" = \
-  "fix(ci): close review-range-bound parser outcome proof"
+  "fix(ci): close exact-cell review-range parser proof"
 implementation_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'fix(ci): close review-range-bound parser outcome proof'
+      'fix(ci): close exact-cell review-range parser proof'
 )"
 test "$implementation_subject_count" -eq 1
 assert_edge "$implementation_base" "$implementation_commit"
@@ -8586,15 +8734,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -8620,12 +8796,12 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 verified_design_base="$(
@@ -8648,22 +8824,22 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 implementation_base_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$implementation_base_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 implementation_subject="$(
   git show -s --format=%s "$implementation_commit"
 )"
 test "$implementation_subject" = \
-  "fix(ci): close review-range-bound parser outcome proof"
+  "fix(ci): close exact-cell review-range parser proof"
 assert_edge "$design_base" "$plan_checkpoint"
 assert_edge "$plan_checkpoint" "$implementation_base"
 assert_edge "$implementation_base" "$implementation_commit"
@@ -8684,11 +8860,21 @@ plan_paths="$(
     sort
 )"
 test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
 base_review_paths="$(
   git diff-tree --no-commit-id --name-only -r "$implementation_base" |
     sort
 )"
 test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
 expected_implementation_paths="$(
   printf '%s\n' \
     "$task_file" \
@@ -8756,7 +8942,7 @@ test -z "$clean_state"
   `$implementation_base..$implementation_commit` range with its verdict.
   Before either terminal path, the controller records the identical full range
   in the
-  `T-TSDC-004R-4AD review-range-bound implementation` matrix row.
+  `T-TSDC-004R-4AE exact-cell implementation` matrix row.
 
 - [ ] **Step 5: Record exactly one full-chain implementation-review
   checkpoint.**
@@ -8775,15 +8961,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -8809,17 +9023,17 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 implementation_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound implementation'
+    'T-TSDC-004R-4AE exact-cell implementation'
 )"
 test -n "$implementation_review_range"
 implementation_base="${implementation_review_range%%..*}"
@@ -8846,22 +9060,22 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 implementation_base_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$implementation_base_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 implementation_subject="$(
   git show -s --format=%s "$implementation_commit"
 )"
 test "$implementation_subject" = \
-  "fix(ci): close review-range-bound parser outcome proof"
+  "fix(ci): close exact-cell review-range parser proof"
 assert_edge "$design_base" "$plan_checkpoint"
 assert_edge "$plan_checkpoint" "$implementation_base"
 assert_edge "$implementation_base" "$implementation_commit"
@@ -8970,7 +9184,7 @@ cached_paths="$(
 )"
 test "$cached_paths" = "$task_file"
 git commit -m \
-  "docs(task): record review-range-bound parser outcome review"
+  "docs(task): record exact-cell review-range review"
 review_checkpoint="$(
   git rev-parse --verify 'HEAD^{commit}'
 )"
@@ -8979,11 +9193,11 @@ review_subject="$(
   git show -s --format=%s "$review_checkpoint"
 )"
 test "$review_subject" = \
-  "docs(task): record review-range-bound parser outcome review"
+  "docs(task): record exact-cell review-range review"
 review_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(task): record review-range-bound parser outcome review'
+      'docs(task): record exact-cell review-range review'
 )"
 test "$review_subject_count" -eq 1
 assert_edge "$implementation_commit" "$review_checkpoint"
@@ -9025,15 +9239,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -9059,17 +9301,17 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 implementation_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound implementation'
+    'T-TSDC-004R-4AE exact-cell implementation'
 )"
 test -n "$implementation_review_range"
 implementation_base="${implementation_review_range%%..*}"
@@ -9096,22 +9338,22 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 implementation_base_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$implementation_base_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 implementation_subject="$(
   git show -s --format=%s "$implementation_commit"
 )"
 test "$implementation_subject" = \
-  "fix(ci): close review-range-bound parser outcome proof"
+  "fix(ci): close exact-cell review-range parser proof"
 assert_edge "$design_base" "$plan_checkpoint"
 assert_edge "$plan_checkpoint" "$implementation_base"
 assert_edge "$implementation_base" "$implementation_commit"
@@ -9220,7 +9462,7 @@ cached_paths="$(
 )"
 test "$cached_paths" = "$task_file"
 git commit -m \
-  "docs(task): record exhausted review-range-bound parser outcome review"
+  "docs(task): record exhausted exact-cell review-range review"
 review_checkpoint="$(
   git rev-parse --verify 'HEAD^{commit}'
 )"
@@ -9229,11 +9471,11 @@ review_subject="$(
   git show -s --format=%s "$review_checkpoint"
 )"
 test "$review_subject" = \
-  "docs(task): record exhausted review-range-bound parser outcome review"
+  "docs(task): record exhausted exact-cell review-range review"
 review_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(task): record exhausted review-range-bound parser outcome review'
+      'docs(task): record exhausted exact-cell review-range review'
 )"
 test "$review_subject_count" -eq 1
 assert_edge "$implementation_commit" "$review_checkpoint"
@@ -9263,7 +9505,7 @@ test -z "$clean_state"
 #### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
 
 - [ ] **Step 0: Re-extract both reviewed ranges and prove the complete
-  accepted 4AD chain.**
+  accepted 4AE chain.**
 
 ```bash
 set -euo pipefail
@@ -9276,15 +9518,43 @@ import pathlib
 import re
 import sys
 
-text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-prefix = f"| {sys.argv[2]} |"
-rows = [line for line in text.splitlines() if line.startswith(prefix)]
-if len(rows) != 1:
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("review-range-read")
+
+label = sys.argv[2]
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    parts = line.split("|")
+    if len(parts) >= 2 and parts[0] == "":
+        first_cell = parts[1].strip(" \t")
+        if first_cell == label:
+            candidates.append(line)
+if len(candidates) != 1:
     raise SystemExit("review-range-row-count")
-matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
-if len(matches) != 1:
-    raise SystemExit("review-range-value-count")
-print(f"{matches[0][0]}..{matches[0][1]}")
+
+row = candidates[0]
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("review-range-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] != "" or parts[-1] != "":
+    raise SystemExit("review-range-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("review-range-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("review-range-extra-token")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("review-range-value")
+print(f"{match.group(1)}..{match.group(2)}")
 PY
 }
 assert_edge() {
@@ -9310,17 +9580,17 @@ assert_edge() {
 }
 plan_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound proof Plan'
+    'T-TSDC-004R-4AE exact-cell proof Plan'
 )"
 test -n "$plan_review_range"
 design_base="${plan_review_range%%..*}"
 test "$design_base" = \
-  "3510e9944655ee89077a295712e759d116e2e87f"
+  "5644c4a301e38d3f0c32efe99e80f879df6e1ac8"
 plan_checkpoint="${plan_review_range##*..}"
 test -n "$plan_checkpoint"
 implementation_review_range="$(
   extract_range \
-    'T-TSDC-004R-4AD review-range-bound implementation'
+    'T-TSDC-004R-4AE exact-cell implementation'
 )"
 test -n "$implementation_review_range"
 implementation_base="${implementation_review_range%%..*}"
@@ -9351,31 +9621,31 @@ base_subject="$(
   git show -s --format=%s "$design_base"
 )"
 test "$base_subject" = \
-  "docs(task): record exhausted candidate-closed parser outcome plan review"
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
 plan_subject="$(
   git show -s --format=%s "$plan_checkpoint"
 )"
 test "$plan_subject" = \
-  "docs(plan): define review-range-bound parser outcome proof"
+  "docs(plan): define exact-cell review-range proof"
 implementation_base_subject="$(
   git show -s --format=%s "$implementation_base"
 )"
 test "$implementation_base_subject" = \
-  "docs(task): record review-range-bound parser outcome plan reviews"
+  "docs(task): record exact-cell review-range plan reviews"
 implementation_subject="$(
   git show -s --format=%s "$implementation_commit"
 )"
 test "$implementation_subject" = \
-  "fix(ci): close review-range-bound parser outcome proof"
+  "fix(ci): close exact-cell review-range parser proof"
 review_subject="$(
   git show -s --format=%s "$review_checkpoint"
 )"
 test "$review_subject" = \
-  "docs(task): record review-range-bound parser outcome review"
+  "docs(task): record exact-cell review-range review"
 review_subject_count="$(
   git log --all --format='%s' |
     grep -Fxc \
-      'docs(task): record review-range-bound parser outcome review'
+      'docs(task): record exact-cell review-range review'
 )"
 test "$review_subject_count" -eq 1
 assert_edge "$design_base" "$plan_checkpoint"
