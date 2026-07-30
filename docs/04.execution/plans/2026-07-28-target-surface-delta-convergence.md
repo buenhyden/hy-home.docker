@@ -61,11 +61,19 @@ command substitution before its value is tested. Its specification review
 passed, but its quality/security review found an immediate-consumption
 contract mismatch, so 4Z is also non-executable history. The user approved
 T-TSDC-004R-4AA on 2026-07-30 to pair every non-RED capture with an immediately
-following value test. No 4AA implementation authority exists until its Plan
+following value test. Its Plan reviews passed, but its sole implementation
+attempt failed fresh specification and quality/security review because
+short/attached/clustered GNU `env -S` handling skipped the first inserted
+token, unresolved dynamic command heads could fail open, and malformed signal
+option near-prefixes could be accepted. The user approved
+T-TSDC-004R-4AB on 2026-07-30 as a Plan-only bounded successor that makes
+`dispatch`, `no-dispatch`, and `ambiguous` explicit, re-enters the same
+budgeted `env` parser at the first split token, and recognizes only exact
+signal option spellings. No 4AB implementation authority exists until its Plan
 receives fresh independent specification and quality/security `C0/I0/M0`
 reviews and the exact review-evidence checkpoint is recorded. Remote, runtime,
-dependency, secret, direct pre-commit, and controlled-wrapper authority remain
-unchanged.
+dependency, secret, direct pre-commit, controlled-wrapper, and Graphify-update
+authority remain unchanged.
 
 ## Global Constraints
 
@@ -4617,6 +4625,10 @@ test -z "$clean_state"
 
 #### Task 4.4AA / T-TSDC-004R-4AA: Immediate-Consumption Proof Design Return
 
+> **Superseded for execution by Task 4.4AB.** Retain this section and its
+> rejected implementation as historical evidence only. Do not execute a 4AA
+> command block or create its uncreated accepted-review subject.
+
 **Authority boundary and supersession:**
 
 - The exact unique
@@ -5251,68 +5263,1170 @@ test -z "$clean_state"
 
   Only this accepted review checkpoint authorizes Task 4.5 Wave C.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### Task 4.4AB / T-TSDC-004R-4AB: Explicit Parser-Outcome Proof Design Return
 
-- [ ] **Step 0: Prove the exact accepted wrapper-proof review checkpoint.**
+**Authority boundary and supersession:**
+
+- The exact unique
+  `docs(task): record exhausted immediate-consumption wrapper review` commit
+  must resolve to
+  `25524ce1af36ee8572b9e0c855700680db957921`, be `HEAD` when this
+  design is authored, and remain an ancestor of every 4AB checkpoint.
+- This Plan-only successor may modify only this Plan and the sibling Task
+  ledger. Its exact unique subject is
+  `docs(plan): define explicit parser outcome proof`.
+- Two fresh read-only reviewers inspect the complete
+  `25524ce1..$plan_checkpoint` range: one specification reviewer and a
+  different quality/security reviewer. Both must return `C0/I0/M0`. Any other
+  result is recorded in the exact Task-only
+  `docs(task): record exhausted explicit parser outcome plan review`
+  checkpoint and returns to design; there is no Plan correction inside 4AB.
+- After both approvals, the controller records the reports and exact range in
+  a Task-ledger-only commit with the exact unique subject
+  `docs(task): record explicit parser outcome plan reviews`. That clean commit
+  is the immutable implementation base.
+- One fresh implementation agent then receives exactly one attempt. It may
+  modify only
+  `tests/validation/test_agent_governance_ci_routing.py` and the sibling Task
+  ledger. Its exact unique subject is
+  `fix(ci): close explicit parser outcome proof`.
+- Freeze `.github/workflow-contract.yml`,
+  `.github/workflows/ci-quality.yml`,
+  `scripts/validation/check-repo-contracts.sh`, every typed gate contract,
+  runner, adapter, and test outside the allowed routing test, every
+  target-delta artifact, and every other tracked path.
+- A fresh read-only specification reviewer and a different fresh read-only
+  quality/security reviewer inspect the exact implementation-base-to-commit
+  range. Both must return `C0/I0/M0`. The controller then records the accepted
+  pair in a Task-ledger-only commit with the exact unique subject
+  `docs(task): record explicit parser outcome review`.
+- Any non-`C0/I0/M0` implementation review exhausts 4AB without retry. The
+  controller records the rejected pair in a Task-ledger-only commit with the
+  exact unique subject
+  `docs(task): record exhausted explicit parser outcome review`; Task 4R,
+  Wave C, Tasks 5–6, and final branch review remain blocked.
+- 4AB supersedes 4AA for execution and incorporates every accepted 4W parser,
+  matrix, budget, and evidence requirement; the corrected 4X GNU `env --` and
+  session-local contract; the 4Y strict/full-lineage contract; the 4Z
+  status-preserving contract; and the 4AA immediate capture/test contract.
+  Every earlier command block and uncreated subject is historical and
+  non-executable.
+
+**Files and interfaces:**
+
+- Modify
+  `tests/validation/test_agent_governance_ci_routing.py` only inside
+  `test_repository_umbrella_is_wiring_only` and its existing
+  `_registered_sibling_dispatches` static oracle.
+- Modify
+  `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`
+  only for bounded RED, GREEN, validation, commit, and review evidence.
+- Do not create a parser module, helper script, workflow, contract field,
+  generated artifact, dependency, or production runtime surface.
+- Inside `command_sink`, the recursive parser consumes and produces one local
+  `ParseResult = tuple[str, frozenset[str]]`. The tag is exactly one of
+  `dispatch`, `no-dispatch`, or `ambiguous`. `dispatch` contains only
+  statically proven registered sibling sinks; `no-dispatch` contains no paths;
+  and `ambiguous` contains the exact relevant registered siblings when they
+  are recoverable, otherwise the complete registered sibling set.
+- Convert a `ParseResult` to the existing public `set[str]` only once at the
+  outer `command_sink` boundary: materialize both `dispatch` and `ambiguous`
+  paths as findings and materialize `no-dispatch` as the empty set. Existing
+  callers, messages, and value-free diagnostics remain unchanged.
+
+**Explicit outcome and parser contract:**
+
+- `parse_chain`, `parse_command`, `parse_exec`, and `parse_env` return
+  `ParseResult`; they never use an empty set to represent both a proved
+  no-dispatch path and unresolved syntax.
+- A literal registered command head is `dispatch`. A proved static
+  non-sibling head is `no-dispatch`. An unresolved dynamic command head such
+  as `$RUNNER` or `${RUNNER}` is `ambiguous` when any remaining token resolves
+  to or contains a registered sibling. `command -v` and `command -V`, including
+  valid clusters, are always `no-dispatch` before command-head evaluation.
+- The original work budget remains exactly
+  `8 * (1 + original token count + total source-token character count)`.
+  Every wrapper/option token and every GNU split-string character charges that
+  one closure-owned budget. Recursive parsing and inserted tokens never reset
+  or add credit. Budget exhaustion is `ambiguous`.
+- Follow the
+  [Coreutils 9.11 `env` grammar](https://www.gnu.org/software/coreutils/manual/html_node/env-invocation.html)
+  and keep the existing static lexer. For separated `-S STRING` and
+  `--split-string STRING`, lex the operand and combine the resulting tokens
+  with the untouched tail after the operand. For attached `-SSTRING`,
+  `--split-string=STRING`, and clustered forms such as `-vSSTRING`, combine
+  the split tokens with the untouched tail after the option token. Return
+  immediately into the same `parse_env` function at the first combined token;
+  do not perform the old unconditional index increment. An empty split result
+  continues with the untouched tail. Malformed, unsupported, dynamic, or
+  budget-exhausted split strings are `ambiguous`.
+- Preserve the documented static `env -S` quotes, whitespace, comment,
+  `\c`, `\f`, `\n`, `\r`, `\t`, `\v`, `\#`, `\$`, `\_`, `\"`, `\'`, and
+  `\\` behavior. Do not read `os.environ`, invoke a shell, expand a variable,
+  execute a wrapper, or execute any sibling entrypoint.
+- Recognize signal options only when the token equals
+  `--block-signal`, `--default-signal`, or `--ignore-signal`, or begins with
+  that exact name followed immediately by `=`. A token that merely starts
+  with one of those names, including `--block-signalX=...`,
+  `--default-signalX=...`, or `--ignore-signalX=...`, is `ambiguous`.
+  Preserve valid exact bare and exact-equals forms.
+- Preserve the accepted Bash
+  [`command`](https://www.gnu.org/software/bash/manual/html_node/Bash-Builtins.html)
+  and
+  [`exec`](https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html)
+  option arities, GNU `env --` assignment transition, option-operand
+  no-dispatch behavior, nested wrapper recursion, deterministic value-free
+  fallback, and all literal, quoted, variable-mediated, helper, Python
+  heredoc `subprocess`, and `os.system` dispatch families.
+
+**Strict proof contract:**
+
+- Every 4AB fenced Bash block begins with `set -euo pipefail` and
+  `shopt -s inherit_errexit`.
+- Every non-RED `$()` is the complete right-hand side of a standalone simple
+  assignment. The immediately following command is a `test` naming that exact
+  variable. Count, distance, path, mode, and clean-state captures use their
+  full semantic assertion as that immediate test.
+- The focused RED is the sole exception: `red_output` is immediately followed
+  by `red_status="$?"`; `errexit` is restored before output and assertions.
+- Before committing this Plan, statically extract every 4AB and Task 4.5
+  Step 0 Bash block; require strict first two lines, Bash syntax, adjacent
+  capture consumption, the sole RED exception, exact two-path scope, exact
+  `100644` modes, metadata, traceability, and diff hygiene.
+
+- [ ] **Step 1: Commit and independently review the 4AB Plan.**
+
+  Immediately after the Plan commit and before either review, the controller
+  runs:
 
 ```bash
 set -euo pipefail
 shopt -s inherit_errexit
-design_base="$(git rev-parse 355a1db5)"
+design_base="$(git rev-parse 25524ce1)"
 test -n "$design_base"
 failure_subject_count="$(
   git log --format=%H \
-    --grep='^docs(task): record exhausted status-preserving plan review$' |
+    --grep='^docs(task): record exhausted immediate-consumption wrapper review$' |
     wc -l
 )"
 test "$failure_subject_count" -eq 1
 failure_checkpoint="$(
   git log -1 --format=%H \
-    --grep='^docs(task): record exhausted status-preserving plan review$'
+    --grep='^docs(task): record exhausted immediate-consumption wrapper review$'
 )"
 test "$failure_checkpoint" = "$design_base"
 plan_subject_count="$(
   git log --format=%H \
-    --grep='^docs(plan): define immediate-consumption proof$' |
+    --grep='^docs(plan): define explicit parser outcome proof$' |
     wc -l
 )"
 test "$plan_subject_count" -eq 1
 plan_checkpoint="$(
   git log -1 --format=%H \
-    --grep='^docs(plan): define immediate-consumption proof$'
+    --grep='^docs(plan): define explicit parser outcome proof$'
 )"
 test -n "$plan_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$plan_checkpoint"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+plan_distance="$(
+  git rev-list --count "$design_base..$plan_checkpoint"
+)"
+test "$plan_distance" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+task_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  If either Plan reviewer is not `C0/I0/M0`, edit only the Task ledger and
+  terminate 4AB with this exact rejected-Plan checkpoint:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$plan_checkpoint"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record exhausted explicit parser outcome plan review"
+review_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record exhausted explicit parser outcome plan review$' |
+    wc -l
+)"
+test "$review_subject_count" -eq 1
+review_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record exhausted explicit parser outcome plan review$'
+)"
+test -n "$review_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$review_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$review_checkpoint"
+review_distance="$(
+  git rev-list --count "$plan_checkpoint..$review_checkpoint"
+)"
+test "$review_distance" -eq 1
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  This rejected-Plan checkpoint grants no correction, implementation, or
+  downstream authority.
+
+  After both Plan reviewers return `C0/I0/M0`, edit only the Task ledger and
+  run this separate strict session:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 25524ce1)"
+test -n "$design_base"
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$plan_checkpoint"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+plan_distance="$(
+  git rev-list --count "$design_base..$plan_checkpoint"
+)"
+test "$plan_distance" -eq 1
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record explicit parser outcome plan reviews"
 base_subject_count="$(
   git log --format=%H \
-    --grep='^docs(task): record immediate-consumption plan reviews$' |
+    --grep='^docs(task): record explicit parser outcome plan reviews$' |
     wc -l
 )"
 test "$base_subject_count" -eq 1
 implementation_base="$(
   git log -1 --format=%H \
-    --grep='^docs(task): record immediate-consumption plan reviews$'
+    --grep='^docs(task): record explicit parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_base"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+base_distance="$(
+  git rev-list --count "$plan_checkpoint..$implementation_base"
+)"
+test "$base_distance" -eq 1
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+base_task_mode="$(
+  git ls-tree "$implementation_base" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$base_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 2: Rebind the implementation session and add
+  fallback-resistant RED cases.**
+
+  The implementation agent first proves the complete authority chain:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 25524ce1)"
+test -n "$design_base"
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_base"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+plan_distance="$(
+  git rev-list --count "$design_base..$plan_checkpoint"
+)"
+test "$plan_distance" -eq 1
+base_distance="$(
+  git rev-list --count "$plan_checkpoint..$implementation_base"
+)"
+test "$base_distance" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+base_task_mode="$(
+  git ls-tree "$implementation_base" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$base_task_mode" = "100644"
+base_test_mode="$(
+  git ls-tree "$implementation_base" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$base_test_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  Add these exact behavior families inside
+  `test_repository_umbrella_is_wiring_only`. Exact singleton and empty-set
+  assertions ensure that neither the all-registered fallback nor
+  direct-head misclassification can satisfy RED accidentally:
+
+```python
+split_transition_dispatch = {
+    "env-split-direct-separated": f"\nenv -S '{sibling}'\n",
+    "env-split-direct-attached": f"\nenv -S'{sibling}'\n",
+    "env-split-direct-clustered": f"\nenv -vS'{sibling}'\n",
+    "env-split-nested-dispatch": (
+        f"\nenv -S 'command -p exec -a gate python3 {sibling}'\n"
+    ),
+}
+for family, mutation in split_transition_dispatch.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "explicit parser outcome matrix must hold",
+        )
+
+split_transition_no_dispatch = {
+    "env-split-query-separated": (
+        f"\nenv -S 'command -v python3 {sibling}'\n"
+    ),
+    "env-split-query-attached": (
+        f"\nenv -S'command -v python3 {sibling}'\n"
+    ),
+    "env-split-query-clustered": (
+        f"\nenv -vS'command -v python3 {sibling}'\n"
+    ),
+}
+for family, mutation in split_transition_no_dispatch.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            set(),
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "explicit parser outcome matrix must hold",
+        )
+
+dynamic_head_mutations = {
+    "command-dynamic-head": f'\ncommand "$RUNNER" {sibling}\n',
+    "direct-dynamic-head": f'\n"$RUNNER" {sibling}\n',
+    "python-dynamic-script": f'\npython3 "$SCRIPT" {sibling}\n',
+}
+for family, mutation in dynamic_head_mutations.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "explicit parser outcome matrix must hold",
+        )
+self.assertEqual(
+    set(),
+    self._registered_sibling_dispatches(
+        source + f'\ncommand -v "$RUNNER" {sibling}\n',
+        sibling_entrypoints,
+    ),
+    "explicit parser outcome matrix must hold",
+)
+
+malformed_signal_options = {
+    "env-block-signal-near-prefix": (
+        f"\nenv --block-signalX={sibling} true\n"
+    ),
+    "env-default-signal-near-prefix": (
+        f"\nenv --default-signalX={sibling} true\n"
+    ),
+    "env-ignore-signal-near-prefix": (
+        f"\nenv --ignore-signalX={sibling} true\n"
+    ),
+}
+for family, mutation in malformed_signal_options.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            {sibling},
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "explicit parser outcome matrix must hold",
+        )
+
+valid_signal_operands = {
+    "env-block-signal-exact-value": (
+        f"\nenv --block-signal={sibling} true\n"
+    ),
+    "env-default-signal-exact-value": (
+        f"\nenv --default-signal={sibling} true\n"
+    ),
+    "env-ignore-signal-exact-value": (
+        f"\nenv --ignore-signal={sibling} true\n"
+    ),
+}
+for family, mutation in valid_signal_operands.items():
+    with self.subTest(family=family):
+        self.assertEqual(
+            set(),
+            self._registered_sibling_dispatches(
+                source + mutation,
+                sibling_entrypoints,
+            ),
+            "explicit parser outcome matrix must hold",
+        )
+```
+
+  Run the focused RED as the sole non-errexit exception:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+set +e
+red_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_repository_umbrella_is_wiring_only \
+    -v 2>&1
+)"
+red_status="$?"
+set -e
+printf '%s\n' "$red_output"
+test "$red_status" -ne 0
+case "$red_output" in
+  *"explicit parser outcome matrix must hold"*) ;;
+  *) exit 1 ;;
+esac
+```
+
+  Valid RED imports and reaches exactly the named test, fails on one or more
+  new behavior-specific assertions, and includes the fixed marker. Import
+  errors, missing tests, unrelated failures, or another marker do not count.
+  Record the exact status and subtest families in the Task ledger.
+
+- [ ] **Step 3: Implement the three-outcome parser and run focused GREEN.**
+
+  Within the existing local oracle, define the exact tagged return interface
+  and convert it only at `command_sink` exit:
+
+```python
+ParseResult = tuple[str, frozenset[str]]
+
+def dispatch(paths: set[str]) -> ParseResult:
+    return ("dispatch", frozenset(paths))
+
+def no_dispatch() -> ParseResult:
+    return ("no-dispatch", frozenset())
+
+def ambiguous(items: list[str]) -> ParseResult:
+    return ("ambiguous", frozenset(fail_closed(items)))
+
+def materialize(result: ParseResult) -> set[str]:
+    kind, paths = result
+    if kind == "no-dispatch":
+        return set()
+    if kind in {"dispatch", "ambiguous"}:
+        return set(paths)
+    raise AssertionError("invalid parser outcome")
+```
+
+  Change every recursive parser return to this interface. Use this exact
+  transition shape for every split option; the nested call closes over the one
+  original `budget` and therefore cannot mint new credit:
+
+```python
+def parse_env_split(
+    split_value: str,
+    tail: list[str],
+) -> ParseResult:
+    split_tokens = split_env_static(split_value)
+    if split_tokens is None:
+        return ambiguous([split_value, *tail])
+    return parse_env([*split_tokens, *tail])
+
+if token == "--split-string":
+    if index + 1 >= len(items):
+        return ambiguous(items[index:])
+    return parse_env_split(items[index + 1], items[index + 2 :])
+if token.startswith("--split-string="):
+    return parse_env_split(token.split("=", 1)[1], items[index + 1 :])
+```
+
+  In the short-option loop, after consuming any preceding `i` or `v`, handle
+  `S` as the terminal option in that token. For attached and clustered forms,
+  pass the characters after `S` with `items[index + 1 :]`; for a separated
+  operand, pass `items[index + 1]` with `items[index + 2 :]`. Return
+  `parse_env_split(...)` immediately in both cases, with no index increment.
+
+  Detect dynamic command-position tokens and exact signal names with these
+  local predicates:
+
+```python
+signal_options = (
+    "--block-signal",
+    "--default-signal",
+    "--ignore-signal",
+)
+
+def is_exact_signal_option(token: str) -> bool:
+    return token in signal_options or any(
+        token.startswith(option + "=")
+        for option in signal_options
+    )
+
+def is_signal_near_prefix(token: str) -> bool:
+    return any(token.startswith(option) for option in signal_options)
+
+def is_unresolved_dynamic_head(token: str) -> bool:
+    return (
+        variable_re.fullmatch(token) is not None
+        and resolved_path(token, positional) is None
+    )
+
+def has_relevant_sibling(items: list[str]) -> bool:
+    return any(
+        resolved_path(token, positional) is not None
+        or any(path in token for path in sibling_entrypoints)
+        for token in items
+    )
+```
+
+  Evaluate the exact signal predicate before the near-prefix predicate. At a
+  command position, return `ambiguous(items)` when
+  `is_unresolved_dynamic_head(items[0])` and
+  `has_relevant_sibling(items[1:])`; otherwise a proved static non-sibling
+  head is `no_dispatch()`. Apply the same check to the script operand after a
+  recognized `python3` or `bash` head. Query-only `command` forms return
+  `no_dispatch()` before this head logic.
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+focused_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_repository_umbrella_is_wiring_only \
+    -v 2>&1
+)"
+test -n "$focused_output"
+printf '%s\n' "$focused_output"
+case "$focused_output" in
+  *"Ran 1 test"*"OK"*) ;;
+  *) exit 1 ;;
+esac
+routing_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing \
+    -v 2>&1
+)"
+test -n "$routing_output"
+printf '%s\n' "$routing_output"
+case "$routing_output" in
+  *"OK"*) ;;
+  *) exit 1 ;;
+esac
+```
+
+  GREEN must preserve the planned local `html5lib` skip exactly as a skip;
+  it must not convert a failure into a skip or xfail.
+
+- [ ] **Step 4: Run the frozen regression and static evidence ladder.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+regression_output="$(
+  python3 -m unittest \
+    tests.validation.test_ci_gate_contract \
+    tests.validation.test_ci_gate_runner \
+    tests.validation.test_ci_gate_adapters \
+    tests.validation.test_github_workflow_contract \
+    tests.validation.test_agent_governance_ci_routing \
+    -v 2>&1
+)"
+test -n "$regression_output"
+printf '%s\n' "$regression_output"
+case "$regression_output" in
+  *"OK"*) ;;
+  *) exit 1 ;;
+esac
+workflow_output="$(
+  python3 scripts/validation/check-github-workflow-contract.py 2>&1
+)"
+test -n "$workflow_output"
+printf '%s\n' "$workflow_output"
+delta_output="$(
+  python3 scripts/validation/check-target-surface-delta-contract.py \
+    --mode advisory 2>&1
+)"
+test -n "$delta_output"
+printf '%s\n' "$delta_output"
+metadata_output="$(
+  python3 scripts/validation/check-document-metadata.py \
+    --mode check-changed 2>&1
+)"
+test -n "$metadata_output"
+printf '%s\n' "$metadata_output"
+traceability_output="$(
+  bash scripts/validation/check-doc-traceability.sh 2>&1
+)"
+test -n "$traceability_output"
+printf '%s\n' "$traceability_output"
+ci_list_output="$(
+  python3 scripts/validation/run-ci-gate.py --profile ci --list 2>&1
+)"
+test -n "$ci_list_output"
+printf '%s\n' "$ci_list_output"
+ci_dry_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile ci --dry-run --all 2>&1
+)"
+test -n "$ci_dry_output"
+printf '%s\n' "$ci_dry_output"
+script_backed_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile local-script-backed --dry-run --all 2>&1
+)"
+test -n "$script_backed_output"
+printf '%s\n' "$script_backed_output"
+local_harness_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile local-harness --dry-run --all 2>&1
+)"
+test -n "$local_harness_output"
+printf '%s\n' "$local_harness_output"
+all_profiles_output="$(
+  python3 scripts/validation/run-ci-gate.py \
+    --profile local-all-profiles --dry-run --all 2>&1
+)"
+test -n "$all_profiles_output"
+printf '%s\n' "$all_profiles_output"
+if python3 -c 'import ruff' >/dev/null 2>&1; then
+  python3 -m ruff check \
+    tests/validation/test_agent_governance_ci_routing.py
+else
+  printf '%s\n' 'UNVERIFIED: Ruff is unavailable; installation prohibited'
+fi
+python3 -m compileall -q \
+  tests/validation/test_agent_governance_ci_routing.py
+git diff --check
+```
+
+  The repository umbrella, registered typed child gates, direct pre-commit,
+  controlled wrapper, Compose/runtime, network, secrets, credentials, remote
+  state, and Graphify update remain prohibited. The listed standalone static
+  validators and execution-free `--list`/`--dry-run` projections are the only
+  authorized child-gate evidence.
+
+- [ ] **Step 5: Re-resolve the implementation base, prove exact scope and
+  freezes, then commit the sole attempt.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_base"
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+test -n "$expected_paths"
+actual_paths="$(
+  {
+    git diff --name-only "$implementation_base" -- &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_mode="$(
+  git ls-files -s \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$test_mode" = "100644"
+task_mode="$(
+  git ls-files -s \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+git diff --check
+git add \
+  tests/validation/test_agent_governance_ci_routing.py \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$expected_paths"
+git commit -m "fix(ci): close explicit parser outcome proof"
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+implementation_distance="$(
+  git rev-list --count "$implementation_base..$implementation_commit"
+)"
+test "$implementation_distance" -eq 1
+implementation_paths="$(
+  git diff --name-only \
+    "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+committed_test_mode="$(
+  git ls-tree "$implementation_commit" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$committed_test_mode" = "100644"
+committed_task_mode="$(
+  git ls-tree "$implementation_commit" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$committed_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 6: Independently review the exact implementation range and
+  record one terminal review checkpoint.**
+
+  Each fresh reviewer independently runs:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$'
 )"
 test -n "$implementation_base"
 implementation_subject_count="$(
   git log --format=%H \
-    --grep='^fix(ci): close immediate-consumption wrapper proof$' |
+    --grep='^fix(ci): close explicit parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+implementation_distance="$(
+  git rev-list --count "$implementation_base..$implementation_commit"
+)"
+test "$implementation_distance" -eq 1
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+test -n "$expected_paths"
+implementation_paths="$(
+  git diff --name-only \
+    "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+task_mode="$(
+  git ls-tree "$implementation_commit" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+test_mode="$(
+  git ls-tree "$implementation_commit" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$test_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  If and only if both reports are `C0/I0/M0`, edit only the Task ledger and
+  create the accepted checkpoint:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record explicit parser outcome review"
+review_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record explicit parser outcome review$' |
+    wc -l
+)"
+test "$review_subject_count" -eq 1
+review_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record explicit parser outcome review$'
+)"
+test -n "$review_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$review_checkpoint"
+git merge-base --is-ancestor "$implementation_commit" "$review_checkpoint"
+review_distance="$(
+  git rev-list --count "$implementation_commit..$review_checkpoint"
+)"
+test "$review_distance" -eq 1
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  If either report is not `C0/I0/M0`, edit only the Task ledger and run the
+  mutually exclusive rejected-review checkpoint instead:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$' |
+    wc -l
+)"
+test "$implementation_subject_count" -eq 1
+implementation_commit="$(
+  git log -1 --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$'
+)"
+test -n "$implementation_commit"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$implementation_commit"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record exhausted explicit parser outcome review"
+review_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record exhausted explicit parser outcome review$' |
+    wc -l
+)"
+test "$review_subject_count" -eq 1
+review_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record exhausted explicit parser outcome review$'
+)"
+test -n "$review_checkpoint"
+head_commit="$(git rev-parse HEAD)"
+test "$head_commit" = "$review_checkpoint"
+git merge-base --is-ancestor "$implementation_commit" "$review_checkpoint"
+review_distance="$(
+  git rev-list --count "$implementation_commit..$review_checkpoint"
+)"
+test "$review_distance" -eq 1
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+  The rejected checkpoint grants no implementation retry or downstream
+  authority. Only the accepted
+  `docs(task): record explicit parser outcome review` checkpoint authorizes
+  Task 4.5 Wave C.
+
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Prove the exact accepted explicit-outcome review
+  checkpoint.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 25524ce1)"
+test -n "$design_base"
+failure_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record exhausted immediate-consumption wrapper review$' |
+    wc -l
+)"
+test "$failure_subject_count" -eq 1
+failure_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record exhausted immediate-consumption wrapper review$'
+)"
+test "$failure_checkpoint" = "$design_base"
+plan_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$' |
+    wc -l
+)"
+test "$plan_subject_count" -eq 1
+plan_checkpoint="$(
+  git log -1 --format=%H \
+    --grep='^docs(plan): define explicit parser outcome proof$'
+)"
+test -n "$plan_checkpoint"
+base_subject_count="$(
+  git log --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$' |
+    wc -l
+)"
+test "$base_subject_count" -eq 1
+implementation_base="$(
+  git log -1 --format=%H \
+    --grep='^docs(task): record explicit parser outcome plan reviews$'
+)"
+test -n "$implementation_base"
+implementation_subject_count="$(
+  git log --format=%H \
+    --grep='^fix(ci): close explicit parser outcome proof$' |
     wc -l
 )"
 test "$implementation_subject_count" -eq 1
 wrapper_implementation="$(
   git log -1 --format=%H \
-    --grep='^fix(ci): close immediate-consumption wrapper proof$'
+    --grep='^fix(ci): close explicit parser outcome proof$'
 )"
 test -n "$wrapper_implementation"
 review_subject_count="$(
   git log --format=%H \
-    --grep='^docs(task): record immediate-consumption wrapper review$' |
+    --grep='^docs(task): record explicit parser outcome review$' |
     wc -l
 )"
 test "$review_subject_count" -eq 1
 wrapper_review="$(
   git log -1 --format=%H \
-    --grep='^docs(task): record immediate-consumption wrapper review$'
+    --grep='^docs(task): record explicit parser outcome review$'
 )"
 test -n "$wrapper_review"
 head_commit="$(git rev-parse HEAD)"
