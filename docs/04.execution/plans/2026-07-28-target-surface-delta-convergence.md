@@ -92,11 +92,15 @@ bounded repair. Its Plan checkpoint committed as `8abea15a`; its exact reviewed
 range was `5644c4a301e38d3f0c32efe99e80f879df6e1ac8..8abea15a1ebafdf607be801789a409e6f312c099`.
 Specification returned `C0/I0/M0`; quality/security returned `C0/I2/M0`, so
 rejected Task-only evidence committed as `8cacc463`. The user then approved
-T-TSDC-004R-4AF as a Plan-only repair. Implementation and tests remain blocked
-until fresh independent 4AF Plan reviews return `C0/I0/M0` and accepted
-Task-only evidence B is recorded. Remote, runtime, dependency,
-secret, direct pre-commit, controlled-wrapper, and Graphify-update authority
-remain unchanged.
+T-TSDC-004R-4AF as a Plan-only repair. Its sole implementation attempt is now
+historical and review-rejected because the frozen Step 4 evidence envelope
+mistook valid silent success for failure. The user approved
+T-TSDC-004R-4AG as the Plan-only successor: it supersedes only that delta
+command capture/evidence envelope. Tests, revalidation, E_AG, R_AG, and Wave C
+remain blocked until accepted B_AG exists and the user separately approves one
+evidence-only revalidation attempt. Remote, runtime, dependency, secret,
+direct pre-commit, controlled-wrapper, and Graphify-update authority remain
+unchanged.
 
 ## Global Constraints
 
@@ -3341,12 +3345,12 @@ test -z "$(git status --porcelain=v1 --untracked-files=all)"
   `test_repository_umbrella_is_wiring_only`, plus these named GNU `env`
   transitions:
 
-  - dispatch-positive `env -- NAME=VALUE python3 <sibling>`;
-  - dispatch-positive `env -- A=1 B=2 python3 <sibling>`;
-  - non-dispatch `env -- NAME=<sibling>` with no command;
-  - dispatch-positive `env -- NAME=<sibling> python3 <sibling>`, proving that
+- dispatch-positive `env -- NAME=VALUE python3 <sibling>`;
+- dispatch-positive `env -- A=1 B=2 python3 <sibling>`;
+- non-dispatch `env -- NAME=<sibling>` with no command;
+- dispatch-positive `env -- NAME=<sibling> python3 <sibling>`, proving that
     assignment occurrence is ignored while the command sink is detected; and
-  - non-dispatch `env -- -command <sibling>` using a controlled static
+- non-dispatch `env -- -command <sibling>` using a controlled static
     fixture, proving that `-command` is the command position rather than an
     unknown option and that its sibling argument is not itself dispatched.
 
@@ -9665,12 +9669,1487 @@ test -z "$clean_state"
 
   The rejected checkpoint grants no retry or downstream authority.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### T-TSDC-004R-4AG: Status-Based Silent-Success Proof (Plan-Only Successor)
 
-- [ ] **Step 0: Re-extract both reviewed ranges and prove the complete
-  accepted 4AF chain.**
+- [ ] **Step 0: Bind the exhausted design boundary without reopening 4AF.**
+
+  `D_AG` is exactly `737838fe80880b7eadbfb1c7e18d8dc251bcc8b9`, has sole
+  subject `docs(task): record exhausted canonical-row authority review`, has
+  parent `I` exactly `a7d05b0e5c0ffaeccde9e401450e696855cfb2b5`, changes this
+  Task ledger only, and remains mode `100644`. Historical 4AF parser, test,
+  command/argv/order, 61-family matrix, every Step 4 assertion other than the
+  delta capture/evidence envelope, scopes, prohibitions, and files are frozen.
+  No parser, product, workflow, validator, runtime, or test change is in this
+  successor. TDD RED/GREEN is N/A: the framing oracle is negative/positive
+  evidence, not a product change.
+
+  Every 4AG proof block retains `set -euo pipefail` and
+  `shopt -s inherit_errexit`. Each ordinary fallible command substitution is
+  a standalone assignment whose immediately following command tests that same
+  variable. The only framing exceptions are guarded production/oracle frame
+  and oracle-result assignments. Their inner and outer branches each consume
+  `$?` as their first command, and the next post-conditional command validates
+  the frame sentinel or exact captured status before any bytes can be
+  classified or discarded.
+
+- [ ] **Step 1: Make P_AG and obtain its terminal Plan evidence.**
+
+  Create `P_AG` as the single-parent successor of D_AG with exact subject
+  `docs(plan): define status-based silent-success proof`, Plan plus Task paths
+  only, and both modes `100644`. Two fresh independent Plan reviewers inspect
+  exact `D_AG..P_AG`; both must return `C0/I0/M0`. If either does not, create
+  Task-only `XP_AG` with exact subject
+  `docs(task): record exhausted status-based silent-success plan review` and
+  stop. If both do, create Task-only `B_AG` with exact subject
+  `docs(task): record status-based silent-success plan reviews`. There is no
+  correction inside 4AG. The present approval authorizes only Plan/Task
+  drafting, P_AG, these fresh Plan reviews, and their accepted or rejected
+  Task-only evidence; P_AG is not yet committed at this draft.
+
+  Immediately after P_AG is committed, each fresh reviewer independently runs
+  this immutable checkpoint proof and reports both printed full OIDs:
 
 ```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+design_base="$(
+  git rev-parse --verify \
+    '737838fe80880b7eadbfb1c7e18d8dc251bcc8b9^{commit}'
+)"
+test "$design_base" = \
+  "737838fe80880b7eadbfb1c7e18d8dc251bcc8b9"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted canonical-row authority review"
+base_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record exhausted canonical-row authority review'
+)"
+test "$base_subject_count" -eq 1
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+plan_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$plan_checkpoint"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define status-based silent-success proof"
+plan_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(plan): define status-based silent-success proof'
+)"
+test "$plan_subject_count" -eq 1
+assert_edge "$design_base" "$plan_checkpoint"
+expected_plan_paths="$(
+  printf '%s\n' "$plan_file" "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" "$plan_file" |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$plan_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+printf 'REVIEWED_BASE=%s\nREVIEWED_HEAD=%s\n' \
+  "$design_base" "$plan_checkpoint"
+```
+
+  The controller copies the identical full range and both completed verdicts
+  into the single `T-TSDC-004R-4AG status-based silent-success Plan` row.
+  The following one terminal session derives its branch from that row. The
+  accepted cell values are exactly
+  `C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES` and
+  `C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES`; any other two
+  completed C/I/M verdicts select XP_AG. Pending, malformed, duplicated, or
+  divergent evidence fails before a commit:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_attestation="$(
+  python3 - "$task_file" <<'PY'
+import pathlib
+import re
+import sys
+
+label = "T-TSDC-004R-4AG status-based silent-success Plan"
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("plan-review-read")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    candidate_view = line[1:] if line.startswith("|") else line
+    separator = candidate_view.find("|")
+    if separator < 0:
+        continue
+    first_cell = candidate_view[:separator].strip(" \t")
+    if first_cell == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("plan-review-row-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|"):
+    raise SystemExit("plan-review-cell-count")
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("plan-review-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("plan-review-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("plan-review-label")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("plan-review-extra-range")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("plan-review-range")
+complete = re.compile(r"^C[0-9]+/I[0-9]+/M[0-9]+; .+", re.ASCII)
+if complete.fullmatch(cells[2]) is None or complete.fullmatch(cells[3]) is None:
+    raise SystemExit("plan-review-incomplete")
+accepted = (
+    cells[2]
+    == "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES"
+    and cells[3]
+    == "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES"
+)
+outcome = "accepted" if accepted else "rejected"
+print(f"{match.group(1)}..{match.group(2)}\t{outcome}")
+PY
+)"
+test -n "$plan_attestation"
+plan_review_range="${plan_attestation%%$'\t'*}"
+test -n "$plan_review_range"
+review_outcome="${plan_attestation##*$'\t'}"
+test "$review_outcome" = accepted || test "$review_outcome" = rejected
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "737838fe80880b7eadbfb1c7e18d8dc251bcc8b9"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted canonical-row authority review"
+base_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record exhausted canonical-row authority review'
+)"
+test "$base_subject_count" -eq 1
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define status-based silent-success proof"
+plan_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(plan): define status-based silent-success proof'
+)"
+test "$plan_subject_count" -eq 1
+assert_edge "$design_base" "$plan_checkpoint"
+expected_plan_paths="$(
+  printf '%s\n' "$plan_file" "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" "$plan_file" |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$plan_checkpoint"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+if [ "$review_outcome" = accepted ]; then
+  terminal_subject='docs(task): record status-based silent-success plan reviews'
+else
+  terminal_subject='docs(task): record exhausted status-based silent-success plan review'
+fi
+git commit -m "$terminal_subject"
+terminal_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$terminal_checkpoint"
+recorded_subject="$(
+  git show -s --format=%s "$terminal_checkpoint"
+)"
+test "$recorded_subject" = "$terminal_subject"
+subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc "$terminal_subject"
+)"
+test "$subject_count" -eq 1
+assert_edge "$plan_checkpoint" "$terminal_checkpoint"
+terminal_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$terminal_checkpoint" |
+    sort
+)"
+test "$terminal_paths" = "$task_file"
+terminal_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$terminal_checkpoint" |
+    sort
+)"
+test "$terminal_range_paths" = "$task_file"
+terminal_task_mode="$(
+  git ls-tree "$terminal_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$terminal_task_mode" = "100644"
+terminal_head="$(
+  git rev-parse HEAD
+)"
+test "$terminal_head" = "$terminal_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 2: Use the strict status-based Step 4 delta envelope after a
+  separate future approval.**
+
+  Only after B_AG exists and the user separately approves one evidence-only
+  revalidation attempt, run the frozen delta command exactly once without code
+  edits. Retain `set -euo pipefail` and `shopt -s inherit_errexit`; admit only
+  this exact external simple command in conditional context:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+delta_sentinel=$'\x1e'
+if delta_frame="$(
+  if python3 \
+      scripts/validation/check-target-surface-delta-contract.py \
+      --mode advisory 2>&1; then
+    delta_inner_status=$?
+  else
+    delta_inner_status=$?
+  fi
+  printf '%s' "$delta_sentinel"
+  exit "$delta_inner_status"
+)"; then
+  delta_status=$?
+else
+  delta_status=$?
+fi
+case "$delta_frame" in
+  *"$delta_sentinel") ;;
+  *)
+    unset delta_frame
+    if [ "$delta_status" -eq 0 ]; then
+      exit 125
+    fi
+    exit "$delta_status"
+    ;;
+esac
+delta_body="${delta_frame%"$delta_sentinel"}"
+unset delta_frame
+if [[ -n "$delta_body" ]]; then
+  delta_output_class=nonempty
+else
+  delta_output_class=empty
+fi
+unset delta_body
+printf 'result status=%d output=%s\n' \
+  "$delta_status" "$delta_output_class"
+if [ "$delta_status" -ne 0 ]; then
+  exit "$delta_status"
+fi
+```
+
+  The sentinel is inside the guarded assignment, so trailing-newline-only
+  output remains nonempty. Capture inner and outer status immediately through
+  `if`/`else`; classify only `status=<n>` and `output=empty|nonempty`; unset
+  the body promptly; never print or persist its raw body. Do not use `set +e`,
+  `!`, `|| true`, `eval`, pipelines, temporary/raw-log files, or a second
+  execution. Bash variables cannot represent NUL, so this is bounded to the
+  existing bounded value-free text validator.
+
+  Future adversarial proof uses local shell functions, never `bash -c`:
+  success with zero bytes must classify `0/empty`; success with newline-only
+  output must classify `0/nonempty`; stderr-only output containing a fixed raw
+  marker must classify `0/nonempty` without emitting that marker; a deliberately
+  corrupted success frame must exit reserved status `125`; and status `23`
+  with empty and nonempty combined output must produce only its value-free
+  class, exit exactly `23`, emit no successor marker, and invoke the function
+  once. The oracle must separately assert that no raw stdout or stderr marker
+  appears in persisted or displayed evidence.
+
+  The future revalidation runs this local-function oracle before the exact
+  external validator command. It is self-contained, uses no file or second
+  execution, and proves that nonzero and corrupt frames never reach the
+  successor marker:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+produce_empty() {
+  probe_count=$((probe_count + 1))
+  return 0
+}
+produce_newline() {
+  probe_count=$((probe_count + 1))
+  printf '\n'
+}
+produce_stderr_marker() {
+  probe_count=$((probe_count + 1))
+  printf '%s' 'RAW-STDERR-MARKER' >&2
+}
+produce_23_empty() {
+  probe_count=$((probe_count + 1))
+  return 23
+}
+produce_23_nonempty() {
+  probe_count=$((probe_count + 1))
+  printf '%s' 'RAW-NONZERO-MARKER'
+  return 23
+}
+run_probe() {
+  local producer="$1"
+  local frame_mode="$2"
+  local probe_sentinel=$'\x1e'
+  local probe_frame
+  local probe_inner_status
+  local probe_status
+  local probe_body
+  local probe_output_class
+  probe_count=0
+  if probe_frame="$(
+    if "$producer" 2>&1; then
+      probe_inner_status=$?
+    else
+      probe_inner_status=$?
+    fi
+    if [ "$probe_count" -ne 1 ]; then
+      exit 126
+    fi
+    if [ "$frame_mode" = intact ]; then
+      printf '%s' "$probe_sentinel"
+    fi
+    exit "$probe_inner_status"
+  )"; then
+    probe_status=$?
+  else
+    probe_status=$?
+  fi
+  case "$probe_frame" in
+    *"$probe_sentinel") ;;
+    *)
+      unset probe_frame
+      if [ "$probe_status" -eq 0 ]; then
+        exit 125
+      fi
+      exit "$probe_status"
+      ;;
+  esac
+  probe_body="${probe_frame%"$probe_sentinel"}"
+  unset probe_frame
+  if [[ -n "$probe_body" ]]; then
+    probe_output_class=nonempty
+  else
+    probe_output_class=empty
+  fi
+  unset probe_body
+  printf 'result status=%d output=%s\n' \
+    "$probe_status" "$probe_output_class"
+  if [ "$probe_status" -ne 0 ]; then
+    exit "$probe_status"
+  fi
+  printf '%s\n' 'successor-marker'
+}
+if probe_output="$(run_probe produce_empty intact)"; then
+  probe_status=$?
+else
+  probe_status=$?
+fi
+test "$probe_status" -eq 0
+test "$probe_output" = $'result status=0 output=empty\nsuccessor-marker'
+if probe_output="$(run_probe produce_newline intact)"; then
+  probe_status=$?
+else
+  probe_status=$?
+fi
+test "$probe_status" -eq 0
+test "$probe_output" = \
+  $'result status=0 output=nonempty\nsuccessor-marker'
+if probe_output="$(run_probe produce_stderr_marker intact)"; then
+  probe_status=$?
+else
+  probe_status=$?
+fi
+test "$probe_status" -eq 0
+test "$probe_output" = \
+  $'result status=0 output=nonempty\nsuccessor-marker'
+case "$probe_output" in
+  *RAW-STDERR-MARKER*) exit 1 ;;
+  *) ;;
+esac
+if probe_output="$(run_probe produce_23_empty intact)"; then
+  probe_status=$?
+else
+  probe_status=$?
+fi
+test "$probe_status" -eq 23
+test "$probe_output" = 'result status=23 output=empty'
+case "$probe_output" in
+  *successor-marker*) exit 1 ;;
+  *) ;;
+esac
+if probe_output="$(run_probe produce_23_nonempty intact)"; then
+  probe_status=$?
+else
+  probe_status=$?
+fi
+test "$probe_status" -eq 23
+test "$probe_output" = 'result status=23 output=nonempty'
+case "$probe_output" in
+  *RAW-NONZERO-MARKER*|*successor-marker*) exit 1 ;;
+  *) ;;
+esac
+if probe_output="$(run_probe produce_empty corrupt)"; then
+  probe_status=$?
+else
+  probe_status=$?
+fi
+test "$probe_status" -eq 125
+test -z "$probe_output"
+```
+
+- [ ] **Step 3: Rebind immutable history and record E_AG only after that
+  approved revalidation.**
+
+  The historical code range is exactly
+  `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5`.
+  Prove the test-file blob at B_AG equals I, every commit after I through B_AG
+  changes only allowed Plan/Task evidence, and test mode remains `100644`.
+  Do not cherry-pick, amend, revert, reapply, or create empty commits. Create
+  Task-only logical evidence `E_AG` after the one revalidation with exact
+  subject `docs(task): record status-based silent-success revalidation`.
+  Fresh specification and quality/security reviewers inspect both the immutable
+  historical implementation range and exact B_AG..E_AG evidence range, attest
+  all four full OIDs, and prove `B_4AF -> I -> D_AG -> P_AG -> B_AG -> E_AG`.
+  The accepted terminal is Task-only `R_AG`, exact subject
+  `docs(task): record status-based silent-success review`; rejection is
+  Task-only `XE_AG`, exact subject
+  `docs(task): record exhausted status-based silent-success review`. Only
+  accepted R_AG unlocks Task 4.5.
+
+  After the separately approved status-based ladder passes, edit only the Task
+  ledger and run this E_AG commit proof. It derives P_AG from the accepted Plan
+  row, binds B_AG from clean `HEAD`, proves the immutable test blob, and
+  records no raw command output:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  python3 - "$task_file" <<'PY'
+import pathlib
+import re
+import sys
+
+label = "T-TSDC-004R-4AG status-based silent-success Plan"
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    candidate_view = line[1:] if line.startswith("|") else line
+    separator = candidate_view.find("|")
+    if separator < 0:
+        continue
+    first_cell = candidate_view[:separator].strip(" \t")
+    if first_cell == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("plan-review-row-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|"):
+    raise SystemExit("plan-review-cell-count")
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("plan-review-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("plan-review-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("plan-review-label")
+if cells[2] != "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES":
+    raise SystemExit("plan-review-spec")
+if cells[3] != "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES":
+    raise SystemExit("plan-review-quality")
+for index, cell in enumerate(cells):
+    if index != 4 and ("`" in cell or ".." in cell):
+        raise SystemExit("plan-review-extra-range")
+match = re.fullmatch(
+    r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+    cells[4],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("plan-review-range")
+print(f"{match.group(1)}..{match.group(2)}")
+PY
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "737838fe80880b7eadbfb1c7e18d8dc251bcc8b9"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+implementation_base="$(
+  git rev-parse --verify \
+    '7e32c37cafde08b108ee33e3439cda3aea336961^{commit}'
+)"
+test "$implementation_base" = \
+  "7e32c37cafde08b108ee33e3439cda3aea336961"
+implementation_commit="$(
+  git rev-parse --verify \
+    'a7d05b0e5c0ffaeccde9e401450e696855cfb2b5^{commit}'
+)"
+test "$implementation_commit" = \
+  "a7d05b0e5c0ffaeccde9e401450e696855cfb2b5"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+evidence_base="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$evidence_base"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record canonical-row authority plan reviews"
+implementation_subject="$(
+  git show -s --format=%s "$implementation_commit"
+)"
+test "$implementation_subject" = \
+  "fix(ci): close canonical-row authority proof"
+design_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$design_subject" = \
+  "docs(task): record exhausted canonical-row authority review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define status-based silent-success proof"
+evidence_base_subject="$(
+  git show -s --format=%s "$evidence_base"
+)"
+test "$evidence_base_subject" = \
+  "docs(task): record status-based silent-success plan reviews"
+for expected_subject in \
+  'docs(task): record canonical-row authority plan reviews' \
+  'fix(ci): close canonical-row authority proof' \
+  'docs(task): record exhausted canonical-row authority review' \
+  'docs(plan): define status-based silent-success proof' \
+  'docs(task): record status-based silent-success plan reviews'
+do
+  subject_count="$(
+    git log --all --format='%s' |
+      grep -Fxc "$expected_subject"
+  )"
+  test "$subject_count" -eq 1
+done
+assert_edge "$implementation_base" "$implementation_commit"
+assert_edge "$implementation_commit" "$design_base"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$evidence_base"
+expected_plan_paths="$(
+  printf '%s\n' "$plan_file" "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+expected_implementation_paths="$(
+  printf '%s\n' "$task_file" "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+implementation_base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$implementation_base_paths" = "$task_file"
+implementation_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_implementation_paths"
+design_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$design_paths" = "$task_file"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+evidence_base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$evidence_base" |
+    sort
+)"
+test "$evidence_base_paths" = "$task_file"
+evidence_base_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$evidence_base" |
+    sort
+)"
+test "$evidence_base_range_paths" = "$task_file"
+post_implementation_paths="$(
+  git diff --name-only "$implementation_commit..$evidence_base" |
+    sort
+)"
+test "$post_implementation_paths" = "$expected_plan_paths"
+for commit_path in \
+  "$implementation_base:$task_file" \
+  "$implementation_commit:$task_file" \
+  "$implementation_commit:$test_file" \
+  "$design_base:$task_file" \
+  "$plan_checkpoint:$plan_file" \
+  "$plan_checkpoint:$task_file" \
+  "$evidence_base:$task_file" \
+  "$evidence_base:$test_file"
+do
+  tree_mode="$(
+    git ls-tree "${commit_path%%:*}" "${commit_path#*:}" |
+      awk '{print $1}'
+  )"
+  test "$tree_mode" = "100644"
+done
+implementation_blob="$(
+  git rev-parse "$implementation_commit:$test_file"
+)"
+test -n "$implementation_blob"
+evidence_base_blob="$(
+  git rev-parse "$evidence_base:$test_file"
+)"
+test "$evidence_base_blob" = "$implementation_blob"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+git commit -m \
+  "docs(task): record status-based silent-success revalidation"
+evidence_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$evidence_checkpoint"
+evidence_subject="$(
+  git show -s --format=%s "$evidence_checkpoint"
+)"
+test "$evidence_subject" = \
+  "docs(task): record status-based silent-success revalidation"
+evidence_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record status-based silent-success revalidation'
+)"
+test "$evidence_subject_count" -eq 1
+assert_edge "$evidence_base" "$evidence_checkpoint"
+evidence_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$evidence_checkpoint" |
+    sort
+)"
+test "$evidence_paths" = "$task_file"
+evidence_range_paths="$(
+  git diff --name-only "$evidence_base..$evidence_checkpoint" |
+    sort
+)"
+test "$evidence_range_paths" = "$task_file"
+evidence_mode="$(
+  git ls-tree "$evidence_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$evidence_mode" = "100644"
+evidence_blob="$(
+  git rev-parse "$evidence_checkpoint:$test_file"
+)"
+test "$evidence_blob" = "$implementation_blob"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$evidence_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  Both composite reviewers then report the same two exact ranges: historical
+  `B_4AF..I` and new `B_AG..E_AG`. The controller copies their completed
+  verdicts into both canonical implementation/revalidation rows and edits only
+  the Task ledger. This terminal session requires the two rows to carry
+  identical verdicts. It selects R_AG only when both are the exact accepted
+  C0/I0/M0 forms; any other two completed verdicts select XE_AG:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+review_attestation="$(
+  python3 - "$task_file" <<'PY'
+import pathlib
+import re
+import sys
+
+labels = (
+    "T-TSDC-004R-4AG status-based silent-success Plan",
+    "T-TSDC-004R-4AG frozen canonical-row implementation",
+    "T-TSDC-004R-4AG status-based revalidation",
+)
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+found = {label: [] for label in labels}
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    candidate_view = line[1:] if line.startswith("|") else line
+    separator = candidate_view.find("|")
+    if separator < 0:
+        continue
+    first_cell = candidate_view[:separator].strip(" \t")
+    if first_cell in found:
+        found[first_cell].append(line)
+if any(len(found[label]) != 1 for label in labels):
+    raise SystemExit("review-row-count")
+rows = []
+for label in labels:
+    row = found[label][0]
+    if not row.startswith("|") or not row.endswith("|"):
+        raise SystemExit("review-cell-count")
+    if "\\|" in row or "\\`" in row:
+        raise SystemExit("review-escape")
+    parts = row.split("|")
+    if len(parts) != 9 or parts[0] or parts[-1]:
+        raise SystemExit("review-cell-count")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if len(cells) != 7 or cells[0] != label:
+        raise SystemExit("review-label")
+    rows.append(cells)
+ranges = []
+for cells in rows:
+    for index, cell in enumerate(cells):
+        if index != 4 and ("`" in cell or ".." in cell):
+            raise SystemExit("review-extra-range")
+    match = re.fullmatch(
+        r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+        cells[4],
+        flags=re.ASCII,
+    )
+    if match is None:
+        raise SystemExit("review-range")
+    ranges.append(f"{match.group(1)}..{match.group(2)}")
+accepted_spec = "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES"
+accepted_quality = "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES"
+if rows[0][2] != "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES":
+    raise SystemExit("plan-review-spec")
+if rows[0][3] != "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES":
+    raise SystemExit("plan-review-quality")
+complete = re.compile(r"^C[0-9]+/I[0-9]+/M[0-9]+; .+", re.ASCII)
+for cells in rows[1:]:
+    if complete.fullmatch(cells[2]) is None:
+        raise SystemExit("composite-spec-incomplete")
+    if complete.fullmatch(cells[3]) is None:
+        raise SystemExit("composite-quality-incomplete")
+if rows[1][2:4] != rows[2][2:4]:
+    raise SystemExit("composite-verdict-divergence")
+accepted = (
+    rows[1][2] == accepted_spec
+    and rows[1][3] == accepted_quality
+)
+outcome = "accepted" if accepted else "rejected"
+print("\t".join((*ranges, outcome)))
+PY
+)"
+test -n "$review_attestation"
+plan_review_range="${review_attestation%%$'\t'*}"
+test -n "$plan_review_range"
+attestation_tail="${review_attestation#*$'\t'}"
+test -n "$attestation_tail"
+implementation_review_range="${attestation_tail%%$'\t'*}"
+test -n "$implementation_review_range"
+attestation_tail="${attestation_tail#*$'\t'}"
+test -n "$attestation_tail"
+revalidation_review_range="${attestation_tail%%$'\t'*}"
+test -n "$revalidation_review_range"
+review_outcome="${attestation_tail##*$'\t'}"
+test "$review_outcome" = accepted || test "$review_outcome" = rejected
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "737838fe80880b7eadbfb1c7e18d8dc251bcc8b9"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+implementation_base="${implementation_review_range%%..*}"
+test "$implementation_base" = \
+  "7e32c37cafde08b108ee33e3439cda3aea336961"
+implementation_commit="${implementation_review_range##*..}"
+test "$implementation_commit" = \
+  "a7d05b0e5c0ffaeccde9e401450e696855cfb2b5"
+evidence_base="${revalidation_review_range%%..*}"
+test -n "$evidence_base"
+evidence_checkpoint="${revalidation_review_range##*..}"
+test -n "$evidence_checkpoint"
+for bound_commit in \
+  "$implementation_base" "$implementation_commit" "$design_base" \
+  "$plan_checkpoint" "$evidence_base" "$evidence_checkpoint"
+do
+  verified_commit="$(
+    git rev-parse --verify "$bound_commit^{commit}"
+  )"
+  test "$verified_commit" = "$bound_commit"
+done
+expected_subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record status-based silent-success plan reviews'
+  'docs(task): record status-based silent-success revalidation'
+)
+bound_commits=(
+  "$implementation_base" "$implementation_commit" "$design_base"
+  "$plan_checkpoint" "$evidence_base" "$evidence_checkpoint"
+)
+for index in "${!bound_commits[@]}"; do
+  bound_subject="$(
+    git show -s --format=%s "${bound_commits[$index]}"
+  )"
+  test "$bound_subject" = "${expected_subjects[$index]}"
+  subject_count="$(
+    git log --all --format='%s' |
+      grep -Fxc "${expected_subjects[$index]}"
+  )"
+  test "$subject_count" -eq 1
+done
+assert_edge "$implementation_base" "$implementation_commit"
+assert_edge "$implementation_commit" "$design_base"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$evidence_base"
+assert_edge "$evidence_base" "$evidence_checkpoint"
+expected_plan_paths="$(
+  printf '%s\n' "$plan_file" "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+expected_implementation_paths="$(
+  printf '%s\n' "$task_file" "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+expected_paths=(
+  "$task_file"
+  "$expected_implementation_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$task_file"
+)
+for index in "${!bound_commits[@]}"; do
+  commit_paths="$(
+    git diff-tree --no-commit-id --name-only -r \
+      "${bound_commits[$index]}" |
+      sort
+  )"
+  test "$commit_paths" = "${expected_paths[$index]}"
+done
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+base_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$evidence_base" |
+    sort
+)"
+test "$base_range_paths" = "$task_file"
+evidence_range_paths="$(
+  git diff --name-only "$evidence_base..$evidence_checkpoint" |
+    sort
+)"
+test "$evidence_range_paths" = "$task_file"
+for commit_path in \
+  "$implementation_base:$task_file" \
+  "$implementation_commit:$task_file" \
+  "$implementation_commit:$test_file" \
+  "$design_base:$task_file" \
+  "$plan_checkpoint:$plan_file" \
+  "$plan_checkpoint:$task_file" \
+  "$evidence_base:$task_file" \
+  "$evidence_base:$test_file" \
+  "$evidence_checkpoint:$task_file" \
+  "$evidence_checkpoint:$test_file"
+do
+  tree_mode="$(
+    git ls-tree "${commit_path%%:*}" "${commit_path#*:}" |
+      awk '{print $1}'
+  )"
+  test "$tree_mode" = "100644"
+done
+implementation_blob="$(
+  git rev-parse "$implementation_commit:$test_file"
+)"
+test -n "$implementation_blob"
+evidence_base_blob="$(
+  git rev-parse "$evidence_base:$test_file"
+)"
+test "$evidence_base_blob" = "$implementation_blob"
+evidence_blob="$(
+  git rev-parse "$evidence_checkpoint:$test_file"
+)"
+test "$evidence_blob" = "$implementation_blob"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$evidence_checkpoint"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+if [ "$review_outcome" = accepted ]; then
+  terminal_subject='docs(task): record status-based silent-success review'
+else
+  terminal_subject='docs(task): record exhausted status-based silent-success review'
+fi
+git commit -m "$terminal_subject"
+terminal_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$terminal_checkpoint"
+terminal_subject_actual="$(
+  git show -s --format=%s "$terminal_checkpoint"
+)"
+test "$terminal_subject_actual" = "$terminal_subject"
+terminal_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc "$terminal_subject"
+)"
+test "$terminal_subject_count" -eq 1
+assert_edge "$evidence_checkpoint" "$terminal_checkpoint"
+terminal_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$terminal_checkpoint" |
+    sort
+)"
+test "$terminal_paths" = "$task_file"
+terminal_range_paths="$(
+  git diff --name-only "$evidence_checkpoint..$terminal_checkpoint" |
+    sort
+)"
+test "$terminal_range_paths" = "$task_file"
+terminal_mode="$(
+  git ls-tree "$terminal_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$terminal_mode" = "100644"
+terminal_blob="$(
+  git rev-parse "$terminal_checkpoint:$test_file"
+)"
+test "$terminal_blob" = "$implementation_blob"
+terminal_head="$(
+  git rev-parse HEAD
+)"
+test "$terminal_head" = "$terminal_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  R_AG authorizes Task 4.5 only when `review_outcome=accepted`; XE_AG is
+  terminal and grants no correction, retry, Wave C, or downstream authority.
+
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Re-extract the three canonical rows and prove the complete
+  accepted 4AG chain.**
+
+  Before any Wave C change, run this active prerequisite. It extracts exactly
+  the three 4AG canonical rows, accepts only completed C0/I0/M0 evidence,
+  proves `B_4AF -> I -> D_AG -> P_AG -> B_AG -> E_AG -> R_AG`, and binds the
+  current test blob to historical I:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+authority_ranges="$(
+  python3 - "$task_file" <<'PY'
+import pathlib
+import re
+import sys
+
+labels = (
+    "T-TSDC-004R-4AG status-based silent-success Plan",
+    "T-TSDC-004R-4AG frozen canonical-row implementation",
+    "T-TSDC-004R-4AG status-based revalidation",
+)
+try:
+    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+except (OSError, UnicodeError):
+    raise SystemExit("authority-read")
+found = {label: [] for label in labels}
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    candidate_view = line[1:] if line.startswith("|") else line
+    separator = candidate_view.find("|")
+    if separator < 0:
+        continue
+    first_cell = candidate_view[:separator].strip(" \t")
+    if first_cell in found:
+        found[first_cell].append(line)
+if any(len(found[label]) != 1 for label in labels):
+    raise SystemExit("authority-row-count")
+rows = []
+for label in labels:
+    row = found[label][0]
+    if not row.startswith("|") or not row.endswith("|"):
+        raise SystemExit("authority-cell-count")
+    if "\\|" in row or "\\`" in row:
+        raise SystemExit("authority-escape")
+    parts = row.split("|")
+    if len(parts) != 9 or parts[0] or parts[-1]:
+        raise SystemExit("authority-cell-count")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if len(cells) != 7 or cells[0] != label:
+        raise SystemExit("authority-label")
+    rows.append(cells)
+expected_reviews = (
+    (
+        "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+        "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    ),
+    (
+        "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+        "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+    ),
+    (
+        "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+        "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+    ),
+)
+ranges = []
+for cells, expected in zip(rows, expected_reviews, strict=True):
+    if tuple(cells[2:4]) != expected:
+        raise SystemExit("authority-review")
+    for index, cell in enumerate(cells):
+        if index != 4 and ("`" in cell or ".." in cell):
+            raise SystemExit("authority-extra-range")
+    match = re.fullmatch(
+        r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
+        cells[4],
+        flags=re.ASCII,
+    )
+    if match is None:
+        raise SystemExit("authority-range")
+    ranges.append(f"{match.group(1)}..{match.group(2)}")
+print("\t".join(ranges))
+PY
+)"
+test -n "$authority_ranges"
+plan_review_range="${authority_ranges%%$'\t'*}"
+test -n "$plan_review_range"
+authority_tail="${authority_ranges#*$'\t'}"
+test -n "$authority_tail"
+implementation_review_range="${authority_tail%%$'\t'*}"
+test -n "$implementation_review_range"
+revalidation_review_range="${authority_tail##*$'\t'}"
+test -n "$revalidation_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "737838fe80880b7eadbfb1c7e18d8dc251bcc8b9"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+implementation_base="${implementation_review_range%%..*}"
+test "$implementation_base" = \
+  "7e32c37cafde08b108ee33e3439cda3aea336961"
+implementation_commit="${implementation_review_range##*..}"
+test "$implementation_commit" = \
+  "a7d05b0e5c0ffaeccde9e401450e696855cfb2b5"
+evidence_base="${revalidation_review_range%%..*}"
+test -n "$evidence_base"
+evidence_checkpoint="${revalidation_review_range##*..}"
+test -n "$evidence_checkpoint"
+review_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$review_checkpoint"
+bound_commits=(
+  "$implementation_base" "$implementation_commit" "$design_base"
+  "$plan_checkpoint" "$evidence_base" "$evidence_checkpoint"
+  "$review_checkpoint"
+)
+expected_subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record status-based silent-success plan reviews'
+  'docs(task): record status-based silent-success revalidation'
+  'docs(task): record status-based silent-success review'
+)
+for index in "${!bound_commits[@]}"; do
+  verified_commit="$(
+    git rev-parse --verify "${bound_commits[$index]}^{commit}"
+  )"
+  test "$verified_commit" = "${bound_commits[$index]}"
+  bound_subject="$(
+    git show -s --format=%s "${bound_commits[$index]}"
+  )"
+  test "$bound_subject" = "${expected_subjects[$index]}"
+  subject_count="$(
+    git log --all --format='%s' |
+      grep -Fxc "${expected_subjects[$index]}"
+  )"
+  test "$subject_count" -eq 1
+done
+assert_edge "$implementation_base" "$implementation_commit"
+assert_edge "$implementation_commit" "$design_base"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$evidence_base"
+assert_edge "$evidence_base" "$evidence_checkpoint"
+assert_edge "$evidence_checkpoint" "$review_checkpoint"
+expected_plan_paths="$(
+  printf '%s\n' "$plan_file" "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+expected_implementation_paths="$(
+  printf '%s\n' "$task_file" "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+expected_paths=(
+  "$task_file"
+  "$expected_implementation_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$task_file"
+  "$task_file"
+)
+for index in "${!bound_commits[@]}"; do
+  commit_paths="$(
+    git diff-tree --no-commit-id --name-only -r \
+      "${bound_commits[$index]}" |
+      sort
+  )"
+  test "$commit_paths" = "${expected_paths[$index]}"
+done
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+base_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$evidence_base" |
+    sort
+)"
+test "$base_range_paths" = "$task_file"
+evidence_range_paths="$(
+  git diff --name-only "$evidence_base..$evidence_checkpoint" |
+    sort
+)"
+test "$evidence_range_paths" = "$task_file"
+review_range_paths="$(
+  git diff --name-only "$evidence_checkpoint..$review_checkpoint" |
+    sort
+)"
+test "$review_range_paths" = "$task_file"
+for commit_path in \
+  "$implementation_base:$task_file" \
+  "$implementation_commit:$task_file" \
+  "$implementation_commit:$test_file" \
+  "$design_base:$task_file" \
+  "$plan_checkpoint:$plan_file" \
+  "$plan_checkpoint:$task_file" \
+  "$evidence_base:$task_file" \
+  "$evidence_base:$test_file" \
+  "$evidence_checkpoint:$task_file" \
+  "$evidence_checkpoint:$test_file" \
+  "$review_checkpoint:$task_file" \
+  "$review_checkpoint:$test_file"
+do
+  tree_mode="$(
+    git ls-tree "${commit_path%%:*}" "${commit_path#*:}" |
+      awk '{print $1}'
+  )"
+  test "$tree_mode" = "100644"
+done
+implementation_blob="$(
+  git rev-parse "$implementation_commit:$test_file"
+)"
+test -n "$implementation_blob"
+evidence_base_blob="$(
+  git rev-parse "$evidence_base:$test_file"
+)"
+test "$evidence_base_blob" = "$implementation_blob"
+evidence_blob="$(
+  git rev-parse "$evidence_checkpoint:$test_file"
+)"
+test "$evidence_blob" = "$implementation_blob"
+review_blob="$(
+  git rev-parse "$review_checkpoint:$test_file"
+)"
+test "$review_blob" = "$implementation_blob"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$review_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  The accepted R_AG is the only Wave C authority. The former 4AF-only block
+  below is retained as non-executable provenance and cannot authorize work.
+
+**Historical non-executable 4AF authority illustration:**
+
+```text
 set -euo pipefail
 shopt -s inherit_errexit
 task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
@@ -10554,12 +12033,17 @@ is not applicable because neither surface is mutated.
   exhausted five-round breaker.
 - The user approved Revision R1 on 2026-07-29. Its two-attempt Plan review
   loop remained blocked and returned to design/plan.
-- Revision R2 requires a new explicit user approval, then fresh independent
-  specification and quality/security C0/I0 reviews before any R1 production
-  or test file is created or modified.
-- After Revision R2 approval and both fresh reviews, protected local workflow,
-  contract, governance, and test changes listed under T-TSDC-004R are within
-  the Plan-bounded class.
+- Revision R2 and successors through 4AF are historical. 4AF's sole
+  implementation is frozen evidence and its rejected quality/security review
+  grants no Wave C or downstream authority.
+- The user's current approval authorizes only the 4AG Plan/Task checkpoint
+  P_AG, two fresh independent Plan reviews over exact `D_AG..P_AG`, and one
+  accepted B_AG or rejected XP_AG Task-only terminal. It authorizes no test,
+  validator, product, workflow, runtime, or remote execution.
+- A future status-based evidence-only revalidation requires accepted B_AG plus
+  a separate explicit one-attempt approval. That approval may create Task-only
+  E_AG and obtain fresh composite reviews; only accepted Task-only R_AG
+  authorizes Task 4.5 Wave C. Rejected XP_AG or XE_AG is terminal.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact

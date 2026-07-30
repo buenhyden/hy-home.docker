@@ -186,6 +186,14 @@ read-only observation only.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
   is one exact attempt from one clean committed checkpoint.
+- The user approved T-TSDC-004R-4AG as a strictly Plan-only successor from
+  D_AG `737838fe80880b7eadbfb1c7e18d8dc251bcc8b9`. This authorizes only
+  Plan/Task drafting, P_AG, fresh Plan reviews, and accepted or rejected
+  Task-only Plan-review evidence. Tests, revalidation, E_AG, R_AG, and Wave C
+  remain blocked until accepted B_AG exists and the user separately approves
+  one evidence-only revalidation attempt. No runtime, remote, dependency,
+  secret, wrapper, direct-pre-commit, Graphify, parser, product, workflow, or
+  validator authority is added.
 
 Rollback is one logical task commit at a time after exact-range review. It
 never uses `git reset --hard`, discards unrelated user changes, or attempts a
@@ -198,9 +206,10 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active; 4AF sole implementation review rejected and exhausted; returned to design/plan |
-| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after a separately accepted successor implementation-review checkpoint | blocked; 4AF exhausted and grants no downstream authority |
-| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; Task 5 and 4AF successor authority are absent |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active; 4AG Plan-only successor drafting from exhausted 4AF evidence |
+| T-TSDC-004R-4AG | Record status-based silent-success proof without changing frozen product behavior | Plan/evidence | TSDC-010–014 | fresh Plan review, then separately approved evidence-only revalidation and review | controller and fresh independent reviewers | active; Plan-only; P_AG not created; no tests now |
+| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after accepted R_AG and Wave C completion | blocked; 4AG Plan and evidence chain are incomplete |
+| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; Task 5 and accepted 4AG/Wave C authority are absent |
 
 Tasks are serial at their commit/review boundaries. A task may not advance
 until its implementation is committed, the Task ledger is current, and a
@@ -383,6 +392,7 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-4AF Plan reviews | Fresh independent specification and quality/security reviewers | Both reviewed the identical immutable full-OID range `8cacc4634448416a7dbc8d3de69bf6011b62c6d5..21bf5cc25fae8ef8cf8010812136448d5a58b83b` (`REVIEWED_BASE=8cacc4634448416a7dbc8d3de69bf6011b62c6d5`; `REVIEWED_HEAD=21bf5cc25fae8ef8cf8010812136448d5a58b83b`). Specification: `C0/I0/M0`, `SPEC_COMPLIANCE YES`, `IMPLEMENTATION_READY YES`. Quality/security: `C0/I0/M0`, `QUALITY_SECURITY PASS`, `IMPLEMENTATION_READY YES`. The Plan review is accepted; B uses exact subject `docs(task): record canonical-row authority plan reviews` and its clean Step 2 rebind authorized the sole implementation attempt. |
 | 2026-07-30 | T-TSDC-004R-4AF implementation | Task 4.4AF implementation agent, sole attempt | Clean implementation base B is `7e32c37cafde08b108ee33e3439cda3aea336961`; the active Step 2 rebind passed before edits. The inherited 61-family matrix produced the planned marker-bound RED with 25 behavior-specific subtest failures, then focused and routing GREEN passed. The frozen 116-test regression and workflow checker passed. The delta validator itself returned 0 with empty output, after which the frozen shell block's non-empty-output assertion returned 1; all remaining approved standalone static commands passed or were explicitly unavailable. Exact two-path scope and `100644` modes are preserved. Historical implementation I is `a7d05b0e5c0ffaeccde9e401450e696855cfb2b5`; fresh reviews are recorded as rejected/exhausted below, and Wave C stays blocked. |
 | 2026-07-30 | T-TSDC-004R-4AF implementation reviews | Fresh independent specification and quality/security reviewers | Exact range `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` returned specification REVIEWED_BASE 7e32c37cafde08b108ee33e3439cda3aea336961, REVIEWED_HEAD a7d05b0e5c0ffaeccde9e401450e696855cfb2b5, C0/I0/M0, SPEC_COMPLIANCE YES, and COMMIT_READY YES; quality/security returned the same endpoints, C0/I1/M0, QUALITY_SECURITY FAIL, and COMMIT_READY NO. The active 4AF contract requires the immutable 4AC exact Step 4; the delta advisory legitimately returns exit 0 with empty output on no findings, so the frozen non-empty-output assertion deterministically exits 1. Later standalone passes cannot cure that required fail-fast aggregate. The parser has no defect; controller-readiness timing is not a range blocker. The sole attempt is rejected and exhausted, returned to design/plan, and grants no Wave C or downstream authority. |
+| 2026-07-30 | T-TSDC-004R-4AG status-based silent-success design return | User / Controller | Approved Plan-only successor from D_AG 737838fe80880b7eadbfb1c7e18d8dc251bcc8b9. It replaces only the delta capture/evidence envelope that falsely required nonempty successful advisory output; all parser behavior, 61-family tests, command order, scopes, and prohibitions remain frozen. P_AG and terminal Plan evidence are not created. Tests and revalidation require accepted B_AG plus a separate one-attempt user approval; Wave C remains blocked. |
 
 ## Verification Evidence
 
@@ -408,9 +418,9 @@ have no unresolved Critical or Important findings.
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
 | T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression. Review remediations produced 17 resolver/static failures, six quoted-key failures, five global-uniqueness/Dozzle failures, and the exact `141 != 140` manifest-oracle failure. | Initial focused tests passed 7/7. Successive remediation suites passed 11/11, 16/16, and finally 17/17; the exact 141-row manifest oracle passes 1/1 with Dozzle path-specific owner, consumer, update, and pending-verdict assertions. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff gates pass. Final independent specification and quality/security reviews of `b1e62873..60e0313c` each returned C0/I0/M0 and COMMIT_READY YES; all 141 manifest verdict pairs remain pending for Task 6. | completed |
-| T-TSDC-004 | Historical RED evidence is preserved. The sole 4AF attempt added 61 inherited behavior families; the exact focused RED ran one test and returned 1 with the fixed marker and 25 failures. | Historical GREEN evidence is preserved. Focused, routing, frozen regression, and workflow evidence remain historical only. | The implementation review rejected the frozen aggregate because silent-success delta advisory output makes the required non-empty-output assertion fail. Later standalone passes cannot cure the aggregate; parser behavior was not defective. | rejected/exhausted; returned to design/plan; no downstream authority |
-| T-TSDC-005 | Not run — 4AF exhausted | Not run — 4AF exhausted | Not run — no accepted successor implementation-review checkpoint | blocked |
-| T-TSDC-006 | Not run — Wave C and Task 5 blocked | Not run — Wave C and Task 5 blocked | Not run — 4AF grants no downstream authority | blocked |
+| T-TSDC-004 | Historical 4AF RED evidence is preserved; 4AG adds no product RED because parser/test content is frozen. | Historical GREEN evidence is preserved; 4AG Plan-only drafting runs no tests or revalidation. | The 4AG status-based successor is being drafted from D_AG; P_AG and its fresh reviews are pending. | active Plan-only; no downstream authority |
+| T-TSDC-005 | Not run — accepted R_AG absent | Not run — accepted R_AG absent | Not run — Wave C and accepted successor review are incomplete | blocked |
+| T-TSDC-006 | Not run — Wave C and Task 5 blocked | Not run — Wave C and Task 5 blocked | Not run — accepted 4AG terminal and downstream evidence absent | blocked |
 
 ### T-TSDC-001 bounded implementation evidence
 
@@ -1761,6 +1771,54 @@ have no unresolved Critical or Important findings.
   implementation commit and two fresh exact-range reviews are complete and rejected; no Wave C
   authority follows from the historical implementation evidence.
 
+### T-TSDC-004R-4AG status-based silent-success design-return and evidence boundary
+
+- D_AG is the exact clean design base
+  `737838fe80880b7eadbfb1c7e18d8dc251bcc8b9`, Task-only mode `100644`, with
+  parent I `a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` and exact subject
+  `docs(task): record exhausted canonical-row authority review`.
+- P_AG is prospective only: exact subject
+  `docs(plan): define status-based silent-success proof`, Plan plus Task only,
+  single parent D_AG, both modes `100644`. Two fresh Plan reviewers must
+  inspect D_AG..P_AG and each return C0/I0/M0. XP_AG and B_AG are Task-only
+  terminal evidence with the exact rejected and accepted subjects specified in
+  the Plan; neither future OIDs nor outcomes are invented here.
+- The only defect is 4AC Step 4's `test -n "$delta_output"`. 4AG supersedes
+  only the delta command capture/evidence envelope. It freezes command, argv,
+  order, parser behavior, 61-family tests, every other Step 4 assertion,
+  scopes, prohibitions, and files. No parser, product, workflow, validator,
+  runtime, or test change is authorized. TDD RED/GREEN is N/A because the
+  product is frozen; negative/positive value-free evidence is the oracle.
+- B_AG plus a separate user approval are mandatory before one evidence-only
+  revalidation. That future pass must use the strict Bash status pattern in the
+  Plan: it runs the exact external delta command once in its admitted
+  conditional context, retains strict mode and inherit_errexit, uses the
+  guarded sentinel assignment, immediately records inner and outer statuses,
+  classifies only status and empty/nonempty, unsets the body, preserves exact
+  nonzero exit, and neither prints nor persists raw body. It forbids set plus
+  e, negation, true masking, eval, pipelines, temporary/raw-log files, and
+  double execution. Bash cannot represent NUL; scope remains the existing
+  bounded value-free text validator.
+- The future local-function adversarial proof covers zero-byte success,
+  newline-only success, and status 23 with empty/nonempty body. It must show
+  0/empty or 0/nonempty as applicable; status 23 must be value-free, exit 23,
+  have no successor marker, and invoke once. It must not use bash dash c.
+- Historical revalidation context is fixed at
+  `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5`.
+  After the single approved attempt, E_AG is Task-only evidence with exact
+  subject `docs(task): record status-based silent-success revalidation`.
+  Fresh specification and quality/security reviewers inspect both immutable
+  historical implementation and B_AG..E_AG evidence, attest all four full
+  OIDs, and prove B_4AF -> I -> D_AG -> P_AG -> B_AG -> E_AG. R_AG or XE_AG
+  is Task-only with its exact Plan-defined subject; only accepted R_AG unlocks
+  Task 4.5.
+- Task 4.5 is rebound from nonexistent 4AF R to accepted 4AG R. Before Wave C
+  it must extract exactly three unique canonical review-matrix rows: 4AG Plan,
+  frozen 4AF implementation, and 4AG revalidation; prove subjects, fixed
+  whole-line uniqueness, single parents, distance one, exact paths/ranges,
+  modes `100644`, current test blob equal to historical I, and clean HEAD.
+  Historical 4AF rows remain historical.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -1843,9 +1901,12 @@ consume or create Agent authorization.
 | T-TSDC-004R-4AE exact-cell implementation | superseded uncreated attempt | not applicable | not applicable | not available | blocked; 4AE exhausted at Plan review | The exact two-path implementation was never authorized or started because the quality/security Plan review failed. |
 | T-TSDC-004R-4AF canonical-row proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | `8cacc4634448416a7dbc8d3de69bf6011b62c6d5..21bf5cc25fae8ef8cf8010812136448d5a58b83b` | accepted; Task-only B committed and pre-edit rebind passed | REVIEWED_BASE=8cacc4634448416a7dbc8d3de69bf6011b62c6d5; REVIEWED_HEAD=21bf5cc25fae8ef8cf8010812136448d5a58b83b. B is 7e32c37cafde08b108ee33e3439cda3aea336961 with exact subject docs(task): record canonical-row authority plan reviews. |
 | T-TSDC-004R-4AF canonical-row implementation | Task 4.4AF implementation agent, sole attempt | C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | C0/I1/M0; QUALITY_SECURITY FAIL; COMMIT_READY NO | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | rejected/exhausted; returned to design/plan | REVIEWED_BASE 7e32c37cafde08b108ee33e3439cda3aea336961; REVIEWED_HEAD a7d05b0e5c0ffaeccde9e401450e696855cfb2b5; active 4AF requires immutable 4AC exact Step 4; silent-success advisory output makes the frozen non-empty assertion fail; later standalone passes cannot cure the fail-fast aggregate; parser has no defect; controller readiness timing is not a range blocker; no Wave C authority |
-| T-TSDC-005 | pending | pending | pending | not available | blocked | 4AF exhausted; no accepted successor implementation-review checkpoint |
-| T-TSDC-006 | pending | pending | pending | not available | blocked | Wave C and Task 5 blocked; 4AF grants no downstream authority |
-| Whole branch | not applicable | pending final fresh reviewer after separately accepted successor chain | pending different final fresh reviewer after separately accepted successor chain | not available | blocked | 4AF implementation review is rejected/exhausted; historical implementation grants no Wave C, Tasks 5–6, or final branch-review authority. |
+| T-TSDC-004R-4AG status-based silent-success Plan | Controller | pending | pending | pending | draft; P_AG not created | Plan-only successor; fresh reviewers required; no test or revalidation authority |
+| T-TSDC-004R-4AG frozen canonical-row implementation | Historical 4AF implementer / fresh composite reviewers | pending fresh composite review | pending fresh composite review | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | historical implementation frozen; fresh 4AG verdict pending | Historical 4AF verdict remains in its own row; 4AG must freshly review this immutable range together with the B_AG-to-E_AG evidence range. |
+| T-TSDC-004R-4AG status-based revalidation | pending | pending | pending | pending | blocked pending B_AG and separate user approval | one evidence-only revalidation; accepted R_AG alone unlocks Task 4.5 |
+| T-TSDC-005 | pending | pending | pending | not available | blocked | 4AG Plan, evidence revalidation, accepted R_AG, and Wave C are incomplete. |
+| T-TSDC-006 | pending | pending | pending | not available | blocked | Wave C and Task 5 remain blocked; no accepted 4AG downstream authority exists. |
+| Whole branch | not applicable | pending final fresh reviewer after separately accepted successor chain | pending different final fresh reviewer after separately accepted successor chain | not available | blocked | 4AG is Plan-only and P_AG is not created; historical 4AF implementation grants no Wave C, Tasks 5–6, or final branch-review authority. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -1975,7 +2036,13 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4AF implementation | Sole attempt | `fix(ci): close canonical-row authority proof` | `a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | Historical implementation evidence only; the sole review rejected and exhausted it, so it grants no downstream authority |
 | T-TSDC-004R-4AF implementation review evidence | Superseded uncreated checkpoint | `docs(task): record canonical-row authority review` | not created | R is non-executable because the required quality/security review failed |
 | T-TSDC-004R-4AF exhausted implementation-review evidence | Record the rejected implementation-review pair and return to design | `docs(task): record exhausted canonical-row authority review` | resolved by this exact unique subject | XI records specification C0/I0/M0 and quality/security C0/I1/M0; 4AF is exhausted and grants no correction, Wave C, or downstream authority |
-| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | blocked; 4AF exhausted and accepted successor authority is absent |
+| T-TSDC-004R-4AG Plan checkpoint P_AG | Define status-based silent-success proof | `docs(plan): define status-based silent-success proof` | not created | Draft only; P_AG must be Plan plus Task only, single parent D_AG, and modes 100644 |
+| T-TSDC-004R-4AG rejected Plan evidence XP_AG | Record exhausted Plan review | `docs(task): record exhausted status-based silent-success plan review` | not created | Task-only terminal if either fresh Plan review is not C0/I0/M0 |
+| T-TSDC-004R-4AG accepted Plan evidence B_AG | Record accepted Plan reviews | `docs(task): record status-based silent-success plan reviews` | not created | Task-only terminal; B_AG is required before separately approved revalidation |
+| T-TSDC-004R-4AG revalidation E_AG | Record status-based silent-success revalidation | `docs(task): record status-based silent-success revalidation` | not created | Task-only logical evidence after one separately approved evidence-only revalidation |
+| T-TSDC-004R-4AG accepted review R_AG | Record accepted revalidation review | `docs(task): record status-based silent-success review` | not created | Task-only; only accepted R_AG unlocks Task 4.5 |
+| T-TSDC-004R-4AG rejected review XE_AG | Record exhausted revalidation review | `docs(task): record exhausted status-based silent-success review` | not created | Task-only terminal; no correction or Wave C authority |
+| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | blocked; accepted R_AG and Wave C completion are absent |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
 ## Deferred and Blocked Items
@@ -1984,7 +2051,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked; 4AF implementation review rejected/exhausted | Historical 4AE evidence remains exhausted. B and its rebind remain historical Plan-approval evidence. I is committed historical implementation evidence only; quality/security rejected the sole review because immutable 4AC Step 4 requires fail-fast aggregate success while valid silent-success delta advisory output fails the frozen non-empty assertion. Parser behavior is not defective. | return to a separately approved design/plan successor; do not authorize correction, tests, Wave C, downstream work, runtime, remote, or accepted R from 4AF |
+| T-TSDC-004R-3 atomic projection cutover | blocked; 4AG Plan-only evidence pending | Historical 4AF evidence remains exhausted: I is committed historical implementation evidence only, and quality/security rejected its sole review because immutable 4AC Step 4 required nonempty successful advisory output. The parser is not defective. | await P_AG, accepted B_AG, separate one-attempt evidence-only revalidation approval, E_AG, and accepted R_AG; no correction, tests, Wave C, downstream work, runtime, or remote action |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -2096,8 +2163,13 @@ non-empty assertion exits 1; later standalone passes cannot cure the
 fail-fast aggregate. The parser has no defect, and controller readiness timing
 is not a range blocker. XI is resolved by this exact unique subject without an
 invented OID; R is not created and is non-executable.
-4AF returns to design/plan. Wave C, Tasks 5–6, whole-branch review, tests,
-corrections, runtime, remote, and all downstream authority remain blocked.
+4AF returns to design/plan. T-TSDC-004R-4AG is the active Plan-only successor
+from D_AG `737838fe80880b7eadbfb1c7e18d8dc251bcc8b9`: P_AG is not yet created;
+fresh C0/I0/M0 Plan reviews and accepted B_AG are required before the user may
+separately approve one evidence-only revalidation. E_AG and accepted R_AG are
+then required before Task 4.5 may rebind to the three canonical rows. Wave C,
+Tasks 5–6, whole-branch review, tests, corrections, runtime, remote, and all
+other downstream authority remain blocked.
 The original five-round implementation blocker, exhausted Revision R1 Plan
 reviews, and superseded `5d089dd4` and `b73d2a99` checkpoints remain
 historical evidence and grant no authority.
