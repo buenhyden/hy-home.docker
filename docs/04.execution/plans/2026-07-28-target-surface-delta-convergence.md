@@ -49,11 +49,15 @@ option-bearing wrapper bypass. The user approved the bounded
 T-TSDC-004R-4W design return on 2026-07-30. Its initial and sole corrected
 Plans failed review, so 4W is retained only as non-executable design evidence.
 The user approved T-TSDC-004R-4X on 2026-07-30 to correct GNU `env --`
-assignment semantics and make every checkpoint proof session-local. No 4X
-implementation authority exists until its Plan receives fresh independent
-specification and quality/security `C0/I0/M0` reviews and the exact
-review-evidence checkpoint is recorded. Remote, runtime, dependency, secret,
-direct pre-commit, and controlled-wrapper authority remain unchanged.
+assignment semantics and make every checkpoint proof session-local. Its
+specification review passed, but its quality/security review found two
+Important proof-oracle defects, so 4X is also non-executable history. The user
+approved T-TSDC-004R-4Y on 2026-07-30 to make every authority block fail-fast
+and bind Task 4.5 to the complete Plan-to-review lineage, exact scopes, and
+file modes. No 4Y implementation authority exists until its Plan receives
+fresh independent specification and quality/security `C0/I0/M0` reviews and
+the exact review-evidence checkpoint is recorded. Remote, runtime, dependency,
+secret, direct pre-commit, and controlled-wrapper authority remain unchanged.
 
 ## Global Constraints
 
@@ -3095,6 +3099,10 @@ test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
 #### Task 4.4X / T-TSDC-004R-4X: Session-Local Option-Proof Design Return
 
+> **Superseded for execution by Task 4.4Y.** Retain this section as failed
+> design evidence only. Do not execute any 4X command block or create any 4X
+> pending commit subject.
+
 **Authority boundary and supersession:**
 
 - The exact unique `docs(task): record exhausted option-aware plan review`
@@ -3519,28 +3527,555 @@ test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
   Only this accepted review checkpoint authorizes Task 4.5 Wave C.
 
+#### Task 4.4Y / T-TSDC-004R-4Y: Fail-Fast Lineage-Proof Design Return
+
+**Authority boundary and supersession:**
+
+- The exact unique `docs(task): record exhausted session-local plan review`
+  commit must resolve to `481b1a8e`, be `HEAD` when this design is authored,
+  and remain an ancestor of every 4Y checkpoint.
+- This Plan-only successor may modify only this Plan and the sibling Task
+  ledger. Its exact unique subject is
+  `docs(plan): define fail-fast lineage proof`.
+- Two fresh read-only reviewers inspect the complete
+  `481b1a8e..$plan_checkpoint` range: one specification reviewer and a
+  different quality/security reviewer. Both must return `C0/I0/M0`. Any other
+  result returns to design; there is no Plan correction inside 4Y.
+- After both approvals, the controller records the reports and exact range in
+  a Task-ledger-only commit with the exact unique subject
+  `docs(task): record fail-fast lineage plan reviews`. That clean commit is
+  the immutable implementation base.
+- One implementation agent then receives exactly one attempt. It may modify
+  only `tests/validation/test_agent_governance_ci_routing.py` and the sibling
+  Task ledger. Its exact unique subject is
+  `fix(ci): close fail-fast wrapper proof`.
+- Freeze `.github/workflow-contract.yml`,
+  `.github/workflows/ci-quality.yml`,
+  `scripts/validation/check-repo-contracts.sh`, every typed gate runner and
+  adapter, every target-delta artifact, and every other tracked path.
+- A fresh read-only specification reviewer and a different fresh read-only
+  quality/security reviewer inspect the exact implementation-base-to-commit
+  range. Both must return `C0/I0/M0`. The controller then records the reports
+  in a Task-ledger-only commit with the exact unique subject
+  `docs(task): record fail-fast wrapper review`.
+- Any non-`C0/I0/M0` implementation review exhausts 4Y without a retry and
+  keeps Task 4R, Wave C, Tasks 5–6, and final branch review blocked.
+- 4Y incorporates the complete 4W parser grammar, RED matrix, deterministic
+  no-credit work budget, focused GREEN, frozen regression ladder, value-free
+  diagnostics, and prohibition boundaries. It also incorporates the corrected
+  4X GNU `env --` assignment-selection contract and the requirement that every
+  session resolve its own checkpoint variables. All 4W and 4X command blocks
+  and uncreated pending subjects are non-executable historical text.
+
+**Strict independent-session contract:**
+
+- Every 4Y fenced Bash block is one independent invocation. It begins with
+  `set -euo pipefail` and `shopt -s inherit_errexit`; an earlier failed test,
+  Git command, pipeline element, or command substitution must terminate the
+  block before any later stage or commit command.
+- Expected RED is the sole nonzero exception. Its block temporarily disables
+  `errexit` only around the named focused test, captures the exit status and
+  output, immediately restores `errexit`, and requires both nonzero status and
+  the fixed behavior-specific assertion marker
+  `GNU env -- assignment scan must reach command`.
+- Every compound command substitution joins fallible commands with `&&` and
+  runs under `pipefail` plus inherited `errexit`. No proof depends on a final
+  clean-state command to expose an earlier failure.
+- Every block resolves every commit variable it reads inside that same block
+  from an exact unique subject or the immutable `481b1a8e` literal. No block
+  inherits shell state from another agent, controller, or reviewer.
+- Every authority transition proves exact subject uniqueness, ancestry,
+  direct commit count, exact commit/range paths, relevant `100644` modes, and
+  tracked plus untracked cleanliness or the exact allowed dirty paths.
+- Task 4.5 independently re-resolves and proves the complete
+  design-base -> Plan -> Plan-review evidence -> implementation ->
+  implementation-review chain. It rechecks the Plan two-path scope, both
+  Task-only evidence scopes, the implementation two-path scope, all relevant
+  modes, `HEAD`, and clean state before Wave C receives authority.
+
+- [ ] **Step 1: Commit and independently review the 4Y Plan.**
+
+  Immediately after the Plan commit and before either review, the controller
+  runs:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 481b1a8e)"
+test "$(git log --format=%H \
+  --grep='^docs(task): record exhausted session-local plan review$' |
+  wc -l)" -eq 1
+test "$(git log -1 --format=%H \
+  --grep='^docs(task): record exhausted session-local plan review$')" = \
+  "$design_base"
+test "$(git log --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$' |
+  wc -l)" -eq 1
+plan_checkpoint="$(git log -1 --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$')"
+test "$(git rev-parse HEAD)" = "$plan_checkpoint"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+test "$(git rev-list --count \
+  "$design_base..$plan_checkpoint")" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$plan_checkpoint" | sort)" = "$expected_plan_paths"
+test "$(git ls-tree "$plan_checkpoint" \
+  docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$plan_checkpoint" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  After both Plan reviewers return `C0/I0/M0`, edit only the Task ledger and
+  run this separate strict session:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 481b1a8e)"
+test "$(git log --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$' |
+  wc -l)" -eq 1
+plan_checkpoint="$(git log -1 --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$')"
+test "$(git rev-parse HEAD)" = "$plan_checkpoint"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+test "$(git rev-list --count \
+  "$design_base..$plan_checkpoint")" -eq 1
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git diff --cached --name-only | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record fail-fast lineage plan reviews"
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$' |
+  wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$')"
+test "$(git rev-parse HEAD)" = "$implementation_base"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+test "$(git rev-list --count \
+  "$plan_checkpoint..$implementation_base")" -eq 1
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$implementation_base" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test "$(git ls-tree "$implementation_base" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+- [ ] **Step 2: Rebind the implementation session and capture the complete
+  behavior-specific RED matrix.**
+
+  The implementation agent begins with this strict prerequisite:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 481b1a8e)"
+test "$(git log --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$' |
+  wc -l)" -eq 1
+plan_checkpoint="$(git log -1 --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$')"
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$' |
+  wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$')"
+test "$(git rev-parse HEAD)" = "$implementation_base"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+test "$(git rev-list --count \
+  "$design_base..$plan_checkpoint")" -eq 1
+test "$(git rev-list --count \
+  "$plan_checkpoint..$implementation_base")" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$plan_checkpoint" | sort)" = "$expected_plan_paths"
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$implementation_base" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test "$(git ls-tree "$implementation_base" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$implementation_base" \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  Add the complete 4W RED matrix and every 4X GNU `env --` transition to
+  `test_repository_umbrella_is_wiring_only`. The
+  `env -- NAME=VALUE python3 <sibling>` assertion must use the fixed message
+  `GNU env -- assignment scan must reach command`. Use two distinct registered
+  siblings in the assignment-plus-command case so its expected set proves
+  that an assignment occurrence is ignored while the command occurrence is
+  detected.
+
+  Run the focused RED through this strict exception boundary:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+set +e
+red_output="$(
+  python3 -m unittest \
+    tests.validation.test_agent_governance_ci_routing.AgentGovernanceRoutingTests.test_repository_umbrella_is_wiring_only \
+    -v 2>&1
+)"
+red_status="$?"
+set -e
+printf '%s\n' "$red_output"
+test "$red_status" -ne 0
+case "$red_output" in
+  *"GNU env -- assignment scan must reach command"*) ;;
+  *) exit 1 ;;
+esac
+```
+
+  Record the exact RED status, counts, and fixed assertion marker in the Task
+  ledger. Import errors, missing tests, unrelated failures, or another marker
+  do not count as RED.
+
+- [ ] **Step 3: Implement the bounded pure parser and run focused GREEN.**
+
+  Change only the narrow static oracle in the allowed test file. Preserve all
+  incorporated wrapper families, option arities, GNU split-string rules,
+  corrected post-`--` assignment phase, deterministic no-credit work budget,
+  fail-closed outcomes, and value-free diagnostics.
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+python3 -m unittest \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+python3 -m unittest \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+```
+
+- [ ] **Step 4: Run the frozen regression and static evidence ladder.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+python3 -m unittest \
+  tests.validation.test_ci_gate_contract \
+  tests.validation.test_ci_gate_runner \
+  tests.validation.test_ci_gate_adapters \
+  tests.validation.test_github_workflow_contract \
+  tests.validation.test_agent_governance_ci_routing \
+  -v
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/run-ci-gate.py --profile ci --list
+python3 scripts/validation/run-ci-gate.py --profile ci --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-script-backed --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-harness --dry-run --all
+python3 scripts/validation/run-ci-gate.py \
+  --profile local-all-profiles --dry-run --all
+if python3 -c 'import ruff' >/dev/null 2>&1; then
+  python3 -m ruff check \
+    tests/validation/test_agent_governance_ci_routing.py
+else
+  printf '%s\n' 'UNVERIFIED: Ruff is unavailable; installation prohibited'
+fi
+python3 -m compileall -q \
+  tests/validation/test_agent_governance_ci_routing.py
+git diff --check
+```
+
+  The repository umbrella, registered typed child gates, direct pre-commit,
+  controlled wrapper, Compose/runtime, network, secrets, credentials, remote
+  state, and Graphify update remain prohibited. The listed standalone static
+  validators and execution-free `--list`/`--dry-run` projections are the only
+  authorized child-gate evidence.
+
+- [ ] **Step 5: Re-resolve the implementation base, prove exact scope and
+  freezes, then commit the sole attempt.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$' |
+  wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$')"
+test "$(git rev-parse HEAD)" = "$implementation_base"
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+actual_paths="$(
+  {
+    git diff --name-only "$implementation_base" -- &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$expected_paths"
+git diff --exit-code "$implementation_base" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test "$(git ls-files -s \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test "$(git ls-files -s \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+git diff --check
+git add \
+  tests/validation/test_agent_governance_ci_routing.py \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git diff --cached --name-only | sort)" = "$expected_paths"
+git commit -m "fix(ci): close fail-fast wrapper proof"
+test "$(git log --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$' |
+  wc -l)" -eq 1
+implementation_commit="$(git log -1 --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$')"
+test "$(git rev-parse HEAD)" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+test "$(git rev-list --count \
+  "$implementation_base..$implementation_commit")" -eq 1
+test "$(git diff --name-only \
+  "$implementation_base..$implementation_commit" | sort)" = \
+  "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test "$(git ls-tree "$implementation_commit" \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$implementation_commit" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+- [ ] **Step 6: Re-resolve the exact review range in each review session and
+  record the accepted pair separately.**
+
+  Each reviewer independently runs:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$' |
+  wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$')"
+test "$(git log --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$' |
+  wc -l)" -eq 1
+implementation_commit="$(git log -1 --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$')"
+test "$(git rev-parse HEAD)" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+test "$(git rev-list --count \
+  "$implementation_base..$implementation_commit")" -eq 1
+expected_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+test "$(git diff --name-only \
+  "$implementation_base..$implementation_commit" | sort)" = \
+  "$expected_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test "$(git ls-tree "$implementation_commit" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$implementation_commit" \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  After both reviewers return `C0/I0/M0`, the controller edits only the Task
+  ledger and runs:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$' |
+  wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$')"
+test "$(git log --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$' |
+  wc -l)" -eq 1
+implementation_commit="$(git log -1 --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$')"
+test "$(git rev-parse HEAD)" = "$implementation_commit"
+git merge-base --is-ancestor "$implementation_base" "$implementation_commit"
+test "$(git rev-list --count \
+  "$implementation_base..$implementation_commit")" -eq 1
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git diff --check
+git add docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+test "$(git diff --cached --name-only | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+git commit -m "docs(task): record fail-fast wrapper review"
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast wrapper review$' |
+  wc -l)" -eq 1
+review_checkpoint="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast wrapper review$')"
+test "$(git rev-parse HEAD)" = "$review_checkpoint"
+git merge-base --is-ancestor "$implementation_commit" "$review_checkpoint"
+test "$(git rev-list --count \
+  "$implementation_commit..$review_checkpoint")" -eq 1
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$review_checkpoint" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test "$(git ls-tree "$review_checkpoint" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+```
+
+  Only this accepted review checkpoint authorizes Task 4.5 Wave C.
+
 #### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
 
 - [ ] **Step 0: Prove the exact accepted wrapper-proof review checkpoint.**
 
 ```bash
+set -euo pipefail
+shopt -s inherit_errexit
+design_base="$(git rev-parse 481b1a8e)"
 test "$(git log --format=%H \
-  --grep='^fix(ci): close session-local wrapper proof$' |
+  --grep='^docs(task): record exhausted session-local plan review$' |
+  wc -l)" -eq 1
+test "$(git log -1 --format=%H \
+  --grep='^docs(task): record exhausted session-local plan review$')" = \
+  "$design_base"
+test "$(git log --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$' |
+  wc -l)" -eq 1
+plan_checkpoint="$(git log -1 --format=%H \
+  --grep='^docs(plan): define fail-fast lineage proof$')"
+test "$(git log --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$' |
+  wc -l)" -eq 1
+implementation_base="$(git log -1 --format=%H \
+  --grep='^docs(task): record fail-fast lineage plan reviews$')"
+test "$(git log --format=%H \
+  --grep='^fix(ci): close fail-fast wrapper proof$' |
   wc -l)" -eq 1
 wrapper_implementation="$(git log -1 --format=%H \
-  --grep='^fix(ci): close session-local wrapper proof$')"
+  --grep='^fix(ci): close fail-fast wrapper proof$')"
 test "$(git log --format=%H \
-  --grep='^docs(task): record session-local wrapper review$' |
+  --grep='^docs(task): record fail-fast wrapper review$' |
   wc -l)" -eq 1
 wrapper_review="$(git log -1 --format=%H \
-  --grep='^docs(task): record session-local wrapper review$')"
+  --grep='^docs(task): record fail-fast wrapper review$')"
 test "$(git rev-parse HEAD)" = "$wrapper_review"
+git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
+git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
+git merge-base --is-ancestor "$implementation_base" "$wrapper_implementation"
 git merge-base --is-ancestor "$wrapper_implementation" "$wrapper_review"
 test "$(git rev-list --count \
+  "$design_base..$plan_checkpoint")" -eq 1
+test "$(git rev-list --count \
+  "$plan_checkpoint..$implementation_base")" -eq 1
+test "$(git rev-list --count \
+  "$implementation_base..$wrapper_implementation")" -eq 1
+test "$(git rev-list --count \
   "$wrapper_implementation..$wrapper_review")" -eq 1
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    sort
+)"
+expected_implementation_paths="$(
+  printf '%s\n' \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
+    tests/validation/test_agent_governance_ci_routing.py |
+    sort
+)"
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$plan_checkpoint" | sort)" = "$expected_plan_paths"
+test "$(git diff-tree --no-commit-id --name-only -r \
+  "$implementation_base" | sort)" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test "$(git diff --name-only \
+  "$implementation_base..$wrapper_implementation" | sort)" = \
+  "$expected_implementation_paths"
+git diff --exit-code \
+  "$implementation_base..$wrapper_implementation" -- . \
+  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
+  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
 test "$(git diff-tree --no-commit-id --name-only -r \
   "$wrapper_review" | sort)" = \
   "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test "$(git ls-tree "$plan_checkpoint" \
+  docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$plan_checkpoint" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$implementation_base" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$wrapper_implementation" \
+  tests/validation/test_agent_governance_ci_routing.py |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$wrapper_implementation" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
+test "$(git ls-tree "$wrapper_review" \
+  docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  awk '{print $1}')" = "100644"
 test -z "$(git status --porcelain=v1 --untracked-files=all)"
 ```
 

@@ -1054,6 +1054,48 @@ have no unresolved Critical or Important findings.
   Tasks 5–6, or whole-branch review is authorized. A new user-approved bounded
   design/Plan successor is required.
 
+### T-TSDC-004R-4Y fail-fast lineage-proof design return
+
+- User approval on 2026-07-30 authorizes a Plan-only successor after the exact
+  unique `docs(task): record exhausted session-local plan review` checkpoint
+  at `481b1a8e`. Failed 4W and 4X Plans remain historical evidence and grant no
+  implementation authority.
+- 4Y closes only the two 4X review findings. Every new Bash proof block is an
+  independent strict session using `set -euo pipefail` and
+  `shopt -s inherit_errexit`; the expected focused RED has one explicit,
+  immediately bounded nonzero exception and a fixed behavior marker.
+- Task 4.5 now re-resolves the complete design-base -> Plan -> Plan-review
+  evidence -> implementation -> implementation-review chain and proves exact
+  subject uniqueness, direct ancestry counts, the Plan two-path scope, both
+  Task-only evidence scopes, the implementation two-path scope, relevant
+  `100644` modes, `HEAD`, and clean state.
+- The complete 4W parser grammar, RED matrix, deterministic budget, focused
+  GREEN, frozen regression ladder, value-free diagnostics, two-path
+  implementation allowlist, production freezes, and prohibitions remain
+  normative. The corrected 4X GNU `env --` assignment phase and session-local
+  lookup contract also remain normative. All earlier command blocks and
+  uncreated pending subjects are non-executable.
+- The Plan checkpoint uses the exact unique subject
+  `docs(plan): define fail-fast lineage proof`. It grants no implementation
+  authority until a fresh read-only specification reviewer and a different
+  fresh read-only quality/security reviewer both return `C0/I0/M0` over the
+  exact `481b1a8e..$plan_checkpoint` range.
+- If approved, the controller records the pair in the exact unique
+  Task-ledger-only `docs(task): record fail-fast lineage plan reviews`
+  checkpoint. One implementation agent then receives exactly one attempt over
+  only `tests/validation/test_agent_governance_ci_routing.py` and this Task
+  ledger with the exact unique subject
+  `fix(ci): close fail-fast wrapper proof`.
+- A fresh implementation specification reviewer and a different fresh
+  quality/security reviewer must both return `C0/I0/M0`. The controller then
+  records the pair in the exact unique Task-ledger-only
+  `docs(task): record fail-fast wrapper review` checkpoint. Any failed Plan or
+  implementation review returns to design without correction or retry.
+- At this Plan checkpoint, no Plan-review evidence commit, implementation,
+  test execution, manifest promotion, Wave C, Tasks 5–6, or whole-branch
+  review is authorized. Remote, runtime, dependency, secret, direct
+  pre-commit, controlled-wrapper, and Graphify authority remain unchanged.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -1121,9 +1163,10 @@ consume or create Agent authorization.
 | T-TSDC-004R-4W initial option-aware wrapper-proof Plan | Controller / bounded future implementer | C0/I4/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | C0/I3/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `1b054313..98a3558d` | bounded Plan correction and final re-review required; no implementation authority | Accepted findings require GNU-compatible static `env -S` or deterministic fail-closed handling, unique/ancestry-bound Plan-review evidence, failure-producing exact scope/freeze/mode/clean oracles, and one named RED matrix covering every admitted option form. |
 | T-TSDC-004R-4W corrected option-aware wrapper-proof Plan | Controller / bounded future implementer | interrupted after quality blocker; no verdict | C0/I2/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `1b054313..a46f29b8` | sole Plan correction exhausted; returned to design/plan | Initial scope, checkpoint, mode, and RED-matrix findings were substantially closed, but GNU `env -- NAME=VALUE` assignment semantics remain wrong and evidence blocks depend on shell variables from earlier independent sessions. No implementation authority followed. |
 | T-TSDC-004R-4X session-local option-proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I2/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `7b792a37..4c7c9c4b` | no-correction Plan loop exhausted; returned to design/plan | GNU `env --` and session-local variable defects are closed, but proof blocks can mask earlier failures without fail-fast execution and Task 4.5 does not rebind the 4X base, exact implementation scope, or file modes. No implementation authority followed. |
+| T-TSDC-004R-4Y fail-fast lineage-proof Plan | Controller / bounded future implementer | pending fresh read-only review | pending different fresh read-only review | `481b1a8e..docs(plan): define fail-fast lineage proof` | Plan review pending; no implementation authority | User-approved successor adds strict fail-fast sessions and complete Task 4.5 lineage/scope/mode rebinding while preserving all accepted 4W/4X parser and evidence requirements. |
 | T-TSDC-005 | pending | pending | pending | not available | pending | Task 4 review pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | Task 4.4 retains one load-bearing Important and the T-TSDC-004R-4X no-correction Plan failed final quality/security review. A new user-approved bounded design return is required before implementation, Wave C, Tasks 5–6, or final branch review. |
+| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | Task 4.4 retains one load-bearing Important. T-TSDC-004R-4Y is Plan-only and awaits its fresh C0/I0 review pair before implementation, Wave C, Tasks 5–6, or final branch review. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -1208,7 +1251,11 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4X Plan review evidence | Superseded uncreated checkpoint | `docs(task): record session-local proof plan reviews` | not created | non-executable because the 4X no-correction Plan review failed |
 | T-TSDC-004R-4X implementation | Superseded uncreated attempt | `fix(ci): close session-local wrapper proof` | not created | non-executable because the 4X no-correction Plan review failed |
 | T-TSDC-004R-4X implementation review evidence | Superseded uncreated checkpoint | `docs(task): record session-local wrapper review` | not created | non-executable because the 4X no-correction Plan review failed |
-| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R blocked pending a new approved design return |
+| T-TSDC-004R-4Y fail-fast lineage-proof Plan | Define the user-approved two-finding design return | `docs(plan): define fail-fast lineage proof` | resolved by this exact unique subject | Plan-only checkpoint; no implementation authority until two fresh independent C0/I0 reviews are recorded |
+| T-TSDC-004R-4Y Plan review evidence | Record the fresh C0/I0 Plan approval pair | `docs(task): record fail-fast lineage plan reviews` | not started | required immutable implementation base for the sole two-path attempt |
+| T-TSDC-004R-4Y implementation | Close the option-aware wrapper proof under strict lineage gates | `fix(ci): close fail-fast wrapper proof` | not started | one attempt only after Plan-review evidence; exact RED/GREEN, freezes, scope, modes, and fresh implementation reviews required |
+| T-TSDC-004R-4Y implementation review evidence | Record the fresh C0/I0 implementation approval pair | `docs(task): record fail-fast wrapper review` | not started | required before Task 4.5 Wave C |
+| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R blocked pending 4Y Plan and implementation review acceptance |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
 ## Deferred and Blocked Items
@@ -1217,7 +1264,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked / new design return required | Attempt 2/2 closed the frozen-node and dual-FD findings, but quality/security retains one Important option-bearing wrapper bypass. The 4W and 4X Plan successors both exhausted without implementation authority; 4X corrected GNU `env --` and session-local lookup but omitted fail-fast shell execution and complete Task 4.5 lineage/scope/mode rebinding. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | obtain user approval for a new bounded design/Plan successor covering the two 4X review findings; do not start implementation or Wave C |
+| T-TSDC-004R-3 atomic projection cutover | blocked / 4Y Plan review pending | Attempt 2/2 closed the frozen-node and dual-FD findings, but quality/security retains one Important option-bearing wrapper bypass. The 4W and 4X Plan successors exhausted without implementation authority; the user-approved 4Y Plan adds fail-fast shell execution and complete Task 4.5 lineage/scope/mode rebinding. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | obtain fresh independent C0/I0 reviews for the exact 4Y Plan checkpoint, record the evidence checkpoint, and only then authorize the sole bounded implementation attempt |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -1253,9 +1300,12 @@ assignment selection and session-local commit resolution. Its fresh
 specification review passed `C0/I0/M0`, but the different
 quality/security reviewer returned `C0/I2/M0` because the proof blocks are not
 fail-fast and Task 4.5 incompletely rebinds lineage, scope, and modes. The 4X
-no-correction loop is exhausted and created no implementation authority. Wave
-C, Tasks 5–6, and final whole-branch review remain blocked pending a new
-user-approved bounded design/Plan successor.
+no-correction loop is exhausted and created no implementation authority. The
+user approved T-TSDC-004R-4Y to close those two findings with strict independent
+sessions and a complete downstream chain proof. Its Plan awaits fresh
+independent specification and quality/security `C0/I0/M0` reviews; no
+implementation authority exists yet. Wave C, Tasks 5–6, and final whole-branch
+review remain blocked.
 The original five-round
 implementation blocker, exhausted Revision R1 Plan reviews, and superseded
 `5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
