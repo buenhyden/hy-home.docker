@@ -76,11 +76,20 @@ positional targets were excluded. The user approved T-TSDC-004R-4AC on
 2026-07-30 as a bounded in-place successor that unions every exact and
 embedded candidate, covers named and positional dynamic targets in both
 positive and negative directions, and proves both long split-string forms.
-No 4AC implementation authority exists until its Plan receives fresh
-independent specification and quality/security `C0/I0/M0` reviews and the
-exact review-evidence checkpoint is recorded. Remote, runtime, dependency,
-secret, direct pre-commit, controlled-wrapper, and Graphify-update authority
-remain unchanged.
+Its specification Plan review returned `C0/I0/M0`, but quality/security
+returned `C0/I1/M1`: terminal evidence sessions did not each rebind the full
+reviewed predecessor chain, distances, exact scopes, and modes, so a
+same-subject substituted lineage could receive evidence for a range the
+reviewers did not inspect. The no-correction 4AC loop is exhausted without an
+implementation attempt. The user approved T-TSDC-004R-4AD on 2026-07-30 as a
+Plan-only bounded successor. It preserves the accepted 4AC parser, test, and
+validation design and adds reviewer-range attestations plus complete
+session-local lineage proof to every terminal evidence path and Task 4.5
+re-entry. No 4AD implementation authority exists until its Plan receives
+fresh independent specification and quality/security `C0/I0/M0` reviews and
+the exact accepted review-evidence checkpoint is recorded. Remote, runtime,
+dependency, secret, direct pre-commit, controlled-wrapper, and Graphify-update
+authority remain unchanged.
 
 ## Global Constraints
 
@@ -7660,93 +7669,144 @@ test -z "$clean_state"
   `docs(task): record candidate-closed parser outcome review` checkpoint
   authorizes Task 4.5 Wave C.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### Task 4.4AD / T-TSDC-004R-4AD: Review-Range-Bound Parser Proof
 
-- [ ] **Step 0: Prove the exact accepted candidate-closed review
-  checkpoint.**
+**Design return:** The 4AC Plan review accepted the candidate-closed parser,
+dynamic-target, GNU `env`, signal-option, RED/GREEN, scope, and validation
+design, but rejected terminal evidence sessions that could attach a review to
+a substituted same-subject lineage. 4AD changes only authority binding. It
+  inherits the immutable 4AC behavior and implementation requirements from Plan
+  commit `5bc5ab85e9d8841761ae00b7a169e899e3f8f515`: `Files and
+  interfaces`, `Candidate-closed parser contract`, the Step 2 content beginning
+  `Add these exact behavior families`, and all of Steps 3–4. The earlier Step
+  2 authority block and every 4AC Plan, commit, review, and Task 4.5 block
+  remain historical and non-executable.
+
+**Authority boundary and review attestation:**
+
+- Exact base
+  `3510e9944655ee89077a295712e759d116e2e87f` is the sole 4AD design
+  predecessor. It must have exact subject
+  `docs(task): record exhausted candidate-closed parser outcome plan review`,
+  change only the Task ledger, retain mode `100644`, and be `HEAD` before 4AD
+  drafting.
+- This Plan-only checkpoint may change only this Plan and the sibling Task
+  ledger. Its exact unique subject is
+  `docs(plan): define review-range-bound parser outcome proof`.
+- Each reviewer must report both reviewed endpoints as full 40-hex OIDs. The
+  specification and quality/security reports must name the same endpoints.
+  The controller copies that one full range into the canonical 4AD review
+  matrix row in the Task ledger before any terminal evidence commit.
+- A terminal session extracts the range from exactly one named Task matrix
+  row. Missing, abbreviated, duplicated, malformed, or divergent review
+  ranges fail closed. `git log --grep` is never an authority resolver.
+- Every edge is a single-parent edge: the child has exactly one parent, that
+  first parent equals the expected predecessor, ancestry holds, and the
+  predecessor-to-child distance is exactly one.
+- Two fresh read-only reviewers inspect exact
+  `3510e994..$plan_checkpoint`. Both must return `C0/I0/M0`. Any other result
+  is recorded in exact Task-only
+  `docs(task): record exhausted review-range-bound parser outcome plan review`
+  and exhausts 4AD without correction.
+- Only exact Task-only
+  `docs(task): record review-range-bound parser outcome plan reviews`
+  authorizes one implementation attempt. The implementation may change only
+  `tests/validation/test_agent_governance_ci_routing.py` and the Task ledger
+  and uses exact subject
+  `fix(ci): close review-range-bound parser outcome proof`.
+- Fresh specification and quality/security reviewers inspect the exact
+  accepted-Plan-evidence-to-implementation range and report identical full
+  endpoints. Only exact Task-only
+  `docs(task): record review-range-bound parser outcome review` authorizes
+  Wave C. Exact Task-only
+  `docs(task): record exhausted review-range-bound parser outcome review`
+  exhausts the sole attempt.
+- Freeze every path frozen by 4AC. Do not run the repository umbrella, direct
+  pre-commit, controlled wrapper, Compose/runtime, network, secret, remote, or
+  Graphify-update actions.
+
+**Strict proof contract:**
+
+- Every 4AD and rebound Task 4.5 Bash block begins with
+  `set -euo pipefail` and `shopt -s inherit_errexit`.
+- Every `$()` is the complete right-hand side of a standalone assignment and
+  the immediately following command tests that exact variable. The inherited
+  focused 4AC RED retains its one documented status-capture exception.
+- Exact subject checks use `git show -s --format=%s` on an already bound full
+  OID. Exact-subject uniqueness checks use `%s` output plus fixed whole-line
+  comparison; commit-message-body matching is prohibited.
+- Every applicable session proves the exact base path and mode, every
+  predecessor edge, exact commit and range path sets, all applicable
+  `100644` modes, and clean tracked, staged, and untracked state.
+
+- [ ] **Step 1: Commit and independently review the 4AD Plan checkpoint.**
+
+  Immediately after the Plan commit, and independently inside each reviewer
+  session, run:
 
 ```bash
 set -euo pipefail
 shopt -s inherit_errexit
-design_base="$(git rev-parse 997719ff)"
-test -n "$design_base"
-failure_subject_count="$(
-  git log --format=%H \
-    --grep='^docs(task): record exhausted explicit parser outcome plan review$' |
-    wc -l
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+design_base="$(
+  git rev-parse --verify \
+    '3510e9944655ee89077a295712e759d116e2e87f^{commit}'
 )"
-test "$failure_subject_count" -eq 1
-failure_checkpoint="$(
-  git log -1 --format=%H \
-    --grep='^docs(task): record exhausted explicit parser outcome plan review$'
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+base_subject="$(
+  git show -s --format=%s "$design_base"
 )"
-test "$failure_checkpoint" = "$design_base"
-plan_subject_count="$(
-  git log --format=%H \
-    --grep='^docs(plan): define candidate-closed parser outcome proof$' |
-    wc -l
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
 )"
-test "$plan_subject_count" -eq 1
+test "$base_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+base_mode="$(
+  git ls-tree "$design_base" \
+    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
 plan_checkpoint="$(
-  git log -1 --format=%H \
-    --grep='^docs(plan): define candidate-closed parser outcome proof$'
+  git rev-parse --verify 'HEAD^{commit}'
 )"
 test -n "$plan_checkpoint"
-base_subject_count="$(
-  git log --format=%H \
-    --grep='^docs(task): record candidate-closed parser outcome plan reviews$' |
-    wc -l
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
 )"
-test "$base_subject_count" -eq 1
-implementation_base="$(
-  git log -1 --format=%H \
-    --grep='^docs(task): record candidate-closed parser outcome plan reviews$'
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+plan_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(plan): define review-range-bound parser outcome proof'
 )"
-test -n "$implementation_base"
-implementation_subject_count="$(
-  git log --format=%H \
-    --grep='^fix(ci): close candidate-closed parser outcome proof$' |
-    wc -l
-)"
-test "$implementation_subject_count" -eq 1
-wrapper_implementation="$(
-  git log -1 --format=%H \
-    --grep='^fix(ci): close candidate-closed parser outcome proof$'
-)"
-test -n "$wrapper_implementation"
-review_subject_count="$(
-  git log --format=%H \
-    --grep='^docs(task): record candidate-closed parser outcome review$' |
-    wc -l
-)"
-test "$review_subject_count" -eq 1
-wrapper_review="$(
-  git log -1 --format=%H \
-    --grep='^docs(task): record candidate-closed parser outcome review$'
-)"
-test -n "$wrapper_review"
-head_commit="$(git rev-parse HEAD)"
-test "$head_commit" = "$wrapper_review"
-git merge-base --is-ancestor "$design_base" "$plan_checkpoint"
-git merge-base --is-ancestor "$plan_checkpoint" "$implementation_base"
-git merge-base --is-ancestor "$implementation_base" "$wrapper_implementation"
-git merge-base --is-ancestor "$wrapper_implementation" "$wrapper_review"
-plan_distance="$(
-  git rev-list --count "$design_base..$plan_checkpoint"
-)"
-test "$plan_distance" -eq 1
-base_distance="$(
-  git rev-list --count "$plan_checkpoint..$implementation_base"
-)"
-test "$base_distance" -eq 1
-implementation_distance="$(
-  git rev-list --count "$implementation_base..$wrapper_implementation"
-)"
-test "$implementation_distance" -eq 1
-review_distance="$(
-  git rev-list --count "$wrapper_implementation..$wrapper_review"
-)"
-test "$review_distance" -eq 1
+test "$plan_subject_count" -eq 1
+assert_edge "$design_base" "$plan_checkpoint"
 expected_plan_paths="$(
   printf '%s\n' \
     docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
@@ -7754,40 +7814,16 @@ expected_plan_paths="$(
     sort
 )"
 test -n "$expected_plan_paths"
-expected_implementation_paths="$(
-  printf '%s\n' \
-    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
-    tests/validation/test_agent_governance_ci_routing.py |
-    sort
-)"
-test -n "$expected_implementation_paths"
 plan_paths="$(
   git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
     sort
 )"
 test "$plan_paths" = "$expected_plan_paths"
-base_paths="$(
-  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
     sort
 )"
-test "$base_paths" = \
-  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
-implementation_paths="$(
-  git diff --name-only \
-    "$implementation_base..$wrapper_implementation" |
-    sort
-)"
-test "$implementation_paths" = "$expected_implementation_paths"
-git diff --exit-code \
-  "$implementation_base..$wrapper_implementation" -- . \
-  ':(exclude)tests/validation/test_agent_governance_ci_routing.py' \
-  ':(exclude)docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
-review_paths="$(
-  git diff-tree --no-commit-id --name-only -r "$wrapper_review" |
-    sort
-)"
-test "$review_paths" = \
-  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+test "$plan_range_paths" = "$expected_plan_paths"
 plan_mode="$(
   git ls-tree "$plan_checkpoint" \
     docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
@@ -7800,31 +7836,1663 @@ plan_task_mode="$(
     awk '{print $1}'
 )"
 test "$plan_task_mode" = "100644"
-base_task_mode="$(
-  git ls-tree "$implementation_base" \
-    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$plan_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  Each reviewer returns the full
+  `3510e9944655ee89077a295712e759d116e2e87f..$plan_checkpoint`
+  range with its verdict. Before either terminal path, the controller records
+  that identical full range in the
+  `T-TSDC-004R-4AD review-range-bound proof Plan` matrix row.
+
+  If either reviewer is not `C0/I0/M0`, edit only the Task ledger and run this
+  exact rejected terminal session:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+plan_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(plan): define review-range-bound parser outcome proof'
+)"
+test "$plan_subject_count" -eq 1
+assert_edge "$design_base" "$plan_checkpoint"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = \
+  "docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
     awk '{print $1}'
 )"
-test "$base_task_mode" = "100644"
-implementation_test_mode="$(
-  git ls-tree "$wrapper_implementation" \
+test "$base_mode" = "100644"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$plan_checkpoint"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+git commit -m \
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
+review_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$review_checkpoint"
+review_subject="$(
+  git show -s --format=%s "$review_checkpoint"
+)"
+test "$review_subject" = \
+  "docs(task): record exhausted review-range-bound parser outcome plan review"
+review_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record exhausted review-range-bound parser outcome plan review'
+)"
+test "$review_subject_count" -eq 1
+assert_edge "$plan_checkpoint" "$review_checkpoint"
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = "$task_file"
+review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$review_checkpoint" |
+    sort
+)"
+test "$review_range_paths" = "$task_file"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  This rejected checkpoint grants no correction, implementation, test, or
+  downstream authority.
+
+  If and only if both reviewers return `C0/I0/M0`, edit only the Task ledger
+  and run this separate accepted terminal session:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+plan_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(plan): define review-range-bound parser outcome proof'
+)"
+test "$plan_subject_count" -eq 1
+assert_edge "$design_base" "$plan_checkpoint"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$plan_checkpoint"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+git commit -m \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+implementation_base="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$implementation_base"
+base_review_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$base_review_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+base_review_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record review-range-bound parser outcome plan reviews'
+)"
+test "$base_review_subject_count" -eq 1
+assert_edge "$plan_checkpoint" "$implementation_base"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" \
     tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 2: Rebind the accepted Plan chain and execute the inherited 4AC
+  behavior proof.**
+
+  The fresh implementation agent receives a brief composed from this 4AD
+  section and, at immutable commit `5bc5ab85`, the 4AC Step 2 content beginning
+  `Add these exact behavior families` plus all of Steps 3–4. It does not
+  execute the earlier 4AC Step 2 authority block or any 4AC commit/review
+  block. Before modifying files, run:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+implementation_base="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$implementation_base"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$implementation_base"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" \
+    tests/validation/test_agent_governance_ci_routing.py |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  Execute the inherited 4AC fallback-resistant RED, the candidate-closed
+  parser implementation, focused GREEN, and bounded static validation exactly
+  as specified in immutable 4AC Steps 2–4. Record actual RED, GREEN, skip,
+  static-gate, scope, mode, freeze, and prohibition evidence in the Task
+  ledger. Do not claim Ruff when unavailable and do not install it.
+
+- [ ] **Step 3: Rebind the full accepted Plan chain, prove exact scope and
+  freezes, then commit the sole implementation attempt.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+implementation_base="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$implementation_base"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$implementation_base"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" "$test_file" |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+expected_implementation_paths="$(
+  printf '%s\n' \
+    "$task_file" \
+    "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+actual_paths="$(
+  {
+    git diff --name-only "$implementation_base" -- &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$expected_implementation_paths"
+git diff --exit-code "$implementation_base" -- . \
+  ":(exclude)$task_file" \
+  ":(exclude)$test_file"
+task_mode="$(
+  git ls-files -s "$task_file" |
+    awk '{print $1}'
+)"
+test "$task_mode" = "100644"
+test_mode="$(
+  git ls-files -s "$test_file" |
+    awk '{print $1}'
+)"
+test "$test_mode" = "100644"
+git diff --check
+git add "$task_file" "$test_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$expected_implementation_paths"
+git commit -m \
+  "fix(ci): close review-range-bound parser outcome proof"
+implementation_commit="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$implementation_commit"
+implementation_subject="$(
+  git show -s --format=%s "$implementation_commit"
+)"
+test "$implementation_subject" = \
+  "fix(ci): close review-range-bound parser outcome proof"
+implementation_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'fix(ci): close review-range-bound parser outcome proof'
+)"
+test "$implementation_subject_count" -eq 1
+assert_edge "$implementation_base" "$implementation_commit"
+implementation_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_implementation_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+git diff --exit-code "$implementation_base..$implementation_commit" -- . \
+  ":(exclude)$task_file" \
+  ":(exclude)$test_file"
+implementation_task_mode="$(
+  git ls-tree "$implementation_commit" "$task_file" |
+    awk '{print $1}'
+)"
+test "$implementation_task_mode" = "100644"
+implementation_test_mode="$(
+  git ls-tree "$implementation_commit" "$test_file" |
+    awk '{print $1}'
+)"
+test "$implementation_test_mode" = "100644"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+- [ ] **Step 4: Independently review the exact implementation range and
+  attest both full endpoints.**
+
+  Each fresh reviewer independently runs:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+implementation_commit="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$implementation_commit"
+implementation_base="$(
+  git rev-parse --verify "$implementation_commit^1"
+)"
+test -n "$implementation_base"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+implementation_subject="$(
+  git show -s --format=%s "$implementation_commit"
+)"
+test "$implementation_subject" = \
+  "fix(ci): close review-range-bound parser outcome proof"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$implementation_base"
+assert_edge "$implementation_base" "$implementation_commit"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+expected_implementation_paths="$(
+  printf '%s\n' \
+    "$task_file" \
+    "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+implementation_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_implementation_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" "$test_file" |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+implementation_task_mode="$(
+  git ls-tree "$implementation_commit" "$task_file" |
+    awk '{print $1}'
+)"
+test "$implementation_task_mode" = "100644"
+implementation_test_mode="$(
+  git ls-tree "$implementation_commit" "$test_file" |
+    awk '{print $1}'
+)"
+test "$implementation_test_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$implementation_commit"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  Each reviewer returns the full
+  `$implementation_base..$implementation_commit` range with its verdict.
+  Before either terminal path, the controller records the identical full range
+  in the
+  `T-TSDC-004R-4AD review-range-bound implementation` matrix row.
+
+- [ ] **Step 5: Record exactly one full-chain implementation-review
+  checkpoint.**
+
+  If and only if both implementation reviewers return `C0/I0/M0`, edit only
+  the Task ledger and run:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+implementation_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound implementation'
+)"
+test -n "$implementation_review_range"
+implementation_base="${implementation_review_range%%..*}"
+test -n "$implementation_base"
+implementation_commit="${implementation_review_range##*..}"
+test -n "$implementation_commit"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+verified_implementation_base="$(
+  git rev-parse --verify "$implementation_base^{commit}"
+)"
+test "$verified_implementation_base" = "$implementation_base"
+verified_implementation_commit="$(
+  git rev-parse --verify "$implementation_commit^{commit}"
+)"
+test "$verified_implementation_commit" = "$implementation_commit"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+implementation_subject="$(
+  git show -s --format=%s "$implementation_commit"
+)"
+test "$implementation_subject" = \
+  "fix(ci): close review-range-bound parser outcome proof"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$implementation_base"
+assert_edge "$implementation_base" "$implementation_commit"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
+expected_implementation_paths="$(
+  printf '%s\n' \
+    "$task_file" \
+    "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+implementation_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_implementation_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" "$test_file" |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+implementation_task_mode="$(
+  git ls-tree "$implementation_commit" "$task_file" |
+    awk '{print $1}'
+)"
+test "$implementation_task_mode" = "100644"
+implementation_test_mode="$(
+  git ls-tree "$implementation_commit" "$test_file" |
+    awk '{print $1}'
+)"
+test "$implementation_test_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$implementation_commit"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+git commit -m \
+  "docs(task): record review-range-bound parser outcome review"
+review_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$review_checkpoint"
+review_subject="$(
+  git show -s --format=%s "$review_checkpoint"
+)"
+test "$review_subject" = \
+  "docs(task): record review-range-bound parser outcome review"
+review_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record review-range-bound parser outcome review'
+)"
+test "$review_subject_count" -eq 1
+assert_edge "$implementation_commit" "$review_checkpoint"
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = "$task_file"
+review_range_paths="$(
+  git diff --name-only "$implementation_commit..$review_checkpoint" |
+    sort
+)"
+test "$review_range_paths" = "$task_file"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  Only this accepted checkpoint can authorize Task 4.5 after its independent
+  Step 0 proof.
+
+  If either reviewer is not `C0/I0/M0`, edit only the Task ledger and run the
+  mutually exclusive rejected terminal session:
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+implementation_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound implementation'
+)"
+test -n "$implementation_review_range"
+implementation_base="${implementation_review_range%%..*}"
+test -n "$implementation_base"
+implementation_commit="${implementation_review_range##*..}"
+test -n "$implementation_commit"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+verified_implementation_base="$(
+  git rev-parse --verify "$implementation_base^{commit}"
+)"
+test "$verified_implementation_base" = "$implementation_base"
+verified_implementation_commit="$(
+  git rev-parse --verify "$implementation_commit^{commit}"
+)"
+test "$verified_implementation_commit" = "$implementation_commit"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+implementation_subject="$(
+  git show -s --format=%s "$implementation_commit"
+)"
+test "$implementation_subject" = \
+  "fix(ci): close review-range-bound parser outcome proof"
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$implementation_base"
+assert_edge "$implementation_base" "$implementation_commit"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
+expected_implementation_paths="$(
+  printf '%s\n' \
+    "$task_file" \
+    "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+implementation_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_implementation_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" "$test_file" |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+implementation_task_mode="$(
+  git ls-tree "$implementation_commit" "$task_file" |
+    awk '{print $1}'
+)"
+test "$implementation_task_mode" = "100644"
+implementation_test_mode="$(
+  git ls-tree "$implementation_commit" "$test_file" |
+    awk '{print $1}'
+)"
+test "$implementation_test_mode" = "100644"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$implementation_commit"
+actual_paths="$(
+  {
+    git diff --name-only &&
+      git diff --cached --name-only &&
+      git ls-files --others --exclude-standard
+  } | sort -u
+)"
+test "$actual_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(
+  git diff --cached --name-only |
+    sort
+)"
+test "$cached_paths" = "$task_file"
+git commit -m \
+  "docs(task): record exhausted review-range-bound parser outcome review"
+review_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$review_checkpoint"
+review_subject="$(
+  git show -s --format=%s "$review_checkpoint"
+)"
+test "$review_subject" = \
+  "docs(task): record exhausted review-range-bound parser outcome review"
+review_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record exhausted review-range-bound parser outcome review'
+)"
+test "$review_subject_count" -eq 1
+assert_edge "$implementation_commit" "$review_checkpoint"
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = "$task_file"
+review_range_paths="$(
+  git diff --name-only "$implementation_commit..$review_checkpoint" |
+    sort
+)"
+test "$review_range_paths" = "$task_file"
+review_task_mode="$(
+  git ls-tree "$review_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$review_task_mode" = "100644"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
+test -z "$clean_state"
+```
+
+  The rejected checkpoint grants no retry or downstream authority.
+
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Re-extract both reviewed ranges and prove the complete
+  accepted 4AD chain.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+extract_range() {
+  python3 - "$task_file" "$1" <<'PY'
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+prefix = f"| {sys.argv[2]} |"
+rows = [line for line in text.splitlines() if line.startswith(prefix)]
+if len(rows) != 1:
+    raise SystemExit("review-range-row-count")
+matches = re.findall(r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`", rows[0])
+if len(matches) != 1:
+    raise SystemExit("review-range-value-count")
+print(f"{matches[0][0]}..{matches[0][1]}")
+PY
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(
+    git rev-list --count "$parent..$child"
+  )"
+  test "$distance" -eq 1
+  parent_count="$(
+    git rev-list --parents -n 1 "$child" |
+      awk '{print NF - 1}'
+  )"
+  test "$parent_count" -eq 1
+  first_parent="$(
+    git rev-parse "$child^1"
+  )"
+  test "$first_parent" = "$parent"
+}
+plan_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound proof Plan'
+)"
+test -n "$plan_review_range"
+design_base="${plan_review_range%%..*}"
+test "$design_base" = \
+  "3510e9944655ee89077a295712e759d116e2e87f"
+plan_checkpoint="${plan_review_range##*..}"
+test -n "$plan_checkpoint"
+implementation_review_range="$(
+  extract_range \
+    'T-TSDC-004R-4AD review-range-bound implementation'
+)"
+test -n "$implementation_review_range"
+implementation_base="${implementation_review_range%%..*}"
+test -n "$implementation_base"
+implementation_commit="${implementation_review_range##*..}"
+test -n "$implementation_commit"
+review_checkpoint="$(
+  git rev-parse --verify 'HEAD^{commit}'
+)"
+test -n "$review_checkpoint"
+verified_design_base="$(
+  git rev-parse --verify "$design_base^{commit}"
+)"
+test "$verified_design_base" = "$design_base"
+verified_plan_checkpoint="$(
+  git rev-parse --verify "$plan_checkpoint^{commit}"
+)"
+test "$verified_plan_checkpoint" = "$plan_checkpoint"
+verified_implementation_base="$(
+  git rev-parse --verify "$implementation_base^{commit}"
+)"
+test "$verified_implementation_base" = "$implementation_base"
+verified_implementation_commit="$(
+  git rev-parse --verify "$implementation_commit^{commit}"
+)"
+test "$verified_implementation_commit" = "$implementation_commit"
+base_subject="$(
+  git show -s --format=%s "$design_base"
+)"
+test "$base_subject" = \
+  "docs(task): record exhausted candidate-closed parser outcome plan review"
+plan_subject="$(
+  git show -s --format=%s "$plan_checkpoint"
+)"
+test "$plan_subject" = \
+  "docs(plan): define review-range-bound parser outcome proof"
+implementation_base_subject="$(
+  git show -s --format=%s "$implementation_base"
+)"
+test "$implementation_base_subject" = \
+  "docs(task): record review-range-bound parser outcome plan reviews"
+implementation_subject="$(
+  git show -s --format=%s "$implementation_commit"
+)"
+test "$implementation_subject" = \
+  "fix(ci): close review-range-bound parser outcome proof"
+review_subject="$(
+  git show -s --format=%s "$review_checkpoint"
+)"
+test "$review_subject" = \
+  "docs(task): record review-range-bound parser outcome review"
+review_subject_count="$(
+  git log --all --format='%s' |
+    grep -Fxc \
+      'docs(task): record review-range-bound parser outcome review'
+)"
+test "$review_subject_count" -eq 1
+assert_edge "$design_base" "$plan_checkpoint"
+assert_edge "$plan_checkpoint" "$implementation_base"
+assert_edge "$implementation_base" "$implementation_commit"
+assert_edge "$implementation_commit" "$review_checkpoint"
+base_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$design_base" |
+    sort
+)"
+test "$base_paths" = "$task_file"
+expected_plan_paths="$(
+  printf '%s\n' \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
+    "$task_file" |
+    sort
+)"
+test -n "$expected_plan_paths"
+expected_implementation_paths="$(
+  printf '%s\n' \
+    "$task_file" \
+    "$test_file" |
+    sort
+)"
+test -n "$expected_implementation_paths"
+plan_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$plan_checkpoint" |
+    sort
+)"
+test "$plan_paths" = "$expected_plan_paths"
+plan_range_paths="$(
+  git diff --name-only "$design_base..$plan_checkpoint" |
+    sort
+)"
+test "$plan_range_paths" = "$expected_plan_paths"
+base_review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_base" |
+    sort
+)"
+test "$base_review_paths" = "$task_file"
+base_review_range_paths="$(
+  git diff --name-only "$plan_checkpoint..$implementation_base" |
+    sort
+)"
+test "$base_review_range_paths" = "$task_file"
+implementation_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$implementation_commit" |
+    sort
+)"
+test "$implementation_paths" = "$expected_implementation_paths"
+implementation_range_paths="$(
+  git diff --name-only "$implementation_base..$implementation_commit" |
+    sort
+)"
+test "$implementation_range_paths" = "$expected_implementation_paths"
+git diff --exit-code \
+  "$implementation_base..$implementation_commit" -- . \
+  ":(exclude)$test_file" \
+  ":(exclude)$task_file"
+review_paths="$(
+  git diff-tree --no-commit-id --name-only -r "$review_checkpoint" |
+    sort
+)"
+test "$review_paths" = "$task_file"
+review_range_paths="$(
+  git diff --name-only "$implementation_commit..$review_checkpoint" |
+    sort
+)"
+test "$review_range_paths" = "$task_file"
+base_mode="$(
+  git ls-tree "$design_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_mode" = "100644"
+plan_mode="$(
+  git ls-tree "$plan_checkpoint" \
+    docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md |
+    awk '{print $1}'
+)"
+test "$plan_mode" = "100644"
+plan_task_mode="$(
+  git ls-tree "$plan_checkpoint" "$task_file" |
+    awk '{print $1}'
+)"
+test "$plan_task_mode" = "100644"
+base_review_task_mode="$(
+  git ls-tree "$implementation_base" "$task_file" |
+    awk '{print $1}'
+)"
+test "$base_review_task_mode" = "100644"
+base_review_test_mode="$(
+  git ls-tree "$implementation_base" "$test_file" |
+    awk '{print $1}'
+)"
+test "$base_review_test_mode" = "100644"
+implementation_test_mode="$(
+  git ls-tree "$implementation_commit" "$test_file" |
     awk '{print $1}'
 )"
 test "$implementation_test_mode" = "100644"
 implementation_task_mode="$(
-  git ls-tree "$wrapper_implementation" \
-    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  git ls-tree "$implementation_commit" "$task_file" |
     awk '{print $1}'
 )"
 test "$implementation_task_mode" = "100644"
 review_task_mode="$(
-  git ls-tree "$wrapper_review" \
-    docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md |
+  git ls-tree "$review_checkpoint" "$task_file" |
     awk '{print $1}'
 )"
 test "$review_task_mode" = "100644"
-clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+head_commit="$(
+  git rev-parse HEAD
+)"
+test "$head_commit" = "$review_checkpoint"
+clean_state="$(
+  git status --porcelain=v1 --untracked-files=all
+)"
 test -z "$clean_state"
 ```
 

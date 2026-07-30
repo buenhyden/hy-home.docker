@@ -119,6 +119,19 @@ read-only observation only.
   `IMPLEMENTATION_READY NO`. The no-correction 4AC Plan loop is therefore
   exhausted. No accepted Plan-review evidence, implementation attempt, test
   execution, Wave C, Tasks 5–6, or whole-branch authority follows.
+- On 2026-07-30 the user approved T-TSDC-004R-4AD as one Plan-only bounded
+  successor from exact checkpoint
+  `3510e9944655ee89077a295712e759d116e2e87f`. It preserves the accepted 4AC
+  parser, test, scope, and validation design. Its only semantic delta is to
+  copy each pair of reviewer-reported full hashes into the canonical review
+  matrix and require every accepted or rejected terminal evidence session,
+  plus Task 4.5 re-entry, to extract that attestation and independently prove
+  the full predecessor chain, distances, exact scopes, modes, and clean state.
+  Plan and Task are the only authorized checkpoint paths. Implementation,
+  tests, Wave C, runtime, remote, dependency, secret, direct pre-commit,
+  controlled-wrapper, and Graphify-update authority remain blocked until two
+  fresh independent 4AD Plan reviews return `C0/I0/M0` and their Task-only
+  accepted evidence checkpoint is committed.
 - No current approval authorizes
   `scripts/validation/run-agent-precommit-all-files.sh`. Any future approval
   is one exact attempt from one clean committed checkpoint.
@@ -134,8 +147,8 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | blocked / 4AC Plan review exhausted |
-| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | blocked by exhausted 4AC Plan review |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active 4AD Plan review |
+| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after Task 4 review | blocked pending 4AD review chain |
 | T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | pending |
 
 Tasks are serial at their commit/review boundaries. A task may not advance
@@ -305,6 +318,9 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-4AC candidate-closed design approval | User / Controller | The user approved one Plan-only bounded successor from exact checkpoint `997719ff`. The design requires every-token union of all exact plus embedded registered sibling candidates before ambiguity fallback; unresolved named variables and `$1`/`${1}` at direct, `command`, `python3`, and `bash` positions with relevant-sibling, no-relevant-sibling, and query-precedence witnesses; separated and equals long `--split-string` direct, wrapped, and query transitions; and a two-sibling malformed-signal union witness plus an exact-option contrast. The Plan and Task ledger are the only authorized checkpoint paths. Implementation, tests, Wave C, runtime, remote, dependency, secret, direct pre-commit, controlled-wrapper, and Graphify update remain blocked pending two fresh independent Plan reviews at `C0/I0/M0`. |
 | 2026-07-30 | T-TSDC-004R-4AC candidate-closed Plan checkpoint | Controller | Commit `5bc5ab85` is exactly one commit after `997719ff`, changes only the Plan and this Task ledger, preserves both modes as `100644`, and left a clean worktree. Static extraction found 12 strict Bash blocks, 145 standalone captures, one bounded RED exception, immediate same-variable consumption for every non-RED capture, and valid Bash syntax. Diff hygiene, changed-document metadata `15/0` with five registered legacy exceptions, and traceability `46/0` passed. The first postcommit proof invocation used the default `zsh` and stopped at unsupported `shopt` with status 127 before any mutation; the same block rerun explicitly with `/bin/bash` passed the base, ancestry, distance, exact-path, mode, and clean-state assertions. |
 | 2026-07-30 | T-TSDC-004R-4AC candidate-closed Plan reviews | Fresh independent specification and quality/security reviewers | Exact range `997719ff..5bc5ab85` returned specification `C0/I0/M0`, `SPEC_COMPLIANCE YES`, `IMPLEMENTATION_READY YES`, but quality/security `C0/I1/M1`, `QUALITY_SECURITY FAIL`, `IMPLEMENTATION_READY NO`. The Important finding is that terminal review-evidence sessions do not each rebind the complete reviewed predecessor chain, distance, scope, and modes, so current-ancestry-only subject uniqueness cannot exclude a substituted same-subject lineage. The Minor finding is that the Task ledger described the committed Plan checkpoint as pending; this rejected-review evidence synchronizes that status without correcting the Plan. The no-correction 4AC Plan loop is exhausted. No accepted Plan-review evidence, implementation, tests, Wave C, Tasks 5–6, or whole-branch authority follows. |
+| 2026-07-30 | T-TSDC-004R-4AD review-range-bound design approval | User / Controller | The user approved one Plan-only bounded successor from exact checkpoint `3510e994`. The design preserves the reviewed 4AC parser behavior, RED/GREEN matrix, two-path implementation scope, freezes, and validation ladder. It adds one canonical full-hash range attestation for each review pair and requires every terminal evidence session plus Task 4.5 Step 0 to extract that range from this ledger and repeat the complete base-to-terminal ancestry, one-commit distances, exact path sets, `100644` modes, and clean-state proof. Plan/Task drafting is authorized; implementation and tests remain blocked pending two fresh independent C0/I0/M0 Plan reviews and their accepted Task-only evidence checkpoint. |
+| 2026-07-30 | T-TSDC-004R-4AD draft preflight | Controller plus fresh read-only design and draft-audit agents | The bounded lineage map returned `C0/I0/M0`, `DESIGN_READY YES`. The first independent draft audit returned `C0/I0/M0`; a controller exact-prefix check then found that the Commit Ledger reused the Plan review-matrix label and would make range extraction fail closed. Renaming only that ledger unit left exactly one Plan attestation row and one implementation attestation row; the same auditor rechecked all 11 calls and returned `C0/I0/M0`, `DRAFT_READY YES`. Static extraction found nine strict 4AD plus Task 4.5 Bash blocks and 263 standalone captures with zero syntax or immediate-consumption failure. Exact two-path scope and `100644` modes, diff hygiene, changed-document metadata `15/0` with five registered legacy exceptions, and traceability `46/0` passed. Formal postcommit Plan reviews remain pending and no implementation authority exists. |
+| 2026-07-30 | T-TSDC-004R-4AD review-range-bound Plan checkpoint | Controller | This exact two-path checkpoint starts at `3510e994`, is identified by exact unique subject `docs(plan): define review-range-bound parser outcome proof`, preserves both modes as `100644`, and passed the draft mapping, corrected independent audit, nine-block/263-capture static proof, metadata `15/0`, traceability `46/0`, diff, scope, and mode gates. It grants no implementation or test authority; two fresh postcommit Plan reviews and their accepted Task-only evidence remain required. |
 
 ## Verification Evidence
 
@@ -331,7 +347,7 @@ have no unresolved Critical or Important findings.
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
 | T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression. Review remediations produced 17 resolver/static failures, six quoted-key failures, five global-uniqueness/Dozzle failures, and the exact `141 != 140` manifest-oracle failure. | Initial focused tests passed 7/7. Successive remediation suites passed 11/11, 16/16, and finally 17/17; the exact 141-row manifest oracle passes 1/1 with Dozzle path-specific owner, consumer, update, and pending-verdict assertions. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff gates pass. Final independent specification and quality/security reviews of `b1e62873..60e0313c` each returned C0/I0/M0 and COMMIT_READY YES; all 141 manifest verdict pairs remain pending for Task 6. | completed |
 | T-TSDC-004 | Missing wrapper; four missing-module errors; bounded reader 2 failures/1 error; `148 != 141`; missing local wrapper-test route; missing purpose-folder registration; mixed quoted/unquoted `on` failed both orderings; seven required permission co-mutations returned no baseline finding; round 3 produced 15 failures across five methods; round 4 produced 13 failures across four methods; final round 5 produced 29 failures across eight methods. | Successive workflow suites pass 9/9, 11/11, 14/14, 17/17, 20/20, and 27/27. Final round 5 focused methods pass 8/8, eval tests 38/38, and Stage 00 mutations 4/4. Focused CLI 7/23/8, exact manifest 148/89/59/0, and advisory remain green. | Static gates pass, but final independent reviews return specification C0/I4/M0 and quality/security C0/I4/M1. TSDC-012 remains bypassable through valid shell/Python/helper execution forms and bounded-provenance gaps. Every manifest review pair remains pending. | blocked after fix round 5/5 |
-| T-TSDC-005 | Not run — 4AC Plan review exhausted | Not run — 4AC Plan review exhausted | Not run — 4AC Plan review exhausted | blocked |
+| T-TSDC-005 | Not run — 4AD Plan and implementation reviews pending | Not run — 4AD Plan and implementation reviews pending | Not run — 4AD Plan and implementation reviews pending | blocked |
 | T-TSDC-006 | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | Not run — Tasks 1–5 pending | pending |
 
 ### T-TSDC-001 bounded implementation evidence
@@ -1482,6 +1498,78 @@ have no unresolved Critical or Important findings.
   direct pre-commit, controlled-wrapper, and Graphify authority remain
   unchanged.
 
+### T-TSDC-004R-4AD review-range-bound parser proof design return
+
+- User approval on 2026-07-30 authorizes one Plan-only bounded successor after
+  the exact unique
+  `docs(task): record exhausted candidate-closed parser outcome plan review`
+  checkpoint at
+  `3510e9944655ee89077a295712e759d116e2e87f`. Failed or exhausted 4W
+  through 4AC work remains historical evidence and grants no implementation
+  authority.
+- 4AD preserves the accepted candidate-closed parser contract and complete
+  behavior matrix from the immutable 4AC Plan commit
+  `5bc5ab85e9d8841761ae00b7a169e899e3f8f515`: the 4AC files and
+  interfaces, candidate-closed contract, Step 2 behavior matrix after its
+  historical authority block, and Steps 3–4. It does not change parser
+  outcomes, candidate union, dynamic-target boundaries, GNU `env` grammar,
+  signal-option grammar, work budget, two-path implementation scope, freezes,
+  RED/GREEN expectations, or the bounded validation ladder.
+- The Plan defines this review matrix as the canonical full-hash attestation
+  surface. After each independent review pair completes, the controller must
+  replace that unit's pending range with the identical 40-hex
+  `base..reviewed-head` range reported by both reviewers. A terminal evidence
+  block must extract exactly one such range from this ledger; a missing,
+  abbreviated, duplicated, malformed, or reviewer-divergent range fails
+  closed.
+- Every accepted and rejected Plan-review evidence session must derive the
+  reviewed Plan checkpoint from the 4AD Plan matrix row, bind it to exact
+  design base `3510e994`, and re-prove exact subject, single-parent topology,
+  ancestry, one-commit distance, exact Plan-and-Task paths, both `100644`
+  modes, Task-only evidence scope, evidence-commit distance and mode, and
+  clean state.
+- Every accepted and rejected implementation-review evidence session must
+  derive the reviewed implementation range from the 4AD implementation matrix
+  row. In the same strict session it must also re-extract the Plan review
+  range and prove the entire design-base → Plan → accepted Plan-review
+  evidence → implementation → terminal review chain, every one-commit
+  distance, each exact parent, each exact path set, every `100644` mode, and
+  clean state.
+- Task 4.5 Step 0 repeats that complete proof from the same two canonical
+  full-hash attestations before Wave C can modify any file. Subject lookup is
+  performed with `git show` on already-bound OIDs; current-ancestry
+  `git log --grep` lookup is never the authority for a reviewer-inspected
+  range.
+- The Plan checkpoint uses exact unique subject
+  `docs(plan): define review-range-bound parser outcome proof`. It changes
+  only the Plan and this Task ledger and grants no implementation authority
+  until a fresh read-only specification reviewer and a different fresh
+  read-only quality/security reviewer both return `C0/I0/M0` over exact range
+  `3510e994..$plan_checkpoint`.
+- Any failed Plan review is recorded in exact Task-only
+  `docs(task): record exhausted review-range-bound parser outcome plan review`
+  and exhausts 4AD without a correction or implementation attempt. If both
+  reviews pass, exact Task-only
+  `docs(task): record review-range-bound parser outcome plan reviews` becomes
+  the immutable implementation base.
+- One fresh implementation agent then receives exactly one attempt over only
+  `tests/validation/test_agent_governance_ci_routing.py` and this Task ledger,
+  with exact unique subject
+  `fix(ci): close review-range-bound parser outcome proof`. A fresh
+  specification reviewer and a different fresh quality/security reviewer must
+  both return `C0/I0/M0`. The accepted pair is recorded under
+  `docs(task): record review-range-bound parser outcome review`; any rejected
+  pair is recorded under
+  `docs(task): record exhausted review-range-bound parser outcome review` and
+  grants no retry or downstream authority.
+- The exact 4AD Plan checkpoint is identified by
+  `docs(plan): define review-range-bound parser outcome proof`; its two fresh
+  postcommit Plan reviews are pending. No Plan-review evidence,
+  implementation, test execution, manifest promotion, Wave C, Tasks 5–6, or
+  whole-branch review is authorized. Remote, runtime, dependency, secret,
+  direct pre-commit, controlled-wrapper, and Graphify authority remain
+  unchanged.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -1555,9 +1643,11 @@ consume or create Agent authorization.
 | T-TSDC-004R-4AA immediate-consumption implementation | Task 4.4AA implementation agent, sole attempt | C0/I1/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | C0/I3/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `194b7d16..84067c8f` | one-attempt implementation loop exhausted; returned to design/plan | GNU `env -S` skips its first inserted token, unresolved dynamic command heads can fail open, and malformed signal-option near-prefixes can be accepted. Passing local tests do not establish the required bounded parser proof; no Wave C authority follows. |
 | T-TSDC-004R-4AB explicit parser-outcome proof Plan | Controller / bounded future implementer | C0/I2/M0; SPEC_COMPLIANCE NO; IMPLEMENTATION_READY NO | C0/I2/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `25524ce1..8d3f1122` | no-correction Plan loop exhausted; returned to design/plan | Long split-string transition witnesses and no-relevant-sibling dynamic negatives are absent; ambiguous candidate union can drop an embedded sibling; and unresolved positional `$1`/`${1}` heads remain outside the dynamic predicate. No implementation or Wave C authority follows. |
 | T-TSDC-004R-4AC candidate-closed proof Plan | Controller / bounded future implementer | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I1/M1; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `997719ff..5bc5ab85` | no-correction Plan loop exhausted; returned to design/plan | Candidate union, dynamic-target/query precedence, GNU `env` split re-entry, and signal-option handling passed. Terminal evidence sessions do not each rebind the complete reviewed lineage, distance, scope, and modes, so same-subject lineage substitution remains possible; the stale pending-checkpoint Task wording is synchronized by this evidence commit. No implementation or Wave C authority follows. |
-| T-TSDC-005 | pending | pending | pending | not available | blocked | 4AC no-correction Plan review exhausted; no accepted Task 4 implementation-review checkpoint exists |
+| T-TSDC-004R-4AD review-range-bound proof Plan | Controller / bounded future implementer | pending fresh review | pending different fresh review | starts at `3510e994` | Plan checkpoint committed by exact subject; fresh reviews pending; no implementation authority | The approved Plan-only successor preserves the accepted 4AC parser and test design while binding each terminal session to the identical full-hash range reported by both reviewers and re-proving the complete predecessor chain, distances, scopes, modes, and clean state. |
+| T-TSDC-004R-4AD review-range-bound implementation | future Task 4.4AD implementation agent, sole attempt | pending after accepted Plan-review evidence | pending different fresh review | not available | blocked by Plan reviews | Exact two-path implementation is unavailable until both Plan reviewers return C0/I0/M0 and the accepted Task-only Plan-review evidence checkpoint is committed. |
+| T-TSDC-005 | pending | pending | pending | not available | blocked | 4AD Plan, implementation, and review checkpoints pending |
 | T-TSDC-006 | pending | pending | pending | not available | pending | Tasks 1–5 pending |
-| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | The 4AC quality/security Plan review failed at C0/I1/M1, so the no-correction loop is exhausted. Implementation, Wave C, Tasks 5–6, and final branch review remain blocked pending a separately approved successor design and complete accepted review chain. |
+| Whole branch | not applicable | pending final fresh reviewer after Task 4 | pending different final fresh reviewer after Task 4 | not available | blocked | The user-approved 4AD Plan checkpoint and both fresh Plan reviews are pending. Implementation, Wave C, Tasks 5–6, and final branch review remain blocked until the complete accepted 4AD review chain is committed. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -1669,7 +1759,13 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4AC implementation | Superseded uncreated attempt | `fix(ci): close candidate-closed parser outcome proof` | not created | Non-executable because the 4AC no-correction Plan review failed |
 | T-TSDC-004R-4AC implementation review evidence | Superseded uncreated checkpoint | `docs(task): record candidate-closed parser outcome review` | not created | No 4AC implementation exists to review |
 | T-TSDC-004R-4AC exhausted implementation-review evidence | Superseded uncreated checkpoint | `docs(task): record exhausted candidate-closed parser outcome review` | not created | No implementation exists to reject; 4AC exhausted at Plan review |
-| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R remains blocked because 4AC exhausted without an accepted implementation-review checkpoint |
+| T-TSDC-004R-4AD Plan checkpoint | Define the user-approved terminal-evidence lineage successor | `docs(plan): define review-range-bound parser outcome proof` | resolved by this exact unique subject | One exact Plan-and-Task commit from `3510e994`; preserves `100644` modes and passes strict Bash/capture, metadata, traceability, diff, scope, and mode checks; fresh reviews pending |
+| T-TSDC-004R-4AD Plan review evidence | Record the fresh C0/I0 Plan pair and their identical full-hash range | `docs(task): record review-range-bound parser outcome plan reviews` | not created | Task-ledger-only immutable implementation base; every terminal session re-extracts the canonical full-hash attestation |
+| T-TSDC-004R-4AD exhausted Plan-review evidence | Record a rejected Plan pair and return to design | `docs(task): record exhausted review-range-bound parser outcome plan review` | not created | Mutually exclusive with accepted Plan evidence; any non-C0/I0/M0 Plan review exhausts 4AD without correction |
+| T-TSDC-004R-4AD implementation | Close the inherited candidate-closed parser proof under review-range binding | `fix(ci): close review-range-bound parser outcome proof` | not created | One fresh implementation-agent attempt over exactly the routing test and this Task ledger, only after accepted Plan-review evidence |
+| T-TSDC-004R-4AD implementation review evidence | Record the fresh C0/I0 implementation pair and their identical full-hash range | `docs(task): record review-range-bound parser outcome review` | not created | Task-ledger-only checkpoint; only this accepted subject authorizes Wave C after complete Task 4.5 re-entry proof |
+| T-TSDC-004R-4AD exhausted implementation-review evidence | Record a rejected implementation pair and return to design | `docs(task): record exhausted review-range-bound parser outcome review` | not created | Mutually exclusive with accepted implementation evidence; any non-C0/I0/M0 pair exhausts the sole attempt |
+| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | Task 4R remains blocked until the accepted 4AD implementation-review checkpoint |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
 ## Deferred and Blocked Items
@@ -1678,7 +1774,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked / 4AC Plan review exhausted | Attempt 2/2 closed the frozen-node and dual-FD findings, the sole 4AA implementation failed review, the no-correction 4AB Plan failed specification C0/I2 plus quality/security C0/I2, and the no-correction 4AC Plan failed quality/security C0/I1/M1 despite specification C0/I0/M0. 4AC still lacks complete session-local lineage, distance, scope, and mode rebinding in every terminal evidence block. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | require a separately approved successor design that closes the 4AC review finding, then a new exact Plan checkpoint and two fresh independent C0/I0/M0 Plan reviews before any implementation attempt |
+| T-TSDC-004R-3 atomic projection cutover | blocked / 4AD Plan review pending | Attempt 2/2 closed the frozen-node and dual-FD findings, the sole 4AA implementation failed review, the no-correction 4AB Plan failed specification C0/I2 plus quality/security C0/I2, and the no-correction 4AC Plan failed quality/security C0/I1/M1 despite specification C0/I0/M0. The approved 4AD successor preserves accepted parser semantics and adds full-hash reviewer attestations plus complete terminal-session lineage, distance, scope, and mode proof. Ruff, repository-umbrella execution, runtime, and remote state remain unverified. | commit the exact two-path 4AD Plan, obtain two fresh independent C0/I0/M0 Plan reviews, record their Task-only full-hash-bound evidence, then permit at most one exact two-path implementation attempt |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -1722,8 +1818,8 @@ the substitution status; specification review was interrupted after the
 blocker. The 4Y no-correction loop is exhausted and created no implementation
 authority. The user approved T-TSDC-004R-4Z to preserve every fallible
 substitution status through a standalone assignment before testing its value.
-Its Plan awaits fresh independent specification and quality/security
-review. Specification passed `C0/I0/M0`, but the different quality/security
+Its fresh independent specification review passed `C0/I0/M0`, but the
+different quality/security
 reviewer returned `C0/I1/M0` because some captured values are not tested by the
 immediately following command as the 4Z contract requires. The 4Z
 no-correction loop is exhausted and created no implementation authority. The
@@ -1759,9 +1855,18 @@ dynamic-target, split-string, and signal-option semantics passed, but every
 terminal evidence session does not yet rebind the complete reviewed lineage,
 distance, scope, and modes, leaving same-subject lineage substitution
 unexcluded. The 4AC no-correction Plan loop is exhausted without an
-implementation attempt. No implementation, test execution, Wave C, Tasks
-5–6, or whole-branch authority exists pending a separately approved successor
-design and its complete accepted review chain.
+implementation attempt. The user approved T-TSDC-004R-4AD from exact
+checkpoint `3510e994`. It preserves the reviewed 4AC parser and behavior proof
+and makes each reviewer pair's identical full OIDs the canonical authority
+input. Every accepted or rejected terminal evidence session and Task 4.5
+re-entry must independently prove the complete single-parent chain, exact
+distances, path sets, modes, and clean state. The 4AD Plan checkpoint and its
+two fresh independent reviews are separated: the checkpoint is identified by
+exact unique subject `docs(plan): define review-range-bound parser outcome
+proof`, while both reviews remain pending. No implementation, test execution,
+Wave C, Tasks 5–6, or whole-branch authority exists until both Plan reviews
+return `C0/I0/M0` and their full-hash-bound Task-only evidence checkpoint is
+committed.
 The original five-round
 implementation blocker, exhausted Revision R1 Plan reviews, and superseded
 `5d089dd4` and `b73d2a99` checkpoints remain historical evidence and grant no
