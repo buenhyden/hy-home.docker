@@ -96,11 +96,14 @@ T-TSDC-004R-4AF as a Plan-only repair. Its sole implementation attempt is now
 historical and review-rejected because the frozen Step 4 evidence envelope
 mistook valid silent success for failure. The user approved
 T-TSDC-004R-4AG as the Plan-only successor: it supersedes only that delta
-command capture/evidence envelope. Tests, revalidation, E_AG, R_AG, and Wave C
-remain blocked until accepted B_AG exists and the user separately approves one
-evidence-only revalidation attempt. Remote, runtime, dependency, secret,
+command capture/evidence envelope. Its Plan review exhausted at XP_AG. The
+user subsequently approved T-TSDC-004R-4AH as the Plan-only successor from
+clean D_AH `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`. 4AH changes exactly two
+design defects: collision-safe byte classification and truthful,
+outcome-specific disposition parsing. Tests, validators, revalidation,
+implementation, E_AH, R_AH, Wave C, runtime, remote, dependency, secret,
 direct pre-commit, controlled-wrapper, and Graphify-update authority remain
-unchanged.
+blocked pending the separately governed checkpoints below.
 
 ## Global Constraints
 
@@ -9671,6 +9674,11 @@ test -z "$clean_state"
 
 #### T-TSDC-004R-4AG: Status-Based Silent-Success Proof (Plan-Only Successor)
 
+**Historical non-executable provenance.** 4AG is rejected and exhausted at
+its Task-only terminal. Its checklists and fenced proof text are retained only
+to preserve the committed design record; they MUST NOT be run, resumed, or
+used as authority. The sole executable future successor design is 4AH below.
+
 - [ ] **Step 0: Bind the exhausted design boundary without reopening 4AF.**
 
   `D_AG` is exactly `737838fe80880b7eadbfb1c7e18d8dc251bcc8b9`, has sole
@@ -10873,15 +10881,152 @@ test -z "$clean_state"
   R_AG authorizes Task 4.5 only when `review_outcome=accepted`; XE_AG is
   terminal and grants no correction, retry, Wave C, or downstream authority.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### T-TSDC-004R-4AH: Collision-Safe Disposition Proof (Active Plan-Only Successor)
 
-- [ ] **Step 0: Re-extract the three canonical rows and prove the complete
-  accepted 4AG chain.**
+4AH is the single active Plan successor from clean D_AH
+`e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`. Committed 4AG evidence is
+historical, non-executable provenance only. The current approval stops after
+P_AH, two fresh independent Plan reviews over `D_AH..P_AH`, and exactly one
+Task-only B_AH or XP_AH terminal. Every block below is intended future
+execution and remains subject to its stated approval gate.
 
-  Before any Wave C change, run this active prerequisite. It extracts exactly
-  the three 4AG canonical rows, accepts only completed C0/I0/M0 evidence,
-  proves `B_4AF -> I -> D_AG -> P_AG -> B_AG -> E_AG -> R_AG`, and binds the
-  current test blob to historical I:
+- [ ] **Step AH-1: Commit and prove P_AH.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_subject='docs(plan): define collision-safe disposition proof'
+head_before="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_before" = "$d_ah"
+d_subject="$(git show -s --format=%s "$d_ah")"
+test "$d_subject" = 'docs(task): record exhausted status-based silent-success plan review'
+dirty_paths="$({ git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; } | sort -u)"
+expected_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+test "$dirty_paths" = "$expected_paths"
+git diff --check
+git add "$plan_file" "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$expected_paths"
+git commit -m "$p_subject"
+p_ah="$(git rev-parse --verify 'HEAD^{commit}')"
+test -n "$p_ah"
+p_actual_subject="$(git show -s --format=%s "$p_ah")"
+test "$p_actual_subject" = "$p_subject"
+p_subject_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$p_subject_count" -eq 1
+p_parent_count="$(git rev-list --parents -n 1 "$p_ah" | awk '{print NF - 1}')"
+test "$p_parent_count" -eq 1
+p_parent="$(git rev-parse "$p_ah^1")"
+test "$p_parent" = "$d_ah"
+p_distance="$(git rev-list --count "$d_ah..$p_ah")"
+test "$p_distance" -eq 1
+p_paths="$(git diff-tree --no-commit-id --name-only -r "$p_ah" | sort)"
+test "$p_paths" = "$expected_paths"
+p_range_paths="$(git diff --name-only "$d_ah..$p_ah" | sort)"
+test "$p_range_paths" = "$expected_paths"
+for path in "$plan_file" "$task_file"; do
+  mode="$(git ls-tree "$p_ah" "$path" | awk '{print $1}')"
+  test "$mode" = 100644
+done
+python3 - "$task_file" <<'PY'
+import pathlib
+import sys
+
+
+def section(text, start_heading, end_heading):
+    start_marker = f"{start_heading}\n"
+    end_marker = f"{end_heading}\n"
+    if text.count(start_marker) != 1 or text.count(end_marker) != 1:
+        raise SystemExit("p-ah-section-count")
+    start = text.index(start_marker) + len(start_marker)
+    end = text.index(end_marker, start)
+    return text[start:end]
+
+
+def exact_row(body, label, expected):
+    candidates = []
+    for source_line in body.splitlines():
+        line = source_line.strip(" \t")
+        view = line[1:] if line.startswith("|") else line
+        separator = view.find("|")
+        if separator >= 0 and view[:separator].strip(" \t") == label:
+            candidates.append(line)
+    if len(candidates) != 1:
+        raise SystemExit(f"p-ah-row-count:{label}")
+    row = candidates[0]
+    if not row.startswith("|") or not row.endswith("|") or "\\|" in row:
+        raise SystemExit(f"p-ah-row-shape:{label}")
+    parts = row.split("|")
+    if len(parts) != len(expected) + 2 or parts[0] or parts[-1]:
+        raise SystemExit(f"p-ah-row-cells:{label}")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if cells != expected:
+        raise SystemExit(f"p-ah-row-values:{label}")
+
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+work = section(text, "## Work Breakdown", "## Work Log")
+validation = section(text, "### Task execution evidence", "### T-TSDC-001 bounded implementation evidence")
+reviews = section(text, "## Review Evidence", "## Commit Ledger")
+ledger = section(text, "## Commit Ledger", "## Deferred and Blocked Items")
+deferred = section(text, "## Deferred and Blocked Items", "## Related Documents")
+
+exact_row(work, "T-TSDC-004R-4AH", [
+    "T-TSDC-004R-4AH",
+    "Define collision-safe byte classification and truthful disposition proof without changing frozen implementation",
+    "Plan/evidence",
+    "TSDC-010–014",
+    "fresh Plan reviews pending",
+    "controller and fresh independent reviewers",
+    "active Plan-only checkpoint; P_AH committed and resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority",
+])
+exact_row(validation, "T-TSDC-004", [
+    "T-TSDC-004",
+    "Historical 4AF RED evidence is preserved; 4AG is rejected history and 4AH adds no product RED because parser/test content is frozen.",
+    "Historical GREEN evidence is preserved; 4AH executes no tests, validators, wrapper, or revalidation.",
+    "P_AH committed and resolved by its exact unique subject; fresh Plan reviews are pending; no downstream authority exists.",
+    "active Plan-only; P_AH committed and resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority",
+])
+exact_row(reviews, "T-TSDC-004R-4AH collision-safe disposition Plan", [
+    "T-TSDC-004R-4AH collision-safe disposition Plan",
+    "Controller",
+    "pending fresh independent review",
+    "pending fresh independent review",
+    "awaiting exact reviewed range",
+    "checkpoint committed; fresh Plan reviews pending; no downstream authority",
+    "P_AH committed and resolved by its exact unique subject; no future OID is claimed in its own tree",
+])
+exact_row(ledger, "T-TSDC-004R-4AH Plan checkpoint P_AH", [
+    "T-TSDC-004R-4AH Plan checkpoint P_AH",
+    "Define collision-safe disposition proof",
+    "`docs(plan): define collision-safe disposition proof`",
+    "resolved by this exact unique subject",
+    "P_AH committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority. Plan + Task only from D_AH; both modes `100644`; no future OID is claimed in its own tree.",
+])
+exact_row(deferred, "T-TSDC-004R-3 atomic projection cutover", [
+    "T-TSDC-004R-3 atomic projection cutover",
+    "blocked; 4AH Plan reviews pending",
+    "Historical 4AF and rejected 4AG evidence remain frozen. P_AH committed and resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority.",
+    "await fresh 4AH Plan reviews and exactly one B_AH or XP_AH terminal; no correction, tests, revalidation, Wave C, downstream work, runtime, or remote action",
+])
+handoff = "Current 4AH final handoff: P_AH committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority."
+if deferred.count(handoff) != 1:
+    raise SystemExit("p-ah-final-handoff")
+PY
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+At the P_AH tree the canonical row is exactly:
+
+| Review unit | Owner | Specification | Quality/security | Reviewed range | Disposition | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| T-TSDC-004R-4AH collision-safe disposition Plan | Controller | pending fresh independent review | pending fresh independent review | awaiting exact reviewed range | checkpoint committed; fresh Plan reviews pending; no downstream authority | P_AH committed and resolved by its exact unique subject; no future OID is claimed in its own tree |
+
+- [ ] **Step AH-2: Parse completed Plan reviews and commit one terminal.**
 
 ```bash
 set -euo pipefail
@@ -10889,6 +11034,21 @@ shopt -s inherit_errexit
 plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
 task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
 test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_subject='docs(plan): define collision-safe disposition proof'
+subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record exhausted status-based silent-success plan review'
+  "$p_subject"
+)
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah")
 assert_edge() {
   local parent="$1"
   local child="$2"
@@ -10896,52 +11056,1046 @@ assert_edge() {
   local parent_count
   local first_parent
   git merge-base --is-ancestor "$parent" "$child"
-  distance="$(
-    git rev-list --count "$parent..$child"
-  )"
+  distance="$(git rev-list --count "$parent..$child")"
   test "$distance" -eq 1
-  parent_count="$(
-    git rev-list --parents -n 1 "$child" |
-      awk '{print NF - 1}'
-  )"
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
   test "$parent_count" -eq 1
-  first_parent="$(
-    git rev-parse "$child^1"
-  )"
+  first_parent="$(git rev-parse "$child^1")"
   test "$first_parent" = "$parent"
 }
-authority_ranges="$(
-  python3 - "$task_file" <<'PY'
+assert_commit_paths() {
+  local commit="$1"
+  shift
+  local actual
+  local expected
+  actual="$(git diff-tree --no-commit-id --name-only -r "$commit" | sort)"
+  expected="$(printf '%s\n' "$@" | sort)"
+  test "$actual" = "$expected"
+}
+assert_range_paths() {
+  local range="$1"
+  shift
+  local actual
+  local expected
+  actual="$(git diff --name-only "$range" | sort)"
+  expected="$(printf '%s\n' "$@" | sort)"
+  test "$actual" = "$expected"
+}
+assert_modes() {
+  local commit="$1"
+  shift
+  local mode
+  local path
+  for path in "$@"; do
+    mode="$(git ls-tree "$commit" "$path" | awk '{print $1}')"
+    test "$mode" = 100644
+  done
+}
+p_subject_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$p_subject_count" -eq 1
+p_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$p_subject" '$2 == s {print $1}')"
+test -n "$p_ah"
+commits+=("$p_ah")
+for index in "${!commits[@]}"; do
+  actual_subject="$(git show -s --format=%s "${commits[$index]}")"
+  test "$actual_subject" = "${subjects[$index]}"
+  subject_count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$subject_count" -eq 1
+done
+assert_edge "$b_4af" "$i"
+assert_edge "$i" "$d_ag"
+assert_edge "$d_ag" "$p_ag"
+assert_edge "$p_ag" "$d_ah"
+assert_edge "$d_ah" "$p_ah"
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$p_ah"
+assert_commit_paths "$b_4af" "$task_file"
+assert_commit_paths "$i" "$task_file" "$test_file"
+assert_commit_paths "$d_ag" "$task_file"
+assert_commit_paths "$p_ag" "$plan_file" "$task_file"
+assert_commit_paths "$d_ah" "$task_file"
+assert_commit_paths "$p_ah" "$plan_file" "$task_file"
+assert_range_paths "$b_4af..$i" "$task_file" "$test_file"
+assert_range_paths "$d_ah..$p_ah" "$plan_file" "$task_file"
+for commit in "${commits[@]}"; do
+  assert_modes "$commit" "$plan_file" "$task_file" "$test_file"
+done
+implementation_blob="$(git rev-parse "$i:$test_file")"
+p_ah_blob="$(git rev-parse "$p_ah:$test_file")"
+test "$p_ah_blob" = "$implementation_blob"
+dirty_paths="$({ git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; } | sort -u)"
+test "$dirty_paths" = "$task_file"
+selection="$({ python3 - "$task_file" "$d_ah" "$p_ah" <<'PY'
+import pathlib
+import re
+import sys
+
+label = "T-TSDC-004R-4AH collision-safe disposition Plan"
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    candidate_view = line[1:] if line.startswith("|") else line
+    separator = candidate_view.find("|")
+    if separator >= 0 and candidate_view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("plan-candidate-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|"):
+    raise SystemExit("plan-shape")
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("plan-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("plan-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("plan-label")
+if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+    raise SystemExit("plan-extra-range-token")
+if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+    raise SystemExit("plan-range-shape")
+if cells[4] != f"`{sys.argv[2]}..{sys.argv[3]}`":
+    raise SystemExit("plan-range")
+spec_re = r"C\d+/I\d+/M\d+; SPEC_COMPLIANCE (YES|NO); IMPLEMENTATION_READY (YES|NO)"
+quality_re = r"C\d+/I\d+/M\d+; QUALITY_SECURITY (PASS|FAIL); IMPLEMENTATION_READY (YES|NO)"
+if re.fullmatch(spec_re, cells[2], flags=re.ASCII) is None:
+    raise SystemExit("plan-spec-verdict")
+if re.fullmatch(quality_re, cells[3], flags=re.ASCII) is None:
+    raise SystemExit("plan-quality-verdict")
+accepted = (
+    cells[2] == "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES"
+    and cells[3] == "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES"
+)
+expected = (
+    (
+        "accepted; B_AH resolved by its exact unique subject",
+        "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+    )
+    if accepted
+    else (
+        "rejected/exhausted; XP_AH resolved by its exact unique subject",
+        "One or both fresh Plan reviews rejected; no correction, revalidation, or Wave C authority",
+    )
+)
+if tuple(cells[5:7]) != expected:
+    raise SystemExit("plan-outcome-pair")
+print("B_AH" if accepted else "XP_AH")
+PY
+})"
+test "$selection" = B_AH || test "$selection" = XP_AH
+case "$selection" in
+  B_AH)
+    terminal_subject='docs(task): record collision-safe disposition plan reviews'
+    ;;
+  XP_AH)
+    terminal_subject='docs(task): record exhausted collision-safe disposition plan review'
+    ;;
+esac
+git diff --check
+git add "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$task_file"
+git commit -m "$terminal_subject"
+terminal="$(git rev-parse --verify 'HEAD^{commit}')"
+test -n "$terminal"
+actual_subject="$(git show -s --format=%s "$terminal")"
+test "$actual_subject" = "$terminal_subject"
+subject_count="$(git log --all --format='%s' | grep -Fxc "$terminal_subject")"
+test "$subject_count" -eq 1
+parent_count="$(git rev-list --parents -n 1 "$terminal" | awk '{print NF - 1}')"
+test "$parent_count" -eq 1
+parent="$(git rev-parse "$terminal^1")"
+test "$parent" = "$p_ah"
+distance="$(git rev-list --count "$p_ah..$terminal")"
+test "$distance" -eq 1
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$terminal" | sort)"
+test "$commit_paths" = "$task_file"
+range_paths="$(git diff --name-only "$p_ah..$terminal" | sort)"
+test "$range_paths" = "$task_file"
+mode="$(git ls-tree "$terminal" "$task_file" | awk '{print $1}')"
+test "$mode" = 100644
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+XP_AH is terminal. Accepted B_AH still grants no revalidation or Wave C
+authority. A separate user approval must name the resolved full B_AH OID
+before any remaining 4AH block may execute.
+
+- [ ] **Step AH-3: Run the one approved byte-safe advisory revalidation.**
+
+  This is one self-contained Bash block. The inline Python oracle covers every
+  byte/status case before one counted real validator call. It preserves the
+  caller's cwd, environment, and stdin, emits no raw child bytes, and creates
+  no temporary or persistent raw-output artifact.
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_subject='docs(plan): define collision-safe disposition proof'
+b_subject='docs(task): record collision-safe disposition plan reviews'
+approved_b_ah_oid="${APPROVED_B_AH_OID:?explicit approved B_AH OID required}"
+[[ "$approved_b_ah_oid" =~ ^[0-9a-f]{40}$ ]]
+subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record exhausted status-based silent-success plan review'
+  "$p_subject"
+  "$b_subject"
+)
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah")
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(git rev-list --count "$parent..$child")"
+  test "$distance" -eq 1
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
+  test "$parent_count" -eq 1
+  first_parent="$(git rev-parse "$child^1")"
+  test "$first_parent" = "$parent"
+}
+assert_commit_paths() {
+  local commit="$1"
+  shift
+  local actual
+  local expected
+  actual="$(git diff-tree --no-commit-id --name-only -r "$commit" | sort)"
+  expected="$(printf '%s\n' "$@" | sort)"
+  test "$actual" = "$expected"
+}
+assert_range_paths() {
+  local range="$1"
+  shift
+  local actual
+  local expected
+  actual="$(git diff --name-only "$range" | sort)"
+  expected="$(printf '%s\n' "$@" | sort)"
+  test "$actual" = "$expected"
+}
+assert_modes() {
+  local commit="$1"
+  shift
+  local mode
+  local path
+  for path in "$@"; do
+    mode="$(git ls-tree "$commit" "$path" | awk '{print $1}')"
+    test "$mode" = 100644
+  done
+}
+p_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$p_count" -eq 1
+p_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$p_subject" '$2 == s {print $1}')"
+test -n "$p_ah"
+b_count="$(git log --all --format='%s' | grep -Fxc "$b_subject")"
+test "$b_count" -eq 1
+b_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$b_subject" '$2 == s {print $1}')"
+test -n "$b_ah"
+test "$b_ah" = "$approved_b_ah_oid"
+commits+=("$p_ah" "$b_ah")
+for index in "${!commits[@]}"; do
+  actual_subject="$(git show -s --format=%s "${commits[$index]}")"
+  test "$actual_subject" = "${subjects[$index]}"
+  subject_count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$subject_count" -eq 1
+done
+assert_edge "$b_4af" "$i"
+assert_edge "$i" "$d_ag"
+assert_edge "$d_ag" "$p_ag"
+assert_edge "$p_ag" "$d_ah"
+assert_edge "$d_ah" "$p_ah"
+assert_edge "$p_ah" "$b_ah"
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$b_ah"
+assert_commit_paths "$b_4af" "$task_file"
+assert_commit_paths "$i" "$task_file" "$test_file"
+assert_commit_paths "$d_ag" "$task_file"
+assert_commit_paths "$p_ag" "$plan_file" "$task_file"
+assert_commit_paths "$d_ah" "$task_file"
+assert_commit_paths "$p_ah" "$plan_file" "$task_file"
+assert_commit_paths "$b_ah" "$task_file"
+assert_range_paths "$b_4af..$i" "$task_file" "$test_file"
+assert_range_paths "$d_ah..$p_ah" "$plan_file" "$task_file"
+assert_range_paths "$p_ah..$b_ah" "$task_file"
+for commit in "${commits[@]}"; do
+  assert_modes "$commit" "$plan_file" "$task_file" "$test_file"
+done
+implementation_blob="$(git rev-parse "$i:$test_file")"
+b_ah_blob="$(git rev-parse "$b_ah:$test_file")"
+test "$b_ah_blob" = "$implementation_blob"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+python3 - "$task_file" "$d_ah" "$p_ah" <<'PY'
+import pathlib
+import re
+import sys
+
+label = "T-TSDC-004R-4AH collision-safe disposition Plan"
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0 and view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("accepted-plan-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|") or "\\|" in row or "\\`" in row:
+    raise SystemExit("accepted-plan-shape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("accepted-plan-cells")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("accepted-plan-label")
+if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+    raise SystemExit("accepted-plan-extra-range")
+if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+    raise SystemExit("accepted-plan-range-shape")
+expected = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[2]}..{sys.argv[3]}`",
+    "accepted; B_AH resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+if cells[2:7] != expected:
+    raise SystemExit("accepted-plan-values")
+PY
+wrapper_status=0
+wrapper_output="$({
+  python3 - \
+    python3 scripts/validation/check-target-surface-delta-contract.py \
+    --mode advisory <<'PY'
+import os
+import subprocess
+import sys
+
+RESERVED = 125
+
+
+def run_once(argv, runner=subprocess.run):
+    try:
+        if not argv:
+            raise ValueError("missing argv")
+        completed = runner(
+            argv,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+            shell=False,
+        )
+        rc = completed.returncode
+        payload = completed.stdout
+        if (
+            isinstance(rc, bool)
+            or not isinstance(rc, int)
+            or rc < 0
+            or rc > 255
+            or not isinstance(payload, (bytes, bytearray))
+        ):
+            return RESERVED, "internal"
+        return rc, "nonempty" if payload else "empty"
+    except Exception:
+        return RESERVED, "internal"
+
+
+def render(rc, output_class):
+    return f"result status={rc} output={output_class}\n".encode("ascii")
+
+
+class Completed:
+    def __init__(self, returncode, stdout):
+        self.returncode = returncode
+        self.stdout = stdout
+
+
+def require_canonical(result, expected, markers):
+    if result != expected:
+        raise RuntimeError("oracle-result")
+    rendered = render(*result)
+    expected_line = f"result status={expected[0]} output={expected[1]}\n".encode("ascii")
+    if rendered != expected_line:
+        raise RuntimeError("oracle-canonical")
+    if any(marker in rendered for marker in markers):
+        raise RuntimeError("oracle-raw-leak")
+
+
+def oracle():
+    markers = (b"stderr-merged-raw-marker", b"successor-marker")
+    cases = (
+        (0, b"", (0, "empty")),
+        (0, b"\n", (0, "nonempty")),
+        (0, b"stderr-merged-raw-marker", (0, "nonempty")),
+        (0, b"\x1e", (0, "nonempty")),
+        (0, b"\x00", (0, "nonempty")),
+        (23, b"", (23, "empty")),
+        (23, b"successor-marker", (23, "nonempty")),
+        (125, b"", (125, "empty")),
+        (125, b"stderr-merged-raw-marker", (125, "nonempty")),
+        (-9, b"", (125, "internal")),
+        (256, b"", (125, "internal")),
+        (0, "invalid-stdout", (125, "internal")),
+    )
+    expected_kwargs = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "check": False,
+        "shell": False,
+    }
+    for returncode, stdout, expected in cases:
+        calls = []
+
+        def fake(argv, **kwargs):
+            calls.append((argv, kwargs))
+            return Completed(returncode, stdout)
+
+        result = run_once(["fake-validator"], fake)
+        if calls != [(["fake-validator"], expected_kwargs)]:
+            raise RuntimeError("oracle-call-count-or-shape")
+        require_canonical(result, expected, markers)
+
+    exception_calls = []
+
+    def raising_runner(argv, **kwargs):
+        exception_calls.append((argv, kwargs))
+        raise RuntimeError("runner failure")
+
+    exception_result = run_once(["fake-validator"], raising_runner)
+    if exception_calls != [(["fake-validator"], expected_kwargs)]:
+        raise RuntimeError("oracle-exception-call-count")
+    require_canonical(exception_result, (125, "internal"), markers)
+
+    missing_calls = []
+
+    def forbidden_runner(argv, **kwargs):
+        missing_calls.append((argv, kwargs))
+        return Completed(0, b"")
+
+    missing_result = run_once([], forbidden_runner)
+    if missing_calls:
+        raise RuntimeError("oracle-missing-call-count")
+    require_canonical(missing_result, (125, "internal"), markers)
+
+
+def main():
+    oracle()
+    expected_argv = [
+        "python3",
+        "scripts/validation/check-target-surface-delta-contract.py",
+        "--mode",
+        "advisory",
+    ]
+    if sys.argv[1:] != expected_argv:
+        raise RuntimeError("real-argv")
+    real_calls = []
+
+    def counted_runner(argv, **kwargs):
+        real_calls.append((argv, kwargs))
+        return subprocess.run(argv, **kwargs)
+
+    rc, output_class = run_once(sys.argv[1:], counted_runner)
+    expected_real_kwargs = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "check": False,
+        "shell": False,
+    }
+    if real_calls != [(expected_argv, expected_real_kwargs)]:
+        raise RuntimeError("real-call-count-or-shape")
+    canonical = render(rc, output_class)
+    written = os.write(1, canonical)
+    if written != len(canonical):
+        raise RuntimeError("canonical-short-write")
+    return rc
+
+
+try:
+    rc = main()
+except Exception:
+    rc = RESERVED
+    try:
+        internal = render(RESERVED, "internal")
+        written = os.write(1, internal)
+        if written != len(internal):
+            raise RuntimeError("internal-short-write")
+    except Exception:
+        pass
+raise SystemExit(rc)
+PY
+})" || wrapper_status=$?
+case "$wrapper_output" in
+  'result status=125 output=internal')
+    exit 125
+    ;;
+  "result status=$wrapper_status output=empty" | \
+  "result status=$wrapper_status output=nonempty")
+    ;;
+  *)
+    exit 125
+    ;;
+esac
+if [ "$wrapper_status" -ne 0 ]; then
+  exit "$wrapper_status"
+fi
+case "$wrapper_output" in
+  'result status=0 output=empty' | 'result status=0 output=nonempty')
+    ;;
+  *)
+    exit 125
+    ;;
+esac
+```
+
+- [ ] **Step AH-4: Prove accepted B_AH, record E_AH, and prove the commit.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_subject='docs(plan): define collision-safe disposition proof'
+b_subject='docs(task): record collision-safe disposition plan reviews'
+e_subject='docs(task): record collision-safe disposition revalidation'
+edge() {
+  local parent="$1"
+  local child="$2"
+  local count
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  count="$(git rev-list --count "$parent..$child")"
+  test "$count" -eq 1
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
+  test "$parent_count" -eq 1
+  first_parent="$(git rev-parse "$child^1")"
+  test "$first_parent" = "$parent"
+}
+p_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$p_subject" '$2 == s {print $1}')"
+test -n "$p_ah"
+p_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$p_count" -eq 1
+b_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$b_subject" '$2 == s {print $1}')"
+test -n "$b_ah"
+b_count="$(git log --all --format='%s' | grep -Fxc "$b_subject")"
+test "$b_count" -eq 1
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$b_ah"
+subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record exhausted status-based silent-success plan review'
+  "$p_subject"
+  "$b_subject"
+)
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$b_ah")
+for index in "${!commits[@]}"; do
+  actual="$(git show -s --format=%s "${commits[$index]}")"
+  test "$actual" = "${subjects[$index]}"
+  count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$count" -eq 1
+done
+edge "$b_4af" "$i"
+edge "$i" "$d_ag"
+edge "$d_ag" "$p_ag"
+edge "$p_ag" "$d_ah"
+edge "$d_ah" "$p_ah"
+edge "$p_ah" "$b_ah"
+python3 - "$task_file" "$d_ah" "$p_ah" <<'PY'
+import pathlib
+import re
+import sys
+
+label = "T-TSDC-004R-4AH collision-safe disposition Plan"
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0 and view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("accepted-plan-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|") or "\\|" in row or "\\`" in row:
+    raise SystemExit("accepted-plan-shape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("accepted-plan-cells")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("accepted-plan-label")
+if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+    raise SystemExit("accepted-plan-extra-range")
+if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+    raise SystemExit("accepted-plan-range-shape")
+expected = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[2]}..{sys.argv[3]}`",
+    "accepted; B_AH resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+if cells[2:7] != expected:
+    raise SystemExit("accepted-plan-values")
+PY
+python3 - "$task_file" <<'PY'
+import pathlib
+import sys
+
+label = "T-TSDC-004R-4AH collision-safe disposition revalidation"
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0 and view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("evidence-row-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|"):
+    raise SystemExit("evidence-row-shape")
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("evidence-row-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("evidence-row-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("evidence-row-label")
+if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+    raise SystemExit("evidence-row-extra-range")
+expected = [
+    "pending fresh independent review",
+    "pending fresh independent review",
+    "awaiting exact reviewed range",
+    "E_AH committed; fresh composite reviews pending; no downstream authority",
+    "E_AH resolved by its exact unique subject; revalidation approval consumed; R_AH and XE_AH are not created",
+]
+if cells[2:7] != expected:
+    raise SystemExit("evidence-row-values")
+PY
+expected_plan_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+test -n "$expected_plan_paths"
+expected_test_paths="$(printf '%s\n' "$task_file" "$test_file" | sort)"
+test -n "$expected_test_paths"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$b_4af" | sort)"
+test "$commit_paths" = "$task_file"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$i" | sort)"
+test "$commit_paths" = "$expected_test_paths"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$d_ag" | sort)"
+test "$commit_paths" = "$task_file"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$p_ag" | sort)"
+test "$commit_paths" = "$expected_plan_paths"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$d_ah" | sort)"
+test "$commit_paths" = "$task_file"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$p_ah" | sort)"
+test "$commit_paths" = "$expected_plan_paths"
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$b_ah" | sort)"
+test "$commit_paths" = "$task_file"
+historical_range_paths="$(git diff --name-only "$b_4af..$i" | sort)"
+test "$historical_range_paths" = "$expected_test_paths"
+plan_range_paths="$(git diff --name-only "$d_ah..$p_ah" | sort)"
+test "$plan_range_paths" = "$expected_plan_paths"
+historical_blob="$(git rev-parse "$i:$test_file")"
+test -n "$historical_blob"
+b_blob="$(git rev-parse "$b_ah:$test_file")"
+test "$b_blob" = "$historical_blob"
+for commit_path in \
+  "$b_4af:$task_file" \
+  "$i:$task_file" "$i:$test_file" \
+  "$d_ag:$task_file" \
+  "$p_ag:$plan_file" "$p_ag:$task_file" \
+  "$d_ah:$task_file" \
+  "$p_ah:$plan_file" "$p_ah:$task_file" \
+  "$b_ah:$task_file"
+do
+  mode="$(git ls-tree "${commit_path%%:*}" "${commit_path#*:}" | awk '{print $1}')"
+  test "$mode" = 100644
+done
+dirty_paths="$({ git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; } | sort -u)"
+test "$dirty_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$task_file"
+git commit -m "$e_subject"
+e_ah="$(git rev-parse --verify 'HEAD^{commit}')"
+test -n "$e_ah"
+e_actual_subject="$(git show -s --format=%s "$e_ah")"
+test "$e_actual_subject" = "$e_subject"
+e_count="$(git log --all --format='%s' | grep -Fxc "$e_subject")"
+test "$e_count" -eq 1
+edge "$b_ah" "$e_ah"
+e_paths="$(git diff-tree --no-commit-id --name-only -r "$e_ah" | sort)"
+test "$e_paths" = "$task_file"
+e_range_paths="$(git diff --name-only "$b_ah..$e_ah" | sort)"
+test "$e_range_paths" = "$task_file"
+e_mode="$(git ls-tree "$e_ah" "$task_file" | awk '{print $1}')"
+test "$e_mode" = 100644
+e_blob="$(git rev-parse "$e_ah:$test_file")"
+test "$e_blob" = "$historical_blob"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+Before composite review, the revalidation row is exactly:
+
+| Review unit | Owner | Specification | Quality/security | Reviewed range | Disposition | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| T-TSDC-004R-4AH collision-safe disposition revalidation | Controller | pending fresh independent review | pending fresh independent review | awaiting exact reviewed range | E_AH committed; fresh composite reviews pending; no downstream authority | E_AH resolved by its exact unique subject; revalidation approval consumed; R_AH and XE_AH are not created |
+
+- [ ] **Step AH-5: Parse composite rows and commit R_AH or XE_AH.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_subject='docs(plan): define collision-safe disposition proof'
+b_subject='docs(task): record collision-safe disposition plan reviews'
+e_subject='docs(task): record collision-safe disposition revalidation'
+p_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$p_subject" '$2 == s {print $1}')"
+test -n "$p_ah"
+p_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$p_count" -eq 1
+b_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$b_subject" '$2 == s {print $1}')"
+test -n "$b_ah"
+b_count="$(git log --all --format='%s' | grep -Fxc "$b_subject")"
+test "$b_count" -eq 1
+e_ah="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$e_subject" '$2 == s {print $1}')"
+test -n "$e_ah"
+e_count="$(git log --all --format='%s' | grep -Fxc "$e_subject")"
+test "$e_count" -eq 1
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$e_ah"
+selection="$({ python3 - "$task_file" "$d_ah" "$p_ah" "$b_4af" "$i" "$b_ah" "$e_ah" <<'PY'
 import pathlib
 import re
 import sys
 
 labels = (
-    "T-TSDC-004R-4AG status-based silent-success Plan",
-    "T-TSDC-004R-4AG frozen canonical-row implementation",
-    "T-TSDC-004R-4AG status-based revalidation",
+    "T-TSDC-004R-4AH collision-safe disposition Plan",
+    "T-TSDC-004R-4AH frozen canonical-row implementation",
+    "T-TSDC-004R-4AH collision-safe disposition revalidation",
 )
-try:
-    text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-except (OSError, UnicodeError):
-    raise SystemExit("authority-read")
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
 found = {label: [] for label in labels}
 for source_line in text.splitlines():
     line = source_line.strip(" \t")
-    candidate_view = line[1:] if line.startswith("|") else line
-    separator = candidate_view.find("|")
-    if separator < 0:
-        continue
-    first_cell = candidate_view[:separator].strip(" \t")
-    if first_cell in found:
-        found[first_cell].append(line)
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0:
+        first_cell = view[:separator].strip(" \t")
+        if first_cell in found:
+            found[first_cell].append(line)
 if any(len(found[label]) != 1 for label in labels):
-    raise SystemExit("authority-row-count")
+    raise SystemExit("composite-candidate-count")
 rows = []
 for label in labels:
     row = found[label][0]
     if not row.startswith("|") or not row.endswith("|"):
-        raise SystemExit("authority-cell-count")
+        raise SystemExit("composite-shape")
+    if "\\|" in row or "\\`" in row:
+        raise SystemExit("composite-escape")
+    parts = row.split("|")
+    if len(parts) != 9 or parts[0] or parts[-1]:
+        raise SystemExit("composite-cell-count")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if len(cells) != 7 or cells[0] != label:
+        raise SystemExit("composite-label")
+    if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+        raise SystemExit("composite-extra-range")
+    if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+        raise SystemExit("composite-range-shape")
+    rows.append(cells)
+plan, implementation, revalidation = rows
+expected_plan = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[2]}..{sys.argv[3]}`",
+    "accepted; B_AH resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+if plan[2:7] != expected_plan:
+    raise SystemExit("composite-plan")
+if implementation[4] != f"`{sys.argv[4]}..{sys.argv[5]}`":
+    raise SystemExit("composite-implementation-range")
+if revalidation[4] != f"`{sys.argv[6]}..{sys.argv[7]}`":
+    raise SystemExit("composite-revalidation-range")
+spec_re = r"C\d+/I\d+/M\d+; SPEC_COMPLIANCE (YES|NO); COMMIT_READY (YES|NO)"
+quality_re = r"C\d+/I\d+/M\d+; QUALITY_SECURITY (PASS|FAIL); COMMIT_READY (YES|NO)"
+for cells in (implementation, revalidation):
+    if re.fullmatch(spec_re, cells[2], flags=re.ASCII) is None:
+        raise SystemExit("composite-spec-verdict")
+    if re.fullmatch(quality_re, cells[3], flags=re.ASCII) is None:
+        raise SystemExit("composite-quality-verdict")
+if implementation[2:4] != revalidation[2:4]:
+    raise SystemExit("composite-divergent-verdicts")
+accepted_reviews = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+]
+accepted = implementation[2:4] == accepted_reviews
+if accepted:
+    expected_implementation = [
+        "accepted; frozen implementation approved in 4AH composite review",
+        "Composite reviewers accepted the exact historical implementation and revalidation ranges; frozen test blob preserved",
+    ]
+    expected_revalidation = [
+        "accepted; R_AH resolved by its exact unique subject",
+        "Separately approved revalidation and both fresh composite reviews accepted; Task 4.5 authority granted",
+    ]
+else:
+    expected_implementation = [
+        "rejected/exhausted; frozen implementation not approved in 4AH composite review",
+        "One or both fresh composite reviews rejected; frozen history grants no downstream authority",
+    ]
+    expected_revalidation = [
+        "rejected/exhausted; XE_AH resolved by its exact unique subject",
+        "One or both fresh composite reviews rejected; no correction, retry, or Wave C authority",
+    ]
+if implementation[5:7] != expected_implementation:
+    raise SystemExit("composite-implementation-outcome")
+if revalidation[5:7] != expected_revalidation:
+    raise SystemExit("composite-revalidation-outcome")
+print("R_AH" if accepted else "XE_AH")
+PY
+})"
+test "$selection" = R_AH || test "$selection" = XE_AH
+case "$selection" in
+  R_AH)
+    terminal_subject='docs(task): record collision-safe disposition review'
+    ;;
+  XE_AH)
+    terminal_subject='docs(task): record exhausted collision-safe disposition review'
+    ;;
+esac
+dirty_paths="$({ git diff --name-only; git diff --cached --name-only; git ls-files --others --exclude-standard; } | sort -u)"
+test "$dirty_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$task_file"
+git commit -m "$terminal_subject"
+terminal="$(git rev-parse --verify 'HEAD^{commit}')"
+test -n "$terminal"
+actual_subject="$(git show -s --format=%s "$terminal")"
+test "$actual_subject" = "$terminal_subject"
+subject_count="$(git log --all --format='%s' | grep -Fxc "$terminal_subject")"
+test "$subject_count" -eq 1
+edge() {
+  local parent="$1"
+  local child="$2"
+  local count
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  count="$(git rev-list --count "$parent..$child")"
+  test "$count" -eq 1
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
+  test "$parent_count" -eq 1
+  first_parent="$(git rev-parse "$child^1")"
+  test "$first_parent" = "$parent"
+}
+edge "$b_4af" "$i"
+edge "$i" "$d_ag"
+edge "$d_ag" "$p_ag"
+edge "$p_ag" "$d_ah"
+edge "$d_ah" "$p_ah"
+edge "$p_ah" "$b_ah"
+edge "$b_ah" "$e_ah"
+edge "$e_ah" "$terminal"
+subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record exhausted status-based silent-success plan review'
+  "$p_subject"
+  "$b_subject"
+  "$e_subject"
+  "$terminal_subject"
+)
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$b_ah" "$e_ah" "$terminal")
+for index in "${!commits[@]}"; do
+  verified="$(git rev-parse --verify "${commits[$index]}^{commit}")"
+  test "$verified" = "${commits[$index]}"
+  commit_subject="$(git show -s --format=%s "${commits[$index]}")"
+  test "$commit_subject" = "${subjects[$index]}"
+  commit_subject_count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$commit_subject_count" -eq 1
+done
+expected_plan_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+expected_test_paths="$(printf '%s\n' "$task_file" "$test_file" | sort)"
+expected_paths=(
+  "$task_file"
+  "$expected_test_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$task_file"
+  "$task_file"
+)
+for index in "${!commits[@]}"; do
+  commit_paths="$(git diff-tree --no-commit-id --name-only -r "${commits[$index]}" | sort)"
+  test "$commit_paths" = "${expected_paths[$index]}"
+done
+terminal_range_paths="$(git diff --name-only "$e_ah..$terminal" | sort)"
+test "$terminal_range_paths" = "$task_file"
+plan_range_paths="$(git diff --name-only "$d_ah..$p_ah" | sort)"
+test "$plan_range_paths" = "$expected_plan_paths"
+historical_range_paths="$(git diff --name-only "$b_4af..$i" | sort)"
+test "$historical_range_paths" = "$expected_test_paths"
+evidence_range_paths="$(git diff --name-only "$b_ah..$e_ah" | sort)"
+test "$evidence_range_paths" = "$task_file"
+for commit_path in \
+  "$b_4af:$task_file" \
+  "$i:$task_file" "$i:$test_file" \
+  "$d_ag:$task_file" \
+  "$p_ag:$plan_file" "$p_ag:$task_file" \
+  "$d_ah:$task_file" \
+  "$p_ah:$plan_file" "$p_ah:$task_file" \
+  "$b_ah:$task_file" "$e_ah:$task_file" "$terminal:$task_file"
+do
+  mode="$(git ls-tree "${commit_path%%:*}" "${commit_path#*:}" | awk '{print $1}')"
+  test "$mode" = 100644
+done
+historical_blob="$(git rev-parse "$i:$test_file")"
+test -n "$historical_blob"
+terminal_blob="$(git rev-parse "$terminal:$test_file")"
+test "$terminal_blob" = "$historical_blob"
+head_after="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_after" = "$terminal"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+XE_AH is terminal. Only the exact accepted R_AH chain authorizes Task 4.5.
+
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Prove the complete accepted 4AH chain.**
+
+  Before any Wave C change, this prerequisite requires the exact accepted
+  review, range, disposition, and evidence values on all three 4AH rows. It
+  also requires unique R_AH at clean HEAD, every sole-parent distance-one
+  edge, exact commit and range paths, mode `100644`, and the frozen historical
+  test blob.
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_subject='docs(plan): define collision-safe disposition proof'
+b_subject='docs(task): record collision-safe disposition plan reviews'
+e_subject='docs(task): record collision-safe disposition revalidation'
+r_subject='docs(task): record collision-safe disposition review'
+resolve_unique_subject() {
+  local subject="$1"
+  local count
+  local oid
+  count="$(git log --all --format='%s' | grep -Fxc "$subject")"
+  test "$count" -eq 1
+  oid="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$subject" '$2 == s {print $1}')"
+  test -n "$oid"
+  printf '%s\n' "$oid"
+}
+edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(git rev-list --count "$parent..$child")"
+  test "$distance" -eq 1
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
+  test "$parent_count" -eq 1
+  first_parent="$(git rev-parse "$child^1")"
+  test "$first_parent" = "$parent"
+}
+p_ah="$(resolve_unique_subject "$p_subject")"
+test -n "$p_ah"
+b_ah="$(resolve_unique_subject "$b_subject")"
+test -n "$b_ah"
+e_ah="$(resolve_unique_subject "$e_subject")"
+test -n "$e_ah"
+r_ah="$(resolve_unique_subject "$r_subject")"
+test -n "$r_ah"
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$r_ah"
+python3 - \
+  "$task_file" "$d_ah" "$p_ah" "$b_4af" "$i" "$b_ah" "$e_ah" <<'PY'
+import pathlib
+import re
+import sys
+
+labels = (
+    "T-TSDC-004R-4AH collision-safe disposition Plan",
+    "T-TSDC-004R-4AH frozen canonical-row implementation",
+    "T-TSDC-004R-4AH collision-safe disposition revalidation",
+)
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+found = {label: [] for label in labels}
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0:
+        first_cell = view[:separator].strip(" \t")
+        if first_cell in found:
+            found[first_cell].append(line)
+if any(len(found[label]) != 1 for label in labels):
+    raise SystemExit("authority-candidate-count")
+rows = []
+for label in labels:
+    row = found[label][0]
+    if not row.startswith("|") or not row.endswith("|"):
+        raise SystemExit("authority-shape")
     if "\\|" in row or "\\`" in row:
         raise SystemExit("authority-escape")
     parts = row.split("|")
@@ -10950,202 +12104,115 @@ for label in labels:
     cells = [part.strip(" \t") for part in parts[1:-1]]
     if len(cells) != 7 or cells[0] != label:
         raise SystemExit("authority-label")
+    if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+        raise SystemExit("authority-extra-range")
+    if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+        raise SystemExit("authority-range-shape")
     rows.append(cells)
-expected_reviews = (
-    (
-        "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
-        "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
-    ),
-    (
-        "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
-        "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
-    ),
-    (
-        "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
-        "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
-    ),
-)
-ranges = []
-for cells, expected in zip(rows, expected_reviews, strict=True):
-    if tuple(cells[2:4]) != expected:
-        raise SystemExit("authority-review")
-    for index, cell in enumerate(cells):
-        if index != 4 and ("`" in cell or ".." in cell):
-            raise SystemExit("authority-extra-range")
-    match = re.fullmatch(
-        r"`([0-9a-f]{40})\.\.([0-9a-f]{40})`",
-        cells[4],
-        flags=re.ASCII,
-    )
-    if match is None:
-        raise SystemExit("authority-range")
-    ranges.append(f"{match.group(1)}..{match.group(2)}")
-print("\t".join(ranges))
+plan, implementation, revalidation = rows
+expected_plan = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[2]}..{sys.argv[3]}`",
+    "accepted; B_AH resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+expected_implementation = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+    f"`{sys.argv[4]}..{sys.argv[5]}`",
+    "accepted; frozen implementation approved in 4AH composite review",
+    "Composite reviewers accepted the exact historical implementation and revalidation ranges; frozen test blob preserved",
+]
+expected_revalidation = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+    f"`{sys.argv[6]}..{sys.argv[7]}`",
+    "accepted; R_AH resolved by its exact unique subject",
+    "Separately approved revalidation and both fresh composite reviews accepted; Task 4.5 authority granted",
+]
+if plan[2:7] != expected_plan:
+    raise SystemExit("authority-plan")
+if implementation[2:7] != expected_implementation:
+    raise SystemExit("authority-implementation")
+if revalidation[2:7] != expected_revalidation:
+    raise SystemExit("authority-revalidation")
 PY
-)"
-test -n "$authority_ranges"
-plan_review_range="${authority_ranges%%$'\t'*}"
-test -n "$plan_review_range"
-authority_tail="${authority_ranges#*$'\t'}"
-test -n "$authority_tail"
-implementation_review_range="${authority_tail%%$'\t'*}"
-test -n "$implementation_review_range"
-revalidation_review_range="${authority_tail##*$'\t'}"
-test -n "$revalidation_review_range"
-design_base="${plan_review_range%%..*}"
-test "$design_base" = \
-  "737838fe80880b7eadbfb1c7e18d8dc251bcc8b9"
-plan_checkpoint="${plan_review_range##*..}"
-test -n "$plan_checkpoint"
-implementation_base="${implementation_review_range%%..*}"
-test "$implementation_base" = \
-  "7e32c37cafde08b108ee33e3439cda3aea336961"
-implementation_commit="${implementation_review_range##*..}"
-test "$implementation_commit" = \
-  "a7d05b0e5c0ffaeccde9e401450e696855cfb2b5"
-evidence_base="${revalidation_review_range%%..*}"
-test -n "$evidence_base"
-evidence_checkpoint="${revalidation_review_range##*..}"
-test -n "$evidence_checkpoint"
-review_checkpoint="$(
-  git rev-parse --verify 'HEAD^{commit}'
-)"
-test -n "$review_checkpoint"
-bound_commits=(
-  "$implementation_base" "$implementation_commit" "$design_base"
-  "$plan_checkpoint" "$evidence_base" "$evidence_checkpoint"
-  "$review_checkpoint"
-)
-expected_subjects=(
+subjects=(
   'docs(task): record canonical-row authority plan reviews'
   'fix(ci): close canonical-row authority proof'
   'docs(task): record exhausted canonical-row authority review'
   'docs(plan): define status-based silent-success proof'
-  'docs(task): record status-based silent-success plan reviews'
-  'docs(task): record status-based silent-success revalidation'
-  'docs(task): record status-based silent-success review'
+  'docs(task): record exhausted status-based silent-success plan review'
+  "$p_subject"
+  "$b_subject"
+  "$e_subject"
+  "$r_subject"
 )
-for index in "${!bound_commits[@]}"; do
-  verified_commit="$(
-    git rev-parse --verify "${bound_commits[$index]}^{commit}"
-  )"
-  test "$verified_commit" = "${bound_commits[$index]}"
-  bound_subject="$(
-    git show -s --format=%s "${bound_commits[$index]}"
-  )"
-  test "$bound_subject" = "${expected_subjects[$index]}"
-  subject_count="$(
-    git log --all --format='%s' |
-      grep -Fxc "${expected_subjects[$index]}"
-  )"
-  test "$subject_count" -eq 1
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$b_ah" "$e_ah" "$r_ah")
+for index in "${!commits[@]}"; do
+  verified="$(git rev-parse --verify "${commits[$index]}^{commit}")"
+  test "$verified" = "${commits[$index]}"
+  actual="$(git show -s --format=%s "${commits[$index]}")"
+  test "$actual" = "${subjects[$index]}"
+  count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$count" -eq 1
 done
-assert_edge "$implementation_base" "$implementation_commit"
-assert_edge "$implementation_commit" "$design_base"
-assert_edge "$design_base" "$plan_checkpoint"
-assert_edge "$plan_checkpoint" "$evidence_base"
-assert_edge "$evidence_base" "$evidence_checkpoint"
-assert_edge "$evidence_checkpoint" "$review_checkpoint"
-expected_plan_paths="$(
-  printf '%s\n' "$plan_file" "$task_file" |
-    sort
-)"
-test -n "$expected_plan_paths"
-expected_implementation_paths="$(
-  printf '%s\n' "$task_file" "$test_file" |
-    sort
-)"
-test -n "$expected_implementation_paths"
+edge "$b_4af" "$i"
+edge "$i" "$d_ag"
+edge "$d_ag" "$p_ag"
+edge "$p_ag" "$d_ah"
+edge "$d_ah" "$p_ah"
+edge "$p_ah" "$b_ah"
+edge "$b_ah" "$e_ah"
+edge "$e_ah" "$r_ah"
+expected_plan_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+expected_test_paths="$(printf '%s\n' "$task_file" "$test_file" | sort)"
 expected_paths=(
   "$task_file"
-  "$expected_implementation_paths"
+  "$expected_test_paths"
+  "$task_file"
+  "$expected_plan_paths"
   "$task_file"
   "$expected_plan_paths"
   "$task_file"
   "$task_file"
   "$task_file"
 )
-for index in "${!bound_commits[@]}"; do
-  commit_paths="$(
-    git diff-tree --no-commit-id --name-only -r \
-      "${bound_commits[$index]}" |
-      sort
-  )"
-  test "$commit_paths" = "${expected_paths[$index]}"
+for index in "${!commits[@]}"; do
+  paths="$(git diff-tree --no-commit-id --name-only -r "${commits[$index]}" | sort)"
+  test "$paths" = "${expected_paths[$index]}"
 done
-plan_range_paths="$(
-  git diff --name-only "$design_base..$plan_checkpoint" |
-    sort
-)"
+historical_range_paths="$(git diff --name-only "$b_4af..$i" | sort)"
+test "$historical_range_paths" = "$expected_test_paths"
+plan_range_paths="$(git diff --name-only "$d_ah..$p_ah" | sort)"
 test "$plan_range_paths" = "$expected_plan_paths"
-implementation_range_paths="$(
-  git diff --name-only "$implementation_base..$implementation_commit" |
-    sort
-)"
-test "$implementation_range_paths" = "$expected_implementation_paths"
-base_range_paths="$(
-  git diff --name-only "$plan_checkpoint..$evidence_base" |
-    sort
-)"
-test "$base_range_paths" = "$task_file"
-evidence_range_paths="$(
-  git diff --name-only "$evidence_base..$evidence_checkpoint" |
-    sort
-)"
+evidence_range_paths="$(git diff --name-only "$b_ah..$e_ah" | sort)"
 test "$evidence_range_paths" = "$task_file"
-review_range_paths="$(
-  git diff --name-only "$evidence_checkpoint..$review_checkpoint" |
-    sort
-)"
-test "$review_range_paths" = "$task_file"
+terminal_range_paths="$(git diff --name-only "$e_ah..$r_ah" | sort)"
+test "$terminal_range_paths" = "$task_file"
 for commit_path in \
-  "$implementation_base:$task_file" \
-  "$implementation_commit:$task_file" \
-  "$implementation_commit:$test_file" \
-  "$design_base:$task_file" \
-  "$plan_checkpoint:$plan_file" \
-  "$plan_checkpoint:$task_file" \
-  "$evidence_base:$task_file" \
-  "$evidence_base:$test_file" \
-  "$evidence_checkpoint:$task_file" \
-  "$evidence_checkpoint:$test_file" \
-  "$review_checkpoint:$task_file" \
-  "$review_checkpoint:$test_file"
+  "$b_4af:$task_file" \
+  "$i:$task_file" "$i:$test_file" \
+  "$d_ag:$task_file" \
+  "$p_ag:$plan_file" "$p_ag:$task_file" \
+  "$d_ah:$task_file" \
+  "$p_ah:$plan_file" "$p_ah:$task_file" \
+  "$b_ah:$task_file" "$e_ah:$task_file" "$r_ah:$task_file"
 do
-  tree_mode="$(
-    git ls-tree "${commit_path%%:*}" "${commit_path#*:}" |
-      awk '{print $1}'
-  )"
-  test "$tree_mode" = "100644"
+  mode="$(git ls-tree "${commit_path%%:*}" "${commit_path#*:}" | awk '{print $1}')"
+  test "$mode" = 100644
 done
-implementation_blob="$(
-  git rev-parse "$implementation_commit:$test_file"
-)"
-test -n "$implementation_blob"
-evidence_base_blob="$(
-  git rev-parse "$evidence_base:$test_file"
-)"
-test "$evidence_base_blob" = "$implementation_blob"
-evidence_blob="$(
-  git rev-parse "$evidence_checkpoint:$test_file"
-)"
-test "$evidence_blob" = "$implementation_blob"
-review_blob="$(
-  git rev-parse "$review_checkpoint:$test_file"
-)"
-test "$review_blob" = "$implementation_blob"
-head_commit="$(
-  git rev-parse HEAD
-)"
-test "$head_commit" = "$review_checkpoint"
-clean_state="$(
-  git status --porcelain=v1 --untracked-files=all
-)"
+historical_blob="$(git rev-parse "$i:$test_file")"
+test -n "$historical_blob"
+r_blob="$(git rev-parse "$r_ah:$test_file")"
+test "$r_blob" = "$historical_blob"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
 test -z "$clean_state"
 ```
 
-  The accepted R_AG is the only Wave C authority. The former 4AF-only block
-  below is retained as non-executable provenance and cannot authorize work.
+The accepted R_AH is the only Wave C authority. The 4AF block below remains a
+non-executable historical illustration and cannot authorize work.
 
 **Historical non-executable 4AF authority illustration:**
 
@@ -12036,14 +13103,18 @@ is not applicable because neither surface is mutated.
 - Revision R2 and successors through 4AF are historical. 4AF's sole
   implementation is frozen evidence and its rejected quality/security review
   grants no Wave C or downstream authority.
-- The user's current approval authorizes only the 4AG Plan/Task checkpoint
-  P_AG, two fresh independent Plan reviews over exact `D_AG..P_AG`, and one
-  accepted B_AG or rejected XP_AG Task-only terminal. It authorizes no test,
-  validator, product, workflow, runtime, or remote execution.
-- A future status-based evidence-only revalidation requires accepted B_AG plus
-  a separate explicit one-attempt approval. That approval may create Task-only
-  E_AG and obtain fresh composite reviews; only accepted Task-only R_AG
-  authorizes Task 4.5 Wave C. Rejected XP_AG or XE_AG is terminal.
+- 4AG is rejected/exhausted at XP_AG and is preserved only as historical
+  evidence. Its rejected terminal grants no correction or downstream authority.
+- The user's current approval authorizes only the 4AH Plan/Task checkpoint
+  P_AH from D_AH `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`, two fresh
+  independent Plan reviews over exact `D_AH..P_AH`, and one accepted B_AH or
+  rejected XP_AH Task-only terminal. It authorizes no test, validator, product,
+  wrapper, workflow, runtime, remote, or Wave C execution.
+- A future collision-safe evidence-only revalidation requires accepted B_AH
+  plus a separate explicit one-attempt approval naming the resolved B_AH full
+  OID. That approval may create Task-only E_AH and obtain fresh composite
+  reviews; only accepted Task-only R_AH authorizes Task 4.5 Wave C. Rejected
+  XP_AH or XE_AH is terminal.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
