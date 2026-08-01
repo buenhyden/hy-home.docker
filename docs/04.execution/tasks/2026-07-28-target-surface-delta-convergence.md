@@ -228,6 +228,24 @@ read-only observation only.
   exact unique subject; B_AH, E_AH, R_AH, and XE_AH are not created. No test,
   validator, wrapper, revalidation, composite review, implementation, Wave C,
   or downstream authority follows.
+- The user approved T-TSDC-004R-4AI as the strictly Plan-only successor from
+  clean D_AI `88f55837be251318cd697bd8a1ab3a4f0ed1a824`, which is also the
+  Task-only XP_AH terminal. This approval authorizes only Plan/Task drafting,
+  future P_AI with exact subject
+  `docs(plan): define session-bound collision-safe proof`, two fresh
+  independent Plan reviews over `D_AI..P_AI`, and exactly one future Task-only
+  B_AI or XP_AI terminal. It does not authorize validators, tests, wrapper or
+  proof execution, revalidation, E_AI, composite review, R_AI, XE_AI,
+  implementation, runtime, remote, dependency, secret, direct pre-commit,
+  Graphify update, Task 4.5, or Wave C.
+- This P_AI tree states exactly: “P_AI committed; resolved by its exact unique
+  subject; fresh Plan reviews pending; no downstream authority”. Its Commit
+  Ledger OID is “resolved by this exact unique subject”; no future full OID is
+  invented. Even an accepted B_AI remains insufficient for revalidation until
+  a separate future user approval names its resolved full OID and authorizes
+  one session-bound attempt.
+- 4AI revalidation approval owner/source: not approved; no source recorded.
+- 4AI `APPROVED_B_AI_OID`: not recorded; B_AI is not created.
 
 Rollback is one logical task commit at a time after exact-range review. It
 never uses `git reset --hard`, discards unrelated user changes, or attempts a
@@ -240,11 +258,12 @@ remote/runtime rollback for surfaces this wave does not mutate.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active; 4AH is rejected/exhausted at Plan review and XP_AH is resolved by its exact unique subject; no Wave C authority; historical 4AF/4AG evidence remains unchanged |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active; P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority |
 | T-TSDC-004R-4AG | Record status-based silent-success proof without changing frozen product behavior | Plan/evidence | TSDC-010–014 | completed fresh Plan reviews; no downstream validation | controller and fresh independent reviewers | rejected/exhausted at Plan review; P_AG committed and XP_AG resolved by its exact unique subject; no tests, revalidation, or implementation |
 | T-TSDC-004R-4AH | Define collision-safe byte classification and truthful disposition proof without changing frozen implementation | Plan/evidence | TSDC-010–014 | completed rejected Plan reviews only; no downstream validation | controller and fresh independent reviewers | rejected/exhausted at Plan review; XP_AH resolved by its exact unique subject; B_AH/E_AH/R_AH/XE_AH not created; no downstream authority |
-| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after a separately approved future successor and Wave C completion | blocked; 4AH is rejected/exhausted and no accepted R_AH/Wave C authority exists |
-| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; Task 5 and Wave C authority are absent after 4AH Plan-review exhaustion |
+| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | two future fresh independent reviews over exact `D_AI..P_AI` | controller and future fresh independent reviewers | P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority |
+| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after a separately approved future successor and Wave C completion | blocked; no accepted R_AI or Wave C authority exists |
+| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; Task 5 and Wave C authority are absent while 4AI Plan reviews are pending |
 
 Tasks are serial at their commit/review boundaries. A task may not advance
 until its implementation is committed, the Task ledger is current, and a
@@ -431,6 +450,10 @@ have no unresolved Critical or Important findings.
 | 2026-07-30 | T-TSDC-004R-4AG status-based silent-success design return | User / Controller | Approved Plan-only successor from D_AG 737838fe80880b7eadbfb1c7e18d8dc251bcc8b9. It replaces only the delta capture/evidence envelope that falsely required nonempty successful advisory output; all parser behavior, 61-family tests, command order, scopes, and prohibitions remain frozen. At approval time P_AG and terminal Plan evidence did not exist; the later rejected-review row records their final disposition. Tests and revalidation required accepted B_AG plus a separate one-attempt user approval, so Wave C remained blocked. |
 | 2026-08-01 | T-TSDC-004R-4AH Plan-only checkpoint design | User / Controller | At clean D_AH `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`, the user approved only a successor Plan/Task checkpoint. The design replaces sentinel/raw Bash capture with a single-call byte-safe inline Python wrapper and requires candidate-first, outcome-specific non-pending disposition/evidence parsing. No test, validator, wrapper, revalidation, review, terminal commit, implementation, runtime, remote, or Wave C action occurred. P_AH self-status is truthful without an invented OID. |
 | 2026-08-01 | T-TSDC-004R-4AH rejected Plan reviews | Fresh independent specification and quality/security reviewers | Both reviewed exact full range `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad..9ff217e63eaf452871cfc3ef47775e0fbd03e706`. Specification returned `C0/I0/M0`, `SPEC_COMPLIANCE YES`, and `IMPLEMENTATION_READY YES`. Quality/security returned `C0/I1/M0`, `QUALITY_SECURITY FAIL`, and `IMPLEMENTATION_READY NO`: AH-3 wrapper execution and AH-4 E_AH commit are separate sessions, so E_AH cannot prove the approved wrapper ran once and succeeded in the same fail-fast session; skipped/replayed evidence could reach composite/Task 4.5. The no-correction Plan loop is rejected/exhausted; XP_AH is the sole terminal resolved by its exact unique subject. No test, validator, wrapper, revalidation, product/runtime/remote action, composite review, implementation, or Wave C occurred. |
+| 2026-08-01 | T-TSDC-004R-4AI session-bound proof approval | User / Controller | From clean D_AI `88f55837be251318cd697bd8a1ab3a4f0ed1a824`, the user approved only Plan/Task drafting, future P_AI, two fresh independent Plan reviews over `D_AI..P_AI`, and exactly one future Task-only B_AI or XP_AI terminal. The 4AI design binds any later separately approved wrapper call, approval consumption, sanitized Task evidence mutation, and E_AI commit into one fail-fast session. No validator, test, wrapper, revalidation, implementation, runtime, remote, Graphify, Task 4.5, or Wave C action occurred. |
+| 2026-08-01 | T-TSDC-004R-4AI Plan checkpoint | Controller | P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority. The current P_AI OID cell intentionally resolves by exact unique subject without inventing its future full OID. |
+| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Not run; B_AI is not created; approval not consumed; E_AI is not created. |
+| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Not run; E_AI, R_AI, and XE_AI are not created. |
 
 ## Verification Evidence
 
@@ -442,6 +465,9 @@ have no unresolved Critical or Important findings.
 | Spec 135 Markdown | zero errors | Passed before Plan drafting |
 | Document implementation alignment | zero failures | Passed before Plan drafting |
 | `git diff --check` | zero whitespace errors | Passed before Plan drafting |
+| 4AI Plan-only checkpoint | P_AI and Task are the only changed checkpoint paths; no execution claim | P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority |
+| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper call, sanitized result, and Task-only E_AI in one session | Not run; B_AI is not created and no approval is consumed |
+| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly one R_AI/XE_AI terminal | Not run; E_AI, R_AI, and XE_AI are not created |
 | Revision R1 Plan/Task metadata and Markdown | zero failures | Passed: explicit base `a0f91bb5` selected 2 changed documents with 0 violations; explicit two-file `markdownlint-cli2 --no-globs` linted 2 files with 0 errors |
 | Revision R1 Plan/Task links and alignment | zero failures | Passed: traceability checked 46 catalog pairs with 0 failures; implementation alignment checked 674 stage documents and 5,663 repository-local Markdown links with 0 failures |
 | Revision R1 Plan/Task diff hygiene | zero whitespace errors | Passed: `git diff --check` returned 0 |
@@ -456,9 +482,9 @@ have no unresolved Critical or Important findings.
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
 | T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression. Review remediations produced 17 resolver/static failures, six quoted-key failures, five global-uniqueness/Dozzle failures, and the exact `141 != 140` manifest-oracle failure. | Initial focused tests passed 7/7. Successive remediation suites passed 11/11, 16/16, and finally 17/17; the exact 141-row manifest oracle passes 1/1 with Dozzle path-specific owner, consumer, update, and pending-verdict assertions. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff gates pass. Final independent specification and quality/security reviews of `b1e62873..60e0313c` each returned C0/I0/M0 and COMMIT_READY YES; all 141 manifest verdict pairs remain pending for Task 6. | completed |
-| T-TSDC-004 | Historical 4AF RED evidence is preserved; 4AG and 4AH are rejected Plan history and 4AH adds no product RED because parser/test content is frozen. | Historical GREEN evidence is preserved; 4AH ran no tests, validators, wrapper, or revalidation. | Exact 4AH Plan-review range completed and rejected/exhausted; XP_AH is resolved by its exact unique subject; no downstream authority exists. | active Task 4; 4AH rejected/exhausted at Plan review; no Wave C authority |
-| T-TSDC-005 | Not run — no Wave C authority exists | Not run — no Wave C authority exists | Not run — 4AH rejected/exhausted at Plan review | blocked |
-| T-TSDC-006 | Not run — Wave C and Task 5 blocked | Not run — Wave C and Task 5 blocked | Not run — 4AH exhausted at Plan review; no downstream evidence | blocked |
+| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI changes only Plan/Task evidence design and adds no product RED. | Historical GREEN evidence is preserved; 4AI ran no tests, validators, wrapper, proof, or revalidation. | P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority. | active Task 4; 4AI Plan review pending; no Wave C authority |
+| T-TSDC-005 | Not run — no accepted R_AI or Wave C authority exists | Not run — no accepted R_AI or Wave C authority exists | Not run — 4AI Plan reviews are pending | blocked |
+| T-TSDC-006 | Not run — Wave C and Task 5 blocked | Not run — Wave C and Task 5 blocked | Not run — 4AI has no downstream authority | blocked |
 
 ### T-TSDC-001 bounded implementation evidence
 
@@ -1893,6 +1919,46 @@ have no unresolved Critical or Important findings.
   review and revalidation are blocked by Plan-review exhaustion; no Wave C or
   downstream authority exists.
 
+### T-TSDC-004R-4AI session-bound collision-safe Plan-only boundary
+
+- D_AI is the clean Task-only XP_AH terminal
+  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`. Historical 4AG and 4AH rows,
+  OIDs, ranges, and verdicts remain immutable evidence. P_AI is the current
+  Plan-and-Task-only checkpoint with exact subject
+  `docs(plan): define session-bound collision-safe proof`; this tree states
+  exactly: “P_AI committed; resolved by its exact unique subject; fresh Plan
+  reviews pending; no downstream authority”.
+- The prospective accepted lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH ->
+  P_AH -> XP_AH/D_AI -> P_AI -> B_AI -> E_AI -> R_AI`. The exact Plan-review
+  range is future `D_AI..P_AI`. Exactly one Task-only B_AI or XP_AI may record
+  those two fresh reviews. B_AI alone grants no wrapper, revalidation,
+  composite-review, implementation, Task 4.5, or Wave C authority.
+- 4AI changes only the rejected AH-3/AH-4 session boundary. Under a separate
+  future approval naming the resolved full B_AI OID, one AI-3 fail-fast
+  session must consume that approval, execute the byte-safe wrapper exactly
+  once, atomically record only its sanitized outcome in this Task, commit
+  E_AI, and prove E_AI parent, distance, Task-only path, `100644` mode, exact
+  subject uniqueness, and clean state. E_AI cannot be committed by a later or
+  replayed session.
+- 4AI transaction state: not-run; separate approval required.
+- 4AI sanitized result: not-run.
+- Immediately before the single wrapper call, the same atomic updater must
+  replace those two unique not-run markers with an in-progress,
+  approval-consumed guard and a pending sanitized-result state. After the
+  call, that session must replace the guard with a completed,
+  approval-consumed, no-retry state and an outcome-specific sanitized marker
+  carrying `result status=N output=empty|nonempty|internal`; E_AI is then
+  resolved by its exact unique subject without inventing its own future OID.
+- Any failure after the in-progress guard consumes the approval and requires
+  a new, explicit recovery approval before cleanup or retry. A nonzero status,
+  `output=internal`, incomplete guard transition, missing E_AI self-subject
+  status, or non-accepted fresh composite review forces XE_AI rejection and
+  cannot authorize R_AI. Only an accepted R_AI unlocks Task 4.5 and Wave C.
+- No 4AI validator, test, wrapper, proof, revalidation, composite review,
+  implementation, runtime, remote, Graphify, Task 4.5, or Wave C action has
+  run. Fresh independent Plan reviews are pending and no downstream authority
+  exists.
+
 ### Current evidence boundaries
 
 - Local tracked definitions do not establish remote workflow success,
@@ -1907,6 +1973,9 @@ have no unresolved Critical or Important findings.
 - The 4AF implementation review is rejected/exhausted. Its historical
   implementation commit is evidence only and does not authorize a correction,
   test execution, Wave C, downstream work, runtime action, or remote action.
+- The active 4AI checkpoint is Plan-only. Pending reviews and future/uncreated
+  B_AI, XP_AI, E_AI, R_AI, and XE_AI do not establish revalidation, Task 4.5,
+  Wave C, downstream, runtime, or remote authority.
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -1981,9 +2050,12 @@ consume or create Agent authorization.
 | T-TSDC-004R-4AH collision-safe disposition Plan | Controller | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I1/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad..9ff217e63eaf452871cfc3ef47775e0fbd03e706` | rejected/exhausted; XP_AH resolved by its exact unique subject | One or both fresh Plan reviews rejected; no correction, revalidation, or Wave C authority |
 | T-TSDC-004R-4AH frozen canonical-row implementation | Historical 4AF implementer / fresh composite reviewers | not run; blocked by Plan-review exhaustion | not run; blocked by Plan-review exhaustion | not run | blocked; 4AH exhausted at Plan review | Frozen historical implementation remains unchanged; no fresh composite review occurs. |
 | T-TSDC-004R-4AH collision-safe disposition revalidation | not run | not run; blocked by Plan-review exhaustion | not run; blocked by Plan-review exhaustion | not run | blocked; 4AH exhausted at Plan review | B_AH is not created, so no E_AH or Task 4.5 authority exists. |
-| T-TSDC-005 | pending | pending | pending | not available | blocked | 4AH is rejected/exhausted; no accepted R_AH or Wave C authority exists. |
-| T-TSDC-006 | pending | pending | pending | not available | blocked | Wave C and Task 5 remain blocked; no accepted downstream authority exists. |
-| Whole branch | not applicable | pending final fresh reviewer after a separately approved successor chain | pending different final fresh reviewer after a separately approved successor chain | not available | blocked | 4AH is rejected/exhausted at Plan review, so historical 4AF/4AG evidence grants no Wave C, Tasks 5–6, or final branch-review authority. |
+| T-TSDC-004R-4AI session-bound collision-safe Plan | Controller | pending fresh independent review | pending fresh independent review | awaiting exact reviewed range | checkpoint committed; fresh Plan reviews pending; no downstream authority | P_AI committed and resolved by its exact unique subject; no future OID is claimed in its own tree |
+| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | blocked; Plan reviews pending | blocked; Plan reviews pending | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | blocked; B_AI is not created | Frozen implementation remains historical; no composite-review authority |
+| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | blocked; Plan reviews pending | blocked; Plan reviews pending | awaiting exact reviewed range | blocked; B_AI is not created | B_AI is not created; approval not consumed; E_AI, R_AI, and XE_AI are not created |
+| T-TSDC-005 | pending | pending | pending | not available | blocked | No accepted R_AI or Wave C authority exists. |
+| T-TSDC-006 | pending | pending | pending | not available | blocked | Wave C and Task 5 remain blocked while 4AI Plan reviews are pending. |
+| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | not available | blocked | P_AI has no downstream authority; historical 4AF/4AG/4AH evidence cannot authorize Wave C, Tasks 5–6, or final branch review. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -2125,7 +2197,13 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4AH revalidation E_AH | Record collision-safe disposition revalidation | `docs(task): record collision-safe disposition revalidation` | not created | Not created; Plan-review exhaustion blocks revalidation. |
 | T-TSDC-004R-4AH accepted review R_AH | Record collision-safe disposition review | `docs(task): record collision-safe disposition review` | not created | Not created; Plan-review exhaustion blocks Task 4.5 authority. |
 | T-TSDC-004R-4AH rejected review XE_AH | Record exhausted collision-safe disposition review | `docs(task): record exhausted collision-safe disposition review` | not created | Not created; revalidation never ran because 4AH exhausted at Plan review. |
-| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | blocked; accepted R_AH and Wave C completion are absent |
+| T-TSDC-004R-4AI Plan checkpoint P_AI | Define session-bound collision-safe proof | `docs(plan): define session-bound collision-safe proof` | resolved by this exact unique subject | P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority. |
+| T-TSDC-004R-4AI accepted Plan evidence B_AI | Record accepted session-bound collision-safe Plan reviews | `docs(task): record session-bound collision-safe plan reviews` | future; not created | May be the sole future Task-only Plan terminal only if both fresh `D_AI..P_AI` reviews are C0/I0/M0; it does not authorize revalidation without separate approval. |
+| T-TSDC-004R-4AI rejected Plan evidence XP_AI | Record exhausted session-bound collision-safe Plan review | `docs(task): record exhausted session-bound collision-safe plan review` | future; not created | Must be the sole future Task-only Plan terminal if either fresh Plan review is not accepted; terminal and no downstream authority. |
+| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | `docs(task): record session-bound collision-safe revalidation` | future; not created | Blocked pending accepted B_AI and separate one-attempt approval naming its resolved full OID; evidence and commit must share one fail-fast session. |
+| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | `docs(task): record session-bound collision-safe review` | future; not created | Blocked pending E_AI plus two accepted fresh composite reviews; only this accepted terminal may authorize Task 4.5/Wave C. |
+| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | `docs(task): record exhausted session-bound collision-safe review` | future; not created | Blocked pending E_AI; required terminal for any nonzero/internal E evidence or non-accepted composite review and grants no downstream authority. |
+| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | blocked; accepted R_AI and Wave C completion are absent |
 | T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | Tasks 1–5 pending |
 
 ## Deferred and Blocked Items
@@ -2134,7 +2212,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked; 4AH rejected/exhausted at Plan review | Historical 4AF and rejected 4AG evidence remain frozen. XP_AH is resolved by its exact unique subject; B_AH/E_AH/R_AH/XE_AH are not created; no downstream authority. | return to a separately approved successor Plan; no correction, tests, revalidation, Wave C, downstream work, runtime, or remote action under 4AH |
+| T-TSDC-004R-3 atomic projection cutover | blocked; 4AI Plan reviews pending | Historical 4AF and rejected/exhausted 4AG/4AH evidence remain frozen. P_AI is resolved by its exact unique subject; B_AI/XP_AI/E_AI/R_AI/XE_AI are not created; no downstream authority. | complete two fresh `D_AI..P_AI` Plan reviews and exactly one future Task-only B_AI/XP_AI terminal; any revalidation still requires separate approval, and only accepted R_AI may unlock Wave C |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -2272,7 +2350,18 @@ evidence could reach composite/Task 4.5. XP_AH is resolved by its exact unique
 subject; B_AH, E_AH, R_AH, and XE_AH are not created. No 4AH test, validator,
 wrapper, revalidation, composite review, implementation, Wave C, runtime,
 remote, product, or external action has occurred.
-Current 4AH final handoff: rejected/exhausted; XP_AH resolved by its exact unique subject; B_AH/E_AH/R_AH/XE_AH not created; no downstream authority.
+Historical 4AH final handoff: rejected/exhausted; XP_AH resolved by its exact unique subject; B_AH/E_AH/R_AH/XE_AH not created; no downstream authority.
+T-TSDC-004R-4AI is the current Plan-only successor from clean XP_AH/D_AI
+`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. P_AI committed; resolved by its
+exact unique subject; fresh Plan reviews pending; no downstream authority.
+B_AI, XP_AI, E_AI, R_AI, and XE_AI are future and not created. The current
+approval ends after two fresh exact-range Plan reviews and exactly one
+Task-only B_AI/XP_AI terminal. No validator, test, wrapper, proof,
+revalidation, implementation, runtime, remote, Graphify, Task 4.5, Wave C,
+Tasks 5–6, or whole-branch review authority exists. Only a future accepted
+R_AI, produced after a separately approved single-session E_AI revalidation
+and accepted fresh composite reviews, may unlock Task 4.5/Wave C.
+Current 4AI final handoff: P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority.
 The original five-round implementation blocker, exhausted Revision R1 Plan
 reviews, and superseded `5d089dd4` and `b73d2a99` checkpoints remain
 historical evidence and grant no authority.

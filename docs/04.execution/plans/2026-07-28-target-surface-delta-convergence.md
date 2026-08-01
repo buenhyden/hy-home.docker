@@ -98,12 +98,21 @@ mistook valid silent success for failure. The user approved
 T-TSDC-004R-4AG as the Plan-only successor: it supersedes only that delta
 command capture/evidence envelope. Its Plan review exhausted at XP_AG. The
 user subsequently approved T-TSDC-004R-4AH as the Plan-only successor from
-clean D_AH `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`. 4AH changes exactly two
-design defects: collision-safe byte classification and truthful,
-outcome-specific disposition parsing. Tests, validators, revalidation,
-implementation, E_AH, R_AH, Wave C, runtime, remote, dependency, secret,
-direct pre-commit, controlled-wrapper, and Graphify-update authority remain
-blocked pending the separately governed checkpoints below.
+clean D_AH `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`. Its Plan checkpoint committed
+as `9ff217e63eaf452871cfc3ef47775e0fbd03e706`, but the fresh quality/security
+review found that wrapper execution and the E_AH evidence commit were split
+across sessions. Rejected Task-only XP_AH committed as
+`88f55837be251318cd697bd8a1ab3a4f0ed1a824`, so 4AH is historical,
+rejected/exhausted evidence. The user approved T-TSDC-004R-4AI as the sole
+Plan-only successor from that clean XP_AH/D_AI checkpoint. 4AI closes only the
+session-binding defect by making approval consumption, one byte-safe wrapper
+call, sanitized evidence capture, E_AI commit, and postcommit proof one
+self-contained transaction. The current approval stops after P_AI, two fresh
+independent Plan reviews over exact `D_AI..P_AI`, and exactly one Task-only
+B_AI or XP_AI terminal. Tests, validators, wrapper/proof execution,
+revalidation, implementation, E_AI, R_AI, Wave C, runtime, remote, dependency,
+secret, direct pre-commit, controlled-wrapper, and Graphify-update authority
+remain blocked pending the separately governed checkpoints below.
 
 ## Global Constraints
 
@@ -10881,14 +10890,14 @@ test -z "$clean_state"
   R_AG authorizes Task 4.5 only when `review_outcome=accepted`; XE_AG is
   terminal and grants no correction, retry, Wave C, or downstream authority.
 
-#### T-TSDC-004R-4AH: Collision-Safe Disposition Proof (Active Plan-Only Successor)
+#### T-TSDC-004R-4AH: Collision-Safe Disposition Proof (Historical Rejected Successor)
 
-4AH is the single active Plan successor from clean D_AH
-`e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`. Committed 4AG evidence is
-historical, non-executable provenance only. The current approval stops after
-P_AH, two fresh independent Plan reviews over `D_AH..P_AH`, and exactly one
-Task-only B_AH or XP_AH terminal. Every block below is intended future
-execution and remains subject to its stated approval gate.
+4AH is rejected/exhausted at XP_AH
+`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. Committed 4AG and 4AH evidence is
+historical, non-executable provenance only. The quality/security Plan review
+rejected the split AH-3/AH-4 session boundary; B_AH, E_AH, R_AH, and XE_AH were
+not created. Every block below is preserved as historical design evidence and
+grants no execution or downstream authority.
 
 - [ ] **Step AH-1: Commit and prove P_AH.**
 
@@ -12009,15 +12018,675 @@ test -z "$clean_state"
 
 XE_AH is terminal. Only the exact accepted R_AH chain authorizes Task 4.5.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### T-TSDC-004R-4AI: Session-Bound Collision-Safe Proof (Active Plan-Only Successor)
 
-- [ ] **Step 0: Prove the complete accepted 4AH chain.**
+4AI is the sole active Plan successor from clean D_AI/XP_AH
+`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. It preserves every 4AH block as
+historical, non-executable evidence and changes only the rejected split-session
+boundary. The separately approved revalidation, its one byte-safe wrapper
+call, sanitized result, Task-only E_AI commit, and postcommit proof form one
+fail-fast transaction. The current approval stops after P_AI, two fresh
+independent Plan reviews over exact `D_AI..P_AI`, and exactly one Task-only
+B_AI or XP_AI terminal. AI-3, AI-4, Task 4.5, tests, validators, wrapper/proof
+execution, revalidation, runtime, remote, direct pre-commit, and Graphify
+remain blocked until their later gates are explicitly approved.
 
-  Before any Wave C change, this prerequisite requires the exact accepted
-  review, range, disposition, and evidence values on all three 4AH rows. It
-  also requires unique R_AH at clean HEAD, every sole-parent distance-one
-  edge, exact commit and range paths, mode `100644`, and the frozen historical
-  test blob.
+The exact subjects are:
+
+- P_AI: `docs(plan): define session-bound collision-safe proof`
+- B_AI: `docs(task): record session-bound collision-safe plan reviews`
+- XP_AI: `docs(task): record exhausted session-bound collision-safe plan review`
+- E_AI: `docs(task): record session-bound collision-safe revalidation`
+- R_AI: `docs(task): record session-bound collision-safe review`
+- XE_AI: `docs(task): record exhausted session-bound collision-safe review`
+
+- [ ] **Step AI-1: Commit and prove P_AI.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+d_ai=88f55837be251318cd697bd8a1ab3a4f0ed1a824
+p_subject='docs(plan): define session-bound collision-safe proof'
+head_before="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_before" = "$d_ai"
+d_subject="$(git show -s --format=%s "$d_ai")"
+test "$d_subject" = 'docs(task): record exhausted collision-safe disposition plan review'
+p_pre_count="$(git log --all --format='%s' | awk -v subject="$p_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$p_pre_count" -eq 0
+unstaged_paths="$(git diff --name-only)"
+test "$?" -eq 0
+staged_paths="$(git diff --cached --name-only)"
+test "$?" -eq 0
+untracked_paths="$(git ls-files --others --exclude-standard)"
+test "$?" -eq 0
+dirty_paths="$(printf '%s\n' "$unstaged_paths" "$staged_paths" "$untracked_paths" | sed '/^$/d' | sort -u)"
+expected_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+test "$dirty_paths" = "$expected_paths"
+git diff --check
+git add "$plan_file" "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$expected_paths"
+git commit -m "$p_subject"
+p_ai="$(git rev-parse --verify 'HEAD^{commit}')"
+test -n "$p_ai"
+actual_subject="$(git show -s --format=%s "$p_ai")"
+test "$actual_subject" = "$p_subject"
+subject_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$subject_count" -eq 1
+parent_count="$(git rev-list --parents -n 1 "$p_ai" | awk '{print NF - 1}')"
+test "$parent_count" -eq 1
+parent="$(git rev-parse "$p_ai^1")"
+test "$parent" = "$d_ai"
+distance="$(git rev-list --count "$d_ai..$p_ai")"
+test "$distance" -eq 1
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$p_ai" | sort)"
+test "$commit_paths" = "$expected_paths"
+range_paths="$(git diff --name-only "$d_ai..$p_ai" | sort)"
+test "$range_paths" = "$expected_paths"
+for file_path in "$plan_file" "$task_file"; do
+  mode="$(git ls-tree "$p_ai" "$file_path" | awk '{print $1}')"
+  test "$mode" = 100644
+done
+python3 - "$task_file" <<'PY'
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+
+
+def exact_line(expected):
+    if text.splitlines().count(expected) != 1:
+        raise SystemExit(f"p-ai-line-count:{expected}")
+
+
+label = "T-TSDC-004R-4AI session-bound collision-safe Plan"
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0 and view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("p-ai-row-count")
+expected = (
+    "| T-TSDC-004R-4AI session-bound collision-safe Plan | Controller | "
+    "pending fresh independent review | pending fresh independent review | "
+    "awaiting exact reviewed range | checkpoint committed; fresh Plan reviews "
+    "pending; no downstream authority | P_AI committed and resolved by its "
+    "exact unique subject; no future OID is claimed in its own tree |"
+)
+if candidates[0] != expected:
+    raise SystemExit("p-ai-row-values")
+exact_line("- 4AI transaction state: not-run; separate approval required.")
+exact_line("- 4AI sanitized result: not-run.")
+exact_line(
+    "| T-TSDC-004R-4AI Plan checkpoint P_AI | Define session-bound collision-safe proof | "
+    "`docs(plan): define session-bound collision-safe proof` | resolved by this exact unique subject | "
+    "P_AI committed; resolved by its exact unique subject; fresh Plan reviews pending; no downstream authority. |"
+)
+exact_line(
+    "Current 4AI final handoff: P_AI committed; resolved by its exact unique subject; "
+    "fresh Plan reviews pending; no downstream authority."
+)
+exact_line(
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+    "blocked; Plan reviews pending | blocked; Plan reviews pending | "
+    "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "blocked; B_AI is not created | Frozen implementation remains historical; "
+    "no composite-review authority |"
+)
+exact_line(
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+    "blocked; Plan reviews pending | blocked; Plan reviews pending | awaiting exact reviewed range | "
+    "blocked; B_AI is not created | B_AI is not created; approval not consumed; "
+    "E_AI, R_AI, and XE_AI are not created |"
+)
+PY
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+At the P_AI tree the canonical row is exactly:
+
+| Review unit | Owner | Specification | Quality/security | Reviewed range | Disposition | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| T-TSDC-004R-4AI session-bound collision-safe Plan | Controller | pending fresh independent review | pending fresh independent review | awaiting exact reviewed range | checkpoint committed; fresh Plan reviews pending; no downstream authority | P_AI committed and resolved by its exact unique subject; no future OID is claimed in its own tree |
+
+- [ ] **Step AI-2: Parse completed Plan reviews first and commit one terminal.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+d_ai=88f55837be251318cd697bd8a1ab3a4f0ed1a824
+p_subject='docs(plan): define session-bound collision-safe proof'
+p_ai="$(git rev-parse --verify 'HEAD^{commit}')"
+selection="$({ python3 - "$task_file" "$d_ai" "$p_ai" <<'PY'
+import pathlib
+import re
+import sys
+
+label = "T-TSDC-004R-4AI session-bound collision-safe Plan"
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0 and view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("plan-candidate-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|"):
+    raise SystemExit("plan-shape")
+if "\\|" in row or "\\`" in row:
+    raise SystemExit("plan-escape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("plan-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label:
+    raise SystemExit("plan-label")
+if cells[1] != "Controller":
+    raise SystemExit("plan-owner")
+if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+    raise SystemExit("plan-extra-range-token")
+if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+    raise SystemExit("plan-range-shape")
+if cells[4] != f"`{sys.argv[2]}..{sys.argv[3]}`":
+    raise SystemExit("plan-range")
+spec_re = r"C\d+/I\d+/M\d+; SPEC_COMPLIANCE (YES|NO); IMPLEMENTATION_READY (YES|NO)"
+quality_re = r"C\d+/I\d+/M\d+; QUALITY_SECURITY (PASS|FAIL); IMPLEMENTATION_READY (YES|NO)"
+if re.fullmatch(spec_re, cells[2], flags=re.ASCII) is None:
+    raise SystemExit("plan-spec-verdict")
+if re.fullmatch(quality_re, cells[3], flags=re.ASCII) is None:
+    raise SystemExit("plan-quality-verdict")
+accepted = (
+    cells[2] == "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES"
+    and cells[3] == "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES"
+)
+expected = (
+    (
+        "accepted; B_AI resolved by its exact unique subject",
+        "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+    )
+    if accepted
+    else (
+        "rejected/exhausted; XP_AI resolved by its exact unique subject",
+        "One or both fresh Plan reviews rejected; no correction, revalidation, or Wave C authority",
+    )
+)
+if tuple(cells[5:7]) != expected:
+    raise SystemExit("plan-outcome-pair")
+print("B_AI" if accepted else "XP_AI")
+PY
+})"
+test "$selection" = B_AI || test "$selection" = XP_AI
+head_subject="$(git show -s --format=%s "$p_ai")"
+test "$head_subject" = "$p_subject"
+p_count="$(git log --all --format='%s' | grep -Fxc "$p_subject")"
+test "$p_count" -eq 1
+parent_count="$(git rev-list --parents -n 1 "$p_ai" | awk '{print NF - 1}')"
+test "$parent_count" -eq 1
+parent="$(git rev-parse "$p_ai^1")"
+test "$parent" = "$d_ai"
+distance="$(git rev-list --count "$d_ai..$p_ai")"
+test "$distance" -eq 1
+expected_plan_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+p_paths="$(git diff-tree --no-commit-id --name-only -r "$p_ai" | sort)"
+test "$p_paths" = "$expected_plan_paths"
+p_range_paths="$(git diff --name-only "$d_ai..$p_ai" | sort)"
+test "$p_range_paths" = "$expected_plan_paths"
+implementation_blob="$(git rev-parse "a7d05b0e5c0ffaeccde9e401450e696855cfb2b5:$test_file")"
+test -n "$implementation_blob"
+p_blob="$(git rev-parse "$p_ai:$test_file")"
+test "$p_blob" = "$implementation_blob"
+unstaged_paths="$(git diff --name-only)"
+test "$?" -eq 0
+staged_paths="$(git diff --cached --name-only)"
+test "$?" -eq 0
+untracked_paths="$(git ls-files --others --exclude-standard)"
+test "$?" -eq 0
+dirty_paths="$(printf '%s\n' "$unstaged_paths" "$staged_paths" "$untracked_paths" | sed '/^$/d' | sort -u)"
+test "$dirty_paths" = "$task_file"
+b_subject='docs(task): record session-bound collision-safe plan reviews'
+xp_subject='docs(task): record exhausted session-bound collision-safe plan review'
+case "$selection" in
+  B_AI)
+    terminal_subject="$b_subject"
+    opposite_subject="$xp_subject"
+    ;;
+  XP_AI)
+    terminal_subject="$xp_subject"
+    opposite_subject="$b_subject"
+    ;;
+esac
+selected_pre_count="$(git log --all --format='%s' | awk -v subject="$terminal_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$selected_pre_count" -eq 0
+opposite_pre_count="$(git log --all --format='%s' | awk -v subject="$opposite_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$opposite_pre_count" -eq 0
+python3 - "$task_file" "$selection" "$d_ai" "$p_ai" <<'PY'
+import os
+import pathlib
+import re
+import stat
+import sys
+import tempfile
+
+path = pathlib.Path(sys.argv[1])
+selection = sys.argv[2]
+text = path.read_text(encoding="utf-8")
+label = "T-TSDC-004R-4AI session-bound collision-safe Plan"
+candidates = []
+for source_line in text.splitlines():
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0 and view[:separator].strip(" \t") == label:
+        candidates.append(line)
+if len(candidates) != 1:
+    raise SystemExit("terminal-plan-candidate-count")
+row = candidates[0]
+if not row.startswith("|") or not row.endswith("|") or "\\|" in row or "\\`" in row:
+    raise SystemExit("terminal-plan-shape")
+parts = row.split("|")
+if len(parts) != 9 or parts[0] or parts[-1]:
+    raise SystemExit("terminal-plan-cell-count")
+cells = [part.strip(" \t") for part in parts[1:-1]]
+if len(cells) != 7 or cells[0] != label or cells[1] != "Controller":
+    raise SystemExit("terminal-plan-identity")
+if cells[4] != f"`{sys.argv[3]}..{sys.argv[4]}`":
+    raise SystemExit("terminal-plan-range")
+spec_re = r"C\d+/I\d+/M\d+; SPEC_COMPLIANCE (YES|NO); IMPLEMENTATION_READY (YES|NO)"
+quality_re = r"C\d+/I\d+/M\d+; QUALITY_SECURITY (PASS|FAIL); IMPLEMENTATION_READY (YES|NO)"
+if re.fullmatch(spec_re, cells[2], flags=re.ASCII) is None:
+    raise SystemExit("terminal-plan-spec")
+if re.fullmatch(quality_re, cells[3], flags=re.ASCII) is None:
+    raise SystemExit("terminal-plan-quality")
+accepted = cells[2:4] == [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+]
+expected_selection = "B_AI" if accepted else "XP_AI"
+if selection != expected_selection:
+    raise SystemExit("terminal-selection-drift")
+expected_outcome = (
+    [
+        "accepted; B_AI resolved by its exact unique subject",
+        "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+    ]
+    if accepted
+    else [
+        "rejected/exhausted; XP_AI resolved by its exact unique subject",
+        "One or both fresh Plan reviews rejected; no correction, revalidation, or Wave C authority",
+    ]
+)
+if cells[5:7] != expected_outcome:
+    raise SystemExit("terminal-plan-outcome")
+old_frozen = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+    "blocked; Plan reviews pending | blocked; Plan reviews pending | "
+    "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "blocked; B_AI is not created | Frozen implementation remains historical; "
+    "no composite-review authority |"
+)
+old_revalidation = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+    "blocked; Plan reviews pending | blocked; Plan reviews pending | awaiting exact reviewed range | "
+    "blocked; B_AI is not created | B_AI is not created; approval not consumed; "
+    "E_AI, R_AI, and XE_AI are not created |"
+)
+old_approval_owner = "- 4AI revalidation approval owner/source: not approved; no source recorded."
+old_approved_oid = "- 4AI `APPROVED_B_AI_OID`: not recorded; B_AI is not created."
+old_parent_work_breakdown = (
+    "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+    "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+    "agent; original agents remain historical | active; P_AI committed; resolved by its exact unique subject; "
+    "fresh Plan reviews pending; no downstream authority |"
+)
+old_work_breakdown = (
+    "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit "
+    "in one fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | "
+    "two future fresh independent reviews over exact `D_AI..P_AI` | controller and future fresh "
+    "independent reviewers | P_AI committed; resolved by its exact unique subject; fresh Plan reviews "
+    "pending; no downstream authority |"
+)
+old_work_log = (
+    "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | "
+    "Not run; B_AI is not created; approval not consumed; E_AI is not created. |"
+)
+old_verification = (
+    "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, "
+    "one wrapper call, sanitized result, and Task-only E_AI in one session | "
+    "Not run; B_AI is not created and no approval is consumed |"
+)
+old_b_ledger = (
+    "| T-TSDC-004R-4AI accepted Plan evidence B_AI | Record accepted session-bound collision-safe Plan "
+    "reviews | `docs(task): record session-bound collision-safe plan reviews` | future; not created | "
+    "May be the sole future Task-only Plan terminal only if both fresh `D_AI..P_AI` reviews are "
+    "C0/I0/M0; it does not authorize revalidation without separate approval. |"
+)
+old_xp_ledger = (
+    "| T-TSDC-004R-4AI rejected Plan evidence XP_AI | Record exhausted session-bound collision-safe Plan "
+    "review | `docs(task): record exhausted session-bound collision-safe plan review` | future; not created | "
+    "Must be the sole future Task-only Plan terminal if either fresh Plan review is not accepted; "
+    "terminal and no downstream authority. |"
+)
+old_e_ledger = (
+    "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+    "`docs(task): record session-bound collision-safe revalidation` | future; not created | "
+    "Blocked pending accepted B_AI and separate one-attempt approval naming its resolved full OID; "
+    "evidence and commit must share one fail-fast session. |"
+)
+old_deferred = (
+    "| T-TSDC-004R-3 atomic projection cutover | blocked; 4AI Plan reviews pending | Historical 4AF and "
+    "rejected/exhausted 4AG/4AH evidence remain frozen. P_AI is resolved by its exact unique subject; "
+    "B_AI/XP_AI/E_AI/R_AI/XE_AI are not created; no downstream authority. | complete two fresh "
+    "`D_AI..P_AI` Plan reviews and exactly one future Task-only B_AI/XP_AI terminal; any revalidation "
+    "still requires separate approval, and only accepted R_AI may unlock Wave C |"
+)
+old_handoff = (
+    "Current 4AI final handoff: P_AI committed; resolved by its exact unique subject; fresh Plan reviews "
+    "pending; no downstream authority."
+)
+old_current_boundary = (
+    "- The active 4AI checkpoint is Plan-only. Pending reviews and future/uncreated\n"
+    "  B_AI, XP_AI, E_AI, R_AI, and XE_AI do not establish revalidation, Task 4.5,\n"
+    "  Wave C, downstream, runtime, or remote authority."
+)
+old_no_run = (
+    "- No 4AI validator, test, wrapper, proof, revalidation, composite review,\n"
+    "  implementation, runtime, remote, Graphify, Task 4.5, or Wave C action has\n"
+    "  run. Fresh independent Plan reviews are pending and no downstream authority\n"
+    "  exists."
+)
+old_final_block = (
+    "T-TSDC-004R-4AI is the current Plan-only successor from clean XP_AH/D_AI\n"
+    "`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. P_AI committed; resolved by its\n"
+    "exact unique subject; fresh Plan reviews pending; no downstream authority.\n"
+    "B_AI, XP_AI, E_AI, R_AI, and XE_AI are future and not created. The current\n"
+    "approval ends after two fresh exact-range Plan reviews and exactly one\n"
+    "Task-only B_AI/XP_AI terminal. No validator, test, wrapper, proof,\n"
+    "revalidation, implementation, runtime, remote, Graphify, Task 4.5, Wave C,\n"
+    "Tasks 5–6, or whole-branch review authority exists. Only a future accepted\n"
+    "R_AI, produced after a separately approved single-session E_AI revalidation\n"
+    "and accepted fresh composite reviews, may unlock Task 4.5/Wave C."
+)
+if selection == "B_AI":
+    replacements = {
+        old_frozen: (
+            "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+            "blocked; revalidation not run | blocked; revalidation not run | "
+            "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+            "blocked; separately approved revalidation not run | Frozen implementation "
+            "remains historical; no composite-review authority |"
+        ),
+        old_revalidation: (
+            "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+            "blocked; revalidation not run | blocked; revalidation not run | awaiting exact reviewed range | "
+            "blocked; separately approved revalidation not run | B_AI accepted; approval not yet "
+            "consumed; E_AI, R_AI, and XE_AI are not created |"
+        ),
+        old_approval_owner: (
+            "- 4AI revalidation approval owner/source: separate future User / Controller approval "
+            "required; not consumed."
+        ),
+        old_approved_oid: (
+            "- 4AI `APPROVED_B_AI_OID`: awaiting a separate approval naming the resolved full B_AI OID."
+        ),
+        old_parent_work_breakdown: (
+            "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+            "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+            "agent; original agents remain historical | active; B_AI accepted and resolved by its exact unique "
+            "subject; separate revalidation approval required; no downstream authority |"
+        ),
+        old_work_breakdown: (
+            "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit "
+            "in one fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | "
+            "accepted fresh Plan reviews over exact `D_AI..P_AI`; separate revalidation approval required | "
+            "controller and future fresh independent reviewers | B_AI accepted and resolved by its exact "
+            "unique subject; separate one-attempt approval required; no downstream authority |"
+        ),
+        old_work_log: (
+            "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Not run; B_AI "
+            "accepted by both fresh Plan reviews; separate one-attempt approval not granted or consumed; "
+            "E_AI is not created. |"
+        ),
+        old_verification: (
+            "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, "
+            "one wrapper call, sanitized result, and Task-only E_AI in one session | Not run; B_AI accepted; "
+            "separate one-attempt approval not granted or consumed |"
+        ),
+        old_b_ledger: (
+            "| T-TSDC-004R-4AI accepted Plan evidence B_AI | Record accepted session-bound collision-safe "
+            "Plan reviews | `docs(task): record session-bound collision-safe plan reviews` | resolved by this "
+            "exact unique subject | Sole Task-only accepted Plan terminal; separate approval naming the "
+            "resolved full B_AI OID remains required before AI-3. |"
+        ),
+        old_xp_ledger: (
+            "| T-TSDC-004R-4AI rejected Plan evidence XP_AI | Record exhausted session-bound collision-safe "
+            "Plan review | `docs(task): record exhausted session-bound collision-safe plan review` | not "
+            "created | Mutually excluded by the accepted B_AI terminal. |"
+        ),
+        old_e_ledger: (
+            "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+            "`docs(task): record session-bound collision-safe revalidation` | not created | Blocked pending "
+            "separate one-attempt approval naming the resolved full B_AI OID. |"
+        ),
+        old_deferred: (
+            "| T-TSDC-004R-3 atomic projection cutover | blocked; accepted B_AI but revalidation not approved | "
+            "Historical 4AF and rejected/exhausted 4AG/4AH evidence remain frozen. B_AI is the sole accepted "
+            "Plan terminal; XP_AI/E_AI/R_AI/XE_AI are not created; no downstream authority. | obtain separate "
+            "one-attempt approval naming the resolved full B_AI OID; only later accepted R_AI may unlock Wave C |"
+        ),
+        old_handoff: (
+            "Current 4AI final handoff: B_AI accepted and resolved by its exact unique subject; separate "
+            "one-attempt revalidation approval required; E_AI/R_AI/XE_AI not created; no downstream authority."
+        ),
+        old_current_boundary: (
+            "- The active 4AI checkpoint has accepted B_AI, but revalidation is not approved. XP_AI, E_AI,\n"
+            "  R_AI, and XE_AI are uncreated and do not establish Task 4.5, Wave C, downstream, runtime,\n"
+            "  or remote authority."
+        ),
+        old_no_run: (
+            "- No 4AI validator, test, wrapper, proof, revalidation, composite review, implementation, runtime,\n"
+            "  remote, Graphify, Task 4.5, or Wave C action has run. Both fresh Plan reviews accepted B_AI,\n"
+            "  but separate one-attempt revalidation approval is absent and no downstream authority exists."
+        ),
+        old_final_block: (
+            "T-TSDC-004R-4AI is the current accepted-Plan successor from clean XP_AH/D_AI\n"
+            "`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. B_AI is accepted and resolved by its\n"
+            "exact unique subject; XP_AI is not created. Separate one-attempt revalidation approval naming\n"
+            "the resolved full B_AI OID is absent; E_AI, R_AI, and XE_AI are not created. No validator,\n"
+            "test, wrapper, proof, revalidation, implementation, runtime, remote, Graphify, Task 4.5,\n"
+            "Wave C, Tasks 5–6, or whole-branch review authority exists."
+        ),
+    }
+elif selection == "XP_AI":
+    replacements = {
+        old_frozen: (
+            "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+            "blocked; Plan rejected | blocked; Plan rejected | "
+            "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+            "rejected/exhausted; XP_AI terminal | Frozen implementation remains historical; "
+            "no composite-review authority |"
+        ),
+        old_revalidation: (
+            "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+            "blocked; Plan rejected | blocked; Plan rejected | not applicable; Plan rejected | "
+            "rejected/exhausted; XP_AI terminal | XP_AI resolved by its exact unique subject; "
+            "no revalidation, retry, or Wave C authority |"
+        ),
+        "- 4AI transaction state: not-run; separate approval required.":
+            "- 4AI transaction state: not-run; Plan rejected and XP_AI terminal.",
+        "- 4AI sanitized result: not-run.":
+            "- 4AI sanitized result: not-run; no revalidation authority.",
+        old_approval_owner: (
+            "- 4AI revalidation approval owner/source: not applicable; Plan rejected and XP_AI terminal."
+        ),
+        old_approved_oid: (
+            "- 4AI `APPROVED_B_AI_OID`: not applicable; B_AI is not created."
+        ),
+        old_parent_work_breakdown: (
+            "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+            "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+            "agent; original agents remain historical | rejected/exhausted at 4AI Plan review; XP_AI resolved "
+            "by its exact unique subject; no downstream authority |"
+        ),
+        old_work_breakdown: (
+            "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit "
+            "in one fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | "
+            "completed rejected Plan reviews only; no downstream validation | controller and fresh independent "
+            "reviewers | rejected/exhausted; XP_AI resolved by its exact unique subject; no downstream authority |"
+        ),
+        old_work_log: (
+            "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Not run; Plan rejected "
+            "and XP_AI terminal; approval not consumed; B_AI/E_AI/R_AI/XE_AI are not created. |"
+        ),
+        old_verification: (
+            "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, "
+            "one wrapper call, sanitized result, and Task-only E_AI in one session | Not run; Plan rejected "
+            "and XP_AI terminal; no revalidation authority |"
+        ),
+        old_b_ledger: (
+            "| T-TSDC-004R-4AI accepted Plan evidence B_AI | Record accepted session-bound collision-safe "
+            "Plan reviews | `docs(task): record session-bound collision-safe plan reviews` | not created | "
+            "Mutually excluded by the rejected XP_AI terminal. |"
+        ),
+        old_xp_ledger: (
+            "| T-TSDC-004R-4AI rejected Plan evidence XP_AI | Record exhausted session-bound collision-safe "
+            "Plan review | `docs(task): record exhausted session-bound collision-safe plan review` | resolved "
+            "by this exact unique subject | Sole Task-only rejected Plan terminal; no correction, revalidation, "
+            "retry, or Wave C authority. |"
+        ),
+        old_e_ledger: (
+            "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+            "`docs(task): record session-bound collision-safe revalidation` | not created | Not created; "
+            "Plan-review exhaustion blocks revalidation. |"
+        ),
+        old_deferred: (
+            "| T-TSDC-004R-3 atomic projection cutover | rejected/exhausted at 4AI Plan review | Historical "
+            "4AF and rejected/exhausted 4AG/4AH evidence remain frozen. XP_AI is the sole rejected Plan "
+            "terminal; B_AI/E_AI/R_AI/XE_AI are not created; no downstream authority. | return to a newly "
+            "approved design; 4AI grants no correction, retry, or Wave C authority |"
+        ),
+        old_handoff: (
+            "Current 4AI final handoff: rejected/exhausted; XP_AI resolved by its exact unique subject; "
+            "B_AI/E_AI/R_AI/XE_AI not created; no downstream authority."
+        ),
+        old_current_boundary: (
+            "- The active 4AI Plan is rejected/exhausted at XP_AI. B_AI, E_AI, R_AI, and XE_AI are uncreated;\n"
+            "  no revalidation, Task 4.5, Wave C, downstream, runtime, or remote authority exists."
+        ),
+        old_no_run: (
+            "- No 4AI validator, test, wrapper, proof, revalidation, composite review, implementation, runtime,\n"
+            "  remote, Graphify, Task 4.5, or Wave C action has run. XP_AI is terminal and no downstream\n"
+            "  authority exists."
+        ),
+        old_final_block: (
+            "T-TSDC-004R-4AI is rejected/exhausted at the Task-only XP_AI terminal from clean XP_AH/D_AI\n"
+            "`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. XP_AI is resolved by its exact unique subject;\n"
+            "B_AI, E_AI, R_AI, and XE_AI are not created. No validator, test, wrapper, proof, revalidation,\n"
+            "implementation, runtime, remote, Graphify, Task 4.5, Wave C, Tasks 5–6, or whole-branch review\n"
+            "authority exists."
+        ),
+    }
+else:
+    raise SystemExit("terminal-selection")
+residue = tuple(path.parent.glob(f".{path.name}.*"))
+if residue:
+    raise SystemExit("terminal-temp-residue")
+for old, new in replacements.items():
+    if text.count(old) != 1 or old == new or new in text:
+        raise SystemExit("terminal-replacement-shape")
+for old, new in replacements.items():
+    text = text.replace(old, new, 1)
+source_mode = stat.S_IMODE(path.stat().st_mode)
+temporary = None
+try:
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        delete=False,
+    ) as stream:
+        temporary = pathlib.Path(stream.name)
+        stream.write(text)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.chmod(temporary, source_mode)
+    os.replace(temporary, path)
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    directory_fd = os.open(path.parent, directory_flags)
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
+    temporary = None
+finally:
+    # Preserve any crash residue as a fail-closed rerun blocker.
+    pass
+PY
+validated_task_blob="$(git hash-object "$task_file")"
+[[ "$validated_task_blob" =~ ^[0-9a-f]{40}$ ]]
+git diff --check
+git add "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$task_file"
+staged_task_blob="$(git rev-parse ":$task_file")"
+test "$staged_task_blob" = "$validated_task_blob"
+git commit -m "$terminal_subject"
+terminal="$(git rev-parse --verify 'HEAD^{commit}')"
+actual_subject="$(git show -s --format=%s "$terminal")"
+test "$actual_subject" = "$terminal_subject"
+subject_count="$(git log --all --format='%s' | grep -Fxc "$terminal_subject")"
+test "$subject_count" -eq 1
+opposite_count="$(git log --all --format='%s' | awk -v subject="$opposite_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$opposite_count" -eq 0
+terminal_task_blob="$(git rev-parse "$terminal:$task_file")"
+test "$terminal_task_blob" = "$validated_task_blob"
+parent_count="$(git rev-list --parents -n 1 "$terminal" | awk '{print NF - 1}')"
+test "$parent_count" -eq 1
+parent="$(git rev-parse "$terminal^1")"
+test "$parent" = "$p_ai"
+distance="$(git rev-list --count "$p_ai..$terminal")"
+test "$distance" -eq 1
+commit_paths="$(git diff-tree --no-commit-id --name-only -r "$terminal" | sort)"
+test "$commit_paths" = "$task_file"
+range_paths="$(git diff --name-only "$p_ai..$terminal" | sort)"
+test "$range_paths" = "$task_file"
+mode="$(git ls-tree "$terminal" "$task_file" | awk '{print $1}')"
+test "$mode" = 100644
+terminal_blob="$(git rev-parse "$terminal:$test_file")"
+test "$terminal_blob" = "$implementation_blob"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+XP_AI is terminal. Accepted B_AI still grants no AI-3, revalidation, or Wave C
+authority. A separate approval must name the resolved full B_AI OID and the
+one-attempt AI-3 transaction before it may execute.
+
+- [ ] **Step AI-3: In one session consume approval, run once, record E_AI, and prove it.**
+
+  This future step is one indivisible fail-fast Bash transaction. All lineage,
+  subject, path, mode, frozen-blob, accepted-row, and clean-B preflight checks
+  finish before an atomic Task-only in-progress guard is written. The very
+  next command is the one existing byte-safe wrapper call. The same session
+  converts the guard and current Task evidence to only the sanitized canonical
+  result, commits Task-only E_AI, and proves the commit. Canonical nonzero and
+  internal results are committed truthfully and can only lead to XE_AI. Any
+  failure after the guard is written consumes the approval and prohibits
+  cleanup or retry without a separately approved recovery design.
 
 ```bash
 set -euo pipefail
@@ -12030,10 +12699,1864 @@ i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
 d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
 p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
 d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
-p_subject='docs(plan): define collision-safe disposition proof'
-b_subject='docs(task): record collision-safe disposition plan reviews'
-e_subject='docs(task): record collision-safe disposition revalidation'
-r_subject='docs(task): record collision-safe disposition review'
+p_ah=9ff217e63eaf452871cfc3ef47775e0fbd03e706
+d_ai=88f55837be251318cd697bd8a1ab3a4f0ed1a824
+p_subject='docs(plan): define session-bound collision-safe proof'
+b_subject='docs(task): record session-bound collision-safe plan reviews'
+xp_subject='docs(task): record exhausted session-bound collision-safe plan review'
+e_subject='docs(task): record session-bound collision-safe revalidation'
+r_subject='docs(task): record session-bound collision-safe review'
+xe_subject='docs(task): record exhausted session-bound collision-safe review'
+approved_b_ai_oid="${APPROVED_B_AI_OID:?explicit approved B_AI OID required}"
+[[ "$approved_b_ai_oid" =~ ^[0-9a-f]{40}$ ]]
+resolve_unique_subject() {
+  local subject="$1"
+  local count
+  local oid
+  count="$(git log --all --format='%s' | grep -Fxc "$subject")"
+  test "$count" -eq 1
+  oid="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$subject" '$2 == s {print $1}')"
+  test -n "$oid"
+  printf '%s\n' "$oid"
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(git rev-list --count "$parent..$child")"
+  test "$distance" -eq 1
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
+  test "$parent_count" -eq 1
+  first_parent="$(git rev-parse "$child^1")"
+  test "$first_parent" = "$parent"
+}
+assert_paths() {
+  local commit="$1"
+  shift
+  local actual
+  local expected
+  actual="$(git diff-tree --no-commit-id --name-only -r "$commit" | sort)"
+  expected="$(printf '%s\n' "$@" | sort)"
+  test "$actual" = "$expected"
+}
+assert_range_paths() {
+  local range="$1"
+  shift
+  local actual
+  local expected
+  actual="$(git diff --name-only "$range" | sort)"
+  expected="$(printf '%s\n' "$@" | sort)"
+  test "$actual" = "$expected"
+}
+assert_mode() {
+  local commit="$1"
+  local file_path="$2"
+  local mode
+  mode="$(git ls-tree "$commit" "$file_path" | awk '{print $1}')"
+  test "$mode" = 100644
+}
+p_ai="$(resolve_unique_subject "$p_subject")"
+b_ai="$(resolve_unique_subject "$b_subject")"
+test "$b_ai" = "$approved_b_ai_oid"
+xp_count="$(git log --all --format='%s' | awk -v subject="$xp_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xp_count" -eq 0
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$b_ai"
+subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record exhausted status-based silent-success plan review'
+  'docs(plan): define collision-safe disposition proof'
+  'docs(task): record exhausted collision-safe disposition plan review'
+  "$p_subject"
+  "$b_subject"
+)
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$d_ai" "$p_ai" "$b_ai")
+for index in "${!commits[@]}"; do
+  verified="$(git rev-parse --verify "${commits[$index]}^{commit}")"
+  test "$verified" = "${commits[$index]}"
+  actual_subject="$(git show -s --format=%s "${commits[$index]}")"
+  test "$actual_subject" = "${subjects[$index]}"
+  subject_count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$subject_count" -eq 1
+done
+assert_edge "$b_4af" "$i"
+assert_edge "$i" "$d_ag"
+assert_edge "$d_ag" "$p_ag"
+assert_edge "$p_ag" "$d_ah"
+assert_edge "$d_ah" "$p_ah"
+assert_edge "$p_ah" "$d_ai"
+assert_edge "$d_ai" "$p_ai"
+assert_edge "$p_ai" "$b_ai"
+assert_paths "$b_4af" "$task_file"
+assert_paths "$i" "$task_file" "$test_file"
+assert_paths "$d_ag" "$task_file"
+assert_paths "$p_ag" "$plan_file" "$task_file"
+assert_paths "$d_ah" "$task_file"
+assert_paths "$p_ah" "$plan_file" "$task_file"
+assert_paths "$d_ai" "$task_file"
+assert_paths "$p_ai" "$plan_file" "$task_file"
+assert_paths "$b_ai" "$task_file"
+assert_range_paths "$b_4af..$i" "$task_file" "$test_file"
+assert_range_paths "$d_ah..$p_ah" "$plan_file" "$task_file"
+assert_range_paths "$d_ai..$p_ai" "$plan_file" "$task_file"
+assert_range_paths "$p_ai..$b_ai" "$task_file"
+for commit_path in \
+  "$b_4af:$task_file" \
+  "$i:$task_file" "$i:$test_file" \
+  "$d_ag:$task_file" \
+  "$p_ag:$plan_file" "$p_ag:$task_file" \
+  "$d_ah:$task_file" \
+  "$p_ah:$plan_file" "$p_ah:$task_file" \
+  "$d_ai:$task_file" \
+  "$p_ai:$plan_file" "$p_ai:$task_file" \
+  "$b_ai:$task_file"
+do
+  assert_mode "${commit_path%%:*}" "${commit_path#*:}"
+done
+implementation_blob="$(git rev-parse "$i:$test_file")"
+test -n "$implementation_blob"
+b_ai_blob="$(git rev-parse "$b_ai:$test_file")"
+test "$b_ai_blob" = "$implementation_blob"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+python3 - "$task_file" "$d_ai" "$p_ai" <<'PY'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+lines = text.splitlines()
+
+
+def exact_line(expected):
+    if lines.count(expected) != 1:
+        raise SystemExit(f"preflight-line-count:{expected}")
+
+
+def exact_row(label):
+    candidates = []
+    for source_line in lines:
+        line = source_line.strip(" \t")
+        view = line[1:] if line.startswith("|") else line
+        separator = view.find("|")
+        if separator >= 0 and view[:separator].strip(" \t") == label:
+            candidates.append(line)
+    if len(candidates) != 1:
+        raise SystemExit(f"preflight-row-count:{label}")
+    row = candidates[0]
+    if not row.startswith("|") or not row.endswith("|") or "\\|" in row or "\\`" in row:
+        raise SystemExit(f"preflight-row-shape:{label}")
+    parts = row.split("|")
+    if len(parts) != 9 or parts[0] or parts[-1]:
+        raise SystemExit(f"preflight-row-cells:{label}")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if len(cells) != 7 or cells[0] != label:
+        raise SystemExit(f"preflight-row-label:{label}")
+    if cells[1] != "Controller":
+        raise SystemExit(f"preflight-row-owner:{label}")
+    return cells
+
+
+plan = exact_row("T-TSDC-004R-4AI session-bound collision-safe Plan")
+expected_plan = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[2]}..{sys.argv[3]}`",
+    "accepted; B_AI resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+if plan[2:7] != expected_plan:
+    raise SystemExit("preflight-plan")
+frozen = exact_row("T-TSDC-004R-4AI frozen canonical-row implementation")
+expected_frozen = [
+    "blocked; revalidation not run",
+    "blocked; revalidation not run",
+    "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5`",
+    "blocked; separately approved revalidation not run",
+    "Frozen implementation remains historical; no composite-review authority",
+]
+if frozen[2:7] != expected_frozen:
+    raise SystemExit("preflight-frozen")
+revalidation = exact_row("T-TSDC-004R-4AI session-bound collision-safe revalidation")
+expected_revalidation = [
+    "blocked; revalidation not run",
+    "blocked; revalidation not run",
+    "awaiting exact reviewed range",
+    "blocked; separately approved revalidation not run",
+    "B_AI accepted; approval not yet consumed; E_AI, R_AI, and XE_AI are not created",
+]
+if revalidation[2:7] != expected_revalidation:
+    raise SystemExit("preflight-revalidation")
+exact_line("- 4AI transaction state: not-run; separate approval required.")
+exact_line("- 4AI sanitized result: not-run.")
+exact_line(
+    "- 4AI revalidation approval owner/source: separate future User / Controller approval "
+    "required; not consumed."
+)
+exact_line(
+    "- 4AI `APPROVED_B_AI_OID`: awaiting a separate approval naming the resolved full B_AI OID."
+)
+exact_line(
+    "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit "
+    "in one fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | "
+    "accepted fresh Plan reviews over exact `D_AI..P_AI`; separate revalidation approval required | "
+    "controller and future fresh independent reviewers | B_AI accepted and resolved by its exact unique "
+    "subject; separate one-attempt approval required; no downstream authority |"
+)
+exact_line(
+    "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Not run; B_AI accepted "
+    "by both fresh Plan reviews; separate one-attempt approval not granted or consumed; E_AI is not created. |"
+)
+exact_line(
+    "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper "
+    "call, sanitized result, and Task-only E_AI in one session | Not run; B_AI accepted; separate one-attempt "
+    "approval not granted or consumed |"
+)
+exact_line(
+    "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+    "`docs(task): record session-bound collision-safe revalidation` | not created | Blocked pending separate "
+    "one-attempt approval naming the resolved full B_AI OID. |"
+)
+exact_line(
+    "Current 4AI final handoff: B_AI accepted and resolved by its exact unique subject; separate one-attempt "
+    "revalidation approval required; E_AI/R_AI/XE_AI not created; no downstream authority."
+)
+if re.search(r"result status=\d+ output=(?:empty|nonempty|internal)", text, flags=re.ASCII):
+    raise SystemExit("preflight-premature-result")
+PY
+wrapper_status=0
+e_pre_count="$(git log --all --format='%s' | awk -v subject="$e_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$e_pre_count" -eq 0
+r_pre_count="$(git log --all --format='%s' | awk -v subject="$r_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$r_pre_count" -eq 0
+xe_pre_count="$(git log --all --format='%s' | awk -v subject="$xe_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xe_pre_count" -eq 0
+python3 - "$task_file" "$approved_b_ai_oid" <<'PY'
+import os
+import pathlib
+import stat
+import sys
+import tempfile
+
+path = pathlib.Path(sys.argv[1])
+approved_b_ai_oid = sys.argv[2]
+if len(approved_b_ai_oid) != 40 or any(character not in "0123456789abcdef" for character in approved_b_ai_oid):
+    raise SystemExit("guard-approved-oid")
+text = path.read_text(encoding="utf-8")
+replacements = {
+    "- 4AI transaction state: not-run; separate approval required.":
+        "- 4AI transaction state: in-progress; approval consumed; retry and cleanup require recovery approval.",
+    "- 4AI sanitized result: not-run.":
+        "- 4AI sanitized result: pending.",
+    "- 4AI revalidation approval owner/source: separate future User / Controller approval required; not consumed.":
+        "- 4AI revalidation approval owner/source: User / Controller; exact one-attempt AI-3 approval consumed by in-progress guard.",
+    "- 4AI `APPROVED_B_AI_OID`: awaiting a separate approval naming the resolved full B_AI OID.":
+        f"- 4AI `APPROVED_B_AI_OID`: `{approved_b_ai_oid}`; validated against the unique accepted B_AI subject.",
+    (
+        "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Not run; B_AI accepted "
+        "by both fresh Plan reviews; separate one-attempt approval not granted or consumed; E_AI is not created. |"
+    ): (
+        "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | In progress; User / "
+        f"Controller approval naming B_AI `{approved_b_ai_oid}` consumed by the guard; wrapper call is the "
+        "immediate next command; E_AI is not created. |"
+    ),
+    (
+        "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper "
+        "call, sanitized result, and Task-only E_AI in one session | Not run; B_AI accepted; separate one-attempt "
+        "approval not granted or consumed |"
+    ): (
+        "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper "
+        "call, sanitized result, and Task-only E_AI in one session | In progress; approval consumed by the guard; "
+        "wrapper is the immediate next command |"
+    ),
+    (
+        "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+        "`docs(task): record session-bound collision-safe revalidation` | not created | Blocked pending separate "
+        "one-attempt approval naming the resolved full B_AI OID. |"
+    ): (
+        "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+        "`docs(task): record session-bound collision-safe revalidation` | in-progress; not committed | Approval "
+        f"naming B_AI `{approved_b_ai_oid}` consumed; retry and cleanup require recovery approval. |"
+    ),
+}
+residue = tuple(path.parent.glob(f".{path.name}.*"))
+if residue:
+    raise SystemExit("guard-temp-residue")
+for old, new in replacements.items():
+    if text.count(old) != 1 or old == new or new in text:
+        raise SystemExit("guard-replacement-shape")
+for old, new in replacements.items():
+    text = text.replace(old, new, 1)
+source_mode = stat.S_IMODE(path.stat().st_mode)
+temporary = None
+try:
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        delete=False,
+    ) as stream:
+        temporary = pathlib.Path(stream.name)
+        stream.write(text)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.chmod(temporary, source_mode)
+    os.replace(temporary, path)
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    directory_fd = os.open(path.parent, directory_flags)
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
+    temporary = None
+finally:
+    # Preserve any crash residue as a fail-closed rerun blocker.
+    pass
+PY
+wrapper_output="$({
+  python3 - \
+    python3 scripts/validation/check-target-surface-delta-contract.py \
+    --mode advisory <<'PY'
+import os
+import subprocess
+import sys
+
+RESERVED = 125
+
+
+def run_once(argv, runner=subprocess.run):
+    try:
+        if not argv:
+            raise ValueError("missing argv")
+        completed = runner(
+            argv,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+            shell=False,
+        )
+        rc = completed.returncode
+        payload = completed.stdout
+        if (
+            isinstance(rc, bool)
+            or not isinstance(rc, int)
+            or rc < 0
+            or rc > 255
+            or not isinstance(payload, (bytes, bytearray))
+        ):
+            return RESERVED, "internal"
+        return rc, "nonempty" if payload else "empty"
+    except Exception:
+        return RESERVED, "internal"
+
+
+def render(rc, output_class):
+    return f"result status={rc} output={output_class}\n".encode("ascii")
+
+
+class Completed:
+    def __init__(self, returncode, stdout):
+        self.returncode = returncode
+        self.stdout = stdout
+
+
+def require_canonical(result, expected, markers):
+    if result != expected:
+        raise RuntimeError("oracle-result")
+    rendered = render(*result)
+    expected_line = f"result status={expected[0]} output={expected[1]}\n".encode("ascii")
+    if rendered != expected_line:
+        raise RuntimeError("oracle-canonical")
+    if any(marker in rendered for marker in markers):
+        raise RuntimeError("oracle-raw-leak")
+
+
+def oracle():
+    markers = (b"stderr-merged-raw-marker", b"successor-marker")
+    cases = (
+        (0, b"", (0, "empty")),
+        (0, b"\n", (0, "nonempty")),
+        (0, b"stderr-merged-raw-marker", (0, "nonempty")),
+        (0, b"\x1e", (0, "nonempty")),
+        (0, b"\x00", (0, "nonempty")),
+        (23, b"", (23, "empty")),
+        (23, b"successor-marker", (23, "nonempty")),
+        (125, b"", (125, "empty")),
+        (125, b"stderr-merged-raw-marker", (125, "nonempty")),
+        (-9, b"", (125, "internal")),
+        (256, b"", (125, "internal")),
+        (0, "invalid-stdout", (125, "internal")),
+    )
+    expected_kwargs = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "check": False,
+        "shell": False,
+    }
+    for returncode, stdout, expected in cases:
+        calls = []
+
+        def fake(argv, **kwargs):
+            calls.append((argv, kwargs))
+            return Completed(returncode, stdout)
+
+        result = run_once(["fake-validator"], fake)
+        if calls != [(["fake-validator"], expected_kwargs)]:
+            raise RuntimeError("oracle-call-count-or-shape")
+        require_canonical(result, expected, markers)
+    exception_calls = []
+
+    def raising_runner(argv, **kwargs):
+        exception_calls.append((argv, kwargs))
+        raise RuntimeError("runner failure")
+
+    exception_result = run_once(["fake-validator"], raising_runner)
+    if exception_calls != [(["fake-validator"], expected_kwargs)]:
+        raise RuntimeError("oracle-exception-call-count")
+    require_canonical(exception_result, (125, "internal"), markers)
+    missing_calls = []
+
+    def forbidden_runner(argv, **kwargs):
+        missing_calls.append((argv, kwargs))
+        return Completed(0, b"")
+
+    missing_result = run_once([], forbidden_runner)
+    if missing_calls:
+        raise RuntimeError("oracle-missing-call-count")
+    require_canonical(missing_result, (125, "internal"), markers)
+
+
+def main():
+    oracle()
+    expected_argv = [
+        "python3",
+        "scripts/validation/check-target-surface-delta-contract.py",
+        "--mode",
+        "advisory",
+    ]
+    if sys.argv[1:] != expected_argv:
+        raise RuntimeError("real-argv")
+    real_calls = []
+
+    def counted_runner(argv, **kwargs):
+        real_calls.append((argv, kwargs))
+        return subprocess.run(argv, **kwargs)
+
+    rc, output_class = run_once(sys.argv[1:], counted_runner)
+    expected_real_kwargs = {
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "check": False,
+        "shell": False,
+    }
+    if real_calls != [(expected_argv, expected_real_kwargs)]:
+        raise RuntimeError("real-call-count-or-shape")
+    canonical = render(rc, output_class)
+    written = os.write(1, canonical)
+    if written != len(canonical):
+        raise RuntimeError("canonical-short-write")
+    return rc
+
+
+try:
+    rc = main()
+except Exception:
+    rc = RESERVED
+    try:
+        internal = render(RESERVED, "internal")
+        written = os.write(1, internal)
+        if written != len(internal):
+            raise RuntimeError("internal-short-write")
+    except Exception:
+        pass
+raise SystemExit(rc)
+PY
+})" || wrapper_status=$?
+case "$wrapper_output" in
+  "result status=$wrapper_status output=empty")
+    output_class=empty
+    ;;
+  "result status=$wrapper_status output=nonempty")
+    output_class=nonempty
+    ;;
+  'result status=125 output=internal')
+    test "$wrapper_status" -eq 125
+    output_class=internal
+    ;;
+  *)
+    exit 125
+    ;;
+esac
+writer_e_task_blob="$({ python3 - \
+  "$task_file" "$wrapper_status" "$output_class" "$approved_b_ai_oid" <<'PY'
+import hashlib
+import os
+import pathlib
+import stat
+import sys
+import tempfile
+
+path = pathlib.Path(sys.argv[1])
+try:
+    status = int(sys.argv[2], 10)
+except ValueError:
+    raise SystemExit("outcome-status")
+output_class = sys.argv[3]
+approved_b_ai_oid = sys.argv[4]
+if status < 0 or status > 255:
+    raise SystemExit("outcome-status-range")
+if output_class not in {"empty", "nonempty", "internal"}:
+    raise SystemExit("outcome-class")
+if output_class == "internal" and status != 125:
+    raise SystemExit("outcome-internal-status")
+if len(approved_b_ai_oid) != 40 or any(character not in "0123456789abcdef" for character in approved_b_ai_oid):
+    raise SystemExit("outcome-approved-oid")
+text = path.read_text(encoding="utf-8")
+old_frozen = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+    "blocked; revalidation not run | blocked; revalidation not run | "
+    "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "blocked; separately approved revalidation not run | Frozen implementation "
+    "remains historical; no composite-review authority |"
+)
+new_frozen = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+    "pending fresh independent review | pending fresh independent review | "
+    "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "E_AI committed; fresh composite reviews pending; no downstream authority | "
+    "Frozen historical implementation and test blob await exact composite review |"
+)
+old_revalidation = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+    "blocked; revalidation not run | blocked; revalidation not run | awaiting exact reviewed range | "
+    "blocked; separately approved revalidation not run | B_AI accepted; approval not yet "
+    "consumed; E_AI, R_AI, and XE_AI are not created |"
+)
+new_revalidation = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+    "pending fresh independent review | pending fresh independent review | awaiting exact reviewed range | "
+    "E_AI committed; fresh composite reviews pending; no downstream authority | Revalidation "
+    f"approval consumed; result status={status} output={output_class}; E_AI resolved by its exact "
+    "unique subject; no future OID is claimed in its own tree |"
+)
+replacements = {
+    "- 4AI transaction state: in-progress; approval consumed; retry and cleanup require recovery approval.":
+        "- 4AI transaction state: completed; approval consumed; no retry authority.",
+    "- 4AI sanitized result: pending.":
+        f"- 4AI sanitized result: result status={status} output={output_class}.",
+    "- 4AI revalidation approval owner/source: User / Controller; exact one-attempt AI-3 approval consumed by in-progress guard.":
+        "- 4AI revalidation approval owner/source: User / Controller; exact one-attempt AI-3 approval consumed.",
+    (
+        "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+        "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+        "agent; original agents remain historical | active; B_AI accepted and resolved by its exact unique "
+        "subject; separate revalidation approval required; no downstream authority |"
+    ): (
+        "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+        "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+        "agent; original agents remain historical | active; E_AI committed and resolved by its exact unique "
+        "subject; fresh composite reviews pending; no downstream authority |"
+    ),
+    (
+        "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one "
+        "fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | accepted "
+        "fresh Plan reviews over exact `D_AI..P_AI`; separate revalidation approval required | controller and "
+        "future fresh independent reviewers | B_AI accepted and resolved by its exact unique subject; separate "
+        "one-attempt approval required; no downstream authority |"
+    ): (
+        "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one "
+        "fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | immutable "
+        "E_AI evidence plus two future fresh composite reviews | controller and future fresh independent "
+        "reviewers | E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; "
+        "no downstream authority |"
+    ),
+    (
+        "| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | "
+        "final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; Task 5 "
+        "and Wave C authority are absent while 4AI Plan reviews are pending |"
+    ): (
+        "| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | "
+        "final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; E_AI "
+        "is committed but accepted R_AI, Wave C, and Task 5 completion are absent |"
+    ),
+    (
+        "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | In progress; User / "
+        f"Controller approval naming B_AI `{approved_b_ai_oid}` consumed by the guard; wrapper call is the "
+        "immediate next command; E_AI is not created. |"
+    ): (
+        "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Completed in one "
+        f"fail-fast session; approval naming B_AI `{approved_b_ai_oid}` consumed; result status={status} "
+        f"output={output_class}; E_AI resolved by its exact unique subject; fresh composite reviews pending. |"
+    ),
+    (
+        "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Not run; E_AI, R_AI, and XE_AI "
+        "are not created. |"
+    ): (
+        "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Pending two fresh independent "
+        "reviews over immutable E_AI evidence; R_AI and XE_AI are not created. |"
+    ),
+    (
+        "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper "
+        "call, sanitized result, and Task-only E_AI in one session | In progress; approval consumed by the guard; "
+        "wrapper is the immediate next command |"
+    ): (
+        "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper "
+        f"call, sanitized result, and Task-only E_AI in one session | Completed; B_AI `{approved_b_ai_oid}`; "
+        f"result status={status} output={output_class}; E_AI resolved by its exact unique subject |"
+    ),
+    (
+        "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly "
+        "one R_AI/XE_AI terminal | Not run; E_AI, R_AI, and XE_AI are not created |"
+    ): (
+        "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly "
+        "one R_AI/XE_AI terminal | Pending; E_AI committed; fresh composite reviews not yet recorded |"
+    ),
+    (
+        "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+        "changes only Plan/Task evidence design and adds no product RED. | Historical GREEN evidence is "
+        "preserved; 4AI ran no tests, validators, wrapper, proof, or revalidation. | P_AI committed; resolved "
+        "by its exact unique subject; fresh Plan reviews pending; no downstream authority. | active Task 4; "
+        "4AI Plan review pending; no Wave C authority |"
+    ): (
+        "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+        "changes only Plan/Task evidence design and adds no product RED. | Frozen product GREEN evidence "
+        f"remains unchanged; the separately approved evidence-only wrapper returned status={status} "
+        f"output={output_class}. | E_AI committed and resolved by its exact unique subject; fresh composite "
+        "reviews pending; no downstream authority. | active Task 4; 4AI composite review pending; no Wave C authority |"
+    ),
+    (
+        "| T-TSDC-005 | Not run — no accepted R_AI or Wave C authority exists | Not run — no accepted R_AI "
+        "or Wave C authority exists | Not run — 4AI Plan reviews are pending | blocked |"
+    ): (
+        "| T-TSDC-005 | Not run — no accepted R_AI or Wave C authority exists | Not run — no accepted R_AI "
+        "or Wave C authority exists | E_AI committed; fresh composite reviews and accepted R_AI are pending | blocked |"
+    ),
+    (
+        "| T-TSDC-006 | Not run — Wave C and Task 5 blocked | Not run — Wave C and Task 5 blocked | "
+        "Not run — 4AI has no downstream authority | blocked |"
+    ): (
+        "| T-TSDC-006 | Not run — accepted R_AI, Wave C, and Task 5 are absent | Not run — accepted R_AI, "
+        "Wave C, and Task 5 are absent | E_AI committed; composite terminal not created | blocked |"
+    ),
+    (
+        "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+        "`docs(task): record session-bound collision-safe revalidation` | in-progress; not committed | Approval "
+        f"naming B_AI `{approved_b_ai_oid}` consumed; retry and cleanup require recovery approval. |"
+    ): (
+        "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+        "`docs(task): record session-bound collision-safe revalidation` | resolved by this exact unique subject | "
+        f"Approval naming B_AI `{approved_b_ai_oid}` consumed; result status={status} output={output_class}; "
+        "Task-only E_AI committed in the same fail-fast session. |"
+    ),
+    (
+        "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+        "`docs(task): record session-bound collision-safe review` | future; not created | Blocked pending E_AI "
+        "plus two accepted fresh composite reviews; only this accepted terminal may authorize Task 4.5/Wave C. |"
+    ): (
+        "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+        "`docs(task): record session-bound collision-safe review` | not created | Pending two accepted fresh "
+        "composite reviews and accepting immutable E_AI result; mutually exclusive with XE_AI. |"
+    ),
+    (
+        "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+        "`docs(task): record exhausted session-bound collision-safe review` | future; not created | Blocked "
+        "pending E_AI; required terminal for any nonzero/internal E evidence or non-accepted composite review "
+        "and grants no downstream authority. |"
+    ): (
+        "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+        "`docs(task): record exhausted session-bound collision-safe review` | not created | Pending composite "
+        "disposition; mandatory for nonzero/internal E_AI evidence or either non-accepted fresh review; mutually "
+        "exclusive with R_AI. |"
+    ),
+    (
+        "| T-TSDC-006 | pending | pending | pending | not available | blocked | Wave C and Task 5 remain "
+        "blocked while 4AI Plan reviews are pending. |"
+    ): (
+        "| T-TSDC-006 | pending | pending | pending | not available | blocked | E_AI is committed; accepted "
+        "R_AI, Wave C, and Task 5 completion remain absent. |"
+    ),
+    (
+        "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and Tasks "
+        "5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | not available | "
+        "blocked | P_AI has no downstream authority; historical 4AF/4AG/4AH evidence cannot authorize Wave C, "
+        "Tasks 5–6, or final branch review. |"
+    ): (
+        "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and Tasks "
+        "5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | not available | "
+        "blocked | E_AI and pending composite reviews grant no Wave C, Tasks 5–6, or final branch-review authority. |"
+    ),
+    (
+        "| T-TSDC-004R-3 atomic projection cutover | blocked; accepted B_AI but revalidation not approved | "
+        "Historical 4AF and rejected/exhausted 4AG/4AH evidence remain frozen. B_AI is the sole accepted Plan "
+        "terminal; XP_AI/E_AI/R_AI/XE_AI are not created; no downstream authority. | obtain separate one-attempt "
+        "approval naming the resolved full B_AI OID; only later accepted R_AI may unlock Wave C |"
+    ): (
+        "| T-TSDC-004R-3 atomic projection cutover | blocked; E_AI committed and composite reviews pending | "
+        f"B_AI `{approved_b_ai_oid}` is accepted, XP_AI is not created, and E_AI records result status={status} "
+        f"output={output_class}; R_AI/XE_AI are not created and no downstream authority exists. | complete two "
+        "fresh composite reviews over immutable E_AI evidence and exactly one R_AI/XE_AI terminal; only accepted "
+        "R_AI may unlock Wave C |"
+    ),
+    (
+        "Current 4AI final handoff: B_AI accepted and resolved by its exact unique subject; separate one-attempt "
+        "revalidation approval required; E_AI/R_AI/XE_AI not created; no downstream authority."
+    ): (
+        f"Current 4AI final handoff: E_AI committed in the approval-consuming session with result status={status} "
+        f"output={output_class}; B_AI `{approved_b_ai_oid}` approved and XP_AI absent; fresh composite reviews "
+        "pending; R_AI/XE_AI not created; no downstream authority."
+    ),
+    (
+        "- The active 4AI checkpoint has accepted B_AI, but revalidation is not approved. XP_AI, E_AI,\n"
+        "  R_AI, and XE_AI are uncreated and do not establish Task 4.5, Wave C, downstream, runtime,\n"
+        "  or remote authority."
+    ): (
+        "- The active 4AI checkpoint has immutable E_AI evidence and pending fresh composite reviews. XP_AI,\n"
+        "  R_AI, and XE_AI are uncreated; E_AI alone does not establish Task 4.5, Wave C, downstream, runtime,\n"
+        "  or remote authority."
+    ),
+    (
+        "- D_AI is the clean Task-only XP_AH terminal\n"
+        "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`. Historical 4AG and 4AH rows,\n"
+        "  OIDs, ranges, and verdicts remain immutable evidence. P_AI is the current\n"
+        "  Plan-and-Task-only checkpoint with exact subject\n"
+        "  `docs(plan): define session-bound collision-safe proof`; this tree states\n"
+        "  exactly: “P_AI committed; resolved by its exact unique subject; fresh Plan\n"
+        "  reviews pending; no downstream authority”."
+    ): (
+        "- D_AI remains the clean Task-only XP_AH terminal\n"
+        "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`; P_AI and accepted B_AI are immutable lineage\n"
+        f"  evidence. The current checkpoint is Task-only E_AI with approved B_AI `{approved_b_ai_oid}`,\n"
+        f"  canonical result status={status} output={output_class}, and pending fresh composite reviews."
+    ),
+    (
+        "- The prospective accepted lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH ->\n"
+        "  P_AH -> XP_AH/D_AI -> P_AI -> B_AI -> E_AI -> R_AI`. The exact Plan-review\n"
+        "  range is future `D_AI..P_AI`. Exactly one Task-only B_AI or XP_AI may record\n"
+        "  those two fresh reviews. B_AI alone grants no wrapper, revalidation,\n"
+        "  composite-review, implementation, Task 4.5, or Wave C authority."
+    ): (
+        "- The realized evidence lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH -> P_AH ->\n"
+        "  XP_AH/D_AI -> P_AI -> B_AI -> E_AI`; XP_AI is absent. E_AI alone grants no implementation,\n"
+        "  Task 4.5, or Wave C authority; exactly one future R_AI/XE_AI composite terminal remains required."
+    ),
+    (
+        "- No 4AI validator, test, wrapper, proof, revalidation, composite review, implementation, runtime,\n"
+        "  remote, Graphify, Task 4.5, or Wave C action has run. Both fresh Plan reviews accepted B_AI,\n"
+        "  but separate one-attempt revalidation approval is absent and no downstream authority exists."
+    ): (
+        f"- The separately approved 4AI revalidation transaction ran once and committed only sanitized result "
+        f"status={status} output={output_class} as E_AI. Fresh composite reviews, R_AI/XE_AI, Task 4.5, Wave C,\n"
+        "  runtime, remote, Graphify, Tasks 5–6, and whole-branch review remain unexecuted and unauthorized."
+    ),
+    (
+        "T-TSDC-004R-4AI is the current accepted-Plan successor from clean XP_AH/D_AI\n"
+        "`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. B_AI is accepted and resolved by its\n"
+        "exact unique subject; XP_AI is not created. Separate one-attempt revalidation approval naming\n"
+        "the resolved full B_AI OID is absent; E_AI, R_AI, and XE_AI are not created. No validator,\n"
+        "test, wrapper, proof, revalidation, implementation, runtime, remote, Graphify, Task 4.5,\n"
+        "Wave C, Tasks 5–6, or whole-branch review authority exists."
+    ): (
+        "T-TSDC-004R-4AI now has immutable Task-only E_AI evidence from one approval-consuming session.\n"
+        f"B_AI `{approved_b_ai_oid}` is accepted and XP_AI is absent; the canonical sanitized result is\n"
+        f"status={status} output={output_class}. Fresh composite reviews remain pending, so R_AI and XE_AI are\n"
+        "not created and no Task 4.5, Wave C, Tasks 5–6, runtime, remote, Graphify, or whole-branch review\n"
+        "authority exists."
+    ),
+    old_frozen: new_frozen,
+    old_revalidation: new_revalidation,
+}
+approved_oid_line = (
+    f"- 4AI `APPROVED_B_AI_OID`: `{approved_b_ai_oid}`; validated against the unique accepted B_AI subject."
+)
+if text.count(approved_oid_line) != 1:
+    raise SystemExit("outcome-approved-oid-evidence")
+residue = tuple(path.parent.glob(f".{path.name}.*"))
+if residue:
+    raise SystemExit("outcome-temp-residue")
+for old, new in replacements.items():
+    if text.count(old) != 1 or old == new or new in text:
+        raise SystemExit("outcome-replacement-shape")
+for old, new in replacements.items():
+    text = text.replace(old, new, 1)
+payload = text.encode("utf-8")
+git_blob_object = b"blob " + str(len(payload)).encode("ascii") + b"\0" + payload
+writer_blob_oid = hashlib.sha1(git_blob_object, usedforsecurity=False).hexdigest()
+source_mode = stat.S_IMODE(path.stat().st_mode)
+temporary = None
+try:
+    with tempfile.NamedTemporaryFile(
+        mode="wb",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        delete=False,
+    ) as stream:
+        temporary = pathlib.Path(stream.name)
+        stream.write(payload)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.chmod(temporary, source_mode)
+    os.replace(temporary, path)
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    directory_fd = os.open(path.parent, directory_flags)
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
+    temporary = None
+    oid_record = f"{writer_blob_oid}\n".encode("ascii")
+    if os.write(1, oid_record) != len(oid_record):
+        raise RuntimeError("outcome-blob-oid-short-write")
+finally:
+    # Preserve any crash residue as a fail-closed rerun blocker.
+    pass
+PY
+})"
+[[ "$writer_e_task_blob" =~ ^[0-9a-f]{40}$ ]]
+unstaged_paths="$(git diff --name-only)"
+test "$?" -eq 0
+staged_paths="$(git diff --cached --name-only)"
+test "$?" -eq 0
+untracked_paths="$(git ls-files --others --exclude-standard)"
+test "$?" -eq 0
+dirty_paths="$(printf '%s\n' "$unstaged_paths" "$staged_paths" "$untracked_paths" | sed '/^$/d' | sort -u)"
+test "$dirty_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$task_file"
+staged_e_task_blob="$(git rev-parse ":$task_file")"
+test "$staged_e_task_blob" = "$writer_e_task_blob"
+git commit -m "$e_subject"
+e_ai="$(git rev-parse --verify 'HEAD^{commit}')"
+committed_e_task_blob="$(git rev-parse "$e_ai:$task_file")"
+test "$committed_e_task_blob" = "$writer_e_task_blob"
+actual_subject="$(git show -s --format=%s "$e_ai")"
+test "$actual_subject" = "$e_subject"
+subject_count="$(git log --all --format='%s' | grep -Fxc "$e_subject")"
+test "$subject_count" -eq 1
+xp_count="$(git log --all --format='%s' | awk -v subject="$xp_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xp_count" -eq 0
+r_count="$(git log --all --format='%s' | awk -v subject="$r_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$r_count" -eq 0
+xe_count="$(git log --all --format='%s' | awk -v subject="$xe_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xe_count" -eq 0
+assert_edge "$b_ai" "$e_ai"
+assert_paths "$e_ai" "$task_file"
+assert_range_paths "$b_ai..$e_ai" "$task_file"
+assert_mode "$e_ai" "$task_file"
+e_blob="$(git rev-parse "$e_ai:$test_file")"
+test "$e_blob" = "$implementation_blob"
+python3 - "$task_file" "$wrapper_status" "$output_class" <<'PY'
+import pathlib
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+status = sys.argv[2]
+output_class = sys.argv[3]
+expected = (
+    "- 4AI transaction state: completed; approval consumed; no retry authority.",
+    f"- 4AI sanitized result: result status={status} output={output_class}.",
+    (
+        "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+        "pending fresh independent review | pending fresh independent review | "
+        "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+        "E_AI committed; fresh composite reviews pending; no downstream authority | "
+        "Frozen historical implementation and test blob await exact composite review |"
+    ),
+    (
+        "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+        "pending fresh independent review | pending fresh independent review | awaiting exact reviewed range | "
+        "E_AI committed; fresh composite reviews pending; no downstream authority | Revalidation "
+        f"approval consumed; result status={status} output={output_class}; E_AI resolved by its exact "
+        "unique subject; no future OID is claimed in its own tree |"
+    ),
+)
+for item in expected:
+    if text.count(item) != 1:
+        raise SystemExit("e-ai-evidence-count")
+PY
+head_after="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_after" = "$e_ai"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+Before composite review, the two review rows are exactly the pending rows
+written by the E_AI transaction, and the only outcome is the exact unique
+`4AI sanitized result` marker. A status other than zero or `output=internal`
+is valid failure evidence, never acceptance evidence.
+
+- [ ] **Step AI-4: Parse exact composite evidence and commit R_AI or XE_AI.**
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_ah=9ff217e63eaf452871cfc3ef47775e0fbd03e706
+d_ai=88f55837be251318cd697bd8a1ab3a4f0ed1a824
+p_subject='docs(plan): define session-bound collision-safe proof'
+b_subject='docs(task): record session-bound collision-safe plan reviews'
+xp_subject='docs(task): record exhausted session-bound collision-safe plan review'
+e_subject='docs(task): record session-bound collision-safe revalidation'
+r_subject='docs(task): record session-bound collision-safe review'
+xe_subject='docs(task): record exhausted session-bound collision-safe review'
+resolve_unique_subject() {
+  local subject="$1"
+  local count
+  local oid
+  count="$(git log --all --format='%s' | grep -Fxc "$subject")"
+  test "$count" -eq 1
+  oid="$(git log --all --format='%H%x09%s' | awk -F '\t' -v s="$subject" '$2 == s {print $1}')"
+  test -n "$oid"
+  printf '%s\n' "$oid"
+}
+assert_edge() {
+  local parent="$1"
+  local child="$2"
+  local distance
+  local parent_count
+  local first_parent
+  git merge-base --is-ancestor "$parent" "$child"
+  distance="$(git rev-list --count "$parent..$child")"
+  test "$distance" -eq 1
+  parent_count="$(git rev-list --parents -n 1 "$child" | awk '{print NF - 1}')"
+  test "$parent_count" -eq 1
+  first_parent="$(git rev-parse "$child^1")"
+  test "$first_parent" = "$parent"
+}
+p_ai="$(resolve_unique_subject "$p_subject")"
+b_ai="$(resolve_unique_subject "$b_subject")"
+e_ai="$(resolve_unique_subject "$e_subject")"
+xp_count="$(git log --all --format='%s' | awk -v subject="$xp_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xp_count" -eq 0
+r_pre_count="$(git log --all --format='%s' | awk -v subject="$r_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$r_pre_count" -eq 0
+xe_pre_count="$(git log --all --format='%s' | awk -v subject="$xe_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xe_pre_count" -eq 0
+head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_commit" = "$e_ai"
+e_task_status=0
+e_task_text="$(git show "$e_ai:$task_file")" || e_task_status=$?
+test "$e_task_status" -eq 0
+test -n "$e_task_text"
+selection="$({ python3 - \
+  "$task_file" "$d_ai" "$p_ai" "$b_4af" "$i" "$b_ai" "$e_ai" \
+  3<<<"$e_task_text" <<'PY'
+import os
+import pathlib
+import re
+import sys
+
+labels = (
+    "T-TSDC-004R-4AI session-bound collision-safe Plan",
+    "T-TSDC-004R-4AI frozen canonical-row implementation",
+    "T-TSDC-004R-4AI session-bound collision-safe revalidation",
+)
+e_text = os.fdopen(3, encoding="utf-8").read()
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+lines = text.splitlines()
+e_lines = e_text.splitlines()
+e_state = "- 4AI transaction state: completed; approval consumed; no retry authority."
+if e_lines.count(e_state) != 1 or lines.count(e_state) != 1:
+    raise SystemExit("composite-e-state")
+e_results = [line for line in e_lines if line.startswith("- 4AI sanitized result: ")]
+if len(e_results) != 1:
+    raise SystemExit("composite-e-result-count")
+match = re.fullmatch(
+    r"- 4AI sanitized result: result status=(\d{1,3}) output=(empty|nonempty|internal)\.",
+    e_results[0],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("composite-e-result-shape")
+status = int(match.group(1), 10)
+output_class = match.group(2)
+if status > 255 or (output_class == "internal" and status != 125):
+    raise SystemExit("composite-e-result-value")
+if lines.count(e_results[0]) != 1:
+    raise SystemExit("composite-current-result-drift")
+immutable_e_lines = (
+    "- 4AI revalidation approval owner/source: User / Controller; exact one-attempt AI-3 approval consumed.",
+    f"- 4AI `APPROVED_B_AI_OID`: `{sys.argv[6]}`; validated against the unique accepted B_AI subject.",
+    (
+        "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+        "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+        "agent; original agents remain historical | active; E_AI committed and resolved by its exact unique "
+        "subject; fresh composite reviews pending; no downstream authority |"
+    ),
+    (
+        "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one "
+        "fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | immutable "
+        "E_AI evidence plus two future fresh composite reviews | controller and future fresh independent "
+        "reviewers | E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; "
+        "no downstream authority |"
+    ),
+    (
+        "| 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Completed in one fail-fast "
+        f"session; approval naming B_AI `{sys.argv[6]}` consumed; result status={status} output={output_class}; "
+        "E_AI resolved by its exact unique subject; fresh composite reviews pending. |"
+    ),
+    (
+        "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Pending two fresh independent "
+        "reviews over immutable E_AI evidence; R_AI and XE_AI are not created. |"
+    ),
+    (
+        "| 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper "
+        f"call, sanitized result, and Task-only E_AI in one session | Completed; B_AI `{sys.argv[6]}`; result "
+        f"status={status} output={output_class}; E_AI resolved by its exact unique subject |"
+    ),
+    (
+        "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly "
+        "one R_AI/XE_AI terminal | Pending; E_AI committed; fresh composite reviews not yet recorded |"
+    ),
+    (
+        "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+        "`docs(task): record session-bound collision-safe revalidation` | resolved by this exact unique subject | "
+        f"Approval naming B_AI `{sys.argv[6]}` consumed; result status={status} output={output_class}; "
+        "Task-only E_AI committed in the same fail-fast session. |"
+    ),
+    (
+        "| T-TSDC-004R-3 atomic projection cutover | blocked; E_AI committed and composite reviews pending | "
+        f"B_AI `{sys.argv[6]}` is accepted, XP_AI is not created, and E_AI records result status={status} "
+        f"output={output_class}; R_AI/XE_AI are not created and no downstream authority exists. | complete two "
+        "fresh composite reviews over immutable E_AI evidence and exactly one R_AI/XE_AI terminal; only accepted "
+        "R_AI may unlock Wave C |"
+    ),
+    (
+        f"Current 4AI final handoff: E_AI committed in the approval-consuming session with result status={status} "
+        f"output={output_class}; B_AI `{sys.argv[6]}` approved and XP_AI absent; fresh composite reviews pending; "
+        "R_AI/XE_AI not created; no downstream authority."
+    ),
+)
+for immutable_line in immutable_e_lines:
+    if e_lines.count(immutable_line) != 1 or lines.count(immutable_line) != 1:
+        raise SystemExit("composite-e-immutable-surface")
+e_plan_row = (
+    "| T-TSDC-004R-4AI session-bound collision-safe Plan | Controller | "
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | "
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES | "
+    f"`{sys.argv[2]}..{sys.argv[3]}` | accepted; B_AI resolved by its exact unique subject | "
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority |"
+)
+e_frozen_row = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | pending fresh independent review | "
+    "pending fresh independent review | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "E_AI committed; fresh composite reviews pending; no downstream authority | Frozen historical "
+    "implementation and test blob await exact composite review |"
+)
+e_revalidation_row = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | pending fresh independent "
+    "review | pending fresh independent review | awaiting exact reviewed range | E_AI committed; fresh "
+    "composite reviews pending; no downstream authority | Revalidation approval consumed; "
+    f"result status={status} output={output_class}; E_AI resolved by its exact unique subject; no future OID "
+    "is claimed in its own tree |"
+)
+for pending_row in (e_plan_row, e_frozen_row, e_revalidation_row):
+    if e_lines.count(pending_row) != 1:
+        raise SystemExit("composite-e-pending-row")
+if lines.count(e_plan_row) != 1:
+    raise SystemExit("composite-current-plan-row")
+found = {label: [] for label in labels}
+for source_line in lines:
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0:
+        first_cell = view[:separator].strip(" \t")
+        if first_cell in found:
+            found[first_cell].append(line)
+if any(len(found[label]) != 1 for label in labels):
+    raise SystemExit("composite-candidate-count")
+rows = []
+for label in labels:
+    row = found[label][0]
+    if not row.startswith("|") or not row.endswith("|"):
+        raise SystemExit("composite-shape")
+    if "\\|" in row or "\\`" in row:
+        raise SystemExit("composite-escape")
+    parts = row.split("|")
+    if len(parts) != 9 or parts[0] or parts[-1]:
+        raise SystemExit("composite-cell-count")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if len(cells) != 7 or cells[0] != label:
+        raise SystemExit("composite-label")
+    if cells[1] != "Controller":
+        raise SystemExit("composite-owner")
+    if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+        raise SystemExit("composite-extra-range")
+    if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+        raise SystemExit("composite-range-shape")
+    rows.append(cells)
+plan, frozen, revalidation = rows
+expected_plan = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[2]}..{sys.argv[3]}`",
+    "accepted; B_AI resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+if plan[2:7] != expected_plan:
+    raise SystemExit("composite-plan")
+if frozen[4] != f"`{sys.argv[4]}..{sys.argv[5]}`":
+    raise SystemExit("composite-frozen-range")
+if revalidation[4] != f"`{sys.argv[6]}..{sys.argv[7]}`":
+    raise SystemExit("composite-revalidation-range")
+spec_re = r"C\d+/I\d+/M\d+; SPEC_COMPLIANCE (YES|NO); COMMIT_READY (YES|NO)"
+quality_re = r"C\d+/I\d+/M\d+; QUALITY_SECURITY (PASS|FAIL); COMMIT_READY (YES|NO)"
+for cells in (frozen, revalidation):
+    if re.fullmatch(spec_re, cells[2], flags=re.ASCII) is None:
+        raise SystemExit("composite-spec-verdict")
+    if re.fullmatch(quality_re, cells[3], flags=re.ASCII) is None:
+        raise SystemExit("composite-quality-verdict")
+if frozen[2:4] != revalidation[2:4]:
+    raise SystemExit("composite-divergent-verdicts")
+state = "- 4AI transaction state: completed; approval consumed; no retry authority."
+if lines.count(state) != 1:
+    raise SystemExit("composite-state-count")
+result_candidates = [
+    line
+    for line in lines
+    if line.startswith("- 4AI sanitized result: ")
+]
+if len(result_candidates) != 1:
+    raise SystemExit("composite-result-count")
+match = re.fullmatch(
+    r"- 4AI sanitized result: result status=(\d{1,3}) output=(empty|nonempty|internal)\.",
+    result_candidates[0],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("composite-result-shape")
+status = int(match.group(1), 10)
+output_class = match.group(2)
+if status > 255 or (output_class == "internal" and status != 125):
+    raise SystemExit("composite-result-value")
+accepted_verdicts = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+]
+reviews_accepted = frozen[2:4] == accepted_verdicts
+outcome_accepted = status == 0 and output_class in {"empty", "nonempty"}
+accepted = reviews_accepted and outcome_accepted
+if accepted:
+    expected_frozen = [
+        "accepted; frozen implementation approved in 4AI composite review",
+        "Composite reviewers accepted exact frozen implementation and session-bound revalidation ranges; frozen test blob preserved",
+    ]
+    expected_revalidation = [
+        "accepted; R_AI resolved by its exact unique subject",
+        f"Revalidation result status={status} output={output_class} and both fresh composite reviews accepted; Task 4.5 authority granted",
+    ]
+else:
+    expected_frozen = [
+        "rejected/exhausted; frozen implementation not approved in 4AI composite review",
+        "One or both fresh composite reviews rejected or sanitized revalidation outcome was non-accepting; frozen history grants no downstream authority",
+    ]
+    expected_revalidation = [
+        "rejected/exhausted; XE_AI resolved by its exact unique subject",
+        f"Revalidation result status={status} output={output_class} was non-accepting or one or both fresh composite reviews rejected; no correction, retry, or Wave C authority",
+    ]
+if frozen[5:7] != expected_frozen:
+    raise SystemExit("composite-frozen-outcome")
+if revalidation[5:7] != expected_revalidation:
+    raise SystemExit("composite-revalidation-outcome")
+normalized = text
+for e_row, current_row in (
+    (e_frozen_row, found[labels[1]][0]),
+    (e_revalidation_row, found[labels[2]][0]),
+):
+    if normalized.count(current_row) != 1 or current_row == e_row:
+        raise SystemExit("composite-normalization-shape")
+    normalized = normalized.replace(current_row, e_row, 1)
+if normalized != e_text:
+    raise SystemExit("composite-e-terminal-diff-scope")
+print("R_AI" if accepted else "XE_AI")
+PY
+})"
+test "$selection" = R_AI || test "$selection" = XE_AI
+case "$selection" in
+  R_AI)
+    terminal_subject="$r_subject"
+    opposite_subject="$xe_subject"
+    ;;
+  XE_AI)
+    terminal_subject="$xe_subject"
+    opposite_subject="$r_subject"
+    ;;
+esac
+selected_pre_count="$(git log --all --format='%s' | awk -v subject="$terminal_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$selected_pre_count" -eq 0
+opposite_pre_count="$(git log --all --format='%s' | awk -v subject="$opposite_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$opposite_pre_count" -eq 0
+python3 - \
+  "$task_file" "$selection" "$d_ai" "$p_ai" "$b_4af" "$i" "$b_ai" "$e_ai" \
+  3<<<"$e_task_text" <<'PY'
+import os
+import pathlib
+import re
+import stat
+import sys
+import tempfile
+
+path = pathlib.Path(sys.argv[1])
+selection = sys.argv[2]
+e_text = os.fdopen(3, encoding="utf-8").read()
+current_text = path.read_text(encoding="utf-8")
+result_candidates = [line for line in e_text.splitlines() if line.startswith("- 4AI sanitized result: ")]
+if len(result_candidates) != 1:
+    raise SystemExit("terminal-e-result-count")
+match = re.fullmatch(
+    r"- 4AI sanitized result: result status=(\d{1,3}) output=(empty|nonempty|internal)\.",
+    result_candidates[0],
+    flags=re.ASCII,
+)
+if match is None:
+    raise SystemExit("terminal-e-result-shape")
+status = int(match.group(1), 10)
+output_class = match.group(2)
+if status > 255 or (output_class == "internal" and status != 125):
+    raise SystemExit("terminal-e-result-value")
+accepted = selection == "R_AI"
+if selection not in {"R_AI", "XE_AI"}:
+    raise SystemExit("terminal-selection")
+e_frozen = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | pending fresh independent review | "
+    "pending fresh independent review | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "E_AI committed; fresh composite reviews pending; no downstream authority | Frozen historical "
+    "implementation and test blob await exact composite review |"
+)
+e_revalidation = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | pending fresh independent "
+    "review | pending fresh independent review | awaiting exact reviewed range | E_AI committed; fresh "
+    "composite reviews pending; no downstream authority | Revalidation approval consumed; "
+    f"result status={status} output={output_class}; E_AI resolved by its exact unique subject; no future OID "
+    "is claimed in its own tree |"
+)
+lines = current_text.splitlines()
+e_lines = e_text.splitlines()
+state = "- 4AI transaction state: completed; approval consumed; no retry authority."
+if e_lines.count(state) != 1 or lines.count(state) != 1:
+    raise SystemExit("terminal-state-count")
+current_results = [line for line in lines if line.startswith("- 4AI sanitized result: ")]
+if len(current_results) != 1 or current_results[0] != result_candidates[0]:
+    raise SystemExit("terminal-current-result-drift")
+
+labels = (
+    "T-TSDC-004R-4AI session-bound collision-safe Plan",
+    "T-TSDC-004R-4AI frozen canonical-row implementation",
+    "T-TSDC-004R-4AI session-bound collision-safe revalidation",
+)
+found = {label: [] for label in labels}
+for source_line in lines:
+    line = source_line.strip(" \t")
+    view = line[1:] if line.startswith("|") else line
+    separator = view.find("|")
+    if separator >= 0:
+        first_cell = view[:separator].strip(" \t")
+        if first_cell in found:
+            found[first_cell].append(line)
+if any(len(found[label]) != 1 for label in labels):
+    raise SystemExit("terminal-candidate-count")
+rows = []
+for label in labels:
+    row = found[label][0]
+    if not row.startswith("|") or not row.endswith("|"):
+        raise SystemExit("terminal-row-shape")
+    if "\\|" in row or "\\`" in row:
+        raise SystemExit("terminal-row-escape")
+    parts = row.split("|")
+    if len(parts) != 9 or parts[0] or parts[-1]:
+        raise SystemExit("terminal-row-cell-count")
+    cells = [part.strip(" \t") for part in parts[1:-1]]
+    if len(cells) != 7 or cells[0] != label:
+        raise SystemExit("terminal-row-label")
+    if cells[1] != "Controller":
+        raise SystemExit("terminal-row-owner")
+    if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
+        raise SystemExit("terminal-row-extra-range")
+    if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
+        raise SystemExit("terminal-row-range-shape")
+    rows.append(cells)
+plan, frozen, revalidation = rows
+expected_plan = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
+    f"`{sys.argv[3]}..{sys.argv[4]}`",
+    "accepted; B_AI resolved by its exact unique subject",
+    "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
+]
+if plan[2:7] != expected_plan:
+    raise SystemExit("terminal-plan-row")
+if frozen[4] != f"`{sys.argv[5]}..{sys.argv[6]}`":
+    raise SystemExit("terminal-frozen-range")
+if revalidation[4] != f"`{sys.argv[7]}..{sys.argv[8]}`":
+    raise SystemExit("terminal-revalidation-range")
+spec_re = r"C\d+/I\d+/M\d+; SPEC_COMPLIANCE (YES|NO); COMMIT_READY (YES|NO)"
+quality_re = r"C\d+/I\d+/M\d+; QUALITY_SECURITY (PASS|FAIL); COMMIT_READY (YES|NO)"
+for cells in (frozen, revalidation):
+    if re.fullmatch(spec_re, cells[2], flags=re.ASCII) is None:
+        raise SystemExit("terminal-spec-verdict")
+    if re.fullmatch(quality_re, cells[3], flags=re.ASCII) is None:
+        raise SystemExit("terminal-quality-verdict")
+if frozen[2:4] != revalidation[2:4]:
+    raise SystemExit("terminal-divergent-verdicts")
+accepted_verdicts = [
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
+]
+reviews_accepted = frozen[2:4] == accepted_verdicts
+outcome_accepted = status == 0 and output_class in {"empty", "nonempty"}
+writer_selection = "R_AI" if reviews_accepted and outcome_accepted else "XE_AI"
+if selection != writer_selection:
+    raise SystemExit("terminal-selection-drift")
+accepted = writer_selection == "R_AI"
+if accepted:
+    expected_frozen = [
+        "accepted; frozen implementation approved in 4AI composite review",
+        "Composite reviewers accepted exact frozen implementation and session-bound revalidation ranges; frozen test blob preserved",
+    ]
+    expected_revalidation = [
+        "accepted; R_AI resolved by its exact unique subject",
+        f"Revalidation result status={status} output={output_class} and both fresh composite reviews accepted; Task 4.5 authority granted",
+    ]
+else:
+    expected_frozen = [
+        "rejected/exhausted; frozen implementation not approved in 4AI composite review",
+        "One or both fresh composite reviews rejected or sanitized revalidation outcome was non-accepting; frozen history grants no downstream authority",
+    ]
+    expected_revalidation = [
+        "rejected/exhausted; XE_AI resolved by its exact unique subject",
+        f"Revalidation result status={status} output={output_class} was non-accepting or one or both fresh composite reviews rejected; no correction, retry, or Wave C authority",
+    ]
+if frozen[5:7] != expected_frozen:
+    raise SystemExit("terminal-frozen-outcome")
+if revalidation[5:7] != expected_revalidation:
+    raise SystemExit("terminal-revalidation-outcome")
+terminal_frozen = found[labels[1]][0]
+terminal_revalidation = found[labels[2]][0]
+
+review_transitions = {
+    e_frozen: terminal_frozen,
+    e_revalidation: terminal_revalidation,
+}
+review_candidate = e_text
+for old, new in review_transitions.items():
+    if review_candidate.count(old) != 1 or old == new or new in review_candidate:
+        raise SystemExit("terminal-review-transition-shape")
+    review_candidate = review_candidate.replace(old, new, 1)
+if current_text != review_candidate:
+    raise SystemExit("terminal-prewrite-diff-scope")
+
+e_parent_work_breakdown = (
+    "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+    "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+    "agent; original agents remain historical | active; E_AI committed and resolved by its exact unique subject; "
+    "fresh composite reviews pending; no downstream authority |"
+)
+e_work_breakdown = (
+    "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one fail-fast "
+    "session without changing frozen implementation | Plan/evidence | TSDC-010–014 | immutable E_AI evidence "
+    "plus two future fresh composite reviews | controller and future fresh independent reviewers | E_AI committed "
+    "and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority |"
+)
+e_task5_work_breakdown = (
+    "| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | "
+    "audit semantic, generators, links | fresh implementer after a separately approved future successor and "
+    "Wave C completion | blocked; no accepted R_AI or Wave C authority exists |"
+)
+e_task6_work_breakdown = (
+    "| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | "
+    "final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; E_AI "
+    "is committed but accepted R_AI, Wave C, and Task 5 completion are absent |"
+)
+e_work_log = (
+    "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Pending two fresh independent reviews "
+    "over immutable E_AI evidence; R_AI and XE_AI are not created. |"
+)
+e_verification = (
+    "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly one "
+    "R_AI/XE_AI terminal | Pending; E_AI committed; fresh composite reviews not yet recorded |"
+)
+e_task4_execution = (
+    "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+    "changes only Plan/Task evidence design and adds no product RED. | Frozen product GREEN evidence "
+    f"remains unchanged; the separately approved evidence-only wrapper returned status={status} "
+    f"output={output_class}. | E_AI committed and resolved by its exact unique subject; fresh composite "
+    "reviews pending; no downstream authority. | active Task 4; 4AI composite review pending; no Wave C authority |"
+)
+e_task5_execution = (
+    "| T-TSDC-005 | Not run — no accepted R_AI or Wave C authority exists | Not run — no accepted R_AI "
+    "or Wave C authority exists | E_AI committed; fresh composite reviews and accepted R_AI are pending | blocked |"
+)
+e_task6_execution = (
+    "| T-TSDC-006 | Not run — accepted R_AI, Wave C, and Task 5 are absent | Not run — accepted R_AI, "
+    "Wave C, and Task 5 are absent | E_AI committed; composite terminal not created | blocked |"
+)
+e_r_ledger = (
+    "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+    "`docs(task): record session-bound collision-safe review` | not created | Pending two accepted fresh composite "
+    "reviews and accepting immutable E_AI result; mutually exclusive with XE_AI. |"
+)
+e_xe_ledger = (
+    "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+    "`docs(task): record exhausted session-bound collision-safe review` | not created | Pending composite "
+    "disposition; mandatory for nonzero/internal E_AI evidence or either non-accepted fresh review; mutually "
+    "exclusive with R_AI. |"
+)
+e_task6_review = (
+    "| T-TSDC-006 | pending | pending | pending | not available | blocked | E_AI is committed; accepted "
+    "R_AI, Wave C, and Task 5 completion remain absent. |"
+)
+e_whole_review = (
+    "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and Tasks "
+    "5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | not available | "
+    "blocked | E_AI and pending composite reviews grant no Wave C, Tasks 5–6, or final branch-review authority. |"
+)
+e_deferred = (
+    "| T-TSDC-004R-3 atomic projection cutover | blocked; E_AI committed and composite reviews pending | "
+    f"B_AI `{sys.argv[7]}` is accepted, XP_AI is not created, and E_AI records result status={status} "
+    f"output={output_class}; R_AI/XE_AI are not created and no downstream authority exists. | complete two "
+    "fresh composite reviews over immutable E_AI evidence and exactly one R_AI/XE_AI terminal; only accepted "
+    "R_AI may unlock Wave C |"
+)
+e_handoff = (
+    f"Current 4AI final handoff: E_AI committed in the approval-consuming session with result status={status} "
+    f"output={output_class}; B_AI `{sys.argv[7]}` approved and XP_AI absent; fresh composite reviews pending; "
+    "R_AI/XE_AI not created; no downstream authority."
+)
+e_boundary = (
+    "- The active 4AI checkpoint has immutable E_AI evidence and pending fresh composite reviews. XP_AI,\n"
+    "  R_AI, and XE_AI are uncreated; E_AI alone does not establish Task 4.5, Wave C, downstream, runtime,\n"
+    "  or remote authority."
+)
+e_checkpoint = (
+    "- D_AI remains the clean Task-only XP_AH terminal\n"
+    "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`; P_AI and accepted B_AI are immutable lineage\n"
+    f"  evidence. The current checkpoint is Task-only E_AI with approved B_AI `{sys.argv[7]}`,\n"
+    f"  canonical result status={status} output={output_class}, and pending fresh composite reviews."
+)
+e_lineage = (
+    "- The realized evidence lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH -> P_AH ->\n"
+    "  XP_AH/D_AI -> P_AI -> B_AI -> E_AI`; XP_AI is absent. E_AI alone grants no implementation,\n"
+    "  Task 4.5, or Wave C authority; exactly one future R_AI/XE_AI composite terminal remains required."
+)
+e_execution_state = (
+    "- The separately approved 4AI revalidation transaction ran once and committed only sanitized result "
+    f"status={status} output={output_class} as E_AI. Fresh composite reviews, R_AI/XE_AI, Task 4.5, Wave C,\n"
+    "  runtime, remote, Graphify, Tasks 5–6, and whole-branch review remain unexecuted and unauthorized."
+)
+e_final_block = (
+    "T-TSDC-004R-4AI now has immutable Task-only E_AI evidence from one approval-consuming session.\n"
+    f"B_AI `{sys.argv[7]}` is accepted and XP_AI is absent; the canonical sanitized result is\n"
+    f"status={status} output={output_class}. Fresh composite reviews remain pending, so R_AI and XE_AI are\n"
+    "not created and no Task 4.5, Wave C, Tasks 5–6, runtime, remote, Graphify, or whole-branch review\n"
+    "authority exists."
+)
+if accepted:
+    terminal_values = {
+        e_parent_work_breakdown: e_parent_work_breakdown.replace(
+            "E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority",
+            "R_AI accepted and resolved by its exact unique subject; Task 4.5 authorized; Wave C not run",
+        ),
+        e_work_breakdown: e_work_breakdown.replace(
+            "E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority",
+            "R_AI accepted and resolved by its exact unique subject; Task 4.5 authorized; Wave C not run",
+        ),
+        e_task5_work_breakdown: e_task5_work_breakdown.replace(
+            "blocked; no accepted R_AI or Wave C authority exists",
+            "blocked; accepted R_AI authorizes Task 4.5 only; Task 4.5 and Wave C not run",
+        ),
+        e_task6_work_breakdown: e_task6_work_breakdown.replace(
+            "blocked; E_AI is committed but accepted R_AI, Wave C, and Task 5 completion are absent",
+            "blocked; accepted R_AI exists but Task 4.5, Wave C, and Task 5 completion are absent",
+        ),
+        e_work_log: (
+            "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Completed; immutable "
+            f"result status={status} output={output_class} and both fresh composite reviews accepted; R_AI "
+            "resolved by its exact unique subject; Task 4.5 authorized and Wave C not run. |"
+        ),
+        e_verification: (
+            "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly "
+            "one R_AI/XE_AI terminal | Accepted; R_AI resolved by its exact unique subject; Task 4.5 authorized |"
+        ),
+        e_task4_execution: (
+            "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+            "changes only Plan/Task evidence design and adds no product RED. | Frozen product GREEN evidence "
+            f"remains unchanged; the separately approved evidence-only wrapper returned status={status} "
+            f"output={output_class}. | R_AI accepted and resolved by its exact unique subject; Task 4.5 "
+            "authorized; Wave C not run. | active Task 4; Task 4.5 authorized; Wave C not run |"
+        ),
+        e_task5_execution: (
+            "| T-TSDC-005 | Not run — Task 4.5 and Wave C not run | Not run — Task 4.5 and Wave C not run | "
+            "Accepted R_AI authorizes Task 4.5 only; Wave C not run | blocked |"
+        ),
+        e_task6_execution: (
+            "| T-TSDC-006 | Not run — Task 4.5, Wave C, and Task 5 not run | Not run — Task 4.5, Wave C, "
+            "and Task 5 not run | Accepted R_AI authorizes Task 4.5 only; no Task 5/6 authority | blocked |"
+        ),
+        e_r_ledger: (
+            "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+            "`docs(task): record session-bound collision-safe review` | resolved by this exact unique subject | "
+            "Both fresh composite reviews accepted immutable accepting E_AI evidence; Task 4.5 authorized. |"
+        ),
+        e_xe_ledger: (
+            "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+            "`docs(task): record exhausted session-bound collision-safe review` | not created | Mutually excluded "
+            "by accepted R_AI. |"
+        ),
+        e_task6_review: (
+            "| T-TSDC-006 | pending | pending | pending | not available | blocked | Accepted R_AI authorizes "
+            "Task 4.5 only; Wave C and Task 5 completion remain absent. |"
+        ),
+        e_whole_review: (
+            "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and "
+            "Tasks 5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | "
+            "not available | blocked | Accepted R_AI authorizes Task 4.5 only; Wave C, Tasks 5–6, and final "
+            "branch review remain unexecuted and unauthorized. |"
+        ),
+        e_deferred: (
+            "| T-TSDC-004R-3 atomic projection cutover | authorized for Task 4.5; Wave C not run | Immutable "
+            f"E_AI result status={status} output={output_class} and both fresh composite reviews accepted; R_AI "
+            "is the sole terminal and XE_AI is absent. | execute Task 4.5 only from this exact accepted R_AI "
+            "chain; Wave C remains unexecuted |"
+        ),
+        e_handoff: (
+            f"Current 4AI final handoff: accepted R_AI resolved by its exact unique subject; immutable E_AI "
+            f"result status={status} output={output_class}; XP_AI/XE_AI absent; Task 4.5 authorized; Wave C not run."
+        ),
+        e_boundary: (
+            "- Accepted R_AI is the sole 4AI terminal. It authorizes Task 4.5 only; Wave C, Tasks 5–6, runtime,\n"
+            "  remote, Graphify, and whole-branch review remain unexecuted and separately governed."
+        ),
+        e_checkpoint: (
+            "- D_AI remains the clean Task-only XP_AH terminal\n"
+            "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`; P_AI, B_AI, and E_AI are immutable lineage\n"
+            f"  evidence. Accepted Task-only R_AI is the current checkpoint with canonical result status={status}\n"
+            f"  output={output_class}; it authorizes Task 4.5 only, which has not run."
+        ),
+        e_lineage: (
+            "- The realized accepted lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH -> P_AH ->\n"
+            "  XP_AH/D_AI -> P_AI -> B_AI -> E_AI -> R_AI`; XP_AI and XE_AI are absent. R_AI authorizes\n"
+            "  Task 4.5 only; Wave C and all later work remain unexecuted and separately governed."
+        ),
+        e_execution_state: (
+            "- The separately approved 4AI revalidation transaction ran once and committed only sanitized result "
+            f"status={status} output={output_class} as E_AI. Both fresh composite reviews then accepted that\n"
+            "  immutable evidence and R_AI became the sole terminal. Task 4.5 is authorized but unexecuted; Wave C,\n"
+            "  runtime, remote, Graphify, Tasks 5–6, and whole-branch review remain unexecuted and unauthorized."
+        ),
+        e_final_block: (
+            "T-TSDC-004R-4AI completed at accepted Task-only R_AI. Immutable E_AI records\n"
+            f"status={status} output={output_class}; B_AI and R_AI are the sole accepted terminals while XP_AI\n"
+            "and XE_AI are absent. Task 4.5 is authorized, but Wave C, Tasks 5–6, runtime, remote, Graphify,\n"
+            "and whole-branch review have not run."
+        ),
+    }
+else:
+    terminal_values = {
+        e_parent_work_breakdown: e_parent_work_breakdown.replace(
+            "active; E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority",
+            "rejected/exhausted at XE_AI; no correction, Task 4.5, or Wave C authority",
+        ),
+        e_work_breakdown: e_work_breakdown.replace(
+            "E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority",
+            "rejected/exhausted; XE_AI resolved by its exact unique subject; no downstream authority",
+        ),
+        e_task5_work_breakdown: e_task5_work_breakdown.replace(
+            "blocked; no accepted R_AI or Wave C authority exists",
+            "blocked; rejected XE_AI grants no Task 4.5 or Wave C authority",
+        ),
+        e_task6_work_breakdown: e_task6_work_breakdown.replace(
+            "blocked; E_AI is committed but accepted R_AI, Wave C, and Task 5 completion are absent",
+            "blocked; rejected XE_AI is terminal and grants no Task 4.5, Wave C, or Task 5 authority",
+        ),
+        e_work_log: (
+            "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Completed; immutable "
+            f"result status={status} output={output_class} or one or both fresh reviews were non-accepting; "
+            "XE_AI resolved by its exact unique subject; no correction, retry, Task 4.5, or Wave C authority. |"
+        ),
+        e_verification: (
+            "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly "
+            "one R_AI/XE_AI terminal | Rejected/exhausted; XE_AI resolved by its exact unique subject; no "
+            "downstream authority |"
+        ),
+        e_task4_execution: (
+            "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+            "changes only Plan/Task evidence design and adds no product RED. | Frozen product GREEN evidence "
+            f"remains unchanged; the separately approved evidence-only wrapper returned status={status} "
+            f"output={output_class}. | XE_AI rejected/exhausted and resolved by its exact unique subject; no "
+            "downstream authority. | blocked Task 4; no correction, Task 4.5, or Wave C authority |"
+        ),
+        e_task5_execution: (
+            "| T-TSDC-005 | Not run — rejected XE_AI grants no authority | Not run — rejected XE_AI grants no "
+            "authority | XE_AI is terminal; Task 4.5 and Wave C are unauthorized | blocked |"
+        ),
+        e_task6_execution: (
+            "| T-TSDC-006 | Not run — rejected XE_AI grants no authority | Not run — rejected XE_AI grants no "
+            "authority | XE_AI is terminal; Tasks 5–6 and closure are unauthorized | blocked |"
+        ),
+        e_r_ledger: (
+            "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+            "`docs(task): record session-bound collision-safe review` | not created | Mutually excluded by "
+            "rejected XE_AI. |"
+        ),
+        e_xe_ledger: (
+            "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+            "`docs(task): record exhausted session-bound collision-safe review` | resolved by this exact unique "
+            "subject | Non-accepting immutable E_AI outcome or fresh composite review; terminal with no "
+            "correction, retry, Task 4.5, or Wave C authority. |"
+        ),
+        e_task6_review: (
+            "| T-TSDC-006 | pending | pending | pending | not available | blocked | Rejected XE_AI is terminal; "
+            "Task 4.5, Wave C, and Task 5 remain unauthorized. |"
+        ),
+        e_whole_review: (
+            "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and "
+            "Tasks 5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | "
+            "not available | blocked | Rejected XE_AI grants no Task 4.5, Wave C, Tasks 5–6, or final "
+            "branch-review authority. |"
+        ),
+        e_deferred: (
+            "| T-TSDC-004R-3 atomic projection cutover | rejected/exhausted at XE_AI | Immutable E_AI result "
+            f"status={status} output={output_class} or a fresh composite review was non-accepting; XE_AI is the "
+            "sole terminal and R_AI is absent. | return to a newly approved design; no correction, retry, Task "
+            "4.5, or Wave C authority |"
+        ),
+        e_handoff: (
+            f"Current 4AI final handoff: rejected/exhausted at XE_AI resolved by its exact unique subject; "
+            f"immutable E_AI result status={status} output={output_class}; XP_AI/R_AI absent; no downstream authority."
+        ),
+        e_boundary: (
+            "- Rejected XE_AI is the sole 4AI composite terminal. R_AI is absent and no correction, retry,\n"
+            "  Task 4.5, Wave C, downstream, runtime, remote, Graphify, or whole-branch authority exists."
+        ),
+        e_checkpoint: (
+            "- D_AI remains the clean Task-only XP_AH terminal\n"
+            "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`; P_AI, B_AI, and E_AI are immutable lineage\n"
+            f"  evidence. Rejected Task-only XE_AI is the current checkpoint with immutable result status={status}\n"
+            f"  output={output_class}; it grants no correction or downstream authority."
+        ),
+        e_lineage: (
+            "- The realized rejected lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH -> P_AH ->\n"
+            "  XP_AH/D_AI -> P_AI -> B_AI -> E_AI -> XE_AI`; XP_AI and R_AI are absent. XE_AI is terminal\n"
+            "  and grants no correction, Task 4.5, Wave C, or later-work authority."
+        ),
+        e_execution_state: (
+            "- The separately approved 4AI revalidation transaction ran once and committed only sanitized result "
+            f"status={status} output={output_class} as E_AI. The immutable result or a fresh composite review was\n"
+            "  non-accepting, so XE_AI became the sole terminal. Task 4.5, Wave C, runtime, remote, Graphify,\n"
+            "  Tasks 5–6, and whole-branch review remain unexecuted and unauthorized."
+        ),
+        e_final_block: (
+            "T-TSDC-004R-4AI is rejected/exhausted at Task-only XE_AI. Immutable E_AI records\n"
+            f"status={status} output={output_class}; B_AI and XE_AI exist while XP_AI and R_AI are absent. No\n"
+            "correction, retry, Task 4.5, Wave C, Tasks 5–6, runtime, remote, Graphify, or whole-branch review\n"
+            "authority exists."
+        ),
+    }
+
+transitions = dict(review_transitions)
+transitions.update(terminal_values)
+candidate = e_text
+for old, new in transitions.items():
+    if candidate.count(old) != 1 or old == new or new in candidate:
+        raise SystemExit("terminal-transition-shape")
+for old, new in transitions.items():
+    candidate = candidate.replace(old, new, 1)
+normalized = candidate
+for old, new in reversed(tuple(transitions.items())):
+    if normalized.count(new) != 1:
+        raise SystemExit("terminal-reverse-count")
+    normalized = normalized.replace(new, old, 1)
+if normalized != e_text:
+    raise SystemExit("terminal-reverse-equality")
+residue = tuple(path.parent.glob(f".{path.name}.*"))
+if residue:
+    raise SystemExit("terminal-temp-residue")
+source_mode = stat.S_IMODE(path.stat().st_mode)
+temporary = None
+try:
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        delete=False,
+    ) as stream:
+        temporary = pathlib.Path(stream.name)
+        stream.write(candidate)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.chmod(temporary, source_mode)
+    os.replace(temporary, path)
+    directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    directory_fd = os.open(path.parent, directory_flags)
+    try:
+        os.fsync(directory_fd)
+    finally:
+        os.close(directory_fd)
+    temporary = None
+finally:
+    # Preserve any crash residue as a fail-closed rerun blocker.
+    pass
+PY
+validated_terminal_blob="$(git hash-object "$task_file")"
+[[ "$validated_terminal_blob" =~ ^[0-9a-f]{40}$ ]]
+subjects=(
+  'docs(task): record canonical-row authority plan reviews'
+  'fix(ci): close canonical-row authority proof'
+  'docs(task): record exhausted canonical-row authority review'
+  'docs(plan): define status-based silent-success proof'
+  'docs(task): record exhausted status-based silent-success plan review'
+  'docs(plan): define collision-safe disposition proof'
+  'docs(task): record exhausted collision-safe disposition plan review'
+  "$p_subject"
+  "$b_subject"
+  "$e_subject"
+)
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$d_ai" "$p_ai" "$b_ai" "$e_ai")
+for index in "${!commits[@]}"; do
+  verified="$(git rev-parse --verify "${commits[$index]}^{commit}")"
+  test "$verified" = "${commits[$index]}"
+  actual_subject="$(git show -s --format=%s "${commits[$index]}")"
+  test "$actual_subject" = "${subjects[$index]}"
+  subject_count="$(git log --all --format='%s' | grep -Fxc "${subjects[$index]}")"
+  test "$subject_count" -eq 1
+done
+assert_edge "$b_4af" "$i"
+assert_edge "$i" "$d_ag"
+assert_edge "$d_ag" "$p_ag"
+assert_edge "$p_ag" "$d_ah"
+assert_edge "$d_ah" "$p_ah"
+assert_edge "$p_ah" "$d_ai"
+assert_edge "$d_ai" "$p_ai"
+assert_edge "$p_ai" "$b_ai"
+assert_edge "$b_ai" "$e_ai"
+unstaged_paths="$(git diff --name-only)"
+test "$?" -eq 0
+staged_paths="$(git diff --cached --name-only)"
+test "$?" -eq 0
+untracked_paths="$(git ls-files --others --exclude-standard)"
+test "$?" -eq 0
+dirty_paths="$(printf '%s\n' "$unstaged_paths" "$staged_paths" "$untracked_paths" | sed '/^$/d' | sort -u)"
+test "$dirty_paths" = "$task_file"
+git diff --check
+git add "$task_file"
+cached_paths="$(git diff --cached --name-only | sort)"
+test "$cached_paths" = "$task_file"
+staged_terminal_blob="$(git rev-parse ":$task_file")"
+test "$staged_terminal_blob" = "$validated_terminal_blob"
+git commit -m "$terminal_subject"
+terminal="$(git rev-parse --verify 'HEAD^{commit}')"
+actual_subject="$(git show -s --format=%s "$terminal")"
+test "$actual_subject" = "$terminal_subject"
+subject_count="$(git log --all --format='%s' | grep -Fxc "$terminal_subject")"
+test "$subject_count" -eq 1
+opposite_count="$(git log --all --format='%s' | awk -v subject="$opposite_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$opposite_count" -eq 0
+committed_terminal_blob="$(git rev-parse "$terminal:$task_file")"
+test "$committed_terminal_blob" = "$validated_terminal_blob"
+assert_edge "$e_ai" "$terminal"
+expected_plan_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
+expected_test_paths="$(printf '%s\n' "$task_file" "$test_file" | sort)"
+expected_paths=(
+  "$task_file"
+  "$expected_test_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$expected_plan_paths"
+  "$task_file"
+  "$task_file"
+  "$task_file"
+)
+commits+=("$terminal")
+for index in "${!commits[@]}"; do
+  commit_paths="$(git diff-tree --no-commit-id --name-only -r "${commits[$index]}" | sort)"
+  test "$commit_paths" = "${expected_paths[$index]}"
+done
+plan_range_paths="$(git diff --name-only "$d_ai..$p_ai" | sort)"
+test "$plan_range_paths" = "$expected_plan_paths"
+frozen_range_paths="$(git diff --name-only "$b_4af..$i" | sort)"
+test "$frozen_range_paths" = "$expected_test_paths"
+evidence_range_paths="$(git diff --name-only "$b_ai..$e_ai" | sort)"
+test "$evidence_range_paths" = "$task_file"
+terminal_range_paths="$(git diff --name-only "$e_ai..$terminal" | sort)"
+test "$terminal_range_paths" = "$task_file"
+for commit_path in \
+  "$b_4af:$task_file" \
+  "$i:$task_file" "$i:$test_file" \
+  "$d_ag:$task_file" \
+  "$p_ag:$plan_file" "$p_ag:$task_file" \
+  "$d_ah:$task_file" \
+  "$p_ah:$plan_file" "$p_ah:$task_file" \
+  "$d_ai:$task_file" \
+  "$p_ai:$plan_file" "$p_ai:$task_file" \
+  "$b_ai:$task_file" "$e_ai:$task_file" "$terminal:$task_file"
+do
+  mode="$(git ls-tree "${commit_path%%:*}" "${commit_path#*:}" | awk '{print $1}')"
+  test "$mode" = 100644
+done
+implementation_blob="$(git rev-parse "$i:$test_file")"
+test -n "$implementation_blob"
+terminal_blob="$(git rev-parse "$terminal:$test_file")"
+test "$terminal_blob" = "$implementation_blob"
+head_after="$(git rev-parse --verify 'HEAD^{commit}')"
+test "$head_after" = "$terminal"
+clean_state="$(git status --porcelain=v1 --untracked-files=all)"
+test -z "$clean_state"
+```
+
+XE_AI is terminal. Only the exact accepted R_AI chain authorizes Task 4.5.
+
+#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+
+- [ ] **Step 0: Prove the complete accepted 4AI chain.**
+
+  Before any Wave C change, this prerequisite requires the exact accepted
+  review, range, disposition, sanitized result, and evidence values on all
+  three 4AI rows. It also requires unique R_AI at clean HEAD, every
+  sole-parent distance-one edge from the frozen historical lineage, exact
+  commit and range paths, mode `100644`, and the frozen test blob.
+
+```bash
+set -euo pipefail
+shopt -s inherit_errexit
+plan_file='docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md'
+task_file='docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+test_file='tests/validation/test_agent_governance_ci_routing.py'
+b_4af=7e32c37cafde08b108ee33e3439cda3aea336961
+i=a7d05b0e5c0ffaeccde9e401450e696855cfb2b5
+d_ag=737838fe80880b7eadbfb1c7e18d8dc251bcc8b9
+p_ag=f2a4b5041222c48f392bc251eae014655cee7b7c
+d_ah=e9100b62f6ea18e2a003cfa805b14a7ad61a64ad
+p_ah=9ff217e63eaf452871cfc3ef47775e0fbd03e706
+d_ai=88f55837be251318cd697bd8a1ab3a4f0ed1a824
+p_subject='docs(plan): define session-bound collision-safe proof'
+b_subject='docs(task): record session-bound collision-safe plan reviews'
+xp_subject='docs(task): record exhausted session-bound collision-safe plan review'
+e_subject='docs(task): record session-bound collision-safe revalidation'
+r_subject='docs(task): record session-bound collision-safe review'
+xe_subject='docs(task): record exhausted session-bound collision-safe review'
 resolve_unique_subject() {
   local subject="$1"
   local count
@@ -12058,28 +14581,73 @@ edge() {
   first_parent="$(git rev-parse "$child^1")"
   test "$first_parent" = "$parent"
 }
-p_ah="$(resolve_unique_subject "$p_subject")"
-test -n "$p_ah"
-b_ah="$(resolve_unique_subject "$b_subject")"
-test -n "$b_ah"
-e_ah="$(resolve_unique_subject "$e_subject")"
-test -n "$e_ah"
-r_ah="$(resolve_unique_subject "$r_subject")"
-test -n "$r_ah"
+p_ai="$(resolve_unique_subject "$p_subject")"
+b_ai="$(resolve_unique_subject "$b_subject")"
+e_ai="$(resolve_unique_subject "$e_subject")"
+r_ai="$(resolve_unique_subject "$r_subject")"
+xp_count="$(git log --all --format='%s' | awk -v subject="$xp_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xp_count" -eq 0
+xe_count="$(git log --all --format='%s' | awk -v subject="$xe_subject" '$0 == subject {count++} END {print count + 0}')"
+test "$xe_count" -eq 0
 head_commit="$(git rev-parse --verify 'HEAD^{commit}')"
-test "$head_commit" = "$r_ah"
+test "$head_commit" = "$r_ai"
+e_task_status=0
+e_task_text="$(git show "$e_ai:$task_file")" || e_task_status=$?
+test "$e_task_status" -eq 0
+test -n "$e_task_text"
+unstaged_paths="$(git diff --name-only)"
+test "$?" -eq 0
+test -z "$unstaged_paths"
+staged_paths="$(git diff --cached --name-only)"
+test "$?" -eq 0
+test -z "$staged_paths"
+untracked_paths="$(git ls-files --others --exclude-standard)"
+test "$?" -eq 0
+test -z "$untracked_paths"
 python3 - \
-  "$task_file" "$d_ah" "$p_ah" "$b_4af" "$i" "$b_ah" "$e_ah" <<'PY'
+  "$task_file" "$d_ai" "$p_ai" "$b_4af" "$i" "$b_ai" "$e_ai" \
+  3<<<"$e_task_text" <<'PY'
+import os
 import pathlib
 import re
 import sys
 
 labels = (
-    "T-TSDC-004R-4AH collision-safe disposition Plan",
-    "T-TSDC-004R-4AH frozen canonical-row implementation",
-    "T-TSDC-004R-4AH collision-safe disposition revalidation",
+    "T-TSDC-004R-4AI session-bound collision-safe Plan",
+    "T-TSDC-004R-4AI frozen canonical-row implementation",
+    "T-TSDC-004R-4AI session-bound collision-safe revalidation",
 )
+e_text = os.fdopen(3, encoding="utf-8").read()
 text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+e_lines = e_text.splitlines()
+lines = text.splitlines()
+state = "- 4AI transaction state: completed; approval consumed; no retry authority."
+if e_lines.count(state) != 1 or lines.count(state) != 1:
+    raise SystemExit("authority-e-state")
+e_results = [line for line in e_lines if line.startswith("- 4AI sanitized result: ")]
+if len(e_results) != 1 or lines.count(e_results[0]) != 1:
+    raise SystemExit("authority-e-result-count")
+e_match = re.fullmatch(
+    r"- 4AI sanitized result: result status=0 output=(empty|nonempty)\.",
+    e_results[0],
+    flags=re.ASCII,
+)
+if e_match is None:
+    raise SystemExit("authority-e-result")
+e_output_class = e_match.group(1)
+approval_lines = (
+    "- 4AI revalidation approval owner/source: User / Controller; exact one-attempt AI-3 approval consumed.",
+    f"- 4AI `APPROVED_B_AI_OID`: `{sys.argv[6]}`; validated against the unique accepted B_AI subject.",
+    (
+        "| T-TSDC-004R-4AI revalidation E_AI | Record session-bound collision-safe revalidation | "
+        "`docs(task): record session-bound collision-safe revalidation` | resolved by this exact unique subject | "
+        f"Approval naming B_AI `{sys.argv[6]}` consumed; result status=0 output={e_output_class}; "
+        "Task-only E_AI committed in the same fail-fast session. |"
+    ),
+)
+for approval_line in approval_lines:
+    if e_lines.count(approval_line) != 1 or lines.count(approval_line) != 1:
+        raise SystemExit("authority-e-approval")
 found = {label: [] for label in labels}
 for source_line in text.splitlines():
     line = source_line.strip(" \t")
@@ -12104,39 +14672,288 @@ for label in labels:
     cells = [part.strip(" \t") for part in parts[1:-1]]
     if len(cells) != 7 or cells[0] != label:
         raise SystemExit("authority-label")
+    if cells[1] != "Controller":
+        raise SystemExit("authority-owner")
     if any(("`" in cell or ".." in cell) for index, cell in enumerate(cells) if index != 4):
         raise SystemExit("authority-extra-range")
     if re.fullmatch(r"`[0-9a-f]{40}\.\.[0-9a-f]{40}`", cells[4], flags=re.ASCII) is None:
         raise SystemExit("authority-range-shape")
     rows.append(cells)
-plan, implementation, revalidation = rows
+plan, frozen, revalidation = rows
 expected_plan = [
     "C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES",
     "C0/I0/M0; QUALITY_SECURITY PASS; IMPLEMENTATION_READY YES",
     f"`{sys.argv[2]}..{sys.argv[3]}`",
-    "accepted; B_AH resolved by its exact unique subject",
+    "accepted; B_AI resolved by its exact unique subject",
     "Both fresh Plan reviews accepted; separate revalidation approval still required; no Wave C authority",
 ]
-expected_implementation = [
+expected_frozen = [
     "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
     "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
     f"`{sys.argv[4]}..{sys.argv[5]}`",
-    "accepted; frozen implementation approved in 4AH composite review",
-    "Composite reviewers accepted the exact historical implementation and revalidation ranges; frozen test blob preserved",
+    "accepted; frozen implementation approved in 4AI composite review",
+    "Composite reviewers accepted exact frozen implementation and session-bound revalidation ranges; frozen test blob preserved",
 ]
+output_class = e_output_class
 expected_revalidation = [
     "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES",
     "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES",
     f"`{sys.argv[6]}..{sys.argv[7]}`",
-    "accepted; R_AH resolved by its exact unique subject",
-    "Separately approved revalidation and both fresh composite reviews accepted; Task 4.5 authority granted",
+    "accepted; R_AI resolved by its exact unique subject",
+    f"Revalidation result status=0 output={output_class} and both fresh composite reviews accepted; Task 4.5 authority granted",
 ]
 if plan[2:7] != expected_plan:
     raise SystemExit("authority-plan")
-if implementation[2:7] != expected_implementation:
-    raise SystemExit("authority-implementation")
+if frozen[2:7] != expected_frozen:
+    raise SystemExit("authority-frozen")
 if revalidation[2:7] != expected_revalidation:
     raise SystemExit("authority-revalidation")
+
+status = 0
+e_frozen = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | pending fresh independent review | "
+    "pending fresh independent review | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "E_AI committed; fresh composite reviews pending; no downstream authority | Frozen historical "
+    "implementation and test blob await exact composite review |"
+)
+r_frozen = (
+    "| T-TSDC-004R-4AI frozen canonical-row implementation | Controller | "
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | "
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES | "
+    "`7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | "
+    "accepted; frozen implementation approved in 4AI composite review | Composite reviewers accepted exact "
+    "frozen implementation and session-bound revalidation ranges; frozen test blob preserved |"
+)
+e_revalidation = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | pending fresh independent "
+    "review | pending fresh independent review | awaiting exact reviewed range | E_AI committed; fresh "
+    "composite reviews pending; no downstream authority | Revalidation approval consumed; "
+    f"result status={status} output={output_class}; E_AI resolved by its exact unique subject; no future OID "
+    "is claimed in its own tree |"
+)
+r_revalidation = (
+    "| T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | "
+    "C0/I0/M0; SPEC_COMPLIANCE YES; COMMIT_READY YES | "
+    "C0/I0/M0; QUALITY_SECURITY PASS; COMMIT_READY YES | "
+    f"`{sys.argv[6]}..{sys.argv[7]}` | accepted; R_AI resolved by its exact unique subject | "
+    f"Revalidation result status={status} output={output_class} and both fresh composite reviews accepted; "
+    "Task 4.5 authority granted |"
+)
+e_parent_work_breakdown = (
+    "| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | "
+    "gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation "
+    "agent; original agents remain historical | active; E_AI committed and resolved by its exact unique subject; "
+    "fresh composite reviews pending; no downstream authority |"
+)
+e_work_breakdown = (
+    "| T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one fail-fast "
+    "session without changing frozen implementation | Plan/evidence | TSDC-010–014 | immutable E_AI evidence "
+    "plus two future fresh composite reviews | controller and future fresh independent reviewers | E_AI committed "
+    "and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority |"
+)
+e_task5_work_breakdown = (
+    "| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | "
+    "audit semantic, generators, links | fresh implementer after a separately approved future successor and "
+    "Wave C completion | blocked; no accepted R_AI or Wave C authority exists |"
+)
+e_task6_work_breakdown = (
+    "| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | "
+    "final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | blocked; E_AI "
+    "is committed but accepted R_AI, Wave C, and Task 5 completion are absent |"
+)
+e_work_log = (
+    "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Pending two fresh independent reviews "
+    "over immutable E_AI evidence; R_AI and XE_AI are not created. |"
+)
+e_verification = (
+    "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly one "
+    "R_AI/XE_AI terminal | Pending; E_AI committed; fresh composite reviews not yet recorded |"
+)
+e_task4_execution = (
+    "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+    "changes only Plan/Task evidence design and adds no product RED. | Frozen product GREEN evidence "
+    f"remains unchanged; the separately approved evidence-only wrapper returned status={status} "
+    f"output={output_class}. | E_AI committed and resolved by its exact unique subject; fresh composite "
+    "reviews pending; no downstream authority. | active Task 4; 4AI composite review pending; no Wave C authority |"
+)
+e_task5_execution = (
+    "| T-TSDC-005 | Not run — no accepted R_AI or Wave C authority exists | Not run — no accepted R_AI "
+    "or Wave C authority exists | E_AI committed; fresh composite reviews and accepted R_AI are pending | blocked |"
+)
+e_task6_execution = (
+    "| T-TSDC-006 | Not run — accepted R_AI, Wave C, and Task 5 are absent | Not run — accepted R_AI, "
+    "Wave C, and Task 5 are absent | E_AI committed; composite terminal not created | blocked |"
+)
+e_r_ledger = (
+    "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+    "`docs(task): record session-bound collision-safe review` | not created | Pending two accepted fresh composite "
+    "reviews and accepting immutable E_AI result; mutually exclusive with XE_AI. |"
+)
+e_xe_ledger = (
+    "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+    "`docs(task): record exhausted session-bound collision-safe review` | not created | Pending composite "
+    "disposition; mandatory for nonzero/internal E_AI evidence or either non-accepted fresh review; mutually "
+    "exclusive with R_AI. |"
+)
+e_task6_review = (
+    "| T-TSDC-006 | pending | pending | pending | not available | blocked | E_AI is committed; accepted "
+    "R_AI, Wave C, and Task 5 completion remain absent. |"
+)
+e_whole_review = (
+    "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and Tasks "
+    "5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | not available | "
+    "blocked | E_AI and pending composite reviews grant no Wave C, Tasks 5–6, or final branch-review authority. |"
+)
+e_deferred = (
+    "| T-TSDC-004R-3 atomic projection cutover | blocked; E_AI committed and composite reviews pending | "
+    f"B_AI `{sys.argv[6]}` is accepted, XP_AI is not created, and E_AI records result status={status} "
+    f"output={output_class}; R_AI/XE_AI are not created and no downstream authority exists. | complete two "
+    "fresh composite reviews over immutable E_AI evidence and exactly one R_AI/XE_AI terminal; only accepted "
+    "R_AI may unlock Wave C |"
+)
+e_handoff = (
+    f"Current 4AI final handoff: E_AI committed in the approval-consuming session with result status={status} "
+    f"output={output_class}; B_AI `{sys.argv[6]}` approved and XP_AI absent; fresh composite reviews pending; "
+    "R_AI/XE_AI not created; no downstream authority."
+)
+e_boundary = (
+    "- The active 4AI checkpoint has immutable E_AI evidence and pending fresh composite reviews. XP_AI,\n"
+    "  R_AI, and XE_AI are uncreated; E_AI alone does not establish Task 4.5, Wave C, downstream, runtime,\n"
+    "  or remote authority."
+)
+e_checkpoint = (
+    "- D_AI remains the clean Task-only XP_AH terminal\n"
+    "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`; P_AI and accepted B_AI are immutable lineage\n"
+    f"  evidence. The current checkpoint is Task-only E_AI with approved B_AI `{sys.argv[6]}`,\n"
+    f"  canonical result status={status} output={output_class}, and pending fresh composite reviews."
+)
+e_lineage = (
+    "- The realized evidence lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH -> P_AH ->\n"
+    "  XP_AH/D_AI -> P_AI -> B_AI -> E_AI`; XP_AI is absent. E_AI alone grants no implementation,\n"
+    "  Task 4.5, or Wave C authority; exactly one future R_AI/XE_AI composite terminal remains required."
+)
+e_execution_state = (
+    "- The separately approved 4AI revalidation transaction ran once and committed only sanitized result "
+    f"status={status} output={output_class} as E_AI. Fresh composite reviews, R_AI/XE_AI, Task 4.5, Wave C,\n"
+    "  runtime, remote, Graphify, Tasks 5–6, and whole-branch review remain unexecuted and unauthorized."
+)
+e_final_block = (
+    "T-TSDC-004R-4AI now has immutable Task-only E_AI evidence from one approval-consuming session.\n"
+    f"B_AI `{sys.argv[6]}` is accepted and XP_AI is absent; the canonical sanitized result is\n"
+    f"status={status} output={output_class}. Fresh composite reviews remain pending, so R_AI and XE_AI are\n"
+    "not created and no Task 4.5, Wave C, Tasks 5–6, runtime, remote, Graphify, or whole-branch review\n"
+    "authority exists."
+)
+accepted_to_e = {
+    r_frozen: e_frozen,
+    r_revalidation: e_revalidation,
+    e_parent_work_breakdown.replace(
+        "E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority",
+        "R_AI accepted and resolved by its exact unique subject; Task 4.5 authorized; Wave C not run",
+    ): e_parent_work_breakdown,
+    e_work_breakdown.replace(
+        "E_AI committed and resolved by its exact unique subject; fresh composite reviews pending; no downstream authority",
+        "R_AI accepted and resolved by its exact unique subject; Task 4.5 authorized; Wave C not run",
+    ): e_work_breakdown,
+    e_task5_work_breakdown.replace(
+        "blocked; no accepted R_AI or Wave C authority exists",
+        "blocked; accepted R_AI authorizes Task 4.5 only; Task 4.5 and Wave C not run",
+    ): e_task5_work_breakdown,
+    e_task6_work_breakdown.replace(
+        "blocked; E_AI is committed but accepted R_AI, Wave C, and Task 5 completion are absent",
+        "blocked; accepted R_AI exists but Task 4.5, Wave C, and Task 5 completion are absent",
+    ): e_task6_work_breakdown,
+    (
+        "| 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Completed; immutable "
+        f"result status={status} output={output_class} and both fresh composite reviews accepted; R_AI "
+        "resolved by its exact unique subject; Task 4.5 authorized and Wave C not run. |"
+    ): e_work_log,
+    (
+        "| 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly "
+        "one R_AI/XE_AI terminal | Accepted; R_AI resolved by its exact unique subject; Task 4.5 authorized |"
+    ): e_verification,
+    (
+        "| T-TSDC-004 | Historical 4AF RED evidence and rejected 4AG/4AH Plan history are preserved; 4AI "
+        "changes only Plan/Task evidence design and adds no product RED. | Frozen product GREEN evidence "
+        f"remains unchanged; the separately approved evidence-only wrapper returned status={status} "
+        f"output={output_class}. | R_AI accepted and resolved by its exact unique subject; Task 4.5 "
+        "authorized; Wave C not run. | active Task 4; Task 4.5 authorized; Wave C not run |"
+    ): e_task4_execution,
+    (
+        "| T-TSDC-005 | Not run — Task 4.5 and Wave C not run | Not run — Task 4.5 and Wave C not run | "
+        "Accepted R_AI authorizes Task 4.5 only; Wave C not run | blocked |"
+    ): e_task5_execution,
+    (
+        "| T-TSDC-006 | Not run — Task 4.5, Wave C, and Task 5 not run | Not run — Task 4.5, Wave C, "
+        "and Task 5 not run | Accepted R_AI authorizes Task 4.5 only; no Task 5/6 authority | blocked |"
+    ): e_task6_execution,
+    (
+        "| T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | "
+        "`docs(task): record session-bound collision-safe review` | resolved by this exact unique subject | "
+        "Both fresh composite reviews accepted immutable accepting E_AI evidence; Task 4.5 authorized. |"
+    ): e_r_ledger,
+    (
+        "| T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | "
+        "`docs(task): record exhausted session-bound collision-safe review` | not created | Mutually excluded "
+        "by accepted R_AI. |"
+    ): e_xe_ledger,
+    (
+        "| T-TSDC-006 | pending | pending | pending | not available | blocked | Accepted R_AI authorizes "
+        "Task 4.5 only; Wave C and Task 5 completion remain absent. |"
+    ): e_task6_review,
+    (
+        "| Whole branch | not applicable | pending final fresh reviewer after accepted R_AI, Wave C, and "
+        "Tasks 5–6 | pending different final fresh reviewer after accepted R_AI, Wave C, and Tasks 5–6 | "
+        "not available | blocked | Accepted R_AI authorizes Task 4.5 only; Wave C, Tasks 5–6, and final "
+        "branch review remain unexecuted and unauthorized. |"
+    ): e_whole_review,
+    (
+        "| T-TSDC-004R-3 atomic projection cutover | authorized for Task 4.5; Wave C not run | Immutable "
+        f"E_AI result status={status} output={output_class} and both fresh composite reviews accepted; R_AI "
+        "is the sole terminal and XE_AI is absent. | execute Task 4.5 only from this exact accepted R_AI "
+        "chain; Wave C remains unexecuted |"
+    ): e_deferred,
+    (
+        f"Current 4AI final handoff: accepted R_AI resolved by its exact unique subject; immutable E_AI "
+        f"result status={status} output={output_class}; XP_AI/XE_AI absent; Task 4.5 authorized; Wave C not run."
+    ): e_handoff,
+    (
+        "- Accepted R_AI is the sole 4AI terminal. It authorizes Task 4.5 only; Wave C, Tasks 5–6, runtime,\n"
+        "  remote, Graphify, and whole-branch review remain unexecuted and separately governed."
+    ): e_boundary,
+    (
+        "- D_AI remains the clean Task-only XP_AH terminal\n"
+        "  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`; P_AI, B_AI, and E_AI are immutable lineage\n"
+        f"  evidence. Accepted Task-only R_AI is the current checkpoint with canonical result status={status}\n"
+        f"  output={output_class}; it authorizes Task 4.5 only, which has not run."
+    ): e_checkpoint,
+    (
+        "- The realized accepted lineage is `B_4AF -> I -> D_AG -> P_AG -> D_AH -> P_AH ->\n"
+        "  XP_AH/D_AI -> P_AI -> B_AI -> E_AI -> R_AI`; XP_AI and XE_AI are absent. R_AI authorizes\n"
+        "  Task 4.5 only; Wave C and all later work remain unexecuted and separately governed."
+    ): e_lineage,
+    (
+        "- The separately approved 4AI revalidation transaction ran once and committed only sanitized result "
+        f"status={status} output={output_class} as E_AI. Both fresh composite reviews then accepted that\n"
+        "  immutable evidence and R_AI became the sole terminal. Task 4.5 is authorized but unexecuted; Wave C,\n"
+        "  runtime, remote, Graphify, Tasks 5–6, and whole-branch review remain unexecuted and unauthorized."
+    ): e_execution_state,
+    (
+        "T-TSDC-004R-4AI completed at accepted Task-only R_AI. Immutable E_AI records\n"
+        f"status={status} output={output_class}; B_AI and R_AI are the sole accepted terminals while XP_AI\n"
+        "and XE_AI are absent. Task 4.5 is authorized, but Wave C, Tasks 5–6, runtime, remote, Graphify,\n"
+        "and whole-branch review have not run."
+    ): e_final_block,
+}
+if len(accepted_to_e) != 22:
+    raise SystemExit("authority-allowlist-size")
+normalized = text
+for accepted_value, e_value in accepted_to_e.items():
+    if accepted_value == e_value or normalized.count(accepted_value) != 1:
+        raise SystemExit("authority-allowlist-shape")
+    normalized = normalized.replace(accepted_value, e_value, 1)
+if normalized != e_text:
+    raise SystemExit("authority-full-e-normalization")
 PY
 subjects=(
   'docs(task): record canonical-row authority plan reviews'
@@ -12144,12 +14961,14 @@ subjects=(
   'docs(task): record exhausted canonical-row authority review'
   'docs(plan): define status-based silent-success proof'
   'docs(task): record exhausted status-based silent-success plan review'
+  'docs(plan): define collision-safe disposition proof'
+  'docs(task): record exhausted collision-safe disposition plan review'
   "$p_subject"
   "$b_subject"
   "$e_subject"
   "$r_subject"
 )
-commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$b_ah" "$e_ah" "$r_ah")
+commits=("$b_4af" "$i" "$d_ag" "$p_ag" "$d_ah" "$p_ah" "$d_ai" "$p_ai" "$b_ai" "$e_ai" "$r_ai")
 for index in "${!commits[@]}"; do
   verified="$(git rev-parse --verify "${commits[$index]}^{commit}")"
   test "$verified" = "${commits[$index]}"
@@ -12163,14 +14982,18 @@ edge "$i" "$d_ag"
 edge "$d_ag" "$p_ag"
 edge "$p_ag" "$d_ah"
 edge "$d_ah" "$p_ah"
-edge "$p_ah" "$b_ah"
-edge "$b_ah" "$e_ah"
-edge "$e_ah" "$r_ah"
+edge "$p_ah" "$d_ai"
+edge "$d_ai" "$p_ai"
+edge "$p_ai" "$b_ai"
+edge "$b_ai" "$e_ai"
+edge "$e_ai" "$r_ai"
 expected_plan_paths="$(printf '%s\n' "$plan_file" "$task_file" | sort)"
 expected_test_paths="$(printf '%s\n' "$task_file" "$test_file" | sort)"
 expected_paths=(
   "$task_file"
   "$expected_test_paths"
+  "$task_file"
+  "$expected_plan_paths"
   "$task_file"
   "$expected_plan_paths"
   "$task_file"
@@ -12185,11 +15008,11 @@ for index in "${!commits[@]}"; do
 done
 historical_range_paths="$(git diff --name-only "$b_4af..$i" | sort)"
 test "$historical_range_paths" = "$expected_test_paths"
-plan_range_paths="$(git diff --name-only "$d_ah..$p_ah" | sort)"
+plan_range_paths="$(git diff --name-only "$d_ai..$p_ai" | sort)"
 test "$plan_range_paths" = "$expected_plan_paths"
-evidence_range_paths="$(git diff --name-only "$b_ah..$e_ah" | sort)"
+evidence_range_paths="$(git diff --name-only "$b_ai..$e_ai" | sort)"
 test "$evidence_range_paths" = "$task_file"
-terminal_range_paths="$(git diff --name-only "$e_ah..$r_ah" | sort)"
+terminal_range_paths="$(git diff --name-only "$e_ai..$r_ai" | sort)"
 test "$terminal_range_paths" = "$task_file"
 for commit_path in \
   "$b_4af:$task_file" \
@@ -12198,20 +15021,22 @@ for commit_path in \
   "$p_ag:$plan_file" "$p_ag:$task_file" \
   "$d_ah:$task_file" \
   "$p_ah:$plan_file" "$p_ah:$task_file" \
-  "$b_ah:$task_file" "$e_ah:$task_file" "$r_ah:$task_file"
+  "$d_ai:$task_file" \
+  "$p_ai:$plan_file" "$p_ai:$task_file" \
+  "$b_ai:$task_file" "$e_ai:$task_file" "$r_ai:$task_file"
 do
   mode="$(git ls-tree "${commit_path%%:*}" "${commit_path#*:}" | awk '{print $1}')"
   test "$mode" = 100644
 done
 historical_blob="$(git rev-parse "$i:$test_file")"
 test -n "$historical_blob"
-r_blob="$(git rev-parse "$r_ah:$test_file")"
+r_blob="$(git rev-parse "$r_ai:$test_file")"
 test "$r_blob" = "$historical_blob"
 clean_state="$(git status --porcelain=v1 --untracked-files=all)"
 test -z "$clean_state"
 ```
 
-The accepted R_AH is the only Wave C authority. The 4AF block below remains a
+The accepted R_AI is the only Wave C authority. The 4AF block below remains a
 non-executable historical illustration and cannot authorize work.
 
 **Historical non-executable 4AF authority illustration:**
@@ -13105,16 +15930,24 @@ is not applicable because neither surface is mutated.
   grants no Wave C or downstream authority.
 - 4AG is rejected/exhausted at XP_AG and is preserved only as historical
   evidence. Its rejected terminal grants no correction or downstream authority.
-- The user's current approval authorizes only the 4AH Plan/Task checkpoint
-  P_AH from D_AH `e9100b62f6ea18e2a003cfa805b14a7ad61a64ad`, two fresh
-  independent Plan reviews over exact `D_AH..P_AH`, and one accepted B_AH or
-  rejected XP_AH Task-only terminal. It authorizes no test, validator, product,
-  wrapper, workflow, runtime, remote, or Wave C execution.
-- A future collision-safe evidence-only revalidation requires accepted B_AH
-  plus a separate explicit one-attempt approval naming the resolved B_AH full
-  OID. That approval may create Task-only E_AH and obtain fresh composite
-  reviews; only accepted Task-only R_AH authorizes Task 4.5 Wave C. Rejected
-  XP_AH or XE_AH is terminal.
+- 4AH is rejected/exhausted at XP_AH
+  `88f55837be251318cd697bd8a1ab3a4f0ed1a824`. Its split-session design and all
+  4AH blocks are historical, non-executable evidence; B_AH, E_AH, R_AH, and
+  XE_AH were not created.
+- The user's current approval authorizes only the 4AI Plan/Task checkpoint
+  P_AI from D_AI `88f55837be251318cd697bd8a1ab3a4f0ed1a824`, two fresh
+  independent Plan reviews over exact `D_AI..P_AI`, and exactly one accepted
+  B_AI or rejected XP_AI Task-only terminal. It authorizes no AI-3, test,
+  validator, product, wrapper, workflow, revalidation, runtime, remote, or
+  Wave C execution.
+- A future session-bound evidence-only transaction requires accepted B_AI plus
+  a separate explicit one-attempt approval naming the resolved B_AI full OID.
+  That single fail-fast session may consume the approval, call the byte-safe
+  wrapper exactly once, commit canonical sanitized success, nonzero, or
+  internal evidence as Task-only E_AI, and prove it. A post-guard failure
+  consumes approval and blocks cleanup or retry without a separately approved
+  recovery design. Fresh composite reviews follow E_AI; only accepted
+  Task-only R_AI authorizes Task 4.5 Wave C. XP_AI or XE_AI is terminal.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
