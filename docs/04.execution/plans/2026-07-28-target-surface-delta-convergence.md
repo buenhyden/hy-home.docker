@@ -103,16 +103,24 @@ as `9ff217e63eaf452871cfc3ef47775e0fbd03e706`, but the fresh quality/security
 review found that wrapper execution and the E_AH evidence commit were split
 across sessions. Rejected Task-only XP_AH committed as
 `88f55837be251318cd697bd8a1ab3a4f0ed1a824`, so 4AH is historical,
-rejected/exhausted evidence. The user approved T-TSDC-004R-4AI as the sole
-Plan-only successor from that clean XP_AH/D_AI checkpoint. 4AI closes only the
-session-binding defect by making approval consumption, one byte-safe wrapper
-call, sanitized evidence capture, E_AI commit, and postcommit proof one
-self-contained transaction. The current approval stops after P_AI, two fresh
-independent Plan reviews over exact `D_AI..P_AI`, and exactly one Task-only
-B_AI or XP_AI terminal. Tests, validators, wrapper/proof execution,
+rejected/exhausted evidence. T-TSDC-004R-4AI was the Plan-only successor from
+that clean XP_AH/D_AI checkpoint. It addressed the session-binding defect by
+designing approval consumption, one byte-safe wrapper call, sanitized evidence
+capture, E_AI commit, and postcommit proof as one self-contained transaction.
+Its approval stopped after P_AI, two fresh independent Plan reviews over exact
+`D_AI..P_AI`, and exactly one Task-only B_AI or XP_AI terminal. Those facts are
+historical only and grant no current tests, validators, wrapper/proof,
 revalidation, implementation, E_AI, R_AI, Wave C, runtime, remote, dependency,
-secret, direct pre-commit, controlled-wrapper, and Graphify-update authority
-remain blocked pending the separately governed checkpoints below.
+secret, direct pre-commit, controlled-wrapper, or Graphify-update authority.
+
+T-TSDC-004R-4AL is the approved written design from D_AL
+`2d2f49dfccb5fec282b2792fe0984d80327b4254`. S_AL resolves only by exact unique
+subject `docs(design): define atomic reviewed-blob successor`. P_AL is not
+created and is blocked pending user review and the later
+`superpowers:writing-plans` phase. Implementation, E_AL, R_AL, XE_AL, Task
+4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+QA-wrapper/pre-commit execution, dependency changes, and Graphify update are
+blocked/no authority.
 
 ## Global Constraints
 
@@ -12018,18 +12026,18 @@ test -z "$clean_state"
 
 XE_AH is terminal. Only the exact accepted R_AH chain authorizes Task 4.5.
 
-#### T-TSDC-004R-4AI: Session-Bound Collision-Safe Proof (Active Plan-Only Successor)
+#### Historical T-TSDC-004R-4AI: Session-Bound Collision-Safe Proof
 
-4AI is the sole active Plan successor from clean D_AI/XP_AH
-`88f55837be251318cd697bd8a1ab3a4f0ed1a824`. It preserves every 4AH block as
-historical, non-executable evidence and changes only the rejected split-session
-boundary. The separately approved revalidation, its one byte-safe wrapper
-call, sanitized result, Task-only E_AI commit, and postcommit proof form one
-fail-fast transaction. The current approval stops after P_AI, two fresh
-independent Plan reviews over exact `D_AI..P_AI`, and exactly one Task-only
-B_AI or XP_AI terminal. AI-3, AI-4, Task 4.5, tests, validators, wrapper/proof
-execution, revalidation, runtime, remote, direct pre-commit, and Graphify
-remain blocked until their later gates are explicitly approved.
+At the time of its approval, 4AI was the Plan-only successor from clean
+D_AI/XP_AH `88f55837be251318cd697bd8a1ab3a4f0ed1a824`. It preserves every 4AH
+block as historical, non-executable evidence and changed only the rejected
+split-session boundary. Its separately approved revalidation, one byte-safe
+wrapper call, sanitized result, Task-only E_AI commit, and postcommit proof
+were designed as one fail-fast transaction. That historical approval stopped
+after P_AI, two fresh independent Plan reviews over exact `D_AI..P_AI`, and
+exactly one Task-only B_AI or XP_AI terminal. AI-3, AI-4, Task 4.5, tests,
+validators, wrapper/proof execution, revalidation, runtime, remote, direct
+pre-commit, and Graphify remained blocked pending later gates.
 
 The exact subjects are:
 
@@ -14526,9 +14534,10 @@ clean_state="$(git status --porcelain=v1 --untracked-files=all)"
 test -z "$clean_state"
 ```
 
-XE_AI is terminal. Only the exact accepted R_AI chain authorizes Task 4.5.
+Historical non-executable evidence only: XE_AI is terminal; R_AI was never
+created and grants no current Task 4.5 or Wave C authority.
 
-#### Task 4.5 / Wave C / T-TSDC-004R-5: Remove the Old Semantic Interpreter
+#### Historical non-executable Task 4.5 / Wave C / T-TSDC-004R-5 procedure: Remove the Old Semantic Interpreter
 
 - [ ] **Step 0: Prove the complete accepted 4AI chain.**
 
@@ -15842,6 +15851,94 @@ git add \
 git commit -m "docs(task): close target surface delta convergence"
 ```
 
+### T-TSDC-004R-4AL — Atomic reviewed-blob successor written design
+
+This preliminary written-design checkpoint succeeds the historical 4AI and the
+rejected 4AK draft without reopening either.  Its only current authority is
+Plan-and-Task design: `D_AL -> S_AL -> P_AL -> B_AL|XP_AL`, where S_AL is
+resolved by the exact unique subject `docs(design): define atomic reviewed-blob
+successor`; P_AL uses `docs(plan): define atomic reviewed-blob terminal proof`;
+and the mutually exclusive terminal subjects are `docs(task): record atomic
+reviewed-blob terminal plan reviews` and `docs(task): record exhausted atomic
+reviewed-blob terminal plan review`.  This is not an executable implementation
+plan. User review followed by the later `superpowers:writing-plans` phase is
+required before P_AL is drafted.
+
+The Task ledger has one current owner, `TSDC-AL-STATE`. Its human-readable
+Work Breakdown, Planning Verification, Task Execution Evidence, Review
+Evidence, Commit Ledger, Deferred/Blocked, Approval Evidence, Work Log, and
+final handoff are explicit derived projections of the same tuple; they must
+agree directly.
+
+The later construction is hook-free, sanitized, configuration-bounded Git
+plumbing. It runs in an explicitly bounded environment: system and global
+configuration are disabled; repository/local influence is explicitly
+overridden or allowlisted for this transaction; UTF-8 encoding is explicit;
+author and committer names, emails, timestamps, and timezone offsets are
+explicit; exact message bytes are explicit; and signing is disabled with no
+signing flag. Begin from the exact parent in a temporary index, materialize
+each review artifact once as a Git blob, use exact reviewed blob OIDs and
+`git write-tree` to construct the tree, and create the commit with hook-free
+`git commit-tree`; ordinary `git commit` is excluded.
+
+Before CAS, prove the complete raw commit object against an allowlist: exact
+tree; sole parent; author; committer; dates and offsets; no encoding header
+outside the admitted UTF-8 form (prefer none); no `gpgsig`, `mergetag`, or
+other extra header; exact blank-line and message bytes; and exact paths, modes,
+and blobs. Any extra header or difference fails before ref update. Publish only
+by direct compare-and-swap `git update-ref` with expected-old semantics and an
+explicitly empty/disabled hooks path, so `reference-transaction` and all other
+ref hooks cannot execute. A CAS conflict stops without retry. Review proof
+reads immutable object OIDs through Git
+object access, never mutable pathname rereads. Historical multiline evidence
+must retain exact `BEGIN`/`END` blocks and byte hashes. Each reviewer record
+binds a role slot, canonical orchestrator-assigned agent identity, assignment
+source, reviewed blob/package/range, and verdict; four formal/candidate
+reviewers must be distinct orchestrator identities, not self-declared labels.
+
+Primary-index and worktree concurrency are bounded explicitly. Before
+construction, capture the primary-index byte hash/stat identity and complete
+tracked-worktree/candidate identity; prebuild the candidate index separately
+from the exact S_AL tree. Acquire the canonical primary-index lock before the
+final pre-CAS recheck. While holding it, require the primary-index identity to
+equal the captured state and re-prove tracked-worktree/candidate identity using
+the immutable captured and temporary indexes. If drift occurs before CAS,
+release only the owned lock and stop unchanged without automatic retry.
+
+Hold that lock across branch CAS and reconciliation; never overwrite
+working-tree files. After CAS, recheck tracked-worktree identity before
+atomically installing the prebuilt candidate index. If worktree drift or any
+reconciliation precondition fails, preserve user work and the original primary
+index, release only the owned lock, retain the already pre-proved branch commit,
+and classify `index-reconciliation-required` for explicit recovery. Crash or
+concurrent drift after CAS uses the same recovery state. Normal success
+atomically installs the candidate index, releases the lock, and proves clean.
+External direct writes that bypass Git lock discipline are outside this
+guarantee; if present when final proof runs, they make that proof fail.
+
+Closed-world protection: implementation, `E_AL`, `R_AL`, `XE_AL`, Task 4.5,
+Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit
+execution, dependency changes, and Graphify update are blocked/no authority.
+Every current projection must state this exact prohibited-authority tuple.
+The only allowed tracked paths, both mode `100644`, are
+`docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md` and
+`docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`; no
+other tracked path is allowed. Titles, frontmatter, artifact status, and
+scope/summary remain unchanged, so no parent README update is required. 4AI is
+immutable historical evidence only. The
+rejected 4AK attempt is also historical only: frozen draft SHA256
+`b746147f3f40039c801d5e97f1448575e096012f158f7dc313b4b54733f4bf47`;
+formal review `C0/I5/M0`, `SPEC_COMPLIANCE NO`, `DRAFT_READY NO`;
+quality/security `C0/I6/M0`, `QUALITY_SECURITY FAIL`, `DRAFT_READY NO`; no
+P_AK, B_AK, or XP_AK commits were created, and its rejected diff was exactly
+reversed with D_AL restored clean.
+
+Acceptance requires exact unique resolution of S_AL by subject; one truthful
+Task state block; mutually exclusive future B_AL/XP_AL topology without
+simultaneous ledger rows; immutable reviewed-blob provenance; distinct reviewer
+identities; closed-world agreement across all projections; modes `100644`; and
+no downstream implementation authority.
+
 ## Verification Plan
 
 ### Per-task Gate
@@ -15934,20 +16031,16 @@ is not applicable because neither surface is mutated.
   `88f55837be251318cd697bd8a1ab3a4f0ed1a824`. Its split-session design and all
   4AH blocks are historical, non-executable evidence; B_AH, E_AH, R_AH, and
   XE_AH were not created.
-- The user's current approval authorizes only the 4AI Plan/Task checkpoint
-  P_AI from D_AI `88f55837be251318cd697bd8a1ab3a4f0ed1a824`, two fresh
-  independent Plan reviews over exact `D_AI..P_AI`, and exactly one accepted
-  B_AI or rejected XP_AI Task-only terminal. It authorizes no AI-3, test,
-  validator, product, wrapper, workflow, revalidation, runtime, remote, or
-  Wave C execution.
-- A future session-bound evidence-only transaction requires accepted B_AI plus
-  a separate explicit one-attempt approval naming the resolved B_AI full OID.
-  That single fail-fast session may consume the approval, call the byte-safe
-  wrapper exactly once, commit canonical sanitized success, nonzero, or
-  internal evidence as Task-only E_AI, and prove it. A post-guard failure
-  consumes approval and blocks cleanup or retry without a separately approved
-  recovery design. Fresh composite reviews follow E_AI; only accepted
-  Task-only R_AI authorizes Task 4.5 Wave C. XP_AI or XE_AI is terminal.
+- 4AI is rejected/exhausted historical evidence only; it grants no current
+  authority. The rejected 4AK draft is historical only and was reversed to
+  clean D_AL. The current written-design checkpoint is S_AL, resolved only by
+  its exact unique subject. P_AL is not created and remains blocked pending
+  user review and the later `superpowers:writing-plans` phase.
+- The prospective terminal topology is exactly `P_AL -> B_AL|XP_AL`; it does
+  not create either terminal now. Implementation, E_AL, R_AL, XE_AL, Task 4.5,
+  Wave C, Tasks 5–6, runtime, remote/external actions,
+  QA-wrapper/pre-commit execution, dependency changes, and Graphify update are
+  blocked/no authority.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
