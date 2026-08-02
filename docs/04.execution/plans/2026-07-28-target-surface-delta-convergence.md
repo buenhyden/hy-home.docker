@@ -113,14 +113,13 @@ historical only and grant no current tests, validators, wrapper/proof,
 revalidation, implementation, E_AI, R_AI, Wave C, runtime, remote, dependency,
 secret, direct pre-commit, controlled-wrapper, or Graphify-update authority.
 
-T-TSDC-004R-4AL is the approved written design from D_AL
-`2d2f49dfccb5fec282b2792fe0984d80327b4254`. S_AL resolves only by exact unique
-subject `docs(design): define atomic reviewed-blob successor`. P_AL is not
-created and is blocked pending user review and the later
-`superpowers:writing-plans` phase. Implementation, E_AL, R_AL, XE_AL, Task
-4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
-QA-wrapper/pre-commit execution, dependency changes, and Graphify update are
-blocked/no authority.
+T-TSDC-004R-4AL is the approved executable Plan from D_AL
+`2d2f49dfccb5fec282b2792fe0984d80327b4254` through exact S_AL
+`eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`. P_AL resolves only by exact unique
+subject `docs(plan): define atomic reviewed-blob terminal proof`; its OID is
+intentionally not self-asserted in its own tree. Four pairwise-distinct
+candidate/formal reviewers and exactly one future Task-only B_AL or XP_AL are
+the only next authority. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
 
 ## Global Constraints
 
@@ -15851,93 +15850,804 @@ git add \
 git commit -m "docs(task): close target surface delta convergence"
 ```
 
-### T-TSDC-004R-4AL — Atomic reviewed-blob successor written design
+### T-TSDC-004R-4AL — Atomic reviewed-blob terminal proof
 
-This preliminary written-design checkpoint succeeds the historical 4AI and the
-rejected 4AK draft without reopening either.  Its only current authority is
-Plan-and-Task design: `D_AL -> S_AL -> P_AL -> B_AL|XP_AL`, where S_AL is
-resolved by the exact unique subject `docs(design): define atomic reviewed-blob
-successor`; P_AL uses `docs(plan): define atomic reviewed-blob terminal proof`;
-and the mutually exclusive terminal subjects are `docs(task): record atomic
-reviewed-blob terminal plan reviews` and `docs(task): record exhausted atomic
-reviewed-blob terminal plan review`.  This is not an executable implementation
-plan. User review followed by the later `superpowers:writing-plans` phase is
-required before P_AL is drafted.
+This is the executable Plan checkpoint for the bounded documentation-only
+lineage `D_AL -> S_AL -> P_AL -> B_AL|XP_AL`. D_AL is
+`2d2f49dfccb5fec282b2792fe0984d80327b4254`. S_AL is
+`eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`, has the exact unique subject
+`docs(design): define atomic reviewed-blob successor`, and is the sole parent
+of P_AL. P_AL has the exact subject
+`docs(plan): define atomic reviewed-blob terminal proof`; its own OID cannot be
+self-asserted in its tree and must be resolved after publication by exact
+subject, parent, distance, tree, paths, modes, and blob proof.
 
-The Task ledger has one current owner, `TSDC-AL-STATE`. Its human-readable
-Work Breakdown, Planning Verification, Task Execution Evidence, Review
-Evidence, Commit Ledger, Deferred/Blocked, Approval Evidence, Work Log, and
-final handoff are explicit derived projections of the same tuple; they must
-agree directly.
+The two mutually exclusive terminal subjects are
+`docs(task): record atomic reviewed-blob terminal plan reviews` for B_AL and
+`docs(task): record exhausted atomic reviewed-blob terminal plan review` for
+XP_AL. P_AL contains no B_AL or XP_AL Commit Ledger row. The terminal builder
+adds exactly one selected row and must prove that the other subject and row are
+absent. B_AL records a fully accepted Plan review set. XP_AL records a
+complete, parseable review set that is non-accepted or has a proved reviewer
+identity collision. Missing, truncated, hash-invalid, or schema-malformed
+evidence stops without a terminal. Neither terminal grants implementation
+authority by itself.
 
-The later construction is hook-free, sanitized, configuration-bounded Git
-plumbing. It runs in an explicitly bounded environment: system and global
-configuration are disabled; repository/local influence is explicitly
-overridden or allowlisted for this transaction; UTF-8 encoding is explicit;
-author and committer names, emails, timestamps, and timezone offsets are
-explicit; exact message bytes are explicit; and signing is disabled with no
-signing flag. Begin from the exact parent in a temporary index, materialize
-each review artifact once as a Git blob, use exact reviewed blob OIDs and
-`git write-tree` to construct the tree, and create the commit with hook-free
-`git commit-tree`; ordinary `git commit` is excluded.
+The Task ledger has one current owner, `TSDC-AL-STATE`. Its state block,
+Approval Evidence, Work Breakdown, Work Log, Planning Verification, Task
+Execution Evidence, atomic reviewed-blob Plan boundary, Review Evidence,
+Commit Ledger, Deferred and Blocked Items, and final handoff are the exact
+eleven projections of one tuple. A state transition is invalid unless one
+candidate Task blob updates every projection together.
 
-Before CAS, prove the complete raw commit object against an allowlist: exact
-tree; sole parent; author; committer; dates and offsets; no encoding header
-outside the admitted UTF-8 form (prefer none); no `gpgsig`, `mergetag`, or
-other extra header; exact blank-line and message bytes; and exact paths, modes,
-and blobs. Any extra header or difference fails before ref update. Publish only
-by direct compare-and-swap `git update-ref` with expected-old semantics and an
-explicitly empty/disabled hooks path, so `reference-transaction` and all other
-ref hooks cannot execute. A CAS conflict stops without retry. Review proof
-reads immutable object OIDs through Git
-object access, never mutable pathname rereads. Historical multiline evidence
-must retain exact `BEGIN`/`END` blocks and byte hashes. Each reviewer record
-binds a role slot, canonical orchestrator-assigned agent identity, assignment
-source, reviewed blob/package/range, and verdict; four formal/candidate
-reviewers must be distinct orchestrator identities, not self-declared labels.
+#### Authority and exact file map
 
-Primary-index and worktree concurrency are bounded explicitly. Before
-construction, capture the primary-index byte hash/stat identity and complete
-tracked-worktree/candidate identity; prebuild the candidate index separately
-from the exact S_AL tree. Acquire the canonical primary-index lock before the
-final pre-CAS recheck. While holding it, require the primary-index identity to
-equal the captured state and re-prove tracked-worktree/candidate identity using
-the immutable captured and temporary indexes. If drift occurs before CAS,
-release only the owned lock and stop unchanged without automatic retry.
+- P_AL may modify only
+  `docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md` and
+  `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`,
+  both as mode `100644`.
+- B_AL or XP_AL may modify only the Task path above as mode `100644`; the Plan
+  blob must equal P_AL exactly.
+- Titles, frontmatter, artifact status, and folder-level summaries remain
+  unchanged, so no parent README update is required.
+- 4AI and rejected 4AK remain immutable historical evidence. Rejected 4AK is
+  bound to frozen draft SHA256
+  `b746147f3f40039c801d5e97f1448575e096012f158f7dc313b4b54733f4bf47`,
+  formal `C0/I5/M0; SPEC_COMPLIANCE NO; DRAFT_READY NO`, quality/security
+  `C0/I6/M0; QUALITY_SECURITY FAIL; DRAFT_READY NO`, no P_AK/B_AK/XP_AK, and
+  an exact reversal to clean D_AL.
+- implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. This exact tuple must
+  remain verbatim in every current Task projection through P_AL and either
+  terminal.
 
-Hold that lock across branch CAS and reconciliation; never overwrite
-working-tree files. After CAS, recheck tracked-worktree identity before
-atomically installing the prebuilt candidate index. If worktree drift or any
-reconciliation precondition fails, preserve user work and the original primary
-index, release only the owned lock, retain the already pre-proved branch commit,
-and classify `index-reconciliation-required` for explicit recovery. Crash or
-concurrent drift after CAS uses the same recovery state. Normal success
-atomically installs the candidate index, releases the lock, and proves clean.
-External direct writes that bypass Git lock discipline are outside this
-guarantee; if present when final proof runs, they make that proof fail.
+#### Immutable review and identity contract
 
-Closed-world protection: implementation, `E_AL`, `R_AL`, `XE_AL`, Task 4.5,
-Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit
-execution, dependency changes, and Graphify update are blocked/no authority.
-Every current projection must state this exact prohibited-authority tuple.
-The only allowed tracked paths, both mode `100644`, are
-`docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md` and
-`docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`; no
-other tracked path is allowed. Titles, frontmatter, artifact status, and
-scope/summary remain unchanged, so no parent README update is required. 4AI is
-immutable historical evidence only. The
-rejected 4AK attempt is also historical only: frozen draft SHA256
-`b746147f3f40039c801d5e97f1448575e096012f158f7dc313b4b54733f4bf47`;
-formal review `C0/I5/M0`, `SPEC_COMPLIANCE NO`, `DRAFT_READY NO`;
-quality/security `C0/I6/M0`, `QUALITY_SECURITY FAIL`, `DRAFT_READY NO`; no
-P_AK, B_AK, or XP_AK commits were created, and its rejected diff was exactly
-reversed with D_AL restored clean.
+The review package is an LF-delimited, final-newline envelope with this exact
+field order:
 
-Acceptance requires exact unique resolution of S_AL by subject; one truthful
-Task state block; mutually exclusive future B_AL/XP_AL topology without
-simultaneous ledger rows; immutable reviewed-blob provenance; distinct reviewer
-identities; closed-world agreement across all projections; modes `100644`; and
-no downstream implementation authority.
+```text
+BEGIN TSDC-4AL-PACKAGE
+schema: tsdc-4al-plan-review/v2
+d_al: 2d2f49dfccb5fec282b2792fe0984d80327b4254
+s_al: eafdaf0433d9e600abbc9b8e2443bdd7b84a9868
+p_al: 40-lowercase-hex P_AL OID
+s_subject: docs(design): define atomic reviewed-blob successor
+p_subject: docs(plan): define atomic reviewed-blob terminal proof
+review_distance: 1
+plan_path: docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md
+task_path: docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+plan_mode: 100644
+task_mode: 100644
+plan_blob: 40-or-64-lowercase-hex object OID
+task_blob: 40-or-64-lowercase-hex object OID
+p_commit_sha256: 64-lowercase-hex digest of raw commit bytes
+p_commit_bytes: positive decimal integer
+p_diff_sha256: 64-lowercase-hex digest of binary S_AL..P_AL diff bytes
+p_diff_bytes: positive decimal integer
+pal_transaction_blob: 40-or-64-lowercase-hex object OID
+pal_transaction_sha256: 64-lowercase-hex digest
+pal_transaction_bytes: positive decimal integer
+terminal_renderer_blob: 40-or-64-lowercase-hex object OID
+terminal_renderer_sha256: 64-lowercase-hex digest
+terminal_renderer_bytes: positive decimal integer
+terminal_publisher_blob: 40-or-64-lowercase-hex object OID
+terminal_publisher_sha256: 64-lowercase-hex digest
+terminal_publisher_bytes: positive decimal integer
+b_al_subject: docs(task): record atomic reviewed-blob terminal plan reviews
+xp_al_subject: docs(task): record exhausted atomic reviewed-blob terminal plan review
+projection_anchors_sha256: 64-lowercase-hex digest of the ordered anchor list
+prohibited_authority: implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+END TSDC-4AL-PACKAGE
+```
+
+The package blob is `git hash-object -w --stdin` over those exact bytes. Its
+SHA256 and byte count are computed before materialization and rebound by every
+assignment and report.
+
+The projection-anchor input is not an informal list. It is one immutable,
+LF-delimited, final-newline file with these exact bytes and order:
+
+```text
+BEGIN TSDC-4AL-PROJECTION-ANCHORS
+schema: tsdc-4al-projection-anchors/v1
+task_path: docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+owner: TSDC-AL-STATE
+anchor: state
+anchor: approval_evidence
+anchor: work_breakdown
+anchor: work_log
+anchor: planning_verification
+anchor: task_execution_evidence
+anchor: boundary_section
+anchor: review_evidence
+anchor: commit_ledger
+anchor: deferred_blocked
+anchor: final_handoff
+END TSDC-4AL-PROJECTION-ANCHORS
+```
+
+The package stores only this file's SHA256; the controller separately freezes
+and materializes the anchor file itself as a reviewed Git blob so a reviewer can
+recompute the digest. P_AL cannot self-assert its own commit OID or the final
+`S_AL..P_AL` diff digest in the two tracked files without recursion. The
+controller therefore freezes the final tracked bytes first, resolves the two
+document blob OIDs and binary diff outside the tree, launches the reviewed P_AL
+transaction with those exact externally bound values, and only then resolves
+P_AL by parent, subject, distance, raw commit, tree, path, mode, and blob. AL-3
+binds those resolved values into the immutable package; no placeholder in the
+P_AL tree is treated as evidence.
+
+Exactly four read-only review slots inspect the same immutable P_AL lineage:
+
+1. `C_AL_SPEC`: candidate specification review;
+2. `C_AL_QS`: candidate quality/security review;
+3. `F_AL_SPEC`: formal specification review, including the candidate artifacts;
+4. `F_AL_QS`: formal quality/security review, including the candidate artifacts.
+
+The orchestrator assigns all four slots directly. Their canonical agent
+identities must be pairwise distinct and may not be inferred from self-declared
+labels. The controller takes the canonical task path returned by the
+orchestrator assignment call, creates one immutable assignment envelope, and
+sends only its blob OID plus the package blob OID to that reviewer. Assignment
+bytes use this closed order:
+
+```text
+BEGIN TSDC-4AL-ASSIGNMENT
+schema: tsdc-4al-assignment/v1
+slot: C_AL_SPEC|C_AL_QS|F_AL_SPEC|F_AL_QS
+canonical_identity: canonical task path returned by the orchestrator
+assignment_source: /root
+package_blob: 40-or-64-lowercase-hex package object OID
+package_sha256: 64-lowercase-hex package digest
+package_bytes: positive decimal package byte count
+candidate_spec_review_blob: NONE|40-or-64-lowercase-hex object OID
+candidate_qs_review_blob: NONE|40-or-64-lowercase-hex object OID
+END TSDC-4AL-ASSIGNMENT
+```
+
+Candidate assignments require both candidate-review fields `NONE`; formal
+assignments require both exact candidate report OIDs. The terminal renderer
+trusts identity and assignment source only from these controller-created
+assignment blobs and requires each reviewer envelope to match its assignment.
+Each record also binds S_AL and P_AL OIDs, exact `S_AL..P_AL` distance, Plan and
+Task blob OIDs, review package identity, verdict, and readiness field. A
+reviewer must not edit the worktree or create a commit.
+
+Every reviewer output is captured once, materialized once with
+`git hash-object -w --stdin`, and then consumed only by its blob OID through
+`git cat-file blob`. Multiline output uses an exact `BEGIN ...` and `END ...`
+envelope, LF line endings, final newline, byte count, and SHA256. Candidate
+review blobs become inputs to both formal reviewers. The terminal Task embeds
+all four exact envelopes plus their blob OIDs, byte counts, and hashes; mutable
+pathname rereads are prohibited.
+
+The envelope grammar is closed and line ordered:
+
+```text
+BEGIN TSDC-4AL-REVIEW
+slot: C_AL_SPEC|C_AL_QS|F_AL_SPEC|F_AL_QS
+canonical_identity: orchestrator-assigned canonical task path
+assignment_source: /root
+assignment_blob: 40-or-64-lowercase-hex assignment object OID
+review_base: 40-lowercase-hex S_AL OID
+review_head: 40-lowercase-hex P_AL OID
+review_distance: 1
+plan_blob: 40-or-64-lowercase-hex object OID
+task_blob: 40-or-64-lowercase-hex object OID
+package_blob: 40-or-64-lowercase-hex package object OID
+package_sha256: 64-lowercase-hex digest
+package_bytes: positive decimal integer
+candidate_spec_review_blob: NONE|40-or-64-lowercase-hex object OID
+candidate_qs_review_blob: NONE|40-or-64-lowercase-hex object OID
+critical: nonnegative decimal integer
+important: nonnegative decimal integer
+minor: nonnegative decimal integer
+spec_compliance: YES|NO|NA
+quality_security: PASS|FAIL|NA
+plan_terminal_ready: YES|NO
+findings: value-free single-line disposition
+END TSDC-4AL-REVIEW
+```
+
+Specification slots must use `quality_security: NA`; quality/security slots
+must use `spec_compliance: NA`. Candidate slots must use `NONE` for both
+candidate-review blob fields. Formal slots must name both exact candidate
+report blob OIDs. All other enum or field combinations are malformed and
+cannot select B_AL. Envelope hash and byte-count metadata are kept outside the
+envelope to avoid self-reference.
+
+B_AL is selected only when all four reports are structurally valid, identity
+distinctness is proved, each reports `C0/I0/M0`, both specification slots state
+`SPEC_COMPLIANCE YES`, both quality/security slots state
+`QUALITY_SECURITY PASS`, and all four state `PLAN_TERMINAL_READY YES`. Every
+other completed disposition selects XP_AL. Missing or malformed evidence stops
+before terminal construction; it is not silently converted into acceptance.
+
+#### Frozen reviewed assets and closed launchers
+
+These out-of-tree assets are immutable Plan evidence. Their Git blob OIDs are
+the content-addressed results for the exact bytes shown; the controller must
+materialize those same bytes before any authorized downstream use.
+
+| Asset | SHA256 | Bytes | Lines | Git blob OID |
+| --- | --- | ---: | ---: | --- |
+| P_AL transaction `/tmp/tsdc-4al-create-pal.sh` | `752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f` | 75,145 | 1,013 | `e26e6f02be09bf67c56cc16840b03f289ea553aa` |
+| Package builder `/tmp/tsdc-4al-build-review-package.py` | `3aac58ddeae93f06d39bd28351d1e63a6134ab30967b8b9ab82325cf69a78f8a` | 34,348 | 932 | `6da62868ec3f630a3e77dfdb286641c49d9bc37c` |
+| Terminal renderer `/tmp/tsdc-4al-render-terminal.py` | `df6a57db6814b34f3969774331522eeeca544d8f75581fd1a362d47fe6ee4598` | 69,917 | 1,862 | `0666e96ab43d66e9d075892d591ca790f8280661` |
+| Terminal publisher `/tmp/tsdc-4al-publish-terminal.py` | `e6841b0d7627bbd97b0e2b9b9ca7b486cd4964f1467dcf68ea9531d473559b83` | 208,072 | 5,552 | `755ffde61559cb259021d6a7b2752f99afb67959` |
+| Projection anchors `/tmp/tsdc-4al-projection-anchors.txt` | `4dbee6d432d9f3a2cc704881867d7db7b42595846c96f3a413f392475fde114b` | 468 | 16 | `bd036ba49089cc1f27d91bdaa1f2478fcb1ef1f9` |
+
+The P_AL transaction has independent final specification and security verdicts
+`C0/I0/M0`, `PASS`, and `EXECUTION_READY YES`. The package builder has an
+independent `C0/I0/M0` contract verdict. The renderer and final publisher each
+have independent specification and security verdicts `C0/I0/M0`, `PASS`, and
+`EXECUTION_READY YES`; rejected intermediate publisher identities are not
+execution authority.
+
+One earlier reviewed P_AL transaction identity,
+`5c0c0a1bf9e84e2879638777c15365ac4160c8fe5e952aeaf6db37a2f50e9be5`/
+`fcf15cf2839f72242db9933c4ff72a7cae8f0f77`, was launched once and failed
+closed at `configuration contract` before object creation,
+transaction-directory creation, ref/index/worktree mutation, or success
+output. Git accepts unsupported `core.fsync*` values with exit zero while
+emitting C-locale warnings, so the superseded probe's nonzero-exit assumption
+was rejected. The current transaction instead requires empty stderr for the
+valid probe and exact C-locale warnings for both invalid probes. The prior
+identity is historical failure evidence only. A retry may use only the current
+identity after the Plan, Task, diff package, launcher, and transaction are all
+rebound to their exact final bytes and independently re-reviewed.
+
+The P_AL transaction is launched only from an unlinked memfd sealed with
+`F_SEAL_SEAL|F_SEAL_SHRINK|F_SEAL_GROW|F_SEAL_WRITE`. Its exact command is
+`/usr/bin/bash /proc/<launcher-pid>/fd/<sealed-fd>` with inherited cwd `/` and a
+closed environment containing only `PATH=/usr/bin:/bin`, `LC_ALL=C`,
+`TZ=Asia/Seoul`, Bash-normalized `PWD=/`, `SHLVL=1`, `_`,
+`TSDC_PACKAGE_PATH=/tmp/review-4al-plan.diff`, the externally resolved package
+SHA256 and byte count, and
+`TSDC_REVIEWED_SCRIPT_SHA256=752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f`.
+Classifier mode replaces the package path with exact recovery mode/directory
+fields while retaining the package identity and reviewed-script identity.
+
+The package builder accepts exactly these six option/value pairs in order:
+
+```text
+--p-al <resolved-P_AL>
+--pal-transaction-blob e26e6f02be09bf67c56cc16840b03f289ea553aa
+--terminal-renderer-blob 0666e96ab43d66e9d075892d591ca790f8280661
+--terminal-publisher-blob 755ffde61559cb259021d6a7b2752f99afb67959
+--anchors-file /tmp/tsdc-4al-projection-anchors.txt
+--output /tmp/tsdc-4al-review-package.txt
+```
+
+The renderer is launched from its own sealed descriptor as
+`/usr/bin/python3 -I -B /proc/self/fd/<sealed-fd>`, cwd `/`, with exactly
+`PATH`, `HOME`, `XDG_CONFIG_HOME`, `LC_ALL`, `LANG`, `TZ`, `TERM`, and two
+pairwise-distinct inherited output-FD variables. The fixed values are
+`PATH=/usr/bin:/bin`, `HOME=/nonexistent`,
+`XDG_CONFIG_HOME=/nonexistent`, `LC_ALL=C`, `LANG=C`, `TZ=UTC`, and
+`TERM=dumb`. Its exact ordered options are `--p-al`, `--manifest-blob`,
+`--candidate-spec-blob`, `--candidate-qs-blob`, `--formal-spec-blob`,
+`--formal-qs-blob`, `--output /tmp/tsdc-4al-terminal-task.md`, and
+`--publication-output /tmp/tsdc-4al-terminal-publication.txt`.
+
+The terminal publisher is launched from its own sealed descriptor with no
+arguments as `/usr/bin/python3 -I -S -B /proc/self/fd/<sealed-fd>`, cwd `/`.
+Its baseline environment is exactly `PATH=/usr/bin:/bin`, `HOME=/nonexistent`,
+`XDG_CONFIG_HOME=/nonexistent`, `LC_ALL=C`, `LANG=C`, and `TZ=UTC`. Publish mode
+adds only `TSDC_PUBLICATION_MANIFEST_BLOB`,
+`TSDC_CANDIDATE_PATH=/tmp/tsdc-4al-terminal-task.md`,
+`TSDC_CANDIDATE_SHA256`, `TSDC_CANDIDATE_BYTES`, and
+`TSDC_REVIEWED_SCRIPT_SHA256`. `classify-terminal` mode instead adds only the
+mode, exact recovery directory, and reviewed-script identity;
+`resolve-terminal` mode adds only the mode, immutable publication-manifest blob,
+and reviewed-script identity.
+
+#### Construction and concurrency contract
+
+P_AL publication and terminal publication share reviewed Git-object, raw-commit,
+ref-CAS, index-lock, durability, and fail-closed primitives, but they use two
+different state machines. P_AL publication consumes the already-edited Plan and
+Task worktree bytes and never writes either worktree file. Terminal publication
+must install the renderer's exact Task bytes and therefore uses the distinct
+`tsdc-4al-terminal-publication/v2` state machine defined below; treating both as
+one no-worktree-write transaction is prohibited. Both assets run hook-free and
+configuration-bounded with system/global configuration disabled;
+repository/local influences rejected or explicitly overridden; no ambient
+`GIT_*`; explicit UTF-8, author/committer identity, timestamps, timezone
+offsets, and exact message bytes; disabled signing; no replacement objects,
+grafts, alternates, lazy fetch, filters, fsmonitor, attributes, text conversion,
+external diff, pager, or hooks. Ordinary `git commit` is prohibited.
+
+The builder copies the exact parent index to an owned temporary index, installs
+only the reviewed blob OIDs with `git update-index --cacheinfo`, refreshes the
+candidate index, proves both `git ls-files -v` and `git ls-files -f` have only
+ordinary non-masking entries, writes the tree, and creates a single-parent
+commit with `git commit-tree`. Before ref mutation it byte-compares the raw
+commit object to an allowlist containing only the exact tree, sole parent,
+author, committer, dates and offsets, blank line, subject plus final newline,
+and no extra header such as `encoding`, `gpgsig`, or `mergetag`.
+
+Before construction, capture the primary index byte hash/stat identity and the
+complete tracked binary diff plus untracked-path state. Prebuild the candidate
+index from the exact parent tree. Acquire the canonical `index.lock` with a
+dedicated owned guard inode before the final pre-CAS recheck and hold that same
+guard continuously across ref CAS and index reconciliation. The candidate
+index is exposed through a distinct owned same-directory install inode and is
+atomically moved to the primary index without ever vacating `index.lock`.
+Publication uses `git update-ref --stdin` expected-old semantics with hooks
+disabled. A CAS conflict or pre-CAS drift before ref advancement stops without
+retry and removes owned state only after proving the branch, primary index,
+complete binary diff, and untracked-path set remain exactly unchanged.
+
+The P_AL builder never overwrites working-tree files. After CAS it rechecks the
+complete tracked diff, untracked state, Plan/Task blobs, package, configuration,
+and guard before atomically installing the prebuilt candidate index. If
+reconciliation or a post-CAS check fails, it preserves user work, the original
+index, the pre-proved commit, journal, and validated guard and reports
+`index-reconciliation-required` with the recovery directory. Normal success
+installs the candidate index, proves the committed state while guarded, releases
+the index guard and ref-verification transaction, proves the same state with no
+locks, removes only exact owned recovery residue, reproves the residue-free
+state, and only then emits the P_AL result. External writes that bypass Git lock
+discipline are outside the guarantee and make the final proof fail when
+observed.
+
+Before ref prepare, the P_AL transaction writes and durably persists an owned
+`journal` inside its canonical Git-dir transaction directory. It uses a
+same-filesystem temporary file, file `fsync`, atomic rename, and directory
+`fsync` for every phase transition. The journal is exactly 19 LF-terminated
+`key=value` lines with a final newline and no envelope:
+
+```text
+schema_version=1
+branch_ref=refs/heads/feat/135-target-surface-delta-convergence
+parent=40-lowercase-hex expected-old S_AL OID
+new_commit=40-lowercase-hex pre-proved P_AL OID
+original_index=canonical owned original-index path
+original_sha256=64-lowercase-hex original-index digest
+candidate_index=canonical owned candidate-index path
+candidate_sha256=64-lowercase-hex candidate-index digest
+index_lock=canonical linked-worktree index.lock path
+lock_identity=decimal-device:decimal-inode of the dedicated guard
+plan_blob=40-lowercase-hex Plan blob OID
+task_blob=40-lowercase-hex Task blob OID
+tree=40-lowercase-hex tree OID
+package_sha256=64-lowercase-hex frozen diff digest
+package_bytes=positive decimal frozen diff byte count
+script_sha256=64-lowercase-hex reviewed transaction digest
+author_epoch=positive decimal Unix epoch
+raw_commit_sha256=64-lowercase-hex raw commit digest
+phase=PREPARED|REF_ADVANCED|INDEX_INSTALLED
+```
+
+`PREPARED` is durable before `update-ref` prepare, `REF_ADVANCED` immediately
+after the expected-old CAS, and `INDEX_INSTALLED` immediately after candidate
+index installation. Recovery never trusts phase alone: a crash between CAS and
+the phase rename is inferred from the journal's pre-proved `new_commit`, current
+ref, original/candidate index hashes, dedicated guard inode, full retained diff,
+untracked-path state, and exact Plan/Task worktree blobs. The current repository
+uses SHA-1 object IDs, so this transaction requires 40-lowercase-hex Git OIDs;
+the generic review-package envelope remains format-capable for 40- or 64-hex
+object stores. Startup refuses a new transaction when any matching residue or
+branch-ref lock exists and reports `recovery-required`.
+
+The same frozen P_AL transaction asset exposes a read-only classifier mode. It
+accepts exactly one canonical owned transaction directory, validates the closed
+journal, paths, ownership, no-symlink boundary, hashes, inode relation, ref,
+index, full retained binary diff, untracked-path set, branch-ref-lock absence,
+and worktree identity, and prints exactly one value-free state:
+`branch-unchanged`, `index-reconciliation-required`,
+`complete-removal-safe`, or `foreign-drift`. Classification never mutates.
+Cleanup may remove the directory only after normal complete proof or a proved
+branch-unchanged/original-index state. Any other recovery action requires
+explicit approval.
+
+#### Distinct terminal publication contract
+
+The terminal renderer writes exactly two private outputs: the selected Task
+candidate at `/tmp/tsdc-4al-terminal-task.md` and a publication manifest at
+`/tmp/tsdc-4al-terminal-publication.txt`. It materializes each once as a Git
+blob and returns their OID, SHA256, and byte count. The publisher pins the Task
+candidate with one no-follow file descriptor, verifies those exact bytes
+against the immutable manifest, and never rereads the mutable pathname. The
+publication manifest is LF-delimited, final-newline text with this exact field
+order:
+
+```text
+BEGIN TSDC-4AL-TERMINAL-PUBLICATION
+schema: tsdc-4al-terminal-publication/v2
+branch_ref: refs/heads/feat/135-target-surface-delta-convergence
+p_al: 40-lowercase-hex P_AL OID
+plan_path: docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md
+task_path: docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+plan_blob: 40-lowercase-hex P_AL Plan blob OID
+expected_task_blob: 40-lowercase-hex P_AL Task blob OID
+selected_terminal: B_AL|XP_AL
+terminal_subject: exact selected terminal subject
+new_task_blob: 40-lowercase-hex selected Task blob OID
+new_task_sha256: 64-lowercase-hex selected Task digest
+new_task_bytes: positive decimal selected Task byte count
+package_blob: 40-lowercase-hex package blob OID
+candidate_spec_assignment_blob: 40-lowercase-hex assignment blob OID
+candidate_qs_assignment_blob: 40-lowercase-hex assignment blob OID
+formal_spec_assignment_blob: 40-lowercase-hex assignment blob OID
+formal_qs_assignment_blob: 40-lowercase-hex assignment blob OID
+candidate_spec_review_blob: 40-lowercase-hex review blob OID
+candidate_qs_review_blob: 40-lowercase-hex review blob OID
+formal_spec_review_blob: 40-lowercase-hex review blob OID
+formal_qs_review_blob: 40-lowercase-hex review blob OID
+terminal_renderer_blob: 40-lowercase-hex renderer blob OID
+terminal_publisher_blob: 40-lowercase-hex publisher blob OID
+author_name: AI Agent
+author_email: agent@example.com
+author_epoch: positive decimal Unix epoch
+author_offset: +0900
+committer_name: AI Agent
+committer_email: agent@example.com
+committer_epoch: same exact author_epoch
+committer_offset: +0900
+END TSDC-4AL-TERMINAL-PUBLICATION
+```
+
+The publisher validates the manifest, v2 package, four assignment blobs, four
+review blobs, renderer and publisher identities, P_AL topology, repository and
+configuration, and the pinned candidate before mutation. The initial renderer
+captures `time.time_ns() // 1_000_000_000` exactly once, validates it as a
+positive decimal epoch, and embeds that same value in both manifest epoch
+fields. It is not a caller-provided environment or CLI input. The publisher
+parses that immutable manifest value, then its isolated bootstrap overrides
+`time.time_ns()` to return exactly `author_epoch * 1_000_000_000` before
+executing the package-bound renderer from a sealed immutable descriptor. The
+replay uses two distinct inherited empty output descriptors, the exact
+nine-key renderer environment, and the closed ordered renderer arguments. The
+replayed Task bytes, publication bytes, Git object IDs, SHA256 values, byte
+counts, and seven-line renderer stdout must exactly equal the supplied
+candidate and manifest. This deterministic replay is an authenticity boundary,
+not a later diagnostic. The publisher creates a private
+transaction directory in the linked-worktree Git directory, proves that it and
+the Task parent are on one filesystem, copies the current primary index, and
+prebuilds a candidate index/tree/raw commit that changes only the mode-`100644`
+Task entry while preserving the exact P_AL Plan blob. It refreshes the
+candidate index, proves the candidate and live primary index have ordinary
+non-masking flags, acquires one dedicated continuous `index.lock` guard, and
+uses a separate same-directory install inode for the candidate index.
+
+After acquiring the canonical primary-index lock, the publisher durably records
+`PREPARED`, prepares expected-old `update-ref` without committing it, persists
+`REF_PREPARED`, and reproves P_AL ref/index/Plan/Task/candidate identities. It
+then performs the
+only permitted worktree mutation with Linux `renameat2(..., RENAME_NOREPLACE)`:
+move the exact P_AL Task to owned `task.old`, fsync both parent directories and
+persist `TASK_DETACHED`; prove the displaced inode and bytes; move owned
+`task.new` to the Task path, fsync both directories, and persist
+`TASK_INSTALLED`. It never truncates a tracked file, never writes the Plan, and
+never overwrites an occupied or divergent Task pathname.
+
+Only after re-proving Task candidate, backup, Plan, candidate index, and current
+P_AL ref may it commit the expected-old ref transaction, persist
+`REF_ADVANCED`, install the candidate index, persist `INDEX_INSTALLED`, prove
+the exact Task-only terminal and clean status under ref/index guards, persist
+`COMPLETE`, and advance the exact journal to `OUTPUT_PENDING`. The publisher
+first establishes a collision-safe external completion receipt in the
+linked-worktree Git directory while the internal journal remains durable,
+file-fsyncs the receipt, and fsyncs the Git directory. Only then may it remove
+and fsync the internal journal, remove the empty transaction directory, and
+retain the external receipt as the durable cleanup witness. The exact duplicate
+journal-plus-receipt intermediate is valid only when both copies are
+byte-identical and rebind every immutable input, renderer replay result,
+selected terminal, raw commit/tree, installed index and flags, configuration,
+and live Plan/Task identity. The receipt bytes are the same closed journal with
+`phase: OUTPUT_PENDING`; it is removed only after a receipt-bound stateless
+terminal proof. A second strict zero-residue stateless proof follows receipt
+removal. A crash is
+classified from the observed ref/index/path/inode/hash tuple rather than the
+recorded phase alone. The read-only terminal classifier returns exactly one of
+`branch-unchanged`, `task-detached`, `task-installed-ref-pending`,
+`index-reconciliation-required`, `complete-removal-safe`, `ref-conflict`, or
+`foreign-drift`. It never restores, resumes, removes, or overwrites anything;
+every non-complete recovery mutation requires separate explicit approval.
+
+The terminal journal is an LF-delimited, final-newline envelope with
+`BEGIN TSDC-4AL-TERMINAL-TRANSACTION`, schema
+`tsdc-4al-terminal-transaction/v2`, these exact ordered keys, and
+`END TSDC-4AL-TERMINAL-TRANSACTION`:
+
+```text
+schema
+branch_ref
+p_al
+new_commit
+tree
+selected_terminal
+terminal_subject
+plan_path
+task_path
+plan_blob
+expected_task_blob
+new_task_blob
+new_task_sha256
+new_task_bytes
+manifest_blob
+manifest_sha256
+manifest_bytes
+package_blob
+candidate_spec_assignment_blob
+candidate_qs_assignment_blob
+formal_spec_assignment_blob
+formal_qs_assignment_blob
+candidate_spec_review_blob
+candidate_qs_review_blob
+formal_spec_review_blob
+formal_qs_review_blob
+terminal_renderer_blob
+terminal_renderer_sha256
+terminal_renderer_bytes
+terminal_publisher_blob
+renderer_replay_status
+renderer_task_blob
+renderer_task_sha256
+renderer_task_bytes
+renderer_publication_blob
+renderer_publication_sha256
+renderer_publication_bytes
+renderer_stdout_sha256
+renderer_stdout_bytes
+transaction_dir
+transaction_identity
+original_index_path
+original_index_sha256
+original_index_bytes
+original_index_identity
+primary_index_original_identity
+candidate_index_path
+candidate_index_sha256
+candidate_index_bytes
+candidate_index_identity
+install_index_path
+install_index_sha256
+install_index_bytes
+install_index_identity
+index_lock_path
+index_lock_identity
+index_flags_v_sha256
+index_flags_v_bytes
+index_flags_f_sha256
+index_flags_f_bytes
+branch_ref_lock_path
+branch_ref_lock_sha256
+branch_ref_lock_bytes
+branch_ref_lock_identity
+task_parent_path
+task_parent_identity
+plan_identity
+original_task_identity
+original_task_sha256
+original_task_bytes
+task_old_path
+task_new_path
+task_new_identity
+config_identity
+config_sha256
+config_bytes
+script_sha256
+author_epoch
+raw_commit_sha256
+raw_commit_bytes
+phase
+```
+
+`phase` is exactly one of `PREPARED`, `REF_PREPARED`, `TASK_DETACHED`,
+`TASK_INSTALLED`, `REF_ADVANCED`, `INDEX_INSTALLED`, `COMPLETE`, or
+`OUTPUT_PENDING`. The classifier accepts a `journal.next`, prepared branch-ref
+lock, or external completion receipt only through its own closed identity and
+phase-specific grammar. Missing or malformed terminal stdout is never authority
+to retry: the controller invokes the sealed publisher in `resolve-terminal`
+mode with the immutable publication-manifest blob. That stateless resolver
+returns exactly `B_AL`, `XP_AL`, `branch-unchanged`, or `foreign-drift`. The Git
+branch and proved zero-residue state are the durable receipt; stdout is only a
+notification.
+
+#### AL-1 — Freeze and prove the P_AL candidate
+
+**Files:** modify only the Plan and Task paths named above. No test, validator,
+controlled wrapper, pre-commit, runtime, remote, dependency, or Graphify command
+is authorized.
+
+- [ ] Start from clean S_AL and prove the exact branch, parent, subject
+  cardinalities, modes, and empty lock/residue state:
+
+```bash
+test "$(git rev-parse HEAD)" = eafdaf0433d9e600abbc9b8e2443bdd7b84a9868
+test "$(git rev-parse HEAD^)" = 2d2f49dfccb5fec282b2792fe0984d80327b4254
+test "$(git rev-list --count 2d2f49dfccb5fec282b2792fe0984d80327b4254..HEAD)" = 1
+test "$(git symbolic-ref -q HEAD)" = refs/heads/feat/135-target-surface-delta-convergence
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
+subjects="$(git log --all --format=%s)"
+test "$(awk '$0 == "docs(design): define atomic reviewed-blob successor" {n++} END {print n+0}' <<<"$subjects")" = 1
+test "$(awk '$0 == "docs(plan): define atomic reviewed-blob terminal proof" {n++} END {print n+0}' <<<"$subjects")" = 0
+test ! -e "$(git rev-parse --git-path index).lock"
+```
+
+- [ ] Update every `TSDC-AL-STATE` projection to P_AL current state: exact
+  D_AL/S_AL, P_AL subject-resolvable with self OID unasserted, all four reviews
+  not started, terminal none, and the exact prohibited-authority tuple.
+- [ ] Confirm the only changed paths and modes, then capture the candidate once:
+
+```bash
+test "$(git diff --name-only)" = $'docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md\ndocs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md'
+git diff --check
+test "$(git ls-files -s -- docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md | cut -d' ' -f1)" = 100644
+test "$(git ls-files -s -- docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md | cut -d' ' -f1)" = 100644
+```
+
+- [ ] Freeze the exact binary diff, Plan blob, Task blob, SHA256, byte counts,
+  and transaction script identity. Any subsequent byte change invalidates the
+  package and requires a new freeze from clean S_AL.
+
+#### AL-2 — Publish P_AL with reviewed-blob plumbing
+
+- [ ] Run static Bash syntax and ShellCheck only on the out-of-tree transaction
+  asset. These checks validate the transaction asset; they are not repository
+  validators, tests, or the QA wrapper.
+- [ ] Launch the exact reviewed transaction bytes from a sealed immutable file
+  descriptor. The transaction must implement the construction and concurrency
+  contract above and use the exact subject
+  `docs(plan): define atomic reviewed-blob terminal proof`.
+- [ ] Before CAS, prove the candidate tree differs from S_AL at exactly the two
+  allowed paths and that both entries equal the frozen reviewed blobs at mode
+  `100644`.
+- [ ] After CAS and index reconciliation, prove P_AL has sole parent S_AL,
+  distance one, exact raw commit bytes, exact tree/path/mode/blob set, clean
+  status, no index lock or transaction residue, one S_AL subject, one P_AL
+  subject, and zero B_AL/XP_AL subjects.
+- [ ] Keep P_AL's own Task evidence prospective and self-reference-free. The
+  controller handoff reports the resolved P_AL OID and transaction output
+  externally; the later selected terminal records those already-resolved facts.
+
+#### AL-3 — Build the immutable P_AL review package
+
+- [ ] Resolve P_AL by exact unique subject, then rebind its OID using exact
+  parent S_AL, distance one, raw object, tree, paths, modes, and blobs.
+- [ ] Create the exact deterministic LF-delimited v2 package shown above. It
+  contains D_AL, S_AL, P_AL, both checkpoint subjects, Plan/Task modes and blob
+  OIDs, raw commit and binary diff SHA256/bytes, all three reviewed runtime
+  asset identities, both terminal subjects, the ordered projection-anchor
+  digest, and the prohibited-authority tuple. The Plan/Task blobs bind the
+  historical freezes; the package does not duplicate a projection list or
+  historical-freeze fields.
+- [ ] Hash and materialize the manifest once as a Git blob. Every reviewer must
+  receive that manifest blob OID and retrieve its bytes through Git object
+  access.
+
+#### AL-4 — Run the candidate review pair
+
+- [ ] Assign `C_AL_SPEC` and `C_AL_QS` directly to two distinct new read-only
+  agents. Record their canonical identities and assignment source.
+- [ ] Require both to inspect the immutable manifest, P_AL objects, both
+  reviewed document blobs, every `TSDC-AL-STATE` projection, terminal selection
+  rules, failure/recovery states, and the closed-world prohibition.
+- [ ] Capture each exact report once with its required envelope and materialize
+  it as a Git blob. Do not remediate P_AL in place; any Critical, Important, or
+  Minor finding is an input to XP_AL.
+
+#### AL-5 — Run the formal review pair
+
+- [ ] Assign `F_AL_SPEC` and `F_AL_QS` directly to two new read-only agents whose
+  canonical identities differ from one another and both candidate reviewers.
+- [ ] Give both formal reviewers the immutable P_AL manifest and both candidate
+  report blob OIDs. Require independent verification rather than acceptance of
+  candidate conclusions by reference.
+- [ ] Capture and materialize each exact formal report once. Prove the four
+  identity records are pairwise distinct and every report rebinds the same
+  P_AL package before selecting a terminal.
+
+#### AL-6 — Produce exactly one terminal Task blob
+
+- [ ] Select B_AL only under the complete acceptance predicate above. Select
+  XP_AL only for a complete, hash-valid, parseable set that fails acceptance or
+  proves an identity collision. Missing or malformed evidence stops without a
+  terminal. Do not create a correction commit in the 4AL lineage.
+- [ ] Starting from the immutable P_AL Task blob, update the state block, Work
+  Breakdown, Planning Verification, Task Execution Evidence, Review Evidence,
+  Commit Ledger, Deferred/Blocked, Approval Evidence, Work Log, atomic
+  reviewed-blob Plan boundary, and final handoff in one candidate Task blob.
+- [ ] Embed all four immutable review envelopes and their OID/hash/byte metadata.
+  Add exactly one terminal Commit Ledger row and prove the alternative row is
+  absent. Keep the exact prohibited-authority tuple in every current projection.
+- [ ] Prove the terminal candidate differs from P_AL only at the Task path,
+  whose mode remains `100644`; prove the Plan blob is byte-identical to P_AL.
+- [ ] Write the exact Task candidate and
+  `tsdc-4al-terminal-publication/v2` manifest to their fixed private paths,
+  materialize each exactly once as a Git blob, and capture only this exact
+  seven-line stdout envelope:
+
+```text
+TSDC_4AL_TERMINAL=B_AL|XP_AL
+TSDC_4AL_TASK_SHA256=64-lowercase-hex digest
+TSDC_4AL_TASK_BYTES=positive decimal byte count
+TSDC_4AL_TASK_BLOB=40-lowercase-hex object OID
+TSDC_4AL_PUBLICATION_SHA256=64-lowercase-hex digest
+TSDC_4AL_PUBLICATION_BYTES=positive decimal byte count
+TSDC_4AL_PUBLICATION_BLOB=40-lowercase-hex object OID
+```
+
+The terminal updater uses this projection matrix as a closed allowlist:
+
+| Projection | P_AL value | B_AL value | XP_AL value |
+| --- | --- | --- | --- |
+| `TSDC-AL-STATE` | four reviews not started; terminal none | four accepted reports; B_AL selected; XP_AL absent | completed review set non-accepted; XP_AL selected; B_AL absent |
+| Work Breakdown | Plan current; reviews not started | accepted Plan terminal; implementation still blocked | exhausted Plan terminal; no correction |
+| Planning Verification | P_AL subject-resolvable; terminal absent | exact P_AL OID/package and B selection proof | exact P_AL OID/package and XP selection proof |
+| Task Execution Evidence | no repository test/validator/wrapper action | same; review evidence only | same; review evidence only |
+| Atomic reviewed-blob Plan boundary | P_AL current; reviews not started; terminal none | exact accepted review set and B_AL publication boundary | exact non-accepted review set and XP_AL exhaustion boundary |
+| Review Evidence | four named slots not started | four immutable accepted envelopes | four immutable envelopes and non-acceptance cause |
+| Commit Ledger | S_AL row plus P_AL row only | add exactly one B_AL row | add exactly one XP_AL row |
+| Deferred/Blocked | four reviews then one terminal | separate user decision required; closed-world tuple remains | exhausted; closed-world tuple remains |
+| Approval Evidence | 2026-08-02 P_AL/review/terminal-only approval | approval consumed only for B_AL evidence transaction | approval consumed only for XP_AL evidence transaction |
+| Work Log | P_AL Plan-writing entry | append B_AL review/transaction entry | append XP_AL review/transaction entry |
+| Final handoff | P_AL current; reviews not started | B_AL current; no implementation authority | XP_AL terminal; no correction/downstream authority |
+
+No other active Task row, paragraph, or status phrase may retain a prior P_AL
+state after the terminal transition.
+
+#### AL-7 — Publish and prove B_AL or XP_AL atomically
+
+- [ ] Launch the distinct reviewed terminal publisher from sealed immutable
+  bytes with the immutable publication-manifest blob and one pinned no-follow
+  candidate Task descriptor. Rebind the publisher/renderer/package/assignment/
+  review OIDs before any mutation.
+- [ ] Use P_AL as expected old ref and sole parent, preserve the immutable P_AL
+  Plan blob, and apply the exact Task-path no-replace CAS, extended journal,
+  primary-index/ref guards, raw-commit allowlist, and observed-state recovery
+  classifier defined above.
+- [ ] Prove exact topology `D_AL -> S_AL -> P_AL -> B_AL` or
+  `D_AL -> S_AL -> P_AL -> XP_AL`, exactly one terminal subject and row, the
+  other absent, Task-only diff, mode `100644`, clean status, and no residue.
+- [ ] Treat the four-line publisher stdout as notification only. If it is
+  missing, truncated, or not exact, run the same sealed publisher in
+  `resolve-terminal` mode and accept only its closed stateless result; never
+  retry publication from process status or output loss.
+
+```text
+TSDC_4AL_PUBLISHED=B_AL|XP_AL
+TSDC_4AL_COMMIT=40-lowercase-hex selected terminal OID
+TSDC_4AL_RECOVERY=none
+TSDC_4AL_RESOLVER=resolve-terminal
+```
+
+- [ ] Stop at the terminal handoff. B_AL still requires a separate explicit user
+  decision before any implementation successor; XP_AL is exhausted and grants
+  no correction or downstream authority.
+
+#### Failure and recovery matrix
+
+| Failure point | Required state | Retry rule |
+| --- | --- | --- |
+| Candidate freeze or static transaction review fails | ref/index unchanged; discard only owned temporary artifacts | no automatic retry; repair and refreeze under the same user-approved Plan-writing scope |
+| Pre-CAS identity, config, scope, raw-object, lock, or worktree proof fails before any Task-path mutation | ref/index/Task unchanged; user work preserved; exact owned P_AL state may be removed only after full unchanged-state proof | no automatic retry |
+| P_AL ref CAS conflicts before advancement | competing ref retained; proved-owned P_AL state removed only after unchanged-state proof | no automatic retry; new approval/rebase analysis required |
+| CAS succeeds but index reconciliation fails | new pre-proved commit retained; original index/user work preserved; `index-reconciliation-required` | explicit recovery approval required |
+| P_AL process or power loss from durable PREPARED through INDEX_INSTALLED and lock/residue cleanup | startup refuses a new transaction; the four-state P_AL classifier reports one observed state | no automatic mutation; explicit recovery approval required unless state is proved `complete-removal-safe` |
+| Terminal process or power loss from durable PREPARED through REF_PREPARED, TASK_DETACHED, TASK_INSTALLED, REF_ADVANCED, INDEX_INSTALLED, COMPLETE, OUTPUT_PENDING, destination-first receipt durability, duplicate journal/receipt, and stateless cleanup | journal/external-receipt classifier applies while durable residue exists; otherwise the exact canonical terminal branch is the durable receipt and the stateless resolver proves the terminal or returns `foreign-drift` | no retry from missing stdout or process status; explicit recovery approval unless exact zero-residue terminal state is proved |
+| Review evidence missing, malformed, or mutable | no terminal commit | correct evidence collection only; never infer acceptance |
+| Complete, hash-valid, parseable evidence proves a reviewer identity collision | XP_AL is the sole eligible terminal | no correction in 4AL; never infer acceptance |
+| Any complete review is non-accepted | XP_AL is the sole eligible terminal | no correction in 4AL |
+| Terminal pre-publication proof fails | P_AL ref/index/Task remain current | no automatic retry |
+| Terminal Task detached before ref CAS | P_AL ref/index retained; exact old/new Task artifacts retained; classifier returns `task-detached` | explicit no-replace resume or rollback approval required |
+| Terminal Task installed before ref CAS | P_AL ref/index retained; new Task and exact old backup retained; classifier returns `task-installed-ref-pending` | explicit resume or uncontested no-replace rollback approval required |
+| Terminal ref advances before index install | selected terminal ref and Task retained; old index plus owned candidate lock retained; classifier returns `index-reconciliation-required` | explicit roll-forward index approval required |
+| Terminal prepared ref conflicts or live ref differs from P_AL and the pre-proved terminal | unlike pre-advance P_AL CAS cleanup, all terminal Task/index/journal/ref-lock artifacts are retained; classifier returns `ref-conflict` | no mutation; new analysis and approval required |
+| Terminal path, inode, hash, Plan, index, lock, or manifest differs | all artifacts retained; classifier returns `foreign-drift` | no mutation; new analysis and approval required |
+
+#### P_AL completion boundary
+
+P_AL is complete only when its exact subject resolves uniquely to a one-commit
+successor of S_AL, its tree contains only the two reviewed mode-`100644` blobs,
+the branch and index reconcile cleanly, every current Task projection agrees
+that the four reviews are not started and no terminal exists, and the exact
+prohibited-authority tuple remains in force. P_AL completion authorizes only
+the four reviews and exactly one Task-only terminal transaction described
+above; it does not authorize implementation or any other blocked action.
 
 ## Verification Plan
 
@@ -16033,14 +16743,14 @@ is not applicable because neither surface is mutated.
   XE_AH were not created.
 - 4AI is rejected/exhausted historical evidence only; it grants no current
   authority. The rejected 4AK draft is historical only and was reversed to
-  clean D_AL. The current written-design checkpoint is S_AL, resolved only by
-  its exact unique subject. P_AL is not created and remains blocked pending
-  user review and the later `superpowers:writing-plans` phase.
-- The prospective terminal topology is exactly `P_AL -> B_AL|XP_AL`; it does
-  not create either terminal now. Implementation, E_AL, R_AL, XE_AL, Task 4.5,
-  Wave C, Tasks 5–6, runtime, remote/external actions,
-  QA-wrapper/pre-commit execution, dependency changes, and Graphify update are
-  blocked/no authority.
+  clean D_AL. S_AL is exact commit
+  `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`; after the approved P_AL
+  publication succeeds, P_AL is resolved only by exact unique subject
+  `docs(plan): define atomic reviewed-blob terminal proof`, with its self OID
+  intentionally unasserted in its own tree.
+- The next topology is exactly `P_AL -> B_AL|XP_AL`; four pairwise-distinct
+  candidate/formal reviews are not started and neither terminal exists now.
+  implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
