@@ -113,13 +113,29 @@ historical only and grant no current tests, validators, wrapper/proof,
 revalidation, implementation, E_AI, R_AI, Wave C, runtime, remote, dependency,
 secret, direct pre-commit, controlled-wrapper, or Graphify-update authority.
 
-T-TSDC-004R-4AL is the approved executable Plan from D_AL
+T-TSDC-004R-4AL was the approved executable Plan from D_AL
 `2d2f49dfccb5fec282b2792fe0984d80327b4254` through exact S_AL
 `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`. P_AL resolves only by exact unique
 subject `docs(plan): define atomic reviewed-blob terminal proof`; its OID is
 intentionally not self-asserted in its own tree. Four pairwise-distinct
 candidate/formal reviewers and exactly one future Task-only B_AL or XP_AL are
-the only next authority. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+the only authority P_AL originally granted. implementation, E_AL, R_AL, XE_AL,
+Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+QA-wrapper/pre-commit execution, dependency changes, and Graphify update were
+blocked/no authority under 4AL.
+
+T-TSDC-004R-4AL later failed closed at terminal pre-publication proof. The
+four immutable review reports selected XP_AL, but the frozen renderer omitted
+two active asset-freeze projections and left current-transaction-not-run text
+in its candidate Task. No publisher ran and no B_AL/XP_AL commit exists. On
+2026-08-02 the user approved a new T-TSDC-004R-4AM correction design from exact
+P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`. S_AM may draft the
+projection-complete successor design, and future P_AM may freeze concrete
+Plan/Task and asset identities. This approval does not authorize 4AL retry or
+correction,
+implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C,
+Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution,
+dependency changes, or Graphify update.
 
 ## Global Constraints
 
@@ -15852,15 +15868,18 @@ git commit -m "docs(task): close target surface delta convergence"
 
 ### T-TSDC-004R-4AL — Atomic reviewed-blob terminal proof
 
-This is the executable Plan checkpoint for the bounded documentation-only
-lineage `D_AL -> S_AL -> P_AL -> B_AL|XP_AL`. D_AL is
+This section is preserved as the historical 4AL design and P_AL review package
+contract for the bounded documentation-only lineage
+`D_AL -> S_AL -> P_AL -> B_AL|XP_AL`. D_AL is
 `2d2f49dfccb5fec282b2792fe0984d80327b4254`. S_AL is
 `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`, has the exact unique subject
 `docs(design): define atomic reviewed-blob successor`, and is the sole parent
 of P_AL. P_AL has the exact subject
-`docs(plan): define atomic reviewed-blob terminal proof`; its own OID cannot be
-self-asserted in its tree and must be resolved after publication by exact
-subject, parent, distance, tree, paths, modes, and blob proof.
+`docs(plan): define atomic reviewed-blob terminal proof`; its own OID could not
+be self-asserted in its tree and had to be resolved after publication by exact
+subject, parent, distance, tree, paths, modes, and blob proof. The current
+correction authority is the 4AM section below; AL steps are no longer executable
+current instructions.
 
 The two mutually exclusive terminal subjects are
 `docs(task): record atomic reviewed-blob terminal plan reviews` for B_AL and
@@ -15873,12 +15892,13 @@ identity collision. Missing, truncated, hash-invalid, or schema-malformed
 evidence stops without a terminal. Neither terminal grants implementation
 authority by itself.
 
-The Task ledger has one current owner, `TSDC-AL-STATE`. Its state block,
-Approval Evidence, Work Breakdown, Work Log, Planning Verification, Task
-Execution Evidence, atomic reviewed-blob Plan boundary, Review Evidence,
-Commit Ledger, Deferred and Blocked Items, and final handoff are the exact
-eleven projections of one tuple. A state transition is invalid unless one
-candidate Task blob updates every projection together.
+At the time P_AL was current, the Task ledger owner was `TSDC-AL-STATE`. Its
+state block, Approval Evidence, Work Breakdown, Work Log, Planning Verification,
+Task Execution Evidence, atomic reviewed-blob Plan boundary, Review Evidence,
+Commit Ledger, Deferred and Blocked Items, and final handoff were intended as
+the exact eleven projections of one tuple. 4AL failed because that inventory was
+not complete enough for terminal publication; 4AM replaces it with a
+full-document discovery and bijective inventory requirement.
 
 #### Authority and exact file map
 
@@ -16447,6 +16467,13 @@ returns exactly `B_AL`, `XP_AL`, `branch-unchanged`, or `foreign-drift`. The Git
 branch and proved zero-residue state are the durable receipt; stdout is only a
 notification.
 
+The following AL-1 through AL-7 steps are preserved as immutable historical
+4AL execution design. They no longer grant current execution authority after
+the P_AL review set selected XP_AL and terminal pre-publication proof failed
+closed. Any remaining `P_AL current`, `reviews not started`, or `terminal none`
+phrases in AL-1 through AL-7 describe the old P_AL pre-review state only; 4AM
+must not treat them as current authority.
+
 #### AL-1 — Freeze and prove the P_AL candidate
 
 **Files:** modify only the Plan and Task paths named above. No test, validator,
@@ -16639,15 +16666,171 @@ TSDC_4AL_RESOLVER=resolve-terminal
 | Terminal prepared ref conflicts or live ref differs from P_AL and the pre-proved terminal | unlike pre-advance P_AL CAS cleanup, all terminal Task/index/journal/ref-lock artifacts are retained; classifier returns `ref-conflict` | no mutation; new analysis and approval required |
 | Terminal path, inode, hash, Plan, index, lock, or manifest differs | all artifacts retained; classifier returns `foreign-drift` | no mutation; new analysis and approval required |
 
-#### P_AL completion boundary
+#### P_AL completed and exhausted boundary
 
-P_AL is complete only when its exact subject resolves uniquely to a one-commit
-successor of S_AL, its tree contains only the two reviewed mode-`100644` blobs,
-the branch and index reconcile cleanly, every current Task projection agrees
-that the four reviews are not started and no terminal exists, and the exact
-prohibited-authority tuple remains in force. P_AL completion authorizes only
-the four reviews and exactly one Task-only terminal transaction described
-above; it does not authorize implementation or any other blocked action.
+P_AL is exact commit `fb05e296b6a791f850cf64d99c7dc17577bb7cfc` and remains
+the immutable D_AM predecessor. Its four completed reviews selected XP_AL, but
+terminal pre-publication proof rejected the only rendered candidate before the
+publisher ran. No B_AL/XP_AL commit exists, and 4AL has no retry or correction
+authority. The new 4AM lineage must use fresh subjects, assets, review evidence,
+and terminal identities.
+
+### T-TSDC-004R-4AM — Projection-complete terminal correction design
+
+4AM is the approved correction successor for the failed 4AL terminal
+pre-publication proof. It starts from exact D_AM/P_AL
+`fb05e296b6a791f850cf64d99c7dc17577bb7cfc` and must not retry, mutate, or
+reinterpret the 4AL lineage. 4AL remains historical evidence: its package and
+four reports selected XP_AL, but the single frozen renderer attempt retained
+prior P_AL phrases in active Task projections, so no B_AL or XP_AL commit was
+published.
+
+The 4AM lineage is `D_AM -> S_AM -> P_AM -> B_AM|XP_AM`. S_AM is this
+design-only correction checkpoint with exact subject
+`docs(design): define projection-complete terminal successor`. P_AM is a future
+Plan+Task checkpoint with exact subject
+`docs(plan): define projection-complete terminal correction proof`. B_AM and
+XP_AM are future mutually exclusive Task-only terminals. B_AM is selected only
+when the new 4AM package, projection inventory, asset reviews, and four
+P_AM-object reviews are all accepted. XP_AM is selected for a complete
+non-accepted review set. Missing, malformed, mutable, or incomplete evidence
+stops before terminal construction.
+
+#### AM authority and non-reuse boundary
+
+- S_AM may modify only this Plan and its paired Task, both mode `100644`.
+- P_AM may modify only this Plan and its paired Task, both mode `100644`, and
+  may freeze out-of-tree 4AM assets as reviewed evidence.
+- B_AM or XP_AM may modify only the Task path as mode `100644`; the Plan blob
+  must equal P_AM exactly.
+- The old 4AL publisher, renderer, package builder, transaction, and anchor
+  assets are not reusable execution authority. A 4AM asset may copy reviewed
+  primitives only by creating a new byte identity, rebinding it into the P_AM
+  package, and receiving fresh 4AM-specific specification and quality/security
+  reviews.
+- The 4AM terminal publisher must be newly rebound. The 4AL publisher was
+  reviewed against 4AL manifest fields, fixed paths, renderer output, and
+  projection assumptions; using it for 4AM would bypass the correction that
+  makes projection completeness an explicit input.
+- implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C,
+  Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution,
+  dependency changes, 4AL retry/correction, and Graphify update are blocked/no
+  authority.
+
+#### Closed-world projection inventory
+
+P_AM must introduce a reviewed `TSDC-4AM-PROJECTION-INVENTORY` blob. The
+inventory is a deterministic LF-delimited file, materialized as a Git blob and
+bound by SHA256, byte count, and blob OID in the P_AM review package. It is not
+an informal checklist. It must enumerate every active Task projection row,
+paragraph, and status phrase that can mention the current checkpoint,
+transaction state, review state, asset state, terminal selection, or prohibited
+authority tuple.
+
+Each inventory row must include:
+
+- stable projection key;
+- exact Markdown anchor or table name;
+- exact selector for the source row or paragraph;
+- expected D_AM/S_AM/P_AM value;
+- expected B_AM value;
+- expected XP_AM value;
+- historical exception policy, limited to named 4AI/4AK/4AL history rows;
+- stale-phrase denylist for that projection.
+
+The inventory count is derived from the exact P_AM Task blob; it is never a
+hand-maintained constant. At minimum, discovery must consider the approval
+evidence, current-state marker, Work Breakdown, Work Log, Planning
+Verification, Task Execution Evidence, 4AL and 4AM boundary sections, review
+artifact insertion point, Review Evidence, whole-branch row, Commit Ledger,
+Deferred/Blocked row, and final handoff. The builder must scan the entire Task
+for 4AM namespace and current-state tokens, then prove a bijection: every
+discovered active occurrence belongs to exactly one inventory row and every
+inventory row matches exactly one active fragment. Uncovered, multiply covered,
+or orphaned entries fail before a package or terminal manifest is emitted.
+
+The projection denylist must include at least the phrases that caused 4AL to
+fail: `current transaction execution remains not-run` and
+`current transaction not run`. P_AM must also deny prior-current statements such
+as `four P_AL reviews are not started`, `terminal none`, and `B_AL/XP_AL absent`
+outside rows explicitly classified as historical 4AL evidence. A terminal
+candidate is invalid if any inventory selector is missing, duplicated,
+ambiguous, or leaves an undeclared prior-state phrase in an active projection.
+
+The renderer must consume the inventory blob and build the terminal candidate
+from the immutable P_AM Task blob. It may not rely on ad hoc string replacement,
+a fixed row count, or a section-heading checklist alone. Rendering fails closed
+unless every
+inventory row is matched exactly once, every expected transition is applied,
+the historical-exception rows remain intentionally historical, and a final
+full-document stale-phrase scan proves no undeclared P_AM-prior state remains.
+The renderer must emit preimage and candidate projection reports, each
+materialized as a Git blob, with input and output line numbers, selector
+SHA256, output SHA256, and stale-phrase counts for every AM-Pxx row. The
+publisher must rebind those report blobs before any mutation.
+
+#### 4AM package and review contract
+
+The 4AM immutable package must bind:
+
+- exact D_AM/P_AL and S_AM/P_AM subjects;
+- P_AM OID resolved externally after publication by parent, subject, distance,
+  raw commit, tree, path, mode, and blob proof;
+- Plan and Task blob OIDs at mode `100644`;
+- raw commit SHA256/bytes and binary `S_AM..P_AM` diff SHA256/bytes;
+- fresh 4AM package-builder, renderer, terminal-publisher, and projection
+  inventory identities;
+- a separate terminal publication manifest schema version;
+- the prohibited-authority tuple above.
+
+The P_AM transaction must close the 4AL fsmonitor finding by proving both
+`git ls-files -v` and `git ls-files -f` ordinary-entry views over the candidate
+index and primary index. The proof must fail if fsmonitor-valid entries,
+skip-worktree, assume-unchanged, intent-to-add, unmerged, sparse, or other
+non-ordinary flags can make the candidate appear clean without being ordinary.
+
+Exactly four fresh read-only 4AM review slots inspect the same immutable P_AM
+package: `C_AM_SPEC`, `C_AM_QS`, `F_AM_SPEC`, and `F_AM_QS`. Their canonical
+orchestrator-assigned identities must be pairwise distinct and must also differ
+from the completed 4AL reviewer identities. Candidate reviews consume only the
+P_AM package. Formal reviews consume the P_AM package plus both candidate
+review blobs. Any reviewer-created edit or commit invalidates that review as
+independence evidence.
+
+#### 4AM terminal gates and recovery
+
+Before terminal publication, the controller must prove the rendered candidate:
+
+1. differs from P_AM only at the Task path;
+2. preserves the P_AM Plan blob byte-for-byte;
+3. updates every projection inventory row exactly once;
+4. embeds all four immutable 4AM review envelopes and blob/hash/byte metadata;
+5. contains exactly one B_AM or XP_AM Commit Ledger row and excludes the
+   alternative subject and row;
+6. has no undeclared stale P_AM, P_AL, B_AL, XP_AL, or 4AL-current phrases in
+   active state surfaces;
+7. keeps historical 4AI/4AK/4AL evidence as history rather than current
+   authority.
+
+The terminal publisher must use a fresh 4AM publication-manifest blob and a
+pinned no-follow descriptor for the rendered Task candidate. It must perform a
+Task-path no-replace CAS before the ref update, preserve the displaced exact
+P_AM Task bytes, hold the primary index guard through Task install, ref CAS,
+and index installation, and classify recovery from observed ref/index/path/
+inode/hash tuples. The allowed classifier results are
+`branch-unchanged`, `task-detached`, `task-installed-ref-pending`,
+`index-reconciliation-required`, `complete-removal-safe`, `ref-conflict`, and
+`foreign-drift`. Missing stdout, malformed stdout, power loss, or process loss
+never authorizes a retry by itself; only a stateless resolver over the durable
+Git state and receipt artifacts may prove the terminal.
+
+#### AM design acceptance boundary
+
+S_AM is sufficient only to authorize drafting P_AM and fresh 4AM assets. It
+does not authorize running the assets, publishing P_AM, assigning 4AM reviewers,
+creating B_AM/XP_AM, running validators/tests/wrappers/pre-commit, updating
+Graphify, or performing runtime/remote actions. P_AM must restate this boundary
+with concrete asset identities before any executable step.
 
 ## Verification Plan
 
@@ -16743,14 +16926,17 @@ is not applicable because neither surface is mutated.
   XE_AH were not created.
 - 4AI is rejected/exhausted historical evidence only; it grants no current
   authority. The rejected 4AK draft is historical only and was reversed to
-  clean D_AL. S_AL is exact commit
-  `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`; after the approved P_AL
-  publication succeeds, P_AL is resolved only by exact unique subject
-  `docs(plan): define atomic reviewed-blob terminal proof`, with its self OID
-  intentionally unasserted in its own tree.
-- The next topology is exactly `P_AL -> B_AL|XP_AL`; four pairwise-distinct
-  candidate/formal reviews are not started and neither terminal exists now.
-  implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+  clean D_AL. 4AL reached exact P_AL
+  `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`, then failed closed at terminal
+  pre-publication proof after its immutable review set selected XP_AL. No 4AL
+  publisher ran and no B_AL/XP_AL commit exists.
+- The current correction topology is `D_AM/P_AL -> S_AM -> P_AM -> B_AM|XP_AM`.
+  S_AM is this design-only checkpoint. P_AM, the four pairwise-distinct 4AM
+  candidate/formal reviews, and both mutually exclusive terminal alternatives
+  do not exist now. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task
+  4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+  QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction,
+  and Graphify update are blocked/no authority.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact

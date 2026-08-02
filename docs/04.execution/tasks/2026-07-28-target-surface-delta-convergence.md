@@ -263,20 +263,17 @@ read-only observation only.
   slots. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
 - The first P_AL publication attempt used the then-reviewed transaction once
   and failed closed at its configuration contract before object creation,
-  transaction-directory creation, or ref/index/worktree mutation. On
-  2026-08-02 the user approved continuation from that unchanged S_AL state.
-  The retry is limited to the corrected current transaction after every
-  downstream identity is rebound and the exact final documents, launcher,
-  package, and transaction receive their required read-only reviews. The
-  superseded attempt grants no terminal or downstream authority.
-- 4AI is now immutable historical evidence only. T-TSDC-004R-4AL starts from
-  D_AL `2d2f49dfccb5fec282b2792fe0984d80327b4254`; S_AL is exact commit
-  `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868` with unique subject
-  `docs(design): define atomic reviewed-blob successor`. The current P_AL is
-  resolvable only by exact unique subject `docs(plan): define atomic
-  reviewed-blob terminal proof`; its OID is intentionally not self-asserted in
-  its own tree. Four pairwise-distinct candidate/formal reviews are not started
-  and no B_AL/XP_AL terminal exists. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+  transaction-directory creation, or ref/index/worktree mutation. The approved
+  continuation produced exact P_AL
+  `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`; the superseded attempt remains
+  historical and grants no terminal or downstream authority.
+- 4AI is immutable historical evidence only. T-TSDC-004R-4AL reached exact
+  P_AL from D_AL `2d2f49dfccb5fec282b2792fe0984d80327b4254` through S_AL
+  `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`. Four immutable reviews selected
+  XP_AL, but terminal pre-publication proof rejected candidate blob
+  `85d1a2769fff6d75f12f0dbdb334fc26f86a06f0`; the publisher did not run and
+  no B_AL/XP_AL commit exists. The user approved a fresh 4AM design successor,
+  not a 4AL retry or correction.
 - The candidate package
   `c4c2a90bd15c85722a2ec1ca0c0ccdf22eb279647069f5b4336fe632b2c140a0` is
   rejected historical review evidence, not current acceptance: independent
@@ -289,16 +286,16 @@ Rollback is one logical task commit at a time after exact-range review. It
 never uses `git reset --hard`, discards unrelated user changes, or attempts a
 remote/runtime rollback for surfaces this wave does not mutate.
 
-<!-- TSDC-AL-STATE BEGIN -->
-Current owner: `TSDC-AL-STATE`.
+<!-- TSDC-AM-STATE BEGIN -->
+Current owner: `TSDC-AM-STATE`.
 
 - Origin: D_AL `2d2f49dfccb5fec282b2792fe0984d80327b4254`.
 - Design checkpoint S_AL:
   `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`, exact unique subject
   `docs(design): define atomic reviewed-blob successor`.
-- Executable Plan checkpoint P_AL: current; resolvable only by exact unique
-  subject `docs(plan): define atomic reviewed-blob terminal proof`; its OID is
-  intentionally not self-asserted in this tree.
+- Executable Plan checkpoint P_AL:
+  `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`, exact unique subject
+  `docs(plan): define atomic reviewed-blob terminal proof`.
 - Frozen Plan asset SHA256/blob pairs: P_AL transaction
   `752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f`/
   `e26e6f02be09bf67c56cc16840b03f289ea553aa`; package builder
@@ -314,17 +311,34 @@ Current owner: `TSDC-AL-STATE`.
   current assets have not executed. One superseded transaction identity ran
   once and failed closed at the configuration contract before any repository
   mutation or success output.
-- Candidate/formal review slots `C_AL_SPEC`, `C_AL_QS`, `F_AL_SPEC`, and
-  `F_AL_QS`: not started; their orchestrator-assigned canonical identities must
-  be pairwise distinct. Terminal: none; B_AL and XP_AL are mutually exclusive
-  future alternatives and no terminal ledger row exists.
-- Prohibited authority: implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+- 4AL immutable review package:
+  `916f724d0ff1575cc4f7f2c00475a023d4e2542d`. `C_AL_SPEC`
+  `bc9407bbd2d9e83445bbef5612219b95224daf87` passed, while `C_AL_QS`
+  `4ae8867efe614e7cc82e2b9cc0fb962b5ff8e0d1`, `F_AL_SPEC`
+  `6042441c495794ae9657e53a1fba1109e8b0bb86`, and `F_AL_QS`
+  `8c62f4d89c421b84bda1361129e503fea6c21e75` were non-accepted, selecting
+  XP_AL.
+- 4AL terminal pre-publication proof failed closed because rendered candidate
+  blob `85d1a2769fff6d75f12f0dbdb334fc26f86a06f0` retained stale active
+  asset-freeze projections. The publisher was not executed and no B_AL/XP_AL
+  commit exists.
+- 4AM design: approved on 2026-08-02 from exact D_AM/P_AL
+  `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`. S_AM is current by exact unique
+  subject `docs(design): define projection-complete terminal successor`; its
+  OID is intentionally not self-asserted in its own tree. P_AM is not created.
+  A future Plan+Task checkpoint must freeze fresh 4AM package-builder, renderer,
+  terminal-publisher, and closed-world projection-inventory identities before
+  any executable step.
+- Prohibited authority: implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM,
+  Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+  QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction,
+  and Graphify update are blocked/no authority.
 - 4AI and rejected 4AK are immutable historical evidence only. 4AK's frozen
   draft SHA256 is `b746147f3f40039c801d5e97f1448575e096012f158f7dc313b4b54733f4bf47`;
   formal `C0/I5/M0; SPEC_COMPLIANCE NO; DRAFT_READY NO`; quality/security
   `C0/I6/M0; QUALITY_SECURITY FAIL; DRAFT_READY NO`; no P_AK/B_AK/XP_AK was
   created and the rejected diff was exactly reversed to clean D_AL.
-<!-- TSDC-AL-STATE END -->
+<!-- TSDC-AM-STATE END -->
 
 ## Work Breakdown
 
@@ -333,13 +347,14 @@ Current owner: `TSDC-AL-STATE`.
 | T-TSDC-001 | Establish successor manifest and whole-surface contract | contract/data | TSDC-001–003, 007, 009 | delta contract tests and advisory checker | fresh Task 1 implementation agent | completed |
 | T-TSDC-002 | Converge README, typed example, archive, and secret inventory | docs/governance | TSDC-003–009 | metadata, target, links, alignment | Task 2 documentation-surface implementation agent | completed |
 | T-TSDC-003 | Reconcile static versions and verified active lifecycle drift | infra-support/docs | TSDC-003, 008–009 | version, hardening, supply-chain checks | Task 3 static-version implementation agent | completed |
-| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active; implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
+| T-TSDC-004 | Cut over workflow and QA ownership to typed gates | CI/security | TSDC-010–014 | gate contract, runner, exact projection, workflow, and CI script tests | fresh Task 4.1 implementation agent; original agents remain historical | active; implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
 | T-TSDC-004R-4AG | Record status-based silent-success proof without changing frozen product behavior | Plan/evidence | TSDC-010–014 | completed fresh Plan reviews; no downstream validation | controller and fresh independent reviewers | rejected/exhausted at Plan review; P_AG committed and XP_AG resolved by its exact unique subject; no tests, revalidation, or implementation |
 | T-TSDC-004R-4AH | Define collision-safe byte classification and truthful disposition proof without changing frozen implementation | Plan/evidence | TSDC-010–014 | completed rejected Plan reviews only; no downstream validation | controller and fresh independent reviewers | rejected/exhausted at Plan review; XP_AH resolved by its exact unique subject; B_AH/E_AH/R_AH/XE_AH not created; no downstream authority |
 | T-TSDC-004R-4AI | Bind wrapper execution, sanitized evidence mutation, and E_AI commit in one fail-fast session without changing frozen implementation | Plan/evidence | TSDC-010–014 | completed rejected formal Plan reviews over exact `D_AI..P_AI`; no downstream validation | controller and fresh independent reviewers | rejected/exhausted at Plan review; XP_AI resolved by its exact unique subject; B_AI/E_AI/R_AI/XE_AI not created; no downstream authority |
-| T-TSDC-004R-4AL | Execute atomic reviewed-blob terminal Plan | Plan/evidence | TSDC-010–014 | immutable Git-object proof only; no repository validator/test/wrapper | controller; `C_AL_SPEC`, `C_AL_QS`, `F_AL_SPEC`, and `F_AL_QS` must be pairwise-distinct orchestrator-assigned identities | S_AL `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`; P_AL current and subject-resolvable with self OID unasserted; five current out-of-tree Plan assets frozen and statically reviewed C0/I0/M0; one superseded transaction attempt failed closed before mutation and the corrected current transaction is not run; four P_AL reviews not started; terminal none; implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after a separately approved future successor and Wave C completion | implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
+| T-TSDC-004R-4AL | Execute atomic reviewed-blob terminal Plan | Plan/evidence | TSDC-010–014 | immutable Git-object proof only; no repository validator/test/wrapper | controller; `C_AL_SPEC`, `C_AL_QS`, `F_AL_SPEC`, and `F_AL_QS` pairwise-distinct identities | rejected/fail-closed; exact P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc` and package `916f724d0ff1575cc4f7f2c00475a023d4e2542d` selected XP_AL, but renderer candidate blob `85d1a2769fff6d75f12f0dbdb334fc26f86a06f0` failed terminal pre-publication proof by retaining stale active asset-freeze projections; no publisher ran and no B_AL/XP_AL commit exists. |
+| T-TSDC-004R-4AM | Define projection-complete terminal successor | Plan/evidence | TSDC-010–014 | closed-world projection inventory only; no repository validator/test/wrapper | controller plus future four pairwise-distinct read-only P_AM reviewers | S_AM current by exact unique subject with self OID unasserted; P_AM not created. S_AM defines fresh 4AM assets, full-document discovery plus bijective inventory coverage, stale-phrase proof, and corrected renderer/package/publisher evidence requirements. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
+| T-TSDC-005 | Reconcile canonical audit and remote observation evidence | evidence/docs | TSDC-015–016 | audit semantic, generators, links | fresh implementer after a separately approved future successor and Wave C completion | implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
+| T-TSDC-006 | Promote blocking enforcement and close reviews | closure/QA | TSDC-001–017 | final ladder and whole-branch reviews | fresh closure implementer after Tasks 1–5 | implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
 
 Tasks are serial at their commit/review boundaries. A task may not advance
 until its implementation is committed, the Task ledger is current, and a
@@ -532,9 +547,11 @@ have no unresolved Critical or Important findings.
 | 2026-08-01 | T-TSDC-004R-4AI revalidation transaction | Controller | Not run; blocked by Plan-review exhaustion. B_AI is mutually excluded; no approval is consumed; sanitized result remains not-run; E_AI is not created. |
 | 2026-08-01 | T-TSDC-004R-4AI composite terminal | Controller | Not run; blocked by Plan-review exhaustion. E_AI, R_AI, and XE_AI are not created; no Task 4.5 or Wave C authority exists. |
 | 2026-08-01 | T-TSDC-004R-4AL written design | Controller | S_AL is exact commit `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`, sole child of D_AL `2d2f49dfccb5fec282b2792fe0984d80327b4254`, with exact unique subject `docs(design): define atomic reviewed-blob successor`. 4AI and rejected 4AK remain historical only. |
-| 2026-08-02 | T-TSDC-004R-4AL executable Plan approval | User / Controller | The user approved the S_AL design and `superpowers:writing-plans` phase. P_AL is current and resolvable only by exact unique subject `docs(plan): define atomic reviewed-blob terminal proof`, with self OID intentionally unasserted in its own tree. `C_AL_SPEC`, `C_AL_QS`, `F_AL_SPEC`, and `F_AL_QS` are not started; terminal none. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
+| 2026-08-02 | T-TSDC-004R-4AL executable Plan approval | User / Controller | The user approved the S_AL design and `superpowers:writing-plans` phase. At approval time P_AL was prospective/current by exact unique subject `docs(plan): define atomic reviewed-blob terminal proof`, the four review slots were not started, and no terminal existed. Later 4AL evidence selected XP_AL but failed pre-publication proof before publisher execution. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
 | 2026-08-02 | T-TSDC-004R-4AL reviewed Plan assets | Controller plus independent read-only asset reviewers | Current frozen P_AL transaction `752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f`, package builder `3aac58ddeae93f06d39bd28351d1e63a6134ab30967b8b9ab82325cf69a78f8a`, renderer `df6a57db6814b34f3969774331522eeeca544d8f75581fd1a362d47fe6ee4598`, publisher `e6841b0d7627bbd97b0e2b9b9ca7b486cd4964f1467dcf68ea9531d473559b83`, and anchors `4dbee6d432d9f3a2cc704881867d7db7b42595846c96f3a413f392475fde114b`. Final transaction, package, renderer, and publisher contract/security reviews are C0/I0/M0; the publisher's earlier receipt-power-loss finding was closed by destination-first same-inode receipt durability. These are static Plan-asset reviews, not `C_AL_*` or `F_AL_*`. |
 | 2026-08-02 | T-TSDC-004R-4AL first P_AL publication attempt | Controller | The reviewed sealed launcher invoked superseded transaction `5c0c0a1bf9e84e2879638777c15365ac4160c8fe5e952aeaf6db37a2f50e9be5` once. It failed closed at `configuration contract` before object creation, transaction-directory creation, ref/index/worktree mutation, or success output because Git reports unsupported `core.fsync*` values as warnings with exit zero. HEAD remained exact S_AL, the index and two reviewed files remained unchanged, no lock/residue existed, and root `main` remained clean. The corrected current asset captures and validates the exact C-locale warnings and was independently re-reviewed. No repository test, validator, wrapper, pre-commit, runtime, remote action, or Graphify update ran. |
+| 2026-08-02 | T-TSDC-004R-4AL immutable reviews and failed terminal candidate | Controller plus four read-only reviewers | Exact P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`, package `916f724d0ff1575cc4f7f2c00475a023d4e2542d`, and four immutable review blobs selected XP_AL. Candidate blob `85d1a2769fff6d75f12f0dbdb334fc26f86a06f0` failed terminal pre-publication proof because active lines equivalent to P_AL Task lines 556 and 2206 retained current-transaction-not-run state. Publisher execution, terminal commit, implementation, QA wrapper, pre-commit, runtime, remote action, and Graphify update did not run. |
+| 2026-08-02 | T-TSDC-004R-4AM correction design approval | User / Controller | The user approved a fresh successor design from exact P_AL after 4AL failed closed. 4AM must bind the two missed asset-freeze rows, discover every active current-state occurrence in the full Task, prove bijective coverage by a typed projection inventory, and fail before package/manifest/publisher creation when any occurrence is uncovered, multiply covered, orphaned, or retains an undeclared prior-state phrase. |
 | 2026-08-01 | T-TSDC-004R-4AL candidate-package review | `/root/task4al_design_spec_review`, preliminary-design-specification-reviewer, assigned directly by `/root`; `/root/task4al_design_quality_security_review`, preliminary-design-quality-security-reviewer, assigned directly by `/root` | Candidate package `c4c2a90bd15c85722a2ec1ca0c0ccdf22eb279647069f5b4336fe632b2c140a0`: specification `C0/I4/M0; SPEC_COMPLIANCE NO; DESIGN_READY NO`; quality/security `C0/I0/M0; QUALITY_SECURITY PASS; DESIGN_READY YES`. That rejected candidate package did not produce S_AL; remediation returned to design. Historical evidence only, not current acceptance. |
 | 2026-08-01 | T-TSDC-004R-4AL R2 candidate-package review | `/root/task4al_design_spec_r2_review`, preliminary-design-specification-r2-reviewer, assigned directly by `/root`; `/root/task4al_design_quality_security_r2_review`, preliminary-design-quality-security-r2-reviewer, assigned directly by `/root` | Rejected R2 package `3222bb2b4ed92b5e72724eb78077f9545034ecdcf32e93f20de227154cd7cc43`: specification `C0/I1/M0; SPEC_COMPLIANCE NO; DESIGN_READY NO`; quality/security `C0/I2/M0; QUALITY_SECURITY FAIL; DESIGN_READY NO`. That rejected R2 package did not produce S_AL; remediation returned to design. Historical evidence only. |
 | 2026-08-01 | T-TSDC-004R-4AK rejected draft history | Controller | Frozen draft SHA256 `b746147f3f40039c801d5e97f1448575e096012f158f7dc313b4b54733f4bf47`; formal `C0/I5/M0; SPEC_COMPLIANCE NO; DRAFT_READY NO`; quality/security `C0/I6/M0; QUALITY_SECURITY FAIL; DRAFT_READY NO`; P_AK/B_AK/XP_AK were not created and the rejected diff was exactly reversed to clean D_AL. |
@@ -552,8 +569,9 @@ have no unresolved Critical or Important findings.
 | 4AI formal Plan terminal | P_AI actual OID and completed exact reviewed range; two formal verdicts select exactly one B_AI/XP_AI terminal | P_AI `c15e0c1e7fc552c3317339689a2848dbbe0a69d6`; specification C0/I0/M0 and quality/security C0/I1/M0; rejected/exhausted; XP_AI resolved by its exact unique subject |
 | 4AI session-bound revalidation | Exact approved B_AI OID, one approval-consuming guard, one wrapper call, sanitized result, and Task-only E_AI in one session | Not run; blocked by Plan-review exhaustion; B_AI is mutually excluded, approval is not consumed, and sanitized result remains not-run |
 | 4AI composite terminal | Immutable E_AI evidence plus two fresh composite reviews select exactly one R_AI/XE_AI terminal | Not run; blocked by Plan-review exhaustion; E_AI, R_AI, and XE_AI are not created |
-| 4AL executable Plan checkpoint | Exact S_AL; P_AL subject-resolvable in its own tree; four reviews not started; no terminal row or subject | S_AL `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`; P_AL current by exact unique subject with self OID unasserted; `C_AL_SPEC`, `C_AL_QS`, `F_AL_SPEC`, and `F_AL_QS` not started; B_AL/XP_AL absent and mutually exclusive; implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| 4AL reviewed asset freeze | Exact five current content identities; independent static contract closure; one superseded fail-closed pre-mutation attempt | Exact SHA256/blob pairs are recorded in `TSDC-AL-STATE` and the atomic reviewed-blob Plan boundary: transaction `752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f`/`e26e6f02be09bf67c56cc16840b03f289ea553aa`; package builder `3aac58ddeae93f06d39bd28351d1e63a6134ab30967b8b9ab82325cf69a78f8a`/`6da62868ec3f630a3e77dfdb286641c49d9bc37c`; renderer `df6a57db6814b34f3969774331522eeeca544d8f75581fd1a362d47fe6ee4598`/`0666e96ab43d66e9d075892d591ca790f8280661`; publisher `e6841b0d7627bbd97b0e2b9b9ca7b486cd4964f1467dcf68ea9531d473559b83`/`755ffde61559cb259021d6a7b2752f99afb67959`; anchors `4dbee6d432d9f3a2cc704881867d7db7b42595846c96f3a413f392475fde114b`/`bd036ba49089cc1f27d91bdaa1f2478fcb1ef1f9`. Final static verdicts are C0/I0/M0; current transaction execution remains not-run. |
+| 4AL executable Plan checkpoint | Exact P_AL/package and four immutable reports select exactly one terminal | P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`; package `916f724d0ff1575cc4f7f2c00475a023d4e2542d`; XP_AL selected by non-accepted immutable reviews, but the rendered candidate failed terminal pre-publication proof and no publisher/terminal commit ran. |
+| 4AL reviewed asset freeze | Exact five current content identities; independent static contract closure; one superseded fail-closed pre-mutation attempt | Exact SHA256/blob pairs are preserved in the historical 4AL evidence inside `TSDC-AM-STATE` and the atomic reviewed-blob Plan boundary. These static asset reviews are not reusable 4AM terminal authority. |
+| 4AM projection-complete design | Full-document discovery, typed inventory, and stale-phrase proof precede any future package or renderer publication | S_AM is current by exact unique subject with self OID unasserted. The two missed 4AL asset-freeze rows are mandatory discovery witnesses, but the inventory count is derived from the exact future P_AM Task blob. Every active occurrence must map to exactly one typed entry and every entry to exactly one occurrence. |
 | Revision R1 Plan/Task metadata and Markdown | zero failures | Passed: explicit base `a0f91bb5` selected 2 changed documents with 0 violations; explicit two-file `markdownlint-cli2 --no-globs` linted 2 files with 0 errors |
 | Revision R1 Plan/Task links and alignment | zero failures | Passed: traceability checked 46 catalog pairs with 0 failures; implementation alignment checked 674 stage documents and 5,663 repository-local Markdown links with 0 failures |
 | Revision R1 Plan/Task diff hygiene | zero whitespace errors | Passed: `git diff --check` returned 0 |
@@ -568,9 +586,9 @@ have no unresolved Critical or Important findings.
 | T-TSDC-001 | Initial run: 1 pass/12 missing-module errors. First remediation emitted 12 focused failures; second remediation covered structural, secret, and no-follow failures; third remediation emitted 2 failed-verdict subcase failures. | Initial 15/15; first remediation successor 25/25; second exact set 4/4; third affected CLI set 3/3. Production advisory passed and blocking retained 105 spec plus 105 quality pending findings. | Predecessor target suite 40/40 and CLI pass; bounded metadata/static/Markdown/diff gates passed. Final independent reviews of `72eef68c..43f78ad5` returned C0/I0/M0 twice and approved completion. | completed |
 | T-TSDC-002 | Sample fixture 3/3 failed; heading/policy emitted 37 failures; bounded data/secret/local group emitted 7 failures with the valid archive witness already passing; copied-template scan emitted 15 failures. Lifecycle coupling produced one positive-handoff failure. Quality remediation then produced 17/19 intended evidence-matrix failures and three nonfailed-verdict compatibility failures. | Metadata fixture 3/3, document/routing group 7/7, manifest owner/consumer 2/2, lifecycle handoff 3/3, and predecessor aggregate passed. Quality remediation delegated the successor contract and passed the 19-case rejection matrix plus all three nonfailed verdict combinations. | Initial target 48/48, delta 30/30, metadata 225/225, and lifecycle manifest 34/34 passed. Remediation lifecycle 7/7, delta integration 2/2, predecessor aggregate 1/1, both CLIs, Ruff, compile, Markdown, metadata, summary freshness, and diff gates passed. Final independent reviews of `78af8462..b28764a9` returned C0/I0/M0 twice and approved completion; the obsolete Plan cross-link path remains recorded as unavailable. | completed |
 | T-TSDC-003 | Registry contract emitted six subtest failures; the bounded suite then emitted those six plus one Keycloak literal failure. The hidden Dozzle follow-up and stale 136-row oracle each failed one exact regression. Review remediations produced 17 resolver/static failures, six quoted-key failures, five global-uniqueness/Dozzle failures, and the exact `141 != 140` manifest-oracle failure. | Initial focused tests passed 7/7. Successive remediation suites passed 11/11, 16/16, and finally 17/17; the exact 141-row manifest oracle passes 1/1 with Dozzle path-specific owner, consumer, update, and pending-verdict assertions. | Sync/provenance, 11-tier hardening, supply-chain 13 fixtures, successor advisory, alignment, Markdown, Ruff, compile, Bash, ShellCheck, and diff gates pass. Final independent specification and quality/security reviews of `b1e62873..60e0313c` each returned C0/I0/M0 and COMMIT_READY YES; all 141 manifest verdict pairs remain pending for Task 6. | completed |
-| T-TSDC-004 | Historical 4AF/4AI evidence is preserved; 4AL adds no product RED. | Historical GREEN evidence is preserved; P_AL runs no repository tests, validators, QA wrapper, pre-commit, revalidation, or implementation. | S_AL is exact; P_AL is the current Plan-only checkpoint; five current out-of-tree Plan assets are frozen and statically reviewed C0/I0/M0; one superseded transaction attempt failed closed before mutation and the corrected current transaction is not run; four immutable P_AL reviews are not started and terminal is none; only immutable Git-object Plan review plus exactly one future Task-only terminal is authorized. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | active Task 4 |
-| T-TSDC-005 | Not run — implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | blocked |
-| T-TSDC-006 | Not run — implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | blocked |
+| T-TSDC-004 | Historical 4AF/4AI evidence is preserved; 4AL adds no product RED. | Historical GREEN evidence is preserved; no repository tests, validators, QA wrapper, pre-commit, revalidation, or implementation ran. | 4AL immutable review evidence selected XP_AL from P_AL, then failed closed before publication because the renderer candidate retained stale active asset-freeze projections. S_AM is the current Plan-only 4AM design for full-document discovery, bijective projection coverage, and renderer proof. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | active Task 4; 4AM design only |
+| T-TSDC-005 | Not run — implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | blocked |
+| T-TSDC-006 | Not run — implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | Not run — implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | blocked |
 
 ### T-TSDC-001 bounded implementation evidence
 
@@ -2035,16 +2053,20 @@ have no unresolved Critical or Important findings.
 
 ### T-TSDC-004R-4AL atomic reviewed-blob Plan boundary
 
-- Current topology is `D_AL -> S_AL -> P_AL -> B_AL|XP_AL`. D_AL is
-  `2d2f49dfccb5fec282b2792fe0984d80327b4254`; S_AL is exact commit
-  `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868` with unique subject
-  `docs(design): define atomic reviewed-blob successor`. P_AL is current and
-  resolves only by exact unique subject `docs(plan): define atomic reviewed-blob
-  terminal proof`; its own OID is intentionally not self-asserted in this tree.
-- P_AL changes only this Task and its paired Plan, both mode `100644`. The
-  future terminal changes only this Task and adds exactly one Commit Ledger row
-  for B_AL or XP_AL; the alternative row and subject must be absent. Neither
-  terminal grants implementation authority by itself.
+- Historical topology reached exact P_AL
+  `fb05e296b6a791f850cf64d99c7dc17577bb7cfc` from D_AL
+  `2d2f49dfccb5fec282b2792fe0984d80327b4254` and S_AL
+  `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`. P_AL has exact unique subject
+  `docs(plan): define atomic reviewed-blob terminal proof`.
+- Four immutable review reports selected XP_AL: `C_AL_SPEC`
+  `bc9407bbd2d9e83445bbef5612219b95224daf87` passed, while `C_AL_QS`
+  `4ae8867efe614e7cc82e2b9cc0fb962b5ff8e0d1`, `F_AL_SPEC`
+  `6042441c495794ae9657e53a1fba1109e8b0bb86`, and `F_AL_QS`
+  `8c62f4d89c421b84bda1361129e503fea6c21e75` were non-accepted.
+- The selected XP_AL candidate failed terminal pre-publication proof before
+  publisher execution. Candidate blob `85d1a2769fff6d75f12f0dbdb334fc26f86a06f0`
+  retained stale active asset-freeze text equivalent to P_AL Task rows 556 and
+  2206. No B_AL/XP_AL terminal commit exists.
 - The frozen out-of-tree Plan assets are P_AL transaction
   `752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f`,
   package builder
@@ -2060,11 +2082,9 @@ have no unresolved Critical or Important findings.
   contract/security review is C0/I0/M0. One superseded transaction identity
   ran once and failed closed before mutation; the corrected current transaction
   and the other four current assets have not executed.
-- Four read-only review slots inspect the same immutable P_AL package:
-  `C_AL_SPEC`, `C_AL_QS`, `F_AL_SPEC`, and `F_AL_QS`. Their
-  orchestrator-assigned canonical identities must be pairwise distinct. All
-  four are not started in this tree; no review report blob exists and terminal
-  is none.
+- The four read-only review slots inspected the same immutable P_AL package
+  `916f724d0ff1575cc4f7f2c00475a023d4e2542d` and are preserved as historical
+  evidence. They are not reusable as 4AM acceptance evidence.
 - Review proof consumes immutable object OIDs, never mutable paths. Each report
   binds the assigned slot and identity, `/root` assignment source, exact
   S_AL/P_AL range, Plan and Task blobs, package hash/bytes, verdict, and
@@ -2105,7 +2125,36 @@ have no unresolved Critical or Important findings.
   formal `C0/I5/M0; SPEC_COMPLIANCE NO; DRAFT_READY NO`; quality/security
   `C0/I6/M0; QUALITY_SECURITY FAIL; DRAFT_READY NO`; P_AK/B_AK/XP_AK were not
   created and the rejected diff was exactly reversed to clean D_AL.
-- implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+- implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C,
+  Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution,
+  dependency changes, 4AL retry/correction, and Graphify update are blocked/no
+  authority.
+
+### T-TSDC-004R-4AM projection-complete terminal correction boundary
+
+- 4AM is approved from exact P_AL
+  `fb05e296b6a791f850cf64d99c7dc17577bb7cfc` after 4AL failed closed. It is a
+  design-only correction checkpoint S_AM for renderer projection inventory,
+  fresh asset rebinding, and stale-phrase proof. P_AM remains a future
+  Plan+Task checkpoint.
+- The future closed-world inventory derives its count from the exact P_AM Task
+  blob. Its builder scans the whole document for current-state and 4AM tokens,
+  then proves a bijection between discovered active occurrences and typed
+  inventory entries. Approval evidence, the state block, section tables,
+  boundary sections, review-artifact insertion point, whole-branch row, ledger,
+  deferred row, and final handoff are mandatory discovery domains.
+- The two 4AL omissions—the Planning Verification asset-freeze row and Review
+  Evidence frozen Plan assets row—are mandatory witnesses, not an exhaustive
+  count. A future renderer must reject missing, duplicate, uncovered,
+  multiply-covered, or orphaned entries and any undeclared prior-state phrase
+  outside preserved historical 4AL findings or failure descriptions.
+- 4AM may define a new self-reference-free P_AM checkpoint, fresh projection
+  anchors, a corrected renderer, a fresh terminal publisher, a fresh immutable
+  package, four new pairwise-distinct read-only reviews, and exactly one future
+  Task-only B_AM or XP_AM terminal. No 4AL retry/correction, publisher execution,
+  implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C,
+  Tasks 5–6, runtime, remote/external action, QA-wrapper/pre-commit execution,
+  dependency change, or Graphify update is authorized by this boundary.
 
 ### Current evidence boundaries
 
@@ -2202,13 +2251,14 @@ consume or create Agent authorization.
 | T-TSDC-004R-4AI session-bound collision-safe Plan | Controller | C0/I0/M0; SPEC_COMPLIANCE YES; IMPLEMENTATION_READY YES | C0/I1/M0; QUALITY_SECURITY FAIL; IMPLEMENTATION_READY NO | `88f55837be251318cd697bd8a1ab3a4f0ed1a824..c15e0c1e7fc552c3317339689a2848dbbe0a69d6` | rejected/exhausted; XP_AI resolved by its exact unique subject | AI-2: the B_AI/XP_AI updater omitted active aggregate Task surfaces, leaving Work Breakdown, execution evidence, and review/handoff rows pending after a terminal; no correction or downstream authority. |
 | T-TSDC-004R-4AI frozen canonical-row implementation | Controller | not run; blocked by Plan-review exhaustion | not run; blocked by Plan-review exhaustion | `7e32c37cafde08b108ee33e3439cda3aea336961..a7d05b0e5c0ffaeccde9e401450e696855cfb2b5` | blocked; B_AI is mutually excluded | Frozen implementation remains historical; no composite-review authority. |
 | T-TSDC-004R-4AI session-bound collision-safe revalidation | Controller | not run; blocked by Plan-review exhaustion | not run; blocked by Plan-review exhaustion | not run | blocked; B_AI is mutually excluded | Approval is not consumed; transaction and sanitized result remain not-run; E_AI, R_AI, and XE_AI are not created. |
-| T-TSDC-004R-4AL atomic reviewed-blob terminal Plan | Controller | `C_AL_SPEC` and `F_AL_SPEC` not started | `C_AL_QS` and `F_AL_QS` not started | S_AL `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`; P_AL resolved by exact unique subject with self OID unasserted | executable Plan checkpoint only; terminal none | Four pairwise-distinct orchestrator-assigned reviews and exactly one future Task-only B_AL/XP_AL terminal are the only next authority; implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| T-TSDC-004R-4AL frozen Plan assets | Controller plus independent read-only asset reviewers | Transaction/package/renderer/publisher specification closure C0/I0/M0; PASS; EXECUTION_READY YES where applicable | Transaction/renderer/publisher security closure C0/I0/M0; PASS; EXECUTION_READY YES | Exact full SHA256/blob pairs are recorded in `TSDC-AL-STATE` and the atomic reviewed-blob Plan boundary | current identities frozen; one superseded pre-mutation attempt; current transaction not run | These asset reviews are not the future `C_AL_*` or `F_AL_*` immutable P_AL reviews. The terminal publisher's prior receipt gap was rejected and remediated; only final identity `e6841b0d7627bbd97b0e2b9b9ca7b486cd4964f1467dcf68ea9531d473559b83` is current publisher authority. The old transaction identity is rejected historical execution evidence; only current transaction `752293831b3b3117476092c0526ea1ac728051fdfb1a3103473c353cb749ac0f` is retry authority after complete rebinding and re-review. |
+| T-TSDC-004R-4AL atomic reviewed-blob terminal Plan | Controller | C_AL_SPEC `/root/c_al_spec_review` `bc9407bbd2d9e83445bbef5612219b95224daf87` C0/I0/M0; F_AL_SPEC `/root/f_al_spec_review` `6042441c495794ae9657e53a1fba1109e8b0bb86` C0/I2/M0 | C_AL_QS `/root/c_al_qs_review` `4ae8867efe614e7cc82e2b9cc0fb962b5ff8e0d1` C0/I1/M0; F_AL_QS `/root/f_al_qs_review` `8c62f4d89c421b84bda1361129e503fea6c21e75` C0/I1/M0 | P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`; package `916f724d0ff1575cc4f7f2c00475a023d4e2542d` | rejected/fail-closed; XP_AL selected but not published | Non-accepted reviews selected XP_AL, then candidate blob `85d1a2769fff6d75f12f0dbdb334fc26f86a06f0` failed terminal pre-publication proof by retaining stale active asset-freeze projections. No publisher ran; no terminal commit exists. |
+| T-TSDC-004R-4AL frozen Plan assets | Controller plus independent read-only asset reviewers | Transaction/package/renderer/publisher specification closure C0/I0/M0; PASS; EXECUTION_READY YES where applicable | Transaction/renderer/publisher security closure C0/I0/M0; PASS; EXECUTION_READY YES | Exact full SHA256/blob pairs are preserved in historical 4AL evidence inside `TSDC-AM-STATE` and the atomic reviewed-blob Plan boundary | historical 4AL Plan-asset evidence | These static asset reviews are preserved as 4AL historical evidence and are not reusable as 4AM acceptance evidence. |
+| T-TSDC-004R-4AM projection-complete terminal correction design | Controller | design self-review only; P_AM reviews not started | design self-review only; P_AM reviews not started | D_AM/P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`; S_AM subject-resolved with self OID unasserted | current design correction | S_AM defines the no-retry 4AM topology, fresh asset rebinding, new terminal publisher requirement, and full-document discovery plus bijective projection inventory. P_AM is not created and must reject uncovered, multiply-covered, orphaned, or stale active state before any package, terminal manifest, or publisher execution. |
 | T-TSDC-004R-4AL candidate package (historical) | `/root/task4al_design_spec_review`, preliminary-design-specification-reviewer, assigned directly by `/root`; `/root/task4al_design_quality_security_review`, preliminary-design-quality-security-reviewer, assigned directly by `/root` | C0/I4/M0; SPEC_COMPLIANCE NO; DESIGN_READY NO | C0/I0/M0; QUALITY_SECURITY PASS; DESIGN_READY YES | `c4c2a90bd15c85722a2ec1ca0c0ccdf22eb279647069f5b4336fe632b2c140a0` | rejected; remediation returned to design | Historical evidence only, not current acceptance; that rejected candidate package did not produce S_AL. |
 | T-TSDC-004R-4AL R2 candidate package (historical) | `/root/task4al_design_spec_r2_review`, preliminary-design-specification-r2-reviewer, assigned directly by `/root`; `/root/task4al_design_quality_security_r2_review`, preliminary-design-quality-security-r2-reviewer, assigned directly by `/root` | C0/I1/M0; SPEC_COMPLIANCE NO; DESIGN_READY NO | C0/I2/M0; QUALITY_SECURITY FAIL; DESIGN_READY NO | `3222bb2b4ed92b5e72724eb78077f9545034ecdcf32e93f20de227154cd7cc43` | rejected; remediation returned to design | Historical evidence only; that rejected R2 package did not produce S_AL. |
-| T-TSDC-005 | pending | blocked: implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update | blocked: implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update | not available | blocked | implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| T-TSDC-006 | pending | blocked: implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update | blocked: implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update | not available | blocked | implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| Whole branch | not applicable | blocked pending `C_AL_SPEC` plus `F_AL_SPEC` and one selected terminal | blocked pending `C_AL_QS` plus `F_AL_QS` and the same terminal | P_AL exact unique subject; terminal none | blocked | All four canonical reviewer identities must be pairwise distinct and inspect the same immutable P_AL package; implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
+| T-TSDC-005 | pending | blocked: implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update | blocked: implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update | not available | blocked | implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
+| T-TSDC-006 | pending | blocked: implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update | blocked: implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update | not available | blocked | implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
+| Whole branch | not applicable | blocked; P_AM not created and no 4AM reviews started | blocked; P_AM not created and no 4AM reviews started | P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`; S_AM current by exact unique subject | blocked | 4AL failed closed before publication. Whole-branch progression waits for a future accepted 4AM successor; implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
 
 Reviewers are read-only. Any reviewer-created edit or commit is a process
 finding and must not be silently accepted as independent review evidence.
@@ -2357,9 +2407,11 @@ finding and must not be silently accepted as independent review evidence.
 | T-TSDC-004R-4AI accepted review R_AI | Record accepted session-bound collision-safe review | `docs(task): record session-bound collision-safe review` | not created | Blocked by Plan-review exhaustion; Task 4.5/Wave C authority does not exist. |
 | T-TSDC-004R-4AI rejected review XE_AI | Record exhausted session-bound collision-safe review | `docs(task): record exhausted session-bound collision-safe review` | not created | Blocked by Plan-review exhaustion because revalidation never ran. |
 | T-TSDC-004R-4AL design checkpoint S_AL | Define atomic reviewed-blob successor | `docs(design): define atomic reviewed-blob successor` | `eafdaf0433d9e600abbc9b8e2443bdd7b84a9868` | Exact one-commit successor of D_AL; immutable design evidence. |
-| T-TSDC-004R-4AL executable Plan checkpoint P_AL | Define atomic reviewed-blob terminal proof | `docs(plan): define atomic reviewed-blob terminal proof` | resolved by this exact unique subject; its OID is intentionally not self-asserted | Plan+Task only, both mode `100644`; exact current transaction/package/renderer/publisher/anchor identities are frozen; one superseded transaction attempt failed closed before mutation and the corrected current transaction is not run; four P_AL reviews not started; no B_AL/XP_AL row or subject; implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
-| T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. |
+| T-TSDC-004R-4AL executable Plan checkpoint P_AL | Define atomic reviewed-blob terminal proof | `docs(plan): define atomic reviewed-blob terminal proof` | `fb05e296b6a791f850cf64d99c7dc17577bb7cfc` | Plan+Task only, both mode `100644`; immutable predecessor of failed-closed 4AL review evidence and current 4AM design. |
+| T-TSDC-004R-4AM design checkpoint S_AM | Define projection-complete terminal successor | `docs(design): define projection-complete terminal successor` | resolved by this exact unique subject after publication; its OID is intentionally not self-asserted | Design-only correction from exact D_AM/P_AL; authorizes only future P_AM drafting and fresh 4AM asset design. |
+| T-TSDC-004R-4AM correction Plan checkpoint P_AM | Define projection-complete terminal correction proof | `docs(plan): define projection-complete terminal correction proof` | not created | Future Plan+Task only checkpoint; must derive inventory cardinality from its exact Task blob, prove full-document discovery-to-inventory bijection, and freeze fresh 4AM assets before any B_AM/XP_AM row or subject. |
+| T-TSDC-005 | Audit and remote evidence | `docs(audit): reconcile target surface evidence` | not started | implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
+| T-TSDC-006 | Blocking promotion and closure | `docs(task): close target surface delta convergence` | not started | implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. |
 
 ## Deferred and Blocked Items
 
@@ -2367,7 +2419,7 @@ finding and must not be silently accepted as independent review evidence.
 | --- | --- | --- | --- |
 | T-TSDC-004R-1 typed gate contract | completed | Commits `fdc01e1c`, `af898045`, and `af22e129` close the accepted implementation and evidence findings; final specification review is C0/I0/M0 and final quality/security review is C0/I0/M1 with approval. | start T-TSDC-004R-2 from this clean committed review-evidence boundary; close the non-blocking full strict-JSON positive-fixture minor during canonical schema-v2 conversion |
 | T-TSDC-004R-2 typed gate runner | review-approved | The sole Task 4.2V implementation and its fresh specification plus quality/security reviews are C0/I0. The accepted adapter pair remains frozen and all manifest verdicts remain pending. | execute the canonical Task 4.3 atomic workflow/local-projection cutover from the clean controller evidence checkpoint |
-| T-TSDC-004R-3 atomic projection cutover | blocked; current 4AL executable Plan | Historical 4AI and rejected 4AK evidence remain frozen. S_AL is exact; P_AL is subject-resolvable with self OID unasserted; five current reviewed Plan assets are frozen; one superseded transaction attempt failed closed before mutation and the corrected current transaction is not run; four P_AL reviews are not started and terminal is none. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority. | publish exact P_AL, run the four pairwise-distinct immutable Plan reviews, then create exactly one Task-only B_AL or XP_AL terminal; no other current authority follows. |
+| T-TSDC-004R-3 atomic projection cutover | blocked; current 4AM design only | Historical 4AI and rejected 4AK evidence remain frozen. 4AL selected XP_AL from exact P_AL but failed closed before publication because the renderer omitted active asset-freeze projections. S_AM is current and P_AM is not created. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority. | draft and review the P_AM projection-complete correction Plan, then separately run future pairwise-distinct immutable 4AM reviews and create exactly one Task-only B_AM or XP_AM terminal; no other current authority follows. |
 | Remote branch-protection synchronization | deferred | Observation-only scope; mutation needs separate approval, rollback, and read-back | future approved GitHub control-plane task |
 | Push, pull request, workflow dispatch, and merge | deferred | No external-write approval | finishing workflow after explicit user choice |
 | Remote failed-run root-cause analysis | unverified | Raw authenticated logs were not approved or read | separately approved bounded investigation |
@@ -2527,21 +2579,22 @@ downstream authority exists.
 Historical 4AI final handoff: rejected/exhausted at Plan review; XP_AI resolved
 by its exact unique subject; B_AI mutually excluded; E_AI/R_AI/XE_AI not
 created; no correction, Task 4.5, Wave C, or downstream authority.
-Current 4AL final handoff: S_AL is exact commit
-`eafdaf0433d9e600abbc9b8e2443bdd7b84a9868`; P_AL resolves only by exact unique
-subject `docs(plan): define atomic reviewed-blob terminal proof`, with its own
-OID intentionally not self-asserted in this tree. `C_AL_SPEC`, `C_AL_QS`,
-`F_AL_SPEC`, and `F_AL_QS` are not started and must use four pairwise-distinct
-orchestrator-assigned identities over the same immutable P_AL package.
-The exact current P_AL transaction, package builder, renderer, publisher, and
-anchor assets are frozen and their final static contract/security reviews are
-C0/I0/M0. One superseded transaction identity ran once and failed closed at
-the configuration contract before object creation or repository mutation. The
-corrected current transaction and the other four current assets have not
-executed; no repository test, validator, QA wrapper, pre-commit, runtime,
-remote action, or Graphify update has executed.
-B_AL/XP_AL remain mutually exclusive future Task-only alternatives and no
-terminal row or subject exists. implementation, E_AL, R_AL, XE_AL, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, and Graphify update are blocked/no authority.
+Current 4AM final handoff: exact P_AL
+`fb05e296b6a791f850cf64d99c7dc17577bb7cfc` remains the committed predecessor.
+4AL immutable package `916f724d0ff1575cc4f7f2c00475a023d4e2542d` and four
+review blobs selected XP_AL, but rendered candidate blob
+`85d1a2769fff6d75f12f0dbdb334fc26f86a06f0` failed terminal pre-publication
+proof by retaining stale active asset-freeze projections. No 4AL publisher ran
+and no B_AL/XP_AL commit exists. The user approved 4AM to define a fresh
+projection-complete successor. S_AM is current by exact unique subject with its
+self OID intentionally unasserted; P_AM is not created. The future inventory
+must derive its count from the exact P_AM Task, prove full-document
+discovery-to-inventory bijection, and include the two previously omitted
+asset-freeze rows as mandatory witnesses. Future P_AM reviews and one
+B_AM/XP_AM terminal remain separate steps. implementation, E_AL, R_AL, XE_AL,
+E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and
+Graphify update are blocked/no authority.
 4AI and rejected 4AK are historical only.
 The original five-round implementation blocker, exhausted Revision R1 Plan
 reviews, and superseded `5d089dd4` and `b73d2a99` checkpoints remain
