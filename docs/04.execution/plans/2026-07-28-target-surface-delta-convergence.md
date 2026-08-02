@@ -16678,6 +16678,11 @@ and terminal identities.
 
 ### T-TSDC-004R-4AM — Projection-complete terminal correction design
 
+> Historical non-executable boundary after S_AN: this section records the
+> design that produced exact P_AM. The AM-2 asset pair was later rejected by
+> quality/security at `C0/I3/M0`; AM-3 through AM-8 and B_AM/XP_AM are not
+> authorized. Current authority is defined only by the 4AN section below.
+
 4AM is the approved correction successor for the failed 4AL terminal
 pre-publication proof. It starts from exact D_AM/P_AL
 `fb05e296b6a791f850cf64d99c7dc17577bb7cfc` and must not retry, mutate, or
@@ -16836,6 +16841,11 @@ performing runtime/remote actions. P_AM must be published and its exact objects
 must be rebound before the asset-freeze steps below begin.
 
 ### T-TSDC-004R-4AM — Executable projection-complete correction Plan
+
+> Historical rejected checklist after S_AN: AM-1 completed at exact P_AM
+> `143b5efe9b68d8688770b10c82fc3e4a9616bc66`; AM-2 completed with a
+> non-accepted asset-review pair; AM-3 through AM-8 did not run. These
+> checkboxes grant no current execution or retry authority.
 
 P_AM is the Plan+Task checkpoint with exact subject
 `docs(plan): define projection-complete terminal correction proof`. Its parent
@@ -17082,6 +17092,313 @@ implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5�
 | Ref conflict, foreign lock, path/inode/hash drift, or unclassified tuple | all evidence retained without mutation | new analysis and approval |
 | Exact terminal is complete but stdout is lost | Git state and durable receipt are authoritative | read-only resolver only; never retry |
 
+### T-TSDC-004R-4AN — Secure occurrence-bound inventory successor design
+
+The 4AM AM-2 attempt is rejected at its asset-review gate. Its exact
+specification review returned `C0/I0/M0`, but its independent quality/security
+review returned `C0/I3/M0`, `QUALITY_SECURITY FAIL`, `AM2_COMPLETE NO`, and
+`AM3_READY NO`. Under the 4AM failure matrix, exact P_AM
+`143b5efe9b68d8688770b10c82fc3e4a9616bc66` remains the last executable Plan
+checkpoint, AM-3 was not authorized, and the frozen rejected bytes are
+historical evidence only:
+
+- builder blob `b10244352953cff18cf2765e60ee29347efd9da1`, SHA256
+  `a70978b3918b6cfd932271802d2ff7c3f79092e49ce4c2c220a6c10510b46401`,
+  `38522` bytes;
+- inventory blob `40b8cd68ce484a0b407ff11dad8096ec64b378b2`, SHA256
+  `44c175f13e241d8b2a031bf977591a39cc227f2ed26360b48919763f6c881ae2`,
+  `239305` bytes;
+- preimage blob `548e8773e63e26f6c0fc230d49db105326563470`, SHA256
+  `ce6f9abc8490a0e1870711e81e7caf9670002645246407747407a3f8402b10d0`,
+  `24987` bytes.
+
+The user approved this return-to-design successor on 2026-08-02. The new
+lineage is
+`D_AN/P_AM -> S_AN -> P_AN -> B_AN|XP_AN`. S_AN is the design-only
+Plan-and-Task checkpoint with exact subject
+`docs(design): define secure occurrence-bound inventory successor`. P_AN is a
+future Plan-and-Task checkpoint with exact subject
+`docs(plan): define secure occurrence-bound inventory proof`; its OID must not
+be self-asserted in its own tree. B_AN and XP_AN are future mutually exclusive
+Task-only terminals. No 4AN asset, review package, candidate, publisher, or
+terminal exists in S_AN.
+
+The rejected `/tmp/tsdc-4am-*` paths and their Git blobs must never be patched,
+overwritten, reclassified as accepted, or executed again. New bytes use the
+`tsdc-4an-*` namespace, new Git blob identities, a fresh implementer, and fresh
+reviewers. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, E_AN, R_AN,
+XE_AN, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+QA-wrapper/pre-commit execution, dependency changes, 4AL/4AM retry or
+correction, and Graphify update remain blocked/no authority.
+
+#### Private atomic output publication
+
+The 4AN inventory builder must not publish to predictable shared `/tmp`
+pathnames. P_AN binds the exact temporary parent path and its acceptance
+contract. The outer launcher opens that parent once with
+`O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC`, proves its pinned device/inode, trusted
+owner, directory type, and sticky-write policy, and creates one unpredictable
+128-bit-name transaction directory relative to that descriptor. Creation uses
+no-follow, create-only semantics and mode `0700`; the builder proves the new
+directory is owned by the current effective UID, has initial link count two,
+and is not group- or world-accessible before any child file is created.
+
+Inventory, preimage, and receipt files are created relative to the transaction
+directory descriptor with `O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC`, mode `0600`,
+and no truncation path. Every opened descriptor is checked with `fstat` for
+regular-file type, effective-UID ownership, link count one, expected device and
+inode, and mode; `fchmod(0600)` is applied before writing. The builder writes,
+rewinds, rereads, hashes, and length-checks through the same descriptor, then
+fsyncs the file. It never hashes and reopens a pathname.
+
+After both payloads are independently proved, the controller materializes
+their exact bytes as Git blobs from pinned descriptors under the closed Git
+environment below. A deterministic pair receipt binds schema, exact P_AN Task
+blob, inventory and preimage SHA256/blob/byte identities, builder identity, and
+completion state; the unpredictable directory name is never receipt content.
+The receipt is written and fsynced last, materialized as an exact Git blob from
+the same pinned descriptor, and followed by a transaction-directory fsync.
+Only a complete receipt Git object whose two payload identities revalidate is
+review authority. A crash,
+partial pair, missing fsync, pre-existing path, hardlink, symlink, ownership
+mismatch, permission mismatch, or receipt mismatch is non-accepting. Cleanup
+may remove only a proved-owned unchanged transaction directory after an
+explicit disposition; it may never follow links or touch the rejected 4AM
+paths.
+
+#### Closed and bounded Git-object reader
+
+Every Git subprocess uses an absolute executable, a fixed repository, a
+closed environment, C locale, UTC, and fixed timeout. The environment sets
+`GIT_NO_REPLACE_OBJECTS=1`, `GIT_NO_LAZY_FETCH=1`,
+`GIT_TERMINAL_PROMPT=0`, `GIT_OPTIONAL_LOCKS=0`, and
+`GIT_CONFIG_NOSYSTEM=1`; global and XDG configuration resolve only to an empty
+private directory. Commands also use `--no-replace-objects`.
+`GIT_OBJECT_DIRECTORY`, `GIT_ALTERNATE_OBJECT_DIRECTORIES`, and every other
+ambient `GIT_*` variable not explicitly admitted above are absent. The reader
+rejects a nonempty repository `objects/info/alternates` file before reading.
+No credential, proxy, replace-ref, hook, fsmonitor, pager, editor, or prompt
+input is inherited.
+
+Before reading content, the reader performs a bounded exact-object metadata
+probe and requires the requested full OID, object type `blob`, and the frozen
+byte count. Content is then streamed once from `git cat-file blob <full-oid>`
+through nonblocking pipes. The reader stores at most `expected_bytes + 1` of
+stdout and a fixed bounded stderr diagnostic, enforces a monotonic deadline,
+kills and reaps on overflow or timeout, rejects short and extra content, and
+computes SHA256 plus Git blob OID while streaming. A missing local object,
+replacement attempt, lazy-fetch request, prompt, config expansion, stderr
+overflow, timeout, signal, nonzero exit, or identity mismatch fails before any
+output publication or object-store write.
+
+#### Occurrence- and subspan-bound inventory schema
+
+P_AN must define `tsdc-4an-projection-inventory/v2`. Each JSONL projection
+object binds one exact source fragment by section, selector kind, selector,
+fragment SHA256, and byte length, then partitions the complete fragment into
+ordered, contiguous, non-overlapping byte subspans. There are no gaps, overlaps,
+negative offsets, out-of-range offsets, or line-number-only selectors.
+
+Every subspan has a stable ID, byte start/end, class
+`terminal-transition`, `historical`, or `static`, source SHA256, occurrence
+IDs, typed P_AN/B_AN/XP_AN expectations, exact historical exception when
+applicable, and its own stale denylist. Every discovered namespace or
+current-state occurrence is wholly contained by exactly one subspan and repeats
+that subspan's class. Every occurrence belongs to exactly one fragment, every
+fragment belongs to exactly one projection object, and every byte of every
+selected fragment belongs to exactly one subspan.
+
+Historical and static subspans are hash-preserved into both terminal
+alternatives. Only terminal-transition subspans may change, and each must
+produce exactly its selected typed value once. A mixed fragment must be split;
+in particular, the rejected inventory's `AM-P043` source block must preserve
+its immutable 4AL P_AL/package/candidate/no-terminal history as exact hashed
+subspans while changing only its active 4AN/current-authority subspans. A
+renderer that changes, drops, merges, or reclassifies a preserved subspan must
+fail even when its fragment-level selector still matches.
+
+Full-document discovery remains count-derived from the exact P_AN Task blob.
+The builder rejects missing, duplicate, overlapping, uncovered,
+multiply-covered, orphaned, ambiguously classified, or mixed-without-split
+occurrences. It emits a deterministic preimage containing the fragment,
+subspan, and occurrence bijection plus aggregate counts; none of those counts
+is a hand-maintained acceptance constant.
+
+#### OS-enforced fake-only harness containment
+
+P_AN must bind a new exact containment-launcher source, reproducible build
+provenance, static executable, and policy alongside the builder and adversarial
+harness. Source-only authority is forbidden. The executable must be one
+self-contained static ELF for the P_AN-bound architecture: no shebang,
+`PT_INTERP`, external `DT_NEEDED`, `RPATH`/`RUNPATH`, environment-selected
+loader, writable-executable segment, or executable stack. Its entry point,
+program headers, machine/type, build receipt, source-to-binary correspondence,
+Git blob, SHA256, byte length, and mode are exact review inputs.
+
+The already-running trusted controller pins and hash-reproves that exact ELF
+through one no-follow descriptor, copies the same bytes into a memfd sealed
+against write, grow, shrink, and further seal changes, rereads and rehashes the
+sealed bytes, then invokes it directly with `execveat(..., AT_EMPTY_PATH)`.
+The kernel therefore runs no interpreter, dynamic loader, shared library,
+startup file, or mutable host pathname before the containment launcher. The
+controller supplies the P_AN-bound bootstrap argv and a newly constructed
+empty or exact-minimal bootstrap environment; it never forwards its own argv,
+environment, cwd, descriptor, signal, or startup state. Any ELF-policy,
+provenance, seal, identity, or direct-exec mismatch stops before launcher
+execution.
+
+The reviewed static launcher is the only component that may prepare the
+harness process. Before any untrusted harness instruction runs, it creates a
+private mode-`0700` sandbox transaction and enters dedicated user, mount, PID,
+IPC, UTS, and network namespaces. It makes mount propagation private,
+constructs a new tmpfs-backed root, and copies through pinned no-follow
+descriptors only the exact reviewed harness, fake fixtures, fake Git
+executable, and a closed P_AN-bound runtime manifest. Every runtime file is
+individually pinned and hash/size/mode-proved through one descriptor, copied
+from that descriptor into the tmpfs root, reread and hash-reproved there, then
+placed on a read-only runtime subtree. Host-file and directory-wide runtime
+binds are forbidden. A separate fake-work subtree is the only writable
+filesystem surface. The launcher then `pivot_root`s into the new root, changes
+directory to `/`, detaches the old root, and proves no cwd, root, mount, or
+descriptor reference retains it. The production worktree, canonical
+Task, common Git directory and object store, user home, host temporary
+directory, credentials, and host `/proc`, `/sys`, and device tree are not
+mounted into the sandbox.
+
+The launcher closes and unshares the inherited descriptor table before the
+harness exec. Only the P_AN-bound stdin/stdout/stderr protocol descriptors may
+remain; none may resolve to a production path or object store. It installs
+`no_new_privs`, a Landlock allowlist confined to the sandbox root, and a fixed
+default-deny seccomp allowlist containing only the P_AN-bound harness syscalls.
+Landlock grants read/execute only to the proved runtime subtree and grants
+write/create/remove only inside the fake-work subtree. The bounded ledger is a
+pre-opened protocol descriptor, not filesystem authority. The seccomp policy
+therefore denies socket creation, mount or namespace manipulation, `setns`,
+`chroot`/`pivot_root`, handle-based filesystem access, ptrace and cross-process
+memory access, kernel keyring/BPF/performance interfaces, `io_uring`, and every
+unlisted escape primitive. The sandbox contains the reviewed fake Git only;
+the production Git executable and repository configuration are unreachable.
+If any namespace, mount, Landlock, seccomp, descriptor-closing, or privilege
+primitive is unavailable, the launcher fails before harness exec. There is no
+weaker fallback.
+
+Neither launcher nor harness inherits an ambient environment. P_AN defines two
+closed, ordered key/value manifests: the static-launcher bootstrap environment
+and the post-pivot harness environment. The controller and launcher construct
+their respective `envp` arrays from scratch, reject duplicate keys, embedded
+NULs, unknown keys, values outside the sandbox, credentials, proxy/startup
+controls, and every unlisted `LD_*`, `PYTHON*`, `GIT_*`, shell-init, locale, or
+tool configuration variable. Any admitted locale, timezone, `PATH`, `HOME`, or
+`TMPDIR` value is literal, points only inside the proved sandbox where
+applicable, and is hash-bound by P_AN. Before harness exec, the launcher proves
+byte-for-byte key order, key count, values, and serialized environment digest
+against that manifest. It also fixes argv, cwd `/`, umask, signal dispositions
+and mask, resource limits, and process personality. No inherited value can
+reach the permitted protocol descriptors.
+
+While still trusted and before harness exec, the launcher emits one bounded
+containment preflight receipt. It proves namespace identities differ from the
+parent, the old root is detached, the mount set equals the closed allowlist,
+the descriptor set equals the protocol allowlist, the environment equals the
+complete P_AN manifest with no inherited or extra key/value, no network route
+or production process is reachable, and open/stat attempts for the canonical
+production worktree, Task, common Git directory, and object store fail with
+the P_AN-bound denial.
+Those production-path probe strings exist only in launcher memory and vanish
+at exec. A missing, duplicate, malformed, oversized, or non-pass preflight
+field, unexpected descriptor or mount, successful negative-reachability probe,
+or inability to prove the final restricted state stops before the harness. A
+post-run comparison is defense-in-depth only and never substitutes for this
+pre-execution OS boundary.
+
+#### Data flow, adversarial verification, and review gates
+
+The only permitted progression after a user-reviewed S_AN is:
+
+1. publish and exactly rebind P_AN as a Plan-and-Task-only successor;
+2. freeze a new builder source, containment-launcher source, exact static ELF
+   plus reproducible source-to-binary receipt, bootstrap/harness environment
+   manifests, and isolated adversarial test-harness source;
+3. obtain fresh independent specification and quality/security reviews of
+   those exact source, executable, receipt, and policy blobs;
+4. execute the reviewed containment launcher, require its exact preflight
+   receipt, and permit it to exec the reviewed harness only after every
+   namespace, mount, descriptor, environment, syscall-policy, and negative
+   reachability proof passes;
+5. inside that OS-enforced sandbox, execute the reviewed adversarial harness
+   against isolated fake directories and fake bounded Git subprocesses without
+   the production Task or object store; require exit zero, no signal or
+   timeout, empty bounded stderr, and a deterministic case ledger containing
+   exactly one `PASS` for every P_AN-bound case ID with no missing, duplicate,
+   unknown, or non-pass result;
+6. only after steps 4 and 5 pass completely and the controller re-proves that
+   the harness had no production Task, Git object-store, path, descriptor, or
+   network reachability, execute exactly one production builder invocation in
+   the private transaction; that invocation must exit zero without signal or
+   timeout and materialize a complete inventory, preimage, and pair receipt as
+   exact Git blobs, or fail
+   closed under the matrix below;
+7. independently reprove the receipt, full-document/subspan bijection, and all
+   frozen identities;
+8. obtain fresh independent specification and quality/security reviews of the
+   complete builder/inventory/preimage/receipt asset set; and
+9. proceed to a separately defined AN-3 renderer step only when both final
+   asset reviews return `C0/I0/M0` with affirmative readiness.
+
+The adversarial asset must cover a pre-existing symlink, a same-UID hardlink,
+an existing output name, a crash between payloads, a missing or mismatched
+receipt, oversized and short Git stdout, oversized stderr, a stalled Git
+process, a replacement object, a missing promisor object with lazy fetch
+disabled, and a mixed historical/transition fragment whose preserved subspan
+is altered. Containment witnesses also attempt production absolute paths,
+inherited-descriptor access, namespace or mount re-entry, handle-based path
+access, and network escape and require the exact P_AN-bound denial. These are
+out-of-tree planning-asset tests only; they do not run
+repository validators, repository tests, QA wrapper, or pre-commit.
+
+The P_AN-bound case manifest is closed and independent of the harness source:
+P_AN enumerates every mandatory case ID and expected failure domain, source
+reviewers prove a one-to-one implementation for those IDs, and the controller
+derives the expected ledger set from the exact P_AN Task rather than from
+self-reported harness discovery. The controller requires the ledger bijection
+before reading a success exit as acceptance and treats any harness nonzero
+exit, signal, timeout, malformed or oversized output, stderr byte, missing
+case, duplicate case, unknown case, or non-pass result as failure. Such a
+failure revokes the production invocation for that attempt. A later command,
+partial ledger, or manual inspection cannot cure it.
+
+The implementer, source reviewers, and final asset reviewers must be fresh and
+pairwise distinct from the rejected 4AM implementer and reviewers. Reviewers
+consume exact Git objects or the same pinned descriptors, never mutable
+pathnames. Any reviewer edit, object write, asset execution, or repository
+mutation invalidates that review. P_AN may authorize only these bounded
+planning assets until the final two reviews pass.
+
+#### 4AN failure matrix
+
+| Failure point | Durable result | Next authority |
+| --- | --- | --- |
+| S_AN publication or written-design review fails | P_AM remains the last executable Plan; rejected 4AM evidence is unchanged | stop and revise design only after user direction |
+| P_AN publication or exact-object rebinding fails | S_AN remains current or foreign state is preserved | new analysis and approval; no automatic retry |
+| Static-launcher ELF/provenance/seal/direct-exec proof, containment primitive, construction, environment equality, preflight receipt, or negative-reachability proof fails | P_AN remains current; no untrusted harness process, production invocation, production transaction, accepted asset, or production object-store write exists; exact launcher/policy identities and bounded failure evidence may be retained | stop before untrusted harness exec with no fallback; no automatic cleanup, reconstruction, rerun, or retry; preserve proved-owned sandbox evidence until explicit disposition and return to design only after user direction |
+| Adversarial harness does not prove every bound case or emits a non-accepting result while its fake-only boundary remains proved | P_AN remains current; frozen source/harness identities and bounded failure evidence may be retained, but no production invocation, production transaction, accepted receipt/assets, or production object-store write exists | stop before production; no automatic cleanup, rerun, or retry; preserve proved-owned isolated evidence until explicit disposition and return to design only after user direction |
+| Harness fake-only isolation cannot be proved or any production-path/object access is observed | no absence-of-mutation claim is made; preserve exact observed P_AN topology, repository/object-store state, isolated evidence, and bounded diagnostics without further access | stop as a security incident; no cleanup, production invocation, rerun, or retry; require explicit incident disposition and user authority |
+| Production builder exits nonzero, is signaled or timed out, emits malformed/oversized diagnostics, or fails for an otherwise unclassified reason | no complete receipt or asset set is accepted; preserve exact observed topology, the incomplete private transaction, any already-materialized unreachable blobs or foreign drift, and bounded diagnostics without claiming P_AN is unchanged until read-only reproved | stop; no automatic cleanup, rebuild, rerun, or retry; require explicit security/evidence disposition and a user-approved return to design |
+| Private directory, descriptor, ownership, mode, hardlink, fsync, or pair-receipt proof fails | no complete receipt or asset set is accepted and no absence-of-object-write claim is made; preserve the exact observed topology, proved-owned incomplete transaction, attempted payload/receipt OIDs, any already-materialized unreachable Git blobs or foreign drift, and bounded diagnostics until read-only object-store and P_AN topology reproving completes | stop; no automatic cleanup, object deletion, rebuild, rerun, or retry; require explicit security/evidence disposition and user authority |
+| Git object is missing, replaced, fetched, oversized, short, timed out, prompted, or otherwise unclosed | no accepted output pair or review authority | stop and return to design |
+| Fragment/subspan/occurrence partition or bijection fails | frozen bytes remain rejected evidence only | stop and return to design |
+| Either source or final asset review is not `C0/I0/M0` | P_AN remains current; AN-3 is not authorized | stop and return to design |
+| All final asset gates pass | exact receipt-bound assets become immutable P_AN evidence | AN-3 may begin only under the later reviewed executable Plan |
+
+#### 4AN design acceptance boundary
+
+S_AN authorizes only drafting and reviewing the future P_AN executable Plan.
+It does not authorize creation or execution of any 4AN asset, Git-object write,
+repository validator/test, QA wrapper, pre-commit, Graphify update, runtime or
+remote action, AN-3 renderer work, terminal construction, or publication. The
+written S_AN design must be committed and reviewed by the user before the
+`superpowers:writing-plans` phase begins.
+
 ## Verification Plan
 
 ### Per-task Gate
@@ -17180,18 +17497,22 @@ is not applicable because neither surface is mutated.
   `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`, then failed closed at terminal
   pre-publication proof after its immutable review set selected XP_AL. No 4AL
   publisher ran and no B_AL/XP_AL commit exists.
-- The current correction topology is `D_AM/P_AL -> S_AM -> P_AM -> B_AM|XP_AM`.
-  S_AM is exact `9eeb6365e4537de311f2bb46e80171c8719ef9c2`. P_AM is
-  current by exact unique subject
-  `docs(plan): define projection-complete terminal correction proof`; its own
-  OID is intentionally unasserted in its own tree. The planning assets, four
-  pairwise-distinct 4AM candidate/formal reviews, renderer execution, publisher
-  execution, and both mutually exclusive terminal alternatives are not
-  started/not created. P_AM authorizes only AM-2 through AM-8 after AM-1
-  publication and exact-object rebinding. implementation, E_AL, R_AL, XE_AL,
-  E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
-  QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction,
-  and Graphify update are blocked/no authority.
+- The 4AM topology stopped at exact P_AM
+  `143b5efe9b68d8688770b10c82fc3e4a9616bc66`. Its AM-2 specification review
+  passed C0/I0/M0, but quality/security failed C0/I3/M0, so AM-3, B_AM, and
+  XP_AM are unauthorized/uncreated and the rejected blobs remain historical
+  evidence only.
+- The current design topology is
+  `D_AN/P_AM -> S_AN -> P_AN -> B_AN|XP_AN`. S_AN is current by exact unique
+  subject `docs(design): define secure occurrence-bound inventory successor`;
+  its own OID is intentionally unasserted in its own tree. P_AN and every 4AN
+  asset, source/final asset review, AN-3 renderer, immutable terminal review,
+  publisher, B_AN, and XP_AN are not started/not created. S_AN authorizes only
+  written-design review and, after explicit user review, P_AN drafting through
+  `superpowers:writing-plans`. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM,
+  XE_AM, E_AN, R_AN, XE_AN, AN-3, Task 4.5, Wave C, Tasks 5–6, runtime,
+  remote/external actions, QA-wrapper/pre-commit execution, dependency changes,
+  4AL/4AM retry or correction, and Graphify update are blocked/no authority.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
   dispatch, credential change, and raw-log access remain separately gated.
 - A controlled final Agent all-files wrapper attempt requires a new exact
