@@ -129,9 +129,10 @@ four immutable review reports selected XP_AL, but the frozen renderer omitted
 two active asset-freeze projections and left current-transaction-not-run text
 in its candidate Task. No publisher ran and no B_AL/XP_AL commit exists. On
 2026-08-02 the user approved a new T-TSDC-004R-4AM correction design from exact
-P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`. S_AM may draft the
-projection-complete successor design, and future P_AM may freeze concrete
-Plan/Task and asset identities. This approval does not authorize 4AL retry or
+P_AL `fb05e296b6a791f850cf64d99c7dc17577bb7cfc`. Exact S_AM
+`9eeb6365e4537de311f2bb46e80171c8719ef9c2` records the approved design; this
+P_AM Plan may define the bounded planning-asset freeze and review sequence.
+This approval does not authorize 4AL retry or
 correction,
 implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C,
 Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution,
@@ -16687,9 +16688,10 @@ published.
 
 The 4AM lineage is `D_AM -> S_AM -> P_AM -> B_AM|XP_AM`. S_AM is this
 design-only correction checkpoint with exact subject
-`docs(design): define projection-complete terminal successor`. P_AM is a future
+`docs(design): define projection-complete terminal successor`. P_AM is this
 Plan+Task checkpoint with exact subject
-`docs(plan): define projection-complete terminal correction proof`. B_AM and
+`docs(plan): define projection-complete terminal correction proof`; its OID is
+intentionally not self-asserted in its own tree. B_AM and
 XP_AM are future mutually exclusive Task-only terminals. B_AM is selected only
 when the new 4AM package, projection inventory, asset reviews, and four
 P_AM-object reviews are all accepted. XP_AM is selected for a complete
@@ -16826,11 +16828,259 @@ Git state and receipt artifacts may prove the terminal.
 
 #### AM design acceptance boundary
 
-S_AM is sufficient only to authorize drafting P_AM and fresh 4AM assets. It
-does not authorize running the assets, publishing P_AM, assigning 4AM reviewers,
-creating B_AM/XP_AM, running validators/tests/wrappers/pre-commit, updating
-Graphify, or performing runtime/remote actions. P_AM must restate this boundary
-with concrete asset identities before any executable step.
+S_AM is exact commit `9eeb6365e4537de311f2bb46e80171c8719ef9c2`.
+It authorizes this P_AM Plan/Task drafting checkpoint, but it does not authorize
+running future assets, assigning the four terminal reviewers, creating
+B_AM/XP_AM, running validators/tests/wrappers/pre-commit, updating Graphify, or
+performing runtime/remote actions. P_AM must be published and its exact objects
+must be rebound before the asset-freeze steps below begin.
+
+### T-TSDC-004R-4AM — Executable projection-complete correction Plan
+
+P_AM is the Plan+Task checkpoint with exact subject
+`docs(plan): define projection-complete terminal correction proof`. Its parent
+must be exact S_AM `9eeb6365e4537de311f2bb46e80171c8719ef9c2`; its own OID is
+resolved only after publication and is intentionally not self-asserted in its
+tree. P_AM changes only this Plan and the paired Task, both mode `100644`.
+
+P_AM authorizes only the planning-asset freeze, immutable review, terminal
+construction, and Task-only publication sequence below.
+implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions, QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction, and Graphify update are blocked/no authority.
+
+#### AM-1 — Publish and rebind P_AM
+
+**Files:**
+
+- Modify:
+  `docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md`
+- Modify:
+  `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`
+
+- [ ] Prove HEAD is exact S_AM, both paths are the only changed tracked paths,
+  both base and candidate modes are `100644`, and both `git ls-files -v` and
+  `git ls-files -f` report ordinary entries for the two paths.
+- [ ] Publish P_AM without invoking repository hooks. The raw single-parent
+  commit must use the exact subject above, and expected-old ref CAS must name
+  exact S_AM.
+- [ ] Re-resolve P_AM by full parent, distance-one, exact unique subject, raw
+  commit, tree, path, mode, and blob proof. Require a clean branch/index/
+  worktree and repeat both `-v` and `-f` ordinary-entry proofs.
+- [ ] Record the exact P_AM OID and Plan/Task blob OIDs outside P_AM's own tree
+  before any planning asset is authored.
+
+#### AM-2 — Build the closed-world projection inventory
+
+**Planning assets:**
+
+- Create: `/tmp/tsdc-4am-build-inventory.py`
+- Generate: `/tmp/tsdc-4am-projection-inventory.jsonl`
+- Generate: `/tmp/tsdc-4am-projection-preimage.txt`
+
+- [ ] Assign one fresh implementation agent ownership of only the inventory
+  builder and its generated outputs. The agent must not edit repository files
+  and must not reuse a completed 4AL reviewer identity.
+- [ ] Make the builder dependency-free and deterministic under absolute Python
+  with `-I -S`, UTF-8, LF endings, final newlines, a closed environment, and an
+  exact immutable P_AM Task input blob. Obtain repository input only from an
+  exact Git blob object or from one single-open, no-follow, regular-file,
+  bounded descriptor whose device, inode, byte count, SHA256, and Git blob OID
+  are pinned before parsing; never hash and then reopen a mutable pathname.
+- [ ] Emit one JSON object per projection with at least `schema`, `id`,
+  `section`, `selector_kind`, `selector`, `class`, `source_sha256`,
+  `expected_p_am`, `expected_b_am`, `expected_xp_am`,
+  `historical_exception`, and `stale_denylist`.
+- [ ] Scan the complete Task for current-state and 4AM namespace tokens. Every
+  discovered occurrence must be covered by exactly one inventory object, and
+  every inventory object must match exactly one source fragment. The derived
+  count is output evidence, never a hard-coded acceptance constant.
+- [ ] Cover at minimum approval evidence, `TSDC-AM-STATE`, Work Breakdown,
+  Work Log, Planning Verification, Task Execution Evidence, 4AL and 4AM
+  boundaries, the 4AM review-artifact insertion marker, Review Evidence,
+  whole-branch status, Commit Ledger, Deferred/Blocked status, and final
+  handoff. Treat both previously omitted asset-freeze rows as mandatory
+  witnesses.
+- [ ] Classify every covered occurrence as either terminal-transition or
+  hash-preserved historical/static evidence. An exception must name its exact
+  section and fragment hash; broad section, substring, or line-number-only
+  exceptions are forbidden.
+- [ ] Reject missing, duplicate, overlapping, uncovered, multiply-covered, or
+  orphaned entries before writing a success report.
+- [ ] Freeze builder, inventory, and preimage identities by SHA256, byte count,
+  and Git blob OID. Reviewers must consume those exact Git objects or the same
+  single-open pinned descriptors, not mutable `/tmp` pathnames. A distinct
+  read-only specification reviewer and a distinct read-only quality/security
+  reviewer must return `C0/I0/M0` before AM-3.
+
+#### AM-3 — Build and review the projection-complete renderer source
+
+**Planning assets:**
+
+- Create: `/tmp/tsdc-4am-render-terminal.py`
+
+- [ ] Assign a fresh implementation agent ownership of only the renderer
+  source. The 4AL renderer may be read as historical evidence, but its byte
+  identity, fixed row count, replacements, and authority must not be reused.
+- [ ] Define a source-only renderer interface that will later accept only the
+  exact P_AM Task blob, projection inventory, final package, and four immutable
+  review-report blobs. Each input must arrive as an exact Git object or one
+  single-open, no-follow, regular-file, bounded descriptor whose identity is
+  pinned before parsing; mutable pathname reopen is forbidden.
+- [ ] Validate all four review envelopes and pairwise-distinct canonical
+  identities. Select B_AM only for four accepted `C0/I0/M0` verdicts with the
+  required specification and quality/security flags; every complete
+  non-accepted set selects XP_AM. Missing or malformed evidence stops without
+  a candidate.
+- [ ] Replay the inventory preimage proof against exact P_AM Task bytes, apply
+  each terminal-transition entry exactly once, preserve every historical/
+  static fragment hash, and insert all four immutable review envelopes only
+  between the exact `TSDC-4AM-REVIEW-ARTIFACTS` markers.
+- [ ] After rendering, rescan the full candidate. Require the same
+  discovery-to-inventory bijection, the selected terminal state for every
+  transition entry, zero undeclared prior-state phrases, and zero alternative
+  terminal subject or ledger rows.
+- [ ] Emit candidate and publication reports containing the derived inventory
+  count, every input/output fragment hash, per-entry stale counts, Task blob/
+  SHA256/bytes, selected subject, Plan blob equality, and exact prohibited
+  authority tuple.
+- [ ] Do not execute the renderer or generate a candidate, projection report,
+  terminal Task, or publication manifest in this step. Freeze only the renderer
+  source identity by SHA256, byte count, and Git blob OID. Distinct read-only
+  specification and quality/security reviewers must consume that exact source
+  object and return `C0/I0/M0` before AM-4.
+
+#### AM-4 — Build and review the fresh terminal publisher, resolver, and launcher
+
+**Planning assets:**
+
+- Create: `/tmp/tsdc-4am-publish-terminal.py`
+- Create: `/tmp/tsdc-4am-resolve-terminal.py`
+- Create: `/tmp/tsdc-4am-sealed-launcher.py`
+
+- [ ] Assign a fresh implementation agent ownership of these three assets.
+  The 4AL publisher may contribute reviewed algorithmic primitives only through
+  new bytes, complete 4AM rebinding, and fresh review.
+- [ ] The launcher must verify its own and target asset identities, copy exact
+  verified bytes to sealed descriptors, use a closed environment, and never
+  hash then reopen a mutable pathname.
+- [ ] The publisher must consume a pinned no-follow descriptor for the rendered
+  Task and a fresh `tsdc-4am-terminal-publication/v1` manifest. The manifest
+  distinguishes `expected_task_blob` from `new_task_blob` and binds every
+  package, review, inventory, renderer, publisher, subject, author/committer,
+  epoch, offset, path, mode, and object identity.
+- [ ] Before any mutation, prove exact P_AM topology, Plan/Task bytes, primary
+  index, clean tracked state, candidate bytes, same-filesystem transaction
+  directory, and ordinary index state through both `git ls-files -v` and
+  `git ls-files -f`. Reject skip-worktree, assume-unchanged, fsmonitor-valid,
+  intent-to-add, unmerged, sparse, or any other non-ordinary state.
+- [ ] Build the exact Task-only tree and raw single-parent commit, prove the
+  Plan blob equals P_AM, and acquire the primary index guard plus expected-old
+  ref lock before Task-path publication.
+- [ ] Use no-replace Task detach/install CAS, preserve the displaced exact
+  P_AM Task bytes, fsync both parent directories, update the ref only from exact
+  P_AM, install the candidate index atomically, and prove clean final state.
+- [ ] Persist journal states `PREPARED`, `REF_PREPARED`, `TASK_DETACHED`,
+  `TASK_INSTALLED`, `REF_ADVANCED`, `INDEX_INSTALLED`, `COMPLETE`, and
+  `OUTPUT_PENDING`. Resolver classification derives from observed ref/index/
+  path/inode/hash state and returns only `branch-unchanged`, `task-detached`,
+  `task-installed-ref-pending`, `index-reconciliation-required`,
+  `complete-removal-safe`, `ref-conflict`, or `foreign-drift`.
+- [ ] Missing stdout, malformed stdout, process loss, and power loss never
+  authorize retry. Every non-complete recovery mutation requires a new explicit
+  approval; only exact complete-removal-safe residue may be removed after proof.
+- [ ] Freeze all three source identities by SHA256, byte count, and Git blob
+  OID. Separate read-only specification and quality/security reviewers must
+  consume the exact frozen source objects and return `C0/I0/M0` before AM-5.
+
+#### AM-5 — Build and freeze the final immutable review package exactly once
+
+**Planning assets:**
+
+- Create: `/tmp/tsdc-4am-build-review-package.py`
+- Generate once: `/tmp/tsdc-4am-review-package.txt`
+
+- [ ] Assign a fresh implementation agent ownership of only the package-builder
+  source. Do not reuse the 4AL package builder as executable authority.
+- [ ] Make the builder accept only exact Git blob objects or single-open,
+  no-follow, regular-file, bounded descriptors with pinned device, inode, byte
+  count, SHA256, and Git blob OID. It must never treat a mutable pathname,
+  hash-then-reopen result, or reviewer transcript as evidence.
+- [ ] Bind exact D_AM/P_AL, S_AM, P_AM, branch ref, Plan/Task modes and blobs,
+  raw P_AM commit SHA256/bytes, binary `S_AM..P_AM` diff SHA256/bytes, final
+  reviewed inventory-builder/inventory/preimage identities, final reviewed
+  renderer identity, all three final reviewed publisher/resolver/launcher
+  identities, the final reviewed package-builder identity, manifest schema
+  version, four review slots, and the exact prohibited-authority tuple.
+- [ ] Use a closed LF-delimited grammar with unique keys, no duplicate fields,
+  no mutable paths as evidence, and no self-asserted P_AM OID from P_AM's tree.
+- [ ] Freeze and review the package-builder source before executing it. One
+  read-only specification reviewer and one read-only quality/security reviewer,
+  distinct from asset implementers and future `C_AM_*`/`F_AM_*` reviewers,
+  must consume its exact Git blob and return `C0/I0/M0`.
+- [ ] Execute the reviewed builder exactly once from the final reviewed asset
+  identities, then freeze the resulting package by SHA256, byte count, and Git
+  blob OID. Do not rebuild, patch, or replace this package downstream.
+
+#### AM-6 — Run four immutable P_AM reviews over the one final package
+
+- [ ] Resolve the AM-5 package by its exact Git blob OID, SHA256, and byte count.
+  Reviewers must consume that Git object or the same single-open pinned
+  descriptor; mutable-path-only evidence is invalid. Never rebuild the package.
+- [ ] Assign four fresh, pairwise-distinct, read-only canonical identities:
+  `C_AM_SPEC`, `C_AM_QS`, `F_AM_SPEC`, and `F_AM_QS`. They must differ from all
+  completed 4AL identities and all 4AM asset implementers/reviewers.
+- [ ] Candidate reviewers consume only the immutable P_AM package. Formal
+  reviewers consume the same package plus both candidate report blobs. Every
+  report binds assignment source, canonical identity, exact package identity,
+  P_AM topology and document blobs, verdict, readiness, and findings.
+- [ ] Materialize each exact LF-delimited report as a Git blob. A reviewer edit,
+  commit, mutable-path-only report, identity collision, malformed envelope, or
+  incomplete set stops before terminal construction.
+
+#### AM-7 — Render and prove exactly one terminal candidate
+
+- [ ] Invoke the sealed renderer exactly once only after all four immutable
+  reports exist. Feed it only the exact pinned P_AM Task, inventory, AM-5
+  package, and four report objects. Capture its selected terminal, candidate
+  identity, projection/preimage reports, terminal Task, and publication
+  manifest without executing the publisher.
+- [ ] Independently prove the candidate is Task-only, preserves the P_AM Plan
+  blob, contains all four exact review envelopes, satisfies the full-document
+  discovery-to-inventory bijection, changes every transition entry exactly
+  once, preserves every historical/static entry, contains the exact blocked
+  tuple, and excludes the alternative terminal subject and ledger row.
+- [ ] Any pre-publication failure leaves P_AM current and exhausts this 4AM
+  attempt. Do not patch the candidate, rerun the renderer, infer acceptance, or
+  invoke the publisher.
+
+#### AM-8 — Publish B_AM or XP_AM once, or stop
+
+- [ ] B_AM is eligible only when the four reports are complete, structurally
+  valid, pairwise distinct, and fully accepted. Every complete non-accepted set
+  makes XP_AM the sole eligible terminal.
+- [ ] Invoke the sealed publisher exactly once only after AM-7 passes. Require
+  expected-old P_AM ref CAS, Task-only tree diff, exact Plan equality, ordinary
+  `-v` and `-f` index proofs, durable Task/index/ref convergence, clean status,
+  and zero foreign residue before accepting success output.
+- [ ] If stdout is missing or ambiguous, run only the read-only stateless
+  resolver. Never retry from process status or stdout loss.
+- [ ] Stop at B_AM or XP_AM. B_AM still needs a separate user decision before
+  any implementation successor; XP_AM is exhausted and grants no correction or
+  downstream authority.
+
+#### 4AM failure matrix
+
+| Failure point | Durable result | Next authority |
+| --- | --- | --- |
+| P_AM publication proof or expected-old CAS fails | S_AM remains current or observed foreign state is preserved | new analysis and approval; no automatic retry |
+| Inventory discovery/bijection or either asset review fails | P_AM remains current; frozen rejected bytes remain evidence only | stop and return to design |
+| Package or four-review evidence is missing, malformed, mutable, or identity-colliding | no terminal candidate | evidence correction only when it does not change frozen inputs; otherwise new design approval |
+| Any complete review is non-accepted | XP_AM is sole eligible terminal | render XP_AM once only after the complete set is frozen |
+| Terminal pre-publication proof fails | P_AM remains current; publisher not run | 4AM exhausted; no patch or rerender |
+| Publisher stops before Task detach | P_AM ref/index/Task preserved | explicit recovery analysis; no automatic retry |
+| Task detached or installed before ref CAS | exact old/new Task artifacts and P_AM ref/index preserved | explicit no-replace resume or rollback approval |
+| Ref advances before index installation | selected terminal ref/Task plus old index and owned lock preserved | explicit roll-forward approval only |
+| Ref conflict, foreign lock, path/inode/hash drift, or unclassified tuple | all evidence retained without mutation | new analysis and approval |
+| Exact terminal is complete but stdout is lost | Git state and durable receipt are authoritative | read-only resolver only; never retry |
 
 ## Verification Plan
 
@@ -16931,10 +17181,15 @@ is not applicable because neither surface is mutated.
   pre-publication proof after its immutable review set selected XP_AL. No 4AL
   publisher ran and no B_AL/XP_AL commit exists.
 - The current correction topology is `D_AM/P_AL -> S_AM -> P_AM -> B_AM|XP_AM`.
-  S_AM is this design-only checkpoint. P_AM, the four pairwise-distinct 4AM
-  candidate/formal reviews, and both mutually exclusive terminal alternatives
-  do not exist now. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task
-  4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+  S_AM is exact `9eeb6365e4537de311f2bb46e80171c8719ef9c2`. P_AM is
+  current by exact unique subject
+  `docs(plan): define projection-complete terminal correction proof`; its own
+  OID is intentionally unasserted in its own tree. The planning assets, four
+  pairwise-distinct 4AM candidate/formal reviews, renderer execution, publisher
+  execution, and both mutually exclusive terminal alternatives are not
+  started/not created. P_AM authorizes only AM-2 through AM-8 after AM-1
+  publication and exact-object rebinding. implementation, E_AL, R_AL, XE_AL,
+  E_AM, R_AM, XE_AM, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
   QA-wrapper/pre-commit execution, dependency changes, 4AL retry/correction,
   and Graphify update are blocked/no authority.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
