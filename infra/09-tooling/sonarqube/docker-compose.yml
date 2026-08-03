@@ -22,7 +22,7 @@ services:
       - 'tooling'
       - sast
     extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
-    image: sonarqube:26.6.0.123539-community
+    image: sonarqube:26.7.0.124771-community
     container_name: sonarqube
     read_only: false
     expose: ['${SONARQUBE_PORT:-9000}']

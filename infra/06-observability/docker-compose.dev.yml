@@ -255,7 +255,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.1.0
+    image: grafana/grafana:13.1.1
     container_name: infra-grafana
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
@@ -401,7 +401,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.1.1
+    image: grafana/pyroscope:2.2.0
     container_name: infra-pyroscope
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
