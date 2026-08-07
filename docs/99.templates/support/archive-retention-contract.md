@@ -116,6 +116,27 @@ a tombstone as current guidance. An immutable snapshot is append-only,
 content-addressed evidence, not Markdown current truth and not an input to
 lifecycle inference.
 
+## Archive Roles
+
+`docs/98.archive/` serves two distinct roles. Both use `status: archived`.
+
+| Role            | Purpose                                                                  | Template                      | Retains body |
+| :-------------- | :----------------------------------------------------------------------- | :---------------------------- | :----------- |
+| Tombstone       | Path redirect only                                                       | `archive.template.md`         | No           |
+| Content archive | Full preservation of terminal work, mirroring the source stage structure | `content-archive.template.md` | Yes          |
+
+Three rules govern the model.
+
+1. An archived document leaves a forward pointer at its original location when
+   the source stage survives. When the source stage is itself removed, inbound
+   links are rewritten to the archive path and the mapping is recorded in the
+   archive ledger instead. A dangling pointer inside a deleted directory serves
+   no reader.
+2. Architecture decision records are never moved. Supersession is a status
+   change plus a `superseded-by` link, applied in place.
+3. Content archive entries retain their date prefix. The archive is the one
+   place where a filename date is an accurate event record.
+
 ## Related Documents
 
 - [corpus migration contract](./corpus-migration-contract.md)
