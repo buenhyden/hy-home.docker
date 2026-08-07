@@ -66,11 +66,11 @@ status: active
 
 | 항목                    | 결과                                          |
 | ----------------------- | --------------------------------------------- |
-| `.env.example` 키 수    | 325                                           |
+| `.env.example` 키 수    | 322                                           |
 | `.env` 키 수            | 325                                           |
-| 키셋 동일 여부          | ✓ 동일 (순서 차이만 있음)                     |
+| 키셋 동일 여부          | ✗ 상이 (3개 차이)                             |
 | `.env.example`에만 존재 | 없음                                          |
-| `.env`에만 존재         | 없음                                          |
+| `.env`에만 존재         | `INFLUXDB_BUCKET`, `INFLUXDB_ORG`, `INFLUXDB_USERNAME` |
 | 순서 차이               | `KAFKA_EXTERNAL_HOSTNAME`, `QDRANT_GRPC_PORT` |
 
 ## 상세 분석
