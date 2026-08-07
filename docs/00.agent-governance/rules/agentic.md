@@ -71,9 +71,11 @@ Standard behavior contract for repo-local, auditable agent execution.
   canonical contract, role/function routing, permission/mutation boundary,
   provider model/reasoning policy, semantic event hooks, controlled QA and
   validation, tracked CI, and sanitized evidence/handoff.
-- The sole lifecycle is
-  `discover -> design/plan -> approval -> implement -> validate ->
-  independent-review -> evidence -> handoff`.
+- The lifecycle is owned by
+  [`workflows.md`](./workflows.md). This rule adds no second sequence; the
+  agent-first phases `discover -> design/plan -> approval -> implement ->
+validate -> independent-review -> evidence -> handoff` describe agent
+  behavior within that lifecycle, not a competing one.
 - Harness layers apply controls to lifecycle states; they are not another
   phase sequence. Existing `harness_loops` are bounded retry/event controls and
   must name their applicable `workflow_states`.
