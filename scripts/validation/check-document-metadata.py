@@ -12,6 +12,7 @@ import hashlib
 import os
 import pathlib
 import re
+import stat
 import subprocess
 import sys
 from collections.abc import Mapping, Sequence
@@ -19,7 +20,33 @@ from collections.abc import Mapping, Sequence
 import yaml
 
 
-_VALIDATION_DIRECTORY = str(pathlib.Path(__file__).resolve().parent)
+_ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
+
+
+def _repository_root() -> pathlib.Path:
+    fallback = pathlib.Path(__file__).resolve().parents[2]
+    override = os.environ.get("HYHOME_CI_GATE_ROOT")
+    if override is None:
+        return fallback
+    match = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", override)
+    if match is None:
+        raise SystemExit(_ROOT_ERROR)
+    try:
+        descriptor = os.fstat(int(match.group(1)))
+        direct = fallback.stat()
+    except (OSError, ValueError, OverflowError):
+        raise SystemExit(_ROOT_ERROR) from None
+    if (
+        not stat.S_ISDIR(descriptor.st_mode)
+        or (descriptor.st_dev, descriptor.st_ino)
+        != (direct.st_dev, direct.st_ino)
+    ):
+        raise SystemExit(_ROOT_ERROR)
+    return pathlib.Path(override)
+
+
+ROOT = _repository_root()
+_VALIDATION_DIRECTORY = str(ROOT / "scripts/validation")
 if _VALIDATION_DIRECTORY not in sys.path:
     sys.path.insert(0, _VALIDATION_DIRECTORY)
 
@@ -31,7 +58,6 @@ from agent_governance_contract import (  # noqa: E402
 )
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_AGENT_GOVERNANCE_ARTIFACTS = (
     ROOT / "docs/00.agent-governance/contracts/agent-governance-artifacts.yaml"
@@ -642,6 +668,12 @@ README_PROFILE_KEYS = frozenset(
     }
 )
 README_FRONTMATTER_ALLOWED_KEYS = frozenset({"status", "layer", "generated_by", "runtime"})
+TYPED_EXAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
+TYPED_EXAMPLE_FIXTURE_STATUS = "draft"
+TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
+    "spec:126-security-supply-chain-remediation",
+    "spec:127-deployment-release-engineering-remediation",
+)
 TEMPLATE_ROLE_KEYS = frozenset(
     {
         "source",
@@ -2372,6 +2404,25 @@ def validate_record(
     template_findings = _validate_template_source(record, profiles)
     if template_findings is not None:
         return template_findings
+    if record.path.as_posix() == TYPED_EXAMPLE_FIXTURE_PATH:
+        if record.metadata.get("status") != TYPED_EXAMPLE_FIXTURE_STATUS:
+            findings.append(
+                _finding(
+                    record,
+                    "typed-example-status-invalid",
+                    "typed example fixture must remain draft and cannot be active truth",
+                )
+            )
+        if record.metadata.get("parent_ids") != list(
+            TYPED_EXAMPLE_FIXTURE_PARENT_IDS
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "typed-example-parent-ids-invalid",
+                    "typed example fixture must use its exact domain parent pair",
+                )
+            )
     if record.artifact_type == "unsupported":
         findings.append(
             _finding(

@@ -2,7 +2,7 @@
 
 > High-performance analytical database for real-time analytics.
 
-## Overview (KR)
+## Overview
 
 `warehouses` 스택은 서브-세컨드 OLAP 쿼리 및 대규모 데이터 웨어하우징을 위해 StarRocks 클러스터 (FE 및 BE 노드)를 제공한다. `infra_net`과 통합되어 안전한 데이터 수집 및 쿼리를 지원한다.
 
@@ -57,9 +57,15 @@ warehouses/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)를 참조한다.
 2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md)을 확인한다.
 3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md)을 사용한다.
+
+4. StarRocks 노드(FE/BE)를 수정하기 전에 메타데이터 저장 경로와 영속성 설정을 확인한다.
+5. BE 노드 확장 시 FE 노드에서의 등록 절차를 런북에서 먼저 찾아본다.
+6. 데이터 쿼리 효율성을 높이기 위해 스키마 변경을 제안하기 전 시스템 가이드의 최적화 파트를 읽는다.
 
 ## Validation
 
@@ -77,12 +83,6 @@ warehouses/
 - **Policy**: [docs/05.operations/policies/04-data/analytics/warehouses.md](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md)
 - **Runbook**: [docs/05.operations/runbooks/04-data/analytics/warehouses.md](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md)
 - **Health**: FE/BE healthchecks in `docker-compose.yml`
-
-## AI Agent Guidance
-
-1. StarRocks 노드(FE/BE)를 수정하기 전에 메타데이터 저장 경로와 영속성 설정을 확인한다.
-2. BE 노드 확장 시 FE 노드에서의 등록 절차를 런북에서 먼저 찾아본다.
-3. 데이터 쿼리 효율성을 높이기 위해 스키마 변경을 제안하기 전 시스템 가이드의 최적화 파트를 읽는다.
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.

@@ -40,7 +40,7 @@ status: active
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: prom/prometheus:v3.13.0|container_name: infra-prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: prom/prometheus:v3.13.1|container_name: infra-prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Scrape job과 rule file boundary를 확인한다.

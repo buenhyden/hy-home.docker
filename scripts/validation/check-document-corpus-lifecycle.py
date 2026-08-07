@@ -24,10 +24,48 @@ from typing import Any
 import yaml
 
 
-ROOT = pathlib.Path(__file__).resolve().parents[2]
+_ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
+
+
+def _repository_root() -> pathlib.Path:
+    fallback = pathlib.Path(__file__).resolve().parents[2]
+    override = os.environ.get("HYHOME_CI_GATE_ROOT")
+    if override is None:
+        return fallback
+    match = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", override)
+    if match is None:
+        raise SystemExit(_ROOT_ERROR)
+    try:
+        descriptor = os.fstat(int(match.group(1)))
+        direct = fallback.stat()
+    except (OSError, ValueError, OverflowError):
+        raise SystemExit(_ROOT_ERROR) from None
+    if (
+        not stat.S_ISDIR(descriptor.st_mode)
+        or (descriptor.st_dev, descriptor.st_ino)
+        != (direct.st_dev, direct.st_ino)
+    ):
+        raise SystemExit(_ROOT_ERROR)
+    return pathlib.Path(override)
+
+
+ROOT = _repository_root()
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
+TARGET_SURFACE_DELTA_SCRIPT = (
+    ROOT / "scripts/validation/target_surface_delta_contract.py"
+)
+SAMPLE_SERVICE_FIXTURE_PATH = "examples/sample-web-service/service.md"
+SAMPLE_SERVICE_FIXTURE_METADATA = {
+    "status": "draft",
+    "artifact_id": "spec:sample-web-service",
+    "artifact_type": "spec",
+    "parent_ids": [
+        "spec:126-security-supply-chain-remediation",
+        "spec:127-deployment-release-engineering-remediation",
+    ],
+}
 
 MODES = (
     "check-contract",
@@ -93,6 +131,19 @@ def _load_metadata_module() -> Any:
     return module
 
 
+def _load_target_surface_delta_module() -> Any:
+    spec = importlib.util.spec_from_file_location(
+        "target_surface_delta_for_corpus_lifecycle",
+        TARGET_SURFACE_DELTA_SCRIPT,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("target-surface delta validator module is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class _BootstrapProfileError(ValueError):
     """Used only until the canonical metadata module is loaded safely."""
 
@@ -107,6 +158,7 @@ class _CorpusSafetyError(Exception):
 
 
 metadata: Any = None
+target_surface_delta: Any = None
 Finding: Any = None
 Record: Any = None
 ProfileError: type[Exception] = _BootstrapProfileError
@@ -125,6 +177,15 @@ def _ensure_metadata_loaded() -> Any:
         Record = metadata.Record
         ProfileError = metadata.ProfileError
     return metadata
+
+
+def _ensure_target_surface_delta_loaded() -> Any:
+    """Load the canonical successor contract only after CLI-shape validation."""
+
+    global target_surface_delta
+    if target_surface_delta is None:
+        target_surface_delta = _load_target_surface_delta_module()
+    return target_surface_delta
 
 
 @dataclasses.dataclass(frozen=True)
@@ -2048,6 +2109,138 @@ def _surface_partition_plan_findings(
     return []
 
 
+def _sample_service_predecessor_row_valid(
+    predecessor_row: MigrationManifestRow,
+) -> bool:
+    """Keep the predecessor manifest's historical sample row immutable."""
+
+    return (
+        predecessor_row.source_path.as_posix() == SAMPLE_SERVICE_FIXTURE_PATH
+        and _safe_path_text(predecessor_row.target_path)
+        == SAMPLE_SERVICE_FIXTURE_PATH
+        and predecessor_row.artifact_id == "spec:sample-web-service"
+        and predecessor_row.artifact_type_before is None
+        and predecessor_row.artifact_type_after == "spec"
+        and predecessor_row.surface_class == "typed-example"
+        and predecessor_row.status_before == "active"
+        and predecessor_row.status_after == "active"
+        and predecessor_row.parent_ids
+        == ("spec:133-target-surface-contract-convergence",)
+        and predecessor_row.disposition == "migrate"
+        and predecessor_row.canonical_replacement is None
+        and not predecessor_row.active_consumers
+        and predecessor_row.partition_plan is None
+        and predecessor_row.preservation_class is None
+        and predecessor_row.evidence == ManifestEvidence((), (), (), (), ())
+        and predecessor_row.review_verdict == ReviewVerdict("pass", "pass")
+    )
+
+
+def _sample_service_successor_handoff_valid(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    target: str,
+    target_record: Record,
+    predecessor_row: MigrationManifestRow,
+) -> bool:
+    """Admit the exact successor-owned sample fixture without rewriting history."""
+
+    if (
+        target != SAMPLE_SERVICE_FIXTURE_PATH
+        or not _sample_service_predecessor_row_valid(predecessor_row)
+        or not target_record.frontmatter_present
+        or target_record.metadata != SAMPLE_SERVICE_FIXTURE_METADATA
+        or metadata.matching_template_roles(
+            pathlib.Path(target),
+            "spec",
+            profiles,
+        )
+        != ["service"]
+    ):
+        return False
+    delta = _ensure_target_surface_delta_loaded()
+    try:
+        document = delta.load_delta_manifest(root)
+        findings = delta.validate_delta_manifest(root, document)
+    except delta.ContractInputError:
+        return False
+    if findings:
+        return False
+    if (
+        document.schema_version != delta.SCHEMA_VERSION
+        or document.predecessor_closure
+        != delta.DEFAULT_PREDECESSOR_CLOSURE
+        or document.implementation_base
+        != delta.DEFAULT_IMPLEMENTATION_BASE
+        or document.enforcement != "advisory"
+        or document.target_roots != delta.TARGET_ROOTS
+    ):
+        return False
+    matching_rows = [
+        candidate
+        for candidate in document.entries
+        if candidate.path == SAMPLE_SERVICE_FIXTURE_PATH
+    ]
+    if len(matching_rows) != 1:
+        return False
+    expected_row = delta.DeltaManifestRow(
+        path=SAMPLE_SERVICE_FIXTURE_PATH,
+        surface_class="typed-example",
+        profile="service",
+        changed_since=delta.DEFAULT_PREDECESSOR_CLOSURE,
+        disposition="update",
+        canonical_owner=SAMPLE_SERVICE_FIXTURE_PATH,
+        direct_consumers=("examples/sample-web-service/README.md",),
+        finding=(
+            "Updated examples/sample-web-service/service.md as a draft Service "
+            "fixture with its exact domain parent pair and no active SDLC claim."
+        ),
+        replacement=None,
+        secret_safety="not-applicable",
+        validators=(
+            "scripts/validation/check-document-metadata.py",
+            "scripts/validation/check-target-surface-contract.py",
+            "scripts/validation/check-target-surface-delta-contract.py",
+        ),
+        tests=(
+            "tests/validation/test_document_metadata.py",
+            "tests/validation/test_target_surface_contracts.py",
+            "tests/validation/test_target_surface_delta_contracts.py",
+        ),
+        provenance=(
+            (
+                "git:63039b5b0b20c99a10aae7162627afefcd7a1d8b.."
+                "1671e9beb257b538d258a513502f3324ed6c8d0b:"
+                "examples/sample-web-service/service.md"
+            ),
+            "implementation-base:19ee47270e3897073ab9a3f86dfd4cce0f4b2e74",
+        ),
+        rollback=(
+            (
+                "git-revert:1671e9beb257b538d258a513502f3324ed6c8d0b:"
+                "examples/sample-web-service/service.md"
+            ),
+        ),
+        spec_verdict=delta.PENDING_REVIEW_VERDICT,
+        quality_verdict=delta.PENDING_REVIEW_VERDICT,
+    )
+    row = matching_rows[0]
+    nonfailed_verdicts = {
+        delta.PENDING_REVIEW_VERDICT,
+        delta.PASSING_REVIEW_VERDICT,
+    }
+    return (
+        row.spec_verdict in nonfailed_verdicts
+        and row.quality_verdict in nonfailed_verdicts
+        and dataclasses.replace(
+            row,
+            spec_verdict=delta.PENDING_REVIEW_VERDICT,
+            quality_verdict=delta.PENDING_REVIEW_VERDICT,
+        )
+        == expected_row
+    )
+
+
 def _surface_result_state_findings(
     root: pathlib.Path,
     profiles: dict[str, object],
@@ -2179,6 +2372,21 @@ def _surface_result_state_findings(
         and all(isinstance(item, str) for item in target_parents)
         else ()
     )
+    sample_successor_handoff = _sample_service_successor_handoff_valid(
+        root,
+        profiles,
+        target,
+        target_record,
+        row,
+    )
+    sample_predecessor_status_valid = (
+        target != SAMPLE_SERVICE_FIXTURE_PATH
+        or (row.status_before, row.status_after) == ("active", "active")
+    )
+    sample_predecessor_parents_valid = (
+        target != SAMPLE_SERVICE_FIXTURE_PATH
+        or row.parent_ids == ("spec:133-target-surface-contract-convergence",)
+    )
     if target_artifact_type != row.artifact_type_after:
         findings.append(
             _finding(
@@ -2225,7 +2433,14 @@ def _surface_result_state_findings(
         dataclasses.replace(target_record, previous_status=row.status_before),
         profiles,
     )
-    if normalized_status != row.status_after and not promoted_hop_valid:
+    if (
+        not sample_predecessor_status_valid
+        or (
+            normalized_status != row.status_after
+            and not promoted_hop_valid
+            and not sample_successor_handoff
+        )
+    ):
         findings.append(
             _finding(
                 target,
@@ -2233,7 +2448,9 @@ def _surface_result_state_findings(
                 "result target status differs from manifest truth",
             )
         )
-    if normalized_parents != row.parent_ids:
+    if not sample_predecessor_parents_valid or (
+        normalized_parents != row.parent_ids and not sample_successor_handoff
+    ):
         findings.append(
             _finding(
                 target,
@@ -2241,7 +2458,7 @@ def _surface_result_state_findings(
                 "result target parents differ from manifest truth",
             )
         )
-    if row.disposition == "migrate":
+    if row.disposition == "migrate" and not sample_successor_handoff:
         profile_type = row.artifact_type_after
         profile_errors: list[Finding] = []
         if not isinstance(profile_type, str) or profile_type not in registered_types:

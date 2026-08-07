@@ -9,6 +9,7 @@ evidence.
 ## Surface Map
 
 - [CI quality workflow](./workflows/ci-quality.yml)
+- [Typed workflow and gate registry](./workflow-contract.yml)
 - [Document corpus lifecycle workflow](./workflows/document-corpus-lifecycle.yml)
 - [Contributor greeting workflow](./workflows/greetings.yml)
 - [Pull request labeler workflow](./workflows/pr-labeler.yml)
@@ -27,11 +28,13 @@ evidence.
 
 ## Verification
 
-- [Local QA gate runner](../scripts/validation/run-local-qa-gates.sh)
+- [Typed gate CLI](../scripts/validation/run-ci-gate.py)
+- [Local QA profile wrapper](../scripts/validation/run-local-qa-gates.sh)
 - [Repository contract checker](../scripts/validation/check-repo-contracts.sh)
+- [Focused workflow checker](../scripts/validation/check-github-workflow-contract.py)
 
 ## Related Documents
 
 - [Agent governance overview](../docs/00.agent-governance/README.md)
 - [Current project memory](../docs/00.agent-governance/memory/current.md)
-- [Active convergence task](../docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md)
+- [Active convergence task](../docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md)

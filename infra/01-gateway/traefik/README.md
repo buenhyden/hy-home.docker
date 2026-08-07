@@ -2,7 +2,7 @@
 
 > Primary edge router with dynamic service discovery and TLS orchestration for the hy-home.docker ecosystem.
 
-## Overview (KR)
+## Overview
 
 Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker 프로바이더를 통한 동적 서비스 탐색, 자동 TLS 종료, 그리고 트래픽 모니터링 및 관리를 위한 대시보드를 제공합니다.
 
@@ -65,10 +65,24 @@ traefik/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Start by reviewing `config/traefik.yml` to understand the core routing entrypoints.
 2. Check `dynamic/middleware.yml` when adding authentication or rate-limiting to a new service.
 3. Use labels in your service's `docker-compose.yml` to register routes with Traefik.
 4. After any configuration change, run the root profile validator and the gateway hardening check before using runtime dashboard evidence.
+5. Do not modify `traefik.yml` entrypoints without a full cluster impact analysis.
+
+- **Required**: Any dynamic routing change must be verified via the Traefik Dashboard.
+- **Validation**: Use static validation first; inspect Traefik logs only for an approved running stack.
+
+### Environment Variables
+
+| Variable          | Required | Description |
+| ----------------- | -------: | ----------- |
+| `DEFAULT_URL`     |      Yes | Primary domain (e.g., localhost or your-domain.com) |
+| `HTTP_HOST_PORT`  |       No | Host port for HTTP (default: 80) |
+| `HTTPS_HOST_PORT` |       No | Host port for HTTPS (default: 443) |
 
 ## Configuration
 
@@ -97,20 +111,6 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 1. Entrypoint: `websecure` (Port 443).
 2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:4180/oauth2/auth`.
 3. Error Redirect: `sso-errors@file` handles 401/403 redirects to `/oauth2/sign_in`.
-
-## AI Agent Operation Policy
-
-- **Required**: Any dynamic routing change must be verified via the Traefik Dashboard.
-- **Caution**: Do not modify `traefik.yml` entrypoints without a full cluster impact analysis.
-- **Validation**: Use static validation first; inspect Traefik logs only for an approved running stack.
-
-### Environment Variables
-
-| Variable          | Required | Description |
-| ----------------- | -------: | ----------- |
-| `DEFAULT_URL`     |      Yes | Primary domain (e.g., localhost or your-domain.com) |
-| `HTTP_HOST_PORT`  |       No | Host port for HTTP (default: 80) |
-| `HTTPS_HOST_PORT` |       No | Host port for HTTPS (default: 443) |
 
 ## Validation
 

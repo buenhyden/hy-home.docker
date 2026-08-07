@@ -73,6 +73,14 @@ policy block is a contract violation even when the duplicated text is accurate.
 Infrastructure profiles distinguish a `Folder index README` from a
 `Service leaf README`. Service-local content may include `Secret refs` and
 `Troubleshooting` when the matched registry profile permits those headings.
+Generic `AI Agent Guidance` and `AI Agent Operation Policy` sections are not
+local content. Replace shared execution or documentation rules with a short
+link to the Stage 00
+[`agentic.md`](../../00.agent-governance/rules/agentic.md) and
+[`documentation-protocol.md`](../../00.agent-governance/rules/documentation-protocol.md)
+owners. Keep service-specific commands, constraints, validation, and
+troubleshooting as local subsections under the profile-admitted README
+envelope.
 Script inventory and the `scripts/validation/` boundary, including the rule
 against root-level `scripts/*.sh` duplicates, remain owned by
 [`scripts/README.md`](../../../scripts/README.md).

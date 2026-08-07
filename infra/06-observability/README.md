@@ -64,20 +64,27 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Follow the [LGTM Stack Guide](../../docs/05.operations/guides/06-observability/lgtm-stack.md).
 2. Refer to the [Alloy Collector Guide](../../docs/05.operations/guides/06-observability/alloy.md) for data piping.
 3. Check the [Operations Policy](../../docs/05.operations/policies/06-observability/README.md) for retention.
 4. Consult the [Observability Runbook](../../docs/05.operations/runbooks/06-observability/README.md) for recovery.
 
+5. Always use `Alloy` as the primary entry point for telemetry data (OTLP).
+6. Dashboards MUST be provisioned via code in `grafana/provisioning/dashboards`.
+7. Recording rules and alerts MUST be defined in `prometheus/config/alert_rules`.
+8. Monitor `MinIO` bucket health as it is critical for Loki/Tempo availability.
+
 ## Tech Stack
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Metrics    | Prometheus                     | v3.13.0                   |
+| Metrics    | Prometheus                     | v3.13.1                   |
 | Logs       | Loki                           | v3.7.3-custom, MinIO bucket `loki-bucket` |
 | Tracing    | Tempo                          | v3.0.2-custom, MinIO bucket `tempo-bucket` |
 | Profiling  | Pyroscope                      | v2.1.0                    |
-| Collector  | Grafana Alloy                  | v1.17.1                   |
+| Collector  | Grafana Alloy                  | v1.18.0                   |
 | UI         | Grafana                        | v13.1.0                   |
 | Alerting   | Alertmanager                   | v0.33.0                   |
 | Batch metrics | Pushgateway                 | v1.11.3                   |
@@ -134,10 +141,3 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 - [04-data](../04-data/README.md) - MinIO for telemetry storage.
 - [02-auth](../02-auth/README.md) - Keycloak for SSO.
 - [01-gateway](../01-gateway/README.md) - Traefik routing to UIs.
-
-## AI Agent Guidance
-
-1. Always use `Alloy` as the primary entry point for telemetry data (OTLP).
-2. Dashboards MUST be provisioned via code in `grafana/provisioning/dashboards`.
-3. Recording rules and alerts MUST be defined in `prometheus/config/alert_rules`.
-4. Monitor `MinIO` bucket health as it is critical for Loki/Tempo availability.

@@ -39,7 +39,7 @@ pyroscope/
 | Category | Technology | Version | Role |
 | :--- | :--- | :--- | :--- |
 | Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | v2.1.0 | Continuous Profiling Engine |
-| Collector | [Grafana Alloy](../alloy/README.md) | v1.17.1 | Profile Scraping & Remapping |
+| Collector | [Grafana Alloy](../alloy/README.md) | v1.18.0 | Profile Scraping & Remapping |
 | Visualization | [Grafana](../grafana/README.md) | v13.1.0 | Unified Dashboards |
 
 ## Available Scripts
@@ -59,12 +59,6 @@ pyroscope/
 
 > [!IMPORTANT]
 > Pyroscope currently uses a local filesystem backend mounted at `/var/lib/pyroscope`. A fixed retention period is not declared in `pyroscope.yaml`; capacity and retention changes require an approved config update.
-
-## AI Agent Guidance
-
-1. **Flamegraph Analysis**: Use the `traceqlEditor` feature toggle in Grafana to correlate profiles with traces.
-2. **Resource Monitoring**: Profiling ingestion can be CPU-intensive; monitor `infra-pyroscope` container stats during peak loads.
-3. **Traceability**: Refer to the dedicated system guide for remapping logic and custom labels.
 
 ## Validation
 
@@ -91,7 +85,8 @@ pyroscope/
 
 ## How to Work in This Area
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
+1. **Flamegraph Analysis**: Use the `traceqlEditor` feature toggle in Grafana to correlate profiles with traces.
+2. **Resource Monitoring**: Profiling ingestion can be CPU-intensive; monitor `infra-pyroscope` container stats during peak loads.
+3. **Traceability**: Refer to the dedicated system guide for remapping logic and custom labels.

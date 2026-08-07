@@ -32,92 +32,58 @@ allowed_docs=(
 mapfile -t actual_docs < <(find docs -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
 expected_docs="$(printf '%s\n' "${allowed_docs[@]}" | sort)"
 actual_docs_text="$(printf '%s\n' "${actual_docs[@]}")"
-
-section "Canonical document contracts"
-if ! python3 scripts/validation/check-document-metadata.py --mode check-contracts; then
-  failures=$((failures + 1))
-fi
-
-section "Document corpus lifecycle Foundation checks"
-lifecycle_contract="docs/99.templates/support/document-corpus-migration-contract.yaml"
-lifecycle_checker="scripts/validation/check-document-corpus-lifecycle.py"
-lifecycle_tests="tests/validation/test_document_corpus_lifecycle.py"
-lifecycle_workflow=".github/workflows/document-corpus-lifecycle.yml"
-
-[[ -f "$lifecycle_contract" ]] || fail "missing document corpus lifecycle contract: $lifecycle_contract"
-[[ -f "$lifecycle_checker" ]] || fail "missing document corpus lifecycle checker: $lifecycle_checker"
-[[ -f "$lifecycle_tests" ]] || fail "missing document corpus lifecycle tests: $lifecycle_tests"
-[[ -f "$lifecycle_workflow" ]] || fail "missing document corpus lifecycle workflow: $lifecycle_workflow"
-
-if [[ -f "$lifecycle_checker" && -f "$lifecycle_contract" ]]; then
-  if ! python3 "$lifecycle_checker" --mode check-contract; then
-    failures=$((failures + 1))
-  fi
-  if ! python3 "$lifecycle_checker" --mode check-promoted; then
-    failures=$((failures + 1))
-  fi
-
-  lifecycle_base_ref=""
-  if [[ -n "${TEMPLATE_GATE_BASE:-}" ]]; then
-    if git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}" 2>/dev/null; then
-      lifecycle_base_ref="$TEMPLATE_GATE_BASE"
-    else
-      fail "TEMPLATE_GATE_BASE does not resolve to a commit for lifecycle impact validation"
-    fi
-  elif git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then
-    lifecycle_base_ref="HEAD~1"
-  else
-    echo "SKIP: document corpus lifecycle impact check; no comparison base exists"
-  fi
-
-  if [[ -n "$lifecycle_base_ref" ]]; then
-    if ! python3 "$lifecycle_checker" --mode check-impacted --base-ref "$lifecycle_base_ref"; then
-      failures=$((failures + 1))
-    fi
-  fi
-fi
-
-section "Target surface convergence contracts"
-target_surface_checker="scripts/validation/check-target-surface-contract.py"
-target_surface_library="scripts/validation/target_surface_contract.py"
-target_surface_tests="tests/validation/test_target_surface_contracts.py"
-
-[[ -f "$target_surface_checker" ]] || fail "missing target surface checker: $target_surface_checker"
-[[ -f "$target_surface_library" ]] || fail "missing target surface library: $target_surface_library"
-[[ -f "$target_surface_tests" ]] || fail "missing target surface tests: $target_surface_tests"
-if [[ -f "$target_surface_checker" && -f "$target_surface_library" ]]; then
-  if ! python3 "$target_surface_checker"; then
-    failures=$((failures + 1))
-  fi
-fi
-
-section "Supply-chain deterministic fixture policy"
-supply_chain_checker="scripts/validation/check-supply-chain-policy.py"
-supply_chain_summary="scripts/security/generate-supply-chain-sample-service-summary.sh"
-supply_chain_tests=(
-  "tests/validation/test_compose_core_readiness.py"
-  "tests/validation/test_postgres_logical_upgrade_rehearsal.py"
-  "tests/validation/test_grype_db_seed.py"
-  "tests/validation/test_supply_chain_policy.py"
-  "tests/validation/test_sample_service_delivery_rehearsal.py"
-)
-for supply_chain_path in "$supply_chain_checker" "$supply_chain_summary" \
-  "${supply_chain_tests[@]}"; do
-  [[ -f "$supply_chain_path" ]] || fail "missing supply-chain policy surface: $supply_chain_path"
-done
-if [[ -f "$supply_chain_checker" ]] && ! python3 "$supply_chain_checker" --check; then
-  failures=$((failures + 1))
-fi
-if [[ -f "$supply_chain_summary" ]] && ! bash "$supply_chain_summary" --check; then
-  failures=$((failures + 1))
-fi
-
 if [[ "$actual_docs_text" != "$expected_docs" ]]; then
   fail "docs top-level folders do not match the allowed taxonomy"
-  echo "Expected:" >&2
-  printf '  %s\n' "${allowed_docs[@]}" >&2
-  echo "Actual:" >&2
-  printf '  %s\n' "${actual_docs[@]}" >&2
+fi
+
+section "Typed repository gate wiring"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import json
+import pathlib
+import sys
+
+contract_path = pathlib.Path(".github/workflow-contract.yml")
+try:
+    document = json.loads(contract_path.read_text(encoding="utf-8"))
+except (OSError, UnicodeError, json.JSONDecodeError):
+    print("FAIL: typed repository gate wiring is unavailable", file=sys.stderr)
+    sys.exit(1)
+
+nodes = {
+    node.get("gate_id"): node
+    for node in document.get("gate_nodes", [])
+    if isinstance(node, dict)
+}
+repo_leaf = nodes.get("leaf.repo-contracts")
+repo_root = nodes.get("ci.repo-contracts")
+if (
+    repo_leaf != {
+        "gate_id": "leaf.repo-contracts",
+        "kind": "leaf",
+        "entrypoint": "scripts/validation/check-repo-contracts.sh",
+        "argv": [],
+        "cwd": ".",
+        "allowed_env_keys": [],
+        "timeout_minutes": 10,
+        "profiles": [
+            "ci",
+            "local-script-backed",
+            "local-harness",
+            "local-all-profiles",
+        ],
+        "opaque": True,
+        "suite_key": "repo-contracts",
+    }
+    or not isinstance(repo_root, dict)
+    or repo_root.get("kind") != "aggregate"
+    or repo_root.get("children", [])[-1:] != ["leaf.repo-contracts"]
+):
+    print("FAIL: typed repository gate wiring differs from the exact contract", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
 fi
 
 section "Required README files"
@@ -820,102 +786,7 @@ PY
   failures=$((failures + 1))
 fi
 
-section "GitHub Actions YAML and duplicate workflow steps"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import collections
-import pathlib
-import re
-import sys
-
-try:
-    import yaml
-except Exception as exc:
-    print(f"FAIL: PyYAML is required for GitHub Actions YAML parsing: {exc}", file=sys.stderr)
-    sys.exit(1)
-
-failures = 0
-workflow_files = sorted(
-    list(pathlib.Path(".github/workflows").glob("*.yml"))
-    + list(pathlib.Path(".github/workflows").glob("*.yaml"))
-)
-yaml_files = sorted(
-    list(pathlib.Path(".github").rglob("*.yml"))
-    + list(pathlib.Path(".github").rglob("*.yaml"))
-)
-
-for path in yaml_files:
-    try:
-        yaml.safe_load(path.read_text())
-    except Exception as exc:
-        print(f"FAIL: YAML parse failed: {path}: {exc}", file=sys.stderr)
-        failures += 1
-
-for path in workflow_files:
-    text = path.read_text()
-    step_names = re.findall(r"(?m)^\s*-\s+name:\s*(.+)$", text)
-    duplicate_steps = [(name, count) for name, count in collections.Counter(step_names).items() if count > 1]
-    if duplicate_steps:
-        print(f"FAIL: duplicate workflow step names in {path}: {duplicate_steps}", file=sys.stderr)
-        failures += 1
-
-    lines = text.splitlines()
-    for index, line in enumerate(lines):
-        stripped = line.lstrip()
-        if not re.match(r"^-\s+", stripped):
-            continue
-        if re.match(r"^-\s+\*[A-Za-z0-9_-]+\s*$", stripped):
-            continue
-
-        indent = len(line) - len(stripped)
-        block = [line]
-        for next_line in lines[index + 1 :]:
-            next_stripped = next_line.lstrip()
-            next_indent = len(next_line) - len(next_stripped)
-            if next_stripped and next_indent <= indent and re.match(r"^-\s+", next_stripped):
-                break
-            if next_stripped and next_indent < indent:
-                break
-            block.append(next_line)
-
-        block_text = "\n".join(block)
-        has_uses = bool(
-            re.search(r"(?m)^\s*uses:\s*", block_text)
-            or re.search(r"(?m)^\s*-\s+(?:&[A-Za-z0-9_-]+\s+)?uses:\s*", block_text)
-        )
-        has_name = bool(
-            re.search(r"(?m)^\s*name:\s*\S", block_text)
-            or re.search(r"(?m)^\s*-\s+(?:&[A-Za-z0-9_-]+\s+)?name:\s*\S", block_text)
-        )
-        if has_uses and not has_name:
-            print(f"FAIL: unnamed action step in {path}:{index + 1}", file=sys.stderr)
-            failures += 1
-
-    in_jobs = False
-    job_ids: list[str] = []
-    for line in text.splitlines():
-        if re.match(r"^jobs:\s*$", line):
-            in_jobs = True
-            continue
-        if in_jobs and re.match(r"^[A-Za-z0-9_-]+:", line):
-            in_jobs = False
-        if in_jobs:
-            match = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
-            if match:
-                job_ids.append(match.group(1))
-    duplicate_jobs = [(name, count) for name, count in collections.Counter(job_ids).items() if count > 1]
-    if duplicate_jobs:
-        print(f"FAIL: duplicate workflow job ids in {path}: {duplicate_jobs}", file=sys.stderr)
-        failures += 1
-
-if failures:
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
-section "GitHub workflow security contracts"
+section "Stage 00 GitHub routing contracts"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
 
@@ -923,25 +794,72 @@ import pathlib
 import re
 import sys
 
-try:
-    import yaml
-except Exception as exc:
-    print(f"FAIL: PyYAML is required for GitHub workflow contract checks: {exc}", file=sys.stderr)
-    sys.exit(1)
+import yaml
+
+sys.path.insert(0, str(pathlib.Path("scripts/validation").resolve()))
+from github_workflow_contract import (
+    WorkflowContractError,
+    load_workflow_contract,
+    load_workflows,
+)
 
 failures: list[str] = []
-workflow_files = sorted(
-    list(pathlib.Path(".github/workflows").glob("*.yml"))
-    + list(pathlib.Path(".github/workflows").glob("*.yaml"))
-)
-sha_re = re.compile(r"^[0-9a-f]{40}$")
-workflow_documents: dict[pathlib.Path, dict[object, object]] = {}
-workflow_purposes: dict[str, pathlib.Path] = {}
-workflow_job_owners: dict[str, pathlib.Path] = {}
-untrusted_run_re = re.compile(
-    r"\$\{\{\s*github\.(?:event(?:\.|_)|head_ref\b|ref_name\b|ref\b)"
-)
+try:
+    workflow_contract = load_workflow_contract(pathlib.Path.cwd())
+except WorkflowContractError as error:
+    failures.append(
+        f".github/workflow-contract.yml: typed workflow contract is invalid ({error.code})"
+    )
+    required_jobs: set[str] = set()
+    required_job_order: tuple[str, ...] = ()
+else:
+    required_workflows = [
+        workflow
+        for workflow in workflow_contract.workflows
+        if workflow.classification == "required-quality"
+    ]
+    if len(required_workflows) != 1:
+        failures.append(
+            ".github/workflow-contract.yml: exactly one required-quality workflow is required"
+        )
+        required_jobs = set()
+        required_job_order: tuple[str, ...] = ()
+    else:
+        required_job_order = tuple(required_workflows[0].jobs)
+        required_jobs = set(required_job_order)
+        if len(required_jobs) != 16:
+            failures.append(
+                ".github/workflow-contract.yml: required-quality workflow must own exactly 16 jobs"
+            )
 
+ci_path = ".github/workflows/ci-quality.yml"
+try:
+    workflow_documents = load_workflows(pathlib.Path.cwd())
+except WorkflowContractError as error:
+    failures.append(
+        f"{ci_path}: workflow document is invalid ({error.code})"
+    )
+    ci_jobs: set[str] = set()
+else:
+    matching_ci = [
+        document for document in workflow_documents if document.path == ci_path
+    ]
+    if len(matching_ci) != 1:
+        failures.append(f"{ci_path}: required workflow document is unavailable")
+        ci_jobs = set()
+    else:
+        raw_jobs = matching_ci[0].data.get("jobs")
+        if not isinstance(raw_jobs, dict) or any(
+            not isinstance(job_id, str) for job_id in raw_jobs
+        ):
+            failures.append(f"{ci_path}: required workflow jobs are invalid")
+            ci_jobs = set()
+        else:
+            ci_jobs = set(raw_jobs)
+if ci_jobs != required_jobs:
+    failures.append(
+        f"{ci_path}: required job IDs differ from the typed workflow contract"
+    )
 
 class DuplicateKeyError(yaml.YAMLError):
     pass
@@ -978,311 +896,6 @@ UniqueKeyLoader.add_constructor(
     yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
     construct_unique_mapping,
 )
-
-
-def load_workflow(path: pathlib.Path, text: str) -> dict[object, object] | None:
-    try:
-        data = yaml.load(text, Loader=UniqueKeyLoader)
-    except DuplicateKeyError:
-        failures.append(f"{path}: duplicate YAML mapping key")
-        return None
-    except yaml.YAMLError:
-        failures.append(f"{path}: invalid workflow YAML")
-        return None
-    if not isinstance(data, dict):
-        failures.append(f"{path}: workflow root must be a mapping")
-        return None
-    return data
-
-for path in workflow_files:
-    text = path.read_text()
-    data = load_workflow(path, text)
-    if data is None:
-        continue
-    workflow_documents[path] = data
-    purpose = data.get("name")
-    if not isinstance(purpose, str) or not purpose.strip():
-        failures.append(f"{path}: workflow purpose must be a non-empty name")
-    else:
-        normalized_purpose = " ".join(purpose.split()).casefold()
-        previous = workflow_purposes.get(normalized_purpose)
-        if previous is not None:
-            failures.append(
-                f"{path}: duplicate workflow purpose conflicts with another tracked workflow"
-            )
-        else:
-            workflow_purposes[normalized_purpose] = path
-    jobs = data.get("jobs") or {}
-    if not isinstance(jobs, dict):
-        failures.append(f"{path}: workflow jobs must be a mapping")
-        jobs = {}
-    for job_id, job in jobs.items():
-        if not isinstance(job_id, str):
-            failures.append(f"{path}: workflow job id must be a string")
-            continue
-        previous = workflow_job_owners.get(job_id)
-        if previous is not None:
-            failures.append(
-                f"{path}: duplicate workflow job id across files: {job_id}"
-            )
-        else:
-            workflow_job_owners[job_id] = path
-        if not isinstance(job, dict):
-            failures.append(f"{path}: job {job_id!r} must be a mapping")
-            continue
-        timeout = job.get("timeout-minutes")
-        if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 30:
-            failures.append(
-                f"{path}: job {job_id!r} timeout-minutes must use a bounded integer"
-            )
-        for step in job.get("steps") or []:
-            if not isinstance(step, dict):
-                continue
-            run = step.get("run")
-            if isinstance(run, str) and untrusted_run_re.search(run):
-                failures.append(
-                    f"{path}: job {job_id!r} run step uses an untrusted GitHub context directly"
-                )
-    top_permissions = data.get("permissions")
-
-    if top_permissions is None:
-        failures.append(f"{path}: workflow is missing top-level permissions")
-    if "pull_request_target:" in text:
-        failures.append(f"{path}: pull_request_target is not allowed")
-    if re.search(r"(?m)^\s*contents:\s*write\s*(#.*)?$", text):
-        failures.append(f"{path}: contents: write is not allowed")
-    if "git push origin main" in text:
-        failures.append(f"{path}: direct push to main is not allowed")
-    raw_upload_artifact = "actions/upload-artifact@" in text
-    if raw_upload_artifact:
-        failures.append(f"{path}: artifact upload is forbidden")
-
-    for line_no, line in enumerate(text.splitlines(), start=1):
-        match = re.match(r"^\s*uses:\s*([^#\s]+)", line)
-        if not match:
-            continue
-        action = match.group(1).strip("'\"")
-        if (
-            action.casefold().startswith("actions/upload-artifact@")
-            and not raw_upload_artifact
-        ):
-            failures.append(f"{path}: artifact upload is forbidden")
-            continue
-        if action.startswith("./"):
-            continue
-        if "@" not in action:
-            failures.append(f"{path}:{line_no}: action reference is missing a pinned ref: {action}")
-            continue
-        ref = action.rsplit("@", 1)[1]
-        if not sha_re.fullmatch(ref):
-            failures.append(f"{path}:{line_no}: action reference must use a full commit SHA: {action}")
-
-    if top_permissions is None:
-        for job_id, job in jobs.items():
-            if isinstance(job, dict) and "permissions" not in job:
-                failures.append(f"{path}: job {job_id!r} is missing explicit permissions")
-
-ci_quality = pathlib.Path(".github/workflows/ci-quality.yml")
-# COUPLING CONSTRAINT: required_jobs must stay in sync with:
-#   (1) job IDs in .github/workflows/ci-quality.yml
-#   (2) Required Status Checks in .github/rulesets/main-protection.md
-#   (3) CI/CD Job Taxonomy in docs/00.agent-governance/rules/github-governance.md
-# When adding a new CI job: update all three locations simultaneously.
-# GitHub-native-only jobs (greetings, stale, pr-labeler, generate-changelog)
-# must NOT be added here — they are not script-backed QA gates.
-required_jobs = {
-    "docs-traceability",
-    "docs-implementation-alignment",
-    "repo-contracts",
-    "agent-output-eval-fixture-gate",
-    "supply-chain-fixture-policy",
-    "dependency-vulnerability-audit",
-    "git-flow-contract",
-    "compose-validation",
-    "compose-all-profiles-validation",
-    "infrastructure-hardening",
-    "template-security-baseline",
-    "quickwin-baseline",
-    "pre-commit",
-    "frontend-quality",
-    "zizmor",
-    "storybook-coverage",
-}
-ci_jobs: set[str] = set()
-if ci_quality in workflow_documents:
-    data = workflow_documents[ci_quality]
-    ci_text = ci_quality.read_text()
-    raw_jobs = data.get("jobs") or {}
-    jobs = raw_jobs if isinstance(raw_jobs, dict) else {}
-    ci_jobs = set(jobs.keys())
-    expected_top_permissions = {"contents": "read"}
-    expected_concurrency = {
-        "group": "${{ github.workflow }}-${{ github.ref }}",
-        "cancel-in-progress": True,
-    }
-    if data.get("permissions") != expected_top_permissions:
-        failures.append(f"{ci_quality}: top-level permissions must match read-only quality policy")
-    if data.get("concurrency") != expected_concurrency:
-        failures.append(f"{ci_quality}: concurrency must match the stable quality policy")
-    missing_jobs = sorted(required_jobs - ci_jobs)
-    for job_id in missing_jobs:
-        failures.append(f"{ci_quality}: missing required QA/CI job: {job_id}")
-    unexpected_jobs = sorted(ci_jobs - required_jobs)
-    for job_id in unexpected_jobs:
-        failures.append(f"{ci_quality}: unexpected QA/CI job outside the ruleset contract: {job_id}")
-    expected_timeouts = {
-        "docs-traceability": 5,
-        "docs-implementation-alignment": 5,
-        "repo-contracts": 10,
-        "agent-output-eval-fixture-gate": 5,
-        "supply-chain-fixture-policy": 5,
-        "dependency-vulnerability-audit": 10,
-        "git-flow-contract": 5,
-        "compose-validation": 10,
-        "compose-all-profiles-validation": 10,
-        "infrastructure-hardening": 10,
-        "template-security-baseline": 10,
-        "quickwin-baseline": 10,
-        "pre-commit": 20,
-        "frontend-quality": 20,
-        "storybook-coverage": 20,
-        "zizmor": 10,
-    }
-    read_only_permissions = {"contents": "read"}
-    zizmor_permissions = {
-        "security-events": "write",
-        "actions": "read",
-        "contents": "read",
-    }
-    for job_id, job in jobs.items():
-        if not isinstance(job, dict):
-            failures.append(f"{ci_quality}: job {job_id!r} must be a mapping")
-            continue
-        expected_permissions = (
-            zizmor_permissions if job_id == "zizmor" else read_only_permissions
-        )
-        if job.get("permissions") != expected_permissions:
-            failures.append(
-                f"{ci_quality}: job {job_id!r} permissions must match the approved policy"
-            )
-        if job.get("timeout-minutes") != expected_timeouts.get(job_id):
-            failures.append(
-                f"{ci_quality}: job {job_id!r} timeout-minutes must equal the approved bound"
-            )
-    operational_readiness_test_command = "python3 -m unittest tests.validation.test_compose_core_readiness tests.validation.test_postgres_logical_upgrade_rehearsal tests.validation.test_grype_db_seed tests.validation.test_supply_chain_policy tests.validation.test_sample_service_delivery_rehearsal -v"
-    supply_chain_job = jobs.get("supply-chain-fixture-policy")
-    supply_chain_steps = (
-        supply_chain_job.get("steps") or []
-        if isinstance(supply_chain_job, dict)
-        else []
-    )
-    focused_regression_steps = [
-        step
-        for step in supply_chain_steps
-        if isinstance(step, dict)
-        and step.get("name") == "Run focused operational readiness regressions"
-        and step.get("run") == operational_readiness_test_command
-    ]
-    if len(focused_regression_steps) != 1:
-        failures.append(
-            f"{ci_quality}: supply-chain focused regression step must match the approved command exactly once"
-        )
-    expected_zizmor_command = (
-        "uvx --from 'zizmor==1.28.0' "
-        "zizmor . --format sarif . > results.sarif"
-    )
-    zizmor_job = jobs.get("zizmor")
-    zizmor_steps = (
-        zizmor_job.get("steps") or []
-        if isinstance(zizmor_job, dict)
-        else []
-    )
-    zizmor_commands = [
-        step.get("run")
-        for step in zizmor_steps
-        if isinstance(step, dict)
-        and isinstance(step.get("run"), str)
-        and "zizmor" in step.get("run", "")
-    ]
-    if zizmor_commands != [expected_zizmor_command]:
-        failures.append(f"{ci_quality}: unpinned dynamic tool package")
-    zizmor_run_steps = [
-        step
-        for step in zizmor_steps
-        if isinstance(step, dict) and step.get("run") == expected_zizmor_command
-    ]
-    if len(zizmor_run_steps) != 1 or "env" in zizmor_run_steps[0]:
-        failures.append(f"{ci_quality}: zizmor credential environment is forbidden")
-    for literal in [
-        "Publish QA gate recommendations",
-        "GITHUB_STEP_SUMMARY",
-        "scripts/validation/recommend-qa-gates.sh --base",
-    ]:
-        if literal not in ci_text:
-            failures.append(f"{ci_quality}: missing QA recommendation summary literal: {literal}")
-
-    repo_contracts = jobs.get("repo-contracts") or {}
-    repo_contract_steps = repo_contracts.get("steps") or []
-    expected_base_step = {
-        "name": "Verify document metadata comparison base",
-        "if": "github.event_name == 'pull_request' || github.event_name == 'push'",
-        "shell": "bash",
-        "run": (
-            "set -euo pipefail\n"
-            'git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"\n'
-            'git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null\n'
-        ),
-    }
-    base_steps = [
-        (index, step)
-        for index, step in enumerate(repo_contract_steps)
-        if isinstance(step, dict) and step.get("name") == "Verify document metadata comparison base"
-    ]
-    if base_steps != [(1, expected_base_step)]:
-        failures.append(
-            f"{ci_quality}: repo-contracts must fail closed on an unreachable PR/push metadata base"
-        )
-    metadata_steps = [
-        (index, step)
-        for index, step in enumerate(repo_contract_steps)
-        if isinstance(step, dict) and step.get("name") == "Check changed and new document metadata"
-    ]
-    expected_metadata_step = {
-        "name": "Check changed and new document metadata",
-        "run": "python3 scripts/validation/check-document-metadata.py --mode check-changed",
-    }
-    if len(metadata_steps) != 1:
-        failures.append(
-            f"{ci_quality}: repo-contracts must contain exactly one changed/new document metadata step"
-        )
-    else:
-        metadata_index, metadata_step = metadata_steps[0]
-        if metadata_step != expected_metadata_step:
-            failures.append(
-                f"{ci_quality}: repo-contracts changed/new document metadata step must match the approved command exactly"
-            )
-        previous_name = (
-            repo_contract_steps[metadata_index - 1].get("name")
-            if metadata_index > 0 and isinstance(repo_contract_steps[metadata_index - 1], dict)
-            else None
-        )
-        if previous_name != "Install repository contract Python dependencies":
-            failures.append(
-                f"{ci_quality}: changed/new document metadata step must follow dependency installation"
-            )
-
-    template_gate_base = (repo_contracts.get("env") or {}).get("TEMPLATE_GATE_BASE")
-    expected_template_gate_base = (
-        "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || "
-        "github.event_name == 'push' && github.event.before || '' }}"
-    )
-    if template_gate_base != expected_template_gate_base:
-        failures.append(
-            f"{ci_quality}: repo-contracts must bind TEMPLATE_GATE_BASE to the PR base or push-before SHA"
-        )
-else:
-    failures.append("missing required workflow: .github/workflows/ci-quality.yml")
-
 ruleset = pathlib.Path(".github/rulesets/main-protection.md")
 if ruleset.is_file():
     text = ruleset.read_text()
@@ -1309,6 +922,32 @@ if ruleset.is_file():
             failures.append(f"{ruleset}: status check is not a CI Quality Gates job: {check}")
 else:
     failures.append("missing local branch protection proposal: .github/rulesets/main-protection.md")
+
+governance_path = pathlib.Path(
+    "docs/00.agent-governance/rules/github-governance.md"
+)
+if not governance_path.is_file():
+    failures.append(f"missing active GitHub governance surface: {governance_path}")
+else:
+    governance_text = governance_path.read_text(encoding="utf-8")
+    governance_section = re.search(
+        r"(?ms)^### Required Quality Gates\s*(.*?)(?:\n### |\Z)",
+        governance_text,
+    )
+    governance_jobs = (
+        tuple(
+            re.findall(
+                r"(?m)^\|\s*`([^`]+)`\s*\|",
+                governance_section.group(1),
+            )
+        )
+        if governance_section is not None
+        else ()
+    )
+    if governance_jobs != required_job_order:
+        failures.append(
+            f"{governance_path}: required quality gate table differs from typed workflow contract"
+        )
 
 github_index = pathlib.Path(".github/INDEX.md")
 github_readme = pathlib.Path(".github/README.md")
@@ -1590,351 +1229,6 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Document corpus lifecycle workflow and QA routing contract"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import pathlib
-import re
-import subprocess
-import sys
-
-import yaml
-
-failures: list[str] = []
-workflow_path = pathlib.Path(".github/workflows/document-corpus-lifecycle.yml")
-checkout_sha = "3d3c42e5aac5ba805825da76410c181273ba90b1"
-setup_python_sha = "5fda3b95a4ea91299a34e894583c3862153e4b97"
-lifecycle_command = "python3 scripts/validation/check-document-corpus-lifecycle.py"
-
-expected_workflow = {
-    "name": "Document Corpus Lifecycle",
-    "on": {
-        "schedule": [{"cron": "17 17 * * 1"}],
-        "workflow_dispatch": None,
-    },
-    "permissions": {"contents": "read"},
-    "concurrency": {
-        "group": "document-corpus-lifecycle-${{ github.ref }}",
-        "cancel-in-progress": True,
-    },
-    "jobs": {
-        "document-corpus-lifecycle": {
-            "permissions": {"contents": "read"},
-            "runs-on": "ubuntu-latest",
-            "timeout-minutes": 15,
-            "steps": [
-                {
-                    "name": "Checkout repository",
-                    "uses": f"actions/checkout@{checkout_sha}",
-                    "with": {
-                        "persist-credentials": False,
-                        "fetch-depth": 0,
-                    },
-                },
-                {
-                    "name": "Set up Python",
-                    "uses": f"actions/setup-python@{setup_python_sha}",
-                    "with": {"python-version": "3.12"},
-                },
-                {
-                    "name": "Install repository contract Python dependencies",
-                    "run": "python -m pip install -r scripts/requirements.txt",
-                },
-                {
-                    "name": "Check lifecycle contract",
-                    "run": f"{lifecycle_command} --mode check-contract",
-                },
-                {
-                    "name": "Check promoted lifecycle waves",
-                    "run": f"{lifecycle_command} --mode check-promoted",
-                },
-                {
-                    "name": "Check impacted lifecycle records",
-                    "shell": "bash",
-                    "run": (
-                        "set -euo pipefail\n"
-                        "if git cat-file -e 'HEAD~1^{commit}' 2>/dev/null; then\n"
-                        f"  {lifecycle_command} --mode check-impacted --base-ref HEAD~1\n"
-                        "else\n"
-                        '  echo "SKIP: HEAD~1 is unavailable; no comparison base exists"\n'
-                        "fi\n"
-                    ),
-                },
-                {
-                    "name": "Report full corpus lifecycle debt",
-                    "run": f"{lifecycle_command} --mode report-full",
-                },
-                {
-                    "name": "Report duplicate candidates",
-                    "shell": "bash",
-                    "run": (
-                        "set -euo pipefail\n"
-                        'report_path="${RUNNER_TEMP}/document-corpus-lifecycle-duplicates.md"\n'
-                        f"{lifecycle_command} --mode report-duplicates --output \"$report_path\"\n"
-                        'cat -- "$report_path"\n'
-                    ),
-                },
-            ],
-        },
-    },
-}
-
-if not workflow_path.is_file():
-    failures.append(f"missing tracked lifecycle workflow: {workflow_path}")
-else:
-    workflow_text = workflow_path.read_text(encoding="utf-8")
-    try:
-        workflow = yaml.safe_load(workflow_text) or {}
-    except yaml.YAMLError as exc:
-        failures.append(f"{workflow_path}: YAML parse failed: {exc}")
-        workflow = {}
-
-    # PyYAML 1.1 resolves the unquoted Actions key `on` as boolean true.
-    if True in workflow and "on" not in workflow:
-        workflow["on"] = workflow.pop(True)
-
-    if workflow != expected_workflow:
-        failures.append(
-            f"{workflow_path}: workflow must match the approved read-only lifecycle contract exactly"
-        )
-
-    forbidden_literals = {
-        "pull_request_target": "pull_request_target is forbidden",
-        "continue-on-error": "continue-on-error is forbidden",
-        "${{ secrets.": "secret interpolation is forbidden",
-        "actions/upload-artifact@": "artifact upload is forbidden",
-    }
-    for literal, reason in forbidden_literals.items():
-        if literal in workflow_text:
-            failures.append(f"{workflow_path}: {reason}")
-
-    if re.search(r"(?m)^\s*(?:actions|checks|contents|deployments|id-token|issues|packages|pages|pull-requests|security-events|statuses):\s*write\b", workflow_text):
-        failures.append(f"{workflow_path}: write permission is forbidden")
-    if re.search(r"(?m)^\s*(?:deployment|environment|release):\s*", workflow_text):
-        failures.append(f"{workflow_path}: deployment, environment, and release keys are forbidden")
-
-    remote_mutation_re = re.compile(
-        r"(?im)(?:"
-        r"\bgit\s+push\b|"
-        r"\bgh\s+(?:api\b[^\n]*(?:--method|-X)\s*(?:POST|PUT|PATCH|DELETE)|"
-        r"pr\s+(?:create|merge)|release\s+create|workflow\s+run)|"
-        r"\bcurl\b[^\n]*(?:-X|--request)\s*(?:POST|PUT|PATCH|DELETE)|"
-        r"\bdocker\s+push\b|\bnpm\s+publish\b"
-        r")"
-    )
-    if remote_mutation_re.search(workflow_text):
-        failures.append(f"{workflow_path}: remote mutation command is forbidden")
-
-pre_commit_path = pathlib.Path(".pre-commit-config.yaml")
-if not pre_commit_path.is_file():
-    failures.append(f"missing pre-commit configuration: {pre_commit_path}")
-else:
-    config = yaml.safe_load(pre_commit_path.read_text(encoding="utf-8")) or {}
-    local_hooks = [
-        hook
-        for repository in config.get("repos", [])
-        if repository.get("repo") == "local"
-        for hook in repository.get("hooks", [])
-    ]
-    repo_contract_hooks = [
-        hook for hook in local_hooks if hook.get("id") == "check-repo-contracts"
-    ]
-    expected_selector = (
-        r"^(AGENTS\.md|CLAUDE\.md|GEMINI\.md|docker-compose\.yml|\.env\.example|\.prettierignore|"
-        r"\.agents/.*|\.claude/.*|\.codex/.*|\.gemini/.*|infra/.*|docs/.*|"
-        r"archive/.*|examples/.*|projects/.*|scripts/.*|secrets/.*|tests/.*|"
-        r"\.github/.*|\.pre-commit-config\.yaml)$"
-    )
-    expected_hook = {
-        "id": "check-repo-contracts",
-        "name": "Repo contracts (docs/infra/scripts drift)",
-        "entry": "./scripts/validation/check-repo-contracts.sh",
-        "language": "script",
-        "files": expected_selector,
-        "pass_filenames": False,
-        "stages": ["pre-push"],
-    }
-    if repo_contract_hooks != [expected_hook]:
-        failures.append(
-            ".pre-commit-config.yaml: repo-contracts hook must match the approved lifecycle routing contract"
-        )
-    else:
-        selector = re.compile(expected_selector)
-        routed_paths = (
-            "docs/99.templates/support/document-corpus-migration-contract.yaml",
-            "scripts/validation/check-document-corpus-lifecycle.py",
-            "tests/validation/test_document_corpus_lifecycle.py",
-            ".github/workflows/document-corpus-lifecycle.yml",
-            ".pre-commit-config.yaml",
-            ".prettierignore",
-            "archive/Windows-Network-IP.md",
-            "examples/sample-web-service/service.md",
-            "projects/storybook/README.md",
-            "secrets/SENSITIVE_ENV_VARS.md.example",
-            "scripts/validation/target_surface_contract.py",
-            "tests/validation/test_target_surface_contracts.py",
-        )
-        for routed_path in routed_paths:
-            if selector.fullmatch(routed_path) is None:
-                failures.append(
-                    f".pre-commit-config.yaml: repo-contracts selector misses {routed_path}"
-                )
-    lifecycle_hooks = [
-        hook for hook in local_hooks if hook.get("id") == "check-document-corpus-lifecycle"
-    ]
-    if lifecycle_hooks:
-        failures.append(
-            ".pre-commit-config.yaml: lifecycle checks must remain inside the existing repo-contracts hook"
-        )
-
-lifecycle_gate_commands = (
-    "python3 -m unittest discover -s tests/validation -p 'test_document_corpus_lifecycle.py' -v",
-    f"{lifecycle_command} --mode check-contract",
-    f"{lifecycle_command} --mode check-promoted",
-)
-generated_freshness_commands = (
-    "bash scripts/validation/generate-security-automation-readiness.sh --check",
-    "bash scripts/validation/generate-audit-implementation-matrix.sh --check",
-    "bash scripts/knowledge/generate-llm-wiki-index.sh --check",
-    "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check",
-)
-required_lifecycle_recommendation_commands = (
-    *lifecycle_gate_commands,
-    *generated_freshness_commands,
-)
-generated_freshness_mode_functions = (
-    "run_script_backed_gates",
-    "run_harness_gates",
-)
-lifecycle_surfaces = (
-    "docs/99.templates/support/document-corpus-migration-contract.yaml",
-    "scripts/validation/check-document-corpus-lifecycle.py",
-    "tests/validation/test_document_corpus_lifecycle.py",
-    ".github/workflows/document-corpus-lifecycle.yml",
-    ".pre-commit-config.yaml",
-    "docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml",
-    "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md",
-    "docs/98.archive/example.md",
-)
-recommend_script = pathlib.Path("scripts/validation/recommend-qa-gates.sh")
-if not recommend_script.is_file():
-    failures.append(f"missing QA recommendation owner: {recommend_script}")
-else:
-    for surface in lifecycle_surfaces:
-        result = subprocess.run(
-            ["bash", str(recommend_script), "--files", surface],
-            check=False,
-            cwd=pathlib.Path.cwd(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        if result.returncode != 0:
-            failures.append(f"{recommend_script}: failed to route lifecycle surface {surface}")
-            continue
-        for command in required_lifecycle_recommendation_commands:
-            if f"- {command}\n" not in result.stdout:
-                failures.append(
-                    f"{recommend_script}: lifecycle surface {surface} misses gate: {command}"
-                )
-
-local_runner = pathlib.Path("scripts/validation/run-local-qa-gates.sh")
-if not local_runner.is_file():
-    failures.append(f"missing local QA owner: {local_runner}")
-else:
-    local_runner_text = local_runner.read_text(encoding="utf-8")
-    for command in lifecycle_gate_commands:
-        if command not in local_runner_text:
-            failures.append(f"{local_runner}: missing lifecycle gate: {command}")
-
-    list_result = subprocess.run(
-        ["bash", str(local_runner), "--list"],
-        check=False,
-        cwd=pathlib.Path.cwd(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    if list_result.returncode != 0:
-        failures.append(f"{local_runner}: --list failed")
-    else:
-        listed_generated_freshness_commands = tuple(
-            line.removeprefix("- ")
-            for line in list_result.stdout.splitlines()
-            if re.fullmatch(
-                r"- bash scripts/(?:validation|knowledge)/generate-[^ ]+\.sh --check",
-                line,
-            )
-        )
-        if listed_generated_freshness_commands != generated_freshness_commands:
-            failures.append(
-                f"{local_runner}: --list must enumerate every executed generated freshness gate"
-            )
-
-    generated_function_match = re.search(
-        r"(?ms)^run_generated_freshness_gates\(\) \{\n(.*?)^\}\n",
-        local_runner_text,
-    )
-    if generated_function_match is None:
-        failures.append(f"{local_runner}: missing run_generated_freshness_gates function")
-    else:
-        executed_generated_freshness_commands = tuple(
-            re.findall(
-                r'^\s*run_step\s+"[^"]+"\s+(bash scripts/(?:validation|knowledge)/generate-[^ ]+\.sh --check)\s*$',
-                generated_function_match.group(1),
-                flags=re.MULTILINE,
-            )
-        )
-        if executed_generated_freshness_commands != generated_freshness_commands:
-            failures.append(
-                f"{local_runner}: generated freshness execution must match the approved gate set"
-            )
-        if list_result.returncode == 0 and (
-            listed_generated_freshness_commands != executed_generated_freshness_commands
-        ):
-            failures.append(
-                f"{local_runner}: generated freshness --list/execution parity mismatch"
-            )
-
-    for function_name in generated_freshness_mode_functions:
-        mode_function_match = re.search(
-            rf"(?ms)^{re.escape(function_name)}\(\) \{{\n(.*?)^\}}\n",
-            local_runner_text,
-        )
-        if mode_function_match is None:
-            failures.append(f"{local_runner}: missing {function_name} function")
-            continue
-        helper_calls = re.findall(
-            r"(?m)^\s*run_generated_freshness_gates\s*$",
-            mode_function_match.group(1),
-        )
-        if len(helper_calls) != 1:
-            failures.append(
-                f"{local_runner}: {function_name} must invoke "
-                "run_generated_freshness_gates exactly once"
-            )
-
-scripts_readme = pathlib.Path("scripts/README.md")
-if not scripts_readme.is_file():
-    failures.append(f"missing script inventory: {scripts_readme}")
-else:
-    scripts_readme_text = scripts_readme.read_text(encoding="utf-8")
-    for fragment in (
-        "scripts/validation/check-document-corpus-lifecycle.py",
-        "tests/validation/test_document_corpus_lifecycle.py",
-    ):
-        if fragment not in scripts_readme_text:
-            failures.append(f"{scripts_readme}: missing lifecycle inventory fragment: {fragment}")
-
-if failures:
-    for failure in failures:
-        print(f"FAIL: {failure}", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
 section "GitHub governance surface"
 if [[ -f ".github/copilot-instructions.md" || -d ".github/instructions" ]]; then
   fail "GitHub-native instruction files are not adopted in this repository"
@@ -2113,17 +1407,6 @@ if failures:
 PY
   failures=$((failures + 1))
 fi
-
-section "Typed agent governance repository contract"
-if ! python3 scripts/validation/check-agent-governance-contract.py \
-  --mode repository --section all; then
-  failures=$((failures + 1))
-fi
-if ! bash scripts/operations/sync-provider-surfaces.sh --check; then
-  failures=$((failures + 1))
-fi
-
-
 
 section "Provider workspace artifact path parity"
 if ! python3 - <<'PY'; then
@@ -2820,15 +2103,6 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Changed and new document template contracts"
-if [[ -n "${TEMPLATE_GATE_BASE:-}" ]]; then
-  if ! python3 scripts/validation/check-document-metadata.py --mode check-changed; then
-    failures=$((failures + 1))
-  fi
-else
-  echo "SKIP: TEMPLATE_GATE_BASE is unset; run the Python changed checker with an explicit safe base"
-fi
-
 section "Infra README rubric advisory"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3420,30 +2694,6 @@ if coverage_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{coverage_path}: generated coverage includes secret content path: {linked_path}")
 
-generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh")
-if generator.is_file() and index_path.is_file():
-    result = subprocess.run(
-        ["bash", "scripts/knowledge/generate-llm-wiki-index.sh", "--check"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        failures.append("generated LLM Wiki index is stale or generator check failed")
-        for line in (result.stderr or result.stdout).splitlines():
-            failures.append(f"generate-llm-wiki-index.sh --check: {line}")
-
-coverage_generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh")
-if coverage_generator.is_file() and coverage_path.is_file():
-    result = subprocess.run(
-        ["bash", "scripts/knowledge/generate-llm-wiki-coverage.sh", "--check"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        failures.append("generated LLM Wiki coverage snapshot is stale or generator check failed")
-        for line in (result.stderr or result.stdout).splitlines():
-            failures.append(f"generate-llm-wiki-coverage.sh --check: {line}")
-
 if failures:
     for failure in failures:
         print(f"FAIL: {failure}", file=sys.stderr)
@@ -3498,35 +2748,11 @@ PY
   failures=$((failures + 1))
 fi
 
-section "Infrastructure hardening hard gate"
-if ! bash scripts/hardening/check-all-hardening.sh >/tmp/check-repo-contracts-hardening.txt 2>&1; then
-  fail "infrastructure hardening hard gate failed"
-  cat /tmp/check-repo-contracts-hardening.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-hardening.txt
-
-section "Compose profile coverage snapshot"
-if ! bash scripts/operations/generate-compose-profile-service-coverage.sh --check >/tmp/check-repo-contracts-compose-profile-coverage.txt 2>&1; then
-  fail "generated Compose profile coverage snapshot is stale or generator check failed"
-  cat /tmp/check-repo-contracts-compose-profile-coverage.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-compose-profile-coverage.txt
-
-section "Tech-stack version provenance snapshot"
-if ! bash scripts/operations/generate-tech-stack-version-provenance.sh --check >/tmp/check-repo-contracts-tech-stack-provenance.txt 2>&1; then
-  fail "generated tech-stack provenance snapshot is stale or generator check failed"
-  cat /tmp/check-repo-contracts-tech-stack-provenance.txt >&2
-elif ! grep -q 'generated tech-stack provenance snapshot is fresh' /tmp/check-repo-contracts-tech-stack-provenance.txt; then
-  fail "tech-stack provenance generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-tech-stack-provenance.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-tech-stack-provenance.txt
-
 section "Gap routing recommender"
 if ! bash scripts/validation/recommend-gap-routing.sh --text "runbook recovery procedure is missing rollback evidence" >/tmp/check-repo-contracts-gap-routing-ops.txt 2>&1; then
   fail "gap routing recommender failed for operations text"
   cat /tmp/check-repo-contracts-gap-routing-ops.txt >&2
-elif ! grep -q 'suggested_owner=`docs/05.operations/`' /tmp/check-repo-contracts-gap-routing-ops.txt; then
+elif ! grep -q "suggested_owner=\`docs/05.operations/\`" /tmp/check-repo-contracts-gap-routing-ops.txt; then
   fail "gap routing recommender did not route operations text to docs/05.operations"
   cat /tmp/check-repo-contracts-gap-routing-ops.txt >&2
 fi
@@ -3535,7 +2761,7 @@ rm -f /tmp/check-repo-contracts-gap-routing-ops.txt
 if ! bash scripts/validation/recommend-gap-routing.sh --files docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md >/tmp/check-repo-contracts-gap-routing-spec.txt 2>&1; then
   fail "gap routing recommender failed for spec path"
   cat /tmp/check-repo-contracts-gap-routing-spec.txt >&2
-elif ! grep -q 'suggested_owner=`docs/03.specs/`' /tmp/check-repo-contracts-gap-routing-spec.txt; then
+elif ! grep -q "suggested_owner=\`docs/03.specs/\`" /tmp/check-repo-contracts-gap-routing-spec.txt; then
   fail "gap routing recommender did not route spec path to docs/03.specs"
   cat /tmp/check-repo-contracts-gap-routing-spec.txt >&2
 fi
@@ -3587,109 +2813,6 @@ elif ! grep -Fxq 'audit_semantic_freshness: PASS assertions=11 failures=0' "$sem
 fi
 cleanup_semantic_audit_output
 trap - EXIT HUP INT TERM
-
-section "Document metadata inventory and changed/new hook contract"
-metadata_profiles="docs/99.templates/support/document-metadata-profiles.yaml"
-metadata_checker="scripts/validation/check-document-metadata.py"
-metadata_tests="tests/validation/test_document_metadata.py"
-metadata_inventory="docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md"
-
-[[ -f "$metadata_profiles" ]] || fail "missing document metadata profiles: $metadata_profiles"
-[[ -f "$metadata_checker" ]] || fail "missing document metadata checker: $metadata_checker"
-[[ -f "$metadata_tests" ]] || fail "missing document metadata tests: $metadata_tests"
-[[ -f "$metadata_inventory" ]] || fail "missing document metadata inventory: $metadata_inventory"
-
-if ! python3 - <<'PY'; then
-from __future__ import annotations
-
-import pathlib
-import sys
-
-import yaml
-
-config = yaml.safe_load(pathlib.Path(".pre-commit-config.yaml").read_text(encoding="utf-8"))
-hooks = [
-    hook
-    for repository in config.get("repos", [])
-    if repository.get("repo") == "local"
-    for hook in repository.get("hooks", [])
-    if hook.get("id") == "check-document-metadata"
-]
-expected = {
-    "id": "check-document-metadata",
-    "name": "Document metadata changed/new contract",
-    "entry": "python3 scripts/validation/check-document-metadata.py --mode check-changed",
-    "language": "system",
-    "files": r"^docs/.*\.md$",
-    "pass_filenames": False,
-    "stages": ["pre-push"],
-}
-if hooks != [expected]:
-    print("FAIL: changed/new document metadata hook must match the approved pre-push contract", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
-
-metadata_check_output="$(mktemp "${TMPDIR:-/tmp}/check-repo-contracts-document-metadata.XXXXXX")"
-cleanup_metadata_check_output() {
-  rm -f "$metadata_check_output"
-}
-trap cleanup_metadata_check_output EXIT
-if [[ -f "$metadata_profiles" && -f "$metadata_checker" && -f "$metadata_inventory" ]]; then
-  if ! python3 "$metadata_checker" --mode report --output "$metadata_inventory" --check >"$metadata_check_output" 2>&1; then
-    fail "document metadata profile syntax or advisory inventory freshness check failed"
-    cat "$metadata_check_output" >&2
-  elif ! grep -q 'metadata inventory fresh:' "$metadata_check_output"; then
-    fail "document metadata inventory check did not print a freshness marker"
-    cat "$metadata_check_output" >&2
-  fi
-fi
-cleanup_metadata_check_output
-trap - EXIT
-
-section "Audit implementation matrix snapshot"
-if ! bash scripts/validation/generate-audit-implementation-matrix.sh --check >/tmp/check-repo-contracts-audit-implementation-matrix.txt 2>&1; then
-  fail "generated audit implementation matrix is stale or generator check failed"
-  cat /tmp/check-repo-contracts-audit-implementation-matrix.txt >&2
-elif ! grep -q 'generated audit implementation matrix is fresh' /tmp/check-repo-contracts-audit-implementation-matrix.txt; then
-  fail "audit implementation matrix generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-audit-implementation-matrix.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-audit-implementation-matrix.txt
-
-section "Provider hook parity matrix"
-if ! bash scripts/validation/report-provider-hook-parity.sh --check >/tmp/check-repo-contracts-provider-hook-parity.txt 2>&1; then
-  fail "generated provider hook parity matrix is stale or generator check failed"
-  cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
-elif ! grep -q 'generated provider hook parity matrix is fresh' /tmp/check-repo-contracts-provider-hook-parity.txt; then
-  fail "provider hook parity generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-provider-hook-parity.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-provider-hook-parity.txt
-
-section "Agent output eval fixture runner"
-if ! bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions >/tmp/check-repo-contracts-agent-output-eval.txt 2>&1; then
-  fail "agent-output eval fixture runner catalog check failed"
-  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
-elif ! grep -q 'fixtures_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
-  fail "agent-output eval fixture runner did not print a pass marker"
-  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
-elif ! grep -q 'regressions_check=pass' /tmp/check-repo-contracts-agent-output-eval.txt; then
-  fail "agent-output eval fixture runner did not print a regression pass marker"
-  cat /tmp/check-repo-contracts-agent-output-eval.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-agent-output-eval.txt
-
-section "Security automation readiness snapshot"
-if ! bash scripts/validation/generate-security-automation-readiness.sh --check >/tmp/check-repo-contracts-security-readiness.txt 2>&1; then
-  fail "generated security automation readiness snapshot is stale or generator check failed"
-  cat /tmp/check-repo-contracts-security-readiness.txt >&2
-elif ! grep -q 'generated security automation readiness snapshot is fresh' /tmp/check-repo-contracts-security-readiness.txt; then
-  fail "security automation readiness generator did not print a pass marker"
-  cat /tmp/check-repo-contracts-security-readiness.txt >&2
-fi
-rm -f /tmp/check-repo-contracts-security-readiness.txt
 
 section "Controlled agent pre-commit wrapper contract"
 wrapper_script="scripts/validation/run-agent-precommit-all-files.sh"
@@ -4407,6 +3530,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/report-provider-hook-parity.sh"),
     pathlib.Path("scripts/validation/run-agent-output-eval-fixtures.sh"),
     pathlib.Path("scripts/validation/run-agent-precommit-all-files.sh"),
+    pathlib.Path("scripts/validation/run-ci-precommit.sh"),
     pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/validation/rehearse-postgres-logical-upgrade.sh"),
     pathlib.Path("scripts/security/generate-supply-chain-sample-service-summary.sh"),
@@ -4656,15 +3780,15 @@ stage_roots = [
 ]
 
 stale_literals = {
-    "v3.6.8": "Traefik is declared as traefik:v3.7.6",
-    "v3.6.12": "Traefik is declared as traefik:v3.7.6",
-    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.6.4-1",
+    "v3.6.8": "Traefik is declared as traefik:v3.7.8",
+    "v3.6.12": "Traefik is declared as traefik:v3.7.8",
+    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.7.0-0",
     "7.14.2": "OAuth2 Proxy Dockerfile uses quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "hashicorp/vault:1.21.4": "Vault is declared as hashicorp/vault:2.0.3",
     "Confluent CP 8.1.1": "Kafka is declared as confluentinc/cp-kafka:8.3.0",
     "RabbitMQ 4.2": "RabbitMQ is declared as rabbitmq:4.3.1-management-alpine",
     "kafbat/kafka-ui:v1.4.2": "Kafbat UI is declared as kafbat/kafka-ui:v1.5.0",
-    "v0.20.0": "Ollama is declared as ollama/ollama:0.31.1",
+    "v0.20.0": "Ollama is declared as ollama/ollama:0.32.1",
     "v0.8.5-cuda": "Open WebUI is declared as ghcr.io/open-webui/open-webui:v0.10.2-cuda",
     "OLLAMA_WEB_UI_PORT": "Open WebUI compose uses OLLAMA_WEBUI_PORT",
     "docker compose -f infra/08-ai/ollama/docker-compose.yml config": "08-ai service-local compose files depend on root infra_net context; use the AI hardening check and root profile validator",
@@ -4714,7 +3838,7 @@ stale_literals = {
     "Pyroscope (v1.18.1)": "Pyroscope is declared as grafana/pyroscope:2.1.0",
     "v1.17-unprivileged": "Qdrant is declared as qdrant/qdrant:v1.18.1-unprivileged",
     "neo4j:5.26.23-community": "Neo4j is declared as neo4j:5.26.26-community",
-    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.6",
+    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.11",
     "PostgreSQL (v16+)": "PostgreSQL services are currently PostgreSQL 17/18 family images",
     "InfluxDB 2.x 채택": "InfluxDB 3 Core is the sole current analytics time-series compose",
     "OpenSearch 2.x 채택": "OpenSearch 3.x is the current analytics implementation family",
@@ -4767,8 +3891,8 @@ allowed_suffixes = {".md", ".yml", ".yaml", ".sh", ".cfg", ".Dockerfile", ""}
 auth_files = [path for path in auth_files if path.is_file() and path.suffix in allowed_suffixes]
 
 stale_literals = {
-    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.4-1",
-    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.6.4-1",
+    "26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.7.0-0",
+    "v26.5.4": "Keycloak current image is quay.io/keycloak/keycloak:26.7.0-0",
     "7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "v7.14.2": "OAuth2 Proxy source image is quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
     "Keycloak: `template-infra-med`": "Keycloak current compose extends template-infra-high",
@@ -4879,7 +4003,7 @@ roots = [
 ]
 
 stale_literals = {
-    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.6",
+    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.8",
     "Port 80, 443, 7687": "Traefik static entrypoints are web(80), websecure(443), and metrics(8082)",
     "| `7687` | `7687` | TCP | Neo4j Bolt": "Current gateway docs must not claim a public Neo4j Bolt gateway entrypoint",
     "cd infra/01-gateway": "Use root profile validation instead of a nonexistent tier-level compose stack",

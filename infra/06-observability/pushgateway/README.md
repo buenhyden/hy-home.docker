@@ -38,7 +38,7 @@ pushgateway/
 | :--- | :--- | :--- | :--- |
 | Buffer | [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) | v1.11.3 | Metrics ingestion buffer |
 | Ingress | [Traefik](../../01-gateway/README.md) | v3.3.4 | SSL Termination & Routing |
-| Scraper | [Prometheus](../prometheus/README.md) | v3.13.0 | Expected scrape-to-pull bridge; verify the scrape job before depending on pushed metrics |
+| Scraper | [Prometheus](../prometheus/README.md) | v3.13.1 | Expected scrape-to-pull bridge; verify the scrape job before depending on pushed metrics |
 
 ## Usage Instructions
 
@@ -71,12 +71,6 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 > [!CAUTION]
 > Pushgateway is **not** a general-purpose proxy. Metrics persist in the gateway until explicitly deleted or overwritten. Unmanaged metric growth can lead to memory exhaustion and performance degradation.
 
-## AI Agent Guidance
-
-1. **PromQL Optimization**: When querying metrics from Pushgateway, always include the `job` label to distinguish between different batch runs.
-2. **Maintenance**: Periodically check for stale metrics that haven't been updated.
-3. **Traceability**: Refer to the dedicated guide and runbook for cleanup logic and evidence capture.
-
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
@@ -101,7 +95,8 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 ## How to Work in This Area
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
+1. **PromQL Optimization**: When querying metrics from Pushgateway, always include the `job` label to distinguish between different batch runs.
+2. **Maintenance**: Periodically check for stale metrics that haven't been updated.
+3. **Traceability**: Refer to the dedicated guide and runbook for cleanup logic and evidence capture.

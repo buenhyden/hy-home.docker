@@ -1,6 +1,6 @@
 # n8n Low-code Automation
 
-## Overview (KR)
+## Overview
 
 n8n은 시각적 인터페이스를 통해 워크플로우 자동화를 구현하는 로우코드 도구이다. 복잡한 Airflow DAG와 달리 직관적인 노드 연결을 통해 API 통합, 웹후크 처리, 이벤트 기반 자동화를 빠르게 배포할 수 있다.
 
@@ -59,10 +59,16 @@ n8n/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Review the linked operations guide, policy, and runbook before changing n8n configuration.
 2. Keep external credentials in n8n's encrypted credentials system or Docker Secrets.
 3. Distinguish quick low-code automation from Airflow-owned DAG workflows before adding integrations.
 4. After compose or queue-mode changes, run the validation commands listed below.
+5. Keep `EXECUTIONS_MODE: queue` behavior in mind for parallel workload changes.
+
+6. **Modularization**: 복잡한 로직은 `Sub-workflows`를 활용하여 분리하고 재사용성을 확보하십시오.
+7. **Credential Safety**: 모든 외부 인증 정보는 n8n 내부의 `Credentials` 시스템에 암호화되어 저장되어야 하며, `docker-compose.yml`의 시크릿(`secrets`)을 통해 안전하게 공급됩니다.
 
 ## Tech Stack
 
@@ -81,12 +87,6 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **Worker**: 실제 태스크 실행 담당 (Valkey 큐 기반).
 - **Task Runner**: 특정 복잡한 태스크를 격리된 환경에서 안전하게 처리.
 - **Valkey**: 워커 간 작업 분배를 위한 메시지 브로커.
-
-## AI Agent Guidance
-
-1. **Modularization**: 복잡한 로직은 `Sub-workflows`를 활용하여 분리하고 재사용성을 확보하십시오.
-2. **Credential Safety**: 모든 외부 인증 정보는 n8n 내부의 `Credentials` 시스템에 암호화되어 저장되어야 하며, `docker-compose.yml`의 시크릿(`secrets`)을 통해 안전하게 공급됩니다.
-3. **Execution Mode**: `EXECUTIONS_MODE: queue`로 설정되어 있으므로 대량의 병렬 작업 처리가 가능합니다.
 
 ## Traceability (Golden 5)
 

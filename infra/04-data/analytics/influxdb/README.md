@@ -2,7 +2,7 @@
 
 > High-performance time series database for metrics and analytics.
 
-## Overview (KR)
+## Overview
 
 `influxdb` 서비스는 `hy-home.docker`의 시계열 데이터 영속성 계층을 제공한다. 현재 구현은 InfluxDB 3 Core 단일 compose이며 SQL 조회와 HTTP line-protocol 쓰기의 source interface를 정의한다.
 
@@ -58,10 +58,16 @@ influxdb/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md)를 참조한다.
 2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/05.operations/policies/04-data/analytics/influxdb.md)을 따른다.
 3. 수집 장애 발생 시 [복구 런북](../../../../docs/05.operations/runbooks/04-data/analytics/influxdb.md)을 참조한다.
 4. Root secret declarations are metadata only. Source-only validation cannot prove authorization; token creation/provisioning and authenticated write acceptance require separate runtime approval.
+
+5. 이 README를 읽고 InfluxDB 3 Core의 database/endpoint source contract와 token-provisioning 승인 경계를 파악한다.
+6. Token provisioning은 별도 runtime 승인과 인증 쓰기 acceptance evidence 없이는 완료로 간주하지 않는다.
+7. 데이터 보존 정책을 수정하기 전에 반드시 운영 정책 문서를 대조한다.
 
 ## Validation
 
@@ -80,12 +86,6 @@ influxdb/
 - **Runbook**: [docs/05.operations/runbooks/04-data/analytics/influxdb.md](../../../../docs/05.operations/runbooks/04-data/analytics/influxdb.md)
 - **Official token administration**: [InfluxDB 3 Core token management](https://docs.influxdata.com/influxdb3/core/admin/tokens/)
 - **Monitoring**: `https://grafana.${DEFAULT_URL}`
-
-## AI Agent Guidance
-
-1. 이 README를 읽고 InfluxDB 3 Core의 database/endpoint source contract와 token-provisioning 승인 경계를 파악한다.
-2. Token provisioning은 별도 runtime 승인과 인증 쓰기 acceptance evidence 없이는 완료로 간주하지 않는다.
-3. 데이터 보존 정책을 수정하기 전에 반드시 운영 정책 문서를 대조한다.
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.

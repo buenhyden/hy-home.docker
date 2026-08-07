@@ -64,7 +64,9 @@ governance/
 ├── document-corpus-lifecycle/         # Reviewed manifests and generated safe summaries
 ├── gap-to-stage-routing.md            # Gap-to-stage routing advisory reference
 ├── github-actions-control-plane-observation.yaml # Dated public remote observation
-└── provider-hook-parity-matrix.md     # Generated provider hook parity matrix
+├── provider-hook-parity-matrix.md     # Generated provider hook parity matrix
+├── target-surface-delta-manifest.yaml # Reviewed Spec 135 successor delta
+└── target-surface-delta-summary.md    # Generated value-free delta summary
 ```
 
 ## Current References
@@ -78,6 +80,8 @@ governance/
 - [gap-to-stage-routing.md](./gap-to-stage-routing.md) - Stage 00 gap-to-stage routing table and recommender contract
 - [github-actions-control-plane-observation.yaml](./github-actions-control-plane-observation.yaml) - dated public GitHub Actions inventory with explicit unverified control-plane and root-cause boundaries
 - [provider-hook-parity-matrix.md](./provider-hook-parity-matrix.md) - generated Claude/Codex/Gemini hook parity matrix and Gemini behavioral reminder checklist
+- [target-surface-delta-manifest.yaml](./target-surface-delta-manifest.yaml) - advisory successor manifest classifying every target path changed since the immutable Spec 133 closure
+- [target-surface-delta-summary.md](./target-surface-delta-summary.md) - generator-owned, value-free successor-delta and current-inventory summary
 
 ## How to Work in This Area
 
@@ -87,7 +91,9 @@ governance/
 4. Keep retirement records value-free and bind each source to an exact Git commit, path, and blob.
 5. Validate lifecycle manifest and summary changes through their canonical lifecycle checker modes.
 6. Keep remote observations source-linked, dated, non-authoritative, and explicit about every unverified field.
-7. Run `bash scripts/validation/check-repo-contracts.sh` after changing this category.
+7. Refresh the target-surface delta summary only through
+   `python3 scripts/validation/check-target-surface-delta-contract.py --write-summary`.
+8. Run `bash scripts/validation/check-repo-contracts.sh` after changing this category.
 
 ## Related Documents
 

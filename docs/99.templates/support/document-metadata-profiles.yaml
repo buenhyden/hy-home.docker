@@ -36,6 +36,7 @@ common:
   generated_outputs:
     docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
     docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/governance/target-surface-delta-summary.md: scripts/validation/check-target-surface-delta-contract.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
@@ -472,7 +473,7 @@ template_roles:
   service:
     source: docs/99.templates/templates/spec-contracts/service.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/service.md]
+    target_globs: [docs/03.specs/*/service.md, examples/sample-web-service/service.md]
     required_headings: ["## Overview", "## Parent and Scope", "## Image and Build", "## Security", "## Networking and Storage", "## Secrets", "## Health and Operations", "## Validation", "## Related Documents"]
     conditional_headings: ["## Scaling"]
     forbidden_headings: ["## Template Usage"]

@@ -2,7 +2,7 @@
 
 > Distributed search and analytics engine with Dashboards.
 
-## Overview (KR)
+## Overview
 
 `opensearch` 스택은 로그 집계, 풀텍스트 검색 및 실시간 시각화를 위한 확장 가능한 검색 백엔드를 제공한다. 고가용성 관측성 및 분석 워크로드를 위해 설계되었다.
 
@@ -60,9 +60,15 @@ opensearch/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)를 참조한다.
 2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/policies/04-data/analytics/opensearch.md)을 확인한다.
 3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/runbooks/04-data/analytics/opensearch.md)을 사용한다.
+
+4. OpenSearch 설정 변경 시 JVM Heap 메모리 설정을 신중히 확인한다.
+5. HTTPS 및 보안 플러그인 설정을 수정할 때 인증서 경로를 누락하지 않도록 주의한다.
+6. 인덱스 생성 및 삭제 작업을 자동화하기 전에 운영 정책의 데이터 보존 주기를 먼저 읽는다.
 
 ## Validation
 
@@ -81,12 +87,6 @@ opensearch/
 - **Policy**: [docs/05.operations/policies/04-data/analytics/opensearch.md](../../../../docs/05.operations/policies/04-data/analytics/opensearch.md)
 - **Runbook**: [docs/05.operations/runbooks/04-data/analytics/opensearch.md](../../../../docs/05.operations/runbooks/04-data/analytics/opensearch.md)
 - **Monitoring**: `opensearch-exporter:9114/metrics`
-
-## AI Agent Guidance
-
-1. OpenSearch 설정 변경 시 JVM Heap 메모리 설정을 신중히 확인한다.
-2. HTTPS 및 보안 플러그인 설정을 수정할 때 인증서 경로를 누락하지 않도록 주의한다.
-3. 인덱스 생성 및 삭제 작업을 자동화하기 전에 운영 정책의 데이터 보존 주기를 먼저 읽는다.
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.

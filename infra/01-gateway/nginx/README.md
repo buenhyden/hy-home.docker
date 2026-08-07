@@ -6,8 +6,6 @@
 
 The Nginx component in the `01-gateway` tier is a profile-only specialized proxy for complex path-based routing (for example, MinIO and Keycloak) and SSO checks through OAuth2 Proxy. It is not included in the current root compose stack by default; validation and runtime use require an explicit root network and dependency context.
 
-## Overview (KR)
-
 Nginx 컴포넌트는 복잡한 경로 기반 라우팅과 SSO(OAuth2 Proxy) 인증 클라이언트 역할을 수행하는 profile-only leaf입니다. 현재 root compose에는 기본 include되어 있지 않으므로, 실행은 명시적인 root network/dependency context와 승인된 runtime 절차가 있을 때만 다룹니다.
 
 ## Audience
@@ -63,10 +61,16 @@ nginx/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Review `config/nginx.conf` to understand current `location` blocks and `upstream` definitions.
 2. When adding a new path-based route, ensure it is added to the main `server` block in `nginx.conf`.
 3. If the route requires SSO, include the `auth_request /_oauth2_auth_check;` directive.
 4. After any configuration change, run `bash scripts/hardening/check-all-hardening.sh 01-gateway`; run `nginx -t` or reload only against an approved running Nginx context.
+
+5. Always run `nginx -t` in the approved running context before reloading configuration.
+6. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
+7. Update specific path guides in `docs/05.operations/guides/01-gateway/nginx.md` when adding new routing logic.
 
 ## Configuration
 
@@ -108,9 +112,3 @@ healthcheck:
 - [Gateway Operations Policy](../../../docs/05.operations/policies/01-gateway/nginx.md)
 - [Nginx Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md)
 - [SSO Setup Guide](../../../docs/05.operations/guides/02-auth/README.md)
-
-## AI Agent Guidance
-
-1. Always run `nginx -t` in the approved running context before reloading configuration.
-2. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
-3. Update specific path guides in `docs/05.operations/guides/01-gateway/nginx.md` when adding new routing logic.

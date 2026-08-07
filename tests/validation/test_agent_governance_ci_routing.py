@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import ast
 import contextlib
+import importlib.util
+import json
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -70,8 +74,7 @@ REQUIRED_CI_JOBS = frozenset(
     }
 )
 SUPPLY_CHAIN_GOVERNANCE_DESCRIPTION = (
-    "Five focused operational-readiness unittest modules, the deterministic "
-    "supply-chain policy check, and the supply-chain summary freshness check"
+    "`ci.supply-chain-fixture-policy`"
 )
 GITHUB_INDEX_SECTIONS = (
     "Purpose",
@@ -202,11 +205,22 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn(TARGET_CLI_COMMAND, result.stdout)
-        self.assertIn(TARGET_TEST_COMMAND, result.stdout)
+        self.assertIn(
+            "leaf.local-target-surface-regressions\t"
+            "scripts/validation/ci_gate_adapters.py",
+            result.stdout,
+        )
+        self.assertIn(
+            "leaf.local-target-surface-contract\t"
+            "scripts/validation/check-target-surface-contract.py",
+            result.stdout,
+        )
         local_text = LOCAL_QA.read_text(encoding="utf-8")
-        self.assertIn(TARGET_CLI_COMMAND, local_text)
-        self.assertIn(TARGET_TEST_COMMAND, local_text)
+        self.assertIn("--profile local-script-backed", local_text)
+        self.assertIn("--profile local-harness", local_text)
+        self.assertIn("--profile local-all-profiles", local_text)
+        self.assertNotIn(TARGET_CLI_COMMAND, local_text)
+        self.assertNotIn(TARGET_TEST_COMMAND, local_text)
         tool_bootstrap = (ROOT / "scripts/operations/use-qa-ci-tools.sh").read_text(
             encoding="utf-8"
         )
@@ -228,19 +242,39 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         commands = "\n".join(
             str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
         )
-        self.assertIn(TARGET_CLI_COMMAND, commands)
-        self.assertIn(
-            "tests.validation.test_target_surface_contracts",
-            commands,
-        )
+        self.assertNotIn(TARGET_CLI_COMMAND, commands)
+        self.assertNotIn("tests.validation.test_target_surface_contracts", commands)
         self.assertEqual(
-            1,
+            0,
             sum(
                 step.get("name") == "Check target surface contracts"
                 for step in repo_steps
                 if isinstance(step, dict)
             ),
         )
+        aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
+        self.assertNotIn(TARGET_CLI_COMMAND, aggregate)
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        node_by_id = {
+            node["gate_id"]: node for node in contract["gate_nodes"]
+        }
+        self.assertEqual(
+            [
+                "leaf.local-target-surface-regressions",
+                "leaf.local-target-surface-contract",
+                "leaf.local-target-delta-regressions",
+                "leaf.local-target-delta-contract",
+            ],
+            node_by_id["local.target-surface"]["children"],
+        )
+        local_qa = LOCAL_QA.read_text(encoding="utf-8")
+        self.assertIn("--profile local-script-backed", local_qa)
+        self.assertNotIn(TARGET_CLI_COMMAND, local_qa)
+        self.assertNotIn(TARGET_TEST_COMMAND, local_qa)
 
     def test_ci_quality_has_exact_sixteen_job_ids(self) -> None:
         workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
@@ -255,42 +289,29 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             for step in workflow["jobs"]["zizmor"]["steps"]
             if isinstance(step, dict)
         ]
-        commands = [
-            step.get("run")
-            for step in zizmor_steps
-            if isinstance(step.get("run"), str)
-        ]
         self.assertEqual(
             [
-                "uvx --from 'zizmor==1.28.0' "
-                "zizmor . --format sarif . > results.sarif"
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.zizmor"
             ],
             [
-                command
-                for command in commands
-                if command is not None and "zizmor" in command
+                step["run"]
+                for step in zizmor_steps
+                if isinstance(step.get("run"), str)
             ],
         )
-        self.assertNotIn(
-            "zizmor==1.27.0",
-            "\n".join(command for command in commands if command is not None),
-            "the yanked credential-logging release must be rejected",
-        )
-        run_steps = [
-            step
-            for step in zizmor_steps
-            if step.get("run")
-            == (
-                "uvx --from 'zizmor==1.28.0' "
-                "zizmor . --format sarif . > results.sarif"
-            )
-        ]
+        run_steps = [step for step in zizmor_steps if "run" in step]
         self.assertEqual(1, len(run_steps))
         self.assertNotIn(
             "env",
             run_steps[0],
             "offline zizmor must not receive a credential environment",
         )
+        adapter = (
+            ROOT / "scripts/validation/ci_gate_adapters.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("zizmor==1.28.0", adapter)
+        self.assertNotIn("zizmor==1.27.0", adapter)
 
     def test_github_index_is_navigation_only_and_not_readme(self) -> None:
         self.assertTrue(GITHUB_INDEX.is_file(), "missing .github/INDEX.md")
@@ -451,18 +472,33 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             step
             for step in job["steps"]
             if isinstance(step, dict)
-            and step.get("run") == OPERATIONAL_READINESS_TEST_COMMAND
+            and step.get("run")
+            == (
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.supply-chain-fixture-policy"
+            )
         ]
         self.assertEqual(1, len(matching))
         self.assertEqual(
-            "Run focused operational readiness regressions",
+            "Check supply-chain fixture policy",
             matching[0].get("name"),
         )
-        contract = REPO_CONTRACT.read_text(encoding="utf-8")
-        self.assertIn(OPERATIONAL_READINESS_TEST_COMMAND, contract)
-        self.assertIn(
-            "supply-chain focused regression step must match",
-            contract,
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            (
+                "leaf.supply-chain-fixture-policy",
+                "leaf.supply-chain-deterministic-policy",
+                "leaf.supply-chain-summary-freshness",
+            ),
+            tuple(
+                next(
+                    node["children"]
+                    for node in contract["gate_nodes"]
+                    if node["gate_id"] == "ci.supply-chain-fixture-policy"
+                )
+            ),
         )
         governance_text = GITHUB_GOVERNANCE.read_text(encoding="utf-8")
         governance_row = re.search(
@@ -481,10 +517,10 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         with self._workflow_fixture() as root:
             workflow_path = root / ".github/workflows/ci-quality.yml"
             text = workflow_path.read_text(encoding="utf-8")
-            old = "          tests.validation.test_grype_db_seed\n"
+            old = "--gate ci.supply-chain-fixture-policy"
             self.assertIn(old, text)
             workflow_path.write_text(
-                text.replace(old, "", 1),
+                text.replace(old, "--gate ci.docs-traceability", 1),
                 encoding="utf-8",
             )
             result = subprocess.run(
@@ -496,7 +532,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             )
         self.assertEqual(1, result.returncode, result.stderr)
         self.assertIn(
-            "supply-chain focused regression step must match",
+            "does not project its root exactly once",
             result.stderr,
         )
 
@@ -506,81 +542,81 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "permissions",
                 "repo-contracts:\n    permissions:\n      contents: read",
                 "repo-contracts:\n    permissions:\n      contents: read\n      issues: read",
-                "permissions must match",
+                "permissions differ from the contract",
             ),
             (
                 "concurrency",
                 "cancel-in-progress: true",
                 "cancel-in-progress: false",
-                "concurrency must match",
+                "concurrency differs from the contract",
             ),
             (
                 "timeout",
                 "repo-contracts:\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest\n    timeout-minutes: 10",
                 "repo-contracts:\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest",
-                "timeout-minutes must equal",
+                "timeout differs from the contract",
             ),
             (
                 "action-pin",
                 "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
                 "actions/checkout@v4",
-                "full commit SHA",
+                "not a full SHA",
             ),
             (
                 "unsafe-trigger",
                 "  pull_request:\n    branches: [main]",
                 "  pull_request_target:\n    branches: [main]",
-                "pull_request_target is not allowed",
+                "forbidden event is configured",
             ),
             (
                 "untrusted-run-input",
-                "run: bash scripts/validation/check-repo-contracts.sh",
-                "run: bash scripts/validation/check-repo-contracts.sh '${{ github.event.pull_request.title }}'",
-                "untrusted GitHub context",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.repo-contracts",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate '${{ github.event.pull_request.title }}'",
+                "interpolates an Actions expression directly in run",
             ),
             (
                 "untrusted-direct-ref",
-                "run: bash scripts/validation/check-repo-contracts.sh",
-                "run: bash scripts/validation/check-repo-contracts.sh '${{ github.ref }}'",
-                "untrusted GitHub context",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.repo-contracts",
+                "run: python3 scripts/validation/run-ci-gate.py --profile ci --gate '${{ github.ref }}'",
+                "interpolates an Actions expression directly in run",
             ),
             (
                 "zizmor-credential-env",
                 (
-                    "        run: uvx --from 'zizmor==1.28.0' "
-                    "zizmor . --format sarif . > results.sarif"
+                    "        run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.zizmor"
                 ),
                 (
-                    "        run: uvx --from 'zizmor==1.28.0' "
-                    "zizmor . --format sarif . > results.sarif\n"
+                    "        run: python3 scripts/validation/run-ci-gate.py "
+                    "--profile ci --gate ci.zizmor\n"
                     "        env:\n"
                     "          AUTH_CONTEXT: synthetic-value"
                 ),
-                "zizmor credential environment is forbidden",
+                "zizmor must not receive a credential environment",
             ),
             (
                 "stable-job-name",
                 "  repo-contracts:\n",
                 "  target-repo-contracts:\n",
-                "missing required QA/CI job: repo-contracts",
+                "job IDs differ from the contract",
             ),
             (
                 "artifact-upload",
                 "      - name: Check docs traceability sync",
                 "      - name: Forbidden artifact upload\n        uses: actions/upload-artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
-                "artifact upload is forbidden",
+                "artifact upload is outside the approved workflow contract",
             ),
             (
                 "artifact-upload-mixed-owner-case",
                 "      - name: Check docs traceability sync",
                 "      - name: Forbidden artifact upload\n        uses: Actions/upload-artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
-                "artifact upload is forbidden",
+                "artifact upload is outside the approved workflow contract",
             ),
             (
                 "artifact-upload-mixed-action-case",
                 "      - name: Check docs traceability sync",
                 "      - name: Forbidden artifact upload\n        uses: actions/Upload-Artifact@0000000000000000000000000000000000000000\n      - name: Check docs traceability sync",
-                "artifact upload is forbidden",
+                "artifact upload is outside the approved workflow contract",
             ),
         )
         program = self._workflow_security_program()
@@ -601,16 +637,20 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertIn(expected, result.stderr)
 
         with (
-            self.subTest(label="ref-env-indirection-is-safe"),
+            self.subTest(label="ref-env-indirection-fails-projection"),
             self._workflow_fixture() as root,
         ):
             workflow_path = root / ".github/workflows/ci-quality.yml"
             text = workflow_path.read_text(encoding="utf-8")
-            old = "        run: bash scripts/validation/check-repo-contracts.sh"
+            old = (
+                "        run: python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.repo-contracts"
+            )
             new = (
                 "        env:\n"
                 "          SAFE_REF: ${{ github.ref }}\n"
-                '        run: bash scripts/validation/check-repo-contracts.sh "$SAFE_REF"'
+                "        run: python3 scripts/validation/run-ci-gate.py "
+                '--profile ci --gate "$SAFE_REF"'
             )
             self.assertIn(old, text)
             workflow_path.write_text(text.replace(old, new, 1), encoding="utf-8")
@@ -621,7 +661,8 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 text=True,
                 check=False,
             )
-            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(1, result.returncode, result.stderr)
+            self.assertIn("non-static gate program", result.stderr)
 
         safe_actions = (
             "actions/download-artifact@0000000000000000000000000000000000000000",
@@ -647,7 +688,8 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     text=True,
                     check=False,
                 )
-                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(1, result.returncode, result.stderr)
+                self.assertIn("direct Action reference is not registered", result.stderr)
 
     def test_ci_quality_duplicate_yaml_keys_fail_closed(self) -> None:
         sentinel = "duplicate-workflow-secret-sentinel"
@@ -717,7 +759,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     "    timeout-minutes: 5\n"
                     "    steps: []\n"
                 ),
-                "duplicate workflow purpose",
+                "workflow name is duplicated",
             ),
             (
                 "cross-file-job-id",
@@ -736,7 +778,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                     "    timeout-minutes: 5\n"
                     "    steps: []\n"
                 ),
-                "duplicate workflow job id across files",
+                "job identity is duplicated across workflows",
             ),
         )
         program = self._workflow_security_program()
@@ -790,7 +832,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 "stale active remote-state claim",
             ),
         )
-        program = self._workflow_security_program()
+        program = self._stage00_github_program()
         for label, relative, old, new, expected in cases:
             with self.subTest(label=label), self._workflow_fixture() as root:
                 target = root / relative
@@ -809,7 +851,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertNotIn(sentinel, result.stderr)
 
     def test_ruleset_required_check_mismatch_fails_closed(self) -> None:
-        program = self._workflow_security_program()
+        program = self._stage00_github_program()
         with self._workflow_fixture() as root:
             ruleset = root / MAIN_PROTECTION.relative_to(ROOT)
             text = ruleset.read_text(encoding="utf-8")
@@ -826,9 +868,72 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         self.assertEqual(1, result.returncode, result.stderr)
         self.assertIn("missing required status check", result.stderr)
 
+    def test_governance_required_gate_table_mismatch_fails_closed(
+        self,
+    ) -> None:
+        program = self._stage00_github_program()
+        with self._workflow_fixture() as root:
+            governance = root / GITHUB_GOVERNANCE.relative_to(ROOT)
+            text = governance.read_text(encoding="utf-8")
+            old = "| `storybook-coverage`"
+            self.assertIn(old, text)
+            governance.write_text(
+                text.replace(old, "| `renamed-coverage-probe`", 1),
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, result.returncode, result.stderr)
+        self.assertIn(
+            "required quality gate table differs from typed workflow contract",
+            result.stderr,
+        )
+
+    def test_repository_metadata_stage00_mutations_fail_closed(self) -> None:
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        repo_root = next(
+            node
+            for node in contract["gate_nodes"]
+            if node["gate_id"] == "ci.repo-contracts"
+        )
+        children = tuple(repo_root["children"])
+        self.assertLess(
+            children.index("leaf.repo-metadata-base"),
+            children.index("setup.repo-python-dependencies"),
+        )
+        self.assertLess(
+            children.index("setup.repo-python-dependencies"),
+            children.index("leaf.repo-document-metadata"),
+        )
+        metadata = next(
+            node
+            for node in contract["gate_nodes"]
+            if node["gate_id"] == "leaf.repo-document-metadata"
+        )
+        self.assertEqual(["TEMPLATE_GATE_BASE"], metadata["allowed_env_keys"])
+        workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+        self.assertEqual(
+            (
+                "python3 scripts/validation/run-ci-gate.py "
+                "--profile ci --gate ci.repo-contracts"
+            ),
+            workflow["jobs"]["repo-contracts"]["steps"][-1]["run"],
+        )
+
     def test_repo_memory_contract_rejects_exact_current_profile_mutation(
         self,
     ) -> None:
+        if importlib.util.find_spec("html5lib") is None:
+            self.skipTest("html5lib is not installed in the local test runtime")
         program = self._repo_python_program("Governance memory contract")
         sentinel = "private-current-profile-sentinel"
         load_sentinel = "private-contract-load-sentinel"
@@ -927,31 +1032,42 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
         workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
         jobs = workflow["jobs"]
 
-        repo_steps = jobs["repo-contracts"]["steps"]
-        repo_commands = "\n".join(
-            str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
+        self.assertIn(
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.repo-contracts",
+            "\n".join(
+                str(step.get("run", ""))
+                for step in jobs["repo-contracts"]["steps"]
+                if isinstance(step, dict)
+            ),
         )
         self.assertIn(
-            "check-agent-governance-contract.py --mode repository --section all",
-            repo_commands,
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.agent-output-eval-fixture-gate",
+            "\n".join(
+                str(step.get("run", ""))
+                for step in jobs["agent-output-eval-fixture-gate"]["steps"]
+                if isinstance(step, dict)
+            ),
         )
-
-        eval_steps = jobs["agent-output-eval-fixture-gate"]["steps"]
-        eval_commands = "\n".join(
-            str(step.get("run", "")) for step in eval_steps if isinstance(step, dict)
+        aggregate = REPO_CONTRACT.read_text(encoding="utf-8")
+        self.assertNotIn(
+            "python3 scripts/validation/check-agent-governance-contract.py",
+            aggregate,
         )
-        self.assertIn(
-            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
-            eval_commands,
+        self.assertNotRegex(
+            aggregate,
+            r"(?m)^if ! bash scripts/hardening/check-all-hardening\.sh ",
         )
-        self.assertIn("fixtures_check=pass", eval_commands)
-        self.assertIn("regressions_check=pass", eval_commands)
-        for module in (
-            "tests.validation.test_agent_governance_ci_routing",
-            "tests.validation.test_agent_output_eval_fixtures",
-        ):
-            with self.subTest(ci_module=module):
-                self.assertIn(module, repo_commands + eval_commands)
+        self.assertNotRegex(
+            aggregate,
+            r"(?m)^if ! bash scripts/validation/"
+            r"run-agent-output-eval-fixtures\.sh ",
+        )
+        local_qa = LOCAL_QA.read_text(encoding="utf-8")
+        self.assertNotIn("run-agent-output-eval-fixtures.sh", local_qa)
+        self.assertNotIn("check-all-hardening.sh", local_qa)
+        self.assertEqual(4, local_qa.count("scripts/validation/run-ci-gate.py"))
         self.assertEqual({"contents": "read"}, jobs["repo-contracts"]["permissions"])
         self.assertEqual(
             {"contents": "read"},
@@ -1013,6 +1129,7 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 self.assertIn(fragment, result.stdout)
         self.assertNotIn("locally use pre-commit", result.stdout)
         self.assertNotIn("pre-commit run --all-files", result.stdout)
+        self.assertIn("leaf.ci-precommit-regressions", result.stdout)
 
     def test_semantic_local_qa_bypass_guard_is_selector_coupled(self) -> None:
         for path in (
@@ -1034,7 +1151,12 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             'pathlib.Path("scripts/validation/run-local-qa-gates.sh")',
             aggregate_fragments,
         )
-        self.assertIn("--mode repository --section all", source)
+        self.assertIn('"gate_id": "leaf.repo-contracts"', source)
+        self.assertIn(
+            '"entrypoint": "scripts/validation/check-repo-contracts.sh"',
+            source,
+        )
+        self.assertNotIn("--mode repository --section all", source)
 
     def test_script_reference_scan_ignores_only_python_cache_artifacts(self) -> None:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
@@ -1734,6 +1856,1365 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
             r"grep .*validate-harness",
         )
 
+    def test_local_profiles_exclude_compose_env_setup(self) -> None:
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        node_by_id = {
+            node["gate_id"]: node for node in contract["gate_nodes"]
+        }
+
+        def expand(roots):
+            expanded = []
+            seen = set()
+
+            def visit(gate_id):
+                if gate_id in seen:
+                    return
+                seen.add(gate_id)
+                node = node_by_id[gate_id]
+                if node["kind"] == "aggregate":
+                    for child in node["children"]:
+                        visit(child)
+                else:
+                    expanded.append(gate_id)
+
+            for root in roots:
+                visit(root)
+            return expanded
+
+        for profile in contract["profile_roots"]:
+            with self.subTest(profile=profile["profile"]):
+                self.assertNotIn(
+                    "setup.compose-env",
+                    expand(profile["root_gate_ids"]),
+                )
+
+    def test_local_wrapper_preserves_existing_env_bytes(self) -> None:
+        source = (
+            ROOT / "scripts/validation/run-local-qa-gates.sh"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("cp .env.example .env", source)
+        self.assertNotRegex(source, r"(?:>|>>)\s*\.env(?:\s|$)")
+        self.assertNotIn("rm .env", source)
+
+    def test_descriptor_mode_root_and_import_compatibility_set_is_exact(
+        self,
+    ) -> None:
+        expected = {
+            "scripts/hardening/check-all-hardening.sh",
+            "scripts/operations/sync-provider-surfaces.sh",
+            "scripts/operations/sync-tech-stack-versions.sh",
+            "scripts/validation/check-agent-governance-contract.py",
+            "scripts/validation/check-document-corpus-lifecycle.py",
+            "scripts/validation/check-document-metadata.py",
+            "scripts/validation/check-supply-chain-policy.py",
+        }
+        for relative in sorted(expected):
+            with self.subTest(relative=relative):
+                source = (ROOT / relative).read_text(encoding="utf-8")
+                self.assertIn("HYHOME_CI_GATE_ROOT", source)
+        references = {
+            path.relative_to(ROOT).as_posix()
+            for root in (ROOT / "scripts",)
+            for path in root.rglob("*")
+            if path.is_file()
+            and "__pycache__" not in path.parts
+            and "HYHOME_CI_GATE_ROOT" in path.read_text(
+                encoding="utf-8",
+                errors="ignore",
+            )
+            and path.name
+            not in {
+                "ci_gate_adapters.py",
+                "ci_gate_runner.py",
+                "test_ci_gate_runner.py",
+            }
+        }
+        self.assertEqual(expected, references)
+
+    def test_descriptor_compatibility_consumers_validate_root_identity(
+        self,
+    ) -> None:
+        consumers = {
+            "scripts/hardening/check-all-hardening.sh": "shell",
+            "scripts/operations/sync-provider-surfaces.sh": "shell",
+            "scripts/operations/sync-tech-stack-versions.sh": "shell",
+            "scripts/validation/check-agent-governance-contract.py": "python",
+            "scripts/validation/check-document-corpus-lifecycle.py": "python",
+            "scripts/validation/check-document-metadata.py": "python",
+            "scripts/validation/check-supply-chain-policy.py": "python",
+        }
+        diagnostic = "FAIL: invalid HYHOME_CI_GATE_ROOT\n"
+        for relative, kind in consumers.items():
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+                fixture_root = pathlib.Path(directory) / "repository"
+                target = fixture_root / relative
+                target.parent.mkdir(parents=True)
+                shutil.copy2(ROOT / relative, target)
+                validation = fixture_root / "scripts/validation"
+                validation.mkdir(parents=True, exist_ok=True)
+                sibling = validation / "agent_governance_contract.py"
+                if not sibling.exists():
+                    shutil.copy2(
+                        ROOT / "scripts/validation/agent_governance_contract.py",
+                        sibling,
+                    )
+                if relative.endswith("check-document-corpus-lifecycle.py"):
+                    shutil.copy2(
+                        ROOT / "scripts/validation/check-document-metadata.py",
+                        validation / "check-document-metadata.py",
+                    )
+
+                if kind == "shell":
+                    source = target.read_text(encoding="utf-8")
+                    marker = 'REPO_ROOT="$(_verified_repository_root)"\n'
+                    self.assertIn(marker, source)
+                    target.write_text(
+                        source.replace(
+                            marker,
+                            marker + "printf '%s\\n' \"$REPO_ROOT\"\nexit 0\n",
+                            1,
+                        ),
+                        encoding="utf-8",
+                    )
+                    direct_command = ["bash", str(target)]
+                else:
+                    direct_command = [
+                        sys.executable,
+                        "-c",
+                        (
+                            "import importlib.util, pathlib, sys;"
+                            "p=pathlib.Path(sys.argv[1]);"
+                            "s=importlib.util.spec_from_file_location('probe',p);"
+                            "m=importlib.util.module_from_spec(s);"
+                            "sys.modules[s.name]=m;"
+                            "sys.path.insert(0,str(p.parent));"
+                            "s.loader.exec_module(m);"
+                            "print(m.ROOT);"
+                            "print(sys.modules.get('agent_governance_contract').__file__ "
+                            "if p.name == 'check-document-metadata.py' else '-')"
+                        ),
+                        str(target),
+                    ]
+
+                direct_env = os.environ.copy()
+                direct_env.pop("HYHOME_CI_GATE_ROOT", None)
+                direct = subprocess.run(
+                    direct_command,
+                    cwd=fixture_root,
+                    env=direct_env,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, direct.returncode, direct.stderr)
+                self.assertEqual(
+                    str(fixture_root),
+                    direct.stdout.splitlines()[0],
+                )
+
+                root_fd = os.open(
+                    fixture_root,
+                    os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
+                )
+                entrypoint_fd = (
+                    os.open(target, os.O_RDONLY)
+                    if kind == "shell"
+                    else None
+                )
+                try:
+                    descriptor_env = direct_env | {
+                        "HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{root_fd}"
+                    }
+                    descriptor_command = (
+                        ["bash", f"/proc/self/fd/{entrypoint_fd}"]
+                        if entrypoint_fd is not None
+                        else direct_command
+                    )
+                    inherited_fds = (
+                        (entrypoint_fd, root_fd)
+                        if entrypoint_fd is not None
+                        else (root_fd,)
+                    )
+                    valid = subprocess.run(
+                        descriptor_command,
+                        cwd=fixture_root,
+                        env=descriptor_env,
+                        pass_fds=inherited_fds,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                finally:
+                    if entrypoint_fd is not None:
+                        os.close(entrypoint_fd)
+                    os.close(root_fd)
+                self.assertEqual(0, valid.returncode, valid.stderr)
+                self.assertRegex(
+                    valid.stdout.splitlines()[0],
+                    r"\A/proc/self/fd/[0-9]+\Z",
+                )
+                if relative.endswith("check-document-metadata.py"):
+                    self.assertRegex(
+                        valid.stdout.splitlines()[1],
+                        r"\A/proc/self/fd/[0-9]+/scripts/validation/"
+                        r"agent_governance_contract\.py\Z",
+                    )
+
+                entrypoint_fd = (
+                    os.open(target, os.O_RDONLY)
+                    if kind == "shell"
+                    else None
+                )
+                try:
+                    invalid = subprocess.run(
+                        (
+                            ["bash", f"/proc/self/fd/{entrypoint_fd}"]
+                            if entrypoint_fd is not None
+                            else direct_command
+                        ),
+                        cwd=fixture_root,
+                        env=direct_env
+                        | {"HYHOME_CI_GATE_ROOT": "/tmp/not-a-descriptor"},
+                        pass_fds=(
+                            (entrypoint_fd,)
+                            if entrypoint_fd is not None
+                            else ()
+                        ),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                finally:
+                    if entrypoint_fd is not None:
+                        os.close(entrypoint_fd)
+                self.assertNotEqual(0, invalid.returncode)
+                self.assertEqual(diagnostic, invalid.stderr)
+
+                with tempfile.TemporaryDirectory() as other_directory:
+                    other_fd = os.open(
+                        other_directory,
+                        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0),
+                    )
+                    entrypoint_fd = (
+                        os.open(target, os.O_RDONLY)
+                        if kind == "shell"
+                        else None
+                    )
+                    try:
+                        mismatched = subprocess.run(
+                            (
+                                ["bash", f"/proc/self/fd/{entrypoint_fd}"]
+                                if entrypoint_fd is not None
+                                else direct_command
+                            ),
+                            cwd=fixture_root,
+                            env=direct_env
+                            | {
+                                "HYHOME_CI_GATE_ROOT": (
+                                    f"/proc/self/fd/{other_fd}"
+                                )
+                            },
+                            pass_fds=(
+                                (entrypoint_fd, other_fd)
+                                if entrypoint_fd is not None
+                                else (other_fd,)
+                            ),
+                            capture_output=True,
+                            text=True,
+                            check=False,
+                        )
+                    finally:
+                        if entrypoint_fd is not None:
+                            os.close(entrypoint_fd)
+                        os.close(other_fd)
+                self.assertNotEqual(0, mismatched.returncode)
+                self.assertEqual(diagnostic, mismatched.stderr)
+
+    def test_typed_repository_wiring_matches_exact_registered_node(self) -> None:
+        program = self._repo_python_program("Typed repository gate wiring")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            contract = root / ".github/workflow-contract.yml"
+            contract.parent.mkdir(parents=True)
+            shutil.copy2(ROOT / ".github/workflow-contract.yml", contract)
+            baseline = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, baseline.returncode, baseline.stderr)
+
+            document = json.loads(contract.read_text(encoding="utf-8"))
+            repo_leaf = next(
+                node
+                for node in document["gate_nodes"]
+                if node["gate_id"] == "leaf.repo-contracts"
+            )
+            repo_leaf["profiles"] = ["ci"]
+            contract.write_text(
+                json.dumps(document, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            mutated = subprocess.run(
+                [sys.executable, "-c", program],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(1, mutated.returncode)
+        self.assertEqual(
+            "FAIL: typed repository gate wiring differs from the exact contract\n",
+            mutated.stderr,
+        )
+
+    def test_repository_umbrella_is_wiring_only(self) -> None:
+        source = (
+            ROOT / "scripts/validation/check-repo-contracts.sh"
+        ).read_text(encoding="utf-8")
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        sibling_entrypoints = {
+            node["entrypoint"]
+            for node in contract["gate_nodes"]
+            if node["kind"] in {"leaf", "setup"}
+            and node["gate_id"] != "leaf.repo-contracts"
+        }
+        dispatched = self._registered_sibling_dispatches(
+            source,
+            sibling_entrypoints,
+        )
+        self.assertEqual(set(), dispatched)
+        sibling = "scripts/validation/check-target-surface-contract.py"
+        assignment_sibling = "scripts/validation/check-document-metadata.py"
+        dispatch_mutations = {
+            "literal-python": f"\npython3 {sibling}\n",
+            "literal-bash": f"\nbash {sibling}\n",
+            "direct-executable": f"\n{sibling}\n",
+            "quoted-path": f'\npython3 "{sibling}"\n',
+            "variable-mediated": (
+                f'\nregistered_gate="{sibling}"\npython3 "$registered_gate"\n'
+            ),
+            "command-wrapper": f"\ncommand python3 {sibling}\n",
+            "command-p-wrapper": f"\ncommand -p python3 {sibling}\n",
+            "command-pp-wrapper": f"\ncommand -pp python3 {sibling}\n",
+            "command-stop-wrapper": f"\ncommand -- python3 {sibling}\n",
+            "env-wrapper": f"\nenv LANG=C python3 {sibling}\n",
+            "env-dash-wrapper": f"\nenv - python3 {sibling}\n",
+            "env-ignore-short-wrapper": f"\nenv -i python3 {sibling}\n",
+            "env-ignore-long-wrapper": (
+                f"\nenv --ignore-environment python3 {sibling}\n"
+            ),
+            "env-debug-short-wrapper": f"\nenv -v python3 {sibling}\n",
+            "env-debug-long-wrapper": f"\nenv --debug python3 {sibling}\n",
+            "env-list-signal-wrapper": (
+                f"\nenv --list-signal-handling python3 {sibling}\n"
+            ),
+            "env-block-signal-wrapper": (
+                f"\nenv --block-signal python3 {sibling}\n"
+            ),
+            "env-block-signal-equals-wrapper": (
+                f"\nenv --block-signal=PIPE python3 {sibling}\n"
+            ),
+            "env-default-signal-wrapper": (
+                f"\nenv --default-signal python3 {sibling}\n"
+            ),
+            "env-default-signal-equals-wrapper": (
+                f"\nenv --default-signal=PIPE python3 {sibling}\n"
+            ),
+            "env-ignore-signal-wrapper": (
+                f"\nenv --ignore-signal python3 {sibling}\n"
+            ),
+            "env-ignore-signal-equals-wrapper": (
+                f"\nenv --ignore-signal=PIPE python3 {sibling}\n"
+            ),
+            "env-unset-short-wrapper": f"\nenv -u NAME python3 {sibling}\n",
+            "env-unset-attached-wrapper": f"\nenv -uNAME python3 {sibling}\n",
+            "env-unset-long-wrapper": f"\nenv --unset NAME python3 {sibling}\n",
+            "env-unset-equals-wrapper": (
+                f"\nenv --unset=NAME python3 {sibling}\n"
+            ),
+            "env-chdir-short-wrapper": f"\nenv -C DIR python3 {sibling}\n",
+            "env-chdir-attached-wrapper": f"\nenv -CDIR python3 {sibling}\n",
+            "env-chdir-long-wrapper": f"\nenv --chdir DIR python3 {sibling}\n",
+            "env-chdir-equals-wrapper": f"\nenv --chdir=DIR python3 {sibling}\n",
+            "env-argv0-short-wrapper": f"\nenv -a ARG python3 {sibling}\n",
+            "env-argv0-attached-wrapper": f"\nenv -aARG python3 {sibling}\n",
+            "env-argv0-long-wrapper": f"\nenv --argv0 ARG python3 {sibling}\n",
+            "env-argv0-equals-wrapper": (
+                f"\nenv --argv0=ARG python3 {sibling}\n"
+            ),
+            "env-short-cluster-wrapper": f"\nenv -iv python3 {sibling}\n",
+            "env-split-short-cluster-wrapper": (
+                f"\nenv -vS'python3 {sibling}'\n"
+            ),
+            "env-split-short-wrapper": f"\nenv -S 'python3 {sibling}'\n",
+            "env-split-attached-wrapper": f"\nenv -S'python3 {sibling}'\n",
+            "env-split-long-wrapper": (
+                f"\nenv --split-string 'python3 {sibling}'\n"
+            ),
+            "env-split-equals-wrapper": (
+                f"\nenv --split-string='python3 {sibling}'\n"
+            ),
+            "env-assignment-wrapper": f"\nenv LANG=C python3 {sibling}\n",
+            "env-stop-assignment-wrapper": (
+                f"\nenv -- NAME=VALUE python3 {sibling}\n"
+            ),
+            "env-stop-two-assignments-wrapper": (
+                f"\nenv -- A=1 B=2 python3 {sibling}\n"
+            ),
+            "env-stop-assignment-then-command-wrapper": (
+                f"\nenv -- NAME={assignment_sibling} python3 {sibling}\n"
+            ),
+            "env-split-whitespace-wrapper": f"\nenv -S 'python3 {sibling}'\n",
+            "env-split-quoted-whitespace-wrapper": (
+                f"\nenv -S 'python3 \"{sibling}\"'\n"
+            ),
+            "env-split-underscore-wrapper": f"\nenv -S 'python3\\_{sibling}'\n",
+            "env-split-nested-wrapper": (
+                f"\nenv -S 'command -p exec -a gate python3 {sibling}'\n"
+            ),
+            "env-nested-chain-wrapper": (
+                f"\nenv -u HOME command -p exec -a gate python3 {sibling}\n"
+            ),
+            "exec-wrapper": f"\nexec python3 {sibling}\n",
+            "exec-argv0-wrapper": f"\nexec -a NAME python3 {sibling}\n",
+            "exec-argv0-attached-wrapper": f"\nexec -aNAME python3 {sibling}\n",
+            "exec-clear-wrapper": f"\nexec -c python3 {sibling}\n",
+            "exec-login-wrapper": f"\nexec -l python3 {sibling}\n",
+            "exec-cluster-wrapper": f"\nexec -cl python3 {sibling}\n",
+            "exec-cluster-argv0-wrapper": f"\nexec -claNAME python3 {sibling}\n",
+            "exec-stop-wrapper": f"\nexec -- python3 {sibling}\n",
+            "helper-indirection": (
+                '\nrun_registered_gate() { python3 "$1"; }\n'
+                f"run_registered_gate {sibling}\n"
+            ),
+            "python-subprocess": (
+                "\npython3 - <<'PY'\n"
+                "import subprocess\n"
+                f"subprocess.run(['python3', '{sibling}'], check=False)\n"
+                "PY\n"
+            ),
+            "python-os-system": (
+                "\npython3 - <<'PY'\n"
+                "import os\n"
+                f"os.system('python3 {sibling}')\n"
+                "PY\n"
+            ),
+        }
+        for family, mutation in dispatch_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                )
+        split_transition_dispatch = {
+            "env-split-direct-separated": f"\nenv -S '{sibling}'\n",
+            "env-split-direct-attached": f"\nenv -S'{sibling}'\n",
+            "env-split-direct-clustered": f"\nenv -vS'{sibling}'\n",
+            "env-split-long-separated": (
+                f"\nenv --split-string '{sibling}'\n"
+            ),
+            "env-split-long-equals": (
+                f"\nenv --split-string='{sibling}'\n"
+            ),
+            "env-split-long-python-separated": (
+                f"\nenv --split-string 'python3 {sibling}'\n"
+            ),
+            "env-split-long-python-equals": (
+                f"\nenv --split-string='python3 {sibling}'\n"
+            ),
+            "env-split-nested-dispatch": (
+                f"\nenv -S 'command -p exec -a gate python3 {sibling}'\n"
+            ),
+        }
+        for family, mutation in split_transition_dispatch.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        split_transition_no_dispatch = {
+            "env-split-query-separated": (
+                f"\nenv -S 'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-attached": (
+                f"\nenv -S'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-clustered": (
+                f"\nenv -vS'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-long-separated": (
+                f"\nenv --split-string 'command -v python3 {sibling}'\n"
+            ),
+            "env-split-query-long-equals": (
+                f"\nenv --split-string='command -v python3 {sibling}'\n"
+            ),
+        }
+        for family, mutation in split_transition_no_dispatch.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        dynamic_relevant_mutations = {
+            "direct-named-dynamic-target": f'\n"$RUNNER" {sibling}\n',
+            "direct-braced-named-dynamic-target": (
+                f'\n"${{RUNNER}}" {sibling}\n'
+            ),
+            "command-named-dynamic-target": (
+                f'\ncommand "$RUNNER" {sibling}\n'
+            ),
+            "command-braced-named-dynamic-target": (
+                f'\ncommand "${{RUNNER}}" {sibling}\n'
+            ),
+            "python-named-dynamic-script": (
+                f'\npython3 "$SCRIPT" {sibling}\n'
+            ),
+            "python-braced-named-dynamic-script": (
+                f'\npython3 "${{SCRIPT}}" {sibling}\n'
+            ),
+            "bash-named-dynamic-script": f'\nbash "$SCRIPT" {sibling}\n',
+            "bash-braced-named-dynamic-script": (
+                f'\nbash "${{SCRIPT}}" {sibling}\n'
+            ),
+            "direct-positional-target": f'\n"$1" {sibling}\n',
+            "direct-braced-positional-target": f'\n"${{1}}" {sibling}\n',
+            "command-positional-target": f'\ncommand "$1" {sibling}\n',
+            "command-braced-positional-target": (
+                f'\ncommand "${{1}}" {sibling}\n'
+            ),
+            "python-positional-script": f'\npython3 "$1" {sibling}\n',
+            "python-braced-positional-script": (
+                f'\npython3 "${{1}}" {sibling}\n'
+            ),
+            "bash-positional-script": f'\nbash "$1" {sibling}\n',
+            "bash-braced-positional-script": f'\nbash "${{1}}" {sibling}\n',
+        }
+        for family, mutation in dynamic_relevant_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        harmless = "not-a-registered-sibling"
+        dynamic_no_relevant_mutations = {
+            "direct-named-no-relevant": f'\n"$RUNNER" {harmless}\n',
+            "direct-braced-named-no-relevant": (
+                f'\n"${{RUNNER}}" {harmless}\n'
+            ),
+            "command-named-no-relevant": (
+                f'\ncommand "$RUNNER" {harmless}\n'
+            ),
+            "command-braced-named-no-relevant": (
+                f'\ncommand "${{RUNNER}}" {harmless}\n'
+            ),
+            "python-named-no-relevant": f'\npython3 "$SCRIPT" {harmless}\n',
+            "python-braced-named-no-relevant": (
+                f'\npython3 "${{SCRIPT}}" {harmless}\n'
+            ),
+            "bash-named-no-relevant": f'\nbash "$SCRIPT" {harmless}\n',
+            "bash-braced-named-no-relevant": (
+                f'\nbash "${{SCRIPT}}" {harmless}\n'
+            ),
+            "direct-positional-no-relevant": f'\n"$1" {harmless}\n',
+            "direct-braced-positional-no-relevant": (
+                f'\n"${{1}}" {harmless}\n'
+            ),
+            "command-positional-no-relevant": f'\ncommand "$1" {harmless}\n',
+            "command-braced-positional-no-relevant": (
+                f'\ncommand "${{1}}" {harmless}\n'
+            ),
+            "python-positional-no-relevant": f'\npython3 "$1" {harmless}\n',
+            "python-braced-positional-no-relevant": (
+                f'\npython3 "${{1}}" {harmless}\n'
+            ),
+            "bash-positional-no-relevant": f'\nbash "$1" {harmless}\n',
+            "bash-braced-positional-no-relevant": (
+                f'\nbash "${{1}}" {harmless}\n'
+            ),
+        }
+        for family, mutation in dynamic_no_relevant_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        dynamic_query_mutations = {
+            "command-named-query-v": f'\ncommand -v "$RUNNER" {sibling}\n',
+            "command-named-query-V": f'\ncommand -V "$RUNNER" {sibling}\n',
+            "command-named-query-cluster": (
+                f'\ncommand -pv "$RUNNER" {sibling}\n'
+            ),
+            "command-braced-named-query-cluster": (
+                f'\ncommand -pV "${{RUNNER}}" {sibling}\n'
+            ),
+            "command-positional-query-v": f'\ncommand -v "$1" {sibling}\n',
+            "command-positional-query-cluster": (
+                f'\ncommand -pV "$1" {sibling}\n'
+            ),
+            "command-braced-positional-query-cluster": (
+                f'\ncommand -vp "${{1}}" {sibling}\n'
+            ),
+        }
+        for family, mutation in dynamic_query_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        candidate_union_mutations = {
+            "env-block-signal-candidate-union": (
+                f"\nenv --block-signalX={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-default-signal-candidate-union": (
+                f"\nenv --default-signalX={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-ignore-signal-candidate-union": (
+                f"\nenv --ignore-signalX={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+        }
+        for family, mutation in candidate_union_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {assignment_sibling, sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        valid_signal_operands = {
+            "env-block-signal-exact-value": (
+                f"\nenv --block-signal={assignment_sibling} true\n"
+            ),
+            "env-default-signal-exact-value": (
+                f"\nenv --default-signal={assignment_sibling} true\n"
+            ),
+            "env-ignore-signal-exact-value": (
+                f"\nenv --ignore-signal={assignment_sibling} true\n"
+            ),
+        }
+        for family, mutation in valid_signal_operands.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+
+        valid_signal_commands = {
+            "env-block-signal-exact-command": (
+                f"\nenv --block-signal={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-default-signal-exact-command": (
+                f"\nenv --default-signal={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+            "env-ignore-signal-exact-command": (
+                f"\nenv --ignore-signal={assignment_sibling} "
+                f"python3 {sibling}\n"
+            ),
+        }
+        for family, mutation in valid_signal_commands.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    {sibling},
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                    "candidate-closed parser outcome matrix must hold",
+                )
+        for retired in (
+            "lifecycle_gate_commands",
+            "workflow_gate_commands",
+            "generated_freshness_commands",
+            "run_generated_freshness_gates",
+            "Verify document metadata comparison base",
+            "Check changed and new document metadata",
+        ):
+            with self.subTest(retired=retired):
+                self.assertNotIn(retired, source)
+        query_or_absent_mutations = {
+            "command-query-v": f"\ncommand -v python3 {sibling}\n",
+            "command-query-V": f"\ncommand -V python3 {sibling}\n",
+            "command-query-pv": f"\ncommand -pv python3 {sibling}\n",
+            "command-query-pV": f"\ncommand -pV python3 {sibling}\n",
+            "command-query-vp": f"\ncommand -vp python3 {sibling}\n",
+            "env-null-short": f"\nenv -0 python3 {sibling}\n",
+            "env-null-long": f"\nenv --null python3 {sibling}\n",
+            "env-help": f"\nenv --help python3 {sibling}\n",
+            "env-version": f"\nenv --version python3 {sibling}\n",
+            "env-stop-assignment-only": f"\nenv -- NAME={sibling}\n",
+            "env-stop-dash-command": f"\nenv -- -command {sibling}\n",
+            "env-split-c-discard": f"\nenv -S 'python3\\c {sibling}'\n",
+            "env-split-comment-discard": f"\nenv -S '# python3 {sibling}'\n",
+            "env-unset-sibling-operand": f"\nenv -u {sibling}\n",
+            "env-chdir-sibling-operand": f"\nenv -C {sibling}\n",
+            "env-argv0-sibling-operand": f"\nenv -a {sibling}\n",
+            "exec-argv0-sibling-operand": f"\nexec -a {sibling}\n",
+        }
+        for family, mutation in query_or_absent_mutations.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    set(),
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                )
+        fail_closed_mutations = {
+            "command-unknown-option": f"\ncommand --bad {sibling}\n",
+            "exec-missing-a-operand": "\nexec -a\n",
+            "exec-unknown-option": f"\nexec --bad {sibling}\n",
+            "env-missing-unset-operand": "\nenv -u\n",
+            "env-missing-chdir-operand": "\nenv -C\n",
+            "env-missing-argv0-operand": "\nenv -a\n",
+            "env-unknown-option": f"\nenv --bad {sibling}\n",
+            "env-split-env-expansion": f"\nenv -S '${{GATE}} {sibling}'\n",
+            "env-split-invalid-escape": f"\nenv -S 'python3\\x {sibling}'\n",
+            "env-split-malformed-quote": f"\nenv -S \"'python3 {sibling}\"\n",
+            "env-budget-exhaustion": (
+                "\n"
+                + " ".join(["env -S '"] + ["env -S "] * 80)
+                + f"python3 {sibling}'\n"
+            ),
+        }
+        for family, mutation in fail_closed_mutations.items():
+            with self.subTest(family=family):
+                self.assertIn(
+                    sibling,
+                    self._registered_sibling_dispatches(
+                        source + mutation,
+                        sibling_entrypoints,
+                    ),
+                )
+        self.assertIn(
+            sibling,
+            self._registered_sibling_dispatches(
+                source + f"\nenv -- NAME=VALUE python3 {sibling}\n",
+                sibling_entrypoints,
+            ),
+            "GNU env -- assignment scan must reach command",
+        )
+
+    @staticmethod
+    def _registered_sibling_dispatches(
+        source: str,
+        sibling_entrypoints: set[str],
+    ) -> set[str]:
+        dispatched: set[str] = set()
+        heredoc_re = re.compile(
+            r"(?ms)^(?P<header>[^\n]*\bpython3\b[^\n]*"
+            r"<<[\"']?(?P<tag>[A-Za-z_][A-Za-z0-9_]*)[\"']?[^\n]*)\n"
+            r"(?P<body>.*?)^(?P=tag)[ \t]*$"
+        )
+
+        def static_value(
+            node: ast.AST,
+            values: dict[str, object],
+        ) -> object | None:
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                return node.value
+            if isinstance(node, ast.Name):
+                return values.get(node.id)
+            if isinstance(node, (ast.List, ast.Tuple)):
+                resolved = [static_value(item, values) for item in node.elts]
+                if all(isinstance(item, str) for item in resolved):
+                    return resolved
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+                left = static_value(node.left, values)
+                right = static_value(node.right, values)
+                if isinstance(left, str) and isinstance(right, str):
+                    return left + right
+                if isinstance(left, list) and isinstance(right, list):
+                    return left + right
+            return None
+
+        def command_paths(value: object) -> set[str]:
+            if isinstance(value, str):
+                try:
+                    tokens = shlex.split(value)
+                except ValueError:
+                    tokens = value.split()
+            elif isinstance(value, list):
+                tokens = [item for item in value if isinstance(item, str)]
+            else:
+                return set()
+            return sibling_entrypoints.intersection(tokens)
+
+        def python_dispatches(body: str) -> set[str]:
+            try:
+                tree = ast.parse(body)
+            except SyntaxError:
+                if (
+                    ("subprocess" in body or "os.system" in body)
+                    and any(path in body for path in sibling_entrypoints)
+                ):
+                    return {
+                        path
+                        for path in sibling_entrypoints
+                        if path in body
+                    }
+                return set()
+            values: dict[str, object] = {}
+            assignments = [
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.Assign, ast.AnnAssign))
+            ]
+            for _ in range(len(assignments) + 1):
+                changed = False
+                for assignment in assignments:
+                    targets = (
+                        assignment.targets
+                        if isinstance(assignment, ast.Assign)
+                        else [assignment.target]
+                    )
+                    value_node = assignment.value
+                    if value_node is None:
+                        continue
+                    value = static_value(value_node, values)
+                    for target in targets:
+                        if (
+                            isinstance(target, ast.Name)
+                            and value is not None
+                            and values.get(target.id) != value
+                        ):
+                            values[target.id] = value
+                            changed = True
+                if not changed:
+                    break
+            found: set[str] = set()
+            subprocess_sinks = {
+                "run",
+                "call",
+                "check_call",
+                "check_output",
+                "Popen",
+            }
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call) or not node.args:
+                    continue
+                function = node.func
+                is_sink = (
+                    isinstance(function, ast.Attribute)
+                    and isinstance(function.value, ast.Name)
+                    and (
+                        (
+                            function.value.id == "subprocess"
+                            and function.attr in subprocess_sinks
+                        )
+                        or (
+                            function.value.id == "os"
+                            and function.attr == "system"
+                        )
+                    )
+                )
+                if is_sink:
+                    found.update(
+                        command_paths(static_value(node.args[0], values))
+                    )
+            return found
+
+        shell_source = source
+        for match in reversed(tuple(heredoc_re.finditer(source))):
+            dispatched.update(python_dispatches(match.group("body")))
+            shell_source = (
+                shell_source[: match.start("body")]
+                + "\n" * match.group("body").count("\n")
+                + shell_source[match.end("body") :]
+            )
+
+        variables: dict[str, str] = {}
+        assignment_re = re.compile(
+            r"^\s*(?:local\s+|declare(?:\s+-[A-Za-z]+)?\s+)?"
+            r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)="
+            r"(?P<quote>[\"']?)(?P<value>scripts/[^\"'\s;]+)(?P=quote)\s*$"
+        )
+        for statement in re.split(r"[;\n]", shell_source.replace("\\\n", " ")):
+            match = assignment_re.match(statement)
+            if match and match.group("value") in sibling_entrypoints:
+                variables[match.group("name")] = match.group("value")
+
+        variable_re = re.compile(
+            r"^\$(?:\{(?P<braced>[A-Za-z_][A-Za-z0-9_]*)\}|"
+            r"(?P<plain>[A-Za-z_][A-Za-z0-9_]*))$"
+        )
+
+        def resolved_path(token: str, positional: str | None = None) -> str | None:
+            if token in sibling_entrypoints:
+                return token
+            if token in {"$1", "${1}"}:
+                return positional
+            match = variable_re.fullmatch(token)
+            if match:
+                return variables.get(
+                    match.group("braced") or match.group("plain")
+                )
+            return None
+
+        def command_sink(
+            statement: str,
+            *,
+            positional: str | None = None,
+        ) -> set[str]:
+            try:
+                tokens = shlex.split(statement, comments=True)
+            except ValueError:
+                return {
+                    path
+                    for path in sibling_entrypoints
+                    if path in statement
+                }
+            while tokens and tokens[0] in {
+                "if",
+                "then",
+                "elif",
+                "while",
+                "until",
+                "do",
+                "!",
+                "{",
+                "}",
+            }:
+                tokens.pop(0)
+            budget = 8 * (
+                1
+                + len(tokens)
+                + sum(len(token) for token in tokens)
+            )
+
+            ParseResult = tuple[str, frozenset[str]]
+
+            def candidate_paths(items: list[str]) -> set[str]:
+                found: set[str] = set()
+                for token in items:
+                    exact = resolved_path(token, positional)
+                    if exact is not None:
+                        found.add(exact)
+                    found.update(
+                        path
+                        for path in sibling_entrypoints
+                        if path in token
+                    )
+                return found
+
+            def dispatch(paths: set[str]) -> ParseResult:
+                return ("dispatch", frozenset(paths))
+
+            def no_dispatch() -> ParseResult:
+                return ("no-dispatch", frozenset())
+
+            def ambiguous(items: list[str]) -> ParseResult:
+                candidates = candidate_paths(items)
+                if not candidates:
+                    candidates = set(sibling_entrypoints)
+                return ("ambiguous", frozenset(candidates))
+
+            def materialize(result: ParseResult) -> set[str]:
+                kind, paths = result
+                if kind == "no-dispatch":
+                    return set()
+                if kind in {"dispatch", "ambiguous"}:
+                    return set(paths)
+                raise AssertionError("invalid parser outcome")
+
+            def has_relevant_sibling(items: list[str]) -> bool:
+                return bool(candidate_paths(items))
+
+            def is_unresolved_dynamic_target(token: str) -> bool:
+                is_supported_dynamic = (
+                    token in {"$1", "${1}"}
+                    or variable_re.fullmatch(token) is not None
+                )
+                return (
+                    is_supported_dynamic
+                    and resolved_path(token, positional) is None
+                )
+
+            def charge(amount: int = 1) -> bool:
+                nonlocal budget
+                budget -= amount
+                return budget >= 0
+
+            def split_env_static(value: str) -> list[str] | None:
+                result: list[str] = []
+                current: list[str] = []
+                quote: str | None = None
+                index = 0
+                started = False
+                while index < len(value):
+                    if not charge():
+                        return None
+                    character = value[index]
+                    if quote is None and character in " \t\n\r\v\f":
+                        if started:
+                            result.append("".join(current))
+                            current = []
+                            started = False
+                        index += 1
+                        continue
+                    if quote is None and character == "#":
+                        if not started:
+                            break
+                        current.append(character)
+                        started = True
+                        index += 1
+                        continue
+                    if character in {"'", '"'}:
+                        if quote is None:
+                            quote = character
+                        elif quote == character:
+                            quote = None
+                        else:
+                            current.append(character)
+                        started = True
+                        index += 1
+                        continue
+                    if character == "\\":
+                        if index + 1 >= len(value):
+                            return None
+                        escape = value[index + 1]
+                        if quote == "'" and escape != "'":
+                            current.append(character)
+                            index += 1
+                            continue
+                        if escape == "c" and quote is None:
+                            break
+                        escapes = {
+                            "f": "\f",
+                            "n": "\n",
+                            "r": "\r",
+                            "t": "\t",
+                            "v": "\v",
+                            "#": "#",
+                            "$": "$",
+                            '"': '"',
+                            "'": "'",
+                            "\\": "\\",
+                        }
+                        if escape == "_":
+                            if quote == '"':
+                                current.append(" ")
+                                started = True
+                            elif quote is None:
+                                if started:
+                                    result.append("".join(current))
+                                    current = []
+                                    started = False
+                            else:
+                                current.append("_")
+                                started = True
+                            index += 2
+                            continue
+                        if escape not in escapes:
+                            return None
+                        current.append(escapes[escape])
+                        started = True
+                        index += 2
+                        continue
+                    if character == "$" and index + 1 < len(value) and value[index + 1] == "{":
+                        return None
+                    current.append(character)
+                    started = True
+                    index += 1
+                if quote is not None:
+                    return None
+                if started:
+                    result.append("".join(current))
+                return result
+
+            def parse_chain(items: list[str]) -> ParseResult:
+                if not charge(len(items)):
+                    return ambiguous(items)
+                if not items:
+                    return no_dispatch()
+                head = items[0]
+                if head == "command":
+                    return parse_command(items[1:])
+                if head == "exec":
+                    return parse_exec(items[1:])
+                if head == "env":
+                    return parse_env(items[1:])
+                if head in {"python3", "bash"}:
+                    if len(items) < 2:
+                        return no_dispatch()
+                    target = items[1]
+                    remaining = items[2:]
+                    if is_unresolved_dynamic_target(target):
+                        if has_relevant_sibling(remaining):
+                            return ambiguous([target, *remaining])
+                        return no_dispatch()
+                    path = resolved_path(target, positional)
+                    if path is not None:
+                        return dispatch({path})
+                    return no_dispatch()
+                target = head
+                remaining = items[1:]
+                if is_unresolved_dynamic_target(target):
+                    if has_relevant_sibling(remaining):
+                        return ambiguous([target, *remaining])
+                    return no_dispatch()
+                path = resolved_path(target, positional)
+                if path is not None:
+                    return dispatch({path})
+                return no_dispatch()
+
+            def parse_command(items: list[str]) -> ParseResult:
+                index = 0
+                query = False
+                while index < len(items):
+                    token = items[index]
+                    if token == "--":
+                        index += 1
+                        break
+                    if not token.startswith("-") or token == "-":
+                        break
+                    options = token[1:]
+                    if not options or any(option not in "pVv" for option in options):
+                        return ambiguous(items[index:])
+                    if "v" in options or "V" in options:
+                        query = True
+                    index += 1
+                if query:
+                    return no_dispatch()
+                return parse_chain(items[index:])
+
+            def parse_exec(items: list[str]) -> ParseResult:
+                index = 0
+                while index < len(items):
+                    token = items[index]
+                    if token == "--":
+                        index += 1
+                        break
+                    if not token.startswith("-") or token == "-":
+                        break
+                    options = token[1:]
+                    offset = 0
+                    while offset < len(options):
+                        option = options[offset]
+                        if option in {"c", "l"}:
+                            offset += 1
+                            continue
+                        if option != "a":
+                            return ambiguous(items[index:])
+                        attached = options[offset + 1 :]
+                        if attached:
+                            offset = len(options)
+                        else:
+                            index += 1
+                            if index >= len(items):
+                                return ambiguous(items)
+                            offset = len(options)
+                    index += 1
+                return parse_chain(items[index:])
+
+            def parse_env_split(
+                split_value: str,
+                tail: list[str],
+            ) -> ParseResult:
+                split_tokens = split_env_static(split_value)
+                if split_tokens is None:
+                    return ambiguous([split_value, *tail])
+                return parse_env([*split_tokens, *tail])
+
+            signal_options = (
+                "--block-signal",
+                "--default-signal",
+                "--ignore-signal",
+            )
+
+            def is_exact_signal_option(token: str) -> bool:
+                return token in signal_options or any(
+                    token.startswith(option + "=")
+                    for option in signal_options
+                )
+
+            def is_signal_near_prefix(token: str) -> bool:
+                return any(token.startswith(option) for option in signal_options)
+
+            def parse_env(items: list[str]) -> ParseResult:
+                index = 0
+                while index < len(items):
+                    token = items[index]
+                    if token == "--":
+                        index += 1
+                        break
+                    if token in {"--help", "--version", "-0", "--null"}:
+                        return no_dispatch()
+                    if token == "-":
+                        index += 1
+                        continue
+                    if token in {
+                        "--ignore-environment",
+                        "--debug",
+                        "--list-signal-handling",
+                    }:
+                        index += 1
+                        continue
+                    if is_exact_signal_option(token):
+                        index += 1
+                        continue
+                    if is_signal_near_prefix(token):
+                        return ambiguous(items[index:])
+                    consumed_long_operand = False
+                    for option in ("--unset", "--chdir", "--argv0"):
+                        if token == option:
+                            index += 1
+                            if index >= len(items):
+                                return ambiguous(items)
+                            consumed_long_operand = True
+                            break
+                        if token.startswith(option + "="):
+                            consumed_long_operand = True
+                            break
+                    if consumed_long_operand:
+                        index += 1
+                        continue
+                    if token == "--split-string":
+                        if index + 1 >= len(items):
+                            return ambiguous(items[index:])
+                        return parse_env_split(
+                            items[index + 1],
+                            items[index + 2 :],
+                        )
+                    if token.startswith("--split-string="):
+                        return parse_env_split(
+                            token.split("=", 1)[1],
+                            items[index + 1 :],
+                        )
+                    if token.startswith("--"):
+                        return ambiguous(items[index:])
+                    if token.startswith("-") and token != "-":
+                        options = token[1:]
+                        offset = 0
+                        while offset < len(options):
+                            option = options[offset]
+                            if option in {"i", "v"}:
+                                offset += 1
+                                continue
+                            if option == "S":
+                                attached = options[offset + 1 :]
+                                if attached:
+                                    return parse_env_split(
+                                        attached,
+                                        items[index + 1 :],
+                                    )
+                                if index + 1 >= len(items):
+                                    return ambiguous(items[index:])
+                                return parse_env_split(
+                                    items[index + 1],
+                                    items[index + 2 :],
+                                )
+                            if option in {"u", "C", "a"}:
+                                attached = options[offset + 1 :]
+                                if not attached:
+                                    index += 1
+                                    if index >= len(items):
+                                        return ambiguous(items)
+                                offset = len(options)
+                                continue
+                            if option == "0":
+                                return no_dispatch()
+                            return ambiguous(items[index:])
+                        index += 1
+                        continue
+                    break
+                while index < len(items) and "=" in items[index]:
+                    index += 1
+                return parse_chain(items[index:])
+
+            return materialize(parse_chain(tokens))
+
+        helper_names: set[str] = set()
+        helper_re = re.compile(
+            r"(?ms)^\s*(?:function\s+)?"
+            r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)"
+            r"(?:\s*\(\s*\))?\s*\{(?P<body>.*?)\}"
+        )
+        sentinel = next(iter(sibling_entrypoints), None)
+        if sentinel is not None:
+            for match in helper_re.finditer(shell_source):
+                if any(
+                    command_sink(statement, positional=sentinel)
+                    for statement in re.split(r"[;\n]", match.group("body"))
+                ):
+                    helper_names.add(match.group("name"))
+
+        for statement in re.split(r"[;\n]", shell_source.replace("\\\n", " ")):
+            if assignment_re.match(statement):
+                continue
+            dispatched.update(command_sink(statement))
+            try:
+                tokens = shlex.split(statement, comments=True)
+            except ValueError:
+                continue
+            while tokens and tokens[0] in {
+                "if",
+                "then",
+                "elif",
+                "while",
+                "until",
+                "do",
+                "!",
+                "{",
+                "}",
+            }:
+                tokens.pop(0)
+            if tokens and tokens[0] in helper_names:
+                for token in tokens[1:]:
+                    path = resolved_path(token)
+                    if path is not None:
+                        dispatched.add(path)
+        return dispatched
+
     @staticmethod
     def _repo_python_program(section: str) -> str:
         source = REPO_CONTRACT.read_text(encoding="utf-8")
@@ -1745,8 +3226,18 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
 
     @staticmethod
     def _workflow_security_program() -> str:
+        module_root = ROOT / "scripts/validation"
+        return (
+            "import pathlib, sys\n"
+            f"sys.path.insert(0, {str(module_root)!r})\n"
+            "from github_workflow_contract import main\n"
+            "raise SystemExit(main(['--root', str(pathlib.Path.cwd())]))\n"
+        )
+
+    @staticmethod
+    def _stage00_github_program() -> str:
         return AgentGovernanceRoutingTests._repo_python_program(
-            "GitHub workflow security contracts"
+            "Stage 00 GitHub routing contracts"
         )
 
     @staticmethod
@@ -1829,6 +3320,9 @@ class AgentGovernanceRoutingTests(unittest.TestCase):
                 GITHUB_GOVERNANCE,
                 ARTIFACT_CONTRACT,
                 GITHUB_OBSERVATION,
+                ROOT / "scripts/validation/ci_gate_contract.py",
+                ROOT / "scripts/validation/github_workflow_contract.py",
+                ROOT / "scripts/validation/check-repo-contracts.sh",
             ):
                 if not source.is_file():
                     continue

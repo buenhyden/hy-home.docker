@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - name: Check docs traceability sync
-        run: bash scripts/validation/check-doc-traceability.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.docs-traceability
 
   # ── Documentation Implementation Alignment ─────────────────
   docs-implementation-alignment:
@@ -44,43 +44,10 @@ jobs:
     steps:
       - *checkout
       - name: Check docs against tracked implementation surfaces
-        run: bash scripts/validation/check-doc-implementation-alignment.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate leaf.docs-implementation-alignment
       - name: Publish QA gate recommendations
         if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          summary_file="${GITHUB_STEP_SUMMARY:-}"
-          if [[ -z "$summary_file" ]]; then
-            echo "GITHUB_STEP_SUMMARY is unavailable; skipping QA recommendation summary."
-            exit 0
-          fi
-
-          base_ref=""
-          if [[ "$EVENT_NAME" == "pull_request" && -n "${PR_BASE_SHA:-}" ]]; then
-            base_ref="$PR_BASE_SHA"
-          elif [[ "$EVENT_NAME" == "push" && -n "${PUSH_BEFORE_SHA:-}" && "$PUSH_BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
-            base_ref="$PUSH_BEFORE_SHA"
-          elif git rev-parse --verify --quiet HEAD~1 >/dev/null; then
-            base_ref="HEAD~1"
-          fi
-
-          {
-            echo "## QA gate recommendations"
-            echo
-            if [[ -n "$base_ref" ]] && git rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
-              echo '```text'
-              bash scripts/validation/recommend-qa-gates.sh --base "$base_ref"
-              echo '```'
-            else
-              echo "No comparable base ref is available for this run."
-              echo
-              echo '```text'
-              bash scripts/validation/recommend-qa-gates.sh --files .github/workflows/ci-quality.yml
-              echo '```'
-            fi
-          } >> "$summary_file"
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate leaf.docs-qa-gate-recommendations
 
   # ── Repository Contract Validation ──────────────────────
   repo-contracts:
@@ -92,31 +59,12 @@ jobs:
       TEMPLATE_GATE_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event_name == 'push' && github.event.before || '' }}
     steps:
       - *checkout
-      - name: Verify document metadata comparison base
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git cat-file -e "${TEMPLATE_GATE_BASE}^{commit}"
-          git merge-base HEAD "$TEMPLATE_GATE_BASE" >/dev/null
       - name: Set up Python for repository contracts
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Install repository contract Python dependencies
-        run: python -m pip install -r scripts/requirements.txt
-      - name: Check changed and new document metadata
-        run: python3 scripts/validation/check-document-metadata.py --mode check-changed
-      - name: Check agent governance routing and eval regressions
-        run: python3 -m unittest tests.validation.test_agent_governance_ci_routing tests.validation.test_agent_output_eval_fixtures tests.validation.test_target_surface_contracts -v
-      - name: Check target surface contracts
-        run: python3 scripts/validation/check-target-surface-contract.py
-      - name: Check canonical audit semantic freshness
-        run: python3 scripts/validation/check-agentic-audit-semantic-freshness.py
-      - name: Check typed agent governance repository contract
-        run: python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
       - name: Check repository contracts
-        run: bash scripts/validation/check-repo-contracts.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.repo-contracts
 
   # ── Agent Output Eval Fixture Gate ─────────────────────────
   agent-output-eval-fixture-gate:
@@ -126,14 +74,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - *checkout
-      - name: Check agent-output eval fixture catalog
-        shell: bash
-        run: |
-          set -euo pipefail
-          output="$(bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions)"
-          printf '%s\n' "$output"
-          grep -Fxq 'fixtures_check=pass' <<<"$output"
-          grep -Fxq 'regressions_check=pass' <<<"$output"
+      - name: Check agent-output eval fixture gate
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.agent-output-eval-fixture-gate
 
   # ── Supply-chain Fixture Policy ────────────────────────────
   supply-chain-fixture-policy:
@@ -147,18 +89,8 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Run focused operational readiness regressions
-        run: >-
-          python3 -m unittest
-          tests.validation.test_compose_core_readiness
-          tests.validation.test_postgres_logical_upgrade_rehearsal
-          tests.validation.test_grype_db_seed
-          tests.validation.test_supply_chain_policy
-          tests.validation.test_sample_service_delivery_rehearsal -v
-      - name: Check deterministic supply-chain policy fixtures
-        run: python3 scripts/validation/check-supply-chain-policy.py --check
-      - name: Check supply-chain summary freshness
-        run: bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
+      - name: Check supply-chain fixture policy
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.supply-chain-fixture-policy
 
   # ── Dependency Vulnerability Audit ─────────────────────────
   dependency-vulnerability-audit:
@@ -175,7 +107,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Audit Storybook Next.js dependencies
-        run: npm audit --audit-level=high --prefix projects/storybook/nextjs
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.dependency-vulnerability-audit
 
   # ── Git Flow Contract ───────────────────────────────────────
   git-flow-contract:
@@ -188,28 +120,9 @@ jobs:
       PR_TITLE: ${{ github.event.pull_request.title }}
       HEAD_REF: ${{ github.head_ref }}
     steps:
+      - *checkout
       - name: Check PR title and source branch
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          title_re='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([A-Za-z0-9._-]+\))?!?: .+'
-          human_branch_re='^((feat|fix|hotfix)/[A-Za-z0-9._-]+-.+|(docs|style|refactor|perf|test|build|ci|chore|revert)/.+)$'
-          automation_branch_re='^(dependabot|codex)/.+'
-
-          if ! [[ "$PR_TITLE" =~ $title_re ]]; then
-            echo "PR title must follow Conventional Commits." >&2
-            echo "Allowed examples: feat(scope): add thing, fix: repair thing" >&2
-            exit 1
-          fi
-
-          if ! [[ "$HEAD_REF" =~ $human_branch_re || "$HEAD_REF" =~ $automation_branch_re ]]; then
-            echo "Source branch must use a governed prefix." >&2
-            echo "Human branches: feat/<issue-id>-..., fix/<issue-id>-..., hotfix/<issue-id>-..., docs/, style/," >&2
-            echo "refactor/, perf/, test/, build/, ci/, chore/, or revert/." >&2
-            echo "Automation branches: dependabot/** or codex/**." >&2
-            exit 1
-          fi
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.git-flow-contract
 
   # ── Compose Contract Validation ───────────────────────────────
   compose-validation:
@@ -219,11 +132,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - *checkout
-      - &prepare-env
-        name: Prepare environment
-        run: cp .env.example .env
       - name: Validate Docker Compose config
-        run: bash scripts/validation/validate-docker-compose.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.compose-validation
 
   # ── Full Profile Compose Contract Validation ────────────────
   compose-all-profiles-validation:
@@ -235,9 +145,8 @@ jobs:
       HYHOME_COMPOSE_PROFILES: core data obs workflow ai tooling messaging security communication service storage admin iac registry sast sync testing graph mng ksql nginx
     steps:
       - *checkout
-      - *prepare-env
       - name: Validate all Docker Compose profiles
-        run: bash scripts/validation/validate-docker-compose.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.compose-all-profiles-validation
 
   # ── Infrastructure Hardening Baseline ──────────────────────────
   infrastructure-hardening:
@@ -247,9 +156,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - *checkout
-      - *prepare-env
       - name: Check all tiers hardening baseline
-        run: bash scripts/hardening/check-all-hardening.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.infrastructure-hardening
 
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
@@ -259,9 +167,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - *checkout
-      - *prepare-env
       - name: Check template adoption + security baseline
-        run: bash scripts/validation/check-template-security-baseline.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.template-security-baseline
 
   # ── QuickWin Baseline ───────────────────────────────────────
   quickwin-baseline:
@@ -271,9 +178,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - *checkout
-      - *prepare-env
       - name: Check QuickWin baseline
-        run: bash scripts/validation/check-quickwin-baseline.sh
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.quickwin-baseline
 
   # ── Pre-commit Hooks ──────────────────────────────────────────
   pre-commit:
@@ -283,22 +189,14 @@ jobs:
     timeout-minutes: 20
     steps:
       - *checkout
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: projects/storybook/nextjs/package-lock.json
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: '3.12'
-      - name: Install Storybook Next.js lint dependencies
-        run: npm ci --prefix projects/storybook/nextjs
       - name: Run pre-commit hooks
-        uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd
         env:
           SKIP: eslint-nextjs
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.pre-commit
 
   # ── Frontend Build and Typecheck ───────────────────────────
   frontend-quality:
@@ -314,16 +212,8 @@ jobs:
           node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Install Storybook Next.js dependencies
-        run: npm ci --prefix projects/storybook/nextjs
-      - name: Run Storybook Next.js lint
-        run: npm run lint --prefix projects/storybook/nextjs
-      - name: Run Storybook Next.js typecheck
-        run: npm run typecheck --prefix projects/storybook/nextjs
-      - name: Build Storybook Next.js app
-        run: npm run build --prefix projects/storybook/nextjs
-      - name: Build Storybook static site
-        run: npm run build-storybook --prefix projects/storybook/nextjs
+      - name: Run frontend quality
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.frontend-quality
 
   # ── Storybook Coverage ───────────────────────────────────────
   storybook-coverage:
@@ -339,12 +229,8 @@ jobs:
           node-version: '24'
           cache: 'npm'
           cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Install Storybook Next.js test dependencies
-        run: npm ci --prefix projects/storybook/nextjs
-      - name: Install Playwright browsers
-        run: npx --prefix projects/storybook/nextjs playwright install chromium --with-deps
       - name: Run Storybook coverage
-        run: npm run coverage --prefix projects/storybook/nextjs
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.storybook-coverage
 
   # ── GitHub Actions Security Analysis ─────────────────────────
   zizmor:
@@ -361,7 +247,7 @@ jobs:
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990
 
       - name: Run zizmor
-        run: uvx --from 'zizmor==1.28.0' zizmor . --format sarif . > results.sarif
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.zizmor
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a # v4.37.1

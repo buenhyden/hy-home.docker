@@ -59,10 +59,13 @@ REMOVED_ACTIVE_PATTERNS: Final = (
 PHANTOM_CLAIM_PATTERNS: Final = (re.compile(re.escape(PHANTOM_GITLINK_PATH)),)
 SAMPLE_SERVICE_PATH: Final = "examples/sample-web-service/service.md"
 SAMPLE_SERVICE_METADATA: Final = {
-    "status": "active",
+    "status": "draft",
     "artifact_id": "spec:sample-web-service",
     "artifact_type": "spec",
-    "parent_ids": ["spec:133-target-surface-contract-convergence"],
+    "parent_ids": [
+        "spec:126-security-supply-chain-remediation",
+        "spec:127-deployment-release-engineering-remediation",
+    ],
 }
 SAMPLE_SERVICE_KEYS: Final = (
     "status",

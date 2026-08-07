@@ -12,7 +12,7 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 | Component | Technology | Version |
 | :--- | :--- | :--- |
-| Metrics DB | Prometheus | v3.13.0 |
+| Metrics DB | Prometheus | v3.13.1 |
 | Configuration | YAML-based | Static & File-based SD |
 | Tooling | promtool | Config/Rule Validation |
 
@@ -40,13 +40,6 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 - **Operations Policy**: [docs/05.operations/policies/06-observability/prometheus.md](../../../docs/05.operations/policies/06-observability/prometheus.md)
 - **Runbook**: [docs/05.operations/runbooks/06-observability/prometheus.md](../../../docs/05.operations/runbooks/06-observability/prometheus.md)
 
-## AI Agent Guidance
-
-1. **PromQL Optimization**: Use Recording Rules for expensive dashboard queries.
-2. **Rule Management**: Always validate with `promtool` before applying changes.
-3. **Scrape Settings**: Global interval is `30s`; service-specific overrides such as Prometheus `15s` and cAdvisor `1m` must remain intentional.
-4. **Networking**: Scrape targets must be reachable via the `infra_net`.
-
 ## Overview
 
 `infra/06-observability/prometheus`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
@@ -70,10 +63,12 @@ infra/06-observability/prometheus/
 
 ## How to Work in This Area
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
+1. **PromQL Optimization**: Use Recording Rules for expensive dashboard queries.
+2. **Rule Management**: Always validate with `promtool` before applying changes.
+3. **Scrape Settings**: Global interval is `30s`; service-specific overrides such as Prometheus `15s` and cAdvisor `1m` must remain intentional.
+4. **Networking**: Scrape targets must be reachable via the `infra_net`.
 
 ## Validation
 

@@ -22,6 +22,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "scripts" / "validation" / "check-document-metadata.py"
 PROFILES = ROOT / "docs" / "99.templates" / "support" / "document-metadata-profiles.yaml"
+SERVICE_EXAMPLE = ROOT / "examples" / "sample-web-service" / "service.md"
 MIGRATION_CONTRACT = (
     ROOT
     / "docs"
@@ -473,6 +474,8 @@ class ProfileSchemaTests(unittest.TestCase):
                     "scripts/validation/check-document-corpus-lifecycle.py",
                 "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
+                "docs/90.references/data/governance/target-surface-delta-summary.md":
+                    "scripts/validation/check-target-surface-delta-contract.py",
             },
             profiles["common"]["generated_outputs"],
         )
@@ -1847,6 +1850,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/03.specs/901-fixture/agent-design.md": ("spec", "agent-design"),
             "docs/03.specs/901-fixture/data-model.md": ("spec", "data-model"),
             "docs/03.specs/901-fixture/service.md": ("spec", "service"),
+            "examples/sample-web-service/service.md": ("spec", "service"),
             "docs/03.specs/901-fixture/tests.md": ("spec", "tests"),
             "docs/04.execution/plans/2026-07-13-fixture.md": ("plan", "plan"),
             "docs/04.execution/tasks/2026-07-13-fixture.md": ("task", "task"),
@@ -1871,6 +1875,59 @@ class TemplateRoleInferenceTests(unittest.TestCase):
                         pathlib.Path(path_text), profile, self.profiles
                     ),
                 )
+
+
+class TypedExampleFixtureMetadataTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = metadata.load_profiles(PROFILES)
+
+    def fixture_codes(self, overrides: dict[str, object]) -> set[str]:
+        values = metadata.parse_frontmatter(SERVICE_EXAMPLE)
+        values.update(overrides)
+        record = metadata.Record(
+            pathlib.Path("examples/sample-web-service/service.md"),
+            values,
+            "spec",
+            frontmatter_present=True,
+        )
+        return {
+            finding.code
+            for finding in metadata.validate_record(
+                record,
+                self.profiles,
+                metadata.build_manifest([record]),
+            )
+        }
+
+    def test_exact_sample_fixture_path_selects_existing_service_role(self) -> None:
+        path = pathlib.Path("examples/sample-web-service/service.md")
+
+        self.assertEqual(
+            ["service"],
+            metadata.matching_template_roles(path, "spec", self.profiles),
+        )
+        self.assertEqual(
+            [
+                "docs/03.specs/*/service.md",
+                "examples/sample-web-service/service.md",
+            ],
+            self.profiles["template_roles"]["service"]["target_globs"],
+        )
+
+    def test_active_sample_fixture_status_is_rejected(self) -> None:
+        self.assertIn(
+            "typed-example-status-invalid",
+            self.fixture_codes({"status": "active"}),
+        )
+
+    def test_sample_fixture_requires_exact_domain_parent_pair(self) -> None:
+        self.assertIn(
+            "typed-example-parent-ids-invalid",
+            self.fixture_codes(
+                {"parent_ids": ["spec:133-target-surface-contract-convergence"]}
+            ),
+        )
 
 
 class MetadataValidationTests(unittest.TestCase):

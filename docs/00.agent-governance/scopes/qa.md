@@ -20,13 +20,19 @@ layer: qa
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Execution Boundary (Local vs Remote)**:
   - **Local**: Fail-fast validation (e.g.,
-    `scripts/validation/run-local-qa-gates.sh` for script-backed QA/CI gates,
+    `scripts/validation/run-local-qa-gates.sh` for registry-defined local
+    profiles,
     automatic commit hooks for formatting/linting, and pre-push structural
     contract scripts). Agents must not invoke `pre-commit run` directly.
     Approved final QA all-files execution uses only
     `scripts/validation/run-agent-precommit-all-files.sh` from an initially
     clean linked worktree with a tracked Stage 04 task and reviewed prefixes.
   - **Remote (GitHub CI)**: The ultimate SSoT quality gate. Heavy analysis (e.g., E2E, Zizmor SARIF upload, SonarQube) belongs here.
+  - **CI-only pre-commit**:
+    `scripts/validation/run-ci-precommit.sh` accepts no arguments or
+    Agent-wrapper variables, requires `GITHUB_ACTIONS=true` and `CI=true`,
+    preserves `SKIP=eslint-nextjs`, and executes the exact pinned CI command.
+    It is not a local or Agent authorization path.
   - **Anti-Duplication**: Do not execute the same heavy workloads redundantly. If a dedicated CI job exists for a task (e.g., `zizmor`, `eslint`), skip it in the CI `pre-commit` runner.
 - **Applicability**: Mark coverage N/A for docs-only, policy-only, infrastructure configuration, or validation-script changes when no domain-code coverage signal applies.
 
@@ -85,14 +91,25 @@ optional cleanup.
 ## 3.3 Local QA/CI Orchestration
 
 Use `bash scripts/validation/run-local-qa-gates.sh --list` to distinguish
-locally reproducible script-backed gates from CI/local-tooling and remote-only
-responsibilities. The default mode runs local script-backed checks only; it does
-not upload SARIF, verify remote branch protection, install npm dependencies, or
+the deterministic `local-script-backed` expansion from remote-only
+responsibilities. The wrapper contains no child-command inventory: default,
+`--harness`, and `--all-profiles` each delegate once to their registered
+profile root. `--list` is execution-free. Local roots exclude
+`setup.compose-env`; Compose leaves retain their own create-only cleanup
+contract and preserve an existing `.env` byte-for-byte. These routes do not
+upload SARIF, verify remote branch protection, install CI-only dependencies, or
 declare protected-branch readiness. The `repo-contracts` gate also blocks
 stage-document runtime version drift for implementation-pinned images and
 components, so docs-only changes that mention service versions must keep those
 literals aligned with current compose declarations and
 `infra/tech-stack.versions.json`.
+
+The local runner validates `.github/workflow-contract.yml` and all seven
+tracked workflow definitions through
+`scripts/validation/check-github-workflow-contract.py`. It lists
+`tech-stack-version-sync.yml` as non-gating remote automation, never runs real
+pre-commit through the CI-only entry point, and exercises that wrapper only
+with the fake-binary regression.
 
 ## 4. Operational Procedures
 

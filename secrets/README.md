@@ -75,6 +75,10 @@ secrets/
 | Storage | `storage/` | MinIO and object storage credentials |
 | Tools | `tools/` | SonarQube, Syncthing, utility service secret |
 
+추가 tracked directory identifier:
+
+- `secrets/db/surreal_db/`
+
 ## Inventory Classification
 
 현재 인벤토리는 secret 값이나 인증서 원문을 열람하지 않고 파일명, 디렉터리, 루트 Compose 선언, registry 예시만 기준으로 분류합니다.

@@ -41,10 +41,17 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Read the [Kafka Guide](../../docs/05.operations/guides/05-messaging/kafka.md) for cluster ops.
 2. Follow the [RabbitMQ Guide](../../docs/05.operations/guides/05-messaging/rabbitmq.md) for queues.
 3. Check the [Operations Policy](../../docs/05.operations/policies/05-messaging/README.md) for topic, secret, and queue controls.
 4. Consult the [Messaging Runbook](../../docs/05.operations/runbooks/05-messaging/README.md) for recovery.
+
+5. Always use the `Schema Registry` for any new topic schemas.
+6. Use `replication-factor: 3` only in the full 3 broker Kafka compose; root dev single broker topics are development-only.
+7. Check consumer lag metrics before scaling producer throughput.
+8. RabbitMQ queues should use TTLs and DLXs as per the messaging policy.
 
 ## Tech Stack
 
@@ -98,10 +105,3 @@ docker exec rabbitmq rabbitmq-diagnostics check_running
 - [01-gateway](../01-gateway/README.md) - routing to Messaging UIs.
 - [Kafka guide](../../docs/05.operations/guides/05-messaging/kafka.md)
 - [RabbitMQ guide](../../docs/05.operations/guides/05-messaging/rabbitmq.md)
-
-## AI Agent Guidance
-
-1. Always use the `Schema Registry` for any new topic schemas.
-2. Use `replication-factor: 3` only in the full 3 broker Kafka compose; root dev single broker topics are development-only.
-3. Check consumer lag metrics before scaling producer throughput.
-4. RabbitMQ queues should use TTLs and DLXs as per the messaging policy.

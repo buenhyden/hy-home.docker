@@ -40,10 +40,16 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. Read the [Airflow DAG basics guide](../../docs/05.operations/guides/07-workflow/airflow-dag-basics.md).
 2. Follow the [n8n usage guide](../../docs/05.operations/guides/07-workflow/n8n.md).
 3. Check the [Operations Policy](../../docs/05.operations/policies/07-workflow/README.md) for scaling.
 4. Consult the [Workflow Runbook](../../docs/05.operations/runbooks/07-workflow/README.md) for failure recovery.
+
+5. Always use `CeleryExecutor` for production-grade Airflow deployments.
+6. New n8n nodes should be vetted for security before enabling in the primary instance.
+7. Monitor `worker lag` in Flower to identify bottlenecks in the task queue.
 
 ## Tech Stack
 
@@ -93,9 +99,3 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - [04-data](../04-data/README.md) - Metadata storage.
 - [06-observability](../06-observability/README.md) - Monitoring task performance.
 - [01-gateway](../01-gateway/README.md) - Routing to Web UIs.
-
-## AI Agent Guidance
-
-1. Always use `CeleryExecutor` for production-grade Airflow deployments.
-2. New n8n nodes should be vetted for security before enabling in the primary instance.
-3. Monitor `worker lag` in Flower to identify bottlenecks in the task queue.

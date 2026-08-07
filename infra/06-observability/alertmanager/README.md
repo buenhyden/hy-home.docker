@@ -39,11 +39,18 @@ alertmanager/
 
 ## How to Work in This Area
 
+공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
+
 1. **Understand Routing**: Review `config/config.yml` to understand how alerts are grouped, inhibited, silenced, and dispatched.
 2. **Configuration Updates**: Edit `config/config.yml`; Compose mounts it as `/etc/alertmanager/config.yml.template` and renders secrets into `/tmp/config.yml` at startup.
 3. **Secret Integration**: Ensure Docker Secrets for SMTP and Slack webhook are mounted before deployment. Do not record rendered secret values.
 4. **Silence Management**: Use the Alertmanager UI/API for temporary alert silences during maintenance, and always set an expiry.
 5. **Runtime Checks**: Use the linked guide and runbook before changing route, receiver, inhibition, secret, or middleware policy.
+
+6. **Silences**: Proactively create silences during planned infrastructure maintenance to prevent alert fatigue.
+7. **Grouping**: Keep alert grouping aligned with `alertname`, `job`, `domain`, and `severity` unless the policy and config are changed together.
+8. **Secret Rotation**: Trigger a service restart whenever the `slack_webhook`, `smtp_username`, or `smtp_password` Docker Secrets are rotated.
+9. **Evidence Hygiene**: Record Secret IDs and command results only; never paste rendered webhook, SMTP username, or SMTP password values.
 
 ## Tech Stack
 
@@ -93,10 +100,3 @@ alertmanager/
 - **Guides**: [docs/05.operations/guides/06-observability/alertmanager.md](../../../docs/05.operations/guides/06-observability/alertmanager.md)
 - **Policy**: [docs/05.operations/policies/06-observability/alertmanager.md](../../../docs/05.operations/policies/06-observability/alertmanager.md)
 - **Runbook**: [docs/05.operations/runbooks/06-observability/alertmanager.md](../../../docs/05.operations/runbooks/06-observability/alertmanager.md)
-
-## AI Agent Guidance
-
-1. **Silences**: Proactively create silences during planned infrastructure maintenance to prevent alert fatigue.
-2. **Grouping**: Keep alert grouping aligned with `alertname`, `job`, `domain`, and `severity` unless the policy and config are changed together.
-3. **Secret Rotation**: Trigger a service restart whenever the `slack_webhook`, `smtp_username`, or `smtp_password` Docker Secrets are rotated.
-4. **Evidence Hygiene**: Record Secret IDs and command results only; never paste rendered webhook, SMTP username, or SMTP password values.
