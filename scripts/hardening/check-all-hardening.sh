@@ -80,7 +80,7 @@ check_02_auth() {
   check_file "$oauth_cfg"
 
   check_contains "$keycloak_compose" "service: template-infra-high" "keycloak compose template mismatch"
-  check_contains "$keycloak_compose" "image: quay.io/keycloak/keycloak:26.6.4-1" "keycloak image tag mismatch"
+  check_contains "$keycloak_compose" "image: quay.io/keycloak/keycloak:26.7.0-0" "keycloak image tag mismatch"
   check_contains "$keycloak_compose" "KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password" "keycloak db password secret file missing"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_admin_password" "keycloak admin secret injection mismatch"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_db_password" "keycloak db secret injection mismatch"
@@ -302,7 +302,7 @@ check_11_laboratory() {
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
-  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.7" "dozzle image tag mismatch"
+  check_contains "$dozzle_compose" "image: amir20/dozzle:v10.6.11" "dozzle image tag mismatch"
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
   check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"
