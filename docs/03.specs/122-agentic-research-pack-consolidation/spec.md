@@ -61,7 +61,9 @@ coding suitability, task fit, and evidence limitations.
 - **Canonical Pack**:
   [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Duplicate Pack**:
-  [../../90.references/research/2026-07-07-agentic-research-pack-update/README.md](../../90.references/research/2026-07-07-agentic-research-pack-update/README.md)
+  `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
+  (path removed after consolidation; see the Superseded Paths table in
+  [research references](../../90.references/research/README.md))
 - **Reference Template**:
   [../../99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md)
 - **Stage Authoring Matrix**:
@@ -396,7 +398,7 @@ Also perform targeted checks for:
 - [Task evidence](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
 - [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Duplicate research pack to supersede](../../90.references/research/2026-07-07-agentic-research-pack-update/README.md)
+- [Superseded path mapping for the duplicate research pack](../../90.references/research/README.md) - the pack itself was removed after this specification completed; its canonical destination mapping is preserved in the research category index
 - [Research category README](../../90.references/research/README.md)
 - [Agent governance hub](../../00.agent-governance/README.md)
 - [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)

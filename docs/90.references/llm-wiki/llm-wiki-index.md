@@ -1032,12 +1032,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md](../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](../research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md) | Markdown reference |
-| [docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md](../research/2026-07-07-agentic-research-pack-update/README.md) | folder index |
-| [docs/90.references/research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md](../research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md) | Markdown reference |
-| [docs/90.references/research/2026-07-07-agentic-research-pack-update/harness-engineering.md](../research/2026-07-07-agentic-research-pack-update/harness-engineering.md) | Markdown reference |
-| [docs/90.references/research/2026-07-07-agentic-research-pack-update/loop-engineering.md](../research/2026-07-07-agentic-research-pack-update/loop-engineering.md) | Markdown reference |
-| [docs/90.references/research/2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md](../research/2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md) | Markdown reference |
-| [docs/90.references/research/2026-07-07-agentic-research-pack-update/workspace-baseline.md](../research/2026-07-07-agentic-research-pack-update/workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
 | [docs/99.templates/support/README.md](../../99.templates/support/README.md) | folder index |

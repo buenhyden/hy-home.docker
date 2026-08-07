@@ -61,8 +61,10 @@ boundary that paused
 
 - Creating a new Stage 03 specification or Stage 04 plan.
 - Creating a new dated research pack directory.
-- Deleting the superseded `2026-07-07-agentic-research-pack-update/` pack,
-  which Spec 122 retains for link continuity and canonical mapping.
+- Preserving the `2026-07-07-agentic-research-pack-update/` pack. A later user
+  instruction in the same session directed consolidation of same-purpose
+  documents with the latest content preferred, and selected full removal of
+  that pack. See T-ARPE-012.
 - Changing Stage 00 policy, Stage 03 specifications, Stage 05 procedures, or
   any runtime, Compose, provider, or CI configuration.
 - Promoting any currently `unverified` claim without new observation.
@@ -80,6 +82,13 @@ boundary that paused
   `docs/90.references/llm-wiki/llm-wiki-index.md`,
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`, and
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`
+- For T-ARPE-012 only, inbound-link repair in
+  `docs/03.specs/122-agentic-research-pack-consolidation/spec.md`,
+  `docs/03.specs/122-agentic-research-pack-consolidation/README.md`,
+  `docs/04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md`,
+  and `docs/04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md`,
+  plus removal of
+  `docs/90.references/research/2026-07-07-agentic-research-pack-update/**`
 
 ### Forbidden Paths
 
@@ -87,9 +96,13 @@ boundary that paused
   `contracts/**`
 - `docs/01.requirements/**`, `docs/02.architecture/**`, `docs/03.specs/**`
 - `docs/05.operations/**`
-- `docs/90.references/research/2026-07-07-agentic-research-pack-update/**`
 - `infra/**`, `scripts/**`, `.github/**`, `.claude/**`, `.codex/**`,
   `.gemini/**`, `.agents/**`, `secrets/**`
+
+The Stage 03 and Stage 05 entries above were the boundary for T-ARPE-001
+through T-ARPE-011. T-ARPE-012 narrowly reopens Spec 122 and the two 2026-07-10
+consolidation artifacts for inbound-link repair only, under the separate user
+instruction recorded in its approval note.
 
 ### Compose Impact
 
@@ -164,6 +177,7 @@ credential, private environment diagnostic, or raw log stream is written.
 | T-ARPE-009 | Revalidate baseline, Compose, and catalog leaves    | Three updated leaves                                                                             | Done        |
 | T-ARPE-010 | Update pack README and research README              | Two updated indexes                                                                              | Done        |
 | T-ARPE-011 | Verification and evidence closure                   | Command results and memory handoff refresh                                                       | Done        |
+| T-ARPE-012 | Consolidate same-purpose research documents | Superseded pack removed, mapping folded into the category index, inbound links repaired | Done |
 
 ## Work Log
 
@@ -178,6 +192,17 @@ credential, private environment diagnostic, or raw log stream is written.
   count re-derivation, provider source revalidation, and standards source
   revalidation. Sub-agents do not write files; all authoring is performed by
   the controlling session to avoid concurrent-write conflicts.
+
+- T-ARPE-012 opened on a separate user instruction to consolidate same-purpose
+  documents under `docs/90.references/research`, preferring the latest content.
+  Investigation found one same-purpose duplication: five leaf filenames existed
+  in both packs. The five 2026-07-07 leaves and their index were pure redirect
+  stubs carrying no analysis, 416 lines in total. The user selected full removal
+  with the canonical destination mapping folded into the category index.
+- Path mentions inside the 2026-07-10 Plan's change inventory and verification
+  commands are historical execution records and were retained as written; only
+  its one Markdown link was repaired. The generated LLM Wiki index fell from
+  1,330 to 1,324 path rows.
 
 ## Verification Evidence
 
@@ -195,6 +220,19 @@ credential, private environment diagnostic, or raw log stream is written.
   heading-contract conflict.
 - Traceability check resolves every new and updated cross-link.
 - No whitespace or newline drift in the final diff.
+
+### T-ARPE-012 Approval Note
+
+Spec 122 contemplated this disposition. Its risk table pairs the failure mode
+"Consolidation would erase unique historical evidence" with the escalation
+"Required before deletion or archive migration", and that escalation is
+satisfied by the user's explicit instruction in this session. Two consequences
+are recorded rather than hidden. Spec 122 line 173 states that the pack
+"remains at its current path", which this removal supersedes. Acceptance
+criterion VAL-ARC-006 refers to the pack and its children, which no longer
+exist; the canonical destination mapping it protected is preserved in the
+Superseded Paths table of the research category index. Spec 122 stays
+`completed` and is not reopened beyond inbound-link repair.
 
 ### Observed Evidence
 

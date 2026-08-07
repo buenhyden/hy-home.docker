@@ -8,7 +8,7 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
-- T-ARPE-001 through T-ARPE-011 are complete. The canonical agentic research
+- T-ARPE-001 through T-ARPE-012 are complete. The canonical agentic research
   pack gained three leaves covering documentation architecture, the LLM-WIKI
   system, and the agent memory hierarchy, and its fifteen existing leaves were
   revalidated against repository facts and current external sources. This Task
@@ -20,8 +20,11 @@ status: active
 
 - The pack is extended in place. No new dated research pack directory is
   created, which preserves the Spec 122 consolidation outcome.
-- The superseded `2026-07-07-agentic-research-pack-update/` pack stays in place
-  for link continuity and canonical mapping.
+- The `2026-07-07-agentic-research-pack-update/` pack is removed. It held only
+  redirect stubs with no analysis, and its canonical destination mapping now
+  lives in the Superseded Paths table of the research category index. Spec 122
+  paired this disposition with a human-escalation precondition, which the user
+  instruction satisfies.
 - Revalidation covers two axes: repository-local counted facts and current
   official external sources.
 - Governance lifecycle for this work is one Stage 04 Task, without a new Spec
@@ -33,8 +36,10 @@ status: active
 ## Active boundary
 
 - The Task covers three new Stage 90 leaves, fifteen revalidated leaves, both
-  README indexes, this record, and the three generated artifacts whose
-  freshness contracts the added documents tripped.
+  README indexes, this record, the three generated artifacts whose freshness
+  contracts the changes tripped, and the consolidation unit that removed the
+  duplicate pack and repaired its inbound links in Spec 122, its README, and
+  the two 2026-07-10 consolidation artifacts.
 - Push, remote mutation, live provider calls beyond read-only public
   documentation retrieval, runtime changes, Compose operations, Stage 00 policy
   changes, and the controlled all-files wrapper stay outside this Task.
@@ -66,7 +71,14 @@ status: active
   new leaves.
 - Traceability passes with forty-six catalog pairs and zero failures, and the
   final diff has no whitespace drift.
-- Ten logical-unit commits span `19ee4727` to `e90a81af`.
+- The research category now holds one pack. The removed pack's six files and
+  416 lines carried no analysis. The generated LLM Wiki index fell from 1,330
+  to 1,324 path rows.
+- Spec 122 line 173 stated that the pack remains at its current path, and its
+  acceptance criterion VAL-ARC-006 referred to the pack and its children. Both
+  are superseded by this removal; the mapping they protected is preserved in
+  the category index. Spec 122 stays `completed` and was reopened only for
+  inbound-link repair.
 
 ## Blockers and unverified facts
 

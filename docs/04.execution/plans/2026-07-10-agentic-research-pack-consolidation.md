@@ -1085,7 +1085,12 @@ verdict in this document.
 - **Canonical Research Pack**:
   [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Duplicate Pack**:
-  [2026-07-07 Update](../../90.references/research/2026-07-07-agentic-research-pack-update/README.md)
+  `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
+  (path removed after this Plan completed; the canonical destination mapping is
+  preserved in the Superseded Paths table of
+  [research references](../../90.references/research/README.md). Path mentions
+  elsewhere in this Plan are historical execution records and are retained as
+  written.)
 - **Research Category**:
   [Research References](../../90.references/research/README.md)
 - **Stage Authoring Matrix**:

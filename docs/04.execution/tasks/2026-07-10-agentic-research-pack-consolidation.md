@@ -22,7 +22,9 @@ plan.
 - **Canonical Research Pack**:
   [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Duplicate Pack**:
-  [2026-07-07 Update](../../90.references/research/2026-07-07-agentic-research-pack-update/README.md)
+  `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
+  (path removed after this Task completed; mapping preserved in
+  [research references](../../90.references/research/README.md))
 
 ## Working Rules
 

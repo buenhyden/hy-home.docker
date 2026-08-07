@@ -86,6 +86,6 @@ merge-readiness gate remains in this consolidation scope.
 - [Task evidence](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
 - [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Duplicate research pack to supersede](../../90.references/research/2026-07-07-agentic-research-pack-update/README.md)
+- [Superseded path mapping for the duplicate research pack](../../90.references/research/README.md) - the pack itself was removed after this specification completed
 - [Research category](../../90.references/research/README.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

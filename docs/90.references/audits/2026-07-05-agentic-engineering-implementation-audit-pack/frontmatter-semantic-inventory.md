@@ -39,8 +39,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 ## Definitions / Facts
 
-- **Tracked records**: 938
-- **Records with findings**: 558
+- **Tracked records**: 932
+- **Records with findings**: 553
 - **Frontmatter parser failures**: 0
 - **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking
 
@@ -58,8 +58,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `plan` | 100 |
 | `policy` | 64 |
 | `prd` | 25 |
-| `readme` | 149 |
-| `reference` | 33 |
+| `readme` | 148 |
+| `reference` | 28 |
 | `runbook` | 62 |
 | `spec` | 59 |
 | `task` | 129 |
@@ -69,8 +69,8 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 
 | Finding | Count |
 | --- | ---: |
-| `missing-required-key` | 2015 |
-| `replacement-free-supersession` | 7 |
+| `missing-required-key` | 2000 |
+| `replacement-free-supersession` | 2 |
 | `stale-active` | 123 |
 
 ## Inventory
@@ -944,12 +944,6 @@ generated evidence only; regenerate it with `check-document-metadata.py`.
 | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md` | `reference` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:present; review_cycle=optional:present | not-applicable | none | migration candidate |
 | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md` | `reference` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:present; review_cycle=optional:present | not-applicable | none | migration candidate |
 | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md` | `reference` | allowed-syntax | valid | parents=resolved:1; order=declared-list; supersedes=not-provided | status=active; allowed | unavailable-no-history | reviewed_at=optional:present; review_cycle=optional:present | not-applicable | none | migration candidate |
-| `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=superseded; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
-| `docs/90.references/research/2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=superseded; allowed; signals=replacement-free-supersession | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key, replacement-free-supersession | migration candidate |
-| `docs/90.references/research/2026-07-07-agentic-research-pack-update/harness-engineering.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=superseded; allowed; signals=replacement-free-supersession | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key, replacement-free-supersession | migration candidate |
-| `docs/90.references/research/2026-07-07-agentic-research-pack-update/loop-engineering.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=superseded; allowed; signals=replacement-free-supersession | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key, replacement-free-supersession | migration candidate |
-| `docs/90.references/research/2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=superseded; allowed; signals=replacement-free-supersession | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key, replacement-free-supersession | migration candidate |
-| `docs/90.references/research/2026-07-07-agentic-research-pack-update/workspace-baseline.md` | `reference` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=superseded; allowed; signals=replacement-free-supersession | unavailable-no-history | reviewed_at=optional:not-provided; review_cycle=optional:not-provided | not-applicable | missing-required-key, replacement-free-supersession | migration candidate |
 | `docs/90.references/research/README.md` | `readme` | allowed-syntax | not-applicable | parents=not-applicable; order=not-applicable; supersedes=not-provided | status=active; allowed | not-applicable | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | README profile=stage-index; consumer=scripts/validation/check-document-metadata.py; role=folder-index | none | README exception |
 | `docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md` | `archive` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=archived; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | archive profile | missing-required-key | archive exception |
 | `docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md` | `archive` | profile-semantic-error | missing | parents=missing; order=not-provided; supersedes=not-provided | status=archived; allowed | unavailable-no-history | reviewed_at=forbidden:not-applicable; review_cycle=forbidden:not-applicable | archive profile | missing-required-key | archive exception |
