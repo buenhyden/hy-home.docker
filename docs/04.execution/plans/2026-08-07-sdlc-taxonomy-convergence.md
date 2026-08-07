@@ -980,33 +980,28 @@ replace the `if bucket == "policies":` block with:
 
 ```bash
 python3 - <<'PY'
-import re, glob, os
-y = open('docs/99.templates/support/document-metadata-profiles.yaml').read().split('\n')
-b = y[y.index('template_roles:') + 1:y.index('profiles:')]
-roles = {}; cur = None
-for ln in b:
-    m = re.match(r'^  ([a-z-]+):\s*$', ln)
-    if m: cur = m.group(1); roles[cur] = {}; continue
-    m = re.match(r'^    (\w+): (.*)$', ln)
-    if m and cur:
-        k, v = m.group(1), m.group(2).strip()
-        if v.startswith('['):
-            v = [x.strip().strip('"') for x in v[1:-1].split(',') if x.strip()]
-        roles[cur][k] = v
-S = ('docs/01', 'docs/02', 'docs/03', 'docs/04', 'docs/05', 'docs/90')
-tot = con = 0
-for r, d in roles.items():
-    fs = {f for g in d.get('target_globs', []) for f in glob.glob(g, recursive=True)
-          if f.endswith('.md') and os.path.isfile(f) and f.startswith(S)
-          and not f.endswith('README.md')}
-    req = d.get('required_headings', [])
-    n = sum(1 for f in fs if all(
-        re.search('^' + re.escape(h) + r'\s*$', open(f, errors='replace').read(), re.M)
-        for h in req))
-    if r in ('guide', 'policy', 'runbook'):
-        print(f"  {r:10} {n:4} / {len(fs):4}")
-    tot += len(fs); con += n
-print(f"TOTAL conforming: {con} / {tot}")
+import yaml, re, glob, os
+
+reg = yaml.safe_load(open("docs/99.templates/support/document-metadata-profiles.yaml"))
+roles = reg.get("template_roles", {})
+STAGES = ("docs/01", "docs/02", "docs/03", "docs/04", "docs/05", "docs/90")
+
+total = conforming = 0
+for name, spec in sorted(roles.items()):
+    files = {f for g in spec.get("target_globs", []) or []
+             for f in glob.glob(g, recursive=True)
+             if f.endswith(".md") and os.path.isfile(f)
+             and f.startswith(STAGES) and not f.endswith("README.md")}
+    required = spec.get("required_headings", []) or []
+    n = sum(1 for f in files
+            if all(re.search("^" + re.escape(h) + r"\s*$",
+                             open(f, errors="replace").read(), re.M)
+                   for h in required))
+    if files:
+        print(f"  {name:14} {n:4} / {len(files):4}")
+    total += len(files)
+    conforming += n
+print(f"TOTAL conforming: {conforming} / {total}")
 PY
 ```
 
