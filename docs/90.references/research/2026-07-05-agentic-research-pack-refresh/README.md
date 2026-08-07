@@ -156,7 +156,8 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 ├── ai-agent-catalogs.md                  # External agent catalog vs curated catalog analysis
 ├── documentation-architecture.md         # Diataxis quadrant mapping and mode-mixing findings
 ├── llm-wiki-system.md                    # LLM Wiki structure, generation, and enforcement
-└── memory-hierarchy.md                   # Short-term, long-term, and domain memory analysis
+├── memory-hierarchy.md                   # Short-term, long-term, and domain memory analysis
+└── scope-application-matrix.md           # Per-scope view of the pack and scope reachability
 ```
 
 ## Current References
@@ -179,6 +180,7 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 - [documentation-architecture.md](./documentation-architecture.md) - Diataxis 4분면과 저장소 문서 타입 매핑, 미충족 quadrant, template mode-mixing 분석
 - [llm-wiki-system.md](./llm-wiki-system.md) - LLM Wiki artifact 구조, 생성/freshness/safety 계약, 외부 convention 비교
 - [memory-hierarchy.md](./memory-hierarchy.md) - 단기/장기/영역별 memory tier, provider memory 메커니즘, promotion/retention/eviction 분석
+- [scope-application-matrix.md](./scope-application-matrix.md) - 14개 scope별 적용 범위, live/흡수/vestigial 판정, scope-to-workspace 소유 매핑, scope별 adoption boundary
 
 ## Reading Order
 
@@ -192,6 +194,7 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 7. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.
 8. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
 9. [documentation-architecture.md](./documentation-architecture.md)에서 Diataxis 기준 문서 구조를, [llm-wiki-system.md](./llm-wiki-system.md)에서 machine-facing navigation surface를, [memory-hierarchy.md](./memory-hierarchy.md)에서 memory tier 구조를 확인합니다.
+10. 특정 layer에서 작업할 때는 [scope-application-matrix.md](./scope-application-matrix.md)에서 해당 scope에 적용되는 leaf와 workspace 소유 범위를 먼저 확인합니다. 이 문서는 주제축이 아닌 scope축 진입점이며, 형제 leaf를 종합하되 수정하지 않습니다.
 
 ## How to Work in This Area
 
