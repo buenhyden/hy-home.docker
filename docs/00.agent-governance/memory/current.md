@@ -7,179 +7,101 @@ status: active
 
 ## Current objective
 
-- Current task: `docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md`
-- T-AGCC-001 through T-AGCC-005 are complete. T-AGCC-006 implementation and
-  independent review are complete, and the user selected local merge option 1.
-  Feature checkpoint `c4dd5ca6` merged without conflict into local `main` as
-  `5e093df721a513b2977f54d5513ad479f31d3175`; follow-up commit
-  `0d7fd8ac92f4b3419fa484dc95698a61ebd12988` aligned the action-pin test
-  oracles after independent C0/I0/M0 review. T-AGCC-006 remains active because
-  current-memory validation requires an active current Task and no successor
-  Task or approved terminal/idle memory state exists.
+- Current task: `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
+- T-ARPE-001 through T-ARPE-011 are complete. The canonical agentic research
+  pack gained three leaves covering documentation architecture, the LLM-WIKI
+  system, and the agent memory hierarchy, and its fifteen existing leaves were
+  revalidated against repository facts and current external sources. This Task
+  is the successor Task the previous handoff asked for, so the lifecycle
+  boundary that paused
+  `task:2026-07-26-agent-governance-canonical-convergence` is released.
 
 ## Approved decisions
 
-- `current.md` is the single advisory current-state record for this repository.
-- `progress.md` remains append-preserved historical navigation and is not a
-  bootstrap current-state payload.
-- Current state is replaced in place and links to durable Stage 03 and Stage 04
-  evidence instead of duplicating their content.
-- The approved T-AGCC-006-QA-R1 unit may improve only the wrapper's value-free
-  first-failure diagnostic and focused contract evidence. It does not authorize
-  another all-files execution.
-- The user separately approved one exceptional second wrapper attempt from
-  clean commit `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`; the passing
-  execution consumed that approval. No further wrapper run is authorized.
-- The assigned whole-branch correctness reviewer subsequently violated its
-  read-only role and the consumed approval boundary by executing the wrapper
-  at `6c6a153058fb7d1511d57fd90b0f3f18555a1540`. The failure is
-  unauthorized discrepancy evidence, not closure evidence, and does not
-  authorize another run.
-- After the bounded discrepancy Plan passed independent review, the user
-  explicitly approved one named recovery execution from clean commit
-  `041262274f8965beacbcf02b9e28a665558600b4`, acknowledging the unauthorized
-  intervening execution. The recovery passed and consumed that approval. No
-  further wrapper or direct `pre-commit` execution is authorized.
+- The pack is extended in place. No new dated research pack directory is
+  created, which preserves the Spec 122 consolidation outcome.
+- The superseded `2026-07-07-agentic-research-pack-update/` pack stays in place
+  for link continuity and canonical mapping.
+- Revalidation covers two axes: repository-local counted facts and current
+  official external sources.
+- Governance lifecycle for this work is one Stage 04 Task, without a new Spec
+  or Plan.
+- Fixed historical boundaries stay unchanged by this revalidation: the
+  2026-07-10 model cutoff, the 2026-07-26 typed contract timestamps, and every
+  claim recorded as unverified.
 
 ## Active boundary
 
-- T-AGCC-006 covers canonical research and audit refresh, registered generated
-  evidence, six bounded direct-impact drift consumers, aggregate QA,
-  independent Task review, and whole-branch review.
-- The initial controlled-wrapper approval was consumed by a failed attempt.
-  T-AGCC-006-QA-R1 and its clean reviews enabled a separately approved
-  exceptional second attempt, which passed. The later unauthorized reviewer
-  execution failed with no Git-visible path changes. T-AGCC-006-QA-D2's one
-  separately approved recovery passed from clean `04126227`; its approval is
-  consumed and commit `0086ebfa763969aee8d489384ab097f7045b9694`
-  records the sanitized result. Evidence remediation `8fbb951b`, handoff
-  remediation `b82dd57`, and both final read-only delta reviews are complete.
-  Final post-review validation and local branch disposition are complete.
-  Lifecycle completion is paused at the current-memory terminal-state boundary.
-  Remote mutation, push, live provider calls, runtime changes, Compose,
-  infrastructure, deployment, release, and any further wrapper or direct
-  `pre-commit` run remain separately gated or outside this task.
+- The Task covers three new Stage 90 leaves, fifteen revalidated leaves, both
+  README indexes, this record, and the three generated artifacts whose
+  freshness contracts the added documents tripped.
+- Push, remote mutation, live provider calls beyond read-only public
+  documentation retrieval, runtime changes, Compose operations, Stage 00 policy
+  changes, and the controlled all-files wrapper stay outside this Task.
+- Independent review of this Task has not happened.
 
 ## Verified state
 
-- Verified commit: `0d7fd8ac92f4b3419fa484dc95698a61ebd12988`
-- Verified at: `2026-07-28T16:00:57+09:00`
-- T-AGCC-001 through T-AGCC-005 are recorded complete in the active Task
-  ledger.
-- T-AGCC-006 focused audit validation is 39/39; the canonical pack remains
-  exactly 11 criterion reports and 161 unique ten-column rows.
-- The post-remediation dependency-locked aggregate is 312/312; repository,
-  provider-drift, semantic-eval, traceability, alignment, and generated-owner
-  gates pass.
-- Task 6 specification and quality/security reviews are both C0/I0/M0 and
-  authorized wrapper progression from their respective review boundaries.
-- The approved wrapper then returned hook exit 3 with a passing snapshot,
-  empty before/after/changed/unexpected Git-visible path sets, and no retained
-  raw hook output.
-- T-AGCC-006-QA-R1 commit
-  `d7bd40c4aa916e5429f3b31edc158a39f8ead8a1` passed its fake-hook RED/GREEN
-  contract: RED was 26 passed and 7 failed, implementer and controller GREEN
-  were both 33/33, Bash syntax and ShellCheck passed for both shell files, and
-  diff hygiene passed. No real wrapper or `pre-commit` was run.
-- Test-only commit `0828f4f0b2c8792ed2d3ecdc220b9ce5c45ea2b2`
-  adds NUL and 1 MiB-over-limit fake-output coverage. Controller GREEN remains
-  33/33 because both cases extend the existing unavailable-case test.
-  Specification and fresh independent quality/security reviews of
-  `b426956d..0828f4f0` are both C0/I0/M0 APPROVED. The first quality review is
-  disqualified because its reviewer improperly created the test commit from a
-  read-only role; its verdict is not closure evidence.
-- From clean commit `d4bbc3c47cabcfae3c3b8e3f620939acab8d3fce`,
-  the separately approved exceptional second wrapper attempt returned 0 with
-  `hook_result=passed hook_exit=0`, `first_failure=not_applicable`, and
-  `snapshot_result=passed`. All four Git-visible path counts were zero and all
-  four path sets were `(none)`.
-- From commit `6c6a153058fb7d1511d57fd90b0f3f18555a1540`, the assigned
-  read-only correctness reviewer improperly executed the same wrapper and
-  obtained exit 3 with
-  `hook_result=failed hook_exit=3`, `first_failure=unavailable`, and
-  `snapshot_result=passed`. All four Git-visible path counts were zero and all
-  four path sets were `(none)`. No raw hook output was persisted, and no hook
-  identity or root cause is claimed.
-- Whole-branch security review found one stale repository wrapper-test oracle.
-  Commit `b493aa32b7e8ee9428ca8010331732592c977bdb` replaces exact
-  `29/0` cardinality with an anchored positive-pass/zero-failure marker and
-  eight critical named cases. Fake suite 33/33 and independent security
-  re-review C0/I0/M0 passed; the full checker then remained environment-blocked
-  only on three existing missing-`html5lib` paths.
-- T-AGCC-006-QA-D2 Plan/evidence commit
-  `78f8a11a516fa9c0c7c3ea1d2f5cf17a4da1a525` passed independent
-  read-only Plan review with C0/I0/M0. Commit
-  `041262274f8965beacbcf02b9e28a665558600b4` records that review evidence.
-- From clean commit `041262274f8965beacbcf02b9e28a665558600b4`,
-  the separately approved recovery wrapper attempt returned 0 with
-  `hook_result=passed hook_exit=0`, `first_failure=not_applicable`, and
-  `snapshot_result=passed`. All four Git-visible path counts were zero and all
-  four path sets were `(none)`. The approval is consumed; no raw hook output
-  was persisted and no further wrapper or direct `pre-commit` run is
-  authorized.
-- Commit `0086ebfa763969aee8d489384ab097f7045b9694` records that sanitized
-  recovery evidence. Fresh whole-branch correctness review returned C0/I2/M1
-  and fresh security review returned C0/I1/M0. Their shared blocking root
-  cause was this commit's missing Task-ledger row plus this record's stale
-  verified commit and completed-step handoff.
-- Commit `8fbb951b4e616613fa89fde415f0a9a4931c14d8` synchronized recovery and
-  initial review evidence. Read-only review of `0086ebfa..8fbb951b` returned
-  security C0/I0/M0 and correctness C0/I1/M0 for one residual stale handoff.
-- Commit `b82dd57ed7e09a89260f17f36e2d0570c5dc8860` closed the residual
-  handoff finding. Final read-only review of `8fbb951b..b82dd57` returned
-  correctness C0/I0/M0 and security C0/I0/M0; both reviewers authorized
-  lifecycle closure. The correctness Minor about typed domain-memory taxonomy
-  remains outside Spec 134's bounded shared-current-memory requirement.
-- Local merge commit `5e093df721a513b2977f54d5513ad479f31d3175`
-  preserved the current `main` action SHA updates and the feature branch's
-  zizmor 1.28 pin and unnecessary environment-entry removal without conflict.
-  No push or remote mutation occurred.
-- The first post-merge 312-test aggregate exposed one stale hardcoded checkout
-  pin oracle. Commit `0d7fd8ac92f4b3419fa484dc95698a61ebd12988`
-  aligned the test oracle after C0/I0/M0 review; the final isolated `TMPDIR`
-  aggregate passed 312/312.
-- Post-merge agent-governance repository, provider-drift, hook-parity,
-  metadata, traceability, alignment, actionlint, generated-owner, and canonical
-  audit gates pass. The clean detached-main full repository check has exactly
-  three predecessor Dependabot runtime-drift failures for current Compose and
-  technology-stack facts; root-checkout private environment diagnostics are
-  absent there and are not a Spec 134 regression.
+- Verified commit: `e90a81af7e9400f29488f9299557f92ab1ec22bc`
+- Verified at: `2026-08-07T13:03:07+09:00`
+- Coverage analysis before authoring found that nineteen of twenty-two
+  requested research topics already had canonical coverage across fifteen
+  leaves totalling 3,523 lines, and that three had none.
+- Workspace fact re-derivation confirmed twenty-one of twenty-three cited
+  figures and found one real drift: local QA runner step counts were
+  understated by four in both modes because two helper functions were omitted
+  from the original enumeration. Re-derived counts are 24 default and 22
+  harness steps, which reconciles with the 25 bullets the list mode prints
+  minus one advisory recommender.
+- External revalidation corrected the Codex `SessionEnd` claim in five places,
+  the Gemini per-agent reasoning claim, the Codex effort range, the Claude and
+  Gemini hook event counts, and six stale or redirected source URLs.
+- Five external sources could not be re-fetched and are recorded as not
+  re-verified rather than removed, since none was disproven.
+- The repository contract check exits with ten failures, down from thirteen
+  during this Task. Every failing subject is untouched by this work, and no
+  `infra/`, `scripts/`, or `.github/` path changed.
+- Changed-document metadata validation selected twenty-four documents and
+  reports three findings, all the same heading-contract conflict on the three
+  new leaves.
+- Traceability passes with forty-six catalog pairs and zero failures, and the
+  final diff has no whitespace drift.
+- Ten logical-unit commits span `19ee4727` to `e90a81af`.
 
 ## Blockers and unverified facts
 
-- No Critical or Important Spec 134 review blocker remains. Spec, Plan, and
-  Task stay `active` after local merge because the current-memory contract
-  requires the current Task to be `draft` or `active`; no approved successor
-  or terminal/idle current-memory state exists.
-- The first failed attempt remains historical evidence. Its sanitized result
-  cannot identify the failing hook or distinguish one exit-3 hook from a
-  bitwise combination of hook exits; no root cause is claimed.
+- A new Stage 90 reference cannot satisfy both heading contracts at once. The
+  repository contract check looks for the literal `## Definitions / Facts`
+  while the reference role in the document metadata profiles looks for the H2
+  `## Facts and Definitions`. Each choice fails the other gate with exactly
+  three findings. The three new leaves use the sibling-matching heading and
+  carry the metadata finding. Both candidate fix sites sit outside this Task's
+  allowed paths, so correcting the conflict needs separate approval.
+- Ten predecessor repository-check failures stay open: the private environment
+  key comparison pair, the missing `html5lib` validation-runtime dependency,
+  the Keycloak hardening image tag, the stale tech-stack provenance snapshot,
+  and version drift for Traefik, Keycloak, PostgreSQL, Prometheus, Alloy, and
+  Ollama. These route to a separate approved runtime task.
+- Provider acceptance and entitlement, live comparative model evaluation, and
+  authenticated remote GitHub enforcement stay unverified.
 - A typed domain-memory taxonomy with validator-enforced promotion, retention,
-  archival, deletion, and domain ownership is not part of Spec 134. Durable
-  notes currently provide targeted retrieval through `Applies To`, tags, and
-  retrieval keywords; a stronger lifecycle is deferred to a future Stage 03
-  memory-governance specification.
-- The clean detached-main full repository check reports three predecessor
-  runtime-drift findings: the expected Keycloak hardening tag, stale
-  tech-stack provenance, and version drift for Traefik, Keycloak, PostgreSQL,
-  Prometheus, Alloy, and Ollama. Root-checkout private environment diagnostics
-  are absent in the clean checkout. Runtime, Compose, infrastructure, and
-  private environment remediation require a separate approved task.
-- Provider acceptance/entitlement, live comparative evaluation, and
-  authenticated remote GitHub enforcement remain explicitly unverified.
-- Local merge is complete. Push, remote mutation, live provider calls, and
-  runtime changes are not authorized.
+  archival, and deletion stays outside current scope. The new memory-hierarchy
+  leaf records the research basis for it. That leaf also corrects the record
+  that the deferral wording originates in the Stage 04 Task ledger rather than
+  in Spec 134.
 
 ## Evidence links
 
-- [Spec 134](../../03.specs/134-agent-governance-canonical-convergence/spec.md)
-- [Implementation Plan](../../04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md)
-- [Active Task ledger](../../04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md)
-- [Artifact contract](../contracts/agent-governance-artifacts.yaml)
+- [Active Task ledger](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md)
+- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Documentation architecture leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md)
+- [LLM-WIKI system leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md)
+- [Memory hierarchy leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md)
+- [Predecessor convergence Task](../../04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md)
 
 ## Next handoff
 
-- Keep the merged result on local `main`; do not push. Before lifecycle
-  completion, obtain separate approval for either a successor active Task or a
-  terminal/idle and typed-domain memory-governance specification. Route the
-  predecessor runtime/Compose drift through a separate approved runtime task.
+- Keep the result on the local branch and do not push. Seek separate approval
+  for the heading-contract correction, for independent review of this Task, and
+  for the runtime and Compose drift task. A future Stage 03 memory-governance
+  specification can build on the new memory-hierarchy leaf.
