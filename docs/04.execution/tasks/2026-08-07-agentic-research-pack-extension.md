@@ -73,6 +73,15 @@ boundary that paused
 
 ### Allowed Paths
 
+T-ARPE-013 operates under a separate user instruction that authorized source
+revalidation, resolution of the heading-contract conflict, and remediation of
+the predecessor drift. It narrowly extends the allowed set to
+`docs/99.templates/templates/common/reference.template.md`,
+`docs/99.templates/support/document-metadata-profiles.yaml`,
+`scripts/validation/check-repo-contracts.sh` template-heading list,
+`scripts/hardening/check-all-hardening.sh` image-tag expectations,
+`infra/tech-stack.versions.json`, and the two Stage 05 comparison guides.
+
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**`
 - `docs/90.references/research/README.md`
 - `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
@@ -178,6 +187,7 @@ credential, private environment diagnostic, or raw log stream is written.
 | T-ARPE-010 | Update pack README and research README              | Two updated indexes                                                                              | Done        |
 | T-ARPE-011 | Verification and evidence closure                   | Command results and memory handoff refresh                                                       | Done        |
 | T-ARPE-012 | Consolidate same-purpose research documents | Superseded pack removed, mapping folded into the category index, inbound links repaired | Done |
+| T-ARPE-013 | Revalidate blocked sources and remediate drift | Five sources verified, heading conflict resolved, eight of ten drift findings closed | Done |
 
 ## Work Log
 
@@ -203,6 +213,41 @@ credential, private environment diagnostic, or raw log stream is written.
   commands are historical execution records and were retained as written; only
   its one Markdown link was repaired. The generated LLM Wiki index fell from
   1,330 to 1,324 path rows.
+
+### T-ARPE-013 Outcome
+
+All five previously unfetchable sources were verified. The earlier record
+described three of them as HTTP 429 rate limiting; that diagnosis was wrong.
+Those hosts return a Cloudflare bot challenge that uses 429 as its status code,
+so retrying later never clears it from an automated client. Each was resolved
+through its upstream source of record instead.
+
+- Diataxis: the pinned upstream commit is the current upstream head with no
+  later change to the source tree, so every quotation is re-verified.
+- EditorConfig: version 0.17.2 confirmed, and the specification defines a ninth
+  property, `spelling_language`, that the earlier summary omitted.
+- pytest fixtures: concept, dependency injection, scope, and the xUnit
+  comparison all confirmed.
+- OpenAI practical guide: verified from the official CDN copy after the
+  marketing page refused automated retrieval; the earlier caveat is lifted.
+- ISO: the withdrawal of ISO/IEC/IEEE 12207:2017 is confirmed from the
+  ISO-operated committee catalog at stage 95.99, with ISO/IEC/IEEE 12207:2026
+  named as successor. 29148:2018 and 42010:2022 remain current.
+
+The heading-contract conflict is resolved by aligning the two outliers to the
+corpus rather than migrating documents. No document in `docs/90.references` had
+ever used `## Facts and Definitions`; 69 used `## Definitions / Facts`. The
+reference template, the reference role required headings, and the
+template-source heading list in the repository contract check now use the
+corpus heading. The audit role's forbidden-heading entry was left unchanged
+because 34 audit documents already carry that heading.
+
+Predecessor drift fell from ten findings to two. The six tech-stack registry
+entries, the tech-stack provenance snapshot, and two hardcoded image-tag
+expectations in the hardening script were catch-up corrections only: every
+Compose file already declared the newer image, so no service version changed.
+A seventh drifted image, dozzle, surfaced only after the Keycloak expectation
+was corrected. The two Stage 05 comparison guides now record measured counts.
 
 ## Verification Evidence
 
@@ -319,7 +364,8 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 ### Blocked Items
 
-- **A new Stage 90 reference cannot satisfy both heading contracts.**
+- Resolved in T-ARPE-013. Previously: **a new Stage 90 reference cannot satisfy
+  both heading contracts.**
   `scripts/validation/check-repo-contracts.sh` hard-requires the literal
   `## Definitions / Facts`, while the reference role in
   `docs/99.templates/support/document-metadata-profiles.yaml` requires the H2
@@ -332,10 +378,14 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 - Provider acceptance and entitlement, live comparative model evaluation, and
   authenticated remote GitHub enforcement remain unverified. This Task records
   them as unverified and does not promote them.
-- Five external sources could not be re-fetched on 2026-08-07 and are recorded
-  as not re-verified: the ISO catalog pages and the OpenAI practical guide
-  returned HTTP 403, and the Diataxis site, the editorconfig specification, and
-  the pytest fixtures page returned HTTP 429.
+- Resolved in T-ARPE-013. All five sources are verified through upstream
+  sources of record.
+- Two drift findings remain open and both need an action outside this Task.
+  The private `.env` carries three InfluxDB keys that `.env.example` does not,
+  which the user chose to leave as an environment fact. The `html5lib`
+  validation-runtime dependency is declared in `scripts/requirements.txt` but
+  is not installed, and installation is blocked by PEP 668 in this
+  externally-managed Python environment.
 - Independent review of this Task has not been performed.
 
 ### Deferral Destination
