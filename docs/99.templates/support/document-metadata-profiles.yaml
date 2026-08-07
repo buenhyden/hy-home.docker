@@ -403,7 +403,7 @@ template_roles:
     source: docs/99.templates/templates/common/reference.template.md
     artifact_profile: reference
     target_globs: [docs/90.references/data/**/*.md, docs/90.references/learning/**/*.md, docs/90.references/llm-wiki/**/*.md, docs/90.references/research/**/*.md]
-    required_headings: ["## Overview", "## Purpose", "## Scope", "## Facts and Definitions", "## Sources", "## Maintenance", "## Related Documents"]
+    required_headings: ["## Overview", "## Purpose", "## Scope", "## Definitions / Facts", "## Sources", "## Maintenance", "## Related Documents"]
     conditional_headings: ["## Examples"]
     forbidden_headings: ["## Findings"]
   audit:

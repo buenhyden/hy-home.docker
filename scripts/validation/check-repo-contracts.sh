@@ -3093,7 +3093,7 @@ template_required = [
     "## Overview",
     "## Purpose",
     "## Scope",
-    "## Facts and Definitions",
+    "## Definitions / Facts",
     "## Sources",
     "## Maintenance",
     "## Related Documents",

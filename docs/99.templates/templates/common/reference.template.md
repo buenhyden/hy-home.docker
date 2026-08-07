@@ -19,7 +19,7 @@ parent_ids: []
 
 {{scope}}
 
-## Facts and Definitions
+## Definitions / Facts
 
 {{facts_and_definitions}}
 
