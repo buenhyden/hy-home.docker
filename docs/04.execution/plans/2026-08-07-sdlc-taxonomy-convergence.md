@@ -1721,7 +1721,30 @@ ls -d docs/0*/
 
 Expected: `00.agent-governance 01.requirements 02.architecture 03.specs 04.operations`.
 
-- [ ] **Step 3: Rewrite every textual reference**
+- [ ] **Step 3: Rename the archive subtree and pin its historical values**
+
+`docs/98.archive/05.operations/` is a real directory holding 9 documents. A
+content-only replacement would rewrite every reference to it while leaving the
+directory in place, breaking all 9. Rename it too:
+
+```bash
+git mv docs/98.archive/05.operations docs/98.archive/04.operations
+find docs/98.archive/04.operations -name '*.md' | wc -l
+```
+
+Expected: `9`.
+
+`archived_from` records where a document lived when it was archived, which was
+`docs/05.operations/...`. That value is historical and must survive the rename.
+Capture the current values now so Step 4 can restore them:
+
+```bash
+grep -rn '^archived_from:' docs/98.archive/ \
+  > /tmp/claude-1000/sdlc-convergence/archived-from-historical.txt
+wc -l /tmp/claude-1000/sdlc-convergence/archived-from-historical.txt
+```
+
+- [ ] **Step 4: Rewrite every textual reference**
 
 ```bash
 grep -rl "05\.operations" . --exclude-dir=.git --exclude-dir=graphify-out \
@@ -1738,7 +1761,33 @@ grep -rl "05\.operations" . --exclude-dir=.git --exclude-dir=graphify-out \
 
 Expected: `0`.
 
-- [ ] **Step 4: Confirm the hardcoded validator path was rewritten**
+- [ ] **Step 5: Restore the historical `archived_from` values**
+
+Step 4 rewrote `archived_from` along with everything else, but that field records
+where a document lived when it was archived. Restore the captured values:
+
+```bash
+while IFS= read -r line; do
+  file=${line%%:*}
+  rest=${line#*:}
+  value=${rest#*:}
+  python3 - "$file" "$(echo "$value" | sed 's/^ *//')" <<'PY'
+import sys, re, pathlib
+p = pathlib.Path(sys.argv[1])
+t = p.read_text()
+t = re.sub(r'(?m)^archived_from:.*$', f'archived_from: {sys.argv[2]}', t, count=1)
+p.write_text(t)
+PY
+done < /tmp/claude-1000/sdlc-convergence/archived-from-historical.txt
+grep -rc '^archived_from: docs/05\.operations' docs/98.archive/ 2>/dev/null | grep -v ':0' | wc -l
+```
+
+Expected: the archived operations documents again carry their historical
+`docs/05.operations/...` provenance while living at `docs/98.archive/04.operations/`.
+Current location and historical origin are different facts and are recorded
+separately.
+
+- [ ] **Step 6: Confirm the hardcoded validator path was rewritten**
 
 ```bash
 grep -n 'operations' scripts/validation/check-repo-contracts.sh | grep 'pathlib.Path'
@@ -1747,7 +1796,7 @@ grep -n 'operations' scripts/validation/check-repo-contracts.sh | grep 'pathlib.
 Expected: `root = pathlib.Path("docs/04.operations") / bucket`. This line is the
 one that silently disables the entire operations heading contract if missed.
 
-- [ ] **Step 5: Confirm the infrastructure references changed but their targets did not**
+- [ ] **Step 7: Confirm the infrastructure references changed but their targets did not**
 
 ```bash
 git diff --stat -- infra/ | tail -3
@@ -1758,7 +1807,7 @@ Expected: only documentation path strings differ. No `expr`, `for`, `severity`,
 `alert`, or threshold value appears in the diff. If any does, revert that file
 and rewrite only the path.
 
-- [ ] **Step 6: Run the full verification set including infrastructure**
+- [ ] **Step 8: Run the full verification set including infrastructure**
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
@@ -1770,7 +1819,7 @@ bash scripts/validation/check-doc-traceability.sh
 Expected: Compose validation passes; contract failures at or below the Task 1
 baseline; zero metadata violations on changed documents; traceability clean.
 
-- [ ] **Step 7: Confirm zero broken links across the whole corpus**
+- [ ] **Step 9: Confirm zero broken links across the whole corpus**
 
 ```bash
 python3 - <<'PY'
@@ -1786,7 +1835,7 @@ PY
 
 Expected: at or below the Task 1 baseline.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
 git add -A
