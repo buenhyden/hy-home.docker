@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:ai-agent-catalogs
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -20,7 +20,7 @@ with the small, governance-first catalog in `hy-home.docker`.
 
 The current upstream comparison is pinned to commit
 `8ef49232e02431f7ca4792b487e5a85a7939ff3a` (committed 2026-07-23) and was
-retrieved read-only at `2026-07-27T02:33:54+09:00`. Nothing from that
+retrieved read-only at `2026-08-07T12:45:48+09:00`. Nothing from that
 repository was installed, converted, vendored, or executed.
 
 ## Purpose
@@ -61,6 +61,11 @@ review, escalation, and vibe-coding criteria are canonical in
   the top-level README still displays the rounded and stale public total
   `230+`. These are repository inventory facts, not evidence that every
   definition is production-ready or suitable for this workspace.
+- The 2026-08-07 revalidation re-opened the pinned commit and confirmed it still
+  resolves with 269 agent definitions, 17 divisions, a 16-entry `tools.json`,
+  and an MIT license. Upstream `main` has since grown to 270 generated agents.
+  That movement is a re-pin trigger under the update policy below, not a defect
+  in the pinned analysis.
 - The upstream project is MIT-licensed and publishes persona-oriented Markdown
   definitions plus conversion/install paths for multiple tools.
 - Its Codex converter maps source name/description/body into current minimal
@@ -179,7 +184,7 @@ disposition is task-fit analysis and does not add or rename a role.
 - [pinned Codex integration](https://github.com/msitarzewski/agency-agents/blob/8ef49232e02431f7ca4792b487e5a85a7939ff3a/integrations/codex/README.md)
 - [pinned Gemini CLI integration](https://github.com/msitarzewski/agency-agents/blob/8ef49232e02431f7ca4792b487e5a85a7939ff3a/integrations/gemini-cli/README.md)
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
-- [Codex subagents](https://developers.openai.com/codex/subagents)
+- [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
 - [Gemini CLI documentation](https://google-gemini.github.io/gemini-cli/docs/)
 - [Gemini CLI subagents](https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md)
 - [Gemini CLI v0.38.1 subagent announcement](https://github.com/google-gemini/gemini-cli/discussions/25562)

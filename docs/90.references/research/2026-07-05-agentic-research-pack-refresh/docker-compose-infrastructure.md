@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:docker-compose-infrastructure
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md -->
