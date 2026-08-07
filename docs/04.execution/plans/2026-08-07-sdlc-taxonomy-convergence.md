@@ -1505,28 +1505,63 @@ PY
 
 Record the total. Step 6 must drive it to zero.
 
-- [ ] **Step 4: Move one directory and set its archived frontmatter**
+- [ ] **Step 4: Move one directory and write full archive provenance**
 
 Do one first. The remaining 30 copy this shape.
+
+The archive frontmatter is far heavier than a status change.
+`docs/99.templates/support/archive-retention-contract.md:37-52` defines the
+`sdlc-archive` profile that `docs/98.archive/**` selects, and it requires
+eleven keys:
+
+`status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`,
+`archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`,
+`archived_blob`, `preservation_class`.
+
+Two of those are Git provenance, not free text. The contract at lines 54-57
+requires that `archived_commit` resolve to a commit, `archived_blob` resolve to
+a blob, and `archived_commit:archived_from` resolve to that exact blob. They
+must be computed, not invented.
+
+`archive_disposition` is one of `superseded`, `duplicate`, `conflict`,
+`withdrawn`, `evidence-preserve`. For this migration it is `evidence-preserve`:
+the work completed and its record is retained. `preservation_class` is
+`git-history` — an `immutable-snapshot` is admitted only for an explicit audit
+or legal need and pulls in three further required keys plus a confidentiality
+scan.
 
 ```bash
 slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
 mkdir -p docs/98.archive/03.specs
+
+# Compute provenance from the pre-move path, before git mv rewrites it.
+for f in spec.md README.md; do
+  src="docs/03.specs/$slug/$f"
+  [ -f "$src" ] || continue
+  commit=$(git log -1 --format=%H -- "$src")
+  blob=$(git rev-parse "$commit:$src")
+  echo "$f|$src|$commit|$blob"
+done | tee "/tmp/claude-1000/sdlc-convergence/provenance-$slug.txt"
+
 git mv "docs/03.specs/$slug" "docs/98.archive/03.specs/$slug"
-ls "docs/98.archive/03.specs/$slug/"
 ```
 
-A bare `git mv` is not sufficient. The moved file's path now selects the archive
-profile, which requires `status: archived` plus the archive keys, while the file
-still carries `status: completed`. Read the required key list from the archive
-profile before writing:
+Verify each pair resolves before writing it into frontmatter:
 
 ```bash
-python3 -c "import yaml; p=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print(p['archive_profiles'])"
+slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
+while IFS='|' read -r f src commit blob; do
+  actual=$(git rev-parse "$commit:$src")
+  [ "$actual" = "$blob" ] && echo "OK   $f" || echo "MISMATCH $f: $actual != $blob"
+done < "/tmp/claude-1000/sdlc-convergence/provenance-$slug.txt"
 ```
 
-Set every required key on both `spec.md` and `README.md` in the moved directory.
-`archived_from` records the original path. `archived_on` is today's date.
+Every line must print `OK`. A `MISMATCH` means the commit does not contain that
+path — usually because the file was renamed earlier in its history — and that
+document needs its own `git log --follow` before it can be archived.
+
+Then write all eleven keys into both moved files. `archived_from` is the
+pre-move path. `archived_on` is today's date.
 
 - [ ] **Step 5: Verify the single case before batching**
 
