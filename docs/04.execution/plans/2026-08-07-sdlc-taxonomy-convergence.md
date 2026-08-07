@@ -1407,161 +1407,201 @@ forward pointer inside a deleted directory is not reachable."
 
 ---
 
-#### Task 13: Migrate the 41 terminal Stage 03 specifications
+#### Task 13: Migrate the 31 archivable Stage 03 specifications
+
+The first revision of this task used forward-pointer tombstones. A trial run
+proved that impossible and the approach is withdrawn. Two facts, both verified
+against the tracked validator:
+
+- `check-document-metadata.py` selects a document's profile from its path alone,
+  through `infer_artifact_type()`. Frontmatter never influences the choice.
+- Line 2549 raises `archived-outside-stage-98` whenever `status: archived`
+  appears on a document whose path-derived type is not `archive`.
+
+A tombstone at `docs/03.specs/<slug>/spec.md` therefore cannot carry the status
+that makes it a tombstone. No frontmatter shape avoids this.
+
+Relocation now preserves reachability rather than the path: inbound links are
+rewritten and the mapping is recorded in the archive ledger — the same mechanism
+Task 14 uses for Stage 04.
+
+Scope is 31 specifications, not 42. The 2026-07-04 document restructure audit
+ruled eleven Stage 03 specifications `evidence-preserve`, "Kept in place; no
+archive tombstone", with a reason recorded for each. Ten are terminal and are
+excluded here; the eleventh is already non-terminal.
 
 **Files:**
 
-- Move: 42 directories under `docs/03.specs/` to `docs/98.archive/03.specs/`
-- Create: 42 forward-pointer tombstones at the original paths
+- Move: 31 directories from `docs/03.specs/` to `docs/98.archive/03.specs/`
+- Modify: every document containing an inbound link to a moved specification
+- Modify: `docs/98.archive/README.md` (ledger mapping)
 
 **Interfaces:**
 
 - Consumes: the archive roles from Task 12.
-- Produces: a Stage 03 holding only 17 directories, which Task 16 co-locates
-  into.
+- Produces: a Stage 03 holding 28 directories — 17 live plus the 11 preserved.
 
-- [ ] **Step 1: Enumerate the terminal specifications**
+- [ ] **Step 1: Build the exclusion list from the prior audit**
 
 ```bash
 cd /home/hy/projects/hy-home.docker
-for d in docs/03.specs/*/; do
-  s=$(awk '/^---$/{n++;next} n==1 && /^status:/{print $2; exit}' "$d/spec.md" 2>/dev/null)
-  case "$s" in completed|superseded) echo "$s $d" ;; esac
-done | tee /tmp/claude-1000/sdlc-convergence/terminal-specs.txt | wc -l
-```
-
-Expected: `42` lines — 41 `completed` plus 1 `superseded`.
-
-- [ ] **Step 2: Record inbound links before moving anything**
-
-```bash
-while read -r _ d; do
-  slug=$(basename "$d")
-  n=$(grep -rl "03\.specs/$slug" docs/ --include='*.md' | grep -v llm-wiki | wc -l)
-  echo "$n $slug"
-done < /tmp/claude-1000/sdlc-convergence/terminal-specs.txt \
-  | sort -rn | tee /tmp/claude-1000/sdlc-convergence/spec-inbound.txt | head
-```
-
-Records how many documents link to each specification. Any slug with a non-zero
-count needs its forward pointer to resolve.
-
-- [ ] **Step 3: Move one specification and verify the mechanics before batching**
-
-```bash
-d=$(head -1 /tmp/claude-1000/sdlc-convergence/terminal-specs.txt | awk '{print $2}')
-slug=$(basename "$d")
-mkdir -p docs/98.archive/03.specs
-git mv "$d" "docs/98.archive/03.specs/$slug"
-ls docs/98.archive/03.specs/$slug/
-```
-
-Expected: the directory and its contents are now under the archive.
-
-- [ ] **Step 4: Write the forward-pointer tombstone for that specification**
-
-Create `docs/03.specs/<slug>/spec.md` with this content, substituting the slug,
-today's date, and the recorded status:
-
-```markdown
----
-layer: archive
-status: archived
-archived_from: docs/03.specs/<slug>/spec.md
-archived_on: 2026-08-07
-archive_reason: 'Terminal governance-meta specification relocated to the content archive under specification 136 wave W3.'
-current_replacement: docs/98.archive/03.specs/<slug>/spec.md
----
-
-<!-- Target: docs/03.specs/<slug>/spec.md -->
-
-# Archived Tombstone: <Title>
-
-## Overview
-
-This specification reached a terminal status and its content moved to the
-content archive. This tombstone exists so inbound links continue to resolve.
-
-## Archive Metadata
-
-| Field       | Value                                     |
-| :---------- | :---------------------------------------- |
-| Archived on | 2026-08-07                                |
-| Source      | `docs/03.specs/<slug>/spec.md`            |
-| Destination | `docs/98.archive/03.specs/<slug>/spec.md` |
-| Wave        | W3                                        |
-
-## Archive Ledger
-
-| Event    | Date       | Authority                               |
-| :------- | :--------- | :-------------------------------------- |
-| Archived | 2026-08-07 | `spec:136-sdlc-taxonomy-convergence` D4 |
-
-## Related Documents
-
-- [Archived specification](../../98.archive/03.specs/<slug>/spec.md)
-- [SDLC taxonomy convergence](../136-sdlc-taxonomy-convergence/spec.md)
-```
-
-- [ ] **Step 5: Verify the single case passes before batching**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-```
-
-Expected: `violations=0`. If the archive profile rejects the frontmatter, fix
-the shape here — before it is replicated 41 times.
-
-- [ ] **Step 6: Commit the single case as the pattern**
-
-```bash
-git add -A docs/03.specs docs/98.archive
-git commit -m "docs(archive): migrate the first terminal specification
-
-Establishes the directory-move plus forward-pointer pattern that the remaining
-41 terminal specifications follow. Committed separately so the pattern is
-reviewable before it is replicated."
-```
-
-- [ ] **Step 7: Apply the pattern to the remaining 41**
-
-Repeat Steps 3 and 4 for every remaining line in
-`/tmp/claude-1000/sdlc-convergence/terminal-specs.txt`. Commit in batches of at
-most ten directories, each batch a logical unit named by what it archives.
-
-- [ ] **Step 8: Verify Stage 03 is reduced and links resolve**
-
-```bash
-ls -d docs/03.specs/*/ | wc -l
 python3 - <<'PY'
 import pathlib, re
-broken = []
-for p in pathlib.Path("docs").rglob("*.md"):
-    in_fence = False
-    for line in p.read_text(errors="ignore").splitlines():
-        # Toggle only on a line that STARTS a fence. Counting backtick runs
-        # inside the whole text breaks on any code that contains backticks --
-        # including this check itself.
-        if line.lstrip().startswith("`" * 3):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        for m in re.finditer(r"\]\(([^)]+)\)", line):
-            target = m.group(1).split("#")[0]
-            if not target or target.startswith(("http", "mailto:")):
-                continue
-            if not (p.parent / target).exists():
-                broken.append(f"{p}: {target}")
-print("broken:", len(broken))
-print("\n".join(broken))
+audit = pathlib.Path("docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/sdlc-spec-archive-candidates.md").read_text()
+keep = set()
+for line in audit.splitlines():
+    if "evidence-preserve" in line:
+        keep.update(re.findall(r"docs/03\.specs/(\d{3}-[a-z0-9-]+)/", line))
+pathlib.Path("/tmp/claude-1000/sdlc-convergence/keep-in-place.txt").write_text(
+    "\n".join(sorted(keep)) + "\n")
+print("keep-in-place:", len(keep))
+for s in sorted(keep):
+    print("  ", s)
 PY
 ```
 
-Expected: `59` directories still (42 tombstones remain in place), and broken
-links at or below the Task 1 baseline.
+Expected: 11 specifications. These are never moved by this task.
 
----
+- [ ] **Step 2: Enumerate the archivable specifications**
+
+```bash
+python3 - <<'PY'
+import pathlib, re
+keep = set(pathlib.Path("/tmp/claude-1000/sdlc-convergence/keep-in-place.txt").read_text().split())
+rows = []
+for d in sorted(pathlib.Path("docs/03.specs").iterdir()):
+    f = d / "spec.md"
+    if not f.exists() or d.name in keep:
+        continue
+    m = re.search(r"(?m)^status:\s*(\S+)", f.read_text())
+    if m and m.group(1) in ("completed", "superseded"):
+        rows.append(d.name)
+pathlib.Path("/tmp/claude-1000/sdlc-convergence/archivable-specs.txt").write_text(
+    "\n".join(rows) + "\n")
+print("archivable:", len(rows))
+PY
+```
+
+Expected: `31`. If the count differs, stop — the exclusion list or the status
+scan is wrong, and moving the wrong directory is the expensive mistake here.
+
+- [ ] **Step 3: Record inbound links before moving anything**
+
+```bash
+python3 - <<'PY'
+import pathlib, subprocess
+slugs = pathlib.Path("/tmp/claude-1000/sdlc-convergence/archivable-specs.txt").read_text().split()
+total = 0
+for s in slugs:
+    out = subprocess.run(["grep", "-rl", f"03.specs/{s}", "docs/"],
+                         capture_output=True, text=True).stdout.split()
+    out = [f for f in out if "llm-wiki" not in f and not f.startswith(f"docs/03.specs/{s}/")]
+    total += len(out)
+    if out:
+        print(f"{len(out):3}  {s}")
+print("total inbound documents to rewrite:", total)
+PY
+```
+
+Record the total. Step 6 must drive it to zero.
+
+- [ ] **Step 4: Move one directory and set its archived frontmatter**
+
+Do one first. The remaining 30 copy this shape.
+
+```bash
+slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
+mkdir -p docs/98.archive/03.specs
+git mv "docs/03.specs/$slug" "docs/98.archive/03.specs/$slug"
+ls "docs/98.archive/03.specs/$slug/"
+```
+
+A bare `git mv` is not sufficient. The moved file's path now selects the archive
+profile, which requires `status: archived` plus the archive keys, while the file
+still carries `status: completed`. Read the required key list from the archive
+profile before writing:
+
+```bash
+python3 -c "import yaml; p=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print(p['archive_profiles'])"
+```
+
+Set every required key on both `spec.md` and `README.md` in the moved directory.
+`archived_from` records the original path. `archived_on` is today's date.
+
+- [ ] **Step 5: Verify the single case before batching**
+
+```bash
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+```
+
+Expected: `violations=0`. If the archive profile rejects the frontmatter, fix it
+here — before the shape is replicated 30 times. This is the step whose omission
+caused the first attempt to fail.
+
+- [ ] **Step 6: Rewrite inbound links for that specification**
+
+```bash
+slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
+python3 - "$slug" <<'PY'
+import pathlib, sys
+slug = sys.argv[1]
+old, new = f"03.specs/{slug}", f"98.archive/03.specs/{slug}"
+n = 0
+for p in pathlib.Path("docs").rglob("*.md"):
+    if "llm-wiki" in str(p) or str(p).startswith(f"docs/98.archive/03.specs/{slug}"):
+        continue
+    txt = p.read_text(errors="ignore")
+    if old in txt:
+        p.write_text(txt.replace(old, new))
+        n += 1
+print("rewrote", n, "documents")
+PY
+```
+
+Relative-link depth changes when a document moves one level deeper. After
+rewriting, run the fence-aware link check from Task 1 Step 3 and repair any
+target that no longer resolves.
+
+- [ ] **Step 7: Commit the single case as the reviewable pattern**
+
+```bash
+git add -A docs/
+git commit -m "docs(archive): migrate the first terminal specification
+
+Establishes the move, frontmatter, and link-rewrite pattern the remaining 30
+follow. Committed separately so the pattern is reviewable before replication.
+
+Forward-pointer tombstones were attempted first and withdrawn: the metadata
+validator derives a document's profile from its path, and rejects
+status: archived on any path that is not an archive path, so a tombstone cannot
+carry the status that defines it."
+```
+
+- [ ] **Step 8: Apply the pattern to the remaining 30**
+
+Repeat Steps 4 through 6 for every remaining line in
+`/tmp/claude-1000/sdlc-convergence/archivable-specs.txt`. Commit in batches of at
+most ten directories, each batch named by what it archives. Run the Step 5
+verification after every batch, not only at the end.
+
+- [ ] **Step 9: Record the mapping in the archive ledger**
+
+Append a mapping table to `docs/98.archive/README.md` listing each source path
+and its destination. This replaces the forward pointers the validator makes
+impossible, and is the only remaining record of where a document used to live.
+
+- [ ] **Step 10: Verify the wave's end state**
+
+```bash
+ls -d docs/03.specs/*/ | wc -l
+find docs/98.archive/03.specs -maxdepth 1 -type d | tail -n +2 | wc -l
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
+```
+
+Expected: `28` live specification directories, `31` archived, `violations=0`,
+and `2` contract failures. Then re-run the fence-aware link check from Task 1
+Step 3 and confirm the count is at or below its baseline of 1.
 
 #### Task 14: Migrate the 225 completed Stage 04 documents
 

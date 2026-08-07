@@ -118,20 +118,28 @@ lifecycle inference.
 
 ## Archive Roles
 
-`docs/98.archive/` serves two distinct roles. Both use `status: archived`.
+`docs/98.archive/` serves two distinct roles. Both use `status: archived`, which the metadata validator permits only on archive paths.
 
 | Role            | Purpose                                                                  | Template                      | Retains body |
 | :-------------- | :----------------------------------------------------------------------- | :---------------------------- | :----------- |
-| Tombstone       | Path redirect only                                                       | `archive.template.md`         | No           |
+| Tombstone       | Ledger entry recording a relocation; no body                              | `archive.template.md`         | No           |
 | Content archive | Full preservation of terminal work, mirroring the source stage structure | `content-archive.template.md` | Yes          |
 
 Three rules govern the model.
 
-1. An archived document leaves a forward pointer at its original location when
-   the source stage survives. When the source stage is itself removed, inbound
-   links are rewritten to the archive path and the mapping is recorded in the
-   archive ledger instead. A dangling pointer inside a deleted directory serves
-   no reader.
+1. Relocation preserves reachability, not the original path. Every inbound link
+   to a relocated document is rewritten to its archive path in the same logical
+   commit as the move, and the source-to-destination mapping is recorded in the
+   archive ledger.
+
+   A forward-pointer tombstone at the original path is not an available option.
+   `scripts/validation/check-document-metadata.py` derives a document's profile
+   from its path through `infer_artifact_type()`, and raises
+   `archived-outside-stage-98` at line 2549 whenever `status: archived` appears
+   on a document whose path-derived type is not `archive`. A stub left at the
+   original path therefore cannot carry the status that would make it a
+   tombstone.
+
 2. Architecture decision records are never moved. Supersession is a status
    change plus a `superseded-by` link, applied in place.
 3. Content archive entries retain their date prefix. The archive is the one

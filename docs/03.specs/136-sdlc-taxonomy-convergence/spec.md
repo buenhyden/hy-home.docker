@@ -228,7 +228,7 @@ the decision takes here.
 ### D4 — Archive model
 
 `docs/98.archive/` currently defines itself as a tombstone stage. It holds 21
-documents and has not been exercised since. Meanwhile 267 terminal documents
+documents and has not been exercised since. Meanwhile 256 terminal documents
 remain in the active stages because there is no destination that preserves
 content.
 
@@ -241,18 +241,36 @@ The archive is therefore split into two roles.
 
 Three rules govern the model.
 
-1. Every archived document leaves a forward pointer at its original location.
-   All four external archive patterns reviewed require this; relocation without
-   a pointer reproduces the exact link breakage that redirects exist to prevent.
+1. Relocation preserves reachability, not the original path. Every inbound link
+   to a relocated document is rewritten to its archive path in the same logical
+   commit as the move, and the source-to-destination mapping is recorded in the
+   archive ledger.
+
+   The first revision of this decision required a forward-pointer tombstone at
+   the original path instead. That is not implementable.
+   `check-document-metadata.py` selects a document's profile from its path
+   alone via `infer_artifact_type()`, and line 2549 raises
+   `archived-outside-stage-98` whenever `status: archived` appears on a document
+   whose path-derived type is not `archive`. A tombstone at
+   `docs/03.specs/<slug>/spec.md` therefore cannot carry the status that makes
+   it a tombstone, under any frontmatter shape.
+
+   The requirement was also self-contradictory. Leaving 42 tombstones in Stage
+   03 keeps that stage at 59 directories, which cannot be reconciled with this
+   decision's own stated outcome of 17.
+
 2. Architecture decision records are never moved. Supersession is a status
    change plus a `superseded-by` link, applied in place. This follows Nygard,
    MADR, and Fowler unanimously.
+
 3. Content archive entries retain their date prefix.
 
-Migration volume is 267 documents: 225 completed Stage 04 documents, 41
-completed Stage 03 specifications, and 1 superseded Stage 03 specification. The
-result reduces Stage 04 to 6 documents before D3 removes the stage, and Stage 03
-from 59 to 17 directories.
+Prior recorded dispositions bind this migration. The 2026-07-04 document
+restructure audit ruled eleven Stage 03 specifications `evidence-preserve` —
+"Kept in place; no archive tombstone" — with reasons recorded per specification:
+Stage 90 research and Stage 05 operations still reference them, or they form a
+historical audit chain, or their Stage 04 evidence chain remains live. Ten of
+those eleven are terminal and would otherwise fall in scope. They are excluded.
 
 Under D3 a terminal specification archives as a directory, carrying its
 `plan.md` and `task.md` with it. The archive unit is the directory, not the
@@ -472,9 +490,9 @@ taxonomy convergence itself and would obscure it.
 | Failure mode                                                                                      | Guardrail                                                                              |
 | :------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------- |
 | Moving documents while the heading checker matches substrings makes every result unattributable   | W1 repairs `check-repo-contracts.sh:665-669` before any movement                       |
-| Moving 267 documents while contracts contradict each other makes violation attribution impossible | W1 resolves D1 before any movement                                                     |
+| Moving 256 documents while contracts contradict each other makes violation attribution impossible | W1 resolves D1 before any movement                                                     |
 | Co-location without an archive contract reproduces Kiro's spec-deletion outcome                   | D3 binds co-location to D4; directories archive whole and are never deleted            |
-| Archiving without forward pointers breaks inbound links                                           | Pointer creation is part of the same logical commit as the move                        |
+| Relocating without rewriting inbound links breaks them                                            | Link rewriting plus ledger mapping share the move's logical commit                     |
 | Moving ADRs breaks the immutable-decision convention                                              | ADRs are excluded from relocation by rule                                              |
 | Retargeting templates to the corpus entrenches whatever the corpus got wrong                      | Retargeting applies only where the corpus is internally consistent at 61:1 or better   |
 | Renaming Stage 05 twice, before and after structural movement                                     | W5 executes after all movement waves                                                   |
@@ -490,7 +508,7 @@ taxonomy convergence itself and would obscure it.
 | :--- | :----------------------------------------------------------------- | :--------------------- |
 | W1   | Contract and enforcement repair (D1, D9 conflicts)                 | None; corpus unchanged |
 | W2   | Template retargeting onto corpus vocabulary (D2)                   | W1                     |
-| W3   | Archive model, pointer convention, and 267-document migration (D4) | W2                     |
+| W3   | Archive model, link-rewrite convention, 256-document migration (D4) | W2                    |
 | W4   | Stage 04 collapse into Stage 03 by co-location (D3, D5)            | W3                     |
 | W5   | Stage 05 to Stage 04 renumbering (D6)                              | W4                     |
 | W6   | ARD vocabulary and ADR/ARD renumbering (D7)                        | W1                     |
