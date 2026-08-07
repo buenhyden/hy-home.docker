@@ -7,14 +7,6 @@ parent_ids: [<parent-artifact-id>]
 
 # {{title}}
 
-## Overview
-
-{{overview}}
-
-## Audience and Prerequisites
-
-{{audience_and_prerequisites}}
-
 ## Usage
 
 {{routine_usage}}

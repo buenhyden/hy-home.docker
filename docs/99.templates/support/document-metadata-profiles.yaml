@@ -522,15 +522,8 @@ template_roles:
     artifact_profile: guide
     target_globs: [docs/05.operations/guides/**/*.md]
     required_headings:
-      [
-        '## Overview',
-        '## Audience and Prerequisites',
-        '## Usage',
-        '## Common Checks',
-        '## Runbook Handoff',
-        '## Related Documents',
-      ]
-    conditional_headings: ['## Troubleshooting']
+      ['## Usage', '## Common Checks', '## Runbook Handoff', '## Related Documents']
+    conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Troubleshooting']
     forbidden_headings: ['## Rollback or Recovery', '## Escalation']
   policy:
     source: docs/99.templates/templates/operations/policy.template.md
@@ -554,16 +547,14 @@ template_roles:
     target_globs: [docs/05.operations/runbooks/**/*.md]
     required_headings:
       [
-        '## Overview',
         '## When to Use',
         '## Procedure',
-        '## Verification Record',
         '## Evidence',
         '## Rollback or Recovery',
         '## Escalation',
         '## Related Documents',
       ]
-    conditional_headings: ['## Automation Handoff']
+    conditional_headings: ['## Overview', '## Verification Record']
     forbidden_headings: ['## Routine Usage']
   incident:
     source: docs/99.templates/templates/operations/incident.template.md
