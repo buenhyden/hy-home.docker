@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:quality-ci-formatting
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md -->
@@ -98,13 +98,15 @@ The [pre-commit configuration](../../../../.pre-commit-config.yaml) defines
 count is not the local-runner count.
 
 The [`run_script_backed_gates` function](../../../../scripts/validation/run-local-qa-gates.sh)
-reaches **20 script-backed steps** through direct calls and its lifecycle and
-generated-freshness helpers. The default, `--script-backed`, and `--all-profiles`
-modes execute those 20 gates; `--harness` executes 18; and `--list` executes no
-gate. The list output
+reaches **24 script-backed steps** through 13 direct calls plus its lifecycle
+(3), target-surface (2), supply-chain fixture (2), and generated-freshness (4)
+helpers. The default, `--script-backed`, and `--all-profiles` modes execute
+those 24 gates; `--harness` executes 22 through 11 direct calls plus the same
+four helpers; and `--list` executes no gate. The list output
 names `recommend-qa-gates.sh`, but labels that script advisory and does not
-execute it. Therefore the headline local runner inventory remains **20 executed
-default/script-backed gates + 1 non-executed advisory recommendation**. The
+execute it. Therefore the headline local runner inventory is **24 executed
+default/script-backed gates + 1 non-executed advisory recommendation**, which
+matches the 25 bullets the `--list` output prints. The
 separate controlled all-files wrapper is not a default
 runner step. The runner separates local checks from CI/local-tooling and
 remote-only responsibilities; it is not a full CI replica.
@@ -156,7 +158,7 @@ remote-only responsibilities; it is not a full CI replica.
 ## Analysis
 
 The tracked layers intentionally differ. The default/script-backed/all-profile
-runner modes provide 20 script-backed steps, the harness mode provides 18, and
+runner modes provide 24 script-backed steps, the harness mode provides 22, and
 list mode provides advisory inventory without execution. Pre-commit adds 24
 file/stage-filtered hook IDs; CI adds heavy frontend, coverage, dependency, and
 SARIF behavior. None of those layers proves current branch-protection
@@ -202,7 +204,7 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
   unchanged.
 - The exact official GitHub secure-use, workflow-monitoring, and rulesets URLs,
   plus the zizmor v1.28.0 release and GHSA-f42p-wjw5-97qh advisory, were
-  re-opened at `2026-07-27T02:33:54+09:00`. Tracked YAML and 16 local quality
+  re-opened at `2026-08-07T12:45:48+09:00`. Tracked YAML and 16 local quality
   jobs still do not prove remote runs or enforcement. The latest public
   observation records 15 jobs and a failed run, while authenticated control
   plane state and root cause remain unverified.
@@ -231,7 +233,7 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 - [DORA metrics](https://dora.dev/guides/dora-metrics/) - current five-metric throughput/instability model
 - [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback
 - [CI workflow](../../../../.github/workflows/ci-quality.yml) - 16 tracked quality job IDs
-- [Local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) - 20 script-backed and 18 harness gates plus responsibility split
+- [Local QA runner](../../../../scripts/validation/run-local-qa-gates.sh) - 24 script-backed and 22 harness gates plus responsibility split
 - [pre-commit config](../../../../.pre-commit-config.yaml) - 24 tracked hook IDs
 - [Scripts README](../../../../scripts/README.md) - script lifecycle and authority
 

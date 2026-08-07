@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:provider-model-landscape
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -25,7 +25,7 @@ preserved before a deliberately narrow cross-provider normalization.
 
 The current typed provider-model registry was retrieved at
 `2026-07-26T20:08:18+09:00`, and its external sources were independently
-revalidated at `2026-07-27T02:33:54+09:00`. Those observations update current
+revalidated at `2026-08-07T12:45:40+09:00`. Those observations update current
 workspace selection and current-page context only; they do not move the cutoff,
 change the 145/142 historical ledger, or backdate GPT-5.6's unzoned `Jul 9`
 entry.
@@ -136,7 +136,7 @@ defaults. Every model retains entitlement and runtime acceptance as
 
 The contract facts above retain their exact
 `2026-07-26T20:08:18+09:00` retrieval boundary. The external revalidation at
-`2026-07-27T02:33:54+09:00` confirmed the cited model catalogs and
+`2026-08-07T12:45:40+09:00` confirmed the cited model catalogs and
 provider-native reasoning controls without changing the contract timestamp or
 the historical 2026-07-10 catalog.
 
@@ -406,7 +406,7 @@ or measured workspace results are supplied.
 - [Effort](https://platform.claude.com/docs/en/build-with-claude/effort) — current provider-native effort controls; revalidated 2026-07-27.
 - [Model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations) — seven literal Active rows, one Deprecated row, five Retired rows, dated transition history, and a statement that Mythos Preview “will be retired” June 30; it does not state that retirement completed.
 - [Claude Platform release notes](https://platform.claude.com/docs/en/release-notes/overview) — dated releases through 2026-07-08; retrieval 2026-07-10.
-- [Claude Code settings](https://code.claude.com/docs/en/configuration) — `model`, available-model, fallback, advisor, and teammate configuration surfaces; mutable product docs.
+- [Claude Code settings](https://code.claude.com/docs/en/settings) — `model`, available-model, fallback, advisor, and teammate configuration surfaces; mutable product docs.
 
 ### OpenAI source notes
 
