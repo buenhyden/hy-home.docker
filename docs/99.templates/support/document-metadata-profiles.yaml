@@ -646,15 +646,23 @@ template_roles:
     required_headings:
       [
         '## Overview',
-        '## Scope and Criteria',
-        '## Evidence',
-        '## Findings',
-        '## Gap Analysis',
-        '## Disposition',
+        '## Purpose',
+        '## Repository Role',
+        '## Scope',
+        '## Definitions / Facts',
+        '## Sources',
+        '## Maintenance',
         '## Related Documents',
       ]
-    conditional_headings: ['## Comparison']
-    forbidden_headings: ['## Facts and Definitions']
+    conditional_headings:
+      [
+        '## Findings',
+        '## Method',
+        '## Source Rules',
+        '## Evidence Snapshot Boundary',
+        '## Comparison',
+      ]
+    forbidden_headings: ['## Procedure', '## Controls', '## Usage']
   archive:
     source: docs/99.templates/templates/common/archive.template.md
     artifact_profile: archive
