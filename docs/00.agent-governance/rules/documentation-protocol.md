@@ -92,7 +92,9 @@ Protocol for maintaining documentation consistency and governance traceability.
   `status: draft`, the README source is status-only, and other typed sources
   use their registered metadata shape.
   A document without this frontmatter is **INCOMPLETE**. Retired aliases such
-  as `approved`, `done`, and `archived` must be normalized when found.
+  as `approved` and `done` must be normalized when found. `archived` is a
+  current status value, required by the archive profile, and is never
+  normalized away.
 - **Typed metadata profiles (changed/new enforcement):**
   `docs/99.templates/support/document-metadata-profiles.yaml` is the
   machine-readable application-profile contract for stable identity, typed
@@ -176,33 +178,33 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 
 ## 3. Document Type ↔ Template Mapping
 
-| Stage/Folder                                          | Document Type          | Template                                     |
-| ----------------------------------------------------- | ---------------------- | -------------------------------------------- |
-| `docs/01.requirements/`                               | PRD                    | `docs/99.templates/templates/sdlc/prd.template.md`          |
-| `docs/02.architecture/requirements/`                  | ARD                    | `docs/99.templates/templates/sdlc/ard.template.md`          |
-| `docs/02.architecture/decisions/`                     | ADR                    | `docs/99.templates/templates/sdlc/adr.template.md`          |
-| `docs/03.specs/`                                      | Spec                   | `docs/99.templates/templates/sdlc/spec.template.md`         |
-| `docs/03.specs/NNN-feature-id/api-spec.md`              | API Spec               | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
-| `docs/03.specs/NNN-feature-id/agent-design.md`          | Agent Design           | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
-| `docs/03.specs/NNN-feature-id/data-model.md`            | Data Model             | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
-| `docs/03.specs/NNN-feature-id/service.md`               | Service Scaffold       | `docs/99.templates/templates/spec-contracts/service.template.md`      |
-| `docs/03.specs/NNN-feature-id/tests.md`                 | Test Contract          | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
-| `docs/03.specs/NNN-feature-id/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
-| `docs/03.specs/NNN-feature-id/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
-| `docs/03.specs/NNN-feature-id/contracts/service.proto`  | Protobuf Contract      | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
-| `docs/04.execution/plans/`                            | Plan                   | `docs/99.templates/templates/sdlc/plan.template.md`         |
-| `docs/04.execution/tasks/`                            | Task                   | `docs/99.templates/templates/sdlc/task.template.md`         |
-| `docs/05.operations/guides/`                          | Operations Guide       | `docs/99.templates/templates/operations/guide.template.md`        |
-| `docs/05.operations/policies/`                        | Operations Policy      | `docs/99.templates/templates/operations/policy.template.md`       |
-| `docs/05.operations/runbooks/`                        | Operations Runbook     | `docs/99.templates/templates/operations/runbook.template.md`      |
-| `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` | Incident | `docs/99.templates/templates/operations/incident.template.md` |
-| `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md` | Postmortem | `docs/99.templates/templates/operations/postmortem.template.md` |
-| `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | Release | `docs/99.templates/templates/operations/release.template.md` |
-| `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/templates/governance/memory.template.md`       |
-| `docs/00.agent-governance/memory/progress.md`         | Historical Agent Progress Navigation | `docs/99.templates/templates/governance/progress.template.md` |
-| `docs/90.references/`                                 | Reference              | `docs/99.templates/templates/common/reference.template.md`    |
-| `docs/98.archive/`                                    | Archive Tombstone      | `docs/99.templates/templates/common/archive.template.md`      |
-| `README.md` (per folder)                              | README                 | `docs/99.templates/templates/common/readme.template.md`       |
+| Stage/Folder                                                           | Document Type                        | Template                                                              |
+| ---------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
+| `docs/01.requirements/`                                                | PRD                                  | `docs/99.templates/templates/sdlc/prd.template.md`                    |
+| `docs/02.architecture/requirements/`                                   | ARD                                  | `docs/99.templates/templates/sdlc/ard.template.md`                    |
+| `docs/02.architecture/decisions/`                                      | ADR                                  | `docs/99.templates/templates/sdlc/adr.template.md`                    |
+| `docs/03.specs/`                                                       | Spec                                 | `docs/99.templates/templates/sdlc/spec.template.md`                   |
+| `docs/03.specs/NNN-feature-id/api-spec.md`                             | API Spec                             | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
+| `docs/03.specs/NNN-feature-id/agent-design.md`                         | Agent Design                         | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
+| `docs/03.specs/NNN-feature-id/data-model.md`                           | Data Model                           | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
+| `docs/03.specs/NNN-feature-id/service.md`                              | Service Scaffold                     | `docs/99.templates/templates/spec-contracts/service.template.md`      |
+| `docs/03.specs/NNN-feature-id/tests.md`                                | Test Contract                        | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
+| `docs/03.specs/NNN-feature-id/contracts/openapi.yaml`                  | OpenAPI Contract                     | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
+| `docs/03.specs/NNN-feature-id/contracts/schema.graphql`                | GraphQL Contract                     | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
+| `docs/03.specs/NNN-feature-id/contracts/service.proto`                 | Protobuf Contract                    | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
+| `docs/04.execution/plans/`                                             | Plan                                 | `docs/99.templates/templates/sdlc/plan.template.md`                   |
+| `docs/04.execution/tasks/`                                             | Task                                 | `docs/99.templates/templates/sdlc/task.template.md`                   |
+| `docs/05.operations/guides/`                                           | Operations Guide                     | `docs/99.templates/templates/operations/guide.template.md`            |
+| `docs/05.operations/policies/`                                         | Operations Policy                    | `docs/99.templates/templates/operations/policy.template.md`           |
+| `docs/05.operations/runbooks/`                                         | Operations Runbook                   | `docs/99.templates/templates/operations/runbook.template.md`          |
+| `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` | Incident                             | `docs/99.templates/templates/operations/incident.template.md`         |
+| `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md`      | Postmortem                           | `docs/99.templates/templates/operations/postmortem.template.md`       |
+| `docs/05.operations/releases/YYYY-MM-DD-release-name.md`               | Release                              | `docs/99.templates/templates/operations/release.template.md`          |
+| `docs/00.agent-governance/memory/<note>.md`                            | Governance Memory Note               | `docs/99.templates/templates/governance/memory.template.md`           |
+| `docs/00.agent-governance/memory/progress.md`                          | Historical Agent Progress Navigation | `docs/99.templates/templates/governance/progress.template.md`         |
+| `docs/90.references/`                                                  | Reference                            | `docs/99.templates/templates/common/reference.template.md`            |
+| `docs/98.archive/`                                                     | Archive Tombstone                    | `docs/99.templates/templates/common/archive.template.md`              |
+| `README.md` (per folder)                                               | README                               | `docs/99.templates/templates/common/readme.template.md`               |
 
 For optional supporting contracts under `docs/03.specs/NNN-feature-id/`, keep
 Markdown support files in the feature directory and machine-readable contracts
@@ -221,23 +223,23 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 
 ## 3.1 Language Boundary by Stage
 
-| Stage / Surface | Language Boundary | Rationale |
-| --- | --- | --- |
-| `docs/00.agent-governance/**` | English-only | Agent governance, policy, provider, and validation contracts must be stable across providers. |
-| `docs/01.requirements/**` | Korean human-facing intent; technical identifiers unchanged | Requirements capture user value, scope, and acceptance criteria for human review. |
-| `docs/02.architecture/**` | Mixed: Korean rationale with English IDs, titles, and technical terms preserved | Architecture documents are reviewed by humans and agents and must preserve decision/contracts. |
-| `docs/03.specs/**` | English-only | Specs define technical contracts, interfaces, and verification criteria. |
-| `docs/04.execution/plans/**` | English-only | Plans define implementation sequencing, risk controls, and validation gates. |
-| `docs/04.execution/tasks/**` | English-only | Tasks are audit evidence and must stay machine-reviewable. |
-| `docs/05.operations/guides/**` | Korean human-facing body; technical identifiers unchanged | Guides help operators and developers understand and use services. |
-| `docs/05.operations/policies/**` | Korean human-facing body; control names and evidence identifiers unchanged | Policies define allowed/disallowed operational states for human review. |
-| `docs/05.operations/runbooks/**` | Korean human-facing procedure; commands and expected evidence unchanged | Runbooks support incidents, recovery, rollback, and escalation. |
-| `docs/05.operations/incidents/**` | Korean incident narrative; technical evidence unchanged | Incident records and postmortems preserve operator-readable timelines and actions. |
-| `docs/05.operations/releases/**` | Korean release narrative; artifact identifiers, timestamps, commands, and evidence labels unchanged | Release records preserve evidence for an actual event and remain distinct from deployment runtime. |
-| `docs/90.references/**` | Audience-specific: LLM/generated indexes may be English; human references Korean by default | References support active docs without replacing policy or runtime truth. |
-| `docs/98.archive/**` | Concise tombstone language; preserve original paths, IDs, dates, and titles | Archive docs preserve migration traceability, not active current truth. |
-| `docs/99.templates/**` | Match target stage; template READMEs Korean by default | Templates must not contradict the language contract of copied target documents. |
-| Root `README.md`, service READMEs, and mixed docs | Korean by default with English identifiers preserved | These are human-facing entrypoints that still reference implementation artifacts. |
+| Stage / Surface                                   | Language Boundary                                                                                   | Rationale                                                                                          |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `docs/00.agent-governance/**`                     | English-only                                                                                        | Agent governance, policy, provider, and validation contracts must be stable across providers.      |
+| `docs/01.requirements/**`                         | Korean human-facing intent; technical identifiers unchanged                                         | Requirements capture user value, scope, and acceptance criteria for human review.                  |
+| `docs/02.architecture/**`                         | Mixed: Korean rationale with English IDs, titles, and technical terms preserved                     | Architecture documents are reviewed by humans and agents and must preserve decision/contracts.     |
+| `docs/03.specs/**`                                | English-only                                                                                        | Specs define technical contracts, interfaces, and verification criteria.                           |
+| `docs/04.execution/plans/**`                      | English-only                                                                                        | Plans define implementation sequencing, risk controls, and validation gates.                       |
+| `docs/04.execution/tasks/**`                      | English-only                                                                                        | Tasks are audit evidence and must stay machine-reviewable.                                         |
+| `docs/05.operations/guides/**`                    | Korean human-facing body; technical identifiers unchanged                                           | Guides help operators and developers understand and use services.                                  |
+| `docs/05.operations/policies/**`                  | Korean human-facing body; control names and evidence identifiers unchanged                          | Policies define allowed/disallowed operational states for human review.                            |
+| `docs/05.operations/runbooks/**`                  | Korean human-facing procedure; commands and expected evidence unchanged                             | Runbooks support incidents, recovery, rollback, and escalation.                                    |
+| `docs/05.operations/incidents/**`                 | Korean incident narrative; technical evidence unchanged                                             | Incident records and postmortems preserve operator-readable timelines and actions.                 |
+| `docs/05.operations/releases/**`                  | Korean release narrative; artifact identifiers, timestamps, commands, and evidence labels unchanged | Release records preserve evidence for an actual event and remain distinct from deployment runtime. |
+| `docs/90.references/**`                           | Audience-specific: LLM/generated indexes may be English; human references Korean by default         | References support active docs without replacing policy or runtime truth.                          |
+| `docs/98.archive/**`                              | Concise tombstone language; preserve original paths, IDs, dates, and titles                         | Archive docs preserve migration traceability, not active current truth.                            |
+| `docs/99.templates/**`                            | Match target stage; template READMEs Korean by default                                              | Templates must not contradict the language contract of copied target documents.                    |
+| Root `README.md`, service READMEs, and mixed docs | Korean by default with English identifiers preserved                                                | These are human-facing entrypoints that still reference implementation artifacts.                  |
 
 ## 4. Authoring Protocol
 
@@ -328,19 +330,19 @@ When an audit, review, validation failure, or agent handoff finds a gap, route
 the gap to the canonical owner before editing. Do not duplicate the same rule
 or evidence across stages.
 
-| Gap Type | Canonical Owner | Routing Rule |
-| --- | --- | --- |
-| Governance, provider behavior, agent execution rule, approval boundary, or memory contract | `docs/00.agent-governance/` | Update the rule/provider/memory surface only when the policy change is approved; otherwise record a memory note or task gap. |
-| User value, scope, acceptance criteria, or product intent | `docs/01.requirements/` | Create or update the numbered PRD. Link downstream architecture/spec work instead of embedding design details. |
-| Architecture shape, major technical decision, quality attribute, or tradeoff | `docs/02.architecture/` | Use ARD for enduring architecture and ADR for a decision record. Link PRD/spec evidence. |
-| Interface, data model, service contract, agent contract, or verification contract | `docs/03.specs/` | Update the numbered spec folder and optional support contract files. Do not record execution evidence here. |
-| Work sequencing, approval gates, rollback strategy, or implementation backlog | `docs/04.execution/plans/` | Create or update a plan. Keep actual execution results in the sibling task document. |
-| Completed work evidence, validation output, deviation, or implementation disposition | `docs/04.execution/tasks/` | Record the task result, checks, protected-surface boundary, and remaining gaps. |
-| Operator usage, operational control, recovery procedure, incident, or postmortem | `docs/05.operations/` | Route usage to `guides/`, policy to `policies/`, recovery to `runbooks/`, and incident evidence to `incidents/`. |
-| Source-backed research, audit snapshot, data reference, learning note, or LLM navigation | `docs/90.references/` | Keep it evidence-only. Do not make it active policy, plan, task evidence, or runtime truth. |
-| Obsolete or implementation-conflicting document that must leave the active chain | `docs/98.archive/` | Classify through the Stage 99 migration owner, create a validated provenance tombstone, update only the applicable transitional or generated ledger, and remove active current-truth references. |
-| Template, frontmatter, lifecycle, migration, archive, retention, or authoring contract | `docs/99.templates/` | Put reusable human rules in their named `support/` owner, machine semantics in the registries, and copyable document shapes in `templates/`. |
-| Runtime, secret value, credential, remote GitHub mutation, deployment, or uncertain implementation drift | Stage 04 task/audit gap first | Record as out-of-scope or approval-gated unless the current task explicitly approves that surface and names validation/rollback evidence. |
+| Gap Type                                                                                                 | Canonical Owner               | Routing Rule                                                                                                                                                                                     |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Governance, provider behavior, agent execution rule, approval boundary, or memory contract               | `docs/00.agent-governance/`   | Update the rule/provider/memory surface only when the policy change is approved; otherwise record a memory note or task gap.                                                                     |
+| User value, scope, acceptance criteria, or product intent                                                | `docs/01.requirements/`       | Create or update the numbered PRD. Link downstream architecture/spec work instead of embedding design details.                                                                                   |
+| Architecture shape, major technical decision, quality attribute, or tradeoff                             | `docs/02.architecture/`       | Use ARD for enduring architecture and ADR for a decision record. Link PRD/spec evidence.                                                                                                         |
+| Interface, data model, service contract, agent contract, or verification contract                        | `docs/03.specs/`              | Update the numbered spec folder and optional support contract files. Do not record execution evidence here.                                                                                      |
+| Work sequencing, approval gates, rollback strategy, or implementation backlog                            | `docs/04.execution/plans/`    | Create or update a plan. Keep actual execution results in the sibling task document.                                                                                                             |
+| Completed work evidence, validation output, deviation, or implementation disposition                     | `docs/04.execution/tasks/`    | Record the task result, checks, protected-surface boundary, and remaining gaps.                                                                                                                  |
+| Operator usage, operational control, recovery procedure, incident, or postmortem                         | `docs/05.operations/`         | Route usage to `guides/`, policy to `policies/`, recovery to `runbooks/`, and incident evidence to `incidents/`.                                                                                 |
+| Source-backed research, audit snapshot, data reference, learning note, or LLM navigation                 | `docs/90.references/`         | Keep it evidence-only. Do not make it active policy, plan, task evidence, or runtime truth.                                                                                                      |
+| Obsolete or implementation-conflicting document that must leave the active chain                         | `docs/98.archive/`            | Classify through the Stage 99 migration owner, create a validated provenance tombstone, update only the applicable transitional or generated ledger, and remove active current-truth references. |
+| Template, frontmatter, lifecycle, migration, archive, retention, or authoring contract                   | `docs/99.templates/`          | Put reusable human rules in their named `support/` owner, machine semantics in the registries, and copyable document shapes in `templates/`.                                                     |
+| Runtime, secret value, credential, remote GitHub mutation, deployment, or uncertain implementation drift | Stage 04 task/audit gap first | Record as out-of-scope or approval-gated unless the current task explicitly approves that surface and names validation/rollback evidence.                                                        |
 
 If one gap spans multiple stages, update the earliest canonical owner that
 changes the decision or rule, then link downstream artifacts. For example, a
