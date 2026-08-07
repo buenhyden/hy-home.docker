@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:agent-model-selection
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -95,10 +95,13 @@ the single source of truth.
   GPT-5.6 family and the workspace records the selected exact IDs as `stable`.
   Public catalog presence still does not prove Codex product acceptance,
   entitlement, or runtime activation.
-- **Gemini mechanics**: `.gemini/agents/*.md` use `gemini-3.6-flash` with
-  `high` for adversarial, complex, and supervision work and
-  `gemini-3.5-flash-lite` with `medium` or `minimal` for evidence and routine
-  work. `.agents` remains the shared compatibility projection and is not
+- **Gemini mechanics**: `.gemini/agents/*.md` select `gemini-3.6-flash` for
+  adversarial, complex, and supervision work and `gemini-3.5-flash-lite` for
+  evidence and routine work. The paired `high`, `medium`, and `minimal` values
+  are Gemini API `thinking_level` values. The Gemini CLI subagent file schema
+  documents no reasoning or thinking field, so those values are not per-agent
+  file controls and must be applied through settings-level `thinkingConfig` or
+  the API. `.agents` remains the shared compatibility projection and is not
   treated as Gemini native configuration.
 - **Enforcement**: The typed provider-model contract, deterministic renderer,
   provider sync, strict native-schema checks, and repository contracts enforce
@@ -117,7 +120,7 @@ the single source of truth.
   2026-07-10 10:00 KST, including its 145/142 ledger and three retrieval-only
   GPT-5.6 rows. The current Stage 00 contract facts were retrieved at
   `2026-07-26T20:08:18+09:00`; official external pages were separately
-  revalidated at `2026-07-27T02:33:54+09:00`. Those later observations support
+  revalidated at `2026-08-07T12:45:40+09:00`. Those later observations support
   the current five-profile/11-model contract, not a rewrite of the historical
   cutoff ledger.
 

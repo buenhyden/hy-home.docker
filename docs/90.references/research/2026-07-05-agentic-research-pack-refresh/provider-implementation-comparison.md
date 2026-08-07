@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:provider-implementation-comparison
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -17,7 +17,7 @@ Claude Code, OpenAI Codex, and Gemini CLI expose overlapping agentic coding
 features, but their schemas, defaults, lifecycle coverage, and maturity labels
 are not interchangeable. This reference compares current official
 documentation originally retrieved on 2026-07-10 and currently revalidated at
-`2026-07-27T02:33:54+09:00` with the tracked provider adapters at baseline
+`2026-08-07T12:45:40+09:00` with the tracked provider adapters at baseline
 `ab3a047511c2bf9b5a95ebac737f3ebdb5589384`.
 
 ## Purpose
@@ -52,7 +52,7 @@ global provider configuration.
 - A **provider adapter** translates that substrate into documented native
   files/events without becoming a second policy source.
 - **Current provider capability** means documented at external revalidation at
-  `2026-07-27T02:33:54+09:00`. **Current workspace adoption** means tracked
+  `2026-08-07T12:45:40+09:00`. **Current workspace adoption** means tracked
   surfaces rechecked against the 2026-07-26 typed contracts. Neither is a claim
   about the fixed 2026-07-10 10:00 KST model cutoff or live account
   entitlement.
@@ -70,8 +70,8 @@ and the final column records normalization gaps or task-fit caveats.
 | PIC-01 — Project instructions | Hierarchical `CLAUDE.md` and memory/import surfaces (`C1`) | `AGENTS.md` discovery from global then root-to-CWD, with nearer files winning (`O1`) | Hierarchical `GEMINI.md`, `@` imports, and configurable context filenames (`G1`) | Thin root shims route to Stage 00. | Preserve provider discovery syntax; loaded context is not enforcement. |
 | PIC-02 — Custom agents/subagents | Separate context, prompt, tools, permissions, skills/MCP, memory, hooks, foreground/background, and optional worktree isolation (`C2`) | Built-in/custom agents with parallel app/CLI/IDE operation and inherited sandbox/approval propagation (`O2`) | Built-in/custom subagents with independent context loops, specialized tools, named/automatic delegation, and parallel execution (`G4`) | `agents/README.md` plus `subagent-protocol.md` own 14 roles and handoffs; native adapters exist on all three provider surfaces. | Generation and schema checks do not prove live provider acceptance. `.agents` remains compatibility/shared skills rather than Gemini native configuration. |
 | PIC-03 — Custom-agent schema | Markdown frontmatter/body can declare name, description, tools, model, permissions, skills, hooks, memory, MCP, and isolation (`C2`) | TOML requires `name`, `description`, and `developer_instructions`; model/effort/sandbox/MCP/skills fields are optional (`O2`) | `.gemini/agents/*.md` requires name/description and can declare kind, tools, MCP, model, temperature, turns, and timeouts (`G4`) | Stage 00 owns canonical role/scope/model metadata; the renderer emits strict provider-native fields and validators reject drift. | Native schema conformance is tracked; metadata still does not prove runtime permission enforcement or provider acceptance. |
-| PIC-04 — Lifecycle hooks | Command, HTTP, prompt, MCP-tool, and agent handlers span a broad lifecycle; agent handlers have distinct trust/maturity caveats (`C3`) | Command hooks span documented events and interception paths (`O3`) | Synchronous command hooks are configured under `.gemini` and cover tool, agent, session, compression, model, and tool-selection events (`G5`) | Stage 00 owns seven semantic events; generated Claude and Gemini mappings cover seven, Codex covers six and marks `SessionEnd` unsupported. | Normalize behavior, not event names; configured mappings do not prove live interception. |
-| PIC-05 — Hook coverage | Matchers, inputs, outputs, and blocking semantics vary by handler/event (`C3`) | Interception covers documented simple shell, patch, and MCP paths, not every execution/web path; current docs do not list `SessionEnd` (`O3`) | `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`, `SessionStart`, `SessionEnd`, `PreCompress`, `BeforeModel`, `AfterModel`, and `BeforeToolSelection` are documented (`G5`) | Typed mappings preserve provider-specific outputs, blocking modes, and time units; parity freshness is validator-backed. | Tracked completeness is not complete runtime enforcement; Codex `SessionEnd` remains explicitly unsupported. |
+| PIC-04 — Lifecycle hooks | Command, HTTP, prompt, MCP-tool, and agent handlers span 31 documented events, 15 of them blocking; agent handlers remain experimental (`C3`) | Command hooks document 11 events including `SessionEnd` and `SubagentStart` (`O3`) | Synchronous command hooks are configured under `.gemini` and cover tool, agent, session, compression, model, and tool-selection events (`G5`) | Stage 00 owns seven semantic events; generated Claude and Gemini mappings cover seven and Codex covers six. | Normalize behavior, not event names; configured mappings do not prove live interception. |
+| PIC-05 — Hook coverage | Matchers, inputs, outputs, and blocking semantics vary by handler/event (`C3`) | Interception covers documented shell, patch, and MCP paths, not hosted tools or every execution/web path; async command hooks are parsed but unsupported (`O3`) | `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`, `SessionStart`, `SessionEnd`, `PreCompress`, `BeforeModel`, `AfterModel`, `BeforeToolSelection`, and `Notification` are documented (`G5`) | Typed mappings preserve provider-specific outputs, blocking modes, and time units; parity freshness is validator-backed. | Tracked completeness is not complete runtime enforcement. The Codex six-mapping binding predates upstream `SessionEnd` support and is now a repository-side gap. |
 | PIC-06 — Configuration layers | User, project, local, managed settings, and permissions (`C4`) | User/project config with trusted-project loading and layered `config.toml` (`O4`) | System, user, workspace, and other settings layers with `.gemini/settings.json` (`G1`) | Repository adapters coexist with user-owned global configuration. | Never infer or overwrite global operator configuration from tracked files. |
 | PIC-07 — Permissions/confirmation | Allow/ask/deny rules and permission modes restrict tools and Bash patterns (`C5`) | Approval policy is separate from sandbox; permission profiles add path/network controls (`O4`, `O5`) | Tool allow/exclude settings and default/auto-edit/YOLO confirmation modes (`G1`, `G3`) | `approval-boundaries.md` remains authoritative. | Native settings cannot grant repository authority; unattended modes can remove prompts. |
 | PIC-08 — Filesystem sandbox | Optional sandbox complements permissions and can isolate filesystem/network access (`C5`, `C6`) | `workspace-write`, read-only, and full-access modes are configurable independently from approval (`O5`) | Optional Seatbelt or container sandbox; disabled by default (`G2`) | `environment-constraints.md` plus the actual executing provider mode. | Record actual runtime mode; documentation of an optional control is not local implementation evidence. |
@@ -92,15 +92,15 @@ and the final column records normalization gaps or task-fit caveats.
 | Claude (`C1`) | Overview, instructions, memory, automation | [Claude Code overview](https://code.claude.com/docs/en/overview), [memory](https://code.claude.com/docs/en/memory) | Current documentation; individual preview labels apply where stated | Mutable pages support retrieval-time state only | Root `CLAUDE.md` and `.claude/` | High |
 | Claude (`C2`) | Custom subagents | [Subagents](https://code.claude.com/docs/en/sub-agents) | Current first-class feature; page contains feature-specific version notes | Current behavior, not historical cutoff proof | `.claude/agents/*.md` | High |
 | Claude (`C3`) | Hooks | [Hooks](https://code.claude.com/docs/en/hooks) | Command/HTTP/prompt hooks current; agent hooks explicitly experimental | Current behavior | `.claude/settings.json` and repo scripts | High |
-| Claude (`C4`) | Configuration | [Configuration](https://code.claude.com/docs/en/configuration) | Current documentation | Current behavior | `.claude/settings.json` | High |
+| Claude (`C4`) | Configuration | [Settings](https://code.claude.com/docs/en/settings) | Current documentation | Current behavior | `.claude/settings.json` | High |
 | Claude (`C5`) | Permissions | [Permissions](https://code.claude.com/docs/en/permissions) | Current documentation | Current behavior | Stage 00 approvals plus Claude settings | High |
 | Claude (`C6`) | Security/sandbox | [Security](https://code.claude.com/docs/en/security), [sandboxing](https://code.claude.com/docs/en/sandboxing) | Current docs; sandbox configuration is optional | Current behavior | Environment/approval rules; actual global config unknown | Medium: local files cannot prove runtime enablement |
 | Claude (`C7`) | MCP | [MCP](https://code.claude.com/docs/en/mcp) | Current documentation | Current behavior | Provider/user configuration | High |
 | Codex (`O1`) | Project instructions | [AGENTS.md guide](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | Current documentation | Current behavior | Root `AGENTS.md` and nested instruction chain | High |
 | Codex (`O2`) | Subagents/custom-agent schema | [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | Current first-class feature; `multi_agent` is documented Stable | Current behavior | Fourteen tracked strict `.codex/agents/*.toml` adapters include the required native description and developer-instruction fields; schema/drift validation passes | High for tracked schema adoption; live CLI acceptance remains unobserved |
-| Codex (`O3`) | Hooks/events/coverage | [Hooks](https://learn.chatgpt.com/docs/hooks) | Current Stable feature with command-hook trust review and documented event limits | Current behavior | `.codex/hooks.json` and repo hook scripts | High; tracked `SessionEnd` remains unsupported in the typed binding |
+| Codex (`O3`) | Hooks/events/coverage | [Hooks](https://learn.chatgpt.com/docs/hooks) | Current Stable feature with command-hook trust review and documented event limits | Current behavior | `.codex/hooks.json` and repo hook scripts | High; upstream now documents `SessionEnd`, so the typed binding is behind the provider |
 | Codex (`O4`) | Config, MCP, telemetry | [Configuration](https://learn.chatgpt.com/docs/config-file/config-basic) | Current reference; project-local layers require trust and some keys/features carry their own maturity labels | Current behavior | No tracked `.codex/config.toml`; tracked Codex surfaces are `.codex/hooks.json`, agent TOMLs/skills, and Stage 00/provider notes | High; installed/global MCP configuration and credentials remain unknown |
-| Codex (`O5`) | Sandbox and approvals | [Agent approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security) | Current documentation; permission profiles documented as beta | Current behavior | Stage 00 approval/environment rules | High; actual global operator profile unknown |
+| Codex (`O5`) | Sandbox and approvals | [Agent approvals and security](https://learn.chatgpt.com/docs/agent-approvals-security) | Current documentation; permission profiles carry no beta label on the current page; the earlier beta qualifier is unverified | Current behavior | Stage 00 approval/environment rules | High; actual global operator profile unknown |
 | Gemini (`G1`) | Configuration and context | [Generation settings](https://geminicli.com/docs/cli/generation-settings/), [memory](https://geminicli.com/docs/cli/tutorials/memory-management/) | Current documentation | Current behavior | Root `GEMINI.md`; `.agents` is a separate workspace/Antigravity surface | High |
 | Gemini (`G2`) | Sandbox | [Sandboxing](https://google-gemini.github.io/gemini-cli/docs/cli/sandbox.html) | Optional; documented disabled-by-default behavior | Current behavior | No tracked `.gemini` sandbox configuration | High |
 | Gemini (`G3`) | Tools and MCP | [MCP servers](https://google-gemini.github.io/gemini-cli/docs/tools/mcp-server.html), [tools](https://google-gemini.github.io/gemini-cli/docs/tools/) | Current documentation | Current behavior | Generated pointers do not configure MCP | High |
@@ -137,8 +137,9 @@ and the final column records normalization gaps or task-fit caveats.
 
 - Codex tracked agent TOMLs use the current strict schema but do not prove live
   tool/path enforcement.
-- Codex `SessionEnd` is explicitly unsupported; `PreToolUse`/`PostToolUse`
-  interception is documented as partial.
+- Codex `SessionEnd` is now documented upstream. The tracked six-mapping Codex
+  binding is therefore a repository-side gap, not a provider limitation.
+  `PreToolUse`/`PostToolUse` interception is still documented as partial.
 - Provider adapter auto-scaffolding is present in
   `scripts/operations/sync-provider-surfaces.sh`.
 - Gemini CLI custom agents and hooks are official, pre-evidence-date
@@ -149,7 +150,7 @@ and the final column records normalization gaps or task-fit caveats.
   this implementation matrix.
 - Current contract facts retain their exact
   `2026-07-26T20:08:18+09:00` retrieval timestamp; the provider documentation
-  revalidation at `2026-07-27T02:33:54+09:00` is a separate observation and
+  revalidation at `2026-08-07T12:45:40+09:00` is a separate observation and
   does not rewrite it.
 
 ## Source Rules

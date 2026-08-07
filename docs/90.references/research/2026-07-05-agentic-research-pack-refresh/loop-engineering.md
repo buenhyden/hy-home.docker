@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:loop-engineering
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md -->
@@ -62,14 +62,14 @@ comparison and routing aid.
 ## Provider Loop Criteria
 
 Provider cells state current official mechanisms revalidated at
-`2026-07-27T02:33:54+09:00`;
+`2026-08-07T12:45:40+09:00`;
 the workspace column states tracked policy/evidence, and the final column keeps
 task-fit inference and unresolved implementation gaps explicit.
 
 | Criterion | Claude | Codex | Gemini | Workspace common contract | Gap / caveat |
 | --- | --- | --- | --- | --- | --- |
 | LOOP-01 — Observe and act | A subagent runs an isolated context/tool loop and returns a result to its caller. | Built-in/custom agents run bounded tool loops and propagate results, sandbox, and approvals through the parent session. | Native subagents have independent context loops and may delegate automatically or by name. | Every action is bounded by the user request, loaded Stage 00 scope, latest observation, and approval boundary. | Hidden reasoning is not auditable; only actions, observations, decisions, and evidence may support completion. |
-| LOOP-02 — Pre/post action feedback | Lifecycle hooks can block or enrich pre-tool behavior and inspect successful or failed post-tool behavior. | Current command hooks intercept documented shell/patch/MCP paths, with explicit coverage limitations. | Native hooks include before/after tool and agent events plus model/tool-selection events. | Seven semantic events render to seven Claude, six Codex, and seven Gemini mappings; Codex `SessionEnd` remains explicitly unsupported. | Event-name parity is false and configured mappings do not prove live interception. |
+| LOOP-02 — Pre/post action feedback | Lifecycle hooks can block or enrich pre-tool behavior and inspect successful or failed post-tool behavior. | Command hooks now document 11 events and intercept shell/patch/MCP paths, with hosted tools still excluded. | Native hooks include before/after tool and agent events plus model/tool-selection events. | Seven semantic events render to seven Claude, six Codex, and seven Gemini mappings. | Event-name parity is false and configured mappings do not prove live interception. The Codex six-mapping binding predates upstream `SessionEnd` support and is now a repository-side gap. |
 | LOOP-03 — Validation and eval | Hooks and agents can invoke tests; provider capability does not adopt a scorer. | Agents/skills/hooks can invoke local checks and eval tooling. | Headless/tools/hooks/subagents can invoke checks. | Changed-file validation, CI/local routing, 11 exact fixtures, 16 synthetic regressions, deterministic scorers, calibrated thresholds, task evidence, and independent review define exit evidence. | The repository-semantic loop is implemented; no live provider-quality baseline is claimed. |
 | LOOP-04 — Retry and stop | Stop/SubagentStop hooks can return a blocking decision; retry semantics remain event-specific. | A parent can continue or re-dispatch after evidence, but current hook interception is partial. | Agent/tool hooks and checkpointing can support continuation; checkpointing is optional. | Four typed harness loops bind positive attempt ceilings, exact stop conditions, failure actions, independent review, and one controlled all-files attempt. | Repository retry/stop semantics are enforced; provider continuation and checkpoint behavior remain separate runtime facts. |
 | LOOP-05 — Approval pause/resume | Permissions and hooks can pause sensitive actions for a decision. | Approval policy is separate from sandbox; approval state propagates to subagents. | Confirmation modes and optional sandboxing govern tool execution. | Protected/external mutations pause before action, bind approval to exact scope, then refresh state before resume. | Unattended modes can suppress provider prompts but never broaden repository authority; durable cross-provider resume evidence is not uniform. |
@@ -128,7 +128,7 @@ research foundations only; neither paper defines repository retry limits,
 approvals, or evidence policy.
 
 Provider pages were originally retrieved on 2026-07-10 and revalidated on
-`2026-07-27T02:33:54+09:00`. Mutable documentation proves only the latest
+`2026-08-07T12:45:40+09:00`. Mutable documentation proves only the latest
 described surface;
 later announcements cannot be backdated into the fixed 2026-07-10 10:00 KST
 model cutoff.
@@ -147,8 +147,8 @@ model cutoff.
 - [Reflexion paper](https://arxiv.org/abs/2303.11366)
 - [Claude Code hooks](https://code.claude.com/docs/en/hooks)
 - [Claude Code subagents](https://code.claude.com/docs/en/sub-agents)
-- [Codex hooks](https://developers.openai.com/codex/hooks)
-- [Codex subagents](https://developers.openai.com/codex/subagents)
+- [Codex hooks](https://learn.chatgpt.com/docs/hooks)
+- [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents)
 - [Gemini CLI documentation](https://google-gemini.github.io/gemini-cli/docs/)
 - [Gemini CLI subagents](https://github.com/google-gemini/gemini-cli/blob/main/docs/core/subagents.md)
 - [Gemini CLI v0.38.1 subagent announcement](https://github.com/google-gemini/gemini-cli/discussions/25562)
