@@ -11,25 +11,29 @@ parent_ids: []
 
 {{overview}}
 
-## Scope and Criteria
+## Purpose
 
-{{scope_and_criteria}}
+{{purpose}}
 
-## Evidence
+## Repository Role
 
-{{evidence}}
+{{repository_role}}
 
-## Findings
+## Scope
 
-{{findings}}
+{{scope}}
 
-## Gap Analysis
+## Definitions / Facts
 
-{{gap_analysis}}
+{{facts_and_definitions}}
 
-## Disposition
+## Sources
 
-{{disposition}}
+{{sources}}
+
+## Maintenance
+
+{{maintenance}}
 
 ## Related Documents
 
