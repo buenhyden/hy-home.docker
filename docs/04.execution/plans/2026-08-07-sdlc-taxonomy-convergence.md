@@ -522,11 +522,11 @@ Measurement then showed the real problem is larger than a vacuous forbidden
 rule. All 34 audit documents carry an identical heading set, and it is the
 `reference` set — not the `audit` set:
 
-| Heading | Audit documents carrying it |
-| :------------------------------------------------------------------------ | :-------- |
-| `## Overview`, `## Purpose`, `## Scope`, `## Definitions / Facts`, `## Sources`, `## Maintenance`, `## Related Documents` | 34 of 34 |
-| `## Repository Role` | 34 of 34 |
-| `## Scope and Criteria`, `## Gap Analysis`, `## Disposition` (audit-role required) | 0 of 34 |
+| Heading                                                                                                                   | Audit documents carrying it |
+| :------------------------------------------------------------------------------------------------------------------------ | :-------------------------- |
+| `## Overview`, `## Purpose`, `## Scope`, `## Definitions / Facts`, `## Sources`, `## Maintenance`, `## Related Documents` | 34 of 34                    |
+| `## Repository Role`                                                                                                      | 34 of 34                    |
+| `## Scope and Criteria`, `## Gap Analysis`, `## Disposition` (audit-role required)                                        | 0 of 34                     |
 
 Retiring the role was considered and rejected: 17 documents declare
 `artifact_type: audit`, and two dedicated validators
@@ -593,9 +593,20 @@ In `docs/99.templates/support/document-metadata-profiles.yaml`, under `audit:`,
 replace the three heading lists with:
 
 ```yaml
-    required_headings: ["## Overview", "## Purpose", "## Repository Role", "## Scope", "## Definitions / Facts", "## Sources", "## Maintenance", "## Related Documents"]
-    conditional_headings: ["## Findings", "## Method", "## Source Rules", "## Evidence Snapshot Boundary", "## Comparison"]
-    forbidden_headings: ["## Procedure", "## Controls", "## Usage"]
+required_headings:
+  [
+    '## Overview',
+    '## Purpose',
+    '## Repository Role',
+    '## Scope',
+    '## Definitions / Facts',
+    '## Sources',
+    '## Maintenance',
+    '## Related Documents',
+  ]
+conditional_headings:
+  ['## Findings', '## Method', '## Source Rules', '## Evidence Snapshot Boundary', '## Comparison']
+forbidden_headings: ['## Procedure', '## Controls', '## Usage']
 ```
 
 All three lists are non-empty, every entry starts with `## `, and no list
@@ -1048,6 +1059,37 @@ replace the `if bucket == "policies":` block with:
                     f"{path}: policy document must contain exactly one ## Policy Scope heading; found {scope_count}"
                 )
 ```
+
+- [ ] **Step 6b: Migrate the one policy outlier the repair exposes**
+
+Removing the conditional in Step 6 exposes a document that was passing only
+because the old conditional had the two heading generations backwards. It is the
+single `## Scope` document from the 63:1 measurement in Step 1:
+
+```bash
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep 'Policy Scope'
+```
+
+Expected: one failure naming
+`docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`.
+
+Change that document's `## Scope` heading to `## Policy Scope`. Change nothing
+else in the file.
+
+This is the same situation Task 2 resolved for `guide` and `runbook`: repairing
+a checker exposes a real violation, and specification D2 sends the outlier to the
+corpus majority rather than bending the contract to the outlier. Task 2 migrated
+two documents on that basis; this migrates the third and last.
+
+- [ ] **Step 6c: Confirm the exposure is closed**
+
+```bash
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
+```
+
+Expected: `2`. A `3` means the migration did not take. Do not adjust the
+expected baseline to accommodate the failure — the baseline of 2 is the two
+known out-of-scope subjects, and nothing in this wave may add a third.
 
 - [ ] **Step 7: Measure the conformance improvement**
 
