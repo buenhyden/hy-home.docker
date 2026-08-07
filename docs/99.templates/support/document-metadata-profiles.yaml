@@ -364,7 +364,8 @@ readme_profiles:
     canonical_shared_rule_owner: docs/99.templates/support/template-governance.md
 
   archive:
-    path_globs: [docs/98.archive/README.md, docs/98.archive/*/README.md]
+    path_globs:
+      [docs/98.archive/README.md, docs/98.archive/*/README.md, docs/98.archive/*/*/README.md]
     frontmatter: optional
     frontmatter_consumer: scripts/validation/check-document-metadata.py
     allowed_frontmatter_keys: [layer]
@@ -554,7 +555,7 @@ template_roles:
         '## Escalation',
         '## Related Documents',
       ]
-    conditional_headings: ['## Overview', '## Verification Record', "## Automation Handoff"]
+    conditional_headings: ['## Overview', '## Verification Record', '## Automation Handoff']
     forbidden_headings: ['## Routine Usage']
   incident:
     source: docs/99.templates/templates/operations/incident.template.md
