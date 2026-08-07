@@ -19,17 +19,17 @@ approved active chain and safely selected changed/new documents are enforced.
 
 ## Surface Interpretation
 
-| Surface | Human authoring boundary |
-| --- | --- |
-| Typed Markdown template source | Declare the target profile through registered placeholders; copying the source does not preserve template identity or lifecycle evidence. |
-| README template source | Remove source frontmatter when copied unless the selected README profile independently permits a field for a declared consumer. |
-| Machine-readable template source | Use the native format and comments; do not add Markdown frontmatter. |
-| Stage 00 or Stage 99 governance/support document | Use the governance convention, not an active-stage lifecycle profile. |
-| Target stage leaf | Select the path-derived registry profile and honest lifecycle state. |
-| README | Follow the matched README profile; frontmatter is absent by default. |
-| Repo-support README | Follow the explicit workspace/repo-support profile and remain outside active-stage metadata inference. |
-| Generated output | Preserve generator-owned metadata and refresh through the canonical generator. |
-| Unsupported or native platform surface | Preserve the real consumer's contract; do not add repository metadata for uniformity. |
+| Surface                                          | Human authoring boundary                                                                                                                  |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Typed Markdown template source                   | Declare the target profile through registered placeholders; copying the source does not preserve template identity or lifecycle evidence. |
+| README template source                           | Remove source frontmatter when copied unless the selected README profile independently permits a field for a declared consumer.           |
+| Machine-readable template source                 | Use the native format and comments; do not add Markdown frontmatter.                                                                      |
+| Stage 00 or Stage 99 governance/support document | Use the governance convention, not an active-stage lifecycle profile.                                                                     |
+| Target stage leaf                                | Select the path-derived registry profile and honest lifecycle state.                                                                      |
+| README                                           | Follow the matched README profile; frontmatter is absent by default.                                                                      |
+| Repo-support README                              | Follow the explicit workspace/repo-support profile and remain outside active-stage metadata inference.                                    |
+| Generated output                                 | Preserve generator-owned metadata and refresh through the canonical generator.                                                            |
+| Unsupported or native platform surface           | Preserve the real consumer's contract; do not add repository metadata for uniformity.                                                     |
 
 ## Stage 00 Specialization Boundary
 
@@ -167,6 +167,21 @@ field set, order, value shapes, and conditional presence.
   [README profile contract](./readme-profile-contract.md).
 - Resolve every exact key, value, transition, path, and exception question from
   the registry and checker rather than extending these human routes by analogy.
+
+## Review Fields
+
+Two fields are required by the `policy`, `runbook`, and `postmortem` profiles
+and are enforced by
+[`document-metadata-profiles.yaml`](./document-metadata-profiles.yaml).
+
+| Field          | Type         | Required by                 | Meaning                                                  |
+| :------------- | :----------- | :-------------------------- | :------------------------------------------------------- |
+| `reviewed_at`  | `YYYY-MM-DD` | policy, runbook, postmortem | Date the document's content was last confirmed accurate. |
+| `review_cycle` | string       | policy, runbook             | Cadence or trigger governing the next review.            |
+
+`review_cycle` accepts either a fixed cadence such as `quarterly` or an
+event trigger such as `on-source-change`. A document whose `reviewed_at`
+predates its cadence is stale, but staleness is not currently a blocking check.
 
 ## Related Documents
 
