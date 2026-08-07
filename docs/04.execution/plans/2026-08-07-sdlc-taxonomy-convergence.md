@@ -1666,6 +1666,29 @@ Repeat Steps 4 through 6 for every remaining line in
 most ten directories, each batch named by what it archives. Run the Step 5
 verification after every batch, not only at the end.
 
+Three things the first migration established that the batch will hit repeatedly:
+
+1. **21 of the 32 specifications carry neither `artifact_id` nor `parent_ids`.**
+   That is pre-existing legacy debt, grandfathered under the live `spec` profile
+   but not permitted once `artifact_type: archive` applies. Derive
+   `artifact_id` as `spec:<directory-name>` — the convention the 11 specifications
+   that do carry one already use — and set `parent_ids: []`, which the profile
+   explicitly permits. Never invent a parent.
+
+2. **Outbound links inside the moved document also break.** The document descends
+   two levels, so its own relative links to anything outside its directory need
+   the same depth correction as the inbound links pointing at it. A link to a
+   sibling specification that has not moved yet needs a different correction from
+   one to a sibling that has — recompute rather than applying a fixed prefix.
+
+3. **The substring rewrite misses some link forms.** The first migration found
+   three additional documents only through the fence-aware link check, including
+   `docs/03.specs/README.md`. Run that check after every batch and treat anything
+   above the baseline of 1 as work remaining, not as noise.
+
+The generated LLM Wiki index also carries moved paths. Regenerate it with its
+own script; never hand-edit a generated file.
+
 - [ ] **Step 9: Record the mapping in the archive ledger**
 
 Append a mapping table to `docs/98.archive/README.md` listing each source path
