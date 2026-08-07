@@ -17113,33 +17113,61 @@ historical evidence only:
   `24987` bytes.
 
 The user approved this return-to-design successor on 2026-08-02. The new
-lineage is
-`D_AN/P_AM -> S_AN -> P_AN -> B_AN|XP_AN`. S_AN is the design-only
+planning-and-evidence lineage is
+`D_AN/P_AM -> S_AN -> P_AN -> E_AN -> R_AN|XE_AN`. S_AN is the design-only
 Plan-and-Task checkpoint with exact subject
 `docs(design): define secure occurrence-bound inventory successor`. P_AN is a
 future Plan-and-Task checkpoint with exact subject
 `docs(plan): define secure occurrence-bound inventory proof`; its OID must not
-be self-asserted in its own tree. B_AN and XP_AN are future mutually exclusive
-Task-only terminals. No 4AN asset, review package, candidate, publisher, or
+be self-asserted in its own tree. E_AN is a required Task-only execution-gate
+checkpoint with exact subject
+`docs(task): record secure inventory Plan approval`; it alone may record the
+resolved P_AN OID, the two accepted P_AN review identities and verdicts,
+publication/rebinding proof, and the user's later AN-2 execution approval.
+R_AN and XE_AN are mutually exclusive Task-only AN-2 evidence terminals with
+exact subjects `docs(task): record accepted secure inventory evidence` and
+`docs(task): record exhausted secure inventory evidence`. A future AN-3 design
+must define any B_AN/XP_AN renderer terminals separately; P_AN does not create
+or authorize them. No 4AN asset, review package, candidate, publisher, or
 terminal exists in S_AN.
+
+The first frozen P_AN candidate was reviewed but rejected before publication:
+Plan SHA256/blob/bytes
+`45f451a032905dab1da6f1db0ac760163e3ab4c4fa40264bc9d9233c63358d5f`/
+`629926f1d0621ac9549c8262f17a95dc3c90e3bb`/`794477`, Task
+`91ed61f6185938df9286fa6574bb531158c14f3faefd3628dcb54add60906450`/
+`9da539cfae55be22ec5fad951db8d89e84e4b6a2`/`376297`, and binary diff
+SHA256/bytes
+`fd44e33ecedfefec00c5cbe8a039335d784ab1b1fef4b1d818cab3c37c378647`/
+`94255`. Reviewer `/root/task4an_pan_plan_spec_r2_review` returned `C0/I5/M0`,
+`SPEC_COMPLIANCE NO`, `PLAN_COMMIT_READY NO`; its fresh quality/security
+reviewer `/root/task4an_pan_plan_security_r2_review` returned `C0/I4/M0`,
+`QUALITY_SECURITY FAIL`, `PLAN_COMMIT_READY NO`.
+Those reports are correction inputs only and can never approve a corrected
+byte identity. The corrected candidate must be frozen and reviewed by a wholly
+fresh pair before publication.
 
 The rejected `/tmp/tsdc-4am-*` paths and their Git blobs must never be patched,
 overwritten, reclassified as accepted, or executed again. New bytes use the
 `tsdc-4an-*` namespace, new Git blob identities, a fresh implementer, and fresh
-reviewers. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, E_AN, R_AN,
-XE_AN, Task 4.5, Wave C, Tasks 5–6, runtime, remote/external actions,
+reviewers. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5,
+Wave C, Tasks 5–6, runtime, remote/external actions,
 QA-wrapper/pre-commit execution, dependency changes, 4AL/4AM retry or
-correction, and Graphify update remain blocked/no authority.
+correction, and Graphify update remain blocked/no authority. E_AN is
+conditional on accepted corrected-P_AN reviews, exact publication/rebinding,
+and a new explicit user execution approval. R_AN or XE_AN is conditional on
+one authorized AN-2 attempt reaching a classified accepted or exhausted
+outcome; neither exists or has current authority in this tree.
 
 #### Private atomic output publication
 
 The 4AN inventory builder must not publish to predictable shared `/tmp`
 pathnames. P_AN binds the exact temporary parent path and its acceptance
-contract. The outer launcher opens that parent once with
+contract. The reviewed 4AN controller opens that parent once with
 `O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC`, proves its pinned device/inode, trusted
 owner, directory type, and sticky-write policy, and creates one unpredictable
 128-bit-name transaction directory relative to that descriptor. Creation uses
-no-follow, create-only semantics and mode `0700`; the builder proves the new
+no-follow, create-only semantics and mode `0700`; the controller proves the new
 directory is owned by the current effective UID, has initial link count two,
 and is not group- or world-accessible before any child file is created.
 
@@ -17166,19 +17194,95 @@ may remove only a proved-owned unchanged transaction directory after an
 explicit disposition; it may never follow links or touch the rejected 4AM
 paths.
 
+The build/source transaction and the production-output transaction are
+different children of the same pinned parent. The bounded governance
+orchestrator creates only the build/source child before the reviewed controller
+exists; the reviewed controller later creates only the production-output child
+after `HARNESS_ACCEPTED`. Each actor performs its own separate complete
+16-byte `getrandom(2)` read; interruption, short read, all-zero policy failure,
+encoding failure, or `EEXIST` is terminal and is never retried with a second
+name. The build/source basename is exactly
+`tsdc-4an-` plus 32 lowercase hexadecimal characters. The production-output
+basename is exactly `tsdc-4an-out-` plus a different 32 lowercase hexadecimal
+string. Each is created relative to `PARENT_FD` with `mkdirat(..., 0700)`,
+captured with `fstatat(..., AT_SYMLINK_NOFOLLOW)`, then opened exactly once
+with `openat2(PARENT_FD, name,
+{O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC,
+RESOLVE_BENEATH|RESOLVE_NO_SYMLINKS|RESOLVE_NO_MAGICLINKS|RESOLVE_NO_XDEV})`.
+The opened descriptor identity must equal the captured identity.
+`TX_FD` and `OUT_FD` must have the pinned parent's device, distinct new inodes,
+effective-UID/effective-GID ownership, exact mode `0700`, link count two before
+their first child, and zero group/world permission bits. Neither basename nor
+pathname crosses an executable interface or enters a receipt. The orchestrator
+passes the already-open `PARENT_FD` and `TX_FD` as bootstrap capabilities, and
+the controller independently reproves both before accepting any input. The
+controller creates and owns `OUT_FD`; the builder receives only the already-open directory
+identity indirectly. The controller creates the two payload files itself and
+passes only their already-open regular FDs in the builder's fixed output slots;
+the builder never receives `PARENT_FD`, `TX_FD`, or `OUT_FD` and cannot open,
+rename, remove, or rediscover the parent or either child pathname.
+
 #### Closed and bounded Git-object reader
 
-Every Git subprocess uses an absolute executable, a fixed repository, a
-closed environment, C locale, UTC, and fixed timeout. The environment sets
-`GIT_NO_REPLACE_OBJECTS=1`, `GIT_NO_LAZY_FETCH=1`,
+Every production Git subprocess is created only by the reviewed controller;
+the isolated harness creates only the reviewed fake-Git server. Each child has an
+absolute executable, a fixed repository, a closed environment, C locale, UTC,
+and fixed timeout. The environment sets
+`GIT_NO_REPLACE_OBJECTS=1`,
 `GIT_TERMINAL_PROMPT=0`, `GIT_OPTIONAL_LOCKS=0`, and
-`GIT_CONFIG_NOSYSTEM=1`; global and XDG configuration resolve only to an empty
-private directory. Commands also use `--no-replace-objects`.
-`GIT_OBJECT_DIRECTORY`, `GIT_ALTERNATE_OBJECT_DIRECTORIES`, and every other
-ambient `GIT_*` variable not explicitly admitted above are absent. The reader
-rejects a nonempty repository `objects/info/alternates` file before reading.
+`GIT_CONFIG_NOSYSTEM=1`; `GIT_CONFIG_COUNT=0`, system/global configuration,
+HOME/XDG, TMPDIR, and `PATH=/nonexistent` are fixed by the private view below.
+Commands also use `--no-replace-objects`.
+Every ambient `GIT_*` variable not explicitly admitted below is absent. The
+reader requires both repository `objects/info/alternates` and
+`objects/info/http-alternates` to be absent, not merely empty, before reading.
 No credential, proxy, replace-ref, hook, fsmonitor, pager, editor, or prompt
 input is inherited.
+
+Production repository local/worktree configuration is never a Git input. The
+controller gives each Git child a private bare control directory under
+`TX_FD` whose exact `config` bytes are
+`[core]\n\trepositoryformatversion = 0\n\tbare = true\n`. It is a
+controller-created mode-`0600` regular file opened once, byte-reproved, and
+watched together with its parent for every write/attribute/create/move/delete
+event. The control directory also has exact mode-`0600` `HEAD` bytes
+`ref: refs/heads/tsdc-4an-void\n`, an empty mode-`0700` `refs/heads`
+directory, no `config.worktree`, no `commondir`, and no object or alternate
+path. `GIT_DIR` is exactly `/proc/self/fd/<CONTROL_GIT_FD>` for the once-opened
+control-directory descriptor, `GIT_CONFIG_SYSTEM=/dev/null`,
+`GIT_CONFIG_GLOBAL=/dev/null`, `GIT_CONFIG_NOSYSTEM=1`, and
+`GIT_OBJECT_DIRECTORY` is exactly
+`/proc/self/fd/<OBJECTS_FD>`, where `OBJECTS_FD` is the inherited read-only
+once-opened production object-directory descriptor. The exact descriptor
+number is fixed by the runtime manifest and is non-CLOEXEC only for that Git
+child; all other descriptors are closed before exec. `GIT_COMMON_DIR`,
+production local/worktree config paths, `include` sources, remote/promisor
+configuration, and filters are therefore unreachable.
+`GIT_ALTERNATE_OBJECT_DIRECTORIES` is absent. Because the private config has no
+partial-clone/promisor declaration, a missing object is a local failure and no
+Git version-specific lazy-fetch switch is relied upon.
+
+When `info` exists, both alternate files must be absent under the pinned
+`INFO_FD`, and the controller watches that descriptor plus `OBJECTS_FD`; if it is
+absent, it watches `OBJECTS_FD` and rejects any creation or replacement of
+`info`. The controller keeps the private `CONTROL_GIT_FD`, `CONFIG_FD`,
+`OBJECTS_FD`, and any `INFO_FD` open, installs nonblocking inotify watches
+before the first object read for write, attrib, create, delete, move,
+self-delete, self-move, ignored, and queue-overflow events, and records the
+private control/config identities/SHA256 plus both absence witnesses. Any
+control-parent/config event, any `INFO_FD` event, any `OBJECTS_FD` event whose
+name is exact `info`, watch failure/invalidation/overflow,
+pathname/descriptor divergence, or pre/post identity/hash/absence difference
+rejects the attempt even if bytes are later restored. Direct object-fanout
+events are not alternate evidence: during materialization they must match the
+controller's separately expected object-write ledger, and at all other phases
+they are recorded but acceptance still depends on exact requested-object
+reproof. The controller drains
+and rechecks the watches and all identities after every Git child and
+immediately before accepting each payload or receipt object. The case set
+contains explicit private-control/config mutation and either-alternate
+create/replace races;
+a single precheck is never sufficient.
 
 Before reading content, the reader performs a bounded exact-object metadata
 probe and requires the requested full OID, object type `blob`, and the frozen
@@ -17190,6 +17294,52 @@ computes SHA256 plus Git blob OID while streaming. A missing local object,
 replacement attempt, lazy-fetch request, prompt, config expansion, stderr
 overflow, timeout, signal, nonzero exit, or identity mismatch fails before any
 output publication or object-store write.
+
+Production Git-object publication is implemented by the reviewed controller's
+descriptor-fed loose-object materializer, not by a pathname-fed shell or an
+unbounded `git hash-object` call. Its input is one already-rewound regular
+payload FD plus the pinned `OBJECTS_FD`; it computes canonical
+`blob <decimal-byte-count>\0<payload>` bytes, SHA-1 OID, SHA256, and zlib stream
+under the fixed caps while rereading only that FD. Compression uses exact
+`deflateInit2(Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS, 8,
+Z_DEFAULT_STRATEGY)` and the pinned `libz.a` identity. It opens or creates the
+two-hex fanout directory relative to `OBJECTS_FD` with no-follow checks and
+requires a same-device directory owned by the effective UID with no
+group/world write bit. For a new object it performs one complete independent
+16-byte `getrandom` read and creates exactly one same-directory basename
+`.tsdc-4an-object-` plus 32 lowercase hex with
+`O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC`, mode `0444`; short read, all-zero
+policy failure, encoding failure, or collision is terminal with no second
+name. It writes the complete compressed stream, rereads and validates it,
+fsyncs it, and publishes with
+`renameat2(..., RENAME_NOREPLACE)`. It then fsyncs the final object descriptor,
+fanout directory, and `OBJECTS_FD` in that order. An `EEXIST` final object is
+accepted only after the once-opened existing regular descriptor is boundedly
+inflated and proves exact type, length, SHA-1, SHA256, owner, link count, and
+non-writable mode; it is never replaced or truncated. Any temporary residue is
+preserved on an ambiguous failure and no Git object is deleted. After an
+`EEXIST` final object is fully accepted, the controller may unlink only the
+still-open random temporary file after re-proving its exact name/device/inode/
+owner/link-count tuple, then fsync the fanout directory again. An unlink or
+fsync ambiguity is non-accepting and preserves the observed residue; it never
+authorizes a second materialization attempt.
+
+Inventory and preimage objects are materialized and durably reproved first.
+The controller then drains the config/alternates watches, revalidates both
+payload object descriptors and fanout-directory fsync receipts, constructs the
+pair receipt from those exact identities, and only then creates, fsyncs,
+publishes, and reproves the receipt object through the retained published FD or
+the one pinned existing-object FD by the same algorithm. The receipt
+cannot reach `completion=COMPLETE` unless both payload objects are already
+durable. Object receipt records separate logical prestate (`absent` or
+`present`) and loose publication state (`created-new-loose` or
+`verified-existing-loose`) for each payload OID plus final
+object/fanout/object-directory descriptor identities and fsync success. A
+logically present packed object with no loose file is `present` plus
+`created-new-loose`, never falsely new at the logical layer. The later
+production-run evidence records the pair-receipt
+object by the same fields. Stdout text or a returned OID alone is never
+durability evidence.
 
 #### Occurrence- and subspan-bound inventory schema
 
@@ -17224,18 +17374,153 @@ occurrences. It emits a deterministic preimage containing the fragment,
 subspan, and occurrence bijection plus aggregate counts; none of those counts
 is a hand-maintained acceptance constant.
 
+Discovery is not implementer-selected. The policy manifest contains one
+canonical `tsdc-4an-discovery-rules/v1` section, and the inventory core contains
+the byte-identical compiled table; the builder request carries
+`discovery_rules_sha256`, and the core serializes its table and rejects a hash
+mismatch before scanning. The first whole-Task pass scans raw bytes, including
+tables, fences, comments, and historical sections, for exact identifier-bound
+tokens `D_AN`, `S_AN`, `P_AN`, `E_AN`, `R_AN`, `XE_AN`, `B_AN`, `XP_AN`,
+`AN-1`, `AN-1E`, `AN-2`, `AN-2A` through `AN-2G`, and `AN-3`, plus the exact
+four 4AN commit subjects defined by this Plan. Identifier tokens are bounded
+on both sides by start/end or a byte outside ASCII `[A-Za-z0-9_]`, so `P_AN`
+inside `XP_AN` or `P_AN_SELF_OID` is not a second seed.
+
+The deterministic Markdown byte parser maps every seed to exactly one smallest
+complete owning table row, list item, fenced block, marker block, or heading
+range under the fixed precedence encoded in the same rules. A second pass over
+that selected-fragment union records every exact state token, commit subject,
+full 40-hex OID, and identifier-bounded authority/status token from the closed
+rules table. No line-number, renderer output, source-code self-discovery, or
+manual include/exclude list can add or suppress an occurrence. An unmapped
+seed, structurally ambiguous owner, overlapping owner without the deterministic
+merge rule, or policy/core serialization difference is fatal.
+
+The v2 machine grammar is closed. Each inventory line is UTF-8 JSON followed
+by one LF, has no BOM or insignificant whitespace, and uses shortest canonical
+decimal integers with no sign or leading zero except `0`. Object keys appear
+in the exact order below; arrays retain semantic order. Strings use valid
+shortest UTF-8 and JSON escapes only for quotation mark, reverse solidus, and
+U+0000 through U+001F; solidus and non-ASCII code points are never escaped.
+Duplicate/unknown/missing keys, floats, exponent notation, invalid UTF-8,
+noncanonical escape spellings, CR, or a missing/final extra LF reject the
+inventory.
+
+The Task and every semantic identifier input must contain no NUL. Every field
+rendered as one token in the ASCII preimage must also contain no ASCII control
+or whitespace byte outside the literal delimiters admitted below. All offsets,
+byte counts, and derived
+counts are checked unsigned 64-bit values, and every addition/subtraction/
+multiplication is overflow-checked before use. Task/fixture input is capped at
+`2097152` bytes, one inventory JSON line at `1048576` bytes, each complete
+inventory and preimage at `16777216` bytes, and each projection/subspan/
+occurrence count at `1000000`; hitting an overflow sentinel or exceeding a cap
+fails before receipt creation.
+
+Each top-level object has exact ordered keys `schema`, `projection_id`,
+`task_blob`, `section`, `selector_kind`, `selector`, `fragment_start`,
+`fragment_end`, `fragment_sha256`, `fragment_bytes`, and `subspans`.
+`schema` is literal `tsdc-4an-projection-inventory/v2`; `task_blob` is the
+exact 40-lowercase-hex P_AN Task blob. `selector_kind` is one of
+`html-marker-range`, `heading-range`, `table-row`, or `literal-range` and its
+selector is a unique byte-exact UTF-8 selector, never a line number.
+`fragment_start` and `fragment_end` are zero-based half-open absolute byte
+offsets in the Task blob and `fragment_bytes=end-start`.
+
+Each `subspans` member has exact ordered keys `subspan_id`, `start`, `end`,
+`class`, `sha256`, `occurrences`, `pan`, `ban`, `xpan`,
+`historical_exception`, and `stale_denylist`. Its offsets are also absolute
+half-open Task-blob byte offsets. Each `occurrences` member has exact ordered
+keys `occurrence_id`, `kind`, `start`, `end`, and `sha256`; occurrence offsets
+are absolute and wholly contained by the owning subspan. `kind` is one of
+`namespace`, `current-state`, `authority`, `asset`, `review`, or `terminal`.
+Every `pan`/`ban`/`xpan` expectation has exact ordered keys `kind`,
+`value_utf8`, `value_sha256`, and `value_bytes`. `kind` is `exact`, `absent`,
+or `preserve`; `absent` uses the empty value, zero bytes, and the SHA256 of
+empty bytes, while `preserve` uses an empty `value_utf8` plus the exact source
+subspan SHA256/length. `historical_exception` has exact ordered keys `kind`
+and `evidence`; `kind=none` requires empty evidence and `kind=exact` requires
+one nonempty stable evidence ID. Each stale-denylist member has ordered keys
+`value_utf8`, `sha256`, and `bytes`, and members are sorted by raw UTF-8 bytes.
+
+Stable IDs are full lowercase SHA256, never truncated. `projection_id` is
+`anp-` plus SHA256 of the NUL-delimited bytes
+`projection`, task blob, selector kind, selector, canonical decimal
+fragment-start, and fragment-end. `subspan_id` is `ans-` plus SHA256 of
+`subspan`, projection ID, canonical decimal start/end, class, and subspan
+SHA256. `occurrence_id` is `ano-` plus SHA256 of `occurrence`, subspan ID,
+kind, canonical decimal start/end, and occurrence SHA256. Each literal token
+above is UTF-8, every field is followed by one NUL including the last, and any
+ID collision or recomputation mismatch is fatal. Projection lines are sorted
+by `(fragment_start, fragment_end, projection_id)`; subspans and occurrences
+are sorted analogously by `(start, end, id)`.
+
+The preimage grammar is ASCII LF text with schema
+`tsdc-4an-projection-preimage/v2`. It begins with unique ordered header fields
+`schema`, `pan_task_blob`, `task_sha256`, `task_bytes`, `inventory_blob`,
+`inventory_sha256`, and `inventory_bytes`, each encoded as
+`<key> <value>\n`. The three record productions are exactly:
+
+```text
+P <projection_id> <start> <end> <fragment_sha256> <subspan_count> <occurrence_count>\n
+S <projection_id> <subspan_id> <start> <end> <class> <sha256> <occurrence_count>\n
+O <projection_id> <subspan_id> <occurrence_id> <kind> <start> <end> <sha256>\n
+```
+
+The angle-bracket tokens are replaced by one token each; every rendered record
+contains no line break until its shown final `\n`. Record order exactly matches
+inventory order. It ends with unique
+ordered derived fields `projection_count`, `fragment_bytes_total`,
+`subspan_count`, `occurrence_count`, `terminal_transition_count`,
+`historical_count`, `static_count`, and `completion COMPLETE`. Tokens are
+single-space separated; IDs/hashes are lowercase hex and numbers use the same
+canonical decimal grammar. Counts and totals are recomputed from records and
+the exact Task bytes, never trusted from the inventory.
+
 #### OS-enforced fake-only harness containment
 
-P_AN must bind a new exact containment-launcher source, reproducible build
-provenance, static executable, and policy alongside the builder and adversarial
-harness. Source-only authority is forbidden. The executable must be one
+P_AN must bind a new exact controller source, containment-launcher source,
+reproducible build provenance, static executables, and policy alongside the
+builder and adversarial harness. Source-only authority is forbidden. Every
+executable must be one
 self-contained static ELF for the P_AN-bound architecture: no shebang,
 `PT_INTERP`, external `DT_NEEDED`, `RPATH`/`RUNPATH`, environment-selected
 loader, writable-executable segment, or executable stack. Its entry point,
 program headers, machine/type, build receipt, source-to-binary correspondence,
 Git blob, SHA256, byte length, and mode are exact review inputs.
 
-The already-running trusted controller pins and hash-reproves that exact ELF
+Every reference below to “the controller” means only the reviewed
+`tsdc-4an-controller` static PIE whose source, binary, build identity, fixed
+interfaces, and source-to-binary correspondence are in the same source package
+and both source reviews. It owns the parent/TX/OUT descriptors, immutable
+input opening, launcher sealed-memfd construction, bounded child capture,
+preflight-plus-case aggregation, production gate, exactly-once builder
+invocation, config/alternates watches, descriptor-fed object materialization,
+receipt-last durability, and terminal classification. No shell, agent prose,
+Python interpreter, mutable helper pathname, or unspecified “already-running
+controller” may perform one of those duties. The governance process may only
+start that exact controller once by its pinned reviewed ELF descriptor with
+the P_AN-bound argv/env/FD map; a different starter or controller identity is
+non-accepting.
+
+The separate term “governance orchestrator” means only the root Subagent-Driven
+session that bootstraps reviewable out-of-tree inputs before that executable
+exists. Its write authority is confined to one proved-owned `TX_FD` beneath
+the ignored repo-support parent. It may author candidate sources/manifests, run
+the exact reproducible build commands, freeze isolated review objects, copy
+the exact returned reviewer bytes into sealed transfer memfds, construct the
+non-authoritative controller request, and start the reviewed controller once.
+It may perform only the bounded read-only topology/object rebind needed to
+freeze exact P_AN/E_AN planning inputs; it may not write the production Git
+object store, expose a production descriptor or pathname to a candidate asset,
+create `OUT_FD`, execute a candidate asset before its required review, modify a
+tracked repository file, or decide acceptance from its own assertions. Every
+orchestrator-produced byte and descriptor is independently rebound by source
+review and then by the static controller; a mismatch stops before harness or
+production access. This explicit bootstrap boundary prevents the impossible
+claim that the controller binary creates or reviews its own source and build.
+
+The reviewed controller pins and hash-reproves the exact launcher ELF
 through one no-follow descriptor, copies the same bytes into a memfd sealed
 against write, grow, shrink, and further seal changes, rereads and rehashes the
 sealed bytes, then invokes it directly with `execveat(..., AT_EMPTY_PATH)`.
@@ -17252,12 +17537,20 @@ harness process. Before any untrusted harness instruction runs, it creates a
 private mode-`0700` sandbox transaction and enters dedicated user, mount, PID,
 IPC, UTS, and network namespaces. It makes mount propagation private,
 constructs a new tmpfs-backed root, and copies through pinned no-follow
-descriptors only the exact reviewed harness, fake fixtures, fake Git
-executable, and a closed P_AN-bound runtime manifest. Every runtime file is
+descriptors only the exact reviewed fake-Git executable and path-free
+case/policy/environment payloads listed by the P_AN-bound runtime manifest.
+The bootstrap runtime manifest itself is consumed and closed, never copied
+into the new root. It constructs every fake fixture from that manifest's
+complete canonical fixture-byte map and the reviewed linked fixture generator;
+no separate fixture pathname or undeclared input exists. The harness is already linked into the
+launcher image and is not copied or executed as a separate file. Every runtime file is
 individually pinned and hash/size/mode-proved through one descriptor, copied
 from that descriptor into the tmpfs root, reread and hash-reproved there, then
 placed on a read-only runtime subtree. Host-file and directory-wide runtime
-binds are forbidden. A separate fake-work subtree is the only writable
+binds are forbidden. Fixture inputs are regular manifest/blob descriptors;
+the launcher constructs every required symlink, hardlink, collision, and mode
+witness anew inside the tmpfs fake-work tree and never imports or follows a
+host link. A separate fake-work subtree is the only writable
 filesystem surface. The launcher then `pivot_root`s into the new root, changes
 directory to `/`, detaches the old root, and proves no cwd, root, mount, or
 descriptor reference retains it. The production worktree, canonical
@@ -17266,21 +17559,136 @@ directory, credentials, and host `/proc`, `/sys`, and device tree are not
 mounted into the sandbox.
 
 The launcher closes and unshares the inherited descriptor table before the
-harness exec. Only the P_AN-bound stdin/stdout/stderr protocol descriptors may
-remain; none may resolve to a production path or object store. It installs
-`no_new_privs`, a Landlock allowlist confined to the sandbox root, and a fixed
-default-deny seccomp allowlist containing only the P_AN-bound harness syscalls.
+harness activation. Let `G` be the count of case-manifest rows whose domain is
+exact `git-reader`; the frozen P_AN manifest derives `G=13`. Only read-only
+null stdin `0`, ledger stdout `1`, bounded diagnostic stderr `2`, the read-only
+sealed AN-C015 proof `3`, and the following manifest-derived table may remain.
+For zero-based git-reader case ordinal `j`, worker role `r` is ordered
+negative-metadata, negative-content, positive-metadata, positive-content and
+has base FD `b=4+16j+4r`; harness-side request-write/stdout-read/stderr-read/
+pidfd are `b/b+1/b+2/b+3`. Every pipe comes from
+`pipe2(O_CLOEXEC|O_NONBLOCK)` and every
+worker from `clone3(CLONE_PIDFD)` before the final filter. Each entry is mapped
+once after direction/type/inode and pidfd/PID reproof. No pipe or pidfd resolves
+to a production path or object store, and FD `3` contains no production
+pathname.
+After root construction and irreversible privilege drop but before worker
+creation, it installs `no_new_privs` and a Landlock allowlist confined to the
+sandbox root. After every worker readiness proof and all five sacrificial
+denials, it installs the fixed default-deny seccomp allowlist containing only
+the P_AN-bound same-image harness syscalls.
 Landlock grants read/execute only to the proved runtime subtree and grants
-write/create/remove only inside the fake-work subtree. The bounded ledger is a
-pre-opened protocol descriptor, not filesystem authority. The seccomp policy
+write/create/remove only inside the fake-work subtree. The bounded ledger,
+worker pipes, and pidfds are pre-opened protocol descriptors, not filesystem
+authority.
+The seccomp policy
 therefore denies socket creation, mount or namespace manipulation, `setns`,
 `chroot`/`pivot_root`, handle-based filesystem access, ptrace and cross-process
 memory access, kernel keyring/BPF/performance interfaces, `io_uring`, and every
 unlisted escape primitive. The sandbox contains the reviewed fake Git only;
 the production Git executable and repository configuration are unreachable.
 If any namespace, mount, Landlock, seccomp, descriptor-closing, or privilege
-primitive is unavailable, the launcher fails before harness exec. There is no
+primitive is unavailable, the launcher fails before harness activation. There is no
 weaker fallback.
+
+The parent writes `deny` to `/proc/<child>/setgroups` before the one-line maps
+`65532 <outer-euid> 1` and `65532 <outer-egid> 1`. Because that denial makes a
+later `setgroups` permanently invalid, the child never claims to clear its
+inherited supplementary list. Instead it proves every inherited group is
+either the mapped primary GID `65532` or the namespace overflow GID `65534`,
+that no second outside GID is mapped, and that no retained old-root/host FD or
+mount can turn an overflow group into authority. Any other mapped
+supplementary group fails before mount construction.
+
+After UID/GID maps and all mount/root construction are complete but before any
+harness activation, the launcher performs one exact irreversible privilege
+sequence while it still has the namespace capabilities needed for the drop.
+It first clears the ambient set and locks exact securebits
+`SECBIT_NOROOT|SECBIT_NOROOT_LOCKED|SECBIT_NO_SETUID_FIXUP|
+SECBIT_NO_SETUID_FIXUP_LOCKED|SECBIT_KEEP_CAPS_LOCKED|
+SECBIT_NO_CAP_AMBIENT_RAISE|SECBIT_NO_CAP_AMBIENT_RAISE_LOCKED`. It then drops
+every capability from zero through the pinned pre-pivot `cap_last_cap` value
+from the bounding set, fixes real/effective/saved GID and UID in that order to
+mapped namespace ID `65532`, and sets all effective/permitted/inheritable
+capability words to zero. Finally it sets `PR_SET_DUMPABLE=0` and
+`PR_SET_NO_NEW_PRIVS=1`. The launcher proves with
+`getresuid`, `getresgid`, `getgroups`, `capget`, `PR_CAPBSET_READ`,
+`PR_CAP_AMBIENT_IS_SET`, `PR_GET_SECUREBITS`, `PR_GET_DUMPABLE`, and
+`PR_GET_NO_NEW_PRIVS` that all values exactly match policy. Any unknown kernel
+capability above the compiled maximum, unsupported securebit/ambient primitive,
+supplementary group outside the exact mapped-primary/overflow rule, unlocked
+bit, nonzero capability/dumpability, or mismatch is a hard pre-activation
+failure. The launcher does not `execve` a second harness image: after all
+restrictions pass it calls the reviewed harness translation unit in the same
+static process, so the kernel cannot reset dumpability between the proof and
+harness code. The harness entry rechecks dumpability and the complete
+privilege tuple before reading FD `3` or any other external input.
+
+Before lowering process/file limits or exposing any external input, the
+launcher derives `G` from the sealed case manifest, requires `G=13`, requires
+the inherited hard limits to admit the exact `4G+6` peak processes and
+`16G+16` descriptors,
+and predeclares exactly four fake-Git workers for each git-reader case plus one
+sacrificial child for each of `AN-C017`, `AN-C018`, `AN-C019`, `AN-C020`, and
+`AN-C037`. It records every PID/pidfd and creates no other
+sandbox child. Negative-metadata, negative-content, positive-metadata, and
+positive-content workers are distinct so an overflow, timeout, or kill/reap
+oracle cannot destroy a later witness. Before creating the pool, the launcher
+opens the copied-and-reproved read-only `/runtime` fake-Git ELF once with
+`O_PATH|O_NOFOLLOW|O_CLOEXEC`, binds its identity to the runtime manifest, and
+retains that descriptor only through worker creation. Each worker maps its
+exact request pipe to stdin `0`, response pipe
+to stdout `1`, diagnostic pipe to stderr `2`, retains the sealed executable
+only as CLOEXEC FD `3`, closes everything else, and calls
+`execveat(3, "", ..., AT_EMPTY_PATH)` with one-entry argv and zero-entry envp.
+Fake-Git entry therefore sees only FDs `0` through `2`; the launcher closes its
+last executable-descriptor reference before same-image harness activation. Its
+first-entry path proves case/phase
+identity and privilege state, resets and proves dumpability zero after the
+exec transition, lowers its own soft/hard derived rlimits, proves the inherited
+Landlock boundary with the fixed negative/positive probes, installs a
+no-clone/no-exec final filter, and only then reads the first bounded
+request from stdin. The request grammar is checked after those controls.
+The two `negative-*` roles jointly implement one declared negative phase; when
+the fault belongs to only metadata or content, the other role emits the exact
+valid counterpart. The two `positive-*` roles jointly implement the corrected
+phase. Thus four workers do not invent undeclared extra negative controls.
+The same `tsdc-4an-inventory-core.o` is linked into both the production builder
+and launcher, so harness builder cases call the production parser/renderer core
+without spawning an unreviewed process. Only the thin production builder entry
+point remains exclusive to the builder ELF.
+
+Before any case request is written, each worker emits exactly one bounded
+readiness line `WORKER_READY <case_id> <role> <evidence_sha256>\n` on stdout;
+`role` is one of the four manifest tokens in the fixed order. The digest binds
+the worker PID/pidfd, its three pipe identities, post-exec credential/
+capability/dumpability tuple, exact derived rlimits, Landlock policy identity,
+and installed final-filter identity. The launcher polls and consumes exactly
+one readiness line from all `4G` workers within one `10`-second monotonic pool
+deadline, requires every stderr pipe still empty, and folds the ordered results
+into `worker_table_sha256`. Missing, duplicate, malformed, oversized, extra,
+or mismatched readiness is fatal before same-image harness activation; no case
+request is used as a readiness substitute.
+
+Each sacrificial child installs the exact final filter, attempts only its one
+assigned forbidden syscall (`setns`, `mount`, `open_by_handle_at`, `socket`, or
+fork-like `clone3` respectively), and must be killed by seccomp with the exact
+SIGSYS/pidfd/reap evidence. The launcher reaps all five before harness
+activation; offline policy fixtures additionally prove that every syscall in
+each forbidden family, including both `clone` and `clone3` and both handle
+syscalls, is absent from the compiled filter.
+The final seccomp policy admits neither `clone` nor `clone3`, so the initial
+accepted live topology inside the sandbox is exactly namespace-init
+launcher/harness plus `4G` one-case fake-Git workers; the bounded outer
+launcher supervisor is recorded separately. Each fake-Git worker has already
+lowered its own limits at first entry. Immediately after the exact worker and
+sacrificial reaping set, the surviving launcher lowers its soft and hard
+`RLIMIT_NPROC` to `4G+4` and `RLIMIT_NOFILE` to `16G+16` before same-image
+harness activation. No role ever raises either value or creates another child
+after its final filter. This ordering
+keeps host real-UID population from making trusted predeclaration structurally
+impossible while retaining both limits as defense-in-depth after all
+capability bypasses are absent.
 
 Neither launcher nor harness inherits an ambient environment. P_AN defines two
 closed, ordered key/value manifests: the static-launcher bootstrap environment
@@ -17290,22 +17698,32 @@ NULs, unknown keys, values outside the sandbox, credentials, proxy/startup
 controls, and every unlisted `LD_*`, `PYTHON*`, `GIT_*`, shell-init, locale, or
 tool configuration variable. Any admitted locale, timezone, `PATH`, `HOME`, or
 `TMPDIR` value is literal, points only inside the proved sandbox where
-applicable, and is hash-bound by P_AN. Before harness exec, the launcher proves
+applicable, and is hash-bound by P_AN. Before harness activation, the launcher proves
 byte-for-byte key order, key count, values, and serialized environment digest
 against that manifest. It also fixes argv, cwd `/`, umask, signal dispositions
 and mask, resource limits, and process personality. No inherited value can
 reach the permitted protocol descriptors.
 
-While still trusted and before harness exec, the launcher emits one bounded
+While still trusted and before harness activation, the launcher emits one bounded
 containment preflight receipt. It proves namespace identities differ from the
 parent, the old root is detached, the mount set equals the closed allowlist,
 the descriptor set equals the protocol allowlist, the environment equals the
 complete P_AN manifest with no inherited or extra key/value, no network route
-or production process is reachable, and open/stat attempts for the canonical
+or production process is reachable, UID/GID/groups equal the fixed tuple,
+effective/permitted/inheritable/bounding/ambient capability sets are empty,
+securebits are exactly locked, dumpability is zero, `no_new_privs` is one, and
+open/stat attempts for the canonical
 production worktree, Task, common Git directory, and object store fail with
 the P_AN-bound denial.
-Those production-path probe strings exist only in launcher memory and vanish
-at exec. A missing, duplicate, malformed, oversized, or non-pass preflight
+Those production-path probe strings exist only in the trusted launcher phase
+and are read from the runtime manifest into fixed mutable buffers, never
+compiled as launcher literals or memory-mapped. After the four probes, the
+launcher closes the manifest FD, applies `explicit_bzero` to every primary and
+derived buffer, proves through volatile byte reads that each is zero, and
+source/binary review confirms that none of the exact path byte strings occurs
+in the launcher ELF or retained runtime files. Only then may same-image harness
+activation occur. A missing,
+duplicate, malformed, oversized, or non-pass preflight
 field, unexpected descriptor or mount, successful negative-reachability probe,
 or inability to prove the final restricted state stops before the harness. A
 post-run comparison is defense-in-depth only and never substitutes for this
@@ -17316,34 +17734,43 @@ pre-execution OS boundary.
 The only permitted progression after a user-reviewed S_AN is:
 
 1. publish and exactly rebind P_AN as a Plan-and-Task-only successor;
-2. freeze a new builder source, containment-launcher source, exact static ELF
+2. after fresh accepted P_AN reviews and explicit user execution approval,
+   publish and exactly rebind the Task-only E_AN execution gate while
+   preserving the P_AN Plan blob;
+3. from exact E_AN, freeze a new controller source, builder source,
+   containment-launcher/linked-harness sources, fake-Git source, and exact
+   static ELF closure
    plus reproducible source-to-binary receipt, bootstrap/harness environment
    manifests, and isolated adversarial test-harness source;
-3. obtain fresh independent specification and quality/security reviews of
+4. obtain fresh independent specification and quality/security reviews of
    those exact source, executable, receipt, and policy blobs;
-4. execute the reviewed containment launcher, require its exact preflight
-   receipt, and permit it to exec the reviewed harness only after every
+5. execute the reviewed containment launcher, require its exact preflight
+   receipt, and permit it to activate the linked reviewed harness only after every
    namespace, mount, descriptor, environment, syscall-policy, and negative
    reachability proof passes;
-5. inside that OS-enforced sandbox, execute the reviewed adversarial harness
+6. inside that OS-enforced sandbox, execute the reviewed adversarial harness
    against isolated fake directories and fake bounded Git subprocesses without
    the production Task or object store; require exit zero, no signal or
    timeout, empty bounded stderr, and a deterministic case ledger containing
    exactly one `PASS` for every P_AN-bound case ID with no missing, duplicate,
    unknown, or non-pass result;
-6. only after steps 4 and 5 pass completely and the controller re-proves that
+7. only after steps 5 and 6 pass completely and the controller re-proves that
    the harness had no production Task, Git object-store, path, descriptor, or
    network reachability, execute exactly one production builder invocation in
    the private transaction; that invocation must exit zero without signal or
    timeout and materialize a complete inventory, preimage, and pair receipt as
    exact Git blobs, or fail
    closed under the matrix below;
-7. independently reprove the receipt, full-document/subspan bijection, and all
+8. independently reprove the receipt, full-document/subspan bijection, and all
    frozen identities;
-8. obtain fresh independent specification and quality/security reviews of the
+9. obtain fresh independent specification and quality/security reviews of the
    complete builder/inventory/preimage/receipt asset set; and
-9. proceed to a separately defined AN-3 renderer step only when both final
-   asset reviews return `C0/I0/M0` with affirmative readiness.
+10. publish exactly one Task-only R_AN accepted-evidence checkpoint when both
+    final asset reviews return `C0/I0/M0`, or, only after an explicit safe
+    disposition, one mutually exclusive Task-only XE_AN exhausted-evidence
+    checkpoint for a classified non-security failure; and
+11. proceed to a separately defined AN-3 renderer step only from exact R_AN
+    and only after a new user decision.
 
 The adversarial asset must cover a pre-existing symlink, a same-UID hardlink,
 an existing output name, a crash between payloads, a missing or mismatched
@@ -17355,6 +17782,21 @@ inherited-descriptor access, namespace or mount re-entry, handle-based path
 access, and network escape and require the exact P_AN-bound denial. These are
 out-of-tree planning-asset tests only; they do not run
 repository validators, repository tests, QA wrapper, or pre-commit.
+
+The manifest additionally binds privilege-state proof, process-creation
+enforcement, repository-config/include mutation, and alternates replacement as
+closed cases. The launcher owns the evidence oracles for `AN-C017` through
+`AN-C020`, `AN-C036`, and `AN-C037` and seals their fixed evidence into the
+preflight after
+zero-capability, exact-worker-pool, no-clone-filter, and defense-in-depth
+rlimit checks. `AN-C015` is jointly evidenced by the launcher and harness. To
+preserve one globally ordered ledger, the linked harness verifies those three
+classes of sealed launcher evidence and emits their sole case lines at the normal
+manifest ordinals; the launcher emits no `PASS <case_id>` line. All other case
+evidence is harness-owned. The controller derives the expected set and order
+from every manifest line, cross-checks launcher-owned digests against their
+seven harness case lines, and rejects any missing/duplicate/unknown/out-of-order
+ID.
 
 The P_AN-bound case manifest is closed and independent of the harness source:
 P_AN enumerates every mandatory case ID and expected failure domain, source
@@ -17379,25 +17821,1016 @@ planning assets until the final two reviews pass.
 | Failure point | Durable result | Next authority |
 | --- | --- | --- |
 | S_AN publication or written-design review fails | P_AM remains the last executable Plan; rejected 4AM evidence is unchanged | stop and revise design only after user direction |
-| P_AN publication or exact-object rebinding fails | S_AN remains current or foreign state is preserved | new analysis and approval; no automatic retry |
-| Static-launcher ELF/provenance/seal/direct-exec proof, containment primitive, construction, environment equality, preflight receipt, or negative-reachability proof fails | P_AN remains current; no untrusted harness process, production invocation, production transaction, accepted asset, or production object-store write exists; exact launcher/policy identities and bounded failure evidence may be retained | stop before untrusted harness exec with no fallback; no automatic cleanup, reconstruction, rerun, or retry; preserve proved-owned sandbox evidence until explicit disposition and return to design only after user direction |
-| Adversarial harness does not prove every bound case or emits a non-accepting result while its fake-only boundary remains proved | P_AN remains current; frozen source/harness identities and bounded failure evidence may be retained, but no production invocation, production transaction, accepted receipt/assets, or production object-store write exists | stop before production; no automatic cleanup, rerun, or retry; preserve proved-owned isolated evidence until explicit disposition and return to design only after user direction |
+| P_AN review/publication/rebinding, user execution approval, or E_AN publication/rebinding fails | S_AN or P_AN remains current, or foreign state is preserved | new analysis and approval; no AN-2 asset and no automatic retry |
+| Static-launcher ELF/provenance/seal/direct-exec proof, containment primitive, construction, environment equality, preflight receipt, or negative-reachability proof fails | E_AN remains current; no untrusted harness activation, production invocation, production transaction, accepted asset, or production object-store write exists; exact launcher/policy identities and bounded failure evidence may be retained | stop before untrusted harness activation with no fallback; XE_AN only after explicit safe disposition; no automatic cleanup, reconstruction, rerun, or retry |
+| Adversarial harness does not prove every bound case or emits a non-accepting result while its fake-only boundary remains proved | E_AN remains current; frozen source/harness identities and bounded failure evidence may be retained, but no production invocation, production transaction, accepted receipt/assets, or production object-store write exists | stop before production; XE_AN only after explicit safe disposition; no automatic cleanup, rerun, or retry |
 | Harness fake-only isolation cannot be proved or any production-path/object access is observed | no absence-of-mutation claim is made; preserve exact observed P_AN topology, repository/object-store state, isolated evidence, and bounded diagnostics without further access | stop as a security incident; no cleanup, production invocation, rerun, or retry; require explicit incident disposition and user authority |
 | Production builder exits nonzero, is signaled or timed out, emits malformed/oversized diagnostics, or fails for an otherwise unclassified reason | no complete receipt or asset set is accepted; preserve exact observed topology, the incomplete private transaction, any already-materialized unreachable blobs or foreign drift, and bounded diagnostics without claiming P_AN is unchanged until read-only reproved | stop; no automatic cleanup, rebuild, rerun, or retry; require explicit security/evidence disposition and a user-approved return to design |
 | Private directory, descriptor, ownership, mode, hardlink, fsync, or pair-receipt proof fails | no complete receipt or asset set is accepted and no absence-of-object-write claim is made; preserve the exact observed topology, proved-owned incomplete transaction, attempted payload/receipt OIDs, any already-materialized unreachable Git blobs or foreign drift, and bounded diagnostics until read-only object-store and P_AN topology reproving completes | stop; no automatic cleanup, object deletion, rebuild, rerun, or retry; require explicit security/evidence disposition and user authority |
-| Git object is missing, replaced, fetched, oversized, short, timed out, prompted, or otherwise unclosed | no accepted output pair or review authority | stop and return to design |
-| Fragment/subspan/occurrence partition or bijection fails | frozen bytes remain rejected evidence only | stop and return to design |
-| Either source or final asset review is not `C0/I0/M0` | P_AN remains current; AN-3 is not authorized | stop and return to design |
-| All final asset gates pass | exact receipt-bound assets become immutable P_AN evidence | AN-3 may begin only under the later reviewed executable Plan |
+| Git object is missing, replaced, fetched, oversized, short, timed out, prompted, or otherwise unclosed | no accepted output pair or review authority | read-only reproof; XE_AN only after explicit safe disposition |
+| Fragment/subspan/occurrence partition or bijection fails | frozen bytes remain rejected evidence only | XE_AN only after explicit safe disposition |
+| Either source or final asset review is not `C0/I0/M0` | E_AN remains current; AN-3 is not authorized | XE_AN only after explicit safe disposition |
+| All final asset gates pass | exact receipt-bound assets become immutable P_AN-bound evidence | publish/rebind R_AN, then stop for a separate AN-3 drafting decision |
 
 #### 4AN design acceptance boundary
 
-S_AN authorizes only drafting and reviewing the future P_AN executable Plan.
-It does not authorize creation or execution of any 4AN asset, Git-object write,
+S_AN is exact commit `bac234abf9e1e320d2311b8a8f448afe0a6cbac1`, a
+single-parent successor of exact P_AM. Its final written-design specification
+review and final quality/security review both returned `C0/I0/M0`, affirmative
+compliance/readiness, and no finding. The user reviewed and approved S_AN, so
+it authorizes drafting and reviewing the P_AN executable Plan below. It does
+not itself authorize creation or execution of a 4AN asset, Git-object write,
 repository validator/test, QA wrapper, pre-commit, Graphify update, runtime or
-remote action, AN-3 renderer work, terminal construction, or publication. The
-written S_AN design must be committed and reviewed by the user before the
-`superpowers:writing-plans` phase begins.
+remote action, AN-3 renderer work, terminal construction, or publication.
+
+### T-TSDC-004R-4AN — Executable secure occurrence-bound inventory Plan
+
+> Current planning checkpoint: this checklist is executable only after P_AN is
+> committed, exactly rebound, independently reviewed, and explicitly approved
+> by the user. Until that approval, every AN-2 step is not started.
+
+P_AN is the Plan-and-Task-only successor with exact subject
+`docs(plan): define secure occurrence-bound inventory proof`. Its parent must
+be exact S_AN `bac234abf9e1e320d2311b8a8f448afe0a6cbac1`; its own OID is
+resolved only after publication and is intentionally not self-asserted in its
+tree. P_AN changes only this Plan and its paired Task, both mode `100644`.
+
+P_AN authorizes only AN-1. After fresh accepted P_AN reviews, exact
+publication/rebinding, and explicit user execution approval, it authorizes
+only AN-1E's Task-only E_AN checkpoint. Exact E_AN in turn authorizes the
+bounded AN-2A through AN-2G evidence sequence. AN-3 is reserved for a separate
+renderer Plan that does not yet exist. No AN-2 success authorizes
+implementation, E_AL, R_AL, XE_AL, E_AM, R_AM, XE_AM, Task 4.5, Wave C,
+Tasks 5–6, runtime, remote/external action,
+QA-wrapper/pre-commit execution, dependency change, 4AL/4AM retry or
+correction, Graphify update, terminal construction, or publication.
+
+#### P_AN file map and immutable interfaces
+
+AN-2 uses exact parent
+`/home/hy/projects/hy-home.docker/.worktrees/target-surface-delta-convergence/_workspace/repo-support`,
+opened once by the governance orchestrator as `PARENT_FD` with
+`O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC`. The orchestrator records and proves
+the opened directory's device, inode, owner, group, mode, link count,
+filesystem type, and sticky-write policy before use. It accepts only the
+effective-UID/effective-GID owner policy, exact mode `0755`, zero group/world
+write bits, and zero sticky bit; a shared-writable or ownership mismatch stops
+without creating a child. This is the governance-approved ignored repo-support
+staging surface, not a diagnostics, log, credential, or durable-evidence store.
+The orchestrator obtains 128 random bits with a complete `getrandom` read,
+encodes them as 32 lowercase hexadecimal characters, and creates exactly one
+build/source child at this stage whose basename is the literal prefix
+`tsdc-4an-` followed by those 32
+hexadecimal characters, relative to `PARENT_FD`, with create-only mode `0700`.
+The orchestrator captures it with `fstatat(..., AT_SYMLINK_NOFOLLOW)` and opens
+that child exactly once as `TX_FD` with the exact `openat2` flags and resolve
+policy defined above. The opened/captured identities must match and have the same
+device as `PARENT_FD`, a new inode, effective-UID/effective-GID ownership,
+mode `0700`, link count two before subdirectory creation, and no group/world
+access. The runtime-selected suffix is evidence but never an input to a hash,
+receipt, or acceptance decision.
+
+The following source/build/evidence names are exact relative to `TX_FD`; no
+rejected `tsdc-4am-*` pathname is opened, patched, removed, or executed:
+
+- `src/tsdc-4an-support.h` and `src/tsdc-4an-support.c`: bounded I/O, SHA256,
+  Git-blob hashing, exact grammar, descriptor, deadline, and subprocess
+  primitives shared by all binaries;
+- `src/tsdc-4an-object-store.h` and `src/tsdc-4an-object-store.c`: bounded
+  canonical loose-blob encoding/inflation, SHA-1/SHA256, create-no-replace,
+  descriptor reproof, and file/fanout/object-directory durability primitives;
+- `src/tsdc-4an-controller.c`: the sole host-side acceptance state machine,
+  fixed controller request/FD interface, launcher and builder child ownership,
+  bounded capture, config/alternates watches, production gate, object
+  materialization, receipt-last decision, and no-retry classification;
+- `src/tsdc-4an-inventory-core.h` and
+  `src/tsdc-4an-inventory-core.c`: the sole deterministic inventory parser,
+  partition verifier, and renderer core linked byte-identically into builder
+  and launcher;
+- `src/tsdc-4an-inventory-builder.c`: the thin production/fake request and FD
+  entry point over that core; it writes only through two pre-opened payload FDs
+  and owns neither Git nor publication;
+- `src/tsdc-4an-containment-launcher.c`: the only namespace/root constructor;
+  it owns ELF verification, namespace construction, root pivot, descriptor
+  closure, Landlock, seccomp, preflight, and same-image harness activation;
+- `src/tsdc-4an-adversarial-harness.c`: the closed case-manifest executor and
+  one-PASS-per-case ledger producer, linked into the containment launcher and
+  never emitted or executed as a separate ELF;
+- `src/tsdc-4an-fake-git.c`: the only Git executable present in the sandbox;
+- `manifests/tsdc-4an-cases.jsonl`: exact bytes copied from the paired Task's
+  `TSDC-4AN-CASE-MANIFEST` block after a byte-for-byte extraction proof. The
+  asset is the ordered concatenation of only the JSON object lines between the
+  markers, each including one LF; comments and code fences are excluded;
+- `manifests/tsdc-4an-policy.txt`: exact architecture, Landlock rights,
+  seccomp allowlist, namespace, mount, descriptor, signal, rlimit, personality,
+  argv, and timeout policy;
+- `manifests/tsdc-4an-bootstrap.env`: the empty bootstrap environment, zero
+  bytes, SHA256
+  `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`;
+- `manifests/tsdc-4an-harness.env`: NUL-delimited ordered bytes
+  `HOME=/nonexistent`, `LANG=C`, `LC_ALL=C`, `TMPDIR=/work/tmp`, `TZ=UTC`,
+  each followed by NUL, total `58` bytes, SHA256
+  `cb082fead837d5d1c9fcfefd74c100c743853d91711202b9df5117d1b749204c`;
+- `manifests/tsdc-4an-runtime.txt`: exact runtime destination, blob/SHA256,
+  byte count, mode, and source descriptor slot for the linked harness/inventory-core
+  translation-unit identities, fake-Git ELF, case/environment/policy manifests,
+  the four launcher-only production-denial probe strings, plus the complete
+  canonical fixture-byte/link/mode construction map. The bootstrap manifest is
+  consumed and zeroized rather than copied into `/runtime`; no
+  separate fixture input, harness ELF, or sandbox builder ELF exists;
+- `manifests/tsdc-4an-git-view.txt`: exact private control-directory tree,
+  descriptor slots, Git argv/envp, configuration/alternate watches, bounded
+  reader commands, object-format requirement, materializer policy, and the
+  exact canonical production worktree, historical P_AN Task, common Git,
+  object-directory, and `/usr/bin/git` open/probe strings. The controller may
+  use those host strings only after `HARNESS_ACCEPTED`; the launcher may use
+  the four denial-probe strings only before zeroizing them and activating the
+  same-image harness;
+- `evidence/tsdc-4an-controller-request.txt`: one create-only dynamic entry
+  envelope rendered only after both source reports return. It uses the exact
+  controller-request grammar and names all P_AN/E_AN/Task/package/build/
+  manifest/binary/source-review identities admitted at the execution gate.
+  It is excluded from the source package and both source-review inputs, is
+  treated as untrusted by the controller, and becomes evidence only after the
+  controller rederives every field from its pinned descriptors;
+- `build-a/` and `build-b/`: independent reproducible-build destinations;
+- `evidence/tsdc-4an-build-receipt.txt`: toolchain closure, two-build
+  correspondence, ELF policy, and source-to-binary proof;
+- `evidence/tsdc-4an-source-package.txt`: immutable isolated-object identities
+  supplied to both source reviewers;
+- `evidence/tsdc-4an-asset-review-package.txt`: immutable receipt-bound input
+  set supplied identically to both final asset reviewers;
+- `evidence/tsdc-4an-production-run.txt`: the non-self-referential final
+  controller receipt for Git-view identity, invocation counts, payload and
+  pair-receipt object state/durability, config/alternates watch state, and
+  `completion=COMPLETE`;
+- `tsdc-4an-projection-inventory.jsonl`,
+  `tsdc-4an-projection-preimage.txt`, and
+  `tsdc-4an-pair-receipt.txt`: exact names relative only to a separate
+  unpredictable mode-`0700` `OUT_FD` created beneath `PARENT_FD` for the one
+  production attempt. These three names are not relative to `TX_FD` and never
+  exist directly beneath shared `/tmp`.
+
+The four binaries are self-contained static PIE ELF objects for exact
+`x86_64-linux-gnu`: `tsdc-4an-controller`, `tsdc-4an-inventory-builder`,
+`tsdc-4an-containment-launcher`, and `tsdc-4an-fake-git`. The launcher binary
+contains the separately named harness translation unit. The source package
+also binds absolute `/usr/bin/cc`, the
+actual linker and startup/static archive closure reported by that compiler,
+absolute `/usr/bin/git`, and every build input by descriptor identity,
+SHA256, byte count, mode, and computed Git blob OID. Tool lookup through
+`PATH`, package installation, network fetch, and build fallback are forbidden.
+
+The controller's start contract is exact: argv is the one-entry vector
+`tsdc-4an-controller`, envp has zero entries, cwd is `/`, umask is `0077`, the
+signal mask is empty, and all catchable dispositions are default. After an
+outer descriptor-bound sealed-memfd direct exec, its inherited FD map is: `0`
+read-only null, `1` bounded canonical result, `2` bounded diagnostic, `3`
+controller request, `4` exact P_AN Task blob, `5` source package, `6` build
+receipt, `7` case manifest, `8` policy, `9` runtime, `10` bootstrap env, `11`
+harness env, `12` controller ELF self descriptor, `13` launcher ELF, `14`
+builder ELF, `15` fake-Git ELF, `16` source specification report, `17` source
+quality/security report, `18` PARENT_FD, `19` TX_FD, `20` exact E_AN Task
+blob, `21` Git-view manifest, and `22` one controller-side
+`SOCK_SEQPACKET|SOCK_CLOEXEC` final-review transfer endpoint whose peer remains
+with the governance orchestrator. FD `23` and above are closed/unshared before
+controller code proceeds. Before child creation the orchestrator copies each
+data input in FDs `3` through `11`, `16`, `17`, `20`, and `21` into its own
+`MFD_ALLOW_SEALING|MFD_CLOEXEC|MFD_NOEXEC_SEAL` memfd, applies and verifies
+write/grow/shrink/seal plus execute-denial seals, and maps only the read-only
+copies. It copies each executable in FDs `12` through `15` into a distinct
+`MFD_ALLOW_SEALING|MFD_CLOEXEC|MFD_EXEC` memfd with the four
+write/grow/shrink/seal seals and no execute-denial seal. The controller rereads
+and rehashes every sealed FD before use; `PARENT_FD`, `TX_FD`, and FD `22` are
+the only non-memfd inputs. Missing kernel seal support is a hard pre-start
+failure with no regular-file fallback. The
+controller-request schema `tsdc-4an-controller-request/v1` has unique ordered
+LF fields `schema`, `pan_commit`, `pan_task_blob`, `ean_commit`,
+`ean_task_blob`, `source_package_blob`,
+`build_receipt_blob`, the four binary blob/SHA256/byte tuples, six input-manifest
+blob/SHA256/byte tuples, two source-review blob/assignment/verdict tuples,
+`completion=REQUEST`, and final `request_sha256`. Unknown, missing, duplicate,
+out-of-order, mutable, or mismatched input fails before any child or production
+descriptor is opened. The request is never a source-package child and never
+vouches for itself: the controller recomputes every tuple from FDs `4` through
+`21`, exact branch topology, and the two canonical source reports before using
+it as an execution gate.
+
+Controller input caps are exact and checked before allocation: request
+`65536` bytes; each P_AN/E_AN Task `2097152`; source package, build receipt,
+and runtime manifest `16777216` each; case, policy, and Git-view manifests
+`1048576` each; bootstrap environment zero; harness environment exactly `58`;
+each executable `33554432`; and each source report `262144`. Every streamed
+count uses checked unsigned 64-bit arithmetic. Exceeding a cap, arithmetic
+overflow, short/extra byte, or trailing data stops before child or production
+access.
+
+The controller state machine is exactly `INIT -> INPUTS_BOUND ->
+HARNESS_STARTED -> HARNESS_REAP_STARTED -> HARNESS_REAPED -> HARNESS_ACCEPTED
+-> PRODUCTION_INPUTS_BOUND -> OUT_CREATED -> BUILDER_STARTED ->
+BUILDER_REAP_STARTED -> BUILDER_REAPED -> PAIR_ACCEPTED ->
+REVIEW_PACKAGE_FROZEN -> ASSET_REVIEWS_PENDING -> ASSET_REPORTS_BOUND ->
+COMPLETE` on the accepted path.
+`*_STARTED` is recorded before the child-creation syscall and
+`*_REAP_STARTED` before the sole bounded wait. Ambiguous return, lost child,
+or lost output never retries. Before `HARNESS_ACCEPTED`, the controller may not
+open the production common Git directory, object directory, Git executable,
+configuration, alternates surface, or `OUT_FD`.
+
+After `REVIEW_PACKAGE_FROZEN`, the controller makes no further change to any
+review input and emits one canonical `ASSET_REVIEW_READY` identity envelope.
+It remains alive while the two final reviewers consume that exact object set.
+Only in `ASSET_REVIEWS_PENDING` may FD `22` receive exactly two ordered
+messages, asset specification then asset quality/security. Each message has
+zero inline payload and exactly one `SCM_RIGHTS` descriptor for a read-only
+memfd sealed with `F_SEAL_WRITE|F_SEAL_GROW|F_SEAL_SHRINK|F_SEAL_SEAL`; the
+orchestrator copies exactly the returned canonical reviewer bytes into that
+memfd and cannot submit a pathname. The controller caps each report at
+`262144` bytes, rereads it once, verifies seals, canonical schema, reserved and
+pairwise-distinct assignment, complete reviewed identities, verdict, findings,
+and digest, then materializes those exact bytes once in the isolated object
+store. Before the first message it also requires FD-`22` `SO_PEERCRED` to equal
+the exact orchestrator PID/effective-UID/effective-GID tuple captured at
+controller creation; peer or credential drift is fatal. Missing, duplicate,
+reordered, extra-descriptor, malformed, unsealed,
+oversized, identity-mismatched, non-`C0/I0/M0`, or non-affirmative reports, or
+failure to receive both within the fixed `1800`-second monotonic review window,
+is a classified non-accepting terminal with no resubmission or controller
+restart. FD `22` is never inherited by launcher, builder, or Git children and
+is closed immediately after the second accepted report.
+
+Controller stdout is a two-frame canonical protocol capped at `16384` bytes;
+accepted execution emits exactly
+`ASSET_REVIEW_READY <review_package_blob> <review_package_sha256>\n`, then
+`CONTROLLER_STATUS PASS <run_sha256> <asset_spec_blob> <asset_qs_blob>\n` only
+after both reports are accepted. A pre-ready or post-ready failure emits no
+PASS frame and at most one bounded
+`CONTROLLER_STATUS FAIL <fixed_code> <evidence_sha256>\n`; the orchestrator
+still reaps the same controller and never restarts it. Controller stderr is
+capped at `4096` bytes and acceptance requires zero bytes. Unknown, duplicate,
+out-of-order, trailing, oversized, or post-PASS output is non-accepting.
+
+The builder's exact argv is the one-entry vector
+`tsdc-4an-inventory-builder`; envp has zero entries. Its inherited map is `0`
+bounded request input, `1` canonical result output, `2` bounded diagnostic,
+`3` sealed exact Task-or-fixture input, `4` pre-created inventory output, and
+`5` pre-created preimage output; FD `6` and above are closed. The unique-key LF
+request grammar `tsdc-4an-builder-request/v1` contains ordered fields `schema`,
+`mode` (`FAKE` or `PRODUCTION`), `case_id`, `input_oid`, `input_type=blob`,
+`input_sha256`, `input_bytes`, `object_format=sha1`,
+`discovery_rules_sha256`, `completion=REQUEST`, and `request_sha256`;
+`completion=REQUEST` is penultimate, and the request is capped at
+`4096` bytes. This request is the only mode
+selector. The builder never invokes Git and never receives a repository,
+worktree, parent, transaction, or output-directory pathname/FD. The controller
+owns production Git reads and object publication; the harness exercises the
+same bounded-reader primitives against the reviewed fake Git. No interface
+accepts a mutable Task pathname.
+
+For the sole production invocation, the controller copies and reproves the
+reviewed builder ELF into a fully sealed executable memfd, records
+`BUILDER_STARTED` before exactly one
+`clone3(flags=CLONE_PIDFD, exit_signal=SIGCHLD)` with all other fields zero,
+and lets only that child map FDs `0` through `5`, close the rest, and
+`execveat(..., AT_EMPTY_PATH)`. The controller retains the pidfd and output
+FDs, records `BUILDER_REAP_STARTED` before its only bounded wait, and never
+substitutes an in-process or pathname execution.
+
+The production pair receipt schema is exactly
+`tsdc-4an-pair-receipt/v1`. Unique ordered fields are `schema`,
+`pan_task_blob`, `execution_gate_commit`, `execution_gate_task_blob`,
+`controller_blob`, `controller_sha256`, `controller_bytes`,
+`builder_blob`, `builder_sha256`, `builder_bytes`,
+`inventory_blob`, `inventory_sha256`, `inventory_bytes`, `preimage_blob`,
+`preimage_sha256`, `preimage_bytes`, `case_manifest_blob`,
+`source_package_blob`, `git_view_manifest_blob`,
+`git_view_manifest_sha256`, `payload_durability_sha256`,
+`harness_ledger_sha256`, `completion`, and
+`receipt_sha256`; `completion=COMPLETE` is the penultimate field and the final
+field hashes the canonical preceding bytes. No pathname, transaction suffix,
+timestamp, process ID, locale-dependent value, or self-referential receipt Git
+OID occurs in the receipt.
+
+`payload_durability_sha256` binds only the inventory and preimage object-state
+and durability records, never the pair receipt's own future object state. After
+the receipt object is durably reproved, the controller writes the separate
+`tsdc-4an-production-run/v1` evidence with ordered identities for exact E_AN,
+controller, the rederived controller request, both accepted source reports,
+Git view, watches, one harness activation, complete two-level
+supervisor/namespace-init reap, one builder invocation, both
+payloads, the pair receipt, all three object states/durability tiers, and
+`completion=COMPLETE`; its final `run_sha256` hashes preceding bytes. That run
+receipt is stored only in the isolated review object store and is not a field
+of the pair receipt, avoiding either self-reference.
+
+Before entering `REVIEW_PACKAGE_FROZEN`, the controller performs the final
+config/alternates drain and object/durability reproof, copies only canonical
+identity evidence into the isolated review store, and closes every production
+Git executable, control/config, Task, object-directory, watch, payload,
+receipt, and `OUT_FD` capability. It then reproves that none remains. During
+the final-review wait it retains only its sealed self/input identities, the
+isolated `TX_FD` evidence capability, bounded result/diagnostic channels, the
+controller pid state, and FD `22`; a production capability surviving the
+transition is non-accepting.
+
+The frozen final-review package schema is
+`tsdc-4an-asset-review-package/v1`. Its unique ordered LF fields bind exact
+P_AN/E_AN topology, controller request, source package/build receipt, six input
+manifests, four binaries, two source reports, containment preflight and worker
+table, complete harness ledger, production-run receipt, inventory, preimage,
+pair receipt, loose-object/durability states, review-role constraints,
+`completion=REVIEW_READY`, and final `package_sha256`. It contains neither its
+own future Git OID nor either final report. The controller materializes this
+package once, reopens it by exact object identity, and only then emits the
+ready frame; both final reviewers bind the ready-frame blob and SHA256.
+
+The isolated source-package schema is exactly
+`tsdc-4an-source-package/v1`. Its canonical unique-key LF grammar binds exact
+P_AN commit/Task blob and E_AN commit/Task blob OIDs resolved after their
+respective publications, object format,
+branch, every source, the exact six immutable input manifests, and every
+four-binary blob-SHA256-byte-mode tuple, compiler, linker,
+startup/static-archive closure, build receipt, case manifest,
+bootstrap/harness environments, runtime/policy manifests, fixed bounds, four
+source/final-asset review-role names, the already accepted `AN_GATE_VERIFY`
+identity, the reserved `AN_TERMINAL_VERIFY` role name, the implementation
+assignment, the exact forbidden-identity sets and pairwise-distinctness rules,
+and the complete
+prohibited-authority tuple. It
+contains no mutable pathname or self-asserted P_AN value from the P_AN tree.
+The dynamic controller request and all source/final review reports are
+deliberately excluded: reports bind this already-frozen package, while the
+later untrusted request binds the returned source reports. This directed
+dependency order forbids a package/request/report hash cycle.
+Actual source-review assignments are bound later by their reports and the
+dynamic request; actual final-review and terminal-verifier assignments are
+bound by their own later evidence. Each is checked against the frozen role and
+forbidden-identity rules before it can grant authority.
+
+The containment launcher receives exactly these inherited descriptors after
+the reviewed controller maps them with `dup3`: stdin `0` as read-only null,
+stdout `1` as the bounded ledger pipe, stderr `2` as the bounded diagnostic
+pipe, runtime manifest `3`, fake-Git ELF `4`, case manifest `5`, policy
+manifest `6`, harness environment manifest `7`, and one controller-created
+`SOCK_SEQPACKET|SOCK_CLOEXEC` supervisor-control endpoint `8`.
+No other descriptor is admitted. Bootstrap argv contains exactly one entry,
+`tsdc-4an-containment-launcher`, and bootstrap envp contains zero entries.
+Before harness activation the launcher has copied and reproved every runtime input,
+then writes the accepted production-denial witness into one non-executable
+memfd capped at `4096` bytes, verifies the exact grammar and digest, and seals
+it with `F_SEAL_WRITE|F_SEAL_GROW|F_SEAL_SHRINK|F_SEAL_SEAL`. It maps that
+read-only sealed proof to harness FD `3`, maps the already-proved worker
+pipe/pidfd table contiguously at FDs `4` through `16G+3`, then
+closes/unshares every higher descriptor. The linked harness entry receives the logical
+one-entry argv `tsdc-4an-adversarial-harness` and the exact 58-byte environment
+manifest through explicit arguments; it never consults inherited `environ`.
+The harness validates FD `3` identity, size, seals, grammar, P_AN Task
+binding, and digest, caches only its exact AN-C015 proof hash, ordered
+AN-C017–AN-C020 sacrificial-denial digest, AN-C036 evidence seed, and AN-C037
+evidence hash, and closes it before emitting any case line.
+It also verifies every four-FD worker tuple against the exact case ordinal,
+request/response/diagnostic pipe direction and inode, pidfd/PID, and preflight
+identity set. Each git-reader case consumes its four one-shot workers in exact
+negative-metadata, negative-content, positive-metadata, positive-content order,
+enforces the declared timeout/overflow/kill/reap behavior, validates the typed
+byte-stream and diagnostic transcript, closes all twelve harness-side pipe
+descriptors, and reaps all four pidfds before advancing. After the last case no
+worker pipe, pidfd, or fake worker remains open/live.
+
+The sealed proof schema is `tsdc-4an-preflight-proof/v1` with unique ordered LF
+fields `schema`, `pan_task_blob`, `execution_gate_commit`,
+`execution_gate_task_blob`, `case_id=AN-C015`, `probe_count=4`, four
+ordered role-specific denial-code/errno fields for worktree, Task, common Git,
+and object store, `containment_case_count=4`,
+`containment_denials_sha256`, `privilege_case_id=AN-C036`,
+`privilege_case_seed_sha256`,
+`process_case_id=AN-C037`, `process_case_sha256`, `policy_sha256`,
+`production_path_denials_sha256`,
+`status=PASS`, and final `proof_sha256`. It contains no production pathname
+bytes. `AN-C015` emits its one ledger PASS only after observing this sealed
+proof, rejecting a generic fake-root negative witness without the boundary,
+and accepting the `/work` positive witness. Its evidence digest is SHA256 of
+the NUL-delimited tuple `AN-C015`, preflight-proof SHA256, negative-witness
+SHA256, and positive-witness SHA256, including a final NUL. The controller
+cross-checks that proof digest against the launcher's stdout preflight receipt
+and the harness ledger; either channel alone is non-accepting.
+
+For each of `AN-C017` through `AN-C020`, the harness derives the sole case
+evidence digest from the NUL-delimited case ID, assigned syscall/family,
+compiled-policy SHA256, sacrificial PID/pidfd identity, exact SIGSYS status,
+sole-reap proof, and ordered `containment_denials_sha256`, including a final
+NUL. It never performs the killing syscall in the long-lived harness process.
+
+Before reading FD `3` or any case/runtime manifest, the harness entry reproves
+UID/GID/supplementary mapping, all capability sets and
+bounding/ambient bits, locked securebits, dumpability zero, no-new-privs one,
+and every rlimit. It emits exactly one bounded line
+`POSTDROP_PRIVILEGE PASS <evidence_sha256>` before the case ledger; its digest
+binds the sealed preflight privilege fields and the same-image post-drop
+observations.
+This line and the corresponding `AN-C036` case are both required, but the
+controller still permits only one `PASS AN-C036 ...` case line. That case
+digest is SHA256 of the NUL-delimited AN-C036 seed and POSTDROP digest, with a
+final NUL. Missing,
+late, duplicate, or mismatched post-drop privilege evidence stops the harness
+before any fake Git or filesystem case.
+
+#### P_AN closed policy and acceptance outputs
+
+The policy manifest requires Landlock ABI at least 3 and handles exactly
+`EXECUTE`, `READ_FILE`, `READ_DIR`, `WRITE_FILE`, `REMOVE_DIR`, `REMOVE_FILE`,
+`MAKE_CHAR`, `MAKE_DIR`, `MAKE_REG`, `MAKE_SOCK`, `MAKE_FIFO`, `MAKE_BLOCK`,
+`MAKE_SYM`, `REFER`, and `TRUNCATE`. Rules grant `EXECUTE`, `READ_FILE`, and
+`READ_DIR` only under `/runtime`. Rules for `/work` grant `READ_FILE`,
+`READ_DIR`, `WRITE_FILE`, `REMOVE_DIR`, `REMOVE_FILE`, `MAKE_DIR`, `MAKE_REG`,
+`REFER`, and `TRUNCATE`; they do not grant device, FIFO, socket, symlink, host,
+network, or old-root creation/access. Absence of the requested ABI or right is
+a hard failure, not a best-effort downgrade.
+
+The same policy fixes monotonic bounds rather than implementation defaults:
+each Git metadata stdout is at most `256` bytes, each Git content stdout is
+exactly the frozen object length with an `expected+1` overflow sentinel, every
+Git stderr is capped at `4096` bytes, and every Git child deadline is `10`
+seconds. Launcher/harness stdout is capped at `131072` bytes, each ledger line
+at `256` bytes, launcher/harness stderr at `4096` bytes but acceptance requires
+zero bytes, and the whole harness deadline is `60` seconds. Production-builder
+stdout is capped at `16384` bytes, stderr at `4096` bytes but acceptance
+requires zero bytes, and its deadline is `60` seconds. Compiler stdout/stderr
+are each capped at `4096` bytes, acceptance requires both empty, and each build
+deadline is `60` seconds. All overflow/timeout paths kill and reap the exact
+child and never continue from partial output.
+
+Post-pivot state fixes cwd `/`, umask `0077`, an empty signal mask, default
+disposition for every catchable signal, personality `PER_LINUX` with
+`READ_IMPLIES_EXEC` and `ADDR_NO_RANDOMIZE` absent, and exact rlimits:
+`RLIMIT_CORE=0`, `RLIMIT_CPU=30`, `RLIMIT_FSIZE=16777216`,
+`RLIMIT_NOFILE=16G+16` (exact `224` for `G=13`),
+`RLIMIT_NPROC=4G+4` (exact `56`), `RLIMIT_STACK=8388608`, and
+`RLIMIT_AS=268435456`, each with equal soft and hard values. The closed mount
+set is the tmpfs `/` plus a
+bind-remounted read-only `/runtime`; `/work` is the only writable directory in
+the tmpfs root. No `/proc`, `/sys`, `/dev`, host bind, or additional mount is
+present and the new network namespace has no route or enabled interface.
+
+The seccomp filter first rejects a non-`AUDIT_ARCH_X86_64` architecture and
+then defaults to process-killing denial. Its only admitted syscall names are:
+`read`, `write`, `readv`, `writev`, `close`, `lseek`, `pread64`, `pwrite64`,
+`fstat`, `newfstatat`, `statx`, `fcntl`, `openat`, `openat2`,
+`mkdirat`, `unlinkat`, `renameat2`, `fchmod`, `fchmodat2`, `fsync`,
+`fdatasync`, `getdents64`, `inotify_init1`, `inotify_add_watch`,
+`inotify_rm_watch`, `wait4`, `waitid`,
+`pidfd_send_signal`, `poll`, `ppoll`, `clock_gettime`, `nanosleep`, `mmap`,
+`mprotect`, `munmap`, `mremap`, `brk`, `madvise`, `futex`, `set_tid_address`,
+`set_robust_list`, `rseq`, `arch_prctl`, `prlimit64`, `getrandom`, `getpid`,
+`getppid`, `gettid`, `getuid`, `geteuid`, `getgid`, `getegid`, `getresuid`,
+`getresgid`, `getgroups`, `capget`, `prctl`,
+`rt_sigaction`, `rt_sigprocmask`, `rt_sigreturn`, `sigaltstack`, `exit`,
+`exit_group`, and `uname`. Neither `clone` nor `clone3` is admitted after the
+predeclared fake-Git and sacrificial children are created; each of the five
+sacrificial children must therefore die on its one role-bound post-filter
+attempt.
+`mmap` and `mprotect`
+reject every request containing `PROT_EXEC`. `prctl` is argument-filtered to
+`PR_SET_DUMPABLE` with value zero and read-only `PR_GET_DUMPABLE`,
+`PR_GET_NO_NEW_PRIVS`, `PR_GET_SECUREBITS`, `PR_CAPBSET_READ`, and
+`PR_CAP_AMBIENT_IS_SET`; every other option or nonzero unused argument is
+killed. `fcntl` is argument-filtered to `F_GET_SEALS` on sealed proof FD `3`
+and `F_GETFD`/`F_GETFL` on the manifest-bound descriptor range; duplication,
+flag mutation, ownership, lease, notification, and every other command is
+killed. `pidfd_send_signal` admits only `SIGTERM` or `SIGKILL`, a null siginfo,
+zero flags, and a pidfd in the manifest-bound worker table. `prlimit64` is
+admitted only for `pid=0`, one of the exact policy
+resources, `new_limit=NULL`, and a non-null old-limit output; it cannot modify
+any limit. `inotify_init1` admits only `IN_NONBLOCK|IN_CLOEXEC`; source and
+runtime checks constrain add/remove operations to the exact fake `/work` watch
+set and closed event mask. Source review must remove any
+syscall not reached by the frozen binaries; adding an unlisted syscall after
+source review changes the policy identity and invalidates both reviews.
+Sockets, mounts, namespace
+changes, `setns`, `chroot`, `pivot_root`, file handles, ptrace,
+process-memory access, keyrings, BPF, performance events, `io_uring`, and every
+other unlisted syscall remain denied after containment.
+
+Before installing the final seccomp filter, the launcher uses `clone3` with
+`flags=CLONE_NEWUSER|CLONE_NEWNS|CLONE_NEWPID|CLONE_NEWIPC|CLONE_NEWUTS|
+CLONE_NEWNET|CLONE_PIDFD` and `exit_signal=SIGCHLD`; all other `clone_args`
+fields are zero. The returned pidfd and PID identify the same child. The
+parent opens and rechecks one `/proc/<pid>` directory identity, writes exact
+`deny` to `setgroups`, then the one-line GID map, then the one-line UID map,
+and the child does not continue until those writes, read-backs, and descriptor
+identities pass. It converts
+mount propagation to `MS_REC|MS_PRIVATE`, mounts the new `nodev,nosuid` tmpfs
+root, installs individually pinned runtime files, remounts `/runtime`
+read-only, keeps `/work` as the sole writable subtree, performs `pivot_root`,
+changes to `/`, detaches and removes the old root, fixes umask `0077`, resets
+all signal dispositions and mask, fixes reviewed rlimits and personality,
+consumes and closes the runtime inputs, maps only the sealed proof and exact
+worker pipe/pidfd table to FDs `3` through `16G+3`, and uses the
+overflow-checked equivalent of
+`close_range(16G+4, UINT_MAX, CLOSE_RANGE_UNSHARE)`. It then reproves exactly
+FDs `0` through `16G+3` against the manifest-derived table. `ENOSYS`, `EINVAL`,
+or any partial primitive
+is failure;
+there is no `/proc/self/fd` or weaker fallback. It then sets
+`PR_SET_NO_NEW_PRIVS`, installs Landlock, installs seccomp, and directly calls
+the linked static harness entry without an intervening exec or loader.
+
+The pre-namespace launcher branch is a bounded trusted supervisor, not a
+harness process. Immediately after successful namespace `clone3`, it sends the
+returned inner-PID-namespace-init pidfd and exact outer PID once to the
+controller over FD `8` with `SCM_RIGHTS`; the controller verifies the pidfd/PID
+pair before allowing the child barrier to open. The supervisor then closes all
+runtime and ledger descriptors, retains only its inner pidfd and control
+endpoint, writes/maps the child's IDs through the pinned `/proc/<pid>`
+descriptor, and performs one bounded wait. The sandbox child closes FD `8`
+before root construction. On timeout, signal, supervisor loss, or controller
+cancellation, the controller signals the inner PID-namespace init directly by
+pidfd, then the supervisor, and reaps both; killing namespace PID 1 terminates
+all remaining sandbox descendants. A missing/duplicate pidfd transfer,
+credential mismatch, pidfd/PID mismatch, lost supervisor, or incomplete
+two-level reap is non-accepting and never leaves a fake worker running.
+
+The trusted controller copies the exact reviewed static containment ELF into
+an executable memfd created with
+`MFD_ALLOW_SEALING|MFD_CLOEXEC|MFD_EXEC`. It never sets
+`MFD_NOEXEC_SEAL` or `F_SEAL_EXEC` on that executable object. After a complete
+write it adds and verifies `F_SEAL_WRITE|F_SEAL_GROW|F_SEAL_SHRINK|
+F_SEAL_SEAL`, rereads and rehashes the bytes, and creates exactly one launcher
+child with `clone3(flags=CLONE_PIDFD, exit_signal=SIGCHLD)` and all other
+fields zero. `HARNESS_STARTED` is durable before that syscall. The child maps
+only launcher FDs `0` through `8`, closes everything else, and invokes only
+`execveat(memfd, "", argv, envp, AT_EMPTY_PATH)`; the controller retains the
+returned pidfd, drains bounded pipes, and remains the sole acceptance owner.
+A shebang, `PT_INTERP`,
+external `DT_NEEDED`, `RPATH`/`RUNPATH`, wrong class/data/machine/type, malformed
+or out-of-range program header, W+X `PT_LOAD`, or executable `PT_GNU_STACK`
+is rejected by a bounded parser before the memfd is executed. `ldd` is never
+used as authority.
+
+The launcher emits one canonical LF-delimited preflight receipt to stdout
+before same-image harness activation. Required unique fields are `schema`,
+`pan_task_blob`, `execution_gate_commit`, `execution_gate_task_blob`,
+`launcher_blob`, `policy_blob`, `runtime_manifest_blob`, `bootstrap_env_sha256`,
+`harness_env_sha256`, `namespace_proof`, `old_root_detached`, `mount_set`,
+`fd_set`, `uid_map_sha256`, `gid_map_sha256`, `setgroups_state`,
+`credential_state`, `supplementary_group_state`, `capability_sets`,
+`bounding_set`, `ambient_set`, `securebits`, `dumpable`, `rlimit_state`,
+`worker_pool_state`, `worker_table_sha256`, `sacrificial_count=5`,
+`sacrificial_denials_sha256`, `process_creation_proof`,
+`pid_namespace_pid`, `trace_guard_state`, `landlock_abi`,
+`seccomp_arch`, `no_new_privs`, `network_state`, `supervisor_state`,
+`inner_pidfd_state`, `process_state`,
+`production_path_denials_sha256`, `sealed_proof_sha256`, `status`, and
+`preflight_sha256`. `status=PASS` is penultimate and `preflight_sha256` is the
+SHA256 of every preceding canonical byte, including the status LF. The
+controller rejects unknown, missing, duplicate, oversized, or
+out-of-order fields. Harness ledger lines then use exactly
+`PASS <case_id> <evidence_sha256>` in ascending case-manifest order. One final
+`HARNESS_STATUS PASS` is accepted only after the exact case-set bijection;
+process exit alone never grants production authority.
+
+#### AN-1 — Publish and rebind P_AN
+
+**Files:**
+
+- Modify:
+  `docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md`
+- Modify:
+  `docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md`
+
+- [ ] Prove HEAD is exact S_AN, the two canonical paths are the only changed
+  tracked paths, base and candidate modes are `100644`, and `git ls-files -v`
+  plus `git ls-files -f` both report ordinary entries.
+- [ ] Freeze candidate Plan/Task SHA256, byte counts, Git blob OIDs, and binary
+  `S_AN..P_AN` diff SHA256/bytes. Obtain fresh read-only specification and
+  quality/security Plan reviews over those exact bytes; both must return
+  `C0/I0/M0`, affirmative compliance/security, and `PLAN_COMMIT_READY YES`.
+- [ ] Publish exactly one raw single-parent P_AN commit without repository
+  hooks. Expected-old ref CAS names exact S_AN and the subject is exact.
+- [ ] Re-resolve P_AN by full parent, distance one, exact unique subject, raw
+  commit, tree, both path modes/blobs, and clean branch/index/worktree proof.
+  Record the exact P_AN OID outside its own tree. Stop for explicit user review;
+  AN-2A has no authority before that approval and the E_AN checkpoint below.
+
+**Planning-only verification commands:**
+
+```text
+git diff --check
+git diff --name-only bac234abf9e1e320d2311b8a8f448afe0a6cbac1 --
+git ls-files -s -- docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
+git log --format=%H%x00%P%x00%s --all --fixed-strings --grep='docs(plan): define secure occurrence-bound inventory proof'
+```
+
+Expected before publication: `git diff --check` is silent; the changed-path
+command prints exactly the Plan then Task paths; both index modes are `100644`;
+the exact P_AN subject count is zero. Expected after publication: the subject
+count is one, its sole parent is exact S_AN, and the worktree is clean.
+
+#### AN-1E — Publish the Task-only execution gate E_AN
+
+- [ ] The P_AN tree intentionally asserts neither its own post-publication OID,
+  corrected Plan-review outcome, user execution decision, nor any AN-2
+  start/result. Those facts are external and non-authoritative until E_AN.
+- [ ] After the user explicitly approves AN-2 execution, render one Task-only
+  successor whose parent is exact P_AN, whose Plan blob/mode equals P_AN, and
+  whose exact subject is
+  `docs(task): record secure inventory Plan approval`. It records exact P_AN
+  OID/Plan/Task/diff identities, the two fresh corrected-P_AN reviewer
+  identities and `C0/I0/M0` verdicts, publication/rebinding proof, the user
+  decision, Subagent-Driven mode, and every asset/review as not started.
+- [ ] Assign fresh read-only `AN_GATE_VERIFY`, distinct from both corrected
+  P_AN reviewers and every reserved implementation/source/asset/terminal role.
+  It independently proves the E_AN candidate changes only the Task as mode
+  `100644`, contains no self OID, has exact parent P_AN and unique subject, and
+  preserves the Plan blob byte-for-byte. Publish/rebind it by expected-old CAS.
+  AN-2A begins only from exact E_AN. A missing/rejected approval, failed render,
+  review defect, CAS conflict, or rebind defect leaves AN-2 unauthorized.
+
+E_AN is an evidence gate, not implementation or asset evidence. It changes the
+current Task bytes, so every AN-2 inventory remains explicitly bound to the
+historical exact P_AN Task blob. Any future AN-3 design must rediscover and
+rebind the then-current R_AN Task rather than treating the P_AN inventory as a
+current-Task inventory.
+
+#### AN-2A — Author the closed cases before implementation
+
+- [ ] Assign one fresh implementation agent ownership of only the exact
+  transaction-relative source/manifests/build/evidence/output file map above.
+  The agent is distinct from the rejected 4AM implementer and every 4AM/4AN
+  reviewer and must not edit repository files.
+- [ ] Copy the exact paired-Task case block into
+  `manifests/tsdc-4an-cases.jsonl` and first implement the fake Git, fixtures,
+  negative controls, and harness oracles. Each case has one deliberate bad
+  witness that the oracle must reject and one corrected witness that must pass;
+  a case emits its single PASS only after both results are observed.
+- [ ] Negative controls never weaken the live containment. Filesystem, Git,
+  and partition controls use vulnerable fake implementations inside the fake
+  root. Containment controls use offline policy fixtures plus sacrificial
+  post-seccomp children whose forbidden syscall must be killed or denied; no
+  child receives a host namespace, mount, network, production-path, or extra-FD
+  capability. Canonical production path strings remain launcher-only and are
+  not copied into the runtime or case manifest; `AN-C015` binds the launcher's
+  sealed FD-`3` proof, controller cross-check, and generic fake-root path
+  witness. Privilege/process cases bind the launcher's zero-capability,
+  exact-worker-pool, no-clone, and derived-limit evidence. Positive controls
+  operate only on `/runtime` and
+  `/work`.
+- [ ] Author the two exact environment manifests, the policy/runtime manifests,
+  the controller-request encoder/parser and hostile grammar fixtures, the
+  controller, launcher, object-store/support libraries, and
+  an intentionally non-accepting builder stub before filling the production
+  builder behavior. Do not render the dynamic controller request before the
+  two source reports exist. Static source inspection
+  must show the fixed evidence-owner rule is total and disjoint: `AN-C015` is
+  joint; `AN-C017` through `AN-C020`, `AN-C036`, and `AN-C037` are
+  launcher-evidenced; and every other case is harness-evidenced. The harness
+  alone emits all ordered case lines after
+  verifying sealed launcher evidence. Every `domain=git-reader` row additionally
+  owns exactly its four predeclared negative-metadata, negative-content,
+  positive-metadata, and positive-content worker tuples, but its sole ledger PASS is
+  still emitted by the harness. Every harness-evidenced case is referenced once
+  by its implementation, launcher-evidenced cases are referenced once by the
+  preflight state machine and once by the verifier/emitter, and neither side
+  uses source-code self-discovery as its acceptance list.
+- [ ] Complete the smallest builder implementation that makes all manifest
+  cases pass without changing the case manifest or harness oracle. The builder
+  implements `tsdc-4an-projection-inventory/v2`, exact fragment partitioning,
+  occurrence/subspan bijection, AM-P043 historical preservation, and the exact
+  inventory/preimage grammar while reading and writing only its fixed FDs. The
+  controller and shared support code separately implement closed Git reads,
+  create-only output setup, object durability, and receipt-last publication.
+- [ ] Freeze the complete source/manifests in an isolated bare review object
+  store located inside the private transaction. That object store has no
+  alternates and is not the production common Git object store. Every source
+  object is addressed by full OID and its receipt also binds SHA256/bytes/mode.
+
+Expected RED evidence is structural and isolated: every deliberate bad witness
+maps to its declared reject domain, while the builder stub cannot produce
+`HARNESS_STATUS PASS`. No unreviewed harness process runs in AN-2A.
+
+#### AN-2B — Reproducibly build and freeze the static executable closure
+
+- [ ] Map `TX_FD` to descriptor 10 only for the build subprocess. Run absolute
+  `/usr/bin/cc` twice under `env -i`, `LC_ALL=C`, `LANG=C`, `TZ=UTC`, and the
+  same frozen sources with `-std=c17 -D_GNU_SOURCE -O2 -static-pie
+  -fstack-protector-strong -D_FORTIFY_SOURCE=3 -fno-strict-overflow
+  -fno-record-gcc-switches -Wdate-time -Werror=date-time
+  -ffile-prefix-map=/proc/self/fd/10=. -fmacro-prefix-map=/proc/self/fd/10=.
+  -Wl,--build-id=none,-z,noexecstack,-z,relro,-z,now`. Every compilation uses
+  exactly one translation-unit-specific argument:
+  `-frandom-seed=tsdc-4an-support`,
+  `-frandom-seed=tsdc-4an-object-store`,
+  `-frandom-seed=tsdc-4an-controller`,
+  `-frandom-seed=tsdc-4an-inventory-core`,
+  `-frandom-seed=tsdc-4an-inventory-builder`,
+  `-frandom-seed=tsdc-4an-containment-launcher`,
+  `-frandom-seed=tsdc-4an-adversarial-harness`, and
+  `-frandom-seed=tsdc-4an-fake-git`. The harness object links only into the
+  launcher. Within each build slot, the exact ordered final link inputs are:
+  controller = `controller.o support.o object-store.o -lz`; builder =
+  `inventory-builder.o inventory-core.o support.o -lz`; launcher =
+  `containment-launcher.o adversarial-harness.o inventory-core.o support.o
+  object-store.o -lz`;
+  and fake Git = `fake-git.o support.o -lz`. No object from build A may enter
+  build B or vice versa. The eight A/B objects and four A/B final binaries are
+  written independently to `build-a` and `build-b`. Each corresponding A/B argv differs
+  only in its build-slot output token, and both use exact
+  `SOURCE_DATE_EPOCH=0` in the otherwise closed environment. No shell lookup or
+  network/dependency command runs.
+- [ ] Before either build, run a separate bounded read-only toolchain discovery
+  phase under the same closed environment. Exact `/usr/bin/cc -dumpmachine`,
+  `-dumpfullversion -dumpversion`, and `-dumpspecs` calls have stdout caps
+  `256`, `256`, and `1048576` bytes and empty stderr; exact
+  `-print-prog-name=ld` plus `-print-file-name=` queries for `Scrt1.o`,
+  `crti.o`, `crtbeginS.o`, `crtendS.o`, `crtn.o`, `libgcc.a`, `libc.a`, and
+  `libz.a` each return one absolute LF-terminated path within `4096` bytes and
+  empty stderr. Separate `/usr/bin/cc -###` invocations cover all eight compile
+  argvs and four final link argvs, execute no compiler phase, require empty
+  stdout, cap stderr at `262144` bytes, and are parsed by the exact C-locale
+  quoted-token grammar recorded in the policy manifest. The lexer rejects a
+  response file, relative stage executable, `-specs`, `-B`, wrapper, plugin,
+  unknown stage, control byte, shell operator, substitution, or input/output
+  outside the frozen source/build slots. Expanded argvs may resolve only to
+  already queried compiler/assembler/linker/startup/archive descriptors.
+  Discovery output is evidence, never mixed with the actual-build empty-output
+  contract.
+- [ ] Open `/usr/bin/cc`, its resolved compiler executable, specs source when
+  present, linker, every startup object, and every static archive once with
+  no-follow regular-file checks. Record device/inode/owner/mode/SHA256/bytes
+  before discovery, after discovery, after build A, and after build B; any
+  change or path/descriptor divergence fails. The build receipt stores both
+  complete ordered sets of eight compile argvs and four link argvs plus their
+  env vectors, all eight explicit random seeds,
+  bounded discovery digests, and the exact descriptor closure.
+- [ ] Require exit zero, empty bounded stdout/stderr, and byte-identical A/B
+  corresponding objects and final binaries. Hash and Git-blob-ID every
+  toolchain/source/input/output descriptor;
+  record the exact compiler-expanded link argv and the startup/static archive
+  closure in the build receipt.
+- [ ] Parse each ELF with the launcher's bounded parser and require the exact
+  policy above. Corroborate with `/usr/bin/readelf -h -l -d -W` and
+  `/usr/bin/objdump -p`, but never execute `ldd`; advisory tool output cannot
+  override the bounded parser.
+- [ ] Add negative ELF fixtures for a shebang, `PT_INTERP`, dynamic dependency,
+  wrong architecture/class, truncated or overflowed program headers, W+X load
+  segment, and executable stack. The parser must reject every fixture before
+  any exec attempt.
+- [ ] Freeze binaries, build receipt, manifests, and source objects into the
+  isolated review object store. Any A/B mismatch, build diagnostic, ELF-policy
+  defect, toolchain drift, or receipt ambiguity stops without harness or
+  production execution.
+
+Expected GREEN build evidence is one deterministic receipt binding two equal
+builds of each binary and zero accepted negative ELF fixtures. It is not
+production-builder evidence.
+
+#### AN-2C — Obtain two fresh immutable source/executable/policy reviews
+
+- [ ] Assign fresh pairwise-distinct read-only identities `AN_SOURCE_SPEC` and
+  `AN_SOURCE_QS`; neither may equal the implementer, a rejected 4AM identity,
+  a S_AN design reviewer, or either future final-asset reviewer.
+- [ ] Both reviewers consume the same isolated source-package Git object and
+  its full-OID children, not mutable pathnames. They verify source/binary
+  correspondence for all eight translation units and four executables, exact
+  controller/launcher/builder
+  interfaces and state machine, exact cases, output/object-durability state
+  machine, bounded Git reader plus config/alternates race closure, exact v2 and
+  preimage grammar, partition proof, reproducible toolchain discovery and
+  seeds, ELF/memfd policy, namespace ordering, UID/GID maps, zero
+  capabilities/groups, locked securebits, dumpability/process limit,
+  exact `G=13` derivation, 52 four-role one-shot workers, five role-bound
+  sacrificial denials, peak `4G+6`, final `4G+4`/`16G+16` limits,
+  mount/pivot/old-root detachment, FD closure, exact environments, Landlock,
+  seccomp architecture/default denial, and no fallback.
+- [ ] Each report is canonical LF-delimited evidence stored in the isolated
+  review object store by the governance orchestrator with create-only semantics
+  only after the read-only reviewer returns it. It binds reviewer assignment,
+  source package OID, every reviewed child identity, verdict, readiness, and
+  findings. The orchestrator then renders the one dynamic controller request;
+  neither reports nor request are inserted into the source package. At
+  controller start, FDs `16` and `17` and the request are independently
+  rehashed, reparsed, and cross-bound before the controller stores its own
+  accepted report copies. Any reviewer file/object write, report mutation,
+  missing field, identity collision, request/package/report dependency cycle,
+  or verdict other than `C0/I0/M0` stops before launcher execution.
+
+#### AN-2D — Run the fake-only adversarial harness exactly once
+
+- [ ] The governance process opens the exact reviewed controller ELF once,
+  proves its source-package identity and bounded static-ELF policy, copies only
+  those bytes into `MFD_ALLOW_SEALING|MFD_CLOEXEC|MFD_EXEC`, applies and
+  verifies all four write/grow/shrink/seal seals, rereads/reproves the memfd,
+  precreates bounded stdout/stderr and the FD-`22` final-review socketpair, and
+  creates exactly one controller child with
+  `clone3(flags=CLONE_PIDFD, exit_signal=SIGCHLD)` and all other fields zero.
+  Only that child installs the exact controller FD map and performs one
+  `execveat(..., AT_EMPTY_PATH)` with one-entry argv and zero-entry envp. The
+  governance orchestrator retains the controller pidfd, capture endpoints, and
+  FD-`22` peer so it can coordinate the later final reviews without a second
+  controller start. The
+  controller rehashes its inherited sealed self FD before entering
+  `INPUTS_BOUND`; a pathname execution, external interpreter, mutable helper,
+  missing seal, or second controller start is non-accepting.
+- [ ] The controller rebinds exact current E_AN, its sole-parent P_AN, both
+  exact Task blobs, the source package, both accepted reports,
+  runtime file identities, exact case set from the P_AN Task blob, and the
+  empty/58-byte environments before execution. It opens every input once with
+  no-follow bounded descriptor checks and maps only FDs `0` through `8` as
+  specified above.
+- [ ] Copy and seal the exact launcher ELF in an executable memfd, require all
+  four seals, create the sole pidfd-bound launcher child as specified above,
+  and let only that child call `execveat(..., AT_EMPTY_PATH)` with the one-entry
+  argv and zero-entry envp. The controller remains alive to reap it. The
+  launcher must emit the complete PASS preflight before
+  any harness instruction and must have no weaker path if a primitive fails.
+- [ ] Execute the reviewed harness once in the dedicated namespaces and
+  pivoted fake-only root. Require exit zero, no signal/timeout, empty bounded
+  stderr, the exact preflight field set, exactly one ordered PASS line per
+  paired-Task case ID, no missing/duplicate/unknown/non-pass case, and final
+  `HARNESS_STATUS PASS`.
+- [ ] Reprove from the controller that the sandbox never held a production
+  Task/common-Git/object-store descriptor or mount and had no network route.
+  The canonical production path strings used for the trusted negative probes
+  are absent from the runtime/case manifests and disappear with the launcher
+  at harness activation.
+  Preserve the exact preflight/ledger bytes as isolated evidence. Do not rerun
+  to cure a failed case or lost output.
+
+Expected success output is the exact preflight receipt, same-image post-drop
+privilege receipt, exact case-set ledger, and `HARNESS_STATUS PASS` in that
+order; stderr
+is zero bytes. A nonzero exit,
+signal, timeout, extra byte, or set mismatch is failure even if other lines say
+PASS.
+
+#### AN-2E — Execute exactly one production builder invocation
+
+- [ ] Only after AN-2D accepts, reprove exact current E_AN topology, its
+  sole-parent P_AN/unchanged Plan relation, and open the production common Git
+  directory, exact historical P_AN Task blob, absolute Git
+  executable, and the exact repo-support parent once. Host directory/file
+  opens use one post-harness root descriptor plus the manifest's exact relative
+  components under
+  `RESOLVE_BENEATH|RESOLVE_NO_SYMLINKS|RESOLVE_NO_MAGICLINKS|RESOLVE_NO_XDEV`,
+  and every captured/opened device/inode/type/owner/mode identity must match;
+  no `.git` indirection or mutable path rediscovery is accepted. Reject a nonempty
+  `objects/info/alternates` before starting. Record the object-store baseline
+  without claiming that later failure leaves it unchanged.
+- [ ] The controller constructs Git subprocess envp from scratch with exactly
+  `GIT_CONFIG_SYSTEM=/dev/null`, `GIT_CONFIG_GLOBAL=/dev/null`,
+  `GIT_CONFIG_NOSYSTEM=1`, `GIT_NO_REPLACE_OBJECTS=1`,
+  `GIT_OPTIONAL_LOCKS=0`,
+  `GIT_TERMINAL_PROMPT=0`, `HOME` and `XDG_CONFIG_HOME` pointing to proved
+  empty private directories, `TMPDIR` pointing to a proved private directory,
+  `PATH=/nonexistent`, `GIT_CONFIG_COUNT=0`, `LANG=C`, `LC_ALL=C`, `TZ=UTC`, the exact private
+  `GIT_DIR`, and descriptor-backed `GIT_OBJECT_DIRECTORY` defined above. It
+  uses the absolute Git executable with supported global options
+  `--no-replace-objects --no-optional-locks`; the private Git control directory
+  and descriptor-backed object view replace any version-specific lazy-fetch
+  option.
+- [ ] Metadata is one bounded `cat-file --batch-check` request requiring the
+  full requested OID, type `blob`, and exact byte count. Content is one
+  nonblocking `cat-file blob <full-oid>` stream with stdout cap
+  `expected_bytes+1`, bounded stderr, monotonic deadline, kill/reap on failure,
+  and simultaneous SHA256/Git-blob recomputation into one sealed Task memfd.
+  The controller drains all configuration/alternates watches after metadata
+  and content children and before accepting the memfd. No prompt, replacement,
+  alternate, lazy fetch, short/extra content, config/watch event, or unbounded
+  buffer is accepted.
+- [ ] After the Task memfd is accepted, the controller creates exact `OUT_FD`
+  by the independent 128-bit/open-once contract. Relative to that FD it creates
+  only `tsdc-4an-projection-inventory.jsonl` and
+  `tsdc-4an-projection-preimage.txt` with
+  `O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC`, mode `0600`. Every child is a new
+  same-device regular inode owned by the effective UID/GID, link count one,
+  with no group/world bits; `fchmod(0600)` and same-FD reproof precede use.
+  The reviewed builder is then invoked exactly once with the fixed request,
+  sealed Task FD, and these two output FDs. It cannot see the directory FD or
+  any production pathname.
+- [ ] Require builder exit zero, no signal/timeout, empty bounded diagnostic,
+  and exact canonical result. Rewind, reread, hash, length-check, and fsync both
+  payloads through the same FDs. Materialize and durably reprove their loose
+  Git objects with the controller algorithm. Only after both durable proofs and
+  a fresh config/alternates watch drain may the controller create the exact
+  receipt file under `OUT_FD`, write/fsync/reprove it, materialize its object
+  last, require exactly three regular output entries and no extras, and fsync
+  `OUT_FD`. No truncation, pathname reopen, cleanup, rebuild, or retry is
+  allowed.
+- [ ] Require process exit zero, no signal/timeout, empty bounded stderr, one
+  canonical completion receipt, and exact inventory/preimage/receipt
+  SHA256/blob/byte identities. Failure preserves the private transaction,
+  attempted OIDs, possible unreachable production blobs, observed topology,
+  and bounded diagnostics for explicit disposition.
+
+No raw stdout/stderr, credentials, environment dump, shell history, or secret
+value is written under `_workspace`. Failure preservation records only the
+canonical non-secret failure code, bounded byte counts, hashes, attempted OIDs,
+and proved topology fields; raw diagnostic bytes remain memory-only and are
+discarded after their bounded digest is recorded.
+
+#### AN-2F — Reprove the complete pair and obtain final asset reviews
+
+- [ ] Independently stream exact P_AN Task, inventory, preimage, and receipt
+  objects through the bounded reader. Recompute the full-document discovery,
+  fragment/subspan byte partition, occurrence bijection, typed P_AN/B_AN/XP_AN
+  expectations, stale denylist, aggregate derived counts, and exact AM-P043
+  historical hashes. Require the receipt to bind exact P_AN Task and accepted
+  builder/source-package identities.
+- [ ] Assign fresh pairwise-distinct read-only identities `AN_ASSET_SPEC` and
+  `AN_ASSET_QS`, distinct from every implementer/source/design/4AM reviewer.
+  After the still-running controller emits `ASSET_REVIEW_READY`, both consume
+  the same frozen receipt-bound exact objects while the controller makes no
+  change to that input set. Their reports bind all identities, the harness
+  receipt/ledger, verdict, readiness, and findings. The governance orchestrator
+  copies each exact returned byte string into its own sealed memfd and submits
+  the two descriptors once over the FD-`22` protocol; only the controller may
+  materialize returned final-report bytes in the isolated object store. A
+  reviewer write, report resubmission, or review-input mutation invalidates
+  that review.
+- [ ] Accept AN-2 only when both reports are complete `C0/I0/M0` with
+  affirmative asset readiness, the controller reaches `COMPLETE`, and the
+  governance orchestrator reaps that sole controller child exactly once with
+  empty bounded stderr and the canonical completion envelope. Freeze all
+  evidence and continue only to the
+  bounded R_AN evidence checkpoint in AN-2G. This success does not authorize
+  renderer source, terminal reviews, B_AN/XP_AN, publisher execution,
+  repository tests/validators, or any downstream work.
+
+#### AN-2G — Publish exactly one Task-only AN-2 evidence terminal
+
+- [ ] For accepted AN-2 evidence, render R_AN from exact E_AN with exact
+  subject `docs(task): record accepted secure inventory evidence`. It changes
+  only the Task as mode `100644`, preserves the P_AN Plan blob/mode exactly,
+  has E_AN as its sole parent, and records the exact E_AN and P_AN identities,
+  accepted P_AN review pair, source package and build closure, four executable
+  identities, six input manifests, the dynamic controller-request identity,
+  source-review pair, one controller activation, one harness activation,
+  preflight/privilege/ledger hashes, complete case bijection, one production
+  builder invocation, inventory/preimage/pair-receipt/production-run identities
+  and durability states, final asset-review pair, `completion=ACCEPTED`, and
+  the authority boundary below.
+- [ ] For a classified non-security failure, create XE_AN only after the user
+  explicitly approves the exact safe disposition. Its exact subject is
+  `docs(task): record exhausted secure inventory evidence`; it has the same
+  Task-only/mode/Plan-preservation/single-parent rules and records the first
+  canonical failure code, last completed state, retained non-secret identity
+  hashes, skipped steps/reviews, no-rerun fact, disposition identity, and
+  `completion=EXHAUSTED`. It never claims absence of mutation unless the
+  bounded read-only reproof established it. A security incident, raw-secret
+  exposure, foreign drift, ambiguous object-store result, or unclassified
+  topology creates no automatic XE_AN commit.
+- [ ] Assign one fresh read-only terminal-evidence verifier, distinct from the
+  implementer and all Plan/source/asset reviewers. Freeze the candidate Task
+  SHA256/bytes/blob and `E_AN..terminal` binary diff; require exact evidence
+  correspondence, `C0/I0/M0`, and affirmative terminal readiness. Prove exact
+  unique subject, sole parent E_AN, unchanged Plan blob, Task-only path set,
+  ordinary mode `100644`, no self OID, and current branch/index/worktree
+  cleanliness before and after expected-old ref publication. R_AN and XE_AN
+  are mutually exclusive and neither may be reconstructed or retried after an
+  ambiguous publication result without read-only resolution and new approval.
+
+R_AN authorizes only a new user decision on drafting an AN-3 renderer Plan.
+XE_AN authorizes only the recorded disposition or a separately approved
+return-to-design successor. Because either terminal changes the Task bytes,
+AN-3 must rediscover and review the exact R_AN Task; the historical P_AN-bound
+inventory is evidence for AN-2 and is not a current-Task renderer inventory.
+
+#### P_AN execution failure matrix
+
+| Failure point | Durable result | Next authority |
+| --- | --- | --- |
+| P_AN review/publication/exact-object rebind, user execution approval, or E_AN render/review/publication/rebind fails | S_AN/P_AN remains current or the exact observed foreign state is preserved | stop; no AN-2 asset may be created |
+| Private parent/transaction, source freeze, reproducible build, ELF policy, or source-package proof fails | no harness or production invocation; proved-owned isolated evidence may remain | preserve; after explicit safe disposition, XE_AN may record exhaustion; no cleanup/rebuild/retry without separate approval |
+| Either source/executable/policy review is not complete `C0/I0/M0` | frozen isolated assets remain non-accepted; no launcher or production invocation | after explicit safe disposition, XE_AN may record exhaustion; otherwise stop |
+| Seal/direct exec, namespace, ID map, mount/root, FD, environment, Landlock, seccomp, preflight, or negative-reachability proof fails | no untrusted harness or production invocation; exact isolated evidence retained | fail before harness with no fallback; after explicit safe disposition, XE_AN may record exhaustion |
+| Harness case/ledger/process contract fails while fake-only isolation is proved | no production invocation or production object-store write | preserve isolated evidence; after explicit safe disposition, XE_AN may record exhaustion; no cleanup/rerun/retry |
+| Fake-only isolation is unproved or a production path/object/descriptor/network access is observed | no absence-of-mutation claim; exact repository/object-store/topology and diagnostics preserved | stop as a security incident; no further access, cleanup, production invocation, or retry |
+| Git reader, production builder, private file, fsync, object write, or receipt proof fails | no accepted pair; preserve incomplete private transaction, attempted OIDs, possible unreachable blobs, foreign drift, and bounded diagnostics | read-only reproof first; XE_AN only after an explicit disposition proves the state safe to summarize; never delete/cleanup/rebuild/rerun automatically |
+| Fragment/subspan/occurrence partition or independent reproof fails | receipt-bound bytes remain rejected evidence only | after explicit safe disposition, XE_AN may record exhaustion; otherwise stop |
+| Either final asset review is not complete `C0/I0/M0` | E_AN remains current and AN-3 is unauthorized | after explicit safe disposition, XE_AN may record exhaustion; otherwise stop |
+| Both final asset reviews pass | exact source/package/harness/receipt/assets become immutable P_AN-bound evidence | render, independently verify, publish, and rebind R_AN; then stop for a separate AN-3 drafting decision |
+| R_AN/XE_AN render, verification, publication, or rebind fails | exact E_AN or observed foreign state and all frozen evidence are preserved | stop; no terminal retry without read-only resolution and new approval |
+
+#### P_AN approval and execution boundary
+
+This P_AN tree is planning evidence only until its exact candidate receives two
+fresh independent `C0/I0/M0` Plan reviews, is published from exact S_AN, is
+rebound by its full OID and exact two blobs, and the user explicitly selects
+execution. That approval is first recorded and independently verified in
+Task-only E_AN; AN-2A has no authority from P_AN alone. The selected execution
+mode is Subagent-Driven: AN-2A uses one fresh implementation agent, every
+review uses a fresh read-only identity, and the controller stops at each
+review/failure boundary. No P_AN drafting or
+approval implicitly runs an asset, repository validator/test, wrapper,
+pre-commit, Graphify, runtime, remote action, or dependency command.
+
+The planning commit for this unit is P_AN. After the user's execution
+approval, E_AN is the one Task-only execution-gate commit. AN-2A through AN-2G
+are one bounded out-of-tree evidence transaction and create no tracked source
+or Plan change. AN-2G publishes exactly one Task-only evidence terminal:
+R_AN for accepted evidence, or XE_AN after an explicitly approved safe
+failure disposition. A security incident or unclassified/ambiguous state
+creates neither terminal automatically. No AN-3 work starts in this Plan.
 
 ## Verification Plan
 
@@ -17502,15 +18935,19 @@ is not applicable because neither surface is mutated.
   passed C0/I0/M0, but quality/security failed C0/I3/M0, so AM-3, B_AM, and
   XP_AM are unauthorized/uncreated and the rejected blobs remain historical
   evidence only.
-- The current design topology is
-  `D_AN/P_AM -> S_AN -> P_AN -> B_AN|XP_AN`. S_AN is current by exact unique
-  subject `docs(design): define secure occurrence-bound inventory successor`;
-  its own OID is intentionally unasserted in its own tree. P_AN and every 4AN
-  asset, source/final asset review, AN-3 renderer, immutable terminal review,
-  publisher, B_AN, and XP_AN are not started/not created. S_AN authorizes only
-  written-design review and, after explicit user review, P_AN drafting through
-  `superpowers:writing-plans`. implementation, E_AL, R_AL, XE_AL, E_AM, R_AM,
-  XE_AM, E_AN, R_AN, XE_AN, AN-3, Task 4.5, Wave C, Tasks 5–6, runtime,
+- The current planning topology is
+  `D_AN/P_AM -> S_AN -> P_AN -> E_AN -> R_AN|XE_AN`. S_AN is exact
+  `bac234abf9e1e320d2311b8a8f448afe0a6cbac1`; its final written-design reviews
+  are C0/I0/M0 and the user approved P_AN drafting. The P_AN tree intentionally
+  asserts neither its own post-publication OID/currentness, corrected Plan
+  review outcome, publication/rebinding result, user execution decision, nor
+  any AN-2 start/result. Those facts become authoritative only in exact E_AN.
+  E_AN may be created only after they exist. Every 4AN asset,
+  source/final asset review, R_AN/XE_AN evidence terminal, AN-3 renderer,
+  immutable renderer-terminal review, publisher, B_AN, and XP_AN is not
+  started/not created. implementation,
+  E_AL, R_AL, XE_AL, E_AM, R_AM,
+  XE_AM, AN-3, Task 4.5, Wave C, Tasks 5–6, runtime,
   remote/external actions, QA-wrapper/pre-commit execution, dependency changes,
   4AL/4AM retry or correction, and Graphify update are blocked/no authority.
 - Remote mutation, live runtime work, push, pull request, merge, workflow
