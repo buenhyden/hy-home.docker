@@ -25,13 +25,13 @@ layer: agentic
 
 ## Structure
 
-| Category | Path | Templates |
-| --- | --- | --- |
-| SDLC | [sdlc/](./sdlc/README.md) | `prd`, `ard`, `adr`, `spec`, `plan`, `task` |
+| Category       | Path                                          | Templates                                                                                  |
+| -------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| SDLC           | [sdlc/](./sdlc/README.md)                     | `prd`, `ard`, `adr`, `spec`, `plan`, `task`                                                |
 | Spec contracts | [spec-contracts/](./spec-contracts/README.md) | `api-spec`, `agent-design`, `data-model`, `service`, `tests`, `openapi`, `schema`, `proto` |
-| Operations | [operations/](./operations/README.md) | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `release` |
-| Governance | [governance/](./governance/README.md) | `memory`, `progress` |
-| Common | [common/](./common/README.md) | `readme`, `reference`, `audit`, `archive`, `content-archive` |
+| Operations     | [operations/](./operations/README.md)         | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `release`                          |
+| Governance     | [governance/](./governance/README.md)         | `memory`, `progress`                                                                       |
+| Common         | [common/](./common/README.md)                 | `readme`, `reference`, `audit`, `archive`, `content-archive`                               |
 
 ## How to Work in This Area
 
@@ -46,3 +46,4 @@ layer: agentic
 - [support README](../support/README.md)
 - [template contract](../support/template-contract.md)
 - [template selection](../support/template-selection.md)
+- [not-yet-exercised templates](../../00.agent-governance/rules/stage-authoring-matrix.md#not-yet-exercised-templates) — templates with zero authored instances
