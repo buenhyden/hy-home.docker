@@ -511,66 +511,139 @@ statements are seven lines apart and mutually exclusive.
 
 ---
 
-#### Task 4: Correct the vacuous `audit` forbidden heading
+#### Task 4: Retarget the `audit` role onto its corpus
+
+The plan's first revision of this task prescribed `forbidden_headings: []`. That
+is structurally impossible: `check-document-metadata.py:4288` rejects an empty
+list, and `role.get(heading_key)` returning `None` fails the same check, so
+deleting the key is rejected too. Both exits are closed.
+
+Measurement then showed the real problem is larger than a vacuous forbidden
+rule. All 34 audit documents carry an identical heading set, and it is the
+`reference` set — not the `audit` set:
+
+| Heading | Audit documents carrying it |
+| :------------------------------------------------------------------------ | :-------- |
+| `## Overview`, `## Purpose`, `## Scope`, `## Definitions / Facts`, `## Sources`, `## Maintenance`, `## Related Documents` | 34 of 34 |
+| `## Repository Role` | 34 of 34 |
+| `## Scope and Criteria`, `## Gap Analysis`, `## Disposition` (audit-role required) | 0 of 34 |
+
+Retiring the role was considered and rejected: 17 documents declare
+`artifact_type: audit`, and two dedicated validators
+(`scripts/validation/audit_criterion_contract.py`,
+`scripts/validation/check-agentic-audit-semantic-freshness.py`) plus several
+Stage 99 support contracts depend on the type.
+
+This task therefore retargets the role onto its corpus per specification D2 and
+absorbs what was previously Task 10.
 
 **Files:**
 
-- Modify: `docs/99.templates/support/document-metadata-profiles.yaml:416`
+- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`, `audit:` role
+- Modify: `docs/99.templates/templates/common/audit.template.md`
 
 **Interfaces:**
 
 - Consumes: nothing.
-- Produces: an `audit` role whose forbidden list is capable of firing. Task 9
-  retargets the required list separately.
+- Produces: an `audit` role whose conforming count rises from 0 toward 34.
 
-- [ ] **Step 1: Confirm the rule has never fired**
-
-```bash
-grep -rlc '^## Facts and Definitions' docs/90.references/audits/ 2>/dev/null | wc -l
-grep -rl '^## Definitions / Facts$' docs/90.references/audits/ | wc -l
-find docs/90.references/audits -name '*.md' ! -name 'README.md' | wc -l
-```
-
-Expected: `0` documents carry the forbidden string; `34` carry
-`## Definitions / Facts`; `34` non-README audit documents exist. The forbidden
-rule matches nothing.
-
-- [ ] **Step 2: Decide the disposition and apply it**
-
-`## Definitions / Facts` is the `reference` role's required heading, and 34 of
-34 audit documents carry it. Forbidding it would break every audit document.
-The rule is therefore removed rather than retargeted.
-
-In `docs/99.templates/support/document-metadata-profiles.yaml`, under the
-`audit:` role, replace:
-
-```yaml
-forbidden_headings: ['## Facts and Definitions']
-```
-
-with:
-
-```yaml
-forbidden_headings: []
-```
-
-- [ ] **Step 3: Verify and commit**
+- [ ] **Step 1: Confirm the measurement before changing anything**
 
 ```bash
-python3 -c "import yaml,sys; yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print('yaml ok')"
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-git add docs/99.templates/support/document-metadata-profiles.yaml
-git commit -m "fix(templates): remove the vacuous audit forbidden heading
-
-The audit role forbade \`## Facts and Definitions\`, a string carried by zero
-audit documents. The heading 34 of 34 audit documents actually carry is
-\`## Definitions / Facts\`, which is the reference role's required heading.
-
-The rule inverted the real word order and never fired. Forbidding the real
-string would break every audit document, so the list is emptied instead."
+cd /home/hy/projects/hy-home.docker
+python3 - <<'PY'
+import pathlib, collections
+docs = [p for p in pathlib.Path('docs/90.references/audits').rglob('*.md')
+        if p.name != 'README.md']
+c = collections.Counter()
+for p in docs:
+    for line in p.read_text(errors='ignore').splitlines():
+        if line.startswith('## '):
+            c[line.strip()] += 1
+print("audit documents:", len(docs))
+for h, k in c.most_common(10):
+    print(f"  {k:3}/{len(docs)}  {h}")
+PY
 ```
 
----
+Expected: 34 documents, with eight headings at 34/34. If the universal set is
+not eight headings at 34/34, stop and report — the retarget below assumes it.
+
+- [ ] **Step 2: Confirm the forbidden candidates are absent**
+
+```bash
+python3 - <<'PY'
+import pathlib
+docs = [p for p in pathlib.Path('docs/90.references/audits').rglob('*.md')
+        if p.name != 'README.md']
+for h in ("## Procedure", "## Controls", "## Usage"):
+    n = sum(1 for p in docs
+            if any(l.strip() == h for l in p.read_text(errors='ignore').splitlines()))
+    print(f"  {n:3}/{len(docs)}  {h}")
+PY
+```
+
+Expected: `0/34` for all three. These mark a document as an operations artifact
+rather than an audit, so forbidding them catches a genuine misfile instead of
+never firing.
+
+- [ ] **Step 3: Retarget the `audit` role**
+
+In `docs/99.templates/support/document-metadata-profiles.yaml`, under `audit:`,
+replace the three heading lists with:
+
+```yaml
+    required_headings: ["## Overview", "## Purpose", "## Repository Role", "## Scope", "## Definitions / Facts", "## Sources", "## Maintenance", "## Related Documents"]
+    conditional_headings: ["## Findings", "## Method", "## Source Rules", "## Evidence Snapshot Boundary", "## Comparison"]
+    forbidden_headings: ["## Procedure", "## Controls", "## Usage"]
+```
+
+All three lists are non-empty, every entry starts with `## `, and no list
+contains a duplicate — the three conditions `check-document-metadata.py:4288`
+and `:4297` enforce.
+
+- [ ] **Step 4: Update the template body to match**
+
+Rewrite the heading list in
+`docs/99.templates/templates/common/audit.template.md` to the eight required
+headings from Step 3, in that order, keeping exactly one `## Related Documents`
+as the final heading.
+
+- [ ] **Step 5: Verify the role loads and the conforming count rose**
+
+```bash
+python3 -c "import yaml; d=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); r=d['template_roles']['audit']; print({k: r[k] for k in ('required_headings','conditional_headings','forbidden_headings')})"
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
+```
+
+Expected: the three lists print as set in Step 3; `violations=0`; `2` contract
+failures. A `configuration-error: template role audit ... must be a non-empty
+H2 heading list` means one of the three lists came out empty — fix it before
+continuing.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add docs/99.templates/support/document-metadata-profiles.yaml \
+        docs/99.templates/templates/common/audit.template.md
+git commit -m "docs(templates): retarget the audit role onto its corpus
+
+34 audit documents exist and none satisfied the audit heading contract. The
+required headings were never the ones audit authors write: all 34 carry the
+reference heading set plus ## Repository Role, and zero carry ## Scope and
+Criteria, ## Gap Analysis, or ## Disposition.
+
+The role is retained rather than retired. 17 documents declare
+artifact_type: audit, and audit_criterion_contract.py,
+check-agentic-audit-semantic-freshness.py, and several Stage 99 support
+contracts depend on the type.
+
+forbidden_headings could not be emptied: check-document-metadata.py:4288
+rejects an empty list and a missing key alike. It is retargeted to three
+operations headings, each carried by 0 of 34 documents, so the rule catches a
+misfiled operations document instead of never firing."
+```
 
 #### Task 5: Document the enforced `reviewed_at` and `review_cycle` fields
 
@@ -1038,74 +1111,25 @@ straddle the split."
 
 ---
 
-#### Task 10: Retarget the `audit` role onto its corpus
+#### Task 10: Absorbed into Task 4
 
-**Files:**
+This task retargeted the `audit` role. It was pulled forward into Task 4,
+because Task 4's original disposition (`forbidden_headings: []`) proved
+structurally impossible and the investigation that followed produced the
+measurement this task depended on. Splitting the same role across two waves
+would have edited one registry entry twice.
 
-- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`, `audit:` role
-- Modify: `docs/99.templates/templates/common/audit.template.md`
-
-**Interfaces:**
-
-- Consumes: the emptied forbidden list from Task 4.
-- Produces: an `audit` role with a non-zero conforming count.
-
-- [ ] **Step 1: Measure which headings audit documents actually carry**
+- [ ] **Step 1: Confirm Task 4 already applied the retarget**
 
 ```bash
-python3 - <<'PY'
-import pathlib, collections
-c = collections.Counter()
-n = 0
-for p in pathlib.Path('docs/90.references/audits').rglob('*.md'):
-    if p.name == 'README.md':
-        continue
-    n += 1
-    for line in p.read_text(errors='ignore').splitlines():
-        if line.startswith('## '):
-            c[line.strip()] += 1
-print("audit documents:", n)
-for h, k in c.most_common(14):
-    print(f"  {k:3}  {h}")
-PY
+python3 -c "import yaml; r=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml'))['template_roles']['audit']; print('required:', r['required_headings']); print('forbidden:', r['forbidden_headings'])"
 ```
 
-Record every heading carried by at least 30 of the 34 documents. Those become
-the required set.
+Expected: eight required headings beginning `## Overview`, `## Purpose`,
+`## Repository Role`; and `['## Procedure', '## Controls', '## Usage']`
+forbidden. If either differs, Task 4 did not complete — return to it.
 
-- [ ] **Step 2: Replace the required list with the measured near-universal set**
-
-Under `audit:` in the registry, set `required_headings` to the headings Step 1
-showed at 30 or more of 34, in the order they appear in the documents. Retain
-`## Overview` and `## Related Documents` if present at that threshold. Move any
-heading between 10 and 29 occurrences into `conditional_headings`.
-
-- [ ] **Step 3: Update the template body to the same heading set**
-
-Rewrite the heading list in
-`docs/99.templates/templates/common/audit.template.md` to match Step 2 exactly,
-preserving one `## Related Documents` as the final heading.
-
-- [ ] **Step 4: Confirm the conforming count rose from zero**
-
-Re-run the conformance script from Task 9 Step 7 and read the `audit` row.
-Expected: substantially above `0`.
-
-- [ ] **Step 5: Verify and commit**
-
-```bash
-python3 -c "import yaml; yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print('yaml ok')"
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/99.templates/support/document-metadata-profiles.yaml \
-        docs/99.templates/templates/common/audit.template.md
-git commit -m "docs(templates): retarget the audit role onto its corpus
-
-34 audit documents exist and none satisfied the audit heading contract, because
-the required headings were never the ones audit authors write. The required set
-is replaced with the headings carried by at least 30 of 34 documents."
-```
-
----
+No commit. This task has no remaining work.
 
 #### Task 11: Mark the not-yet-exercised templates
 
