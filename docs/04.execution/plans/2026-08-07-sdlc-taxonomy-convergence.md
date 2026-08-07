@@ -174,24 +174,42 @@ Expected: a `selected=... violations=N` summary line. Record `N`.
 
 - [ ] **Step 3: Record the link baseline**
 
-```bash
+````bash
 python3 - <<'PY' > /tmp/claude-1000/sdlc-convergence/links-baseline.txt
 import pathlib, re
 broken = []
 for p in pathlib.Path("docs").rglob("*.md"):
-    for m in re.finditer(r"\]\(([^)]+)\)", p.read_text(errors="ignore")):
-        t = m.group(1).split("#")[0]
-        if not t or t.startswith(("http", "mailto:")):
+    in_fence = False
+    for line in p.read_text(errors="ignore").splitlines():
+        # Toggle only on a line that STARTS a fence. Counting backtick runs
+        # inside the whole text breaks on any code that contains backticks --
+        # including this check itself.
+        if line.lstrip().startswith("`" * 3):
+            in_fence = not in_fence
             continue
-        if not (p.parent / t).exists():
-            broken.append(f"{p}: {t}")
+        if in_fence:
+            continue
+        for m in re.finditer(r"\]\(([^)]+)\)", line):
+            target = m.group(1).split("#")[0]
+            if not target or target.startswith(("http", "mailto:")):
+                continue
+            if not (p.parent / target).exists():
+                broken.append(f"{p}: {target}")
 print(len(broken))
 print("\n".join(broken))
 PY
 head -1 /tmp/claude-1000/sdlc-convergence/links-baseline.txt
-```
+````
 
-Expected: a count on the first line. Record it. No commit in this task.
+Expected: `1`. The single real defect is `../guides/...` in
+`docs/00.agent-governance/memory/progress.md`, an ellipsis in prose rather than
+a link. Record the number. No commit in this task.
+
+The fence guard is not optional. Without it this check reports 8, of which 7 are
+markdown links inside illustrative code blocks — including the tombstone
+template in Task 13 and the rule snippets in Task 16. A baseline inflated by
+your own plan's example content makes every later link comparison meaningless.
+This is the same defect class as the substring matching Task 2 repairs.
 
 ---
 
@@ -1281,18 +1299,33 @@ most ten directories, each batch a logical unit named by what it archives.
 
 - [ ] **Step 8: Verify Stage 03 is reduced and links resolve**
 
-```bash
+````bash
 ls -d docs/03.specs/*/ | wc -l
 python3 - <<'PY'
 import pathlib, re
-broken = [f"{p}: {t}" for p in pathlib.Path("docs").rglob("*.md")
-          for m in re.finditer(r"\]\(([^)]+)\)", p.read_text(errors="ignore"))
-          for t in [m.group(1).split("#")[0]]
-          if t and not t.startswith(("http", "mailto:")) and not (p.parent / t).exists()]
+broken = []
+for p in pathlib.Path("docs").rglob("*.md"):
+    in_fence = False
+    for line in p.read_text(errors="ignore").splitlines():
+        # Toggle only on a line that STARTS a fence. Counting backtick runs
+        # inside the whole text breaks on any code that contains backticks --
+        # including this check itself.
+        if line.lstrip().startswith("`" * 3):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        for m in re.finditer(r"\]\(([^)]+)\)", line):
+            target = m.group(1).split("#")[0]
+            if not target or target.startswith(("http", "mailto:")):
+                continue
+            if not (p.parent / target).exists():
+                broken.append(f"{p}: {target}")
 print("broken:", len(broken))
-print("\n".join(broken[:20]))
+print("
+".join(broken))
 PY
-```
+````
 
 Expected: `59` directories still (42 tombstones remain in place), and broken
 links at or below the Task 1 baseline.
@@ -1821,17 +1854,32 @@ baseline; zero metadata violations on changed documents; traceability clean.
 
 - [ ] **Step 9: Confirm zero broken links across the whole corpus**
 
-```bash
+````bash
 python3 - <<'PY'
 import pathlib, re
-broken = [f"{p}: {t}" for p in pathlib.Path("docs").rglob("*.md")
-          for m in re.finditer(r"\]\(([^)]+)\)", p.read_text(errors="ignore"))
-          for t in [m.group(1).split("#")[0]]
-          if t and not t.startswith(("http", "mailto:")) and not (p.parent / t).exists()]
+broken = []
+for p in pathlib.Path("docs").rglob("*.md"):
+    in_fence = False
+    for line in p.read_text(errors="ignore").splitlines():
+        # Toggle only on a line that STARTS a fence. Counting backtick runs
+        # inside the whole text breaks on any code that contains backticks --
+        # including this check itself.
+        if line.lstrip().startswith("`" * 3):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        for m in re.finditer(r"\]\(([^)]+)\)", line):
+            target = m.group(1).split("#")[0]
+            if not target or target.startswith(("http", "mailto:")):
+                continue
+            if not (p.parent / target).exists():
+                broken.append(f"{p}: {target}")
 print("broken:", len(broken))
-print("\n".join(broken[:30]))
+print("
+".join(broken))
 PY
-```
+````
 
 Expected: at or below the Task 1 baseline.
 
@@ -1972,8 +2020,11 @@ runs only at the final gate, and only via
 - `docs/04.operations/` exists and `docs/05.operations/` does not.
 - `grep -rl "05\.operations"` returns zero files.
 - `docs/98.archive/` holds the 267 migrated documents plus the pre-existing 21.
-- Broken relative links are at or below the Task 1 baseline.
-- The repository contract failure count is at or below the Task 1 baseline.
+- Broken relative links are at or below the Task 1 baseline of 1, counted with
+  the fence-aware check.
+- The repository contract failure count is at or below the Task 1 baseline of 2.
+  The specification records 4; the tree measured 2, and the measured value
+  governs.
 - `docs/03.specs/136-sdlc-taxonomy-convergence/task.md` records every wave's
   commands, output, and commit range.
 - `docs/00.agent-governance/memory/current.md` reflects the post-W5 state.
