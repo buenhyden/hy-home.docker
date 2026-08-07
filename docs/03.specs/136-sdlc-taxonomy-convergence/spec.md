@@ -81,7 +81,7 @@ All figures below were derived from the working tree and are reproducible.
 | Broken relative links               | 3, of which 1 is a real defect                                                      |
 | SDLC chain completeness             | 11 of 11 infra domains complete                                                     |
 | Largest single document             | `docs/00.agent-governance/memory/progress.md`, 1,193,498 bytes, 12.9% of the corpus |
-| Validator volume                    | ~880 KB across four files                                                           |
+| Validator volume                    | 852,407 bytes across four files                                                     |
 | Repository contract baseline        | `failures=4`                                                                        |
 
 ### External evidence boundary
@@ -242,10 +242,10 @@ audit documents. The heading 34 of 39 audit documents actually carry is
 is a string mismatch, not a scoping decision, and the rule has never fired.
 
 Structural remediation accompanies the roadmap. `check-repo-contracts.sh` is
-4,921 lines of which 4,257 sit inside 36 Python heredocs, so ShellCheck inspects
-only the shell wrapper and no Python linter covers the remainder. Roughly 22,000
-lines of validator Python are unlinted because `.pre-commit-config.yaml`
-declares no `ruff`, `black`, or `mypy` hook.
+4,065 lines of which 3,576 sit inside 34 Python heredocs and only 421 are shell,
+so ShellCheck inspects 10 percent of the file and no Python linter covers the
+rest. Roughly 22,000 lines of validator Python are unlinted because
+`.pre-commit-config.yaml` declares no `ruff`, `black`, or `mypy` hook.
 
 Glob design is the lever. READMEs classify 230 of 230 correctly and pass 219 of
 230 because `readme_profiles` uses 17 narrow explicit path globs. `template_roles`
