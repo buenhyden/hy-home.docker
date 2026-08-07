@@ -14,7 +14,7 @@ review_cycle: on-governance-change
 
 이 런북은 `runbooks/00-workspace/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
 
-## Trigger and Preconditions
+## When to Use
 
 > Scope: LLM Wiki Maintenance Runbook operational execution
 
@@ -107,9 +107,9 @@ review_cycle: on-governance-change
 
 ## Verification Record
 
-| Verification environment | Command or procedure | Result | Evidence location |
-| --- | --- | --- | --- |
-| Local governed worktree | Run both LLM Wiki generators with `--check` and the repository contract checker | Every command exits zero and reports fresh generated outputs | Current Task verification evidence and `docs/00.agent-governance/memory/progress.md` |
+| Verification environment | Command or procedure                                                            | Result                                                       | Evidence location                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Local governed worktree  | Run both LLM Wiki generators with `--check` and the repository contract checker | Every command exits zero and reports fresh generated outputs | Current Task verification evidence and `docs/00.agent-governance/memory/progress.md` |
 
 ## Evidence
 
@@ -131,8 +131,8 @@ review_cycle: on-governance-change
 
 ## Automation Handoff
 
-| Automation candidate or invocation | Human or operator judgment boundary |
-| --- | --- |
+| Automation candidate or invocation            | Human or operator judgment boundary                                                                            |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | Generator freshness checks in local QA and CI | A human approves ownership, source-boundary, or public-scope changes before regeneration becomes authoritative |
 
 ## Related Documents

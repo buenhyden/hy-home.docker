@@ -601,7 +601,7 @@ import sys
 required = {
     "guides": ["## Usage", "## Common Checks", "## Runbook Handoff"],
     "policies": ["## Controls", "## Verification", "## Review Cadence"],
-    "runbooks": ["When to Use", "Procedure", "Evidence", "Escalation"],
+    "runbooks": ["## When to Use", "## Procedure", "## Evidence", "## Escalation"],
 }
 forbidden = {
     "guides": ["## Policy Scope", "## Controls", "## Exceptions", "## Review Cadence", "### When to Use", "#### Procedure"],
@@ -663,11 +663,12 @@ for bucket in ["guides", "policies", "runbooks"]:
                 failures.append(
                     f"{path}: policy document contains cross-generation scope heading: {stale_scope_heading}"
                 )
+        heading_lines = {line.strip() for line in text.splitlines()}
         for literal in required[bucket]:
-            if literal not in text:
+            if literal not in heading_lines:
                 failures.append(f"{path}: missing {bucket} profile heading: {literal}")
         for literal in forbidden[bucket]:
-            if literal in text:
+            if literal in heading_lines:
                 failures.append(f"{path}: {bucket} document contains cross-profile heading: {literal}")
 
 if failures:

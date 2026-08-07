@@ -37,7 +37,7 @@ How-to / audit guide.
 - Confirm the active scope from `docs/00.agent-governance/scopes/`.
 - Do not inspect secrets or credential files.
 
-## Routine Usage
+## Usage
 
 1. Read root entry files: `README.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 2. Read environment and docs maps: `docs/README.md`, `infra/README.md`, `scripts/README.md`.
