@@ -143,7 +143,7 @@ run, but they cannot replace Stage 00 authority or grant an external action.
 
 ## Sources
 
-- [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html)
+- [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) - the site returns a Cloudflare bot challenge to automated clients; the fixture concept, dependency-injection model, scope levels, and the stated improvements over xUnit setup and teardown were re-verified 2026-08-07 from the `pytest-dev/pytest` documentation source
 - [OpenAI HumanEval](https://github.com/openai/human-eval)
 - [EleutherAI LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness)
 - [Inspect AI](https://inspect.aisi.org.uk/)

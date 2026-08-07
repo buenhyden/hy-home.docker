@@ -122,7 +122,7 @@ surfaces, not additional instruction authorities.
 ## Sources
 
 - [OpenAI Codex custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) - discovery, layering, and nearest-scope precedence
-- [OpenAI practical guide to building agents](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/) - not re-fetchable on 2026-08-07 (HTTP 403 to automated retrieval); claims rest on the earlier retrieval - tools, guardrails, retry/high-risk escalation, and human intervention
+- [OpenAI practical guide to building agents](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf) - re-verified 2026-08-07 from the official CDN copy after the marketing page returned HTTP 403 to automated retrieval; the published title omits "AI" - tools in three classes, layered guardrails, explicit retry-threshold and high-risk escalation triggers, and human intervention
 - [Claude Code memory and rules](https://code.claude.com/docs/en/memory) - modular and path-scoped project instructions
 - [Claude Code security](https://code.claude.com/docs/en/security) - least privilege, sandboxing, approval, prompt injection, and user review responsibility
 - [GitHub repository custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions) - repository/path/agent instruction scopes and precedence caveats

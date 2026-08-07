@@ -176,9 +176,10 @@ external frameworks do not become adopted policy through Stage 90.
   rewrite the fixed 2026-07-10 model ledger.
 - ISO public pages provide metadata and summaries, not full standard text.
 - ISO/IEC/IEEE 12207:2017 is marked withdrawn and is used only as historical
-  lifecycle framing. The 2026-08-07 revalidation could not re-open the ISO
-  catalog page, which returned HTTP 403 to automated retrieval, so the
-  withdrawal status rests on the earlier retrieval and is not re-verified.
+  lifecycle framing. The 2026-08-07 revalidation confirmed this from the
+  ISO-operated `committee.iso.org` catalog after `www.iso.org` returned HTTP
+  403 to automated retrieval: record 63712 is at stage 95.99 and names
+  ISO/IEC/IEEE 12207:2026 as its successor.
 - No external source listed here is adopted as workspace policy by this reference.
 
 ## Sources
@@ -197,7 +198,7 @@ external frameworks do not become adopted policy through Stage 90.
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, release notes, and assets
 - [GitHub deployment history](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history) - deployment event and outcome evidence
 - [GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) and [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) - remote enforcement distinct from tracked workflow definitions
-- [GitHub Docs content best practices](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs) and [Diataxis](https://diataxis.fr/) - not re-fetchable on 2026-08-07 (HTTP 429); see [documentation architecture](./documentation-architecture.md) - audience/purpose and content-type separation
+- [GitHub Docs content best practices](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs) and [Diataxis](https://diataxis.fr/) - the site returns a Cloudflare bot challenge to automated clients; content re-verified 2026-08-07 from the pinned upstream source, which is the current upstream head - audience/purpose and content-type separation
 - [GitHub Spec Kit documentation](https://github.github.com/spec-kit/) - Spec → Plan → Tasks → Implement workflow
 - [ISO/IEC/IEEE 12207:2017](https://www.iso.org/standard/63712.html) - withdrawn lifecycle-process metadata
 - [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) - requirements-engineering metadata

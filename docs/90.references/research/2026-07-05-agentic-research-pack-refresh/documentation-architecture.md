@@ -154,7 +154,8 @@ excluding `README.md` files unless stated.
    checks cardinality and not value, mode mixing is recorded in metadata but
    never gated. A registered enumeration would make DOC-15 measurable. Owner:
    `scripts/validation/check-repo-contracts.sh`.
-4. **Two validators require conflicting headings for a new Stage 90 reference.**
+4. **Resolved. Two validators previously required conflicting headings for a new
+   Stage 90 reference.**
    `scripts/validation/check-repo-contracts.sh` hard-requires the literal
    `## Definitions / Facts` in every non-README Stage 90 reference, while the
    reference role in `docs/99.templates/support/document-metadata-profiles.yaml`
@@ -164,12 +165,15 @@ excluding `README.md` files unless stated.
    changed-document metadata check with three findings. Pre-existing leaves are
    unaffected because the metadata check only reports newly introduced
    deficits, so the conflict is invisible until a new reference is authored.
-   The three new leaves in this pack therefore use `## Definitions / Facts`,
-   matching their fifteen siblings and the continuous-integration-enforced
-   stage contract, and carry the metadata finding until one of the two
-   contracts is amended. Owner:
-   `scripts/validation/check-repo-contracts.sh` and
-   `docs/99.templates/support/document-metadata-profiles.yaml`.
+   The conflict was resolved on 2026-08-07 by aligning the two outliers to the
+   corpus. No document in `docs/90.references` had ever used
+   `## Facts and Definitions`, while 69 used `## Definitions / Facts`, so the
+   reference template, the reference role in the metadata profiles, and the
+   template-source heading list in the repository contract check were changed
+   to the heading the corpus actually uses. The audit role's forbidden-heading
+   entry was deliberately left unchanged, because 34 existing audit documents
+   already carry `## Definitions / Facts` and retargeting that rule would break
+   them. That residual inconsistency is recorded here rather than fixed.
 5. **Template-versus-validator drift affects any remediation.** In the guides
    and runbooks buckets the shipped template heading and the validator-required
    heading differ, and the corpus follows the validator. Because
@@ -198,19 +202,32 @@ excluding `README.md` files unless stated.
 
 ## Source Retrieval Boundary
 
-The rendered site at `https://diataxis.fr/` returned HTTP 429 for every request
-attempted on 2026-08-07 and served no content. All quoted framework text in this
-document was therefore read from the canonical upstream source repository that
-builds that site, `evildmp/diataxis-documentation-framework`, at commit
+The rendered site at `https://diataxis.fr/` served no content on 2026-08-07.
+The HTTP 429 it returns is not rate limiting: response headers carry
+`cf-mitigated: challenge` and a Cloudflare bot-challenge body, returned before
+the origin is reached. Retrying later does not clear it from an automated
+client, so this is a standing access boundary rather than a transient failure.
+
+All quoted framework text in this document was therefore read from the
+canonical upstream source repository that builds that site,
+`evildmp/diataxis-documentation-framework`, at commit
 `957c09ca40b4a1edc23874f713e01937d50d54d5`, specifically the files
 `source/index.rst`, `source/foundations.rst`, `source/compass.rst`,
 `source/map.rst`, `source/tutorials.rst`, `source/how-to-guides.rst`,
 `source/reference.rst`, `source/explanation.rst`,
 `source/how-to-use-diataxis.rst`, and `source/quality.rst`.
 
-The rendered site was not verified against that commit. Any divergence between
-the published site and the pinned source is unobserved and must be re-checked
-before this document's framework quotations are treated as current.
+A 2026-08-07 re-check confirmed that this pinned commit is the current head of
+the upstream default branch, and that no later commit touches `source/`. The
+pinned source is therefore current, and every quotation above was re-verified
+against it, including the four types, both axes, the compass table, the blur
+failure modes, the completeness claim, and the guidance against creating empty
+quadrant structures.
+
+The rendered site itself was still not retrieved, so the deploy state of
+`diataxis.fr` against that commit remains unobserved. Note also that `source/`
+was restructured upstream on 2026-08-03; references to pre-restructure file
+paths would be stale.
 
 ## Maintenance
 

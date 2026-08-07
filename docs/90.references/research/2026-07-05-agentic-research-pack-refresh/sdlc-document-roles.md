@@ -154,9 +154,12 @@ collapse Guide, Runbook, Reference, and research explanation into one type.
   content visible at the latest revalidation.
 - ISO pages provide metadata and summaries rather than full standards.
 - ISO/IEC/IEEE 12207:2017 is withdrawn and is not a current normative basis.
-  The 2026-08-07 revalidation could not re-open the ISO catalog page, which
-  returned HTTP 403 to automated retrieval. The withdrawal status therefore
-  rests on the earlier retrieval and is not re-verified.
+  The 2026-08-07 revalidation confirmed this from the ISO-operated
+  `committee.iso.org` catalog after `www.iso.org` returned HTTP 403 to
+  automated retrieval: record 63712 is at stage 95.99, withdrawal of an
+  International Standard, and names ISO/IEC/IEEE 12207:2026 as its successor.
+  ISO/IEC/IEEE 29148:2018 and 42010:2022 are both at stage 60.60 and remain
+  current.
 - External sources remain comparisons; repo-template bases are labeled explicitly.
 
 ## Sources
@@ -183,9 +186,10 @@ collapse Guide, Runbook, Reference, and research explanation into one type.
 - [Keep a Changelog 1.1.2](https://keepachangelog.com/en/1.1.2/) - changelog convention
 - [Semantic Versioning 2.0.0](https://semver.org/) - version signal convention
 - [GitHub Docs content best practices](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs) - audience, purpose, content-type, and scannability guidance
-- [Diataxis](https://diataxis.fr/) - not re-fetchable on 2026-08-07 (HTTP 429);
-  see [documentation architecture](./documentation-architecture.md) for the
-  pinned upstream source actually read - purpose separation across tutorial, how-to, reference, and explanation
+- [Diataxis](https://diataxis.fr/) - the site returns a Cloudflare bot
+  challenge to automated clients; content was re-verified 2026-08-07 from the
+  pinned upstream source, which is the current upstream head. See
+  [documentation architecture](./documentation-architecture.md) - purpose separation across tutorial, how-to, reference, and explanation
 - [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment approvals, restrictions, and environment evidence
 - [GitHub deployment history](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history) - deployment commits, environments, logs, URLs, and status history
 

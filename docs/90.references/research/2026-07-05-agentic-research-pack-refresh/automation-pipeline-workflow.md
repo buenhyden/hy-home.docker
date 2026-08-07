@@ -191,7 +191,7 @@ another merely because one automation loop completed successfully.
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, release notes, and assets
 - [OWASP SAMM Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) - documented/automated deployment, security milestones, separation of duties, and secret handling
 - [pre-commit](https://pre-commit.com/) - local/CI hook orchestration and skip behavior
-- [EditorConfig](https://editorconfig.org/) and [specification](https://spec.editorconfig.org/) - editor-level style automation and precedence
+- [EditorConfig](https://editorconfig.org/) and [specification](https://spec.editorconfig.org/) - specification re-verified 2026-08-07 at version 0.17.2 from upstream source after the site returned a Cloudflare bot challenge - editor-level style automation and precedence
 - [Prettier overview](https://prettier.io/docs) and [CLI](https://prettier.io/docs/cli) - formatter and check-mode behavior
 - [DORA metrics](https://dora.dev/guides/dora-metrics/) - five service-level delivery metrics and context caveat
 - [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback

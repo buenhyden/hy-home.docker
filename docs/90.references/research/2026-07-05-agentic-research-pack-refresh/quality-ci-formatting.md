@@ -227,7 +227,7 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) - tagged release records, notes, and assets
 - [pre-commit](https://pre-commit.com/) - hook configuration, local execution, CI use, and skips
 - [EditorConfig](https://editorconfig.org/) - cross-editor consistency
-- [EditorConfig specification](https://spec.editorconfig.org/) - hierarchical file processing and supported pairs
+- [EditorConfig specification](https://spec.editorconfig.org/) - hierarchical file processing and supported pairs. The site returns a Cloudflare bot challenge to automated clients; version 0.17.2 and the property set were re-verified 2026-08-07 from the `editorconfig/specification` upstream source. The specification defines nine properties, adding `spelling_language` to the eight commonly cited, and states that `unset` removes any pair
 - [Prettier overview](https://prettier.io/docs) - formatter behavior and supported inputs
 - [Prettier CLI](https://prettier.io/docs/cli) - check-mode and exit-code behavior
 - [DORA metrics](https://dora.dev/guides/dora-metrics/) - current five-metric throughput/instability model
