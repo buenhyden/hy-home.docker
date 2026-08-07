@@ -554,7 +554,7 @@ template_roles:
         '## Escalation',
         '## Related Documents',
       ]
-    conditional_headings: ['## Overview', '## Verification Record']
+    conditional_headings: ['## Overview', '## Verification Record', "## Automation Handoff"]
     forbidden_headings: ['## Routine Usage']
   incident:
     source: docs/99.templates/templates/operations/incident.template.md

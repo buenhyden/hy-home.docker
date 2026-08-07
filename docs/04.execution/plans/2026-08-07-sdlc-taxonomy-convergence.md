@@ -1115,6 +1115,13 @@ does not exist nor requires a heading 60 percent of the corpus lacks. Adding
 `## Overview` to the 37 documents that lack it was considered and rejected: it
 is authoring work in the opposite direction to D2.
 
+Write the demotions as ADDITIONS to each role's existing `conditional_headings`,
+never as a replacement list. `runbook` already carries `## Automation Handoff`
+there, and `runbook.template.md` emits that heading. Dropping it leaves the
+template source carrying a heading registered in neither list, which
+`check-document-metadata.py:2224` reports as `body-heading-forbidden` for
+template sources.
+
 Demote all four to `conditional_headings` — never to `forbidden_headings`,
 which would break the documents that do carry them.
 
@@ -1137,7 +1144,7 @@ required_headings:
     '## Escalation',
     '## Related Documents',
   ]
-conditional_headings: ['## Overview', '## Verification Record']
+conditional_headings: ['## Overview', '## Verification Record', '## Automation Handoff']
 ```
 
 Then remove the demoted headings from the two template bodies
