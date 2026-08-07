@@ -13,7 +13,7 @@ review_cycle: <review-cycle>
 
 {{overview}}
 
-## Scope
+## Policy Scope
 
 {{scope}}
 

@@ -539,7 +539,7 @@ template_roles:
     required_headings:
       [
         '## Overview',
-        '## Scope',
+        '## Policy Scope',
         '## Controls',
         '## Exceptions',
         '## Verification',

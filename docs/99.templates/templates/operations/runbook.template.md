@@ -13,22 +13,22 @@ review_cycle: <review-cycle>
 
 {{overview}}
 
-## Trigger and Preconditions
+## When to Use
 
-| Trigger | Prerequisites | Safety conditions |
-| --- | --- | --- |
+| Trigger     | Prerequisites     | Safety conditions     |
+| ----------- | ----------------- | --------------------- |
 | {{trigger}} | {{prerequisites}} | {{safety_conditions}} |
 
 ## Procedure
 
-| Step order | Procedure step | Expected result |
-| --- | --- | --- |
+| Step order     | Procedure step     | Expected result     |
+| -------------- | ------------------ | ------------------- |
 | {{step_order}} | {{procedure_step}} | {{expected_result}} |
 
 ## Verification Record
 
-| Verification environment | Command or procedure | Result | Evidence location |
-| --- | --- | --- | --- |
+| Verification environment     | Command or procedure                  | Result                  | Evidence location                  |
+| ---------------------------- | ------------------------------------- | ----------------------- | ---------------------------------- |
 | {{verification_environment}} | {{verification_command_or_procedure}} | {{verification_result}} | {{verification_evidence_location}} |
 
 ## Evidence
@@ -45,8 +45,8 @@ review_cycle: <review-cycle>
 
 ## Automation Handoff
 
-| Automation candidate or invocation | Human or operator judgment boundary |
-| --- | --- |
+| Automation candidate or invocation     | Human or operator judgment boundary     |
+| -------------------------------------- | --------------------------------------- |
 | {{automation_candidate_or_invocation}} | {{human_or_operator_judgment_boundary}} |
 
 ## Related Documents

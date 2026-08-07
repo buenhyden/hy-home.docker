@@ -646,22 +646,12 @@ for bucket in ["guides", "policies", "runbooks"]:
                     f"{path}: guide document must not contain duplicate ### Usage Type headings; found {usage_type_count}"
                 )
         if bucket == "policies":
-            frontmatter = text.split("---", 2)[1] if text.startswith("---") else ""
-            typed_policy = bool(
-                re.search(r"(?m)^artifact_type:\s*policy\s*$", frontmatter)
-            )
-            scope_heading = "## Scope" if typed_policy else "## Policy Scope"
-            stale_scope_heading = "## Policy Scope" if typed_policy else "## Scope"
             scope_count = sum(
-                1 for line in text.splitlines() if line.strip() == scope_heading
+                1 for line in text.splitlines() if line.strip() == "## Policy Scope"
             )
             if scope_count != 1:
                 failures.append(
-                    f"{path}: policy document must contain exactly one {scope_heading} heading; found {scope_count}"
-                )
-            if stale_scope_heading in text.splitlines():
-                failures.append(
-                    f"{path}: policy document contains cross-generation scope heading: {stale_scope_heading}"
+                    f"{path}: policy document must contain exactly one ## Policy Scope heading; found {scope_count}"
                 )
         heading_lines = {line.strip() for line in text.splitlines()}
         for literal in required[bucket]:

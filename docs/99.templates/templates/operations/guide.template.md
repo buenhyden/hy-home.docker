@@ -15,7 +15,7 @@ parent_ids: [<parent-artifact-id>]
 
 {{audience_and_prerequisites}}
 
-## Routine Usage
+## Usage
 
 {{routine_usage}}
 
