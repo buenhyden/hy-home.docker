@@ -1,8 +1,6 @@
 ---
-status: superseded
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/101-template-system-reorganization/README.md -->
 
 # Template System Reorganization Specification
 
@@ -74,8 +72,8 @@ template-system-reorganization/
 
 - [spec.md](./spec.md)
 - [current replacement spec](../100-template-system-contract-standardization/spec.md)
-- [docs/03.specs README](../README.md)
-- [template catalog](../../99.templates/README.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [repo contract validation](../../../scripts/validation/check-repo-contracts.sh)
+- [docs/03.specs README](../../../03.specs/README.md)
+- [template catalog](../../../99.templates/README.md)
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [repo contract validation](../../../../scripts/validation/check-repo-contracts.sh)

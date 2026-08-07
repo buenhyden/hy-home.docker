@@ -65,9 +65,9 @@ Out of scope:
 ## Related Inputs
 
 - **Template system contract standardization**:
-  [../../../03.specs/100-template-system-contract-standardization/spec.md](../../../03.specs/100-template-system-contract-standardization/spec.md)
+  [../../../03.specs/100-template-system-contract-standardization/spec.md](../100-template-system-contract-standardization/spec.md)
 - **Template system reorganization**:
-  [../../../03.specs/101-template-system-reorganization/spec.md](../../../03.specs/101-template-system-reorganization/spec.md)
+  [../../../03.specs/101-template-system-reorganization/spec.md](../101-template-system-reorganization/spec.md)
 - **Template selection**:
   [../../../99.templates/support/template-selection.md](../../../99.templates/support/template-selection.md)
 - **Template contract**:

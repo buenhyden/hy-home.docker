@@ -26,7 +26,7 @@ The user requested a categorized research pack covering workspace purpose, roles
 
 An existing Stage 90 research pack already covers much of the requested scope. The approved approach is to refresh the existing pack first and add targeted documents only where needed. The design contract now lives in the canonical Stage 03 path:
 
-- [Agentic Research Pack Refresh Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md)
+- [Agentic Research Pack Refresh Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 
 ## Goals & In-Scope
 
@@ -139,7 +139,7 @@ This task records execution evidence for refreshing and extending the Stage 90 a
 
 | Source Class | Source | Role | Status |
 | --- | --- | --- | --- |
-| Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md) | Design contract | Active |
+| Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md) | Design contract | Active |
 | Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution plan | Active |
 | Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Target research category | Active |
 
@@ -154,7 +154,7 @@ Validation runs after research documents and indexes are updated.
 ## Related Documents
 
 - [Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
-- [Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md)
+- [Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - [Research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Research references](../../90.references/research/README.md)
 ```
@@ -664,7 +664,7 @@ Expected: commit succeeds. If `llm-wiki-index.md` did not change, `git add` safe
 
 ## Related Documents
 
-- **Spec**: [Agentic Research Pack Refresh Spec](../../03.specs/104-agentic-research-pack-refresh/spec.md)
+- **Spec**: [Agentic Research Pack Refresh Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Research References**: [Research References](../../90.references/research/README.md)
 - **Task**: [Agentic Research Pack Refresh Task](../tasks/2026-07-05-agentic-research-pack-refresh.md)

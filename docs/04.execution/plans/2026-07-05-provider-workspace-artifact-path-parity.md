@@ -99,7 +99,7 @@ were already updated, but focused provider-surface scans still found active
 ## Related Documents
 
 - **Task**: [Provider Workspace Artifact Path Parity Task](../tasks/2026-07-05-provider-workspace-artifact-path-parity.md)
-- **Workspace Support Surface Spec**: [Workspace support surface contract](../../03.specs/106-workspace-support-surface-contract/spec.md)
+- **Workspace Support Surface Spec**: [Workspace support surface contract](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Workflow Agent Design**: [Workflow agent design](../../03.specs/008-workflow/agent-design.md)
 - **Provider Capability Matrix**: [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
 - **Subagent Protocol**: [Subagent protocol](../../00.agent-governance/subagent-protocol.md)

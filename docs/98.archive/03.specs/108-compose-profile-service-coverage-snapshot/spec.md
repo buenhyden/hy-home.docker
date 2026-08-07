@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:108-compose-profile-service-coverage-snapshot
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: a4dfc207521857e910a78bf119ed65aa71c11e28
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md -->
 
 # Compose Profile Service Coverage Snapshot Technical Specification
 
@@ -12,6 +20,10 @@ This specification defines a deterministic generator and repository-contract
 gate for a Docker Compose profile/service coverage reference. The generated
 reference supports Stage 90 audits and documentation reviews that need profile
 coverage facts without copying Compose service details by hand.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -169,10 +181,20 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-CPC-003**: Script inventory lists the generator under Operations.
 - **VAL-CPC-004**: Full repo contracts pass with `failures=0`.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md` | `docs/98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md)
-- **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../90.references/data/docker/compose-profile-service-coverage.md)
-- **Docker data index**: [../../90.references/data/docker/README.md](../../90.references/data/docker/README.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **README**: [README.md](./README.md)
+- **Plan**: [../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md](../../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md)
+- **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../../90.references/data/docker/compose-profile-service-coverage.md)
+- **Docker data index**: [../../90.references/data/docker/README.md](../../../90.references/data/docker/README.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

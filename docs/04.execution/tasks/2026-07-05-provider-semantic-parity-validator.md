@@ -13,7 +13,7 @@ provider semantic role-scope parity gap.
 
 ## Inputs
 
-- **Parent Spec**: [Provider semantic parity validator spec](../../03.specs/107-provider-semantic-parity-validator/spec.md)
+- **Parent Spec**: [Provider semantic parity validator spec](../../98.archive/03.specs/107-provider-semantic-parity-validator/spec.md)
 - **Parent Plan**: [Provider semantic parity validator plan](../plans/2026-07-05-provider-semantic-parity-validator.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -82,7 +82,7 @@ provider semantic role-scope parity gap.
 
 ## Related Documents
 
-- **Parent Spec**: [Provider semantic parity validator spec](../../03.specs/107-provider-semantic-parity-validator/spec.md)
+- **Parent Spec**: [Provider semantic parity validator spec](../../98.archive/03.specs/107-provider-semantic-parity-validator/spec.md)
 - **Parent Plan**: [Provider semantic parity validator plan](../plans/2026-07-05-provider-semantic-parity-validator.md)
 - **Provider capability matrix**: [../../00.agent-governance/rules/provider-capability-matrix.md](../../00.agent-governance/rules/provider-capability-matrix.md)
 - **Provider adapter model**: [../../00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md)

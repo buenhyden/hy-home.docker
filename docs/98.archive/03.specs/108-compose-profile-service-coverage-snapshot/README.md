@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/108-compose-profile-service-coverage-snapshot/README.md -->
 
 # Compose Profile Service Coverage Snapshot
 
@@ -57,14 +55,14 @@ This README is for:
 
 1. Use [spec.md](./spec.md) as the implementation contract.
 2. Keep generated inventory output under
-   [Stage 90 Docker data](../../90.references/data/docker/compose-profile-service-coverage.md).
+   [Stage 90 Docker data](../../../90.references/data/docker/compose-profile-service-coverage.md).
 3. Re-run the generator after tracked Compose service or profile changes.
 4. Keep execution ordering and evidence in the linked Stage 04 plan and task.
 
 ## Related Documents
 
 - [Spec](./spec.md)
-- [Implementation plan](../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md)
-- [Task evidence](../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md)
-- [Generated Compose profile coverage reference](../../90.references/data/docker/compose-profile-service-coverage.md)
-- [Automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-05-compose-profile-service-coverage-snapshot.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-05-compose-profile-service-coverage-snapshot.md)
+- [Generated Compose profile coverage reference](../../../90.references/data/docker/compose-profile-service-coverage.md)
+- [Automation candidates](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

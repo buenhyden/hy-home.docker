@@ -1,8 +1,16 @@
 ---
-status: superseded
+status: archived
+artifact_id: spec:101-template-system-reorganization
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/101-template-system-reorganization/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after it was superseded; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 80099fb49b651f078b61633768b7c58ae4065af3
+archived_blob: 2c498434fd6f7ddb5251a99d624de112f98e731d
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/101-template-system-reorganization/spec.md -->
 
 # Template System Reorganization Technical Specification
 
@@ -21,6 +29,10 @@ This design is superseded by
 [Template System Contract Standardization](../100-template-system-contract-standardization/spec.md).
 Use the replacement spec and Stage 99 support contracts for current template,
 frontmatter, archive, and governance rules.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -46,13 +58,13 @@ frontmatter, archive, and governance rules.
 - **Current replacement spec**:
   [Template System Contract Standardization](../100-template-system-contract-standardization/spec.md)
 - **Current Template Catalog**:
-  [../../99.templates/README.md](../../99.templates/README.md)
+  [../../99.templates/README.md](../../../99.templates/README.md)
 - **Documentation Protocol**:
-  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
+  [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Authoring Matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Repository Contract Validator**:
-  [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh)
+  [../../../scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh)
 - **CommonMark**: [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/)
 - **GitHub Flavored Markdown**: [GFM specification](https://github.github.com/gfm/)
 - **Frontmatter Convention**:
@@ -351,11 +363,21 @@ being patched during the template migration.
 - **VAL-SPC-007**: External-source rationale is recorded in support docs and is
   reflected in local contract rules.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/101-template-system-reorganization/spec.md` | `docs/98.archive/03.specs/101-template-system-reorganization/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
+- **README**: [README.md](./README.md)
 - [spec README](./README.md)
-- [docs/03.specs README](../README.md)
-- [template catalog](../../99.templates/README.md)
-- [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [repo contract validator](../../../scripts/validation/check-repo-contracts.sh)
+- [docs/03.specs README](../../../03.specs/README.md)
+- [template catalog](../../../99.templates/README.md)
+- [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [repo contract validator](../../../../scripts/validation/check-repo-contracts.sh)

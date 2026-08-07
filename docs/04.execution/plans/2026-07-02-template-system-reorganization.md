@@ -134,8 +134,8 @@ The approved design separates responsibilities:
 
 ## Related Documents
 
-- **Spec**: [template system reorganization spec](../../03.specs/101-template-system-reorganization/spec.md)
-- **Spec README**: [template system reorganization README](../../03.specs/101-template-system-reorganization/README.md)
+- **Spec**: [template system reorganization spec](../../98.archive/03.specs/101-template-system-reorganization/spec.md)
+- **Spec README**: [template system reorganization README](../../98.archive/03.specs/101-template-system-reorganization/README.md)
 - **Template Catalog**: [template catalog](../../99.templates/README.md)
 - **Documentation Protocol**: [documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Authoring Matrix**: [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

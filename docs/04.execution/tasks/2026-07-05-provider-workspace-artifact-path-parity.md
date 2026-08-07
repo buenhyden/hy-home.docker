@@ -14,7 +14,7 @@ paths with the `_workspace/repo-support/` contract.
 ## Inputs
 
 - **Parent Plan**: [Provider Workspace Artifact Path Parity Plan](../plans/2026-07-05-provider-workspace-artifact-path-parity.md)
-- **Workspace Support Surface Spec**: [Workspace support surface contract](../../03.specs/106-workspace-support-surface-contract/spec.md)
+- **Workspace Support Surface Spec**: [Workspace support surface contract](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Provider Audit Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
 ## Working Rules
@@ -66,7 +66,7 @@ paths with the `_workspace/repo-support/` contract.
 | --- | --- | --- |
 | Graphify report | `graphify-out/GRAPH_REPORT.md` | Refreshed with `/home/hy/.local/bin/graphify update .`; advisory due cross-root inferred edges and used only as navigation context. |
 | Current provider drift | Focused `_workspace` scans over `.agents`, `.claude`, `.codex` | Shows active provider/runtime stale artifact paths before this batch. |
-| Workspace support surface | [Workspace support surface contract](../../03.specs/106-workspace-support-surface-contract/spec.md) | Defines `_workspace/repo-support/` as approved staging path. |
+| Workspace support surface | [Workspace support surface contract](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md) | Defines `_workspace/repo-support/` as approved staging path. |
 | Provider sync | `scripts/operations/sync-provider-surfaces.sh` | Keeps Codex skill mirrors and Gemini reference indexes aligned. |
 
 ## Deviation Log
@@ -103,6 +103,6 @@ Validation results will be appended as each logical unit completes.
 ## Related Documents
 
 - **Parent Plan**: [Provider Workspace Artifact Path Parity Plan](../plans/2026-07-05-provider-workspace-artifact-path-parity.md)
-- **Workspace Support Surface Spec**: [Workspace support surface contract](../../03.specs/106-workspace-support-surface-contract/spec.md)
+- **Workspace Support Surface Spec**: [Workspace support surface contract](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Workflow Agent Design**: [Workflow agent design](../../03.specs/008-workflow/agent-design.md)
 - **Provider Capability Matrix**: [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)

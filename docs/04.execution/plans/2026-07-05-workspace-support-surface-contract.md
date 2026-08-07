@@ -105,7 +105,7 @@ in the same batch.
 
 ## Related Documents
 
-- **Spec**: [Workspace Support Surface Contract Spec](../../03.specs/106-workspace-support-surface-contract/spec.md)
+- **Spec**: [Workspace Support Surface Contract Spec](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Task**: [Workspace Support Surface Contract Task](../tasks/2026-07-05-workspace-support-surface-contract.md)
 - **Subagent Protocol**: [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - **Environment Constraints**: [Environment constraints](../../00.agent-governance/rules/environment-constraints.md)

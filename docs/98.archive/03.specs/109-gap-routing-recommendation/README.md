@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/109-gap-routing-recommendation/README.md -->
 
 # Gap Routing Recommendation
 
@@ -61,7 +59,7 @@ This README is for:
 ## Related Documents
 
 - [Spec](./spec.md)
-- [Implementation plan](../../04.execution/plans/2026-07-05-gap-routing-recommendation.md)
-- [Task evidence](../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md)
-- [Gap-to-stage routing reference](../../90.references/data/governance/gap-to-stage-routing.md)
-- [Automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-05-gap-routing-recommendation.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md)
+- [Gap-to-stage routing reference](../../../90.references/data/governance/gap-to-stage-routing.md)
+- [Automation candidates](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

@@ -14,7 +14,7 @@ infrastructure tasks.
 
 ## Inputs
 
-- **Parent Spec**: [Agent output eval fixtures spec](../../03.specs/110-agent-output-eval-fixtures/spec.md)
+- **Parent Spec**: [Agent output eval fixtures spec](../../98.archive/03.specs/110-agent-output-eval-fixtures/spec.md)
 - **Parent Plan**: [Agent output eval fixtures plan](../plans/2026-07-05-agent-output-eval-fixtures.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -74,7 +74,7 @@ infrastructure tasks.
 
 ## Related Documents
 
-- **Parent Spec**: [Agent output eval fixtures spec](../../03.specs/110-agent-output-eval-fixtures/spec.md)
+- **Parent Spec**: [Agent output eval fixtures spec](../../98.archive/03.specs/110-agent-output-eval-fixtures/spec.md)
 - **Parent Plan**: [Agent output eval fixtures plan](../plans/2026-07-05-agent-output-eval-fixtures.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Loop engineering audit**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md)

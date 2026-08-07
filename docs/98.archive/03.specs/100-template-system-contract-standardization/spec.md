@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:100-template-system-contract-standardization
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/100-template-system-contract-standardization/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 80099fb49b651f078b61633768b7c58ae4065af3
+archived_blob: ede2b8f45ea0cdf7aff5a5d8cc6abda07f841303
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/100-template-system-contract-standardization/spec.md -->
 
 # Template System Contract Standardization Technical Specification
 
@@ -23,6 +31,10 @@ The design is contract-first. Support documents define the rules first;
 templates then implement those rules; validators enforce the contract; target
 documents receive only direct fallout fixes unless a separate implementation
 plan approves broader corpus normalization.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -57,21 +69,21 @@ Out of scope:
 - **Existing template reorganization spec**:
   [../101-template-system-reorganization/spec.md](../101-template-system-reorganization/spec.md)
 - **Template catalog**:
-  [../../99.templates/README.md](../../99.templates/README.md)
+  [../../99.templates/README.md](../../../99.templates/README.md)
 - **Template contract**:
-  [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
+  [../../99.templates/support/template-contract.md](../../../99.templates/support/template-contract.md)
 - **Frontmatter contract**:
-  [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
+  [../../99.templates/support/frontmatter-contract.md](../../../99.templates/support/frontmatter-contract.md)
 - **Template governance**:
-  [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
+  [../../99.templates/support/template-governance.md](../../../99.templates/support/template-governance.md)
 - **Template selection guide**:
-  [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
+  [../../99.templates/support/template-selection.md](../../../99.templates/support/template-selection.md)
 - **Documentation protocol**:
-  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
+  [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Repository contract validator**:
-  [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh)
+  [../../../scripts/validation/check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh)
 - **Diataxis**: [https://diataxis.fr/](https://diataxis.fr/)
 - **The Good Docs Project templates**:
   [https://www.thegooddocsproject.dev/template](https://www.thegooddocsproject.dev/template)
@@ -353,21 +365,30 @@ bash scripts/validation/check-repo-contracts.sh
   failures; existing infra image/version drift may remain as an out-of-scope
   gap.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/100-template-system-contract-standardization/spec.md` | `docs/98.archive/03.specs/100-template-system-contract-standardization/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
 - **Prior Template System Spec**:
   [../101-template-system-reorganization/spec.md](../101-template-system-reorganization/spec.md)
 - **Template catalog**:
-  [../../99.templates/README.md](../../99.templates/README.md)
+  [../../99.templates/README.md](../../../99.templates/README.md)
 - **Template contract**:
-  [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
+  [../../99.templates/support/template-contract.md](../../../99.templates/support/template-contract.md)
 - **Frontmatter contract**:
-  [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
+  [../../99.templates/support/frontmatter-contract.md](../../../99.templates/support/frontmatter-contract.md)
 - **Template governance**:
-  [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
+  [../../99.templates/support/template-governance.md](../../../99.templates/support/template-governance.md)
 - **Template selection guide**:
-  [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
+  [../../99.templates/support/template-selection.md](../../../99.templates/support/template-selection.md)
 - **Documentation protocol**:
-  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
+  [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)

@@ -88,7 +88,7 @@ work while preserving human confirmation.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/109-gap-routing-recommendation/spec.md](../../03.specs/109-gap-routing-recommendation/spec.md)
+- **Spec**: [../../03.specs/109-gap-routing-recommendation/spec.md](../../98.archive/03.specs/109-gap-routing-recommendation/spec.md)
 - **Task**: [../tasks/2026-07-05-gap-routing-recommendation.md](../tasks/2026-07-05-gap-routing-recommendation.md)
 - **Gap routing reference**: [../../90.references/data/governance/gap-to-stage-routing.md](../../90.references/data/governance/gap-to-stage-routing.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

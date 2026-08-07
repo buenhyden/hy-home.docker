@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:104-agentic-research-pack-refresh
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/104-agentic-research-pack-refresh/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 7dc5a00fa713d6ae9b9e21371cbfc7907a35541b
+archived_blob: 507077eb4fe37533113d770138e5a3c7e941c618
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/104-agentic-research-pack-refresh/spec.md -->
 
 # Agentic Research Pack Refresh Technical Specification
 
@@ -19,6 +27,10 @@ formatting, linting, syntax checks, automation, pipelines, workflows,
 operating contracts, templates, scripts, integration guides, SDLC, governance,
 system structure, rules, security, harness engineering, loop engineering,
 provider implementation status, Docker Compose, and infrastructure.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -41,13 +53,13 @@ provider implementation status, Docker Compose, and infrastructure.
 - **ARD**: N/A - no architecture runtime surface changes are proposed.
 - **Related ADRs**: N/A - no architecture decision is introduced.
 - **Research Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Stage 90 Contract**:
-  [../../90.references/README.md](../../90.references/README.md)
+  [../../90.references/README.md](../../../90.references/README.md)
 - **Reference Template**:
-  [../../99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md)
+  [../../99.templates/templates/common/reference.template.md](../../../99.templates/templates/common/reference.template.md)
 - **Stage Authoring Matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 
 ## Contracts
 
@@ -243,12 +255,22 @@ applicable, and stale provider capability claims.
 - **VAL-SPC-007**: Repository validation gates pass, or unrelated failures are
   explicitly recorded as out of scope.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/104-agentic-research-pack-refresh/spec.md` | `docs/98.archive/03.specs/104-agentic-research-pack-refresh/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
+- **README**: [README.md](./README.md)
 - [spec README](./README.md)
-- [docs/03.specs README](../README.md)
-- [agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [research references](../../90.references/research/README.md)
-- [reference template](../../99.templates/templates/common/reference.template.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [documentation scope](../../00.agent-governance/scopes/docs.md)
+- [docs/03.specs README](../../../03.specs/README.md)
+- [agentic engineering research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [research references](../../../90.references/research/README.md)
+- [reference template](../../../99.templates/templates/common/reference.template.md)
+- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [documentation scope](../../../00.agent-governance/scopes/docs.md)

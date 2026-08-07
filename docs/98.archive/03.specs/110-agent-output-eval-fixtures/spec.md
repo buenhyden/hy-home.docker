@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:110-agent-output-eval-fixtures
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/110-agent-output-eval-fixtures/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: b0bf02839d4163a8af0ff5b5e6aa4072f5ee699e
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/110-agent-output-eval-fixtures/spec.md -->
 
 # Agent Output Eval Fixtures Technical Specification
 
@@ -13,6 +21,10 @@ outputs in `hy-home.docker`. The fixtures cover documentation, provider-surface,
 and infrastructure documentation tasks so future agents can score output quality
 consistently. The local advisory runner for these fixtures is specified
 separately in `116-agent-output-eval-runner`.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -33,7 +45,7 @@ workflow changes, or protected runtime mutations.
 
 - **Config Contract**: The fixture pack lives under
   `docs/90.references/data/governance/`; local runner behavior is specified by
-  [116-agent-output-eval-runner](../116-agent-output-eval-runner/spec.md).
+  [116-agent-output-eval-runner](../../../03.specs/116-agent-output-eval-runner/spec.md).
 - **Data / Interface Contract**: Each fixture must define an input scenario,
   required source context, expected output properties, scoring criteria, block
   conditions, and verification evidence.
@@ -179,11 +191,20 @@ bash scripts/validation/check-repo-contracts.sh
   local runner follow-up; CI eval gate adoption remains separate future work.
 - **VAL-AOE-004**: Documentation validation and repository contracts pass.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/110-agent-output-eval-fixtures/spec.md` | `docs/98.archive/03.specs/110-agent-output-eval-fixtures/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md](../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md)
-- **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
-- **Runner spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
-- **Loop research**: [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)
+- **Plan**: [../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md](../../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md](../../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md)
+- **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
+- **Runner spec**: [../116-agent-output-eval-runner/spec.md](../../../03.specs/116-agent-output-eval-runner/spec.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Loop research**: [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)

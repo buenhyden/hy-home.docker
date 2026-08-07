@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:109-gap-routing-recommendation
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/109-gap-routing-recommendation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: 37c41b99f8ffd2cf985d68e34ca569e640c95b90
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/109-gap-routing-recommendation/spec.md -->
 
 # Gap Routing Recommendation Technical Specification
 
@@ -12,6 +20,10 @@ This specification defines a non-mutating advisory recommender for routing gaps
 to their canonical repository owner. The recommender reads the Stage 00
 documentation protocol table and applies simple path-prefix and keyword
 heuristics for local use.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -164,10 +176,20 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-GRR-003**: Sensitive-looking text input is redacted in output.
 - **VAL-GRR-004**: Full repo contracts pass with `failures=0`.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/109-gap-routing-recommendation/spec.md` | `docs/98.archive/03.specs/109-gap-routing-recommendation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-05-gap-routing-recommendation.md](../../04.execution/plans/2026-07-05-gap-routing-recommendation.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md](../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md)
-- **Gap routing reference**: [../../90.references/data/governance/gap-to-stage-routing.md](../../90.references/data/governance/gap-to-stage-routing.md)
-- **Documentation protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **README**: [README.md](./README.md)
+- **Plan**: [../../04.execution/plans/2026-07-05-gap-routing-recommendation.md](../../../04.execution/plans/2026-07-05-gap-routing-recommendation.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md](../../../04.execution/tasks/2026-07-05-gap-routing-recommendation.md)
+- **Gap routing reference**: [../../90.references/data/governance/gap-to-stage-routing.md](../../../90.references/data/governance/gap-to-stage-routing.md)
+- **Documentation protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

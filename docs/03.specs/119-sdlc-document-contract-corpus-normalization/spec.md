@@ -68,11 +68,11 @@ paired Stage 04 plan and task files.
 - **Numbered SDLC path migration**:
   [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Template contract standardization**:
-  [../100-template-system-contract-standardization/spec.md](../100-template-system-contract-standardization/spec.md)
+  [../100-template-system-contract-standardization/spec.md](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
 - **Document restructure disposition contract**:
   [../103-document-restructure-audit-contract-archive/spec.md](../103-document-restructure-audit-contract-archive/spec.md)
 - **Workspace support surface contract**:
-  [../106-workspace-support-surface-contract/spec.md](../106-workspace-support-surface-contract/spec.md)
+  [../106-workspace-support-surface-contract/spec.md](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Documentation protocol**:
   [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**:
@@ -364,9 +364,9 @@ policy.
 - [Spec README](./README.md)
 - [Stage 03 README](../README.md)
 - [Numbered SDLC path migration spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
-- [Template contract standardization spec](../100-template-system-contract-standardization/spec.md)
+- [Template contract standardization spec](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
 - [Document restructure disposition spec](../103-document-restructure-audit-contract-archive/spec.md)
-- [Workspace support surface contract spec](../106-workspace-support-surface-contract/spec.md)
+- [Workspace support surface contract spec](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Template governance](../../99.templates/support/template-governance.md)

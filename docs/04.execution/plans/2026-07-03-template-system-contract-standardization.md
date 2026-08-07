@@ -170,7 +170,7 @@ generated indexes according to the approved spec.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/100-template-system-contract-standardization/spec.md](../../03.specs/100-template-system-contract-standardization/spec.md)
+- **Spec**: [../../03.specs/100-template-system-contract-standardization/spec.md](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
 - **Plan**: [../plans/2026-07-03-template-system-contract-standardization.md](../plans/2026-07-03-template-system-contract-standardization.md)
 - **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
 - **Frontmatter contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
@@ -770,8 +770,8 @@ Expected: commit succeeds.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/100-template-system-contract-standardization/spec.md](../../03.specs/100-template-system-contract-standardization/spec.md)
-- **Prior Template System Spec**: [../../03.specs/101-template-system-reorganization/spec.md](../../03.specs/101-template-system-reorganization/spec.md)
+- **Spec**: [../../03.specs/100-template-system-contract-standardization/spec.md](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
+- **Prior Template System Spec**: [../../03.specs/101-template-system-reorganization/spec.md](../../98.archive/03.specs/101-template-system-reorganization/spec.md)
 - **Planned Task Evidence**: `docs/04.execution/tasks/2026-07-03-template-system-contract-standardization.md` will be created by Task 1.
 - **Template catalog**: [../../99.templates/README.md](../../99.templates/README.md)
 - **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)

@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/104-agentic-research-pack-refresh/README.md -->
 
 # Agentic Research Pack Refresh Specification
 
@@ -70,7 +68,7 @@ agentic-research-pack-refresh/
 ## Related Documents
 
 - [spec.md](./spec.md)
-- [docs/03.specs README](../README.md)
-- [agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [research references](../../90.references/research/README.md)
-- [stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [docs/03.specs README](../../../03.specs/README.md)
+- [agentic engineering research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [research references](../../../90.references/research/README.md)
+- [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

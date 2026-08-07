@@ -92,7 +92,7 @@ Compose corpus.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md)
+- **Spec**: [../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md)
 - **Task**: [../tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../tasks/2026-07-05-compose-profile-service-coverage-snapshot.md)
 - **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../90.references/data/docker/compose-profile-service-coverage.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

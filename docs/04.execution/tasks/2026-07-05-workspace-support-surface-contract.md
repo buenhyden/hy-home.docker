@@ -13,7 +13,7 @@ repo-support and protected-surface contract.
 
 ## Inputs
 
-- **Parent Spec**: [Workspace Support Surface Contract Spec](../../03.specs/106-workspace-support-surface-contract/spec.md)
+- **Parent Spec**: [Workspace Support Surface Contract Spec](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Parent Plan**: [Workspace Support Surface Contract Plan](../plans/2026-07-05-workspace-support-surface-contract.md)
 - **User Approval**: 2026-07-05 approval for Approach A, `_workspace` contract
   first.
@@ -121,7 +121,7 @@ Validation results will be appended as each logical unit completes.
 
 ## Related Documents
 
-- **Parent Spec**: [Workspace Support Surface Contract Spec](../../03.specs/106-workspace-support-surface-contract/spec.md)
+- **Parent Spec**: [Workspace Support Surface Contract Spec](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
 - **Parent Plan**: [Workspace Support Surface Contract Plan](../plans/2026-07-05-workspace-support-surface-contract.md)
 - **Subagent Protocol**: [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - **Environment Constraints**: [Environment constraints](../../00.agent-governance/rules/environment-constraints.md)

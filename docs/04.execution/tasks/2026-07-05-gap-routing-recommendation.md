@@ -13,7 +13,7 @@ gap-to-stage routing automation candidate.
 
 ## Inputs
 
-- **Parent Spec**: [Gap routing recommendation spec](../../03.specs/109-gap-routing-recommendation/spec.md)
+- **Parent Spec**: [Gap routing recommendation spec](../../98.archive/03.specs/109-gap-routing-recommendation/spec.md)
 - **Parent Plan**: [Gap routing recommendation plan](../plans/2026-07-05-gap-routing-recommendation.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -77,7 +77,7 @@ gap-to-stage routing automation candidate.
 
 ## Related Documents
 
-- **Parent Spec**: [Gap routing recommendation spec](../../03.specs/109-gap-routing-recommendation/spec.md)
+- **Parent Spec**: [Gap routing recommendation spec](../../98.archive/03.specs/109-gap-routing-recommendation/spec.md)
 - **Parent Plan**: [Gap routing recommendation plan](../plans/2026-07-05-gap-routing-recommendation.md)
 - **Gap routing reference**: [../../90.references/data/governance/gap-to-stage-routing.md](../../90.references/data/governance/gap-to-stage-routing.md)
 - **Documentation protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)

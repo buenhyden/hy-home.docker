@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/107-provider-semantic-parity-validator/README.md -->
 
 # Provider Semantic Parity Validator
 
@@ -63,8 +61,8 @@ This README is for:
 ## Related Documents
 
 - [Spec](./spec.md)
-- [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
-- [AGENTS.md provider-neutral notes](../../00.agent-governance/providers/agents-md.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [Implementation plan](../../04.execution/plans/2026-07-05-provider-semantic-parity-validator.md)
-- [Task evidence](../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md)
+- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md)
+- [AGENTS.md provider-neutral notes](../../../00.agent-governance/providers/agents-md.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-05-provider-semantic-parity-validator.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-05-provider-semantic-parity-validator.md)

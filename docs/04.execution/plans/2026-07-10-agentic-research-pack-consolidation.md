@@ -1081,7 +1081,7 @@ verdict in this document.
 - **Task**:
   [Agentic Research Pack Consolidation Task](../tasks/2026-07-10-agentic-research-pack-consolidation.md)
 - **Previous Spec**:
-  [Agentic Research Pack Refresh](../../03.specs/104-agentic-research-pack-refresh/spec.md)
+  [Agentic Research Pack Refresh](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - **Canonical Research Pack**:
   [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Duplicate Pack**:

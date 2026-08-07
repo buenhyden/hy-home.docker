@@ -91,7 +91,7 @@ repository can start with a small stable fixture pack before adding any runner.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/110-agent-output-eval-fixtures/spec.md](../../03.specs/110-agent-output-eval-fixtures/spec.md)
+- **Spec**: [../../03.specs/110-agent-output-eval-fixtures/spec.md](../../98.archive/03.specs/110-agent-output-eval-fixtures/spec.md)
 - **Task**: [../tasks/2026-07-05-agent-output-eval-fixtures.md](../tasks/2026-07-05-agent-output-eval-fixtures.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/106-workspace-support-surface-contract/README.md -->
 
 # Workspace Support Surface Contract Specification
 
@@ -72,9 +70,9 @@ This specification is a completed design contract implemented on 2026-07-05.
 ## Related Documents
 
 - [spec.md](./spec.md)
-- [docs/03.specs README](../README.md)
-- [implementation plan](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md)
-- [task evidence](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md)
-- [subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [environment constraints](../../00.agent-governance/rules/environment-constraints.md)
-- [template governance](../../99.templates/support/template-governance.md)
+- [docs/03.specs README](../../../03.specs/README.md)
+- [implementation plan](../../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md)
+- [task evidence](../../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md)
+- [subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [environment constraints](../../../00.agent-governance/rules/environment-constraints.md)
+- [template governance](../../../99.templates/support/template-governance.md)

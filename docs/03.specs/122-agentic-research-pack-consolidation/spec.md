@@ -57,7 +57,7 @@ coding suitability, task fit, and evidence limitations.
   changed.
 - **Related ADRs**: No new architecture decision is introduced.
 - **Previous Spec**:
-  [../104-agentic-research-pack-refresh/spec.md](../104-agentic-research-pack-refresh/spec.md)
+  [../104-agentic-research-pack-refresh/spec.md](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - **Canonical Pack**:
   [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Duplicate Pack**:
@@ -396,7 +396,7 @@ Also perform targeted checks for:
 - [Spec folder README](./README.md)
 - [Implementation plan](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
 - [Task evidence](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
-- [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
+- [Previous research refresh specification](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Superseded path mapping for the duplicate research pack](../../90.references/research/README.md) - the pack itself was removed after this specification completed; its canonical destination mapping is preserved in the research category index
 - [Research category README](../../90.references/research/README.md)

@@ -95,7 +95,7 @@ parity gap rather than a structural one.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/107-provider-semantic-parity-validator/spec.md](../../03.specs/107-provider-semantic-parity-validator/spec.md)
+- **Spec**: [../../03.specs/107-provider-semantic-parity-validator/spec.md](../../98.archive/03.specs/107-provider-semantic-parity-validator/spec.md)
 - **Task**: [../tasks/2026-07-05-provider-semantic-parity-validator.md](../tasks/2026-07-05-provider-semantic-parity-validator.md)
 - **Provider capability matrix**: [../../00.agent-governance/rules/provider-capability-matrix.md](../../00.agent-governance/rules/provider-capability-matrix.md)
 - **Provider adapter model**: [../../00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md)

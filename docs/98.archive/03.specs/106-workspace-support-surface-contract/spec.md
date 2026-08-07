@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:106-workspace-support-surface-contract
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/106-workspace-support-surface-contract/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: e327e2c9954a3d63dda4d4ff60eb2a70ac92219d
+archived_blob: 2df64672dd3a7bda35453c86e0201c3578c21e1a
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/106-workspace-support-surface-contract/spec.md -->
 
 # Workspace Support Surface Contract Technical Specification
 
@@ -18,6 +26,10 @@ that gap by making `_workspace/repo-support/` the only allowed temporary
 repo-support staging area and by prohibiting diagnostics, local logs, auth
 files, tokens, shell history, raw logs, credentials, private keys, and secret
 values from the tracked `_workspace` surface.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -39,17 +51,17 @@ values from the tracked `_workspace` surface.
 - **User approval**: 2026-07-05 approval for Approach A, `_workspace` contract
   first, with broader repo-wide cleanup decomposed as follow-up.
 - **Subagent protocol**:
-  [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md)
+  [../../00.agent-governance/subagent-protocol.md](../../../00.agent-governance/subagent-protocol.md)
 - **Workflow routing**:
-  [../../00.agent-governance/rules/workflows.md](../../00.agent-governance/rules/workflows.md)
+  [../../00.agent-governance/rules/workflows.md](../../../00.agent-governance/rules/workflows.md)
 - **Environment constraints**:
-  [../../00.agent-governance/rules/environment-constraints.md](../../00.agent-governance/rules/environment-constraints.md)
+  [../../00.agent-governance/rules/environment-constraints.md](../../../00.agent-governance/rules/environment-constraints.md)
 - **Security scope**:
-  [../../00.agent-governance/scopes/security.md](../../00.agent-governance/scopes/security.md)
+  [../../00.agent-governance/scopes/security.md](../../../00.agent-governance/scopes/security.md)
 - **Template governance**:
-  [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
+  [../../99.templates/support/template-governance.md](../../../99.templates/support/template-governance.md)
 - **Frontmatter contract**:
-  [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
+  [../../99.templates/support/frontmatter-contract.md](../../../99.templates/support/frontmatter-contract.md)
 - **Git ignore pattern source**:
   [gitignore documentation](https://www.kernel.org/pub/software/scm/git/docs/gitignore.html)
 - **GitHub ignore guidance**:
@@ -199,14 +211,24 @@ Graphify is unavailable, record the skip in task evidence.
 - **VAL-WSC-006**: Documentation traceability and repository contract checks
   pass, or unrelated failures are recorded in task evidence.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/106-workspace-support-surface-contract/spec.md` | `docs/98.archive/03.specs/106-workspace-support-surface-contract/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
+- **README**: [README.md](./README.md)
 - [spec README](./README.md)
-- [docs/03.specs README](../README.md)
-- [implementation plan](../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md)
-- [task evidence](../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md)
-- [subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [environment constraints](../../00.agent-governance/rules/environment-constraints.md)
-- [security scope](../../00.agent-governance/scopes/security.md)
-- [template governance](../../99.templates/support/template-governance.md)
-- [frontmatter contract](../../99.templates/support/frontmatter-contract.md)
+- [docs/03.specs README](../../../03.specs/README.md)
+- [implementation plan](../../../04.execution/plans/2026-07-05-workspace-support-surface-contract.md)
+- [task evidence](../../../04.execution/tasks/2026-07-05-workspace-support-surface-contract.md)
+- [subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [environment constraints](../../../00.agent-governance/rules/environment-constraints.md)
+- [security scope](../../../00.agent-governance/scopes/security.md)
+- [template governance](../../../99.templates/support/template-governance.md)
+- [frontmatter contract](../../../99.templates/support/frontmatter-contract.md)

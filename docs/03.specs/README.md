@@ -67,17 +67,9 @@ docs/03.specs/
 ├── 096-llm-wiki-agent-first-completion/ # Completed LLM Wiki contract spec
 ├── 097-home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
 ├── 098-standardize-infra-net/           # Completed infra_net standardization spec
-├── 100-template-system-contract-standardization/ # Completed Stage 99 contract/frontmatter standardization spec
-├── 101-template-system-reorganization/  # Superseded Stage 99 template system reorganization spec
 ├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
-├── 104-agentic-research-pack-refresh/   # Completed Stage 90 agentic research refresh spec
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
-├── 106-workspace-support-surface-contract/ # Completed `_workspace` repo-support surface contract
-├── 107-provider-semantic-parity-validator/ # Completed provider adapter semantic parity validator
-├── 108-compose-profile-service-coverage-snapshot/ # Completed generated Compose profile/service coverage snapshot
-├── 109-gap-routing-recommendation/      # Completed gap-to-stage routing recommendation
-├── 110-agent-output-eval-fixtures/       # Completed agent-output eval fixture pack
 ├── 111-qa-gate-recommendation-ci-summary/ # Completed QA gate recommendation CI summary
 ├── 112-audit-pack-coverage-report/       # Completed audit-pack implementation-status coverage report
 ├── 113-llm-wiki-stage-category-coverage/ # Completed LLM Wiki stage/category coverage snapshot
@@ -117,13 +109,7 @@ docs/03.specs/
 | Kafka, RabbitMQ, stream/message broker behavior                                                       | `006-messaging/spec.md`                                       |
 | Metrics, logs, traces, dashboards, alerts                                                             | `007-observability/spec.md`                                   |
 | Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
-| Stage 90 agentic engineering research pack refresh                                                    | `104-agentic-research-pack-refresh/spec.md`                   |
 | Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
-| `_workspace` repo-support and protected-surface contract                                              | `106-workspace-support-surface-contract/spec.md`              |
-| Provider adapter semantic role-scope parity validation                                                | `107-provider-semantic-parity-validator/spec.md`              |
-| Generated Docker Compose profile/service coverage snapshot                                            | `108-compose-profile-service-coverage-snapshot/spec.md`       |
-| Gap-to-stage routing advisory recommendation                                                          | `109-gap-routing-recommendation/spec.md`                      |
-| Agent-output eval fixture pack                                                                        | `110-agent-output-eval-fixtures/spec.md`                      |
 | QA gate recommendation CI summary                                                                     | `111-qa-gate-recommendation-ci-summary/spec.md`               |
 | Audit-pack implementation-status coverage report                                                      | `112-audit-pack-coverage-report/spec.md`                      |
 | LLM Wiki stage/category coverage snapshot                                                             | `113-llm-wiki-stage-category-coverage/spec.md`                |
@@ -148,7 +134,6 @@ docs/03.specs/
 | Target corpus contract, archive split, deprecated runtime removal, and static QA convergence          | `133-target-surface-contract-convergence/spec.md`             |
 | Active agent-governance provider, memory, harness, loop, CI, and evidence convergence                 | `134-agent-governance-canonical-convergence/spec.md`          |
 | Second-wave document restructure disposition contract                                                 | `103-document-restructure-audit-contract-archive/spec.md`     |
-| Stage 99 template contract, taxonomy, and frontmatter standardization design                          | `100-template-system-contract-standardization/spec.md`        |
 | Workspace-wide document contract audit/disposition model                                              | `102-workspace-document-contract-audit-pack/spec.md`          |
 | Local AI inference, RAG UI, model-serving contracts                                                   | `009-ai/spec.md`, `009-ai/open-webui.md`                      |
 | IaC, registry, quality, performance tooling services                                                  | `010-tooling/spec.md`                                         |
@@ -211,13 +196,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
 - **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
 - **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
-- **Agentic Research Pack Refresh Spec**: [104-agentic-research-pack-refresh/spec.md](./104-agentic-research-pack-refresh/spec.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
-- **Workspace Support Surface Contract Spec**: [106-workspace-support-surface-contract/spec.md](./106-workspace-support-surface-contract/spec.md)
-- **Provider Semantic Parity Validator Spec**: [107-provider-semantic-parity-validator/spec.md](./107-provider-semantic-parity-validator/spec.md)
-- **Compose Profile Service Coverage Snapshot Spec**: [108-compose-profile-service-coverage-snapshot/spec.md](./108-compose-profile-service-coverage-snapshot/spec.md)
-- **Gap Routing Recommendation Spec**: [109-gap-routing-recommendation/spec.md](./109-gap-routing-recommendation/spec.md)
-- **Agent Output Eval Fixtures Spec**: [110-agent-output-eval-fixtures/spec.md](./110-agent-output-eval-fixtures/spec.md)
 - **QA Gate Recommendation CI Summary Spec**: [111-qa-gate-recommendation-ci-summary/spec.md](./111-qa-gate-recommendation-ci-summary/spec.md)
 - **Audit Pack Coverage Report Spec**: [112-audit-pack-coverage-report/spec.md](./112-audit-pack-coverage-report/spec.md)
 - **LLM Wiki Stage Category Coverage Spec**: [113-llm-wiki-stage-category-coverage/spec.md](./113-llm-wiki-stage-category-coverage/spec.md)
@@ -247,6 +226,5 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Home Docker Revalidation Deferred Follow-up Spec**: [097-home-docker-revalidation-deferred-follow-up/spec.md](./097-home-docker-revalidation-deferred-follow-up/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [095-infra-secrets-docs-refresh/spec.md](./095-infra-secrets-docs-refresh/spec.md)
 - **LLM Wiki Agent-first Completion Spec**: [096-llm-wiki-agent-first-completion/spec.md](./096-llm-wiki-agent-first-completion/spec.md)
-- **Template System Contract Standardization Spec**: [100-template-system-contract-standardization/spec.md](./100-template-system-contract-standardization/spec.md)
 - **Workspace Document Contract Audit Pack Spec**: [102-workspace-document-contract-audit-pack/spec.md](./102-workspace-document-contract-audit-pack/spec.md)
 - **Workspace Audit 2026-05 Spec**: [090-workspace-audit-2026-05/spec.md](./090-workspace-audit-2026-05/spec.md)
