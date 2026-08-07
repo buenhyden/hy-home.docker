@@ -1407,7 +1407,7 @@ forward pointer inside a deleted directory is not reachable."
 
 ---
 
-#### Task 13: Migrate the 31 archivable Stage 03 specifications
+#### Task 13: Migrate the 32 archivable Stage 03 specifications
 
 The first revision of this task used forward-pointer tombstones. A trial run
 proved that impossible and the approach is withdrawn. Two facts, both verified
@@ -1425,14 +1425,14 @@ Relocation now preserves reachability rather than the path: inbound links are
 rewritten and the mapping is recorded in the archive ledger — the same mechanism
 Task 14 uses for Stage 04.
 
-Scope is 31 specifications, not 42. The 2026-07-04 document restructure audit
+Scope is 32 specifications, not 42. The 2026-07-04 document restructure audit
 ruled eleven Stage 03 specifications `evidence-preserve`, "Kept in place; no
 archive tombstone", with a reason recorded for each. Ten are terminal and are
 excluded here; the eleventh is already non-terminal.
 
 **Files:**
 
-- Move: 31 directories from `docs/03.specs/` to `docs/98.archive/03.specs/`
+- Move: 32 directories from `docs/03.specs/` to `docs/98.archive/03.specs/`
 - Modify: every document containing an inbound link to a moved specification
 - Modify: `docs/98.archive/README.md` (ledger mapping)
 
@@ -1443,6 +1443,17 @@ excluded here; the eleventh is already non-terminal.
 
 - [ ] **Step 1: Build the exclusion list from the prior audit**
 
+The audit records dispositions in three places, and only one of them is binding.
+`## Completed Candidate List` and `## Prior Follow-Up List` hold _candidates_
+worded as "historical-archive or evidence-preserve candidate". The binding
+rulings are in `## PLN-DRA-004 Disposition Results`, and they are identified by
+the phrase "Kept in place", not by any single disposition value — two of them
+are `active-canonical`, not `evidence-preserve`.
+
+Matching on `evidence-preserve` alone produces the wrong list: it picks up
+specifications 100 and 101, which were only ever candidates, and misses 098 and
+103, which carry real keep-in-place rulings.
+
 ```bash
 cd /home/hy/projects/hy-home.docker
 python3 - <<'PY'
@@ -1450,7 +1461,7 @@ import pathlib, re
 audit = pathlib.Path("docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/sdlc-spec-archive-candidates.md").read_text()
 keep = set()
 for line in audit.splitlines():
-    if "evidence-preserve" in line:
+    if "Kept in place" in line or "No archive in current wave" in line:
         keep.update(re.findall(r"docs/03\.specs/(\d{3}-[a-z0-9-]+)/", line))
 pathlib.Path("/tmp/claude-1000/sdlc-convergence/keep-in-place.txt").write_text(
     "\n".join(sorted(keep)) + "\n")
@@ -1460,7 +1471,8 @@ for s in sorted(keep):
 PY
 ```
 
-Expected: 11 specifications. These are never moved by this task.
+Expected: 11 specifications — 090 through 098, 103, and 105. Ten of them are
+terminal; 103 is already `active` and would not have been in scope anyway.
 
 - [ ] **Step 2: Enumerate the archivable specifications**
 
@@ -1482,7 +1494,7 @@ print("archivable:", len(rows))
 PY
 ```
 
-Expected: `31`. If the count differs, stop — the exclusion list or the status
+Expected: `32`. If the count differs, stop — the exclusion list or the status
 scan is wrong, and moving the wrong directory is the expensive mistake here.
 
 - [ ] **Step 3: Record inbound links before moving anything**
@@ -1505,9 +1517,44 @@ PY
 
 Record the total. Step 6 must drive it to zero.
 
+- [ ] **Step 3b: Widen the archive README profile before moving anything**
+
+16 of the 32 archivable specifications carry a `README.md` beside `spec.md`.
+Moving one produces `docs/98.archive/03.specs/<slug>/README.md`, three levels
+deep. The archive README profile registers only two globs:
+
+```yaml
+path_globs: ['docs/98.archive/README.md', 'docs/98.archive/*/README.md']
+```
+
+One level. Every migrated README therefore classifies as
+`readme-profile: README path is unclassified`, unconditionally and regardless of
+frontmatter. The glob was written when the archive was one level deep; the
+archive already holds `docs/98.archive/04.execution/plans/`, so the assumption
+was stale before this migration reached it.
+
+In `docs/99.templates/support/document-metadata-profiles.yaml`, under the
+`archive` entry of `readme_profiles`, replace those two globs with:
+
+```yaml
+path_globs: ['docs/98.archive/README.md', 'docs/98.archive/**/README.md']
+```
+
+`**` subsumes the single-level form, so no existing archive README changes
+classification. Verify that before continuing:
+
+```bash
+python3 -c "import yaml; p=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print(p['readme_profiles']['archive']['path_globs'])"
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
+```
+
+Expected: the widened globs, `violations=0`, and `2`. Commit this on its own —
+it is a contract prerequisite, not part of any document move.
+
 - [ ] **Step 4: Move one directory and write full archive provenance**
 
-Do one first. The remaining 30 copy this shape.
+Do one first. The remaining 31 copy this shape.
 
 The archive frontmatter is far heavier than a status change.
 `docs/99.templates/support/archive-retention-contract.md:37-52` defines the
@@ -1570,7 +1617,7 @@ python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 
 ```
 
 Expected: `violations=0`. If the archive profile rejects the frontmatter, fix it
-here — before the shape is replicated 30 times. This is the step whose omission
+here — before the shape is replicated 31 times. This is the step whose omission
 caused the first attempt to fail.
 
 - [ ] **Step 6: Rewrite inbound links for that specification**
@@ -1603,7 +1650,7 @@ target that no longer resolves.
 git add -A docs/
 git commit -m "docs(archive): migrate the first terminal specification
 
-Establishes the move, frontmatter, and link-rewrite pattern the remaining 30
+Establishes the move, frontmatter, and link-rewrite pattern the remaining 31
 follow. Committed separately so the pattern is reviewable before replication.
 
 Forward-pointer tombstones were attempted first and withdrawn: the metadata
@@ -1612,7 +1659,7 @@ status: archived on any path that is not an archive path, so a tombstone cannot
 carry the status that defines it."
 ```
 
-- [ ] **Step 8: Apply the pattern to the remaining 30**
+- [ ] **Step 8: Apply the pattern to the remaining 31**
 
 Repeat Steps 4 through 6 for every remaining line in
 `/tmp/claude-1000/sdlc-convergence/archivable-specs.txt`. Commit in batches of at
@@ -1634,7 +1681,7 @@ python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 
 bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
 ```
 
-Expected: `28` live specification directories, `31` archived, `violations=0`,
+Expected: `27` live specification directories, `32` archived, `violations=0`,
 and `2` contract failures. Then re-run the fence-aware link check from Task 1
 Step 3 and confirm the count is at or below its baseline of 1.
 
