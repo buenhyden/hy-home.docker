@@ -35,18 +35,58 @@ if not workflow_path.is_file():
     failures.append(f"missing workflow file: {workflow_path}")
 else:
     text = workflow_path.read_text(errors="ignore")
-    for literal in [
-        "frontend-quality:",
-        "npm run lint --prefix projects/storybook/nextjs",
-        "npm run typecheck --prefix projects/storybook/nextjs",
-        "npm run build --prefix projects/storybook/nextjs",
-        "npm run build-storybook --prefix projects/storybook/nextjs",
-        "storybook-coverage:",
-        "npm ci --prefix projects/storybook/nextjs",
-        "npm run coverage --prefix projects/storybook/nextjs",
-    ]:
+    for literal in ["frontend-quality:", "storybook-coverage:"]:
         if literal not in text:
-            failures.append(f"{workflow_path}: missing Storybook coverage workflow literal: {literal}")
+            failures.append(f"{workflow_path}: missing Storybook coverage workflow job: {literal}")
+
+# The npm invocations moved out of inline workflow shell into typed gate argv
+# declarations executed through scripts/validation/ci_gate_adapters.py. Assert
+# the declarations, not the retired inline literals.
+contract_path = pathlib.Path(".github/workflow-contract.yml")
+required_gate_argv = {
+    "leaf.frontend-lint": ["run-npm", "run", "lint", "--prefix", "projects/storybook/nextjs"],
+    "leaf.frontend-typecheck": ["run-npm", "run", "typecheck", "--prefix", "projects/storybook/nextjs"],
+    "leaf.frontend-build": ["run-npm", "run", "build", "--prefix", "projects/storybook/nextjs"],
+    "leaf.frontend-quality": ["run-npm", "run", "build-storybook", "--prefix", "projects/storybook/nextjs"],
+    "leaf.storybook-coverage": ["run-npm", "run", "coverage", "--prefix", "projects/storybook/nextjs"],
+    "setup.storybook-node-dependencies": ["run-npm", "ci", "--prefix", "projects/storybook/nextjs"],
+}
+
+if not contract_path.is_file():
+    failures.append(f"missing workflow contract: {contract_path}")
+else:
+    contract_text = contract_path.read_text(errors="ignore")
+    try:
+        contract = json.loads(contract_text)
+    except json.JSONDecodeError:
+        try:
+            import yaml
+        except Exception as exc:  # pragma: no cover - dependency guard
+            contract = None
+            failures.append(f"{contract_path}: PyYAML is required to parse the workflow contract: {exc}")
+        else:
+            contract = yaml.safe_load(contract_text)
+
+    def iter_gates(node):
+        if isinstance(node, dict):
+            if "gate_id" in node:
+                yield node
+            for value in node.values():
+                yield from iter_gates(value)
+        elif isinstance(node, list):
+            for value in node:
+                yield from iter_gates(value)
+
+    if contract is not None:
+        declared = {gate["gate_id"]: list(gate.get("argv") or []) for gate in iter_gates(contract)}
+        for gate_id, expected_argv in sorted(required_gate_argv.items()):
+            if gate_id not in declared:
+                failures.append(f"{contract_path}: missing Storybook coverage gate: {gate_id}")
+            elif declared[gate_id] != expected_argv:
+                failures.append(
+                    f"{contract_path}: gate {gate_id} argv mismatch: "
+                    f"expected {expected_argv}, found {declared[gate_id]}"
+                )
 
 if not vitest_config_path.is_file():
     failures.append(f"missing Vitest config: {vitest_config_path}")

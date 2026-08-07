@@ -1314,7 +1314,6 @@ if ! bash scripts/validation/check-storybook-contract.sh; then
   failures=$((failures + 1))
 fi
 
-
 section "Hookify critical-rule metadata"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -3047,6 +3046,20 @@ historical_reference_roots = (
 
 reference_artifact_roots = ()
 
+# Paths that never existed in this tree but are cited by evidence documents
+# precisely to record their absence. Stage 04 execution evidence and Stage 90
+# references must be able to state "this path is absent and no substitute was
+# invented" without that honest record counting as a broken reference. Keep the
+# set explicit so a genuinely broken link still fails.
+absent_documented_entrypoints = {
+    "scripts/governance/validate-cross-links.sh",
+}
+
+absence_record_roots = (
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/90.references"),
+)
+
 def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
     try:
         path.relative_to(root)
@@ -3058,6 +3071,11 @@ def allows_deleted_entrypoint_reference(path: pathlib.Path, ref: str) -> bool:
     if ref not in deleted_entrypoints:
         return False
     return any(is_relative_to(path, root) for root in (*historical_reference_roots, *reference_artifact_roots))
+
+def allows_absence_record_reference(path: pathlib.Path, ref: str) -> bool:
+    if ref not in absent_documented_entrypoints:
+        return False
+    return any(is_relative_to(path, root) for root in absence_record_roots)
 
 def git_paths(*arguments: str) -> tuple[pathlib.Path, ...] | None:
     try:
@@ -3414,6 +3432,8 @@ try:
             if confined_regular_exists(local_target) or confined_regular_exists(root_target):
                 continue
             if allows_deleted_entrypoint_reference(path, ref):
+                continue
+            if allows_absence_record_reference(path, ref):
                 continue
             record_missing_failure(path, ref)
 except (UnicodeError, UnsafeScriptReferenceSurface):
