@@ -58,7 +58,7 @@ routing aid only.
 - Reading or quoting any secret value
 - Treating generated graph output as authoritative
 
-## Facts and Definitions
+## Definitions / Facts
 
 - **LLM Wiki** is a generated tracked repo-local path index plus a small
   hand-curated map. It is explicitly not a deployable wiki site and not a
@@ -79,7 +79,7 @@ Measured at baseline `867a8146`.
 | WIKI-01   | `llms.txt`                                                              | Hand-authored         | 30 lines, 1,589 bytes                                    | English               | Root entrypoint with canonical entry points and boundaries |
 | WIKI-02   | `docs/90.references/llm-wiki/README.md`                                 | Hand-authored         | 85 lines, 4,689 bytes                                    | Korean                | Folder index and category boundary                         |
 | WIKI-03   | `docs/90.references/llm-wiki/repository-map.md`                         | Hand-authored         | 95 lines, 5,834 bytes                                    | English               | Twelve-row need-to-canonical-source table                  |
-| WIKI-04   | `docs/90.references/llm-wiki/llm-wiki-index.md`                         | Generated             | 1,460 lines, 199,107 bytes, 1,326 path rows, 12 sections | Mixed, English-exempt | Deterministic path index                                   |
+| WIKI-04   | `docs/90.references/llm-wiki/llm-wiki-index.md`                         | Generated             | 1,464 lines, 199,864 bytes, 1,330 path rows, 12 sections | Mixed, English-exempt | Deterministic path index                                   |
 | WIKI-05   | `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` | Generated             | Coverage snapshot                                        | English               | Counts safe paths by bucket, category, and role            |
 
 ## Generation and Enforcement Matrix
@@ -104,7 +104,7 @@ Measured at baseline `867a8146`.
 | -------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | Consumer             | External model fetching a website                 | Coding agent at session start                                                      | Repo-local agent exploring the tree                   |
 | Delivery             | HTTP fetch of a root path                         | Auto-loaded into context every session                                             | Read on demand through file tools; nothing auto-loads |
-| Size discipline      | Concise by design, with a skippable optional tier | Codex caps the combined chain at 32 KiB; Claude documents a target under 200 lines | No budget; the generated index is 199,107 bytes       |
+| Size discipline      | Concise by design, with a skippable optional tier | Codex caps the combined chain at 32 KiB; Claude documents a target under 200 lines | No budget; the generated index is 199,864 bytes       |
 | Content              | Curated links with prose notes                    | Instructions, commands, conventions                                                | Path plus role label only, by contract                |
 | Authoring            | Hand-curated                                      | Hand-written                                                                       | Hybrid: three authored artifacts, two generated       |
 | Freshness            | Not specified                                     | Not specified                                                                      | Byte-exact regeneration gate in the contract check    |
@@ -121,7 +121,7 @@ Measured at baseline `867a8146`.
 
 1. **WIKI-17 — No context budget on the generated index.** Codex caps its
    combined instruction chain at 32 KiB and Claude documents a target under 200
-   lines. `llm-wiki-index.md` is 199,107 bytes across 1,460 lines. It is never
+   lines. `llm-wiki-index.md` is 199,864 bytes across 1,464 lines. It is never
    auto-loaded, which is what keeps it harmless today, but an agent instructed
    to read the index ingests the whole file. There is no size gate, no
    chunking, and no per-section split. Owner:
@@ -133,7 +133,7 @@ Measured at baseline `867a8146`.
    files whose registration literals the contract check gates. Owner:
    `AGENTS.md` and `scripts/validation/check-repo-contracts.sh`.
 3. **WIKI-19 — Role labels are extension-derived, not semantic.** Seven labels
-   are computed from filename and suffix, so 1,326 rows read as a filesystem
+   are computed from filename and suffix, so 1,330 rows read as a filesystem
    listing rather than a map. The genuinely navigational content is the
    twelve-row curated table in `repository-map.md`, which is a fraction of the
    size. The published convention allows per-link notes describing what each

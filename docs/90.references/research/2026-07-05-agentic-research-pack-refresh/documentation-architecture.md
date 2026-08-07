@@ -59,7 +59,7 @@ boundary. This Stage 90 document is a comparison and routing aid only.
 - Semantic assessment of Korean prose bodies beyond structural headings and
   declared usage metadata
 
-## Facts and Definitions
+## Definitions / Facts
 
 - **Diataxis** derives four documentation types from two axes. The upstream
   source states the completeness claim directly: "there are necessarily four
@@ -154,7 +154,23 @@ excluding `README.md` files unless stated.
    checks cardinality and not value, mode mixing is recorded in metadata but
    never gated. A registered enumeration would make DOC-15 measurable. Owner:
    `scripts/validation/check-repo-contracts.sh`.
-4. **Template-versus-validator drift affects any remediation.** In the guides
+4. **Two validators require conflicting headings for a new Stage 90 reference.**
+   `scripts/validation/check-repo-contracts.sh` hard-requires the literal
+   `## Definitions / Facts` in every non-README Stage 90 reference, while the
+   reference role in `docs/99.templates/support/document-metadata-profiles.yaml`
+   requires the H2 `## Facts and Definitions`. Both were run against the three
+   references added alongside this document: using one heading fails the
+   repository contract check with three findings, and using the other fails the
+   changed-document metadata check with three findings. Pre-existing leaves are
+   unaffected because the metadata check only reports newly introduced
+   deficits, so the conflict is invisible until a new reference is authored.
+   The three new leaves in this pack therefore use `## Definitions / Facts`,
+   matching their fifteen siblings and the continuous-integration-enforced
+   stage contract, and carry the metadata finding until one of the two
+   contracts is amended. Owner:
+   `scripts/validation/check-repo-contracts.sh` and
+   `docs/99.templates/support/document-metadata-profiles.yaml`.
+5. **Template-versus-validator drift affects any remediation.** In the guides
    and runbooks buckets the shipped template heading and the validator-required
    heading differ, and the corpus follows the validator. Because
    `documentation-protocol.md` declares template-first a blocking condition, an

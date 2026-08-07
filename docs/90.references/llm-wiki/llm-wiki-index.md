@@ -667,6 +667,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md](../../04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md](../../04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md](../../04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -1019,8 +1020,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md](../research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md](../research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md](../research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md](../research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md](../research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md](../research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md](../research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](../research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) | Markdown reference |

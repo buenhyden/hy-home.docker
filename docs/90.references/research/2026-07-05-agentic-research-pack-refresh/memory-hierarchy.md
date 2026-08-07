@@ -58,7 +58,7 @@ Stage 90 document is a comparison and routing aid only.
 - Synchronizing provider-global or user-private memory
 - Recording any credential, token, shell history, or raw output
 
-## Facts and Definitions
+## Definitions / Facts
 
 - **Short-term memory** is the bounded working record that survives only as long
   as the current unit of work. In this repository nothing durable is
