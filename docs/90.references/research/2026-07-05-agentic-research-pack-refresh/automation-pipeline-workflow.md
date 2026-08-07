@@ -14,10 +14,17 @@ review_cycle: on-source-change
 
 This reference maps tracked local scripts, hooks, generated-reference checks,
 GitHub workflows, and agent orchestration to their triggers, authorities,
-evidence, retry behavior, and external-action boundaries. The inventory is from
-tracked source at `cf8790ca98ad395bb58c127ea41b1d0d02455f0e`, not from the
-older advisory Graphify report; current workflow counts and public remote
-evidence were revalidated on 2026-07-27.
+evidence, retry behavior, and external-action boundaries. The inventory was
+re-derived from tracked source on `2026-08-07`, not from the older advisory
+Graphify report.
+
+That revalidation found one structural change large enough to invalidate the
+previous description of the local layer. The CI and local gate surfaces are no
+longer independently hand-wired. Both now resolve through a single typed gate
+registry in `.github/workflow-contract.yml`, executed by
+`scripts/validation/run-ci-gate.py`. The section below on the CI/CD system
+records that control plane; the loop matrix that follows was corrected against
+it.
 
 ## Purpose
 
@@ -82,12 +89,114 @@ from the latest public remote observation, which recorded 15 jobs in failed run
 unverified, and current authenticated branch protection, rulesets,
 environments, secrets, and variables remain unknown.
 
+## CI/CD System, Rules, and Implementation Method
+
+### The system
+
+`.github/workflow-contract.yml` is the typed control plane. Despite the `.yml`
+extension it is JSON (a YAML subset), `schema_version: 2`, and 1,930 lines. It
+declares five things:
+
+| Key | Count | Meaning |
+| --- | ---: | --- |
+| `workflows` | 7 | Every tracked workflow with its triggers, permissions, concurrency, and jobs |
+| `gate_nodes` | 80 | The gate DAG: 48 `leaf`, 26 `aggregate`, 6 `setup` nodes |
+| `job_roots` | 16 | The single root gate each CI job is allowed to invoke |
+| `profile_roots` | 3 | The local execution profiles and their root gates |
+| `actions` | 8 | Every external action with SHA, runtime, manifest URL, retrieval date, consumers, and disposition |
+
+The 7 declared workflows carry 23 job IDs, of which `ci-quality.yml` holds 16
+and is the only workflow classified `required-quality`; the other six are
+classified `non-gating`.
+
+### The rules
+
+Three rules give the system its properties, and each is worth stating because
+each is easy to violate accidentally.
+
+1. **One job, one root gate.** Every CI job invokes exactly one registered root
+   gate. `ci-quality.yml` step bodies are therefore uniform — a job's `run:` is
+   `python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.<name>`.
+   Job behavior lives in the registry, not in the workflow YAML.
+2. **A closed argument grammar.** The runner rejects argument combinations
+   outside its declared grammar with
+   `FAIL [ci-gate-cli-arguments] arguments: the runner arguments do not match
+   the closed grammar`. Ad-hoc invocation is a validation failure, not an
+   undefined behavior.
+3. **Profiles compose from the same leaves.** Local and CI profiles select
+   subsets of one leaf population. A local gate and its CI counterpart are the
+   same registered node, which is what makes local results predictive of CI in
+   a way a parallel hand-written runner never could be.
+
+### The implementation method
+
+`scripts/validation/run-local-qa-gates.sh` is now a 63-line dispatcher. It
+holds no gate logic at all; each mode `exec`s the typed runner with a profile
+name. The previously documented `run_script_backed_gates` function, its
+thirteen direct calls, and its four helper groups no longer exist. Any claim
+about local gate counts derived from reading that function is stale.
+
+Current registered gate counts, measured on `2026-08-07` with
+`run-ci-gate.py --profile <p> --list`:
+
+| Profile | Registered gates | Composition |
+| --- | ---: | --- |
+| `local-script-backed` (default) | 34 | 34 leaf, 0 setup |
+| `local-all-profiles` | 35 | adds `leaf.compose-all-profiles-validation` |
+| `local-harness` | 32 | omits tech-stack drift, quickwin baseline, and the all-profiles render |
+| `ci` | 38 | 32 leaf plus 6 `setup.*` dependency/environment nodes |
+
+These replace the previously documented 24 script-backed, 22 harness, and
+"25 bullets" figures, which described the removed shell function. `--list`
+executes nothing; it prints the usage block and the registered execution order.
+
+### Why this matters for evidence claims
+
+The registry makes the required-check question answerable in principle for the
+first time. `.github/rulesets/main-protection.md` proposes required checks by
+CI job name and states that `.github/workflow-contract.yml` owns their exact
+machine identity. That file is explicit that it is a *proposal*: it applies no
+remote setting, and it records control-plane verification as `unverified`.
+Tracked intent and remote enforcement remain separate evidence classes.
+
+## GitHub Actions Specifics
+
+Facts below are from tracked workflow YAML resolved through the YAML parser,
+not from raw text matching. The distinction changes one previously reported
+number.
+
+- **Action references.** Source text contains 17 literal `uses:` lines. After
+  resolving the `*checkout` YAML anchor — referenced 15 times in
+  `ci-quality.yml` — there are **32 resolved action references**, all 32
+  pinned to full 40-character commit SHAs, across **8 distinct actions**.
+  A previously reported 18/18 counted neither anchor expansion nor the current
+  workflow set.
+- **Permissions.** All 7 workflows declare top-level `permissions`.
+  `ci-quality.yml` defaults to `contents: read`, and only the `zizmor` job
+  raises scope for SARIF upload. GitHub's secure-use guidance recommends
+  exactly this default-read-then-elevate shape.
+- **Concurrency.** `ci-quality.yml` declares
+  `group: ${{ github.workflow }}-${{ github.ref }}` with
+  `cancel-in-progress: true`.
+- **No job dependencies.** No job in `ci-quality.yml` declares `needs:`. The 16
+  quality jobs are independent, so the workflow defines a fan-out, not a
+  staged pipeline. Ordering that does exist lives inside each job's gate DAG,
+  where `setup.*` nodes precede their leaves.
+- **No deployment environment.** No tracked job references a GitHub
+  `environment`. GitHub environments are the documented mechanism for reviewer
+  approval, branch restriction, delayed secret access, and deployment history;
+  none of that is present, so no tracked automation performs CD.
+- **Action metadata.** All 8 registered actions record
+  `runtime: node24`, `security_disposition: approved-node24`, and
+  `retrieved_at: 2026-07-28`, with a manifest URL pinned to the same SHA. This
+  is a tracked review record, not proof the remote action is uncompromised.
+
 ## Automation Loop Matrix
 
 | Automation | Trigger | Authority | Inputs | Actions | Evidence | Failure / retry | Rollback / escalation | External boundary |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Local QA gate runner | Manual invocation: default, `--script-backed`, `--all-profiles`, `--harness`, or `--list` | [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh) | Worktree plus tracked scripts/config | Default, `--script-backed`, and `--all-profiles` execute 24 script-backed gates; `--harness` executes 22; `--list` executes none and separately lists 1 advisory non-executed recommender | Named gate exits for executing modes; list-only stdout for `--list` is not gate evidence | Fix the failing owner, then rerun the named gate or executing mode; correct list ownership separately | Revert authored change; escalate CI/remote-only gaps rather than simulating them | Local only; no SARIF upload, dependency install, branch query, or merge authority; agent all-files QA uses only the separate controlled wrapper |
-| QA gate recommender | Working/staged/base diff or explicit paths; CI summary step | [`recommend-qa-gates.sh`](../../../../scripts/validation/recommend-qa-gates.sh) | Changed path list | Prints deduplicated recommendations and remote/manual notes; executes no gate | Advisory stdout or `GITHUB_STEP_SUMMARY` | Correct path selection and rerun; recommendation failure is not gate evidence | Escalate unsupported mappings to the QA owner | Local/CI advisory; no repository, runtime, remote, or secret mutation |
+| Local QA gate runner | Manual invocation: default, `--script-backed`, `--all-profiles`, `--harness`, or `--list` | [`run-local-qa-gates.sh`](../../../../scripts/validation/run-local-qa-gates.sh) | Worktree plus the typed gate registry in `.github/workflow-contract.yml` | Dispatches to `run-ci-gate.py`: `--script-backed` runs 34 registered gates, `--all-profiles` 35, `--harness` 32; `--list` executes none and prints the registered order | Named gate exits for executing modes; list-only stdout for `--list` is not gate evidence | Fix the failing owner, then rerun the named gate or executing mode; correct list ownership separately | Revert authored change; escalate CI/remote-only gaps rather than simulating them | Local only; no SARIF upload, dependency install, branch query, or merge authority; agent all-files QA uses only the separate controlled wrapper |
+| QA gate recommender | Working/staged/base diff or explicit paths; the `leaf.docs-qa-gate-recommendations` CI gate | [`recommend-qa-gates.sh`](../../../../scripts/validation/recommend-qa-gates.sh), invoked through `ci_gate_adapters.py` | Changed path list | Prints deduplicated recommendations and remote/manual notes; executes no gate | Advisory stdout or `GITHUB_STEP_SUMMARY` | Correct path selection and rerun; recommendation failure is not gate evidence | Escalate unsupported mappings to the QA owner | Local/CI advisory; no repository, runtime, remote, or secret mutation |
 | Post-tool validation | Provider file-edit hook payload | [`post-tool-validate.sh`](../../../../scripts/hooks/post-tool-validate.sh) | JSON payload and changed paths | Normalizes basic whitespace/newlines unless check-only; conditionally runs shfmt, ShellCheck, yamllint, diff, JSON, Compose, repo-contract, and traceability checks | Hook exit and named validator output | Fix changed-path failure and replay payload or run validator directly | `--check` disables writes; revert hook formatting if inappropriate | Local hook; it does not run Prettier or prove CI/remote state |
 | Provider-neutral event dispatcher | Session/tool/stop event from a provider adapter | [`agent-event-hook.sh`](../../../../scripts/hooks/agent-event-hook.sh) | Event name, JSON payload, tracked governance and paths | Produces context, warnings, or validation dispatch based on event/path | Hook JSON/output and exit | Correct adapter/event/payload; rerun without inventing unsupported event parity | Escalate provider incompatibility to Stage 00 provider owner | Local adapter; provider behavior is not policy authority |
 | Provider-surface sync | Manual default verify or approved `--write` | [`sync-provider-surfaces.sh`](../../../../scripts/operations/sync-provider-surfaces.sh) | Stage 00 agent/function and provider-model contracts | Compares or generates Claude, Codex, Gemini, and shared role adapters, Claude/shared function skills, settings, hooks, and indexes | provider count, drift count/list, or write summary | Resolve canonical-source mismatch; verify again | Revert generated projection; policy/model changes need approved Stage 00/04 evidence | Verify is local/read-only; write changes tracked provider adapters, never external accounts |
@@ -95,7 +204,7 @@ environments, secrets, and variables remain unknown.
 | LLM Wiki index freshness | Docs path change or explicit generator/check | [`generate-llm-wiki-index.sh`](../../../../scripts/knowledge/generate-llm-wiki-index.sh) | Indexed tracked paths | Generates or verifies Wiki path index | Fresh/stale result; `repo-contracts` coverage | Run generator, inspect generated diff, rerun check | Revert generated output and fix source/index rules | Local generated reference; never hand-edit |
 | LLM Wiki coverage freshness | Stage/category coverage change or explicit generator/check | [`generate-llm-wiki-coverage.sh`](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh) | Tracked stage paths and Wiki data | Generates or verifies coverage snapshot | Fresh/stale result | Run canonical generator and rerun check | Revert generated output and escalate schema drift | Local generated reference; never hand-edit |
 | Other generated evidence checks | Repo-contract execution or explicit generator `--check` | Canonical scripts listed in [`scripts/README.md`](../../../../scripts/README.md) | Audit pack, security/workflow surfaces, Compose and version registry | Generate/check audit matrix, security readiness, profile coverage, and version provenance | Generator check output and `repo-contracts` | Use only the owning generator; inspect source drift | Report stale generated data before any scope expansion | Local reference generation; does not run scanners, sign artifacts, query registries, or query GitHub |
-| CI quality workflow | push/PR to `main` or manual dispatch | [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | Checked-out commit, pinned actions, GitHub runner context | Runs 16 independent job definitions, including docs, contracts, supply-chain fixtures, Compose, frontend, coverage, dependency, and `zizmor` evidence | GitHub job/check status and SARIF for `zizmor` | Fix job-specific failure and rerun through GitHub controls | Revert offending commit; permissions/workflow changes require review | Remote GitHub CI; YAML presence does not prove required-check enforcement |
+| CI quality workflow | push/PR to `main` or manual dispatch | [`ci-quality.yml`](../../../../.github/workflows/ci-quality.yml) | Checked-out commit, pinned actions, GitHub runner context | Runs 16 independent job definitions, each invoking exactly one registered root gate from the typed contract, covering docs, contracts, supply-chain fixtures, Compose, frontend, coverage, dependency, and `zizmor` evidence | GitHub job/check status and SARIF for `zizmor` | Fix job-specific failure and rerun through GitHub controls | Revert offending commit; permissions/workflow changes require review | Remote GitHub CI; YAML presence does not prove required-check enforcement |
 | Tech-stack drift workflow | Relevant PR path filter | [`tech-stack-version-sync.yml`](../../../../.github/workflows/tech-stack-version-sync.yml) | PR Compose/version-registry diff | Runs sync script in read-only `--check` mode | `drift-gate` status | Author updates the registry locally and pushes through approved workflow | Revert mismatched registry/Compose edit; no auto-commit | Remote CI read-only content permission |
 | Changelog tag-coverage verification | Push of a semantic-looking `v*.*.*` tag | [`generate-changelog.yml`](../../../../.github/workflows/generate-changelog.yml) | Tag name and tracked `CHANGELOG.md` | Verifies that the pushed release tag already appears in the changelog | `changelog` job status and error naming absent tag | Update changelog through a release-branch PR before repushing tag | Delete/correct an erroneous tag only with explicit remote approval | Remote verifier; despite filename, it does not generate or commit a changelog |
 | PR labeler | PR opened, synchronized, or reopened | [`pr-labeler.yml`](../../../../.github/workflows/pr-labeler.yml) | PR file paths and labeler config | Applies path-based labels | `triage` job and resulting labels | Correct config/permissions and rerun via GitHub event/action controls | Remove incorrect labels with approved remote mutation | Remote PR mutation; no local equivalent |
@@ -136,7 +245,16 @@ another merely because one automation loop completed successfully.
 
 - Name the trigger, canonical authority, mutation behavior, and evidence for
   every automation claim.
-- Treat the local runner as a subset, not a full CI replica.
+- Resolve every gate claim through `.github/workflow-contract.yml` and
+  `run-ci-gate.py --profile <p> --list`. Do not derive gate counts by reading
+  `run-local-qa-gates.sh`; it is a 63-line dispatcher holding no gate logic.
+- Treat the local runner as a subset, not a full CI replica. The 34-gate
+  default profile and the 38-entry CI profile draw from the same leaf
+  population, but CI adds frontend, coverage, dependency-audit, git-flow,
+  document-metadata, and `zizmor` nodes that no local profile registers.
+- Count action references after resolving YAML anchors. The 17 literal `uses:`
+  lines expand to 32 resolved references; a raw grep understates pinning
+  coverage by nearly half.
 - Treat `generate-changelog.yml` as pushed-tag coverage verification.
 - Keep the contradictory Stage 00 “generate release changelog” label visible as
   an unresolved governance gap until separately approved policy work corrects
@@ -152,7 +270,13 @@ another merely because one automation loop completed successfully.
 ## Potential Follow-up / Gap
 
 - Reverify remote branch protection and required contexts in a separately
-  authorized GitHub audit.
+  authorized GitHub audit. `.github/rulesets/main-protection.md` now supplies a
+  tracked proposal keyed to CI job names, so the audit has a concrete target
+  list to compare against; the file itself records verification as
+  `unverified` and applies nothing.
+- Consider whether the six `non-gating` workflows should stay outside the typed
+  gate registry. They declare jobs but no registered root gate, so the
+  one-job-one-root-gate rule does not currently constrain them.
 - Keep the tracked 16-job CI contract and any remote required-check list coupled
   only through approved governance/workflow work.
 - In separately approved Stage 00 work, correct the non-gating automation table
@@ -169,11 +293,24 @@ another merely because one automation loop completed successfully.
   ruleset, protected-branch/required-check, environment, and deployment-history
   guidance was re-opened on **2026-07-13** without changing the dated workflow
   inventory or remote-state verdict.
-- The exact official GitHub workflow-syntax, secure-use,
-  deployments/environments, and rulesets URLs, plus pre-commit and DORA metrics,
-  were re-opened during bounded revalidation. The repository now has 16 local
-  quality jobs, while the dated remote 15-job failed run is not a current
-  enforcement claim and no delivery metric is inferred from CI YAML.
+- The official GitHub workflow-syntax, secure-use, artifact-attestations, and
+  rulesets pages, plus pre-commit and DORA metrics, were re-opened on
+  `2026-08-07`. Results: workflow syntax confirms `permissions` as both a
+  top-level and job-level key with job-level overriding; secure use confirms
+  full-SHA pinning as "the only way to use an action as an immutable release"
+  and warns that secret redaction "largely relies on finding an exact match";
+  rulesets confirm that rulesets and classic branch protection layer together
+  and the most restrictive rule wins. None of the GitHub pages exposes a
+  visible last-updated date, so all are retrieval-time guidance.
+- DORA still publishes **five** metrics — change lead time, deployment
+  frequency, failed deployment recovery time, change fail rate, and deployment
+  rework rate — and the page carries a visible last-updated date of
+  `2026-01-05`. pre-commit documents version `4.6.1`, staged-file default
+  execution, `--all-files`, the `SKIP` variable, and stage names matching hook
+  names since 3.2.0.
+- The repository has 16 local quality jobs. The dated remote 15-job failed run
+  is not a current enforcement claim and no delivery metric is inferred from
+  CI YAML.
 - GitHub and tool pages are mutable retrieval-time guidance.
 - Repo-local facts come from tracked workflow/job/script/config definitions;
   Graphify is advisory and was not used for counts.
@@ -197,6 +334,9 @@ another merely because one automation loop completed successfully.
 - [Martin Fowler: Continuous Delivery](https://martinfowler.com/bliki/ContinuousDelivery.html) - releasability and automated pipeline feedback
 - [Scripts README](../../../../scripts/README.md) - canonical script inventory and lifecycle
 - [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - workflow/job implementation entry point
+- [Typed workflow contract](../../../../.github/workflow-contract.yml) - schema_version 2 registry of 7 workflows, 80 gate nodes, 16 job roots, 3 profile roots, and 8 pinned actions
+- [Typed gate runner](../../../../scripts/validation/run-ci-gate.py) - closed-grammar profile/gate executor shared by local and CI surfaces
+- [Main branch protection proposal](../../../../.github/rulesets/main-protection.md) - tracked required-check proposal that applies no remote setting
 - [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary
 
 ## Maintenance
