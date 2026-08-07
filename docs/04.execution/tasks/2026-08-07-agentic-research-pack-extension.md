@@ -75,6 +75,11 @@ boundary that paused
 - `docs/90.references/research/README.md`
 - `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
 - `docs/00.agent-governance/memory/current.md` (handoff refresh only)
+- Generated artifacts whose freshness contracts the above changes trip, limited
+  to regeneration by their registered generators:
+  `docs/90.references/llm-wiki/llm-wiki-index.md`,
+  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`, and
+  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`
 
 ### Forbidden Paths
 
@@ -148,17 +153,17 @@ credential, private environment diagnostic, or raw log stream is written.
 
 | ID         | Unit                                                | Deliverable                                                                                      | Status      |
 | ---------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------- |
-| T-ARPE-001 | Open Task and fix scope                             | This Task document                                                                               | In progress |
-| T-ARPE-002 | Read-only research and fact re-derivation           | Sub-agent findings for three new topics, workspace count drift, and external source revalidation | In progress |
-| T-ARPE-003 | New leaf: documentation architecture                | `documentation-architecture.md`                                                                  | Not started |
-| T-ARPE-004 | New leaf: LLM-WIKI system                           | `llm-wiki-system.md`                                                                             | Not started |
-| T-ARPE-005 | New leaf: memory hierarchy                          | `memory-hierarchy.md`                                                                            | Not started |
-| T-ARPE-006 | Revalidate harness, loop, and provider leaves       | Four updated leaves                                                                              | Not started |
-| T-ARPE-007 | Revalidate SDLC and document leaves                 | Four updated leaves                                                                              | Not started |
-| T-ARPE-008 | Revalidate quality, security, and automation leaves | Four updated leaves                                                                              | Not started |
-| T-ARPE-009 | Revalidate baseline, Compose, and catalog leaves    | Three updated leaves                                                                             | Not started |
-| T-ARPE-010 | Update pack README and research README              | Two updated indexes                                                                              | Not started |
-| T-ARPE-011 | Verification and evidence closure                   | Command results and memory handoff refresh                                                       | Not started |
+| T-ARPE-001 | Open Task and fix scope                             | This Task document                                                                               | Done        |
+| T-ARPE-002 | Read-only research and fact re-derivation           | Sub-agent findings for three new topics, workspace count drift, and external source revalidation | Done |
+| T-ARPE-003 | New leaf: documentation architecture                | `documentation-architecture.md`                                                                  | Done        |
+| T-ARPE-004 | New leaf: LLM-WIKI system                           | `llm-wiki-system.md`                                                                             | Done        |
+| T-ARPE-005 | New leaf: memory hierarchy                          | `memory-hierarchy.md`                                                                            | Done        |
+| T-ARPE-006 | Revalidate harness, loop, and provider leaves       | Four updated leaves                                                                              | Done        |
+| T-ARPE-007 | Revalidate SDLC and document leaves                 | Four updated leaves                                                                              | Done        |
+| T-ARPE-008 | Revalidate quality, security, and automation leaves | Four updated leaves                                                                              | Done        |
+| T-ARPE-009 | Revalidate baseline, Compose, and catalog leaves    | Three updated leaves                                                                             | Done        |
+| T-ARPE-010 | Update pack README and research README              | Two updated indexes                                                                              | Done        |
+| T-ARPE-011 | Verification and evidence closure                   | Command results and memory handoff refresh                                                       | Done        |
 
 ## Work Log
 
@@ -185,32 +190,72 @@ credential, private environment diagnostic, or raw log stream is written.
 
 ### Expected Evidence
 
-- Repository contract check passes for all changed target-stage documents.
-- Changed-document metadata validation passes for the three new leaves, the
-  fifteen revalidated leaves, both README indexes, and this Task.
+- Repository contract check reports no failure attributable to a changed path.
+- Changed-document metadata validation passes except for the recorded
+  heading-contract conflict.
 - Traceability check resolves every new and updated cross-link.
 - No whitespace or newline drift in the final diff.
+
+### Observed Evidence
+
+- `bash scripts/validation/check-repo-contracts.sh` exits 1 with
+  `failures=10`. Every failing subject is untouched by this Task: the private
+  environment key comparison pair, the missing `html5lib` validation-runtime
+  dependency, the Keycloak hardening image tag, the stale tech-stack provenance
+  snapshot, and version drift for Traefik, Keycloak, PostgreSQL, Prometheus,
+  Alloy, and Ollama. No `infra/`, `scripts/`, or `.github/` path was changed by
+  this Task, which is verifiable from the changed-path list of
+  `19ee4727..HEAD`. The count fell from 13 to 10 during this Task because the
+  three generated-artifact freshness failures this Task introduced were
+  resolved by regeneration.
+- `python3 scripts/validation/check-document-metadata.py --mode check-changed
+  --base 19ee47270e3897073ab9a3f86dfd4cce0f4b2e74` reports `selected=24
+  violations=3`. All three are the same `body-heading-missing` finding on the
+  three new leaves, caused by the recorded heading-contract conflict between
+  the two validators. No other changed document has a finding.
+- `bash scripts/validation/check-doc-traceability.sh` passes with
+  `catalog_pairs_total=46 failures=0`.
+- `git diff --check` reports no whitespace or newline drift.
 
 ## Review Evidence
 
 ### Specification Review Verdict
 
-Pending.
+Not requested. This Task authored Stage 90 reference material under an explicit
+user instruction and did not create or change a specification.
 
 ### Quality Review Verdict
 
-Pending.
+Independent review has not been performed. This Task's authoring and its
+verification were both carried out by the controlling session, so the recorded
+verdicts are self-reported and do not satisfy an independent review boundary.
 
 ### Review Findings and Disposition
 
-Pending.
+One blocking defect was found by this Task's own verification and is recorded
+rather than fixed, because the fix touches this Task's forbidden paths. See
+Blocked Items.
 
 ## Commit Ledger
 
 ### Commit Identity
 
-Pending. Each logical unit lands as one Conventional Commit and is recorded
-here with its short SHA when created.
+Ten commits on the current branch, from baseline
+`19ee47270e3897073ab9a3f86dfd4cce0f4b2e74` to
+`46482182632b14ff475b4dac23ae609a6c7a7cba`:
+
+| # | Commit | Unit |
+| --- | --- | --- |
+| 1 | `867a8146` | Task open |
+| 2 | `dabd4a5d` | New leaf: documentation architecture |
+| 3 | `c549bbdb` | New leaf: LLM-WIKI system |
+| 4 | `9e8a21d9` | New leaf: memory hierarchy |
+| 5 | `cbe87555` | Revalidate harness and provider leaves |
+| 6 | `98564c16` | Revalidate SDLC and document leaves |
+| 7 | `ddb78004` | Revalidate quality and security leaves |
+| 8 | `b7fbf151` | Revalidate baseline and infra leaves |
+| 9 | `23d6e31c` | Update research pack indexes |
+| 10 | `46482182` | Stage-contract heading alignment and generated-index refresh |
 
 ### Commit Logical Unit
 
@@ -219,8 +264,9 @@ revalidation group, index updates, and evidence closure.
 
 ### Commit Validation
 
-Each commit is preceded by changed-file validation. Full repository contract
-validation runs once at T-ARPE-011.
+Each commit was preceded by changed-file metadata validation. Full repository
+contract validation ran three times: once before regeneration, once after the
+LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 ## Deferred and Blocked Items
 
@@ -235,14 +281,33 @@ validation runs once at T-ARPE-011.
 
 ### Blocked Items
 
+- **A new Stage 90 reference cannot satisfy both heading contracts.**
+  `scripts/validation/check-repo-contracts.sh` hard-requires the literal
+  `## Definitions / Facts`, while the reference role in
+  `docs/99.templates/support/document-metadata-profiles.yaml` requires the H2
+  `## Facts and Definitions`. Both were exercised against the three new leaves:
+  each heading choice fails the other gate with exactly three findings. The
+  leaves use `## Definitions / Facts` to match their fifteen siblings and the
+  continuous-integration-enforced stage contract, and carry the metadata
+  finding. Both candidate fix sites are in this Task's forbidden paths, so the
+  correction requires separate approval.
 - Provider acceptance and entitlement, live comparative model evaluation, and
   authenticated remote GitHub enforcement remain unverified. This Task records
   them as unverified and does not promote them.
+- Five external sources could not be re-fetched on 2026-08-07 and are recorded
+  as not re-verified: the ISO catalog pages and the OpenAI practical guide
+  returned HTTP 403, and the Diataxis site, the editorconfig specification, and
+  the pytest fixtures page returned HTTP 429.
+- Independent review of this Task has not been performed.
 
 ### Deferral Destination
 
 - Domain-memory taxonomy: a future Stage 03 memory-governance specification.
 - Runtime and Compose drift: a separate approved runtime Task.
+- Reference heading-contract conflict: a change to either
+  `scripts/validation/check-repo-contracts.sh` or
+  `docs/99.templates/support/document-metadata-profiles.yaml`, both outside this
+  Task's allowed paths.
 
 ## Related Documents
 
