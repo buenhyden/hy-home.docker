@@ -47,8 +47,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `e90a81af7e9400f29488f9299557f92ab1ec22bc`
-- Verified at: `2026-08-07T13:03:07+09:00`
+- Verified commit: `ef84635a36314d7146b92c51b3023a8b6c140d20`
+- Verified at: `2026-08-07T13:36:00+09:00`
 - Coverage analysis before authoring found that nineteen of twenty-two
   requested research topics already had canonical coverage across fifteen
   leaves totalling 3,523 lines, and that three had none.
@@ -79,6 +79,9 @@ status: active
   are superseded by this removal; the mapping they protected is preserved in
   the category index. Spec 122 stays `completed` and was reopened only for
   inbound-link repair.
+- The repository contract check after consolidation reports the same ten
+  predecessor failures with no new subject.
+- Eleven logical-unit commits span `19ee4727` to `ef84635a`.
 
 ## Blockers and unverified facts
 
