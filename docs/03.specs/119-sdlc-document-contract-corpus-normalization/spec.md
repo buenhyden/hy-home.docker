@@ -66,7 +66,7 @@ paired Stage 04 plan and task files.
 - **Related ADRs**:
   - [Stage 00 canonical adapter model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - **Numbered SDLC path migration**:
-  [../099-template-system-numbered-sdlc-paths/spec.md](../099-template-system-numbered-sdlc-paths/spec.md)
+  [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Template contract standardization**:
   [../100-template-system-contract-standardization/spec.md](../100-template-system-contract-standardization/spec.md)
 - **Document restructure disposition contract**:
@@ -363,7 +363,7 @@ policy.
 
 - [Spec README](./README.md)
 - [Stage 03 README](../README.md)
-- [Numbered SDLC path migration spec](../099-template-system-numbered-sdlc-paths/spec.md)
+- [Numbered SDLC path migration spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - [Template contract standardization spec](../100-template-system-contract-standardization/spec.md)
 - [Document restructure disposition spec](../103-document-restructure-audit-contract-archive/spec.md)
 - [Workspace support surface contract spec](../106-workspace-support-surface-contract/spec.md)

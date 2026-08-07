@@ -72,7 +72,7 @@ decision, operations leaf naming polish, closure evidence입니다. 실제 파�
 
 - [Spec](./spec.md)
 - [Stage 03 README](../README.md)
-- [Numbered SDLC path migration spec](../099-template-system-numbered-sdlc-paths/spec.md)
+- [Numbered SDLC path migration spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - [Template contract standardization spec](../100-template-system-contract-standardization/spec.md)
 - [Document restructure disposition spec](../103-document-restructure-audit-contract-archive/spec.md)
 - [Workspace support surface contract spec](../106-workspace-support-surface-contract/spec.md)

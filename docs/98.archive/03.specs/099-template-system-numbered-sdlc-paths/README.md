@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/099-template-system-numbered-sdlc-paths/README.md -->
 
 # Template System Numbered SDLC Paths
 
@@ -66,7 +64,7 @@ This README is for:
 ## Related Documents
 
 - **Spec**: [spec.md](./spec.md)
-- **Template selection**: [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
-- **Template contract**: [../../99.templates/support/template-contract.md](../../99.templates/support/template-contract.md)
-- **Frontmatter contract**: [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
-- **Stage authoring matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- **Template selection**: [../../../99.templates/support/template-selection.md](../../../99.templates/support/template-selection.md)
+- **Template contract**: [../../../99.templates/support/template-contract.md](../../../99.templates/support/template-contract.md)
+- **Frontmatter contract**: [../../../99.templates/support/frontmatter-contract.md](../../../99.templates/support/frontmatter-contract.md)
+- **Stage authoring matrix**: [../../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)

@@ -133,7 +133,7 @@ runtime infrastructure, secrets, remote GitHub state, or CI hard gates.
 
 - **Spec**: [../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md](../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
 - **Task**: [../tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md](../tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md)
-- **Numbered path migration spec**: [../../03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../03.specs/099-template-system-numbered-sdlc-paths/spec.md)
+- **Numbered path migration spec**: [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Document restructure disposition spec**: [../../03.specs/103-document-restructure-audit-contract-archive/spec.md](../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
 - **Template governance**: [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
 - **Documentation protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)

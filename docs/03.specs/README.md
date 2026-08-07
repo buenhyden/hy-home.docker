@@ -67,7 +67,6 @@ docs/03.specs/
 ├── 096-llm-wiki-agent-first-completion/ # Completed LLM Wiki contract spec
 ├── 097-home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
 ├── 098-standardize-infra-net/           # Completed infra_net standardization spec
-├── 099-template-system-numbered-sdlc-paths/ # Completed numbered PRD/Spec path migration design
 ├── 100-template-system-contract-standardization/ # Completed Stage 99 contract/frontmatter standardization spec
 ├── 101-template-system-reorganization/  # Superseded Stage 99 template system reorganization spec
 ├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
@@ -108,55 +107,54 @@ docs/03.specs/
 
 ## Routing
 
-| If you need to define...                                   | Use                                                  |
-| ---------------------------------------------------------- | ---------------------------------------------------- |
-| Gateway routing, TLS, middleware, proxy behavior           | `001-gateway/spec.md`                                |
-| Identity, OAuth2, OIDC, session store behavior             | `002-auth/spec.md`                                   |
-| Vault, secret template, AppRole, secret delivery behavior  | `003-security/spec.md`                               |
-| Databases, cache, object storage, core data persistence    | `004-data/spec.md`                                   |
-| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines       | `005-data-analytics/spec.md`                         |
-| Kafka, RabbitMQ, stream/message broker behavior            | `006-messaging/spec.md`                              |
-| Metrics, logs, traces, dashboards, alerts                  | `007-observability/spec.md`                          |
-| Workflow orchestration and cross-validation agent behavior | `008-workflow/spec.md`, `008-workflow/agent-design.md` |
-| Stage 90 agentic engineering research pack refresh | `104-agentic-research-pack-refresh/spec.md` |
-| Agentic engineering reference-audit pack design            | `105-agentic-engineering-implementation-audit-pack/spec.md` |
-| `_workspace` repo-support and protected-surface contract | `106-workspace-support-surface-contract/spec.md` |
-| Provider adapter semantic role-scope parity validation | `107-provider-semantic-parity-validator/spec.md` |
-| Generated Docker Compose profile/service coverage snapshot | `108-compose-profile-service-coverage-snapshot/spec.md` |
-| Gap-to-stage routing advisory recommendation | `109-gap-routing-recommendation/spec.md` |
-| Agent-output eval fixture pack | `110-agent-output-eval-fixtures/spec.md` |
-| QA gate recommendation CI summary | `111-qa-gate-recommendation-ci-summary/spec.md` |
-| Audit-pack implementation-status coverage report | `112-audit-pack-coverage-report/spec.md` |
-| LLM Wiki stage/category coverage snapshot | `113-llm-wiki-stage-category-coverage/spec.md` |
-| Tech-stack version provenance snapshot | `114-tech-stack-version-provenance/spec.md` |
-| Provider hook parity matrix | `115-provider-hook-parity-matrix/spec.md` |
-| Local advisory agent-output eval runner | `116-agent-output-eval-runner/spec.md` |
-| Security automation readiness snapshot | `117-security-automation-readiness-snapshot/spec.md` |
-| Audit implementation matrix snapshot | `118-audit-implementation-matrix-snapshot/spec.md` |
-| SDLC document contract corpus normalization | `119-sdlc-document-contract-corpus-normalization/spec.md` |
-| Agent-output eval fixture freshness CI gate | `120-agent-output-eval-ci-gate/spec.md` |
-| Storybook Next.js dependency vulnerability audit gate | `121-dependency-vulnerability-audit-gate/spec.md` |
-| Canonical agentic research-pack consolidation and provider-model cutoff | `122-agentic-research-pack-consolidation/spec.md` |
-| Completed agentic audit remediation; metadata integrity and fail-closed Git discovery | `123-agentic-engineering-audit-remediation/spec.md` |
-| Compose runtime startup, observed readiness, recovery, and teardown | `124-compose-runtime-readiness-remediation/spec.md` |
-| Infrastructure upgrade, migration, backup, restore, and recovery readiness | `125-infrastructure-operations-readiness-remediation/spec.md` |
-| Security supply-chain scanning, SBOM, provenance, signing, and verification | `126-security-supply-chain-remediation/spec.md` |
-| Deployment environments, promotion, release records, and rollback | `127-deployment-release-engineering-remediation/spec.md` |
-| Canonical audit lifecycle, current-state reassessment, semantic freshness, and QA/CI integration | `128-agentic-audit-harness-consolidation/spec.md` |
-| Contract-first document type, template, README profile, and migration foundation | `129-document-contract-canonicalization/spec.md` |
-| Completed template-role, body-envelope, validator, and direct-consumer canonicalization | `130-template-contract-system-canonicalization/spec.md` |
-| Completed document corpus lifecycle migration manifest, retention, archive, and validation foundation | `131-document-corpus-lifecycle-migration-foundation/spec.md` |
-| Target corpus contract, archive split, deprecated runtime removal, and static QA convergence | `133-target-surface-contract-convergence/spec.md` |
-| Active agent-governance provider, memory, harness, loop, CI, and evidence convergence | `134-agent-governance-canonical-convergence/spec.md` |
-| Second-wave document restructure disposition contract | `103-document-restructure-audit-contract-archive/spec.md` |
-| Numbered PRD and Spec path migration design | `099-template-system-numbered-sdlc-paths/spec.md` |
-| Stage 99 template contract, taxonomy, and frontmatter standardization design | `100-template-system-contract-standardization/spec.md` |
-| Workspace-wide document contract audit/disposition model | `102-workspace-document-contract-audit-pack/spec.md` |
-| Local AI inference, RAG UI, model-serving contracts        | `009-ai/spec.md`, `009-ai/open-webui.md`             |
-| IaC, registry, quality, performance tooling services       | `010-tooling/spec.md`                                |
-| Mail, SMTP, IMAP, development mail trapping                | `011-communication/spec.md`                          |
-| Laboratory/admin UI surfaces and access contracts          | `012-laboratory/spec.md`                             |
-| Completed governance/documentation contract work           | named governance spec folders                        |
+| If you need to define...                                                                              | Use                                                           |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Gateway routing, TLS, middleware, proxy behavior                                                      | `001-gateway/spec.md`                                         |
+| Identity, OAuth2, OIDC, session store behavior                                                        | `002-auth/spec.md`                                            |
+| Vault, secret template, AppRole, secret delivery behavior                                             | `003-security/spec.md`                                        |
+| Databases, cache, object storage, core data persistence                                               | `004-data/spec.md`                                            |
+| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines                                                  | `005-data-analytics/spec.md`                                  |
+| Kafka, RabbitMQ, stream/message broker behavior                                                       | `006-messaging/spec.md`                                       |
+| Metrics, logs, traces, dashboards, alerts                                                             | `007-observability/spec.md`                                   |
+| Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
+| Stage 90 agentic engineering research pack refresh                                                    | `104-agentic-research-pack-refresh/spec.md`                   |
+| Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
+| `_workspace` repo-support and protected-surface contract                                              | `106-workspace-support-surface-contract/spec.md`              |
+| Provider adapter semantic role-scope parity validation                                                | `107-provider-semantic-parity-validator/spec.md`              |
+| Generated Docker Compose profile/service coverage snapshot                                            | `108-compose-profile-service-coverage-snapshot/spec.md`       |
+| Gap-to-stage routing advisory recommendation                                                          | `109-gap-routing-recommendation/spec.md`                      |
+| Agent-output eval fixture pack                                                                        | `110-agent-output-eval-fixtures/spec.md`                      |
+| QA gate recommendation CI summary                                                                     | `111-qa-gate-recommendation-ci-summary/spec.md`               |
+| Audit-pack implementation-status coverage report                                                      | `112-audit-pack-coverage-report/spec.md`                      |
+| LLM Wiki stage/category coverage snapshot                                                             | `113-llm-wiki-stage-category-coverage/spec.md`                |
+| Tech-stack version provenance snapshot                                                                | `114-tech-stack-version-provenance/spec.md`                   |
+| Provider hook parity matrix                                                                           | `115-provider-hook-parity-matrix/spec.md`                     |
+| Local advisory agent-output eval runner                                                               | `116-agent-output-eval-runner/spec.md`                        |
+| Security automation readiness snapshot                                                                | `117-security-automation-readiness-snapshot/spec.md`          |
+| Audit implementation matrix snapshot                                                                  | `118-audit-implementation-matrix-snapshot/spec.md`            |
+| SDLC document contract corpus normalization                                                           | `119-sdlc-document-contract-corpus-normalization/spec.md`     |
+| Agent-output eval fixture freshness CI gate                                                           | `120-agent-output-eval-ci-gate/spec.md`                       |
+| Storybook Next.js dependency vulnerability audit gate                                                 | `121-dependency-vulnerability-audit-gate/spec.md`             |
+| Canonical agentic research-pack consolidation and provider-model cutoff                               | `122-agentic-research-pack-consolidation/spec.md`             |
+| Completed agentic audit remediation; metadata integrity and fail-closed Git discovery                 | `123-agentic-engineering-audit-remediation/spec.md`           |
+| Compose runtime startup, observed readiness, recovery, and teardown                                   | `124-compose-runtime-readiness-remediation/spec.md`           |
+| Infrastructure upgrade, migration, backup, restore, and recovery readiness                            | `125-infrastructure-operations-readiness-remediation/spec.md` |
+| Security supply-chain scanning, SBOM, provenance, signing, and verification                           | `126-security-supply-chain-remediation/spec.md`               |
+| Deployment environments, promotion, release records, and rollback                                     | `127-deployment-release-engineering-remediation/spec.md`      |
+| Canonical audit lifecycle, current-state reassessment, semantic freshness, and QA/CI integration      | `128-agentic-audit-harness-consolidation/spec.md`             |
+| Contract-first document type, template, README profile, and migration foundation                      | `129-document-contract-canonicalization/spec.md`              |
+| Completed template-role, body-envelope, validator, and direct-consumer canonicalization               | `130-template-contract-system-canonicalization/spec.md`       |
+| Completed document corpus lifecycle migration manifest, retention, archive, and validation foundation | `131-document-corpus-lifecycle-migration-foundation/spec.md`  |
+| Target corpus contract, archive split, deprecated runtime removal, and static QA convergence          | `133-target-surface-contract-convergence/spec.md`             |
+| Active agent-governance provider, memory, harness, loop, CI, and evidence convergence                 | `134-agent-governance-canonical-convergence/spec.md`          |
+| Second-wave document restructure disposition contract                                                 | `103-document-restructure-audit-contract-archive/spec.md`     |
+| Stage 99 template contract, taxonomy, and frontmatter standardization design                          | `100-template-system-contract-standardization/spec.md`        |
+| Workspace-wide document contract audit/disposition model                                              | `102-workspace-document-contract-audit-pack/spec.md`          |
+| Local AI inference, RAG UI, model-serving contracts                                                   | `009-ai/spec.md`, `009-ai/open-webui.md`                      |
+| IaC, registry, quality, performance tooling services                                                  | `010-tooling/spec.md`                                         |
+| Mail, SMTP, IMAP, development mail trapping                                                           | `011-communication/spec.md`                                   |
+| Laboratory/admin UI surfaces and access contracts                                                     | `012-laboratory/spec.md`                                      |
+| Completed governance/documentation contract work                                                      | named governance spec folders                                 |
 
 ## How to Work in This Area
 
@@ -245,7 +243,6 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Target Surface Contract and Deprecated Runtime Convergence Spec**: [133-target-surface-contract-convergence/spec.md](./133-target-surface-contract-convergence/spec.md)
 - **Agent Governance Canonical Convergence Spec (active)**: [134-agent-governance-canonical-convergence/spec.md](./134-agent-governance-canonical-convergence/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
-- **Template System Numbered SDLC Paths Spec**: [099-template-system-numbered-sdlc-paths/spec.md](./099-template-system-numbered-sdlc-paths/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
 - **Home Docker Revalidation Deferred Follow-up Spec**: [097-home-docker-revalidation-deferred-follow-up/spec.md](./097-home-docker-revalidation-deferred-follow-up/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [095-infra-secrets-docs-refresh/spec.md](./095-infra-secrets-docs-refresh/spec.md)

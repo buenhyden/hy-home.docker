@@ -9,7 +9,7 @@ status: completed
 ## Overview
 
 This document is the implementation plan for
-`docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md`. It sequences
+`docs/98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md`. It sequences
 the full migration from date-prefixed PRDs and unnumbered Spec folders to
 deterministic three-digit numbered PRD and Spec paths.
 
@@ -126,7 +126,7 @@ edits, validator edits, and generated-index fallout reviewable.
 
 ## Related Documents
 
-- **Spec**: [Template System Numbered SDLC Paths Spec](../../03.specs/099-template-system-numbered-sdlc-paths/spec.md)
+- **Spec**: [Template System Numbered SDLC Paths Spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Task**: [Template System Numbered SDLC Paths Task](../tasks/2026-07-05-template-system-numbered-sdlc-paths.md)
 - **PRD Index**: [Requirements index](../../01.requirements/README.md)
 - **Spec Index**: [Spec index](../../03.specs/README.md)

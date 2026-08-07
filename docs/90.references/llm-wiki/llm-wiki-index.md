@@ -381,8 +381,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md](../../03.specs/097-home-docker-revalidation-deferred-follow-up/spec.md) | Markdown reference |
 | [docs/03.specs/098-standardize-infra-net/README.md](../../03.specs/098-standardize-infra-net/README.md) | folder index |
 | [docs/03.specs/098-standardize-infra-net/spec.md](../../03.specs/098-standardize-infra-net/spec.md) | Markdown reference |
-| [docs/03.specs/099-template-system-numbered-sdlc-paths/README.md](../../03.specs/099-template-system-numbered-sdlc-paths/README.md) | folder index |
-| [docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../03.specs/099-template-system-numbered-sdlc-paths/spec.md) | Markdown reference |
 | [docs/03.specs/100-template-system-contract-standardization/spec.md](../../03.specs/100-template-system-contract-standardization/spec.md) | Markdown reference |
 | [docs/03.specs/101-template-system-reorganization/README.md](../../03.specs/101-template-system-reorganization/README.md) | folder index |
 | [docs/03.specs/101-template-system-reorganization/spec.md](../../03.specs/101-template-system-reorganization/spec.md) | Markdown reference |
@@ -436,6 +434,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/132-agent-governance-harness-convergence/spec.md](../../03.specs/132-agent-governance-harness-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/133-target-surface-contract-convergence/spec.md](../../03.specs/133-target-surface-contract-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/134-agent-governance-canonical-convergence/spec.md](../../03.specs/134-agent-governance-canonical-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/135-target-surface-delta-convergence/spec.md](../../03.specs/135-target-surface-delta-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/136-sdlc-taxonomy-convergence/spec.md](../../03.specs/136-sdlc-taxonomy-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -538,6 +538,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md](../../04.execution/plans/2026-07-18-target-surface-contract-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-19-operational-readiness-closure-program.md](../../04.execution/plans/2026-07-19-operational-readiness-closure-program.md) | Markdown reference |
 | [docs/04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md](../../04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md) | Markdown reference |
+| [docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md](../../04.execution/plans/2026-07-28-target-surface-delta-convergence.md) | Markdown reference |
+| [docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md](../../04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -667,6 +669,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md](../../04.execution/tasks/2026-07-23-security-supply-chain-runtime-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md](../../04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md](../../04.execution/tasks/2026-07-26-corrected-delivery-evidence-reconciliation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md](../../04.execution/tasks/2026-07-28-target-surface-delta-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
@@ -1001,6 +1004,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/governance/gap-to-stage-routing.md](../data/governance/gap-to-stage-routing.md) | Markdown reference |
 | [docs/90.references/data/governance/github-actions-control-plane-observation.yaml](../data/governance/github-actions-control-plane-observation.yaml) | YAML config |
 | [docs/90.references/data/governance/provider-hook-parity-matrix.md](../data/governance/provider-hook-parity-matrix.md) | Markdown reference |
+| [docs/90.references/data/governance/target-surface-delta-manifest.yaml](../data/governance/target-surface-delta-manifest.yaml) | YAML config |
+| [docs/90.references/data/governance/target-surface-delta-summary.md](../data/governance/target-surface-delta-summary.md) | Markdown reference |
 | [docs/90.references/data/hads/README.md](../data/hads/README.md) | folder index |
 | [docs/90.references/data/hads/profile.md](../data/hads/profile.md) | Markdown reference |
 | [docs/90.references/data/knowledge/README.md](../data/knowledge/README.md) | folder index |
@@ -1028,6 +1033,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md](../research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](../research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md](../research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md](../research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md](../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) | Markdown reference |
@@ -1358,6 +1364,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
+| [scripts/requirements-pre-commit.txt](../../../scripts/requirements-pre-commit.txt) | text entrypoint |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
 | [scripts/security/generate-supply-chain-sample-service-summary.sh](../../../scripts/security/generate-supply-chain-sample-service-summary.sh) | script |
 | [scripts/security/seed-grype-db-cache.sh](../../../scripts/security/seed-grype-db-cache.sh) | script |
@@ -1379,6 +1386,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/report-provider-hook-parity.sh](../../../scripts/validation/report-provider-hook-parity.sh) | script |
 | [scripts/validation/run-agent-output-eval-fixtures.sh](../../../scripts/validation/run-agent-output-eval-fixtures.sh) | script |
 | [scripts/validation/run-agent-precommit-all-files.sh](../../../scripts/validation/run-agent-precommit-all-files.sh) | script |
+| [scripts/validation/run-ci-precommit.sh](../../../scripts/validation/run-ci-precommit.sh) | script |
 | [scripts/validation/run-compose-core-readiness.sh](../../../scripts/validation/run-compose-core-readiness.sh) | script |
 | [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
@@ -1397,6 +1405,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.github/dependabot.yml](../../../.github/dependabot.yml) | YAML config |
 | [.github/labeler.yml](../../../.github/labeler.yml) | YAML config |
 | [.github/rulesets/main-protection.md](../../../.github/rulesets/main-protection.md) | Markdown reference |
+| [.github/workflow-contract.yml](../../../.github/workflow-contract.yml) | YAML config |
 | [.github/workflows/ci-quality.yml](../../../.github/workflows/ci-quality.yml) | YAML config |
 | [.github/workflows/document-corpus-lifecycle.yml](../../../.github/workflows/document-corpus-lifecycle.yml) | YAML config |
 | [.github/workflows/generate-changelog.yml](../../../.github/workflows/generate-changelog.yml) | YAML config |
@@ -1415,6 +1424,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 | Path | Role |
 | --- | --- |
+| [docs/98.archive/03.specs/099-template-system-numbered-sdlc-paths/README.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/README.md) | folder index |
+| [docs/98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md) | Markdown reference |
 | [docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md](../../98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md) | Markdown reference |
 | [docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md](../../98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
 | [docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md](../../98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md) | Markdown reference |

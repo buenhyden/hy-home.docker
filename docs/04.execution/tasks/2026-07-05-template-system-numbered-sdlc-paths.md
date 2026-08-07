@@ -15,7 +15,7 @@ evidence derived from the parent Spec and Plan.
 
 ## Inputs
 
-- **Parent Spec**: [Template System Numbered SDLC Paths Spec](../../03.specs/099-template-system-numbered-sdlc-paths/spec.md)
+- **Parent Spec**: [Template System Numbered SDLC Paths Spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Parent Plan**: [Template System Numbered SDLC Paths Plan](../plans/2026-07-05-template-system-numbered-sdlc-paths.md)
 - **Template selection**: [Template selection](../../99.templates/support/template-selection.md)
 
@@ -126,7 +126,7 @@ Validation evidence is updated after each logical implementation batch.
 
 ## Related Documents
 
-- **Parent Spec**: [Template System Numbered SDLC Paths Spec](../../03.specs/099-template-system-numbered-sdlc-paths/spec.md)
+- **Parent Spec**: [Template System Numbered SDLC Paths Spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Parent Plan**: [Template System Numbered SDLC Paths Plan](../plans/2026-07-05-template-system-numbered-sdlc-paths.md)
 - **PRD Index**: [Requirements index](../../01.requirements/README.md)
 - **Spec Index**: [Spec index](../../03.specs/README.md)
