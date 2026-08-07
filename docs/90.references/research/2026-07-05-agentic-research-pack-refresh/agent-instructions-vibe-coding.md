@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:agent-instructions-vibe-coding
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-27
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -108,7 +108,7 @@ surfaces, not additional instruction authorities.
 ## Source Rules
 
 - Mutable official provider sources were revalidated at
-  `2026-07-27T02:33:54+09:00`, and the repo-local implementation comparison was
+  `2026-08-07T12:45:40+09:00`, and the repo-local implementation comparison was
   reconciled on **2026-07-27**. OpenAI, Anthropic, and GitHub product guidance
   proves retrieval-time behavior only.
 - NIST SSDF v1.1 is a February 2022 high-level secure-development framework;
@@ -121,8 +121,8 @@ surfaces, not additional instruction authorities.
 
 ## Sources
 
-- [OpenAI Codex custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md) - discovery, layering, and nearest-scope precedence
-- [OpenAI practical guide to building agents](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/) - tools, guardrails, retry/high-risk escalation, and human intervention
+- [OpenAI Codex custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) - discovery, layering, and nearest-scope precedence
+- [OpenAI practical guide to building agents](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/) - not re-fetchable on 2026-08-07 (HTTP 403 to automated retrieval); claims rest on the earlier retrieval - tools, guardrails, retry/high-risk escalation, and human intervention
 - [Claude Code memory and rules](https://code.claude.com/docs/en/memory) - modular and path-scoped project instructions
 - [Claude Code security](https://code.claude.com/docs/en/security) - least privilege, sandboxing, approval, prompt injection, and user review responsibility
 - [GitHub repository custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions) - repository/path/agent instruction scopes and precedence caveats

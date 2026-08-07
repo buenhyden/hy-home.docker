@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:document-metadata-lifecycle
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-13
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -143,7 +143,7 @@ merge enforcement. None of these layers authorizes a bulk historical rewrite.
 - [Google SRE incident management](https://sre.google/sre-book/managing-incidents/) - live incident state and handoff
 - [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - reviewed learning and action ownership
 - [PagerDuty runbook overview](https://www.pagerduty.com/resources/automation/learn/what-is-a-runbook/) - repeatable operations procedure
-- [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) - human-readable release communication
+- [Keep a Changelog 1.1.2](https://keepachangelog.com/en/1.1.2/) - human-readable release communication
 - [Semantic Versioning 2.0.0](https://semver.org/) - public API version signal
 - [Spec 123](../../../03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved metadata keys, audit fields, transition state machine, numbering, and rollout
 - [Spec 129](../../../03.specs/129-document-contract-canonicalization/spec.md) - canonical families, README profiles, parent serialization, Release, and staged foundation scope

@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:spec-driven-sdlc
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-11
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -174,7 +174,7 @@ operations.
 - [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - reviewed blameless learning
 - [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident-response CSF profile
 - [PagerDuty runbook overview](https://www.pagerduty.com/resources/learn/what-is-a-runbook/) - repeatable operational procedure
-- [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) - human-readable changelog convention
+- [Keep a Changelog 1.1.2](https://keepachangelog.com/en/1.1.2/) - human-readable changelog convention
 - [Semantic Versioning 2.0.0](https://semver.org/) - version signal convention
 
 ## Maintenance

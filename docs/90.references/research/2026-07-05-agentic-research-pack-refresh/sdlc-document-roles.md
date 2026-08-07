@@ -3,7 +3,7 @@ status: active
 artifact_id: reference:agentic-research:sdlc-document-roles
 artifact_type: reference
 parent_ids: [spec:123-agentic-engineering-audit-remediation]
-reviewed_at: 2026-07-13
+reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
 
@@ -154,6 +154,9 @@ collapse Guide, Runbook, Reference, and research explanation into one type.
   content visible at the latest revalidation.
 - ISO pages provide metadata and summaries rather than full standards.
 - ISO/IEC/IEEE 12207:2017 is withdrawn and is not a current normative basis.
+  The 2026-08-07 revalidation could not re-open the ISO catalog page, which
+  returned HTTP 403 to automated retrieval. The withdrawal status therefore
+  rests on the earlier retrieval and is not re-verified.
 - External sources remain comparisons; repo-template bases are labeled explicitly.
 
 ## Sources
@@ -177,10 +180,12 @@ collapse Guide, Runbook, Reference, and research explanation into one type.
 - [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) - blameless reviewed learning
 - [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final) - incident-response CSF profile
 - [PagerDuty runbook overview](https://www.pagerduty.com/resources/learn/what-is-a-runbook/) - repeatable operations procedure
-- [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) - changelog convention
+- [Keep a Changelog 1.1.2](https://keepachangelog.com/en/1.1.2/) - changelog convention
 - [Semantic Versioning 2.0.0](https://semver.org/) - version signal convention
 - [GitHub Docs content best practices](https://docs.github.com/en/contributing/writing-for-github-docs/best-practices-for-github-docs) - audience, purpose, content-type, and scannability guidance
-- [Diataxis](https://diataxis.fr/) - purpose separation across tutorial, how-to, reference, and explanation
+- [Diataxis](https://diataxis.fr/) - not re-fetchable on 2026-08-07 (HTTP 429);
+  see [documentation architecture](./documentation-architecture.md) for the
+  pinned upstream source actually read - purpose separation across tutorial, how-to, reference, and explanation
 - [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - deployment approvals, restrictions, and environment evidence
 - [GitHub deployment history](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/view-deployment-history) - deployment commits, environments, logs, URLs, and status history
 
