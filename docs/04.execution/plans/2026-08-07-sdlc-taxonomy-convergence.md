@@ -1091,6 +1091,78 @@ Expected: `2`. A `3` means the migration did not take. Do not adjust the
 expected baseline to accommodate the failure — the baseline of 2 is the two
 known out-of-scope subjects, and nothing in this wave may add a third.
 
+- [ ] **Step 6d: Complete the required-set retarget for guide and runbook**
+
+Steps 2 through 6c retargeted only the one contested heading per role. The
+remaining required headings are still registry inventions, which is why `policy`
+reached 64 of 64 while `guide` stayed at 1 of 66 and `runbook` at 2 of 62.
+
+Measured against the corpus:
+
+| Role    | Heading                                                                                                             | Documents carrying it | Verdict                          |
+| :------ | :------------------------------------------------------------------------------------------------------------------ | --------------------: | :------------------------------- |
+| guide   | `## Usage`, `## Common Checks`, `## Runbook Handoff`, `## Related Documents`                                        |              66 of 66 | Keep required                    |
+| guide   | `## Overview`                                                                                                       |               1 of 66 | Demote — 65:1 clears D2          |
+| guide   | `## Audience and Prerequisites`                                                                                     |               1 of 66 | Demote — 65:1 clears D2          |
+| runbook | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation`, `## Related Documents` |              62 of 62 | Keep required                    |
+| runbook | `## Verification Record`                                                                                            |               2 of 62 | Demote — 60:2 clears D2          |
+| runbook | `## Overview`                                                                                                       |              25 of 62 | Demote — 37:25 does NOT clear D2 |
+
+The last row is the only judgement call. At 37 against 25 neither side is
+decisive, so D2 forbids promoting the corpus. Demoting to
+`conditional_headings` is the one state that neither asserts a majority that
+does not exist nor requires a heading 60 percent of the corpus lacks. Adding
+`## Overview` to the 37 documents that lack it was considered and rejected: it
+is authoring work in the opposite direction to D2.
+
+Demote all four to `conditional_headings` — never to `forbidden_headings`,
+which would break the documents that do carry them.
+
+In `docs/99.templates/support/document-metadata-profiles.yaml`, under `guide:`:
+
+```yaml
+required_headings: ['## Usage', '## Common Checks', '## Runbook Handoff', '## Related Documents']
+conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Troubleshooting']
+```
+
+Under `runbook:`:
+
+```yaml
+required_headings:
+  [
+    '## When to Use',
+    '## Procedure',
+    '## Evidence',
+    '## Rollback or Recovery',
+    '## Escalation',
+    '## Related Documents',
+  ]
+conditional_headings: ['## Overview', '## Verification Record']
+```
+
+Then remove the demoted headings from the two template bodies
+(`guide.template.md`, `runbook.template.md`) so a newly authored document is not
+told to write a heading its role no longer requires. Keep exactly one
+`## Related Documents` as the final heading in each.
+
+- [ ] **Step 6e: Confirm both roles now conform**
+
+```bash
+python3 -c "
+import yaml,re,pathlib
+reg=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml'))['template_roles']
+for role,d in (('guide','guides'),('runbook','runbooks')):
+    req=reg[role]['required_headings']
+    docs=[p for p in pathlib.Path('docs/05.operations/'+d).rglob('*.md') if p.name!='README.md']
+    n=sum(1 for p in docs if all(any(l.strip()==h for l in p.read_text(errors='ignore').splitlines()) for h in req))
+    print(role, n, '/', len(docs))"
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+```
+
+Expected: `guide 66 / 66`, `runbook 62 / 62`, `2` contract failures,
+`violations=0`.
+
 - [ ] **Step 7: Measure the conformance improvement**
 
 ```bash
