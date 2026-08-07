@@ -89,6 +89,6 @@ categories remain present.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/112-audit-pack-coverage-report/spec.md](../../03.specs/112-audit-pack-coverage-report/spec.md)
+- **Spec**: [../../03.specs/112-audit-pack-coverage-report/spec.md](../../98.archive/03.specs/112-audit-pack-coverage-report/spec.md)
 - **Task**: [../tasks/2026-07-05-audit-pack-coverage-report.md](../tasks/2026-07-05-audit-pack-coverage-report.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

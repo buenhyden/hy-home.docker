@@ -92,7 +92,7 @@ CI gates or model-based eval jobs.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/116-agent-output-eval-runner/spec.md](../../03.specs/116-agent-output-eval-runner/spec.md)
+- **Spec**: [../../03.specs/116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Task**: [../tasks/2026-07-06-agent-output-eval-runner.md](../tasks/2026-07-06-agent-output-eval-runner.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

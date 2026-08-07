@@ -90,6 +90,6 @@ the full index.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/113-llm-wiki-stage-category-coverage/spec.md](../../03.specs/113-llm-wiki-stage-category-coverage/spec.md)
+- **Spec**: [../../03.specs/113-llm-wiki-stage-category-coverage/spec.md](../../98.archive/03.specs/113-llm-wiki-stage-category-coverage/spec.md)
 - **Task**: [../tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../tasks/2026-07-06-llm-wiki-stage-category-coverage.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

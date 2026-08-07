@@ -45,7 +45,7 @@ workflow changes, or protected runtime mutations.
 
 - **Config Contract**: The fixture pack lives under
   `docs/90.references/data/governance/`; local runner behavior is specified by
-  [116-agent-output-eval-runner](../../../03.specs/116-agent-output-eval-runner/spec.md).
+  [116-agent-output-eval-runner](../116-agent-output-eval-runner/spec.md).
 - **Data / Interface Contract**: Each fixture must define an input scenario,
   required source context, expected output properties, scoring criteria, block
   conditions, and verification evidence.
@@ -205,6 +205,6 @@ The repository-wide archive mapping is recorded in
 - **Plan**: [../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md](../../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md)
 - **Tasks**: [../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md](../../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
-- **Runner spec**: [../116-agent-output-eval-runner/spec.md](../../../03.specs/116-agent-output-eval-runner/spec.md)
+- **Runner spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **Loop research**: [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)

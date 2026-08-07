@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:112-audit-pack-coverage-report
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/112-audit-pack-coverage-report/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: ee49856b96f78bfe7f0cdfa29ce2093c001411c7
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/112-audit-pack-coverage-report/spec.md -->
 
 # Audit Pack Coverage Report Technical Specification
 
@@ -12,6 +20,10 @@ This specification defines a read-only coverage report for the agentic
 engineering implementation audit pack. The report parses implementation-status
 tables, summarizes normalized and raw status values, and verifies that the
 overview keeps the required top-level categories.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -158,9 +170,18 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-APC-003**: Repo contracts run the report in `--check` mode.
 - **VAL-APC-004**: Script inventory and Stage 03/04 evidence stay in sync.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/112-audit-pack-coverage-report/spec.md` | `docs/98.archive/03.specs/112-audit-pack-coverage-report/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-05-audit-pack-coverage-report.md](../../04.execution/plans/2026-07-05-audit-pack-coverage-report.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md](../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
-- **Scripts README**: [../../../scripts/README.md](../../../scripts/README.md)
+- **Plan**: [../../04.execution/plans/2026-07-05-audit-pack-coverage-report.md](../../../04.execution/plans/2026-07-05-audit-pack-coverage-report.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md](../../../04.execution/tasks/2026-07-05-audit-pack-coverage-report.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Scripts README**: [../../../scripts/README.md](../../../../scripts/README.md)

@@ -313,6 +313,6 @@ authoritative.
 - [governance data index](./README.md)
 - [reference data index](../README.md)
 - [agent output eval fixtures spec](../../../98.archive/03.specs/110-agent-output-eval-fixtures/spec.md)
-- [agent output eval runner spec](../../../03.specs/116-agent-output-eval-runner/spec.md)
+- [agent output eval runner spec](../../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - [agent output eval fixtures plan](../../../04.execution/plans/2026-07-05-agent-output-eval-fixtures.md)
 - [agent output eval fixtures task](../../../04.execution/tasks/2026-07-05-agent-output-eval-fixtures.md)

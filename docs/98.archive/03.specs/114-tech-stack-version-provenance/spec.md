@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:114-tech-stack-version-provenance
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/114-tech-stack-version-provenance/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: 0d3b9d6afad07c73a7a9f6e1640558325b5a3d3e
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/114-tech-stack-version-provenance/spec.md -->
 
 # Tech-Stack Version Provenance Technical Specification
 
@@ -13,6 +21,10 @@ curated tech-stack version registry. The snapshot groups registry images by
 drift severity, declaration status, infrastructure tier, and Compose source
 line so reviewers can inspect registry-to-Compose parity without manually
 reading every Compose file.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -175,9 +187,18 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-TSV-004**: Stage 03/04 evidence, Docker data indexes, script inventory,
   and automation candidate closure are in sync.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/114-tech-stack-version-provenance/spec.md` | `docs/98.archive/03.specs/114-tech-stack-version-provenance/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md)
-- **Generated provenance**: [../../90.references/data/docker/tech-stack-version-provenance.md](../../90.references/data/docker/tech-stack-version-provenance.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Plan**: [../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md](../../../04.execution/plans/2026-07-06-tech-stack-version-provenance.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md](../../../04.execution/tasks/2026-07-06-tech-stack-version-provenance.md)
+- **Generated provenance**: [../../90.references/data/docker/tech-stack-version-provenance.md](../../../90.references/data/docker/tech-stack-version-provenance.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

@@ -13,7 +13,7 @@ generated provider hook parity matrix and Gemini behavioral reminder checklist.
 
 ## Inputs
 
-- **Parent Spec**: [Provider hook parity matrix spec](../../03.specs/115-provider-hook-parity-matrix/spec.md)
+- **Parent Spec**: [Provider hook parity matrix spec](../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)
 - **Parent Plan**: [Provider hook parity matrix plan](../plans/2026-07-06-provider-hook-parity-matrix.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -81,7 +81,7 @@ generated provider hook parity matrix and Gemini behavioral reminder checklist.
 
 ## Related Documents
 
-- **Parent Spec**: [Provider hook parity matrix spec](../../03.specs/115-provider-hook-parity-matrix/spec.md)
+- **Parent Spec**: [Provider hook parity matrix spec](../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)
 - **Parent Plan**: [Provider hook parity matrix plan](../plans/2026-07-06-provider-hook-parity-matrix.md)
 - **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../90.references/data/governance/provider-hook-parity-matrix.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

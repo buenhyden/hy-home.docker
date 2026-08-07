@@ -13,7 +13,7 @@ advisory agent-output eval fixture runner.
 
 ## Inputs
 
-- **Parent Spec**: [Agent output eval runner spec](../../03.specs/116-agent-output-eval-runner/spec.md)
+- **Parent Spec**: [Agent output eval runner spec](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Parent Plan**: [Agent output eval runner plan](../plans/2026-07-06-agent-output-eval-runner.md)
 - **Fixture Reference**: [Agent output eval fixtures](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
@@ -82,7 +82,7 @@ advisory agent-output eval fixture runner.
 
 ## Related Documents
 
-- **Parent Spec**: [Agent output eval runner spec](../../03.specs/116-agent-output-eval-runner/spec.md)
+- **Parent Spec**: [Agent output eval runner spec](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Parent Plan**: [Agent output eval runner plan](../plans/2026-07-06-agent-output-eval-runner.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

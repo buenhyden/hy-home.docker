@@ -95,7 +95,7 @@ without re-reading every Compose file.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/114-tech-stack-version-provenance/spec.md](../../03.specs/114-tech-stack-version-provenance/spec.md)
+- **Spec**: [../../03.specs/114-tech-stack-version-provenance/spec.md](../../98.archive/03.specs/114-tech-stack-version-provenance/spec.md)
 - **Task**: [../tasks/2026-07-06-tech-stack-version-provenance.md](../tasks/2026-07-06-tech-stack-version-provenance.md)
 - **Generated provenance**: [../../90.references/data/docker/tech-stack-version-provenance.md](../../90.references/data/docker/tech-stack-version-provenance.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

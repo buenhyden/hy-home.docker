@@ -176,6 +176,6 @@ bash scripts/validation/check-repo-contracts.sh
 
 - **Plan**: [../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md)
 - **Tasks**: [../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md)
-- **Parent Runner Spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
+- **Parent Runner Spec**: [../116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Automation Candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

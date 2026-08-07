@@ -13,7 +13,7 @@ agentic-engineering audit-pack implementation-status coverage report.
 
 ## Inputs
 
-- **Parent Spec**: [Audit pack coverage report spec](../../03.specs/112-audit-pack-coverage-report/spec.md)
+- **Parent Spec**: [Audit pack coverage report spec](../../98.archive/03.specs/112-audit-pack-coverage-report/spec.md)
 - **Parent Plan**: [Audit pack coverage report plan](../plans/2026-07-05-audit-pack-coverage-report.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -77,7 +77,7 @@ agentic-engineering audit-pack implementation-status coverage report.
 
 ## Related Documents
 
-- **Parent Spec**: [Audit pack coverage report spec](../../03.specs/112-audit-pack-coverage-report/spec.md)
+- **Parent Spec**: [Audit pack coverage report spec](../../98.archive/03.specs/112-audit-pack-coverage-report/spec.md)
 - **Parent Plan**: [Audit pack coverage report plan](../plans/2026-07-05-audit-pack-coverage-report.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **Scripts README**: [../../../scripts/README.md](../../../scripts/README.md)

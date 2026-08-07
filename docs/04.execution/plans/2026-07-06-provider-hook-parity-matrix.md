@@ -94,7 +94,7 @@ event, command provenance, and Gemini's non-native behavioral reminder contract.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/115-provider-hook-parity-matrix/spec.md](../../03.specs/115-provider-hook-parity-matrix/spec.md)
+- **Spec**: [../../03.specs/115-provider-hook-parity-matrix/spec.md](../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)
 - **Task**: [../tasks/2026-07-06-provider-hook-parity-matrix.md](../tasks/2026-07-06-provider-hook-parity-matrix.md)
 - **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../90.references/data/governance/provider-hook-parity-matrix.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

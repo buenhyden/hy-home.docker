@@ -13,7 +13,7 @@ changed-path QA gate recommendations into GitHub Step Summary.
 
 ## Inputs
 
-- **Parent Spec**: [QA gate recommendation CI summary spec](../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
+- **Parent Spec**: [QA gate recommendation CI summary spec](../../98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
 - **Parent Plan**: [QA gate recommendation CI summary plan](../plans/2026-07-05-qa-gate-recommendation-ci-summary.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -76,7 +76,7 @@ changed-path QA gate recommendations into GitHub Step Summary.
 
 ## Related Documents
 
-- **Parent Spec**: [QA gate recommendation CI summary spec](../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
+- **Parent Spec**: [QA gate recommendation CI summary spec](../../98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
 - **Parent Plan**: [QA gate recommendation CI summary plan](../plans/2026-07-05-qa-gate-recommendation-ci-summary.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **GitHub governance**: [../../00.agent-governance/rules/github-governance.md](../../00.agent-governance/rules/github-governance.md)

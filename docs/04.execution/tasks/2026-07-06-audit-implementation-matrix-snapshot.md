@@ -13,7 +13,7 @@ generated audit implementation matrix snapshot.
 
 ## Inputs
 
-- **Parent Spec**: [Audit implementation matrix snapshot spec](../../03.specs/118-audit-implementation-matrix-snapshot/spec.md)
+- **Parent Spec**: [Audit implementation matrix snapshot spec](../../98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md)
 - **Parent Plan**: [Audit implementation matrix snapshot plan](../plans/2026-07-06-audit-implementation-matrix-snapshot.md)
 - **Implementation Audit Pack**: [Agentic engineering implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
@@ -86,7 +86,7 @@ generated audit implementation matrix snapshot.
 
 ## Related Documents
 
-- **Parent Spec**: [Audit implementation matrix snapshot spec](../../03.specs/118-audit-implementation-matrix-snapshot/spec.md)
+- **Parent Spec**: [Audit implementation matrix snapshot spec](../../98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md)
 - **Parent Plan**: [Audit implementation matrix snapshot plan](../plans/2026-07-06-audit-implementation-matrix-snapshot.md)
 - **Generated reference**: [../../90.references/data/governance/audit-implementation-matrix.md](../../90.references/data/governance/audit-implementation-matrix.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

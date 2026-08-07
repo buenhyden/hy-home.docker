@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:116-agent-output-eval-runner
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/116-agent-output-eval-runner/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: e7d63c23ad166e6dc8674d0fbfbe7fbc45991e3c
+archived_blob: 1866c4f0d64c8783572581789e27a56f149a3e76
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/116-agent-output-eval-runner/spec.md -->
 
 # Agent Output Eval Runner Technical Specification
 
@@ -13,6 +21,10 @@ eval fixture catalog. The runner lists fixtures, checks fixture catalog
 freshness, and heuristically scores saved agent outputs against docs, provider,
 and infrastructure fixture criteria without calling models or mutating runtime
 state.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -182,9 +194,18 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-AOR-004**: Stage 03/04 evidence, fixture reference, script inventory,
   and automation candidate closure are in sync.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/116-agent-output-eval-runner/spec.md` | `docs/98.archive/03.specs/116-agent-output-eval-runner/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-06-agent-output-eval-runner.md](../../04.execution/plans/2026-07-06-agent-output-eval-runner.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md](../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md)
-- **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Plan**: [../../04.execution/plans/2026-07-06-agent-output-eval-runner.md](../../../04.execution/plans/2026-07-06-agent-output-eval-runner.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md](../../../04.execution/tasks/2026-07-06-agent-output-eval-runner.md)
+- **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

@@ -56,7 +56,7 @@ docs/03.specs/120-agent-output-eval-ci-gate/
 ## Related Documents
 
 - **Spec**: [spec.md](./spec.md)
-- **Parent Runner Spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
+- **Parent Runner Spec**: [../116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Plan**: [../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md)
 - **Task**: [../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md)
 - **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)

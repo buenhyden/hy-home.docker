@@ -88,7 +88,7 @@ which avoids changing the required job set.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
+- **Spec**: [../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
 - **Task**: [../tasks/2026-07-05-qa-gate-recommendation-ci-summary.md](../tasks/2026-07-05-qa-gate-recommendation-ci-summary.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **CI quality workflow**: [../../../.github/workflows/ci-quality.yml](../../../.github/workflows/ci-quality.yml)

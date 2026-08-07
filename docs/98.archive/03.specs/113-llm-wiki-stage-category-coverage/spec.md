@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:113-llm-wiki-stage-category-coverage
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: 40b27ec02acbfda97b8a20e1aba4a39f39895a40
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md -->
 
 # LLM Wiki Stage Category Coverage Technical Specification
 
@@ -12,6 +20,10 @@ This specification defines a generated Stage 90 coverage snapshot for the
 repo-local LLM Wiki. The snapshot groups safe tracked source paths by source
 bucket, LLM Wiki category, and lightweight path role so audit consumers can see
 coverage shape without scanning the full generated index.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -163,9 +175,18 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-LWC-004**: Stage 03/04 evidence and automation candidate closure are in
   sync.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md` | `docs/98.archive/03.specs/113-llm-wiki-stage-category-coverage/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
-- **Generated coverage**: [../../90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../../90.references/data/knowledge/llm-wiki-stage-category-coverage.md)
+- **Plan**: [../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md](../../../04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md](../../../04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Generated coverage**: [../../90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../../../90.references/data/knowledge/llm-wiki-stage-category-coverage.md)

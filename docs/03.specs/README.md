@@ -70,14 +70,6 @@ docs/03.specs/
 ├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
-├── 111-qa-gate-recommendation-ci-summary/ # Completed QA gate recommendation CI summary
-├── 112-audit-pack-coverage-report/       # Completed audit-pack implementation-status coverage report
-├── 113-llm-wiki-stage-category-coverage/ # Completed LLM Wiki stage/category coverage snapshot
-├── 114-tech-stack-version-provenance/     # Completed tech-stack version provenance snapshot
-├── 115-provider-hook-parity-matrix/       # Completed provider hook parity matrix
-├── 116-agent-output-eval-runner/          # Completed local advisory agent-output eval runner
-├── 117-security-automation-readiness-snapshot/ # Completed security automation readiness snapshot
-├── 118-audit-implementation-matrix-snapshot/ # Completed audit implementation matrix snapshot
 ├── 119-sdlc-document-contract-corpus-normalization/ # Completed SDLC document contract corpus normalization design
 ├── 120-agent-output-eval-ci-gate/          # Completed agent-output eval fixture freshness CI gate
 ├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
@@ -110,14 +102,6 @@ docs/03.specs/
 | Metrics, logs, traces, dashboards, alerts                                                             | `007-observability/spec.md`                                   |
 | Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
 | Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
-| QA gate recommendation CI summary                                                                     | `111-qa-gate-recommendation-ci-summary/spec.md`               |
-| Audit-pack implementation-status coverage report                                                      | `112-audit-pack-coverage-report/spec.md`                      |
-| LLM Wiki stage/category coverage snapshot                                                             | `113-llm-wiki-stage-category-coverage/spec.md`                |
-| Tech-stack version provenance snapshot                                                                | `114-tech-stack-version-provenance/spec.md`                   |
-| Provider hook parity matrix                                                                           | `115-provider-hook-parity-matrix/spec.md`                     |
-| Local advisory agent-output eval runner                                                               | `116-agent-output-eval-runner/spec.md`                        |
-| Security automation readiness snapshot                                                                | `117-security-automation-readiness-snapshot/spec.md`          |
-| Audit implementation matrix snapshot                                                                  | `118-audit-implementation-matrix-snapshot/spec.md`            |
 | SDLC document contract corpus normalization                                                           | `119-sdlc-document-contract-corpus-normalization/spec.md`     |
 | Agent-output eval fixture freshness CI gate                                                           | `120-agent-output-eval-ci-gate/spec.md`                       |
 | Storybook Next.js dependency vulnerability audit gate                                                 | `121-dependency-vulnerability-audit-gate/spec.md`             |
@@ -197,14 +181,6 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
 - **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
-- **QA Gate Recommendation CI Summary Spec**: [111-qa-gate-recommendation-ci-summary/spec.md](./111-qa-gate-recommendation-ci-summary/spec.md)
-- **Audit Pack Coverage Report Spec**: [112-audit-pack-coverage-report/spec.md](./112-audit-pack-coverage-report/spec.md)
-- **LLM Wiki Stage Category Coverage Spec**: [113-llm-wiki-stage-category-coverage/spec.md](./113-llm-wiki-stage-category-coverage/spec.md)
-- **Tech-Stack Version Provenance Spec**: [114-tech-stack-version-provenance/spec.md](./114-tech-stack-version-provenance/spec.md)
-- **Provider Hook Parity Matrix Spec**: [115-provider-hook-parity-matrix/spec.md](./115-provider-hook-parity-matrix/spec.md)
-- **Agent Output Eval Runner Spec**: [116-agent-output-eval-runner/spec.md](./116-agent-output-eval-runner/spec.md)
-- **Security Automation Readiness Snapshot Spec**: [117-security-automation-readiness-snapshot/spec.md](./117-security-automation-readiness-snapshot/spec.md)
-- **Audit Implementation Matrix Snapshot Spec**: [118-audit-implementation-matrix-snapshot/spec.md](./118-audit-implementation-matrix-snapshot/spec.md)
 - **SDLC Document Contract Corpus Normalization Spec**: [119-sdlc-document-contract-corpus-normalization/spec.md](./119-sdlc-document-contract-corpus-normalization/spec.md)
 - **Agent Output Eval CI Gate Spec**: [120-agent-output-eval-ci-gate/spec.md](./120-agent-output-eval-ci-gate/spec.md)
 - **Dependency Vulnerability Audit Gate Spec**: [121-dependency-vulnerability-audit-gate/spec.md](./121-dependency-vulnerability-audit-gate/spec.md)

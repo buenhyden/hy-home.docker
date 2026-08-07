@@ -13,7 +13,7 @@ generated tech-stack version drift severity and source provenance snapshot.
 
 ## Inputs
 
-- **Parent Spec**: [Tech-stack version provenance spec](../../03.specs/114-tech-stack-version-provenance/spec.md)
+- **Parent Spec**: [Tech-stack version provenance spec](../../98.archive/03.specs/114-tech-stack-version-provenance/spec.md)
 - **Parent Plan**: [Tech-stack version provenance plan](../plans/2026-07-06-tech-stack-version-provenance.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -83,7 +83,7 @@ generated tech-stack version drift severity and source provenance snapshot.
 
 ## Related Documents
 
-- **Parent Spec**: [Tech-stack version provenance spec](../../03.specs/114-tech-stack-version-provenance/spec.md)
+- **Parent Spec**: [Tech-stack version provenance spec](../../98.archive/03.specs/114-tech-stack-version-provenance/spec.md)
 - **Parent Plan**: [Tech-stack version provenance plan](../plans/2026-07-06-tech-stack-version-provenance.md)
 - **Generated provenance**: [../../90.references/data/docker/tech-stack-version-provenance.md](../../90.references/data/docker/tech-stack-version-provenance.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

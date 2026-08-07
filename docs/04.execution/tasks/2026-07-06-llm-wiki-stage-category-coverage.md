@@ -13,7 +13,7 @@ generated LLM Wiki stage/category coverage snapshot.
 
 ## Inputs
 
-- **Parent Spec**: [LLM Wiki stage category coverage spec](../../03.specs/113-llm-wiki-stage-category-coverage/spec.md)
+- **Parent Spec**: [LLM Wiki stage category coverage spec](../../98.archive/03.specs/113-llm-wiki-stage-category-coverage/spec.md)
 - **Parent Plan**: [LLM Wiki stage category coverage plan](../plans/2026-07-06-llm-wiki-stage-category-coverage.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 
@@ -80,7 +80,7 @@ generated LLM Wiki stage/category coverage snapshot.
 
 ## Related Documents
 
-- **Parent Spec**: [LLM Wiki stage category coverage spec](../../03.specs/113-llm-wiki-stage-category-coverage/spec.md)
+- **Parent Spec**: [LLM Wiki stage category coverage spec](../../98.archive/03.specs/113-llm-wiki-stage-category-coverage/spec.md)
 - **Parent Plan**: [LLM Wiki stage category coverage plan](../plans/2026-07-06-llm-wiki-stage-category-coverage.md)
 - **Generated coverage**: [../../90.references/data/knowledge/llm-wiki-stage-category-coverage.md](../../90.references/data/knowledge/llm-wiki-stage-category-coverage.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

@@ -13,7 +13,7 @@ generated security automation readiness snapshot.
 
 ## Inputs
 
-- **Parent Spec**: [Security automation readiness snapshot spec](../../03.specs/117-security-automation-readiness-snapshot/spec.md)
+- **Parent Spec**: [Security automation readiness snapshot spec](../../98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md)
 - **Parent Plan**: [Security automation readiness snapshot plan](../plans/2026-07-06-security-automation-readiness-snapshot.md)
 - **Security Maturity Audit**: [Security framework maturity coverage](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
 - **Automation Candidate**: [Agentic engineering automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
@@ -84,7 +84,7 @@ generated security automation readiness snapshot.
 
 ## Related Documents
 
-- **Parent Spec**: [Security automation readiness snapshot spec](../../03.specs/117-security-automation-readiness-snapshot/spec.md)
+- **Parent Spec**: [Security automation readiness snapshot spec](../../98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md)
 - **Parent Plan**: [Security automation readiness snapshot plan](../plans/2026-07-06-security-automation-readiness-snapshot.md)
 - **Generated reference**: [../../90.references/data/security/security-automation-readiness.md](../../90.references/data/security/security-automation-readiness.md)
 - **Security maturity audit**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)

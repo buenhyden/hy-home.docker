@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:118-audit-implementation-matrix-snapshot
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: 5c9a532ed3bc5e1cb879ac071bf7de7df3f80a02
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md -->
 
 # Audit Implementation Matrix Snapshot Technical Specification
 
@@ -13,6 +21,10 @@ the agentic engineering implementation audit pack. The snapshot summarizes
 required audit report presence, implementation-overview category coverage,
 automation candidate closure rows, generated evidence surfaces, and residual
 gap signals without rewriting audit conclusions or changing protected state.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -189,9 +201,18 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-AIM-004**: Stage 03/04 evidence, Stage 90 indexes, scripts inventory,
   and audit references are synchronized.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md` | `docs/98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md](../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md](../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md)
-- **Generated reference**: [../../90.references/data/governance/audit-implementation-matrix.md](../../90.references/data/governance/audit-implementation-matrix.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Plan**: [../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md](../../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md](../../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md)
+- **Generated reference**: [../../90.references/data/governance/audit-implementation-matrix.md](../../../90.references/data/governance/audit-implementation-matrix.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

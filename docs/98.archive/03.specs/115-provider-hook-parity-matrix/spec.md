@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:115-provider-hook-parity-matrix
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/115-provider-hook-parity-matrix/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 93b29aad1339085d035114e7bfefccfed4c0cf0c
+archived_blob: 6438f6d8d917ff2e6ec1346bda3ac18f7ed4614e
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/115-provider-hook-parity-matrix/spec.md -->
 
 # Provider Hook Parity Matrix Technical Specification
 
@@ -13,6 +21,10 @@ Claude, Codex, and Gemini. The matrix compares tracked Claude/Codex hook
 configuration and records Gemini as a behavioral reminder checklist because the
 Stage 00 provider capability matrix treats Gemini hooks as a non-native
 capability.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -177,9 +189,18 @@ bash scripts/validation/check-repo-contracts.sh
 - **VAL-PHM-004**: Stage 03/04 evidence, governance-data indexes, script
   inventory, and automation candidate closure are in sync.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/115-provider-hook-parity-matrix/spec.md` | `docs/98.archive/03.specs/115-provider-hook-parity-matrix/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md](../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md)
-- **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../90.references/data/governance/provider-hook-parity-matrix.md)
-- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Plan**: [../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md](../../../04.execution/plans/2026-07-06-provider-hook-parity-matrix.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md](../../../04.execution/tasks/2026-07-06-provider-hook-parity-matrix.md)
+- **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../../90.references/data/governance/provider-hook-parity-matrix.md)
+- **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
