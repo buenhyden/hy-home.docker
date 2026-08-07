@@ -8,7 +8,7 @@ status: active
 ## Current objective
 
 - Current task: `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
-- T-ARPE-001 through T-ARPE-012 are complete. The canonical agentic research
+- T-ARPE-001 through T-ARPE-013 are complete. The canonical agentic research
   pack gained three leaves covering documentation architecture, the LLM-WIKI
   system, and the agent memory hierarchy, and its fifteen existing leaves were
   revalidated against repository facts and current external sources. This Task
@@ -47,8 +47,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `ef84635a36314d7146b92c51b3023a8b6c140d20`
-- Verified at: `2026-08-07T13:36:00+09:00`
+- Verified commit: `6faf9444d2eeda93766d1912100a28c4628c8aa4`
+- Verified at: `2026-08-07T13:52:00+09:00`
 - Coverage analysis before authoring found that nineteen of twenty-two
   requested research topics already had canonical coverage across fifteen
   leaves totalling 3,523 lines, and that three had none.
@@ -81,22 +81,34 @@ status: active
   inbound-link repair.
 - The repository contract check after consolidation reports the same ten
   predecessor failures with no new subject.
-- Eleven logical-unit commits span `19ee4727` to `ef84635a`.
+- Sixteen logical-unit commits span `19ee4727` to `6faf9444`.
+- All five previously unfetchable sources are verified through upstream sources
+  of record. The earlier HTTP 429 diagnosis was wrong: those hosts return a
+  Cloudflare bot challenge that retrying never clears from an automated client.
+- The heading-contract conflict is resolved by aligning the reference template,
+  the reference role required headings, and the template-source heading list to
+  the heading 69 documents already use. The audit role forbidden-heading entry
+  is unchanged because 34 audit documents would break.
+- Predecessor drift fell from ten findings to two. Six registry entries, the
+  provenance snapshot, and two hardcoded hardening image-tag expectations were
+  catch-up corrections only; Compose already declared every newer image, so no
+  service version changed. A seventh drifted image, dozzle, surfaced only after
+  the Keycloak expectation was corrected.
+- The repository contract check now reports two remaining subjects. Metadata
+  validation selected thirty-nine documents with zero violations.
 
 ## Blockers and unverified facts
 
-- A new Stage 90 reference cannot satisfy both heading contracts at once. The
-  repository contract check looks for the literal `## Definitions / Facts`
-  while the reference role in the document metadata profiles looks for the H2
-  `## Facts and Definitions`. Each choice fails the other gate with exactly
-  three findings. The three new leaves use the sibling-matching heading and
-  carry the metadata finding. Both candidate fix sites sit outside this Task's
-  allowed paths, so correcting the conflict needs separate approval.
-- Ten predecessor repository-check failures stay open: the private environment
-  key comparison pair, the missing `html5lib` validation-runtime dependency,
-  the Keycloak hardening image tag, the stale tech-stack provenance snapshot,
-  and version drift for Traefik, Keycloak, PostgreSQL, Prometheus, Alloy, and
-  Ollama. These route to a separate approved runtime task.
+- Two repository-check subjects stay open and both need an action outside the
+  repository. The private `.env` carries `INFLUXDB_BUCKET`, `INFLUXDB_ORG`, and
+  `INFLUXDB_USERNAME`, which `.env.example` does not; the user chose to leave
+  that as an environment fact, and it links to the separate InfluxDB review.
+  The `html5lib` dependency is declared in `scripts/requirements.txt` but is not
+  installed, and PEP 668 blocks installation in this externally-managed Python
+  environment; a virtual environment or the distribution package is needed.
+- The audit role still forbids the reference heading that 34 audit documents
+  carry. That rule is vacuous today and retargeting it would surface 34
+  violations, so it is recorded rather than changed.
 - Provider acceptance and entitlement, live comparative model evaluation, and
   authenticated remote GitHub enforcement stay unverified.
 - A typed domain-memory taxonomy with validator-enforced promotion, retention,
