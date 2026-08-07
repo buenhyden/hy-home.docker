@@ -38,8 +38,8 @@ regression도 tracked validation owner에 연결되어 있습니다. 외부 capa
 intake는 source date가 2026-07-26인 9개 merge/defer 결정으로 고정됩니다.
 
 QA/CI tracked source는 7개 workflow와 23개 job, `ci-quality.yml`의 16개 quality
-job, 24개 pre-commit hook, 기본 20개와
-harness 18개의 script-backed local QA step입니다. Controlled all-files wrapper는
+job, 24개 pre-commit hook, 기본 24개와
+harness 22개의 script-backed local QA step입니다. Controlled all-files wrapper는
 별도 승인된 최종 evidence gate이므로 이 step 수에 포함하지 않습니다. 이
 구현 정합화에 따라 canonical audit 분포는 161개 criterion 중 Implemented 77,
 Partial 60, Missing 13, Not Applicable 2, Needs Revalidation 9입니다.
@@ -84,6 +84,22 @@ GitHub secure-use/monitoring/ruleset, zizmor v1.28.0 advisory/release, 그리고
 다시 확인했습니다. 이 현재 관찰은 2026-07-26 typed contract의 timestamp를
 소급 변경하거나 2026-07-10 historical model ledger를 재작성하지 않습니다.
 
+2026-08-07에는 pack을 세 개 leaf로 확장하고 기존 15개 leaf를 저장소 사실과
+외부 source 양쪽으로 재검증했습니다. 확인된 변경은 다음과 같습니다. Codex가
+`SessionEnd`를 포함한 11개 hook event를 공식 문서화했으므로 tracked 6-mapping
+Codex binding은 provider 한계가 아니라 repository-side gap으로 재분류했습니다.
+Claude는 31개, Gemini는 `Notification`을 포함한 11개 event를 문서화합니다.
+Gemini subagent 파일 schema에는 reasoning/thinking 필드가 없으므로 기존
+per-agent effort 서술을 settings/API 수준으로 정정했습니다. Local QA runner의
+script-backed step은 helper 두 개가 누락되어 있었고, runner source에서 다시
+계산한 결과 기본 24개와 harness 22개입니다. `actions/attest@v4` 권한 집합과
+immutable release attestation을 반영했고, redirect된 provider URL 4개를
+교체했습니다. ISO catalog(403), Diataxis(429), editorconfig spec(429),
+OpenAI practical guide(403), pytest fixtures(429)는 이번 재검증에서 다시 열지
+못했으므로 반증이 아니라 미재검증으로 표시했습니다. 이 재검증은 2026-07-10
+model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
+변경하지 않습니다.
+
 ## Audience
 
 이 README의 주요 독자:
@@ -107,6 +123,9 @@ GitHub secure-use/monitoring/ruleset, zizmor v1.28.0 advisory/release, 그리고
 - Claude, Codex, Gemini provider 구현 비교
 - 공통 provider-neutral 환경과 규칙을 만들기 위한 요소 정리
 - 외부 AI agent catalog 패턴과 repo-local agent catalog 비교 분석
+- Diataxis 기준 문서 architecture와 quadrant 커버리지 분석
+- LLM-WIKI 체계, 생성 방식, freshness/safety 계약 분석
+- 단기/장기/영역별 memory tier와 promotion/retention/eviction 분석
 
 ### Out of Scope
 
@@ -134,7 +153,10 @@ GitHub secure-use/monitoring/ruleset, zizmor v1.28.0 advisory/release, 그리고
 ├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
 ├── security-governance.md                # Secure SDLC and security governance analysis
 ├── automation-pipeline-workflow.md       # Automation, pipeline, and workflow analysis
-└── ai-agent-catalogs.md                  # External agent catalog vs curated catalog analysis
+├── ai-agent-catalogs.md                  # External agent catalog vs curated catalog analysis
+├── documentation-architecture.md         # Diataxis quadrant mapping and mode-mixing findings
+├── llm-wiki-system.md                    # LLM Wiki structure, generation, and enforcement
+└── memory-hierarchy.md                   # Short-term, long-term, and domain memory analysis
 ```
 
 ## Current References
@@ -154,6 +176,9 @@ GitHub secure-use/monitoring/ruleset, zizmor v1.28.0 advisory/release, 그리고
 - [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
 - [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, Release/deployment, local/CI/remote enforcement boundary 분석
 - [ai-agent-catalogs.md](./ai-agent-catalogs.md) - agency-agents 같은 외부 agent catalog 패턴과 repo-local curated catalog, import 경계 분석
+- [documentation-architecture.md](./documentation-architecture.md) - Diataxis 4분면과 저장소 문서 타입 매핑, 미충족 quadrant, template mode-mixing 분석
+- [llm-wiki-system.md](./llm-wiki-system.md) - LLM Wiki artifact 구조, 생성/freshness/safety 계약, 외부 convention 비교
+- [memory-hierarchy.md](./memory-hierarchy.md) - 단기/장기/영역별 memory tier, provider memory 메커니즘, promotion/retention/eviction 분석
 
 ## Reading Order
 
@@ -166,6 +191,7 @@ GitHub secure-use/monitoring/ruleset, zizmor v1.28.0 advisory/release, 그리고
 6. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
 7. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.
 8. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
+9. [documentation-architecture.md](./documentation-architecture.md)에서 Diataxis 기준 문서 구조를, [llm-wiki-system.md](./llm-wiki-system.md)에서 machine-facing navigation surface를, [memory-hierarchy.md](./memory-hierarchy.md)에서 memory tier 구조를 확인합니다.
 
 ## How to Work in This Area
 

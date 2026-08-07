@@ -31,7 +31,7 @@ status: active
 ### In Scope
 
 - 외부 공식 문서와 repo-local evidence를 함께 분석한 reference pack
-- 하네스 엔지니어링, 루프 엔지니어링, SDLC, QA, CI/CD, formatting 같은 cross-cutting research
+- 하네스 엔지니어링, 루프 엔지니어링, SDLC, QA, CI/CD, formatting, 문서 architecture, LLM Wiki, memory hierarchy 같은 cross-cutting research
 - active stage 문서가 반복해서 참조할 수 있는 source-backed facts
 - 다른 stage에서 후속 보완이 필요한 gap 기록
 
@@ -48,7 +48,7 @@ status: active
 ```text
 research/
 ├── README.md # This file
-├── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA research pack
+├── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA, documentation, LLM Wiki, memory research pack
 └── 2026-07-07-agentic-research-pack-update/  # Superseded duplicate retained for link/history routing
 ```
 
