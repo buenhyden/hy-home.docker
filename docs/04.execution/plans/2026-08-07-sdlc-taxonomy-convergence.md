@@ -174,7 +174,7 @@ Expected: a `selected=... violations=N` summary line. Record `N`.
 
 - [ ] **Step 3: Record the link baseline**
 
-````bash
+```bash
 python3 - <<'PY' > /tmp/claude-1000/sdlc-convergence/links-baseline.txt
 import pathlib, re
 broken = []
@@ -199,7 +199,7 @@ print(len(broken))
 print("\n".join(broken))
 PY
 head -1 /tmp/claude-1000/sdlc-convergence/links-baseline.txt
-````
+```
 
 Expected: `1`. The single real defect is `../guides/...` in
 `docs/00.agent-governance/memory/progress.md`, an ellipsis in prose rather than
@@ -321,6 +321,92 @@ In `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`, change
 the heading `## Trigger and Preconditions` to `## When to Use`. Leave
 `## Verification Record`, `## Rollback or Recovery`, and every other heading
 untouched — they are not in the required or forbidden lists for runbooks.
+
+- [ ] **Step 6b: Retarget the two registry headings these migrations depend on**
+
+Two checkers enforce headings from different sources. `check-repo-contracts.sh`
+reads the protocol vocabulary; `check-document-metadata.py` reads the registry
+at `docs/99.templates/support/document-metadata-profiles.yaml`. Steps 5 and 6
+moved two documents to the protocol vocabulary, so until the registry agrees the
+metadata checker reports them as deficits and this task leaves the tree red.
+
+The end state is already decided by specification D2 and is not in question:
+`## Usage` carries 65 documents against 1, and `## When to Use` carries 61
+against 2. Task 9 retargets the full operations registry. The two headings these
+migrations depend on move here so that this task closes green.
+
+Under `guide:` replace:
+
+```yaml
+required_headings:
+  [
+    '## Overview',
+    '## Audience and Prerequisites',
+    '## Routine Usage',
+    '## Common Checks',
+    '## Runbook Handoff',
+    '## Related Documents',
+  ]
+```
+
+with:
+
+```yaml
+required_headings:
+  [
+    '## Overview',
+    '## Audience and Prerequisites',
+    '## Usage',
+    '## Common Checks',
+    '## Runbook Handoff',
+    '## Related Documents',
+  ]
+```
+
+Under `runbook:` replace:
+
+```yaml
+required_headings:
+  [
+    '## Overview',
+    '## Trigger and Preconditions',
+    '## Procedure',
+    '## Verification Record',
+    '## Evidence',
+    '## Rollback or Recovery',
+    '## Escalation',
+    '## Related Documents',
+  ]
+```
+
+with:
+
+```yaml
+required_headings:
+  [
+    '## Overview',
+    '## When to Use',
+    '## Procedure',
+    '## Verification Record',
+    '## Evidence',
+    '## Rollback or Recovery',
+    '## Escalation',
+    '## Related Documents',
+  ]
+```
+
+Change nothing under `policy:` — Task 9 owns that one, along with the template
+bodies and the conditional-scope removal.
+
+- [ ] **Step 6c: Confirm both checkers now agree**
+
+```bash
+python3 -c "import yaml; yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print('yaml ok')"
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+```
+
+Expected: `violations=0`. If it still reports the two documents, the registry
+edit did not take.
 
 - [ ] **Step 7: Confirm the heading contract now passes cleanly**
 
@@ -761,7 +847,13 @@ Expected: `guides 65 vs 1`, `policies 63 vs 1`, `runbooks 61 vs 2`. Each ratio
 must exceed the 61:1 threshold specification D2 sets before the corpus is
 promoted. If any ratio is below it, stop and escalate.
 
-- [ ] **Step 2: Retarget the `guide` role**
+> **Already applied in Task 2 Step 6b:** the `guide` and `runbook`
+> `required_headings` were retargeted there, because Task 2's document
+> migrations would otherwise leave the metadata checker red. Steps 2 and 4 below
+> are therefore verification steps in this task, not edits. Confirm each value
+> matches and move on. Step 3 (`policy`) is a real edit and has not been applied.
+
+- [ ] **Step 2: Verify the `guide` role was retargeted**
 
 In `docs/99.templates/support/document-metadata-profiles.yaml`, under `guide:`,
 replace:
@@ -824,7 +916,7 @@ required_headings:
   ]
 ```
 
-- [ ] **Step 4: Retarget the `runbook` role**
+- [ ] **Step 4: Verify the `runbook` role was retargeted**
 
 Under `runbook:`, replace:
 
@@ -1299,7 +1391,7 @@ most ten directories, each batch a logical unit named by what it archives.
 
 - [ ] **Step 8: Verify Stage 03 is reduced and links resolve**
 
-````bash
+```bash
 ls -d docs/03.specs/*/ | wc -l
 python3 - <<'PY'
 import pathlib, re
@@ -1322,10 +1414,9 @@ for p in pathlib.Path("docs").rglob("*.md"):
             if not (p.parent / target).exists():
                 broken.append(f"{p}: {target}")
 print("broken:", len(broken))
-print("
-".join(broken))
+print("\n".join(broken))
 PY
-````
+```
 
 Expected: `59` directories still (42 tombstones remain in place), and broken
 links at or below the Task 1 baseline.
@@ -1854,7 +1945,7 @@ baseline; zero metadata violations on changed documents; traceability clean.
 
 - [ ] **Step 9: Confirm zero broken links across the whole corpus**
 
-````bash
+```bash
 python3 - <<'PY'
 import pathlib, re
 broken = []
@@ -1876,10 +1967,9 @@ for p in pathlib.Path("docs").rglob("*.md"):
             if not (p.parent / target).exists():
                 broken.append(f"{p}: {target}")
 print("broken:", len(broken))
-print("
-".join(broken))
+print("\n".join(broken))
 PY
-````
+```
 
 Expected: at or below the Task 1 baseline.
 
