@@ -8,13 +8,13 @@ Universal quality gate for agent-driven changes in this repository.
 
 ## 1. Documentation Quality Rubric
 
-| Grade | Description | Requirements |
-| :--- | :--- | :--- |
-| A | Elite | Accurate routing, valid commands, no policy conflicts, SSoT alignment |
-| B | Strong | Mostly aligned with minor omissions |
-| C | Functional | Works but has clarity or coverage gaps |
-| D | Weak | Multiple stale references or ambiguous guidance |
-| F | Failing | Hardcoded secrets, broken governance links, contradictory instructions |
+| Grade | Description | Requirements                                                           |
+| :---- | :---------- | :--------------------------------------------------------------------- |
+| A     | Elite       | Accurate routing, valid commands, no policy conflicts, SSoT alignment  |
+| B     | Strong      | Mostly aligned with minor omissions                                    |
+| C     | Functional  | Works but has clarity or coverage gaps                                 |
+| D     | Weak        | Multiple stale references or ambiguous guidance                        |
+| F     | Failing     | Hardcoded secrets, broken governance links, contradictory instructions |
 
 Quality dimensions:
 
@@ -58,7 +58,7 @@ Before completion:
 3. Confirm no stale or nonexistent command references remain in editable scope.
 4. Confirm documentation reflects current workspace state.
 5. Record out-of-scope issues (read-only stages) in `docs/00.agent-governance/memory/`.
-6. For agent-harness changes, require all eight fixture catalog entries, all ten
+6. For agent-harness changes, require all 11 fixture catalog entries, all 16
    deterministic regressions, `fixtures_check=pass`, and
    `regressions_check=pass` without a network model call.
 7. Confirm semantic-loop evidence is limited to `command`, `result`,
