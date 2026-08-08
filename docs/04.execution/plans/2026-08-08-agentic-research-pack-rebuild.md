@@ -1144,10 +1144,20 @@ prefix exclusion for only:
 docs/90.references/research/2026-07-05-agentic-research-pack-refresh/
 ```
 
-The GREEN assertions must prove that all twenty retiring-pack paths are absent
-from both generator inventories, the new `2026-08-08` pack remains present,
-and similarly named Stage 04 Plan/Task history remains present. Do not use a
-substring or date-wide exclusion. Run:
+The focused test must run both canonical generators in a temporary Git fixture
+containing the twenty-file retiring pack, the new pack, similarly named Stage
+04 Plan/Task history, and an exact-prefix sibling such as
+`2026-07-05-agentic-research-pack-refresh-notes/README.md`. Its RED comparison
+uses the coexisting-pack projection versus a temporary-index deletion of only
+the retiring directory. Before the filter, it must observe exactly these
+coverage deltas: safe paths `-20`, `docs/90.references` `-20`, `Reference and
+template docs` `-20`, `folder index` `-1`, and `Markdown reference` `-19`.
+
+The GREEN assertions must prove that the coexisting-pack and temporary-index
+post-deletion outputs are byte-identical for both generators, all twenty
+retiring-pack paths are absent, and the new pack, Stage 04 history, and
+exact-prefix sibling remain present. Do not use a substring or date-wide
+exclusion. Run:
 
 ```bash
 python3 -m unittest \
@@ -1163,6 +1173,11 @@ new-pack additions, exact retiring-pack exclusions, and derived count changes.
 After the old pack is actually deleted, the same filter becomes a no-op over
 `git ls-files`; it remains explicit lifecycle documentation until a separately
 reviewed cleanup removes it.
+
+Rerun the complete retiring-path literal scan after the generator and test
+edits. Record their exact prefix constants as reviewed lifecycle non-link
+literals in the Task allowlist with path, stable anchor, reason, and review
+verdict. They are not clickable-route exceptions.
 
 - [ ] **Step 5: Run the pre-deletion path/link checks**
 
@@ -1210,8 +1225,10 @@ verdicts. Complete the fix/re-review loop before Task 11.
 **Files:**
 
 - Delete: exactly 20 files under the old pack directory
-- Modify: `docs/90.references/llm-wiki/llm-wiki-index.md` through its generator
-- Modify: `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` through its generator
+- Verify, but expect no byte changes in:
+  `docs/90.references/llm-wiki/llm-wiki-index.md` and
+  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
+  after rerunning their generators against the proposed and actual deletion
 - Modify: execution Task ledger with proposed-deletion, staged-deletion,
   recoverability, freshness, review, and commit evidence
 
@@ -1265,8 +1282,10 @@ GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git diff --cached --binary \
   > "$DELETION_REVIEW_DIR/proposed-deletion.patch"
 ```
 
-Inspect the proposed patch and confirm it contains exactly twenty deletions,
-two generated-artifact updates, and the current Task evidence.
+Inspect the proposed patch and confirm it contains exactly twenty deletions and
+the current Task evidence. Both generated artifacts must be byte-identical to
+the Task 10 route-switch versions. Any generated-output diff is an unexpected
+projection change and stops deletion review.
 
 - [ ] **Step 4: Satisfy pre-deletion gate 9**
 
@@ -1298,8 +1317,9 @@ git rm -r docs/90.references/research/2026-07-05-agentic-research-pack-refresh
 - [ ] **Step 6: Run post-deletion checks before committing**
 
 Regenerate both path-derived artifacts after the staged deletion removes the
-old paths from the Git index, inspect their diff for the expected old-pack
-removal and unchanged safety boundaries, then require byte-exact freshness:
+old paths from the Git index. Because Task 10 already excludes that exact
+retiring prefix, both outputs must remain byte-identical; any diff is a blocker.
+Then require byte-exact freshness:
 
 ```bash
 bash scripts/knowledge/generate-llm-wiki-index.sh
@@ -1317,18 +1337,20 @@ directory from the parent commit and stops the task.
 
 - [ ] **Step 7: Review the actual staged deletion**
 
-Stage the two generated outputs and Task, write the actual cached diff to
-`$DELETION_REVIEW_DIR/actual-deletion.patch`, and dispatch two fresh,
-independent staged-diff reviewers over that same immutable patch: one owns
-migration/specification compliance and one owns quality. Require both separate
-verdicts at C0/I0. If evidence changes, rebuild the patch and rerun both. This
+Stage the Task, confirm the two generated outputs have no diff, write the
+actual cached diff to `$DELETION_REVIEW_DIR/actual-deletion.patch`, and
+dispatch two fresh, independent staged-diff reviewers over that same immutable
+patch: one owns migration/specification compliance and one owns quality.
+Require both separate verdicts at C0/I0. If evidence changes, rebuild the patch
+and rerun both. This
 verifies the real index, including the recorded gate-9 evidence, before a
 commit exists.
 
 ```bash
-git add docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
-  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git diff --quiet -- \
+  docs/90.references/llm-wiki/llm-wiki-index.md \
+  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 git diff --cached --binary > "$DELETION_REVIEW_DIR/actual-deletion.patch"
 ```
 
@@ -1341,8 +1363,9 @@ git commit -m "docs(research): retire superseded agentic research pack"
 ```
 
 The `git rm` entries are already staged; confirm the staged set is exactly the
-twenty deletions, both regenerated LLM Wiki artifacts, and the Task update
-before committing.
+twenty deletions and the Task update. The two regenerated LLM Wiki artifacts
+must not appear in the staged set because the reviewed filter makes deletion a
+no-op for their safe-path projection.
 
 - [ ] **Step 9: Review the committed deletion unit**
 
