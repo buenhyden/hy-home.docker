@@ -93,6 +93,53 @@ archive provenance와 retention 조건은
 | `docs/05.operations/policies/07-workflow/airbyte.md`                                    | `docs/98.archive/05.operations/policies/07-workflow/airbyte.md`                                    | No tracked Airbyte implementation under `infra/07-workflow/airbyte`                                                                              | `docs/03.specs/008-workflow/spec.md`                                                                     |
 | `docs/05.operations/runbooks/07-workflow/airbyte.md`                                    | `docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md`                                    | No tracked Airbyte implementation under `infra/07-workflow/airbyte`                                                                              | `docs/03.specs/008-workflow/spec.md`                                                                     |
 
+### Stage 03 Specification Archive (2026-08-08)
+
+The table below records the source-to-destination mapping for the 32 terminal
+(`completed` or `superseded`) Stage 03 specifications relocated into
+`docs/98.archive/03.specs/` because forward-pointer tombstones proved
+impossible: the metadata validator derives a document's profile from its
+path alone and rejects `status: archived` on any path that is not an
+archive path, so no tombstone could carry the status that defines it. Each
+destination carries full Git provenance (`archived_commit`, `archived_blob`)
+under the `evidence-preserve` disposition; see each `spec.md`'s own
+`## Archive Metadata` and `## Archive Ledger` sections.
+
+| Original Path                                                               | Archived Path                                                                          |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `docs/03.specs/099-template-system-numbered-sdlc-paths/spec.md`             | `docs/98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md`             |
+| `docs/03.specs/100-template-system-contract-standardization/spec.md`        | `docs/98.archive/03.specs/100-template-system-contract-standardization/spec.md`        |
+| `docs/03.specs/101-template-system-reorganization/spec.md`                  | `docs/98.archive/03.specs/101-template-system-reorganization/spec.md`                  |
+| `docs/03.specs/104-agentic-research-pack-refresh/spec.md`                   | `docs/98.archive/03.specs/104-agentic-research-pack-refresh/spec.md`                   |
+| `docs/03.specs/106-workspace-support-surface-contract/spec.md`              | `docs/98.archive/03.specs/106-workspace-support-surface-contract/spec.md`              |
+| `docs/03.specs/107-provider-semantic-parity-validator/spec.md`              | `docs/98.archive/03.specs/107-provider-semantic-parity-validator/spec.md`              |
+| `docs/03.specs/108-compose-profile-service-coverage-snapshot/spec.md`       | `docs/98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md`       |
+| `docs/03.specs/109-gap-routing-recommendation/spec.md`                      | `docs/98.archive/03.specs/109-gap-routing-recommendation/spec.md`                      |
+| `docs/03.specs/110-agent-output-eval-fixtures/spec.md`                      | `docs/98.archive/03.specs/110-agent-output-eval-fixtures/spec.md`                      |
+| `docs/03.specs/111-qa-gate-recommendation-ci-summary/spec.md`               | `docs/98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md`               |
+| `docs/03.specs/112-audit-pack-coverage-report/spec.md`                      | `docs/98.archive/03.specs/112-audit-pack-coverage-report/spec.md`                      |
+| `docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md`                | `docs/98.archive/03.specs/113-llm-wiki-stage-category-coverage/spec.md`                |
+| `docs/03.specs/114-tech-stack-version-provenance/spec.md`                   | `docs/98.archive/03.specs/114-tech-stack-version-provenance/spec.md`                   |
+| `docs/03.specs/115-provider-hook-parity-matrix/spec.md`                     | `docs/98.archive/03.specs/115-provider-hook-parity-matrix/spec.md`                     |
+| `docs/03.specs/116-agent-output-eval-runner/spec.md`                        | `docs/98.archive/03.specs/116-agent-output-eval-runner/spec.md`                        |
+| `docs/03.specs/117-security-automation-readiness-snapshot/spec.md`          | `docs/98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md`          |
+| `docs/03.specs/118-audit-implementation-matrix-snapshot/spec.md`            | `docs/98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md`            |
+| `docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md`     | `docs/98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md`     |
+| `docs/03.specs/120-agent-output-eval-ci-gate/spec.md`                       | `docs/98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md`                       |
+| `docs/03.specs/121-dependency-vulnerability-audit-gate/spec.md`             | `docs/98.archive/03.specs/121-dependency-vulnerability-audit-gate/spec.md`             |
+| `docs/03.specs/122-agentic-research-pack-consolidation/spec.md`             | `docs/98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md`             |
+| `docs/03.specs/123-agentic-engineering-audit-remediation/spec.md`           | `docs/98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md`           |
+| `docs/03.specs/124-compose-runtime-readiness-remediation/spec.md`           | `docs/98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md`           |
+| `docs/03.specs/125-infrastructure-operations-readiness-remediation/spec.md` | `docs/98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md` |
+| `docs/03.specs/126-security-supply-chain-remediation/spec.md`               | `docs/98.archive/03.specs/126-security-supply-chain-remediation/spec.md`               |
+| `docs/03.specs/127-deployment-release-engineering-remediation/spec.md`      | `docs/98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md`      |
+| `docs/03.specs/128-agentic-audit-harness-consolidation/spec.md`             | `docs/98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md`             |
+| `docs/03.specs/129-document-contract-canonicalization/spec.md`              | `docs/98.archive/03.specs/129-document-contract-canonicalization/spec.md`              |
+| `docs/03.specs/130-template-contract-system-canonicalization/spec.md`       | `docs/98.archive/03.specs/130-template-contract-system-canonicalization/spec.md`       |
+| `docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md`  | `docs/98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md`  |
+| `docs/03.specs/132-agent-governance-harness-convergence/spec.md`            | `docs/98.archive/03.specs/132-agent-governance-harness-convergence/spec.md`            |
+| `docs/03.specs/133-target-surface-contract-convergence/spec.md`             | `docs/98.archive/03.specs/133-target-surface-contract-convergence/spec.md`             |
+
 ## How to Work in This Area
 
 1. 승인된 manifest에서 대상과 소비자, 대체 문서, 보존 근거를 검토합니다.
