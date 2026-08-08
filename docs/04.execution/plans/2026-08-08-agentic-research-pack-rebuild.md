@@ -235,7 +235,7 @@ replace its normal committed-unit SDD review.
 
 - Consumes: active Spec 137 at `35318255`, this Plan, and the old pack.
 - Produces: the requirement, source/evidence, claim-migration,
-  generated-artifact, old-path allowlist, verification, review, and commit
+  closed generated-artifact, old-path allowlist, verification, review, and commit
   ledgers consumed by every later task.
 
 - [ ] **Step 1: Create the Task from the canonical template**
@@ -252,7 +252,7 @@ parent_ids:
 
 Populate every required heading with current evidence rather than prospective
 PASS claims. Add tables for all 35 requirement IDs, all 14 scopes, external
-and workspace sources, old claims, four generated artifacts, old-path
+and workspace sources, old claims, the closed generated-artifact inventory, old-path
 allowlist, verification results, reviews, and commits.
 
 - [ ] **Step 2: Pin the old file objects**
@@ -1095,9 +1095,10 @@ commit `32c40e11747bc0bd03789c24861d2e5d60c0e999` for an already reviewed,
 blocking 483-row manifest. Preserve those exact seven selectors, their seven
 manifest rows, and seven plain-text summary rows as immutable historical
 evidence. Record all four owning files in the reviewed non-link allowlist with
-the wave, baseline commit, stable anchors, and reason. Require the canonical
-`check-manifest`, `check-promoted`, and `check-summary` modes to pass; do not
-regenerate or silently re-promote the historical manifest.
+the wave, baseline commit, stable anchors, and reason. Run and classify the
+canonical `check-manifest`, `check-promoted`, and `check-summary` modes against
+their exact measured predecessors; do not regenerate or silently re-promote
+the historical manifest before deletion.
 
 By contrast, the sixteen old-pack entries in `APPROVED_MIGRATION_PATHS` are
 mutable current exceptions and may not survive deletion. Add a focused RED
@@ -1290,11 +1291,18 @@ verdicts. Complete the fix/re-review loop before Task 11.
   `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
   after rerunning their generators against the proposed and actual deletion
+- Modify: `docs/90.references/data/governance/target-surface-delta-manifest.yaml`
+  by adding exactly the six changed target paths missing at the Task 10b commit
+- Modify: `docs/90.references/data/governance/target-surface-delta-summary.md`
+  only through `check-target-surface-delta-contract.py --write-summary`
 - Modify: `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml`
-  by changing exactly seven pinned old-pack result rows from same-path
-  `preserve` to evidenced `delete` rows with new-pack canonical replacements
+  after the deletion commit by changing exactly seven pinned old-pack rows and
+  the already-archived Spec 133 source row to evidenced `delete` results
 - Modify: `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md`
   only through the lifecycle summary generator
+- Modify: `tests/validation/test_target_surface_delta_contracts.py` and
+  `tests/validation/test_target_surface_contracts.py` for the exact new
+  lifecycle evidence and generated-summary contracts
 - Modify: execution Task ledger with proposed-deletion, staged-deletion,
   recoverability, freshness, review, and commit evidence
 
@@ -1326,24 +1334,14 @@ git show HEAD:docs/90.references/research/2026-07-05-agentic-research-pack-refre
 
 - [ ] **Step 3: Build a non-destructive proposed-deletion package**
 
-Before building the package, change exactly the seven pinned old-pack manifest
-rows. Keep each `source_path`, baseline identity/type/status/parents, and the
-wave baseline immutable. Set `target_path: null`, `disposition: delete`, the
-reviewed new-pack README/leaf as `canonical_replacement`, and
-`preservation_class: git-history`. Record non-empty commands, sources,
-repository paths, zero-consumer scan, and rollback evidence; start both row
-review verdicts as `pending`. This represents deletion with a replacement
-without requiring the new pack to reuse the old artifact IDs. Regenerate the
-summary only through:
+Do not change the target-surface manifest or either lifecycle summary before
+the deletion commit exists. A valid destructive row requires the source to be
+physically absent and its rollback command to name the real, already existing
+deletion commit, so pre-populating those rows would be false evidence.
 
-```bash
-python3 scripts/validation/check-document-corpus-lifecycle.py \
-  --mode generate-summary --wave target-surface-convergence
-```
-
-Use a temporary Git index to model the twenty deletions without changing the
-real index or removing a worktree file. The two generators inherit the
-temporary index and therefore render the proposed post-deletion state:
+Use a temporary Git index to model only the twenty deletions without changing
+the real index or removing a worktree file. The LLM Wiki generators inherit the
+temporary index and must render bytes identical to the Task 10b outputs:
 
 ```bash
 DELETION_REVIEW_DIR=$(mktemp -d /tmp/agentic-research-deletion-review.XXXXXX)
@@ -1355,35 +1353,27 @@ GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" \
   bash scripts/knowledge/generate-llm-wiki-index.sh
 GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" \
   bash scripts/knowledge/generate-llm-wiki-coverage.sh
-GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git add \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
-  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml \
-  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md \
-  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git diff --cached --binary \
   > "$DELETION_REVIEW_DIR/proposed-deletion.patch"
 ```
 
-Inspect the proposed patch and confirm it contains exactly twenty deletions,
-the seven-row lifecycle manifest delete/replacement transition, its regenerated
-summary, and the current Task evidence. Both LLM Wiki artifacts must be
-byte-identical to the Task 10 route-switch versions. Any LLM output diff is an
-unexpected projection change and stops deletion review.
+Inspect the proposed patch and confirm it contains exactly twenty deletions.
+Provide the current unstaged Task evidence, old/new file manifests, and both
+byte-identical LLM Wiki outputs alongside that patch as review-package
+attachments. Any generated-output diff or manifest/summary mutation in this
+pre-deletion package stops deletion review.
 
 - [ ] **Step 4: Satisfy pre-deletion gate 9**
 
 Dispatch independent migration/specification and quality reviewers with the
 proposed patch, old/new manifests, immutable old blobs, claim ledger,
 recoverability evidence, and Task brief. Require C0/I0 and record the proposed
-deletion diff, recovery commit, and reviewer verdict in the Task. If recording
-the verdict changes the Task, set the seven lifecycle row verdicts to `pass`,
-regenerate the summary, refresh the temporary-index patch, and rerun both
-independent reviewers so the reviewed proposal includes that evidence. Do not
-touch the real index until gate 9 passes. Both separate verdicts must cover the
-same final package. If the gate fails,
-restore only the two generator-owned worktree files from `HEAD`, keep the old pack intact,
-and return the findings to the implementer:
+deletion diff, recovery commit, and separate reviewer verdicts in the Task.
+Refresh the package and rerun both reviewers whenever that evidence changes.
+Do not touch the real index until gate 9 passes. Both separate verdicts must
+cover the same final package. If the gate fails, restore only the two
+generator-owned worktree files from `HEAD`, keep the old pack intact, and
+return the findings to the implementer:
 
 ```bash
 git restore --source=HEAD -- \
@@ -1399,7 +1389,7 @@ Use `git rm` with the exact directory only after all nine gates pass:
 git rm -r docs/90.references/research/2026-07-05-agentic-research-pack-refresh
 ```
 
-- [ ] **Step 6: Run post-deletion checks before committing**
+- [ ] **Step 6: Run staged-deletion checks before committing**
 
 Regenerate both path-derived artifacts after the staged deletion removes the
 old paths from the Git index. Because Task 10 already excludes that exact
@@ -1417,33 +1407,28 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 
 Then repeat the old-slug inventory, Markdown/link contracts, metadata,
 traceability, document alignment delta, repository contracts,
-requirement/scope/claim audit, and diff hygiene. Any regression restores the
-directory from the parent commit and stops the task.
-
-Also run the three lifecycle commands from Task 10 Step 1a. Require zero
-finding for all seven transitioned rows and totals no greater than the pinned root
-predecessor `9 manifest / 25 promoted / 9 summary`. These commands are not
-claimed PASS while unrelated predecessor findings remain.
+requirement/scope/claim audit, and diff hygiene. The target-surface lifecycle
+files remain unchanged in this deletion commit; classify their temporary
+post-delete missing-target findings as the exact input to Step 10, not as a
+PASS. Any other regression restores the directory from the parent commit and
+stops the task.
 
 - [ ] **Step 7: Review the actual staged deletion**
 
-Stage the Task, confirm the two generated outputs have no diff, write the
-actual cached diff to `$DELETION_REVIEW_DIR/actual-deletion.patch`, and
+Keep the Task evidence unstaged, confirm the two generated outputs have no
+diff, write the actual cached diff to
+`$DELETION_REVIEW_DIR/actual-deletion.patch`, and
 dispatch two fresh, independent staged-diff reviewers over that same immutable
 patch: one owns migration/specification compliance and one owns quality.
 Require both separate verdicts at C0/I0. If evidence changes, rebuild the patch
-and rerun both. This
-verifies the real index, including the recorded gate-9 evidence, before a
-commit exists.
+and rerun both. Attach the current unstaged Task evidence to the package, but
+require the immutable patch itself to contain exactly the twenty deletions.
+This verifies the real index before a commit exists.
 
 ```bash
 git diff --quiet -- \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
-git add \
-  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml \
-  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md \
-  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 git diff --cached --binary > "$DELETION_REVIEW_DIR/actual-deletion.patch"
 ```
 
@@ -1456,9 +1441,9 @@ git commit -m "docs(research): retire superseded agentic research pack"
 ```
 
 The `git rm` entries are already staged; confirm the staged set is exactly the
-twenty deletions, the lifecycle manifest and summary, and the Task update. The
-two regenerated LLM Wiki artifacts must not appear in the staged set because
-the reviewed filter makes deletion a no-op for their safe-path projection.
+twenty deletions. The Task, lifecycle manifests/summaries, tests, and two LLM
+Wiki artifacts must not appear in the staged set. This commit creates the real
+immutable rollback SHA required by the following evidence unit.
 
 - [ ] **Step 9: Review the committed deletion unit**
 
@@ -1466,7 +1451,97 @@ Run the committed-unit SDD protocol for Task 11. Require two fresh independent
 reviewers over the exact deletion commit range and record separate
 migration/specification and quality verdicts. If a load-bearing route or claim
 was lost, restore it in an implementer fix commit and complete both scoped
-re-reviews before Task 12.
+re-reviews before lifecycle reconciliation.
+
+- [ ] **Step 10: Build the post-deletion lifecycle evidence package**
+
+Use the actual deletion commit SHA; do not predict or self-reference it. First
+add focused RED assertions to the existing target-surface delta and lifecycle
+test modules for these exact facts:
+
+- the advisory delta manifest lacks exactly the three root-predecessor scripts
+  plus the two Task 10b LLM Wiki generators and its focused test;
+- the seven retiring-pack target rows and the already-archived Spec 133 source
+  row have not yet converged to delete results;
+- the final target-surface counts are eleven `delete`, ten `migrate`, and 462
+  `preserve` rows; and
+- the generated summaries contain the exact reviewed rows and canonical
+  counts.
+
+Run the focused tests and record the intended RED before changing production
+data. Then add the exact six missing advisory-delta rows with the pinned
+predecessor closure, Task 10b commit provenance/rollback, bounded consumers,
+and review evidence. Run the advisory checker, then regenerate its summary
+only after the manifest has zero finding:
+
+```bash
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory --write-summary
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory
+```
+
+Next draft exactly eight target-surface delete rows: the seven retiring paths
+and `docs/03.specs/133-target-surface-contract-convergence/spec.md`. Preserve
+each baseline `source_path`, `artifact_id`, `artifact_type_before`,
+`status_before`, `status_after`, and `parent_ids`; set `target_path: null`,
+`artifact_type_after: null`, `disposition: delete`,
+`canonical_replacement: null`, and `preservation_class: git-history`. The
+seven retiring rows use the actual deletion commit in their commands and
+`git revert --no-commit` rollback. The Spec 133 row uses its actual historical
+archive/deletion commit
+`d8e0c659035f1085d314812470e6f9290958bcbf`. Every row has non-empty bounded
+commands, sources, repository paths, zero-consumer scan, rollback, and starts
+with external review evidence not yet encoded as `pass`.
+
+Dispatch one migration/specification reviewer and one quality reviewer over
+the draft rows, six delta rows, tests, immutable commit evidence, and expected
+summary projection. Only after both return C0/I0 may the eight destructive
+rows encode `pass/pass`. Regenerate the target summary with its required
+explicit output and run the exact lifecycle checks:
+
+```bash
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-manifest --wave target-surface-convergence
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode generate-summary --wave target-surface-convergence \
+  --output docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-summary --wave target-surface-convergence
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-promoted
+```
+
+Expected: the target-surface manifest and summary commands PASS; the advisory
+delta command and its canonical summary freshness PASS; and `check-promoted`
+reports only the exact seventeen pre-existing Foundation findings, not a
+target-surface finding. Rerun both independent reviewers if any encoded
+verdict, evidence, manifest, summary, or test byte changes.
+
+- [ ] **Step 11: Commit and review the lifecycle evidence unit**
+
+Run the focused and full affected test modules, metadata/traceability,
+repository contracts, both LLM Wiki freshness checks, old-slug allowlist scan,
+and diff hygiene. Stage exactly the two delta artifacts, two convergence
+artifacts, two test files, and the Task:
+
+```bash
+git add \
+  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml \
+  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md \
+  tests/validation/test_target_surface_delta_contracts.py \
+  tests/validation/test_target_surface_contracts.py \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git commit -m "docs(governance): record agentic pack retirement lifecycle"
+```
+
+Run the committed-unit SDD protocol with two fresh reviewers over this exact
+commit range. Resolve every Critical or Important finding and rerun affected
+checks before Task 12.
 
 ### Task 12: Close evidence and run the finishing workflow
 
@@ -1485,10 +1560,11 @@ re-reviews before Task 12.
 
 Run changed metadata against the branch base
 `78b60974164ff5427ba8c64aaf3ecde4a7faf41a`, traceability, implementation
-alignment, repository contracts, both LLM freshness checks, old-slug inventory,
-complete requirement/scope/claim audit, `git diff --check`, and exact
-base-to-head file review. Record commands, exit codes, and attributable
-predecessors without raw logs or secrets.
+alignment, repository contracts, both LLM freshness checks, the target-surface
+delta and convergence manifest/summary checks, old-slug inventory, complete
+requirement/scope/claim audit, `git diff --check`, and exact base-to-head file
+review. Record commands, exit codes, and attributable predecessors without raw
+logs or secrets.
 
 - [ ] **Step 2: Run pre-closure whole-branch reviews**
 
@@ -1585,6 +1661,14 @@ env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
   bash scripts/validation/check-repo-contracts.sh
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 scripts/validation/check-target-surface-delta-contract.py \
+  --mode advisory
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-manifest --wave target-surface-convergence
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-summary --wave target-surface-convergence
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-promoted
 git grep -n -I '2026-07-05-agentic-research-pack-refresh' -- \
   ':!docs/90.references/research/2026-07-05-agentic-research-pack-refresh/**'
 git diff --name-status \
@@ -1642,7 +1726,7 @@ progress and is clean after each commit.
 | Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
 | Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
 | Mutable metadata exceptions retain paths scheduled for deletion | Remove the exact sixteen exceptions; separately preserve and verify the seven commit-pinned baseline selectors and promoted evidence | Revert the route-switch unit, keep both packs, and restore the reviewed baseline/exception boundary |
-| Deletion makes a promoted baseline result target disappear | In the deletion package, convert exactly seven immutable baseline rows to evidenced delete-with-replacement results and regenerate the summary | Restore the manifest/summary from the deletion parent and keep the old pack until the seven-row package is reviewed |
+| Deletion makes promoted baseline result targets disappear | Commit only the independently reviewed twenty-file deletion first; then use its real SHA to encode seven retiring rows and the historical Spec 133 row as reviewed delete results, close the six-row advisory-delta predecessor, and regenerate both summaries canonically | Revert the deletion commit if the post-delete lifecycle unit cannot reach target-manifest/summary PASS; otherwise revert only the lifecycle-evidence commit and re-review its bounded package |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
@@ -1663,7 +1747,7 @@ pack are forbidden.
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
-| Lifecycle result mapping reviewed | Proposed and staged packages contain the same seven evidenced delete-with-replacement rows, generated summary, zero row-attributable finding, and no predecessor increase | Deletion commit |
+| Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS | `git rm` |
 | Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
@@ -1684,6 +1768,9 @@ pack are forbidden.
 - LLM Wiki index and coverage freshness checks pass after the route switch and
   after deletion.
 - The old twenty files are deleted in their own reviewed, recoverable commit.
+- The advisory target-surface delta and both canonical summaries are fresh;
+  the target-surface convergence manifest/summary pass, and promoted lifecycle
+  output contains only the separately classified Foundation predecessor.
 - Metadata, traceability, repository contracts, diff hygiene, and old-path
   checks pass; implementation alignment has zero attributable delta.
 - Final whole-branch specification and quality reviews report zero unresolved

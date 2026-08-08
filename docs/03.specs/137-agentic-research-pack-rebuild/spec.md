@@ -450,8 +450,10 @@ disposition, and final result. The initial inventory is closed as follows:
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | Tracked safe-path set or canonical route changes | `scripts/knowledge/generate-llm-wiki-index.sh` | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Regenerate after the canonical route switch and require PASS. | Not run; Task-owned |
 | `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` | Tracked Stage/category path set changes | `scripts/knowledge/generate-llm-wiki-coverage.sh` | `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | FAIL | Regenerate after the canonical route switch and require PASS; the baseline FAIL is not acceptable at deletion. | Not run; Task-owned |
-| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml` | Commit-pinned target-surface baseline plus reviewed result mapping | Reviewed manifest edited under `check-document-corpus-lifecycle.py` | `check-manifest --wave target-surface-convergence` plus `check-promoted` | Root baseline already FAILS with 9 manifest and 25 promoted findings | Preserve the seven baseline source selectors; in the deletion unit, change only their result mapping from same-path `preserve` to reviewed `delete` rows with the new pack as `canonical_replacement`, Git-history preservation, and complete evidence. Require zero finding attributable to those rows and no increase over the pinned predecessor. | Newly discovered; Task-owned |
-| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md` | Reviewed target-surface manifest changes | `check-document-corpus-lifecycle.py --mode generate-summary --wave target-surface-convergence` | `check-summary --wave target-surface-convergence` | Root baseline already FAILS with the same 9 manifest findings | Regenerate only after the seven reviewed result mappings change; require byte-exact summary ownership, zero attributable finding, and no increase over the pinned predecessor. | Newly discovered; Task-owned |
+| `docs/90.references/data/governance/target-surface-delta-manifest.yaml` | Changed `.github`, `archive`, `examples`, `infra`, `projects`, `scripts`, `secrets`, or `tests` path since the pinned predecessor closure | Reviewed advisory manifest edited under `check-target-surface-delta-contract.py` | `python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory` | Root baseline already FAILS for three unregistered changed scripts; Task 10b adds two changed LLM Wiki generators and one focused test | After the Task 10b commit, add exactly the six missing changed paths with bounded provenance, rollback, and review evidence. Require the advisory contract to PASS before using its sample-service successor handoff to close the target-surface manifest. | Newly discovered; Task-owned |
+| `docs/90.references/data/governance/target-surface-delta-summary.md` | Reviewed target-surface delta manifest or tracked target inventory changes | `check-target-surface-delta-contract.py --write-summary` | `python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory` | Stale while the delta manifest has missing changed paths | Regenerate only after the six missing rows are reviewed and the advisory contract has no finding. Require canonical freshness in the post-deletion lifecycle-evidence commit. | Newly discovered; Task-owned |
+| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml` | Commit-pinned target-surface baseline plus reviewed result mapping | Reviewed manifest edited under `check-document-corpus-lifecycle.py` | `check-manifest --wave target-surface-convergence` plus `check-promoted` | Root baseline already FAILS with 9 manifest and 25 promoted findings; the Task 10 route adds one Foundation consumer finding for a `9/26/9` checkpoint | Keep the seven baseline selectors and their same-path rows unchanged before deletion. After the independently reviewed twenty-file deletion commit exists, change those seven rows and the already-archived Spec 133 source row to reviewed `delete` results: `target_path: null`, `artifact_type_after: null`, no canonical replacement, preserved baseline identity/status/parents, Git-history preservation, complete evidence, and rollback commands pinned to the real commits. Close the six-row delta predecessor first so the sample-service successor handoff validates. Require the target-surface manifest itself to PASS and permit only the separately identified Foundation promoted predecessor. | Newly discovered; Task-owned |
+| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md` | Reviewed target-surface manifest changes | `check-document-corpus-lifecycle.py --mode generate-summary --wave target-surface-convergence --output docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md` | `check-summary --wave target-surface-convergence` | Root baseline already FAILS with the same 9 target-surface manifest findings | Regenerate after the eight reviewed delete mappings make the target-surface manifest valid. Require the canonical generator and `check-summary` to PASS in the post-deletion lifecycle-evidence commit. | Newly discovered; Task-owned |
 | `docs/90.references/data/security/security-automation-readiness.md` | Security controls, scripts, workflows, or typed workflow registry changes | `scripts/validation/generate-security-automation-readiness.sh` | `bash scripts/validation/generate-security-automation-readiness.sh --check` | FAIL | Preserve the FAIL as a predecessor because the generator misreads the typed workflow registry. Do not regenerate a known-invalid snapshot or cite it as current truth. Fixing the generator requires separately approved non-documentation scope; the new security leaf reports the snapshot as stale and derives tracked evidence directly. This predecessor does not block old-pack deletion when recorded exactly. | Classified predecessor; Task must re-observe |
 | `graphify-out/**` | Tracked corpus changes | Graphify workspace updater | `bash scripts/knowledge/report-graphify-health.sh` after an explicitly authorized refresh | Advisory and stale at `f8a72211` | Keep advisory and unchanged in this documentation-only workstream; do not use the stale graph as current evidence. | No refresh authorized |
 
@@ -572,11 +574,13 @@ Deletion of the old twenty files is authorized only when all of these are true:
    failure pauses deletion until that gate can run successfully;
 8. LLM Wiki and security-readiness artifacts pass their canonical named
    freshness checks, and a repository-contract pass is not accepted as a
-   substitute. The newly discovered promoted lifecycle manifest/summary may
-   carry only their pinned root-branch `9 manifest / 25 promoted / 9 summary`
-   predecessor when every retiring-pack row has zero finding and totals do not
-   increase; this exception does not apply to byte-exact freshness generators;
-   and
+   substitute. Before deletion, the commit-pinned target-surface manifest and
+   summary remain unchanged and may carry the measured Task 10 checkpoint of
+   `9 manifest / 26 promoted / 9 summary`; the one promoted increase over the
+   root `9/25/9` baseline is the separately recorded Foundation consumer for
+   the new Task index. The seven retiring rows themselves must remain
+   unchanged and introduce no new finding. This exception does not apply to
+   byte-exact freshness generators; and
 9. the Task records the before/after file manifest, deletion diff, recovery
    commit, and reviewer verdict.
 
@@ -594,6 +598,11 @@ After deletion, run and record at least:
 - document implementation-alignment validation with zero attributable delta
   and no increase over the pinned 184-finding predecessor;
 - the canonical LLM Wiki index and coverage freshness checks;
+- the target-surface delta advisory check and canonical delta-summary
+  regeneration/freshness check;
+- the target-surface convergence manifest and summary checks, requiring the
+  target-surface wave to PASS after its eight reviewed delete mappings while
+  separately classifying any unchanged Foundation promoted predecessor;
 - the complete retiring-path literal scan, historical allowlist reconciliation,
   and broken-link scan covering all tracked text and generated documents;
 - `git diff --check` and an exact changed-file review;
