@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:137-agentic-research-pack-rebuild
 artifact_type: spec
 parent_ids:
@@ -12,10 +12,10 @@ parent_ids:
 
 **Conversation design approval date:** 2026-08-08 (Asia/Seoul)
 
-The user approved the design direction in conversation. This written
-specification remains `draft` until the user reviews this artifact. No Stage 04
-Plan may begin and no old-pack deletion authority exists until the document is
-accepted and its lifecycle status becomes `active`.
+The user approved the design direction in conversation. The written artifact
+then passed independent specification and documentation reviews with zero
+Critical or Important findings and is active for Stage 04 planning. Old-pack
+deletion authority remains conditional on every pre-deletion gate below.
 
 ## Overview
 
