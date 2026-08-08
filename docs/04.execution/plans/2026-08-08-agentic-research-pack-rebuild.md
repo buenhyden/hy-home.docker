@@ -1556,13 +1556,17 @@ drift sets the attempt to `INVALIDATED`.
 The finite state sequence is:
 
 ```text
-CHECKPOINT -> BUILT -> PACKAGE_REVIEWED -> TASK_BACKFILLED
-           -> CLOSURE_REVIEWED -> REF_PUBLISHED -> AUTHORIZED
+CHECKPOINT -> BUILT -> ASSIGNED -> PACKAGE_REVIEWED -> TASK_BACKFILLED
+                       -> CLOSURE_REVIEWED -> REF_PUBLISHED -> AUTHORIZED
 ```
 
 `REJECTED`, `INVALIDATED`, `FOREIGN_REF`, and `BLOCKED` are fail-closed
-states. Except for an untrusted `FOREIGN_REF` collision, every consumed
-attempt, accepted or not, must end in a create-only evidence ref. A
+states. A package becomes a consumed attempt only at `ASSIGNED`, after the
+trusted controller attestation is frozen. A build that fails or drifts before
+`ASSIGNED` is discarded as an unassigned construction failure and cannot
+produce review authority. Except for an untrusted `FOREIGN_REF` collision,
+every consumed attempt, accepted or not, must end in a create-only evidence
+ref. A
 pre-backfill rejection stores the complete package and all
 available reports/receipts plus a canonical terminal reason; a drift
 invalidation stores the package, drift evidence, and canonical terminal
@@ -1593,7 +1597,9 @@ report plus one canonical JSON package receipt with the package ID and `HEAD`,
 role, all three identity fields, verdict, C/I/M counts, and SHA-256/byte count
 of that exact report and the assignment-attestation hash. Both receipts must
 bind the same package and controller attestation, and neither may contain a
-Critical or Important finding.
+Critical or Important finding. If either review rejects the package, allow the
+other independent review to finish so the `REJECTED` terminal tree contains
+both exact report/receipt pairs; do not infer or fabricate the missing slot.
 
 Verify the receipts before changing the Task:
 
@@ -1643,15 +1649,48 @@ refs/codex/review-evidence/agentic-research/gate9/v1/
 ```
 
 The evidence commit uses the package `HEAD` as its sole parent. Every terminal
-tree contains the complete package below `package/`, canonical
-`evidence.json`, a terminal report, and a root sorted `SHA256SUMS`.
-`REJECTED` adds the controller assignment attestation and every completed exact
-review report/receipt pair; `INVALIDATED` adds the drift proof and any
-attestation already created; `AUTHORIZED` additionally requires both complete
-review pairs and both exact closure report/JSON pairs. Accepted evidence uses
-the named `reviews/migration-specification/`, `reviews/quality/`, and matching
-`closures/` paths. Every tree entry is a regular blob at mode `100644`; no
-other path or mode is allowed for that terminal-state schema.
+state uses one closed path schema: the exact package attachment set below
+`package/`, plus these literal paths and no others:
+
+```text
+SHA256SUMS
+assignment-attestation.json
+closures/migration-specification/closure.json
+closures/migration-specification/report.md
+closures/quality/closure.json
+closures/quality/report.md
+drift/drift-proof.json
+evidence.json
+reviews/migration-specification/receipt.json
+reviews/migration-specification/report.md
+reviews/quality/receipt.json
+reviews/quality/report.md
+task/task-after.md
+task/task-candidate-to-after.patch
+terminal/report.md
+```
+
+All leaf entries use mode `100644`; Git directory-tree entries use mode
+`040000`. A state that has not reached a review, closure, backfill, or drift
+slot uses the exact sentinel report bytes `NOT_RUN\n` and a canonical JSON
+object with schema `agentic-research-gate9/v1`, its kind and role, and state
+`NOT_RUN`. Before backfill, `task/task-after.md` equals
+`package/task-candidate.md` and the candidate-to-after patch is zero bytes.
+When drift is not the terminal cause, `drift-proof.json` is the canonical
+`NOT_APPLICABLE` object. `REJECTED` requires both completed package-review
+pairs; `INVALIDATED` requires the drift proof and retains any already completed
+review pair; `AUTHORIZED` requires both review pairs, both closure pairs, and
+the exact closure-reviewed Task-after and binary diff bytes.
+
+`evidence.json` has exactly these top-level keys: `schema`, `state`, `attempt`,
+`package_head`, `package_sha256`, `evidence_ref`, `assignment`, `task`,
+`reviews`, `closures`, `drift`, and `terminal_report`. Every referenced file
+record includes literal path, SHA-256, and byte count; identity-bearing review
+records also include role, agent ID, task path, run ID, attestation hash,
+verdict, and C/I/M counts. Root `SHA256SUMS` excludes itself and contains one
+GNU-format `<64 lowercase hex><two spaces><path><LF>` row for every other leaf
+file, byte-sorted by path. `sha256sum -c SHA256SUMS` from the extracted ref root
+must validate the whole evidence tree.
 
 Evidence publication identity is the tuple `(package HEAD, canonical evidence
 tree OID, canonical commit message)`, not the commit OID. The exact commit
@@ -1676,6 +1715,8 @@ not be pushed without a separate user decision.
 python3 "$GATE9_HELPER" publish-evidence-ref \
   --package "$GATE9_PACKAGE" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --terminal-state AUTHORIZED \
+  --terminal-report "$GATE9_TERMINAL_REPORT" \
   --migration-report "$GATE9_MIGRATION_REPORT" \
   --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
   --quality-report "$GATE9_QUALITY_REPORT" \
@@ -1699,6 +1740,13 @@ python3 "$GATE9_HELPER" verify-authorized \
   --require-live-head \
   --require-clean-real-index \
   --require-task-only-worktree
+python3 "$GATE9_HELPER" verify-authorized \
+  --package-from-ref \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --evidence-ref auto \
+  --require-live-head \
+  --require-clean-real-index \
+  --require-task-only-worktree
 ```
 
 `verify-authorized` must prove live `HEAD == package HEAD == evidence-ref
@@ -1708,6 +1756,12 @@ Task before/after/diff and marker transition, C/I=0, exact twenty-file
 projection, byte-identical generated attachments, and no current-worktree or
 real-index drift outside the exact closure-bound Task-only change. Only then is
 Gate 9 `AUTHORIZED`.
+
+The focused suite must remove every external package/report/receipt/closure
+temporary file after publishing a fixture ref, then reproduce the same
+authorization result from only the live `HEAD`, live Task, and evidence ref.
+The real run repeats this ref-only form immediately before `git rm`; `/tmp`
+bytes are convenience inputs and never durable authority.
 
 Before backfill, any package-review C/I finding or byte drift consumes the
 attempt and requires `publish-evidence-ref --terminal-state REJECTED` or
@@ -1722,14 +1776,15 @@ python3 "$GATE9_HELPER" publish-evidence-ref \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --terminal-state "$GATE9_TERMINAL_STATE" \
   --terminal-report "$GATE9_TERMINAL_REPORT" \
+  --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --evidence-ref auto
 ```
 
-For `REJECTED`, append every completed `--role-report`/`--role-receipt` pair;
-for `INVALIDATED`, append `--drift-proof`; whenever an assignment attestation
-already exists, append `--assignment-attestation` with its exact path. The
-helper rejects a terminal tree whose state-required path set is incomplete or
-contains an extra path.
+For `REJECTED`, append both completed `--role-report`/`--role-receipt` pairs;
+for `INVALIDATED`, append `--drift-proof`. Because a consumed attempt begins
+only at `ASSIGNED`, the attestation is mandatory for every terminal ref. The
+helper fills all state-inapplicable fixed slots with their canonical sentinels
+and rejects an incomplete or extra path.
 
 After `TASK_BACKFILLED`, any identity collision, closure C/I finding,
 publication conflict, `HEAD` change, Task drift, or authorization failure is
