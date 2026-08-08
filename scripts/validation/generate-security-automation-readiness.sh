@@ -57,6 +57,8 @@ from scripts.validation.ci_gate_contract import (
 )
 from scripts.validation.github_workflow_contract import (
     WorkflowContractError,
+    _job_programs as workflow_job_programs,
+    _static_gate_id as static_gate_id,
     load_workflows,
 )
 
@@ -165,7 +167,29 @@ def resolve_typed_workflow_evidence(
                 or not isinstance(actual_job, dict)
             ):
                 return empty
-            expand_gate_ids(registry, "ci", root.root_gate_id, False)
+            expected = expand_gate_ids(
+                registry,
+                "ci",
+                root.root_gate_id,
+                False,
+            )
+            projected: list[str] = []
+            programs = workflow_job_programs(actual_job)
+            if not programs:
+                return empty
+            for program in programs:
+                gate_id = static_gate_id(program)
+                if gate_id is None:
+                    return empty
+                expanded = expand_gate_ids(registry, "ci", gate_id, False)
+                if not set(expanded).issubset(expected):
+                    return empty
+                projected.extend(expanded)
+            if (
+                tuple(projected) != expected
+                or len(projected) != len(set(projected))
+            ):
+                return empty
             rooted_workflows.add(root.workflow)
             root_gate_ids.append(root.root_gate_id)
     except GateContractError:
@@ -708,8 +732,9 @@ lines.extend(
         "## Source Rules",
         "",
         "- Use tracked repository files for readiness claims.",
-        "- Admit typed commands and Actions only from canonical contract gates",
-        "  that match parsed workflow jobs and exact `uses` steps.",
+        "- Admit typed commands only when parsed workflow jobs project each",
+        "  registered gate root exactly once; admit Actions only from exact",
+        "  parsed `uses` steps.",
         "- Treat this generated snapshot as planning evidence, not active policy or",
         "  runtime truth.",
         "- Do not include secret values, private keys, tokens, shell history, raw",

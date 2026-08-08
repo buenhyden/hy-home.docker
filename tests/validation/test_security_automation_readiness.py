@@ -98,7 +98,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Run typed security gate
-        run: python3 scripts/validation/run-ci-gate.py --gate ci.security
+        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.security
       - name: Upload SARIF
         uses: github/codeql-action/upload-sarif@{upload_sha}
 """
@@ -251,6 +251,35 @@ jobs:
             "  security:\n", "  actual-security:\n", 1
         )
 
+        missing_gate_projection_workflow = base_workflow.replace(
+            "run: python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.security",
+            "run: echo no-registered-gate",
+        )
+
+        wrong_gate_projection_workflow = base_workflow.replace(
+            "--gate ci.security",
+            "--gate leaf.unwired-broad-sca",
+        )
+
+        partial_gate_projection_workflow = base_workflow.replace(
+            "--gate ci.security",
+            "--gate leaf.zizmor",
+        )
+
+        duplicate_gate_projection_workflow = base_workflow.replace(
+            "      - name: Upload SARIF\n",
+            "      - name: Run typed security gate again\n"
+            "        run: python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.security\n"
+            "      - name: Upload SARIF\n",
+        )
+
+        dynamic_gate_projection_workflow = base_workflow.replace(
+            "--gate ci.security",
+            "--gate ${{ github.ref }}",
+        )
+
         duplicate_gate = copy.deepcopy(base_contract)
         duplicate_gate["gate_nodes"].append(
             copy.deepcopy(duplicate_gate["gate_nodes"][-1])
@@ -265,6 +294,31 @@ jobs:
             ("aggregate cycle", cycle, base_workflow),
             ("non-string aggregate child", non_string_child, base_workflow),
             ("job absent from actual workflow", base_contract, absent_actual_job_workflow),
+            (
+                "job does not project registered gate",
+                base_contract,
+                missing_gate_projection_workflow,
+            ),
+            (
+                "job projects a gate outside its root",
+                base_contract,
+                wrong_gate_projection_workflow,
+            ),
+            (
+                "job projects only part of its root",
+                base_contract,
+                partial_gate_projection_workflow,
+            ),
+            (
+                "job projects its root more than once",
+                base_contract,
+                duplicate_gate_projection_workflow,
+            ),
+            (
+                "job uses a dynamic gate expression",
+                base_contract,
+                dynamic_gate_projection_workflow,
+            ),
             ("duplicate gate", duplicate_gate, base_workflow),
             ("duplicate root", duplicate_root, base_workflow),
         )

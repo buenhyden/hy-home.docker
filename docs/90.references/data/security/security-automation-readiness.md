@@ -104,8 +104,9 @@ management procedures.
 ## Source Rules
 
 - Use tracked repository files for readiness claims.
-- Admit typed commands and Actions only from canonical contract gates
-  that match parsed workflow jobs and exact `uses` steps.
+- Admit typed commands only when parsed workflow jobs project each
+  registered gate root exactly once; admit Actions only from exact
+  parsed `uses` steps.
 - Treat this generated snapshot as planning evidence, not active policy or
   runtime truth.
 - Do not include secret values, private keys, tokens, shell history, raw
