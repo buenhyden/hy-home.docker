@@ -1463,16 +1463,36 @@ test modules for these exact facts:
   plus the two Task 10b LLM Wiki generators and its focused test;
 - the seven retiring-pack target rows and the already-archived Spec 133 source
   row have not yet converged to delete results;
+- the six new delta rows are all `update`, raising the exact repository
+  invariants from 158 entries / 85 preserve / 73 update to
+  164 entries / 85 preserve / 79 update, with the exact update-path set;
 - the final target-surface counts are eleven `delete`, ten `migrate`, and 462
   `preserve` rows; and
 - the generated summaries contain the exact reviewed rows and canonical
   counts.
 
-Run the focused tests and record the intended RED before changing production
-data. Then add the exact six missing advisory-delta rows with the pinned
-predecessor closure, Task 10b commit provenance/rollback, bounded consumers,
-and review evidence. Run the advisory checker, then regenerate its summary
-only after the manifest has zero finding:
+Run this exact focused command and record the intended RED before changing
+production data:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_target_surface_delta_contracts.RepositoryManifestTests.test_repository_manifest_has_fixed_baselines_and_truthful_owners \
+  tests.validation.test_target_surface_contracts.DeprecatedRuntimeContractTests.test_agentic_research_retirement_rows_record_exact_delete_evidence \
+  -v
+```
+
+Then add the exact six missing advisory-delta rows as `update` with bounded
+consumers and review evidence. Use each path's real latest source-changing
+commit for provenance and rollback: Task 10b only for its two LLM Wiki
+generators and focused test,
+`a8d56a7ad99deabe37b4baad498fa64afe43a225` for
+`scripts/validation/check-storybook-contract.sh`, and
+`78b60974164ff5427ba8c64aaf3ecde4a7faf41a` for both
+`scripts/validation/generate-audit-implementation-matrix.sh` and
+`scripts/validation/report-provider-hook-parity.sh`. Do not rely on the
+validator's weaker commit-exists check as proof that a commit changed a path.
+Run the advisory checker, then regenerate its summary only after the manifest
+has no finding other than stale summary bytes:
 
 ```bash
 python3 scripts/validation/check-target-surface-delta-contract.py \
@@ -1482,6 +1502,10 @@ python3 scripts/validation/check-target-surface-delta-contract.py \
 python3 scripts/validation/check-target-surface-delta-contract.py \
   --mode advisory
 ```
+
+The first command must exit 1 with exactly `delta-summary-stale`; any other
+finding blocks generation. The `--write-summary` command must exit 0, and the
+final advisory command must exit 0 quietly with canonical summary bytes.
 
 Next draft exactly eight target-surface delete rows: the seven retiring paths
 and `docs/03.specs/133-target-surface-contract-convergence/spec.md`. Preserve
@@ -1516,16 +1540,26 @@ python3 scripts/validation/check-document-corpus-lifecycle.py \
 
 Expected: the target-surface manifest and summary commands PASS; the advisory
 delta command and its canonical summary freshness PASS; and `check-promoted`
-reports only the exact seventeen pre-existing Foundation findings, not a
-target-surface finding. Rerun both independent reviewers if any encoded
-verdict, evidence, manifest, summary, or test byte changes.
+reports exactly sixteen root-predecessor Foundation findings plus the one
+recorded Task 10 Foundation consumer finding for the Task index, not a
+target-surface finding. Require the focused test and Task ledger to assert that
+exact identity set rather than count alone. Rerun both independent reviewers
+if any encoded verdict, evidence, manifest, summary, or test byte changes.
 
 - [ ] **Step 11: Commit and review the lifecycle evidence unit**
 
-Run the focused and full affected test modules, metadata/traceability,
-repository contracts, both LLM Wiki freshness checks, old-slug allowlist scan,
-and diff hygiene. Stage exactly the two delta artifacts, two convergence
-artifacts, two test files, and the Task:
+Run the focused command above and the exact full affected modules, then run
+metadata/traceability, repository contracts, both LLM Wiki freshness checks,
+old-slug allowlist scan, and diff hygiene:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_target_surface_delta_contracts \
+  tests.validation.test_target_surface_contracts -v
+```
+
+Stage exactly the two delta artifacts, two convergence artifacts, two test
+files, and the Task:
 
 ```bash
 git add \
