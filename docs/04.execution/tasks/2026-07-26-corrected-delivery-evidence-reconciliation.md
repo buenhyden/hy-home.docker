@@ -340,7 +340,7 @@ whole-branch post-closure confirmation remains a branch-level gate, but it does
 not reopen or block completion of this scoped Task.
 
 Deferral destination: stateful impact routes to
-[Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md).
+[Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md).
 Any external/live expansion requires a new approved Stage 01-04 chain. The
 scoped review gate is closed; whole-branch confirmation remains separately
 owned.

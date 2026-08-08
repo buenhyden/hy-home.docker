@@ -6,10 +6,6 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
-  - spec:123-agentic-engineering-audit-remediation
-  - spec:124-compose-runtime-readiness-remediation
-  - spec:125-infrastructure-operations-readiness-remediation
-  - spec:126-security-supply-chain-remediation
 ---
 
 # Deployment and Release Engineering Remediation Technical Specification (Spec)
@@ -42,11 +38,11 @@ or a real Release event.
   defines separate baseline/canary projects and upstream verdict boundaries.
 - **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
   selects verified-artifact local canary, promotion, and previous-identity rollback.
-- **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
+- **Audit lineage**: [Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
   remains the canonical audit lineage.
-- **Direct dependencies**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md),
-  [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md), and
-  [Spec 126](../126-security-supply-chain-remediation/spec.md) own readiness,
+- **Direct dependencies**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
+  [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md), and
+  [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) own readiness,
   recovery, and supply-chain verdicts.
 
 Architecture-changing workflow, environment, target, identity, artifact,
@@ -288,11 +284,11 @@ injection, cleanup, and rollback. Remote delivery commands remain out of scope.
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Deployment/release draft plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
 - **Task**: [Delivery rehearsal Task](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
-- **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
+- **Umbrella lineage**: [Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - **Quality audit**: [SDLC quality and formatting](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
 - **Automation audit**: [Automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **Compose audit**: [Compose, infrastructure, and operations readiness](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
 - **Research**: [Automation/pipeline/workflow research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md), [security research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
-- **Runtime dependency**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md)
-- **Recovery dependency**: [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md)
-- **Security dependency**: [Spec 126](../126-security-supply-chain-remediation/spec.md)
+- **Runtime dependency**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
+- **Recovery dependency**: [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+- **Security dependency**: [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)

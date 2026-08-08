@@ -43,9 +43,9 @@ base was `758aa0d2`; the lifecycle closure comparison base is
 - [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
 - [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- Specs [124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md),
-  [125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
-  [126](../../03.specs/126-security-supply-chain-remediation/spec.md), and
+- Specs [124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
+  [125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
+  [126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md), and
   [127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
 - Domain Tasks linked under Related Documents
 - [Corrected delivery evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)

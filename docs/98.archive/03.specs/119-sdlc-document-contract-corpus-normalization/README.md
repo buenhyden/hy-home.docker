@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/119-sdlc-document-contract-corpus-normalization/README.md -->
 
 # SDLC Document Contract Corpus Normalization
 
@@ -71,12 +69,12 @@ decision, operations leaf naming polish, closure evidence입니다. 실제 파�
 ## Related Documents
 
 - [Spec](./spec.md)
-- [Stage 03 README](../README.md)
-- [Numbered SDLC path migration spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
-- [Template contract standardization spec](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
-- [Document restructure disposition spec](../103-document-restructure-audit-contract-archive/spec.md)
-- [Workspace support surface contract spec](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [Document restructure gap register](../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md)
+- [Stage 03 README](../../../03.specs/README.md)
+- [Numbered SDLC path migration spec](../099-template-system-numbered-sdlc-paths/spec.md)
+- [Template contract standardization spec](../100-template-system-contract-standardization/spec.md)
+- [Document restructure disposition spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
+- [Workspace support surface contract spec](../106-workspace-support-surface-contract/spec.md)
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Template governance](../../../99.templates/support/template-governance.md)
+- [Document restructure gap register](../../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md)

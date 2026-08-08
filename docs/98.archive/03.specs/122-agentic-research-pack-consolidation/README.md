@@ -1,8 +1,6 @@
 ---
-status: completed
+layer: archive
 ---
-
-<!-- Target: docs/03.specs/122-agentic-research-pack-consolidation/README.md -->
 
 # Agentic Research Pack Consolidation
 
@@ -82,10 +80,10 @@ merge-readiness gate remains in this consolidation scope.
 ## Related Documents
 
 - [Technical specification](./spec.md)
-- [Implementation plan](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
-- [Task evidence](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
-- [Previous research refresh specification](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Superseded path mapping for the duplicate research pack](../../90.references/research/README.md) - the pack itself was removed after this specification completed
-- [Research category](../../90.references/research/README.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
+- [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
+- [Canonical research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Superseded path mapping for the duplicate research pack](../../../90.references/research/README.md) - the pack itself was removed after this specification completed
+- [Research category](../../../90.references/research/README.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

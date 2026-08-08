@@ -483,7 +483,7 @@ whole-branch post-closure confirmation remains a separate branch-level gate and
 does not reopen this completed Task.
 
 Deferral destination: data recovery routes to
-[Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
+[Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
 remote delivery requires a new approved Stage 01-04 chain and explicit external
 action approval; the same new-chain boundary applies to Release, registry,
 credential, live-environment, and production expansion.

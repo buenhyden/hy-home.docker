@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: plan
-parent_ids:
-  - spec:123-agentic-engineering-audit-remediation
+parent_ids: []
 ---
 
 # Agentic Engineering Audit and Remediation Implementation Plan
@@ -37,7 +36,7 @@ parent_ids:
 ## Overview
 
 This plan implements
-[Spec 123](../../03.specs/123-agentic-engineering-audit-remediation/spec.md).
+[Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md).
 The umbrella specification contains five ordered workstreams. This plan keeps
 one Stage 04 plan for the umbrella spec, while each numbered task below is a
 self-contained deliverable with its own tests, commit, and two-stage review.
@@ -103,46 +102,46 @@ those distinctions rather than inflating maturity claims.
 
 ### Research and Audit
 
-| Path | Responsibility |
-| --- | --- |
-| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md` | New source-backed metadata, artifact identity, numbering, and lifecycle criteria. |
-| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md` | New instruction anatomy, generated-code accountability, and vibe-coding criteria. |
-| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/*.md` | Existing responsibility-focused research updated in place. |
-| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md` | SDLC flow, document roles, numbering, transitions, and traceability audit. |
-| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md` | Frontmatter, template, and README profile audit. |
-| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md` | Compose, infrastructure, and operations-readiness audit. |
-| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md` | Instruction, catalog, vibe-coding, `agency-agents`, and model-routing audit. |
-| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md` | Generated exhaustive per-document metadata inventory. |
-| `docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/*.md` | Mapping-only superseded records after verified merge. |
+| Path                                                                                                                                | Responsibility                                                                    |
+| ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md`                               | New source-backed metadata, artifact identity, numbering, and lifecycle criteria. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md`                            | New instruction anatomy, generated-code accountability, and vibe-coding criteria. |
+| `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/*.md`                                                         | Existing responsibility-focused research updated in place.                        |
+| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md`      | SDLC flow, document roles, numbering, transitions, and traceability audit.        |
+| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md`  | Frontmatter, template, and README profile audit.                                  |
+| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md` | Compose, infrastructure, and operations-readiness audit.                          |
+| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md`      | Instruction, catalog, vibe-coding, `agency-agents`, and model-routing audit.      |
+| `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`              | Generated exhaustive per-document metadata inventory.                             |
+| `docs/90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/*.md`                                    | Mapping-only superseded records after verified merge.                             |
 
 ### Metadata and Harness Automation
 
-| Path | Responsibility |
-| --- | --- |
-| `docs/99.templates/support/document-metadata-profiles.yaml` | Machine-readable required/optional/forbidden key profile by artifact type. |
-| `docs/99.templates/support/frontmatter-contract.md` | Human-readable metadata ownership and rollout contract. |
-| `docs/99.templates/support/lifecycle-status.md` | Lifecycle state machine and override evidence rules. |
-| `scripts/validation/check-document-metadata.py` | Parse metadata, infer profiles, resolve artifact IDs/parents, render inventory, and enforce advisory/changed modes. |
-| `tests/validation/test_document_metadata.py` | Standard-library unit tests for parsing, profiles, IDs, transitions, and report output. |
-| Directory `scripts/validation/`, file `run-agent-precommit-all-files.sh` | Controlled agent-only wrapper around `pre-commit run --all-files`. |
-| `tests/validation/test_run_agent_precommit_all_files.sh` | Argument, worktree, task-evidence, and unexpected-path tests using a fake pre-commit binary. |
-| `scripts/validation/check-repo-contracts.sh` | Integration point for metadata and wrapper contract checks. |
-| `.pre-commit-config.yaml` | Changed/new metadata pre-push hook; never invokes the full agent wrapper. |
-| `.github/workflows/ci-quality.yml` | Explicit changed/new metadata check in the existing `repo-contracts` job. |
-| `scripts/operations/sync-provider-surfaces.sh` | Canonical provider adapter regeneration after Stage 00/Claude source updates. |
+| Path                                                                     | Responsibility                                                                                                      |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `docs/99.templates/support/document-metadata-profiles.yaml`              | Machine-readable required/optional/forbidden key profile by artifact type.                                          |
+| `docs/99.templates/support/frontmatter-contract.md`                      | Human-readable metadata ownership and rollout contract.                                                             |
+| `docs/99.templates/support/lifecycle-status.md`                          | Lifecycle state machine and override evidence rules.                                                                |
+| `scripts/validation/check-document-metadata.py`                          | Parse metadata, infer profiles, resolve artifact IDs/parents, render inventory, and enforce advisory/changed modes. |
+| `tests/validation/test_document_metadata.py`                             | Standard-library unit tests for parsing, profiles, IDs, transitions, and report output.                             |
+| Directory `scripts/validation/`, file `run-agent-precommit-all-files.sh` | Controlled agent-only wrapper around `pre-commit run --all-files`.                                                  |
+| `tests/validation/test_run_agent_precommit_all_files.sh`                 | Argument, worktree, task-evidence, and unexpected-path tests using a fake pre-commit binary.                        |
+| `scripts/validation/check-repo-contracts.sh`                             | Integration point for metadata and wrapper contract checks.                                                         |
+| `.pre-commit-config.yaml`                                                | Changed/new metadata pre-push hook; never invokes the full agent wrapper.                                           |
+| `.github/workflows/ci-quality.yml`                                       | Explicit changed/new metadata check in the existing `repo-contracts` job.                                           |
+| `scripts/operations/sync-provider-surfaces.sh`                           | Canonical provider adapter regeneration after Stage 00/Claude source updates.                                       |
 
 ### Runtime Follow-up Documentation
 
-| Path | Responsibility |
-| --- | --- |
-| `docs/03.specs/124-compose-runtime-readiness-remediation/` | Follow-up contract for Compose startup, health, recovery, upgrade, and rollback gaps. |
-| `docs/03.specs/125-infrastructure-operations-readiness-remediation/` | Follow-up contract for infrastructure operations, backup/restore, and optional-profile gaps. |
-| `docs/03.specs/126-security-supply-chain-remediation/` | Follow-up contract for SBOM, provenance, signing, broader SCA/container scanning, and approval gaps. |
-| `docs/03.specs/127-deployment-release-engineering-remediation/` | Follow-up contract for CD, promotion, environment approval, rollback, and release records. |
-| `docs/04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md` | Independent Compose runtime-readiness plan requiring later runtime approval. |
-| `docs/04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md` | Independent infrastructure operations-readiness plan requiring later runtime approval. |
-| `docs/04.execution/plans/2026-07-11-security-supply-chain-remediation.md` | Independent security supply-chain plan requiring later runtime approval. |
-| `docs/04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md` | Independent deployment and release-engineering plan requiring later runtime approval. |
+| Path                                                                                    | Responsibility                                                                                       |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `docs/03.specs/124-compose-runtime-readiness-remediation/`                              | Follow-up contract for Compose startup, health, recovery, upgrade, and rollback gaps.                |
+| `docs/03.specs/125-infrastructure-operations-readiness-remediation/`                    | Follow-up contract for infrastructure operations, backup/restore, and optional-profile gaps.         |
+| `docs/03.specs/126-security-supply-chain-remediation/`                                  | Follow-up contract for SBOM, provenance, signing, broader SCA/container scanning, and approval gaps. |
+| `docs/03.specs/127-deployment-release-engineering-remediation/`                         | Follow-up contract for CD, promotion, environment approval, rollback, and release records.           |
+| `docs/04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md`           | Independent Compose runtime-readiness plan requiring later runtime approval.                         |
+| `docs/04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md` | Independent infrastructure operations-readiness plan requiring later runtime approval.               |
+| `docs/04.execution/plans/2026-07-11-security-supply-chain-remediation.md`               | Independent security supply-chain plan requiring later runtime approval.                             |
+| `docs/04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md`      | Independent deployment and release-engineering plan requiring later runtime approval.                |
 
 ## Source Entry Points
 
@@ -171,20 +170,20 @@ applicability. Required source families include:
 
 ## Work Breakdown
 
-| Task | Description | Risk | Primary Files | Validation |
-| --- | --- | --- | --- | --- |
-| PLN-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding. | Low | Canonical research pack | Sources, template contract, repo contracts. |
-| PLN-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research. | Low | Canonical research pack | Provider cutoff ledger, provider sync check, repo contracts. |
-| PLN-AER-003 | Revalidate workspace, QA, automation, Compose, infrastructure, security, release, and deployment research. | Low | Canonical research pack | Tracked inventory, primary sources, repo contracts. |
-| PLN-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles. | Low | Canonical audit pack | Reproducible counts, category matrices, repo contracts. |
-| PLN-AER-005 | Audit harness, loop/evals, providers/models, workspace rules, agent instructions, catalogs, and vibe coding. | Low | Canonical audit pack | Criterion coverage and evidence review. |
-| PLN-AER-006 | Audit QA/CI/CD, automation, Compose/infrastructure, security; consolidate indexes and supersede 2026-07-07 audit. | Medium | Canonical and duplicate audit packs | One-current-pack scan, generated audit matrices, repo contracts. |
-| PLN-AER-007 | Implement typed metadata profiles, parser, advisory inventory, and unit tests. | High | Stage 00/99, Python validator/tests, generated inventory | Unit tests, advisory report, contract integration. |
-| PLN-AER-008 | Migrate the approved active chain and enforce metadata for changed/new documents. | High | Templates, active chain, pre-push hook, validator | Before/after inventory, changed-mode tests, repo contracts. |
-| PLN-AER-009 | Implement the controlled agent pre-commit wrapper and governance rules. | High | Bash wrapper/tests, Stage 00, scripts README | Fake-binary tests, shellcheck, wrapper contract test. |
-| PLN-AER-010 | Synchronize provider adapters and add the metadata check to the existing CI repo-contracts job. | High | Stage 00/providers, `.claude`, generated `.codex`/`.agents`, CI | Provider no-drift, workflow lint/security, repo contracts. |
-| PLN-AER-011 | Author four independent runtime-remediation specs/plans without runtime mutation. | Medium | Specs 124-127 and four plans | Template, traceability, rollback/approval gates. |
-| PLN-AER-012 | Run full local gates through the wrapper, complete independent reviews, and close lifecycle evidence. | High | Task/plan/spec indexes, generated data, progress | Full verification bundle and clean whole-branch review. |
+| Task        | Description                                                                                                       | Risk   | Primary Files                                                   | Validation                                                       |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------- | ---------------------------------------------------------------- |
+| PLN-AER-001 | Research metadata, lifecycle, document roles, agent instructions, and vibe coding.                                | Low    | Canonical research pack                                         | Sources, template contract, repo contracts.                      |
+| PLN-AER-002 | Revalidate harness, loop, provider, model, and agent-catalog research.                                            | Low    | Canonical research pack                                         | Provider cutoff ledger, provider sync check, repo contracts.     |
+| PLN-AER-003 | Revalidate workspace, QA, automation, Compose, infrastructure, security, release, and deployment research.        | Low    | Canonical research pack                                         | Tracked inventory, primary sources, repo contracts.              |
+| PLN-AER-004 | Audit SDLC, document roles, numbering, transitions, frontmatter, templates, and README profiles.                  | Low    | Canonical audit pack                                            | Reproducible counts, category matrices, repo contracts.          |
+| PLN-AER-005 | Audit harness, loop/evals, providers/models, workspace rules, agent instructions, catalogs, and vibe coding.      | Low    | Canonical audit pack                                            | Criterion coverage and evidence review.                          |
+| PLN-AER-006 | Audit QA/CI/CD, automation, Compose/infrastructure, security; consolidate indexes and supersede 2026-07-07 audit. | Medium | Canonical and duplicate audit packs                             | One-current-pack scan, generated audit matrices, repo contracts. |
+| PLN-AER-007 | Implement typed metadata profiles, parser, advisory inventory, and unit tests.                                    | High   | Stage 00/99, Python validator/tests, generated inventory        | Unit tests, advisory report, contract integration.               |
+| PLN-AER-008 | Migrate the approved active chain and enforce metadata for changed/new documents.                                 | High   | Templates, active chain, pre-push hook, validator               | Before/after inventory, changed-mode tests, repo contracts.      |
+| PLN-AER-009 | Implement the controlled agent pre-commit wrapper and governance rules.                                           | High   | Bash wrapper/tests, Stage 00, scripts README                    | Fake-binary tests, shellcheck, wrapper contract test.            |
+| PLN-AER-010 | Synchronize provider adapters and add the metadata check to the existing CI repo-contracts job.                   | High   | Stage 00/providers, `.claude`, generated `.codex`/`.agents`, CI | Provider no-drift, workflow lint/security, repo contracts.       |
+| PLN-AER-011 | Author four independent runtime-remediation specs/plans without runtime mutation.                                 | Medium | Specs 124-127 and four plans                                    | Template, traceability, rollback/approval gates.                 |
+| PLN-AER-012 | Run full local gates through the wrapper, complete independent reviews, and close lifecycle evidence.             | High   | Task/plan/spec indexes, generated data, progress                | Full verification bundle and clean whole-branch review.          |
 
 Plan approval is the explicit local authorization for medium/high tasks on the
 named files. It does not authorize model-value changes, runtime mutation,
@@ -235,7 +234,7 @@ Each new reference must use this exact criterion shape:
 
 ```markdown
 | Criterion ID | Practice | Primary source | Workspace applicability | Required evidence | Potential owner |
-| --- | --- | --- | --- | --- | --- |
+| ------------ | -------- | -------------- | ----------------------- | ----------------- | --------------- |
 ```
 
 `document-metadata-lifecycle.md` must cover artifact identity, type profiles,
@@ -316,7 +315,7 @@ Use the shared matrix:
 
 ```markdown
 | Criterion | Claude | Codex | Gemini | Workspace common contract | Gap / caveat |
-| --- | --- | --- | --- | --- | --- |
+| --------- | ------ | ----- | ------ | ------------------------- | ------------ |
 ```
 
 Keep Gemini reminder/pointer behavior distinct from native execution. Separate
@@ -1224,34 +1223,34 @@ git commit -m "docs(task): close agentic audit remediation"
 
 ## Verification Plan
 
-| ID | Level | Command / Evidence | Pass Criteria |
-| --- | --- | --- | --- |
-| VAL-AER-001 | Unit | `python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v` | All metadata parser/profile/manifest/transition/report tests pass. |
-| VAL-AER-002 | Unit | `bash tests/validation/test_run_agent_precommit_all_files.sh` | All wrapper safety and fake-pre-commit tests pass. |
-| VAL-AER-003 | Provider | `bash scripts/operations/sync-provider-surfaces.sh --check` | Reports `no drift`. |
-| VAL-AER-004 | Metadata | `python3 scripts/validation/check-document-metadata.py --mode report --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md` | Inventory is deterministic and fresh; approved active chain is clean after migration. |
-| VAL-AER-005 | Docs | `bash scripts/validation/check-doc-traceability.sh` | `failures=0`. |
-| VAL-AER-006 | Alignment | `bash scripts/validation/check-doc-implementation-alignment.sh` | `failures=0`. |
-| VAL-AER-007 | Compose | `bash scripts/validation/validate-docker-compose.sh` | Structural validation passes without service startup. |
-| VAL-AER-008 | Hardening | `bash scripts/hardening/check-all-hardening.sh` | All governed tiers pass. |
-| VAL-AER-009 | Contracts | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`; generated outputs are fresh. |
-| VAL-AER-010 | Full QA | Controlled wrapper with task and minimal allowed prefixes | All configured hooks pass; no unexpected paths. |
-| VAL-AER-011 | Review | Task-level and whole-branch independent reports | Spec PASS, Quality APPROVED, Critical 0, Important 0. |
-| VAL-AER-012 | Git | `git diff --check` and final `git status --short` | No whitespace errors and clean worktree. |
+| ID          | Level     | Command / Evidence                                                                                                                                                                                  | Pass Criteria                                                                         |
+| ----------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| VAL-AER-001 | Unit      | `python3 -m unittest discover -s tests/validation -p 'test_document_metadata.py' -v`                                                                                                                | All metadata parser/profile/manifest/transition/report tests pass.                    |
+| VAL-AER-002 | Unit      | `bash tests/validation/test_run_agent_precommit_all_files.sh`                                                                                                                                       | All wrapper safety and fake-pre-commit tests pass.                                    |
+| VAL-AER-003 | Provider  | `bash scripts/operations/sync-provider-surfaces.sh --check`                                                                                                                                         | Reports `no drift`.                                                                   |
+| VAL-AER-004 | Metadata  | `python3 scripts/validation/check-document-metadata.py --mode report --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md` | Inventory is deterministic and fresh; approved active chain is clean after migration. |
+| VAL-AER-005 | Docs      | `bash scripts/validation/check-doc-traceability.sh`                                                                                                                                                 | `failures=0`.                                                                         |
+| VAL-AER-006 | Alignment | `bash scripts/validation/check-doc-implementation-alignment.sh`                                                                                                                                     | `failures=0`.                                                                         |
+| VAL-AER-007 | Compose   | `bash scripts/validation/validate-docker-compose.sh`                                                                                                                                                | Structural validation passes without service startup.                                 |
+| VAL-AER-008 | Hardening | `bash scripts/hardening/check-all-hardening.sh`                                                                                                                                                     | All governed tiers pass.                                                              |
+| VAL-AER-009 | Contracts | `bash scripts/validation/check-repo-contracts.sh`                                                                                                                                                   | `failures=0`; generated outputs are fresh.                                            |
+| VAL-AER-010 | Full QA   | Controlled wrapper with task and minimal allowed prefixes                                                                                                                                           | All configured hooks pass; no unexpected paths.                                       |
+| VAL-AER-011 | Review    | Task-level and whole-branch independent reports                                                                                                                                                     | Spec PASS, Quality APPROVED, Critical 0, Important 0.                                 |
+| VAL-AER-012 | Git       | `git diff --check` and final `git status --short`                                                                                                                                                   | No whitespace errors and clean worktree.                                              |
 
 ## Risks and Rollback
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Mutable external sources obscure the approved model cutoff | High | Preserve direct cutoff evidence and use `historical state unverified`; never backdate later facts. |
-| Audit reports become policy or runtime truth | High | Keep Stage 90 advisory; route approved changes to Stage 00/99/04 or runtime follow-up specs. |
-| Typed metadata causes mass false positives | High | Advisory report first, type-profile tests, active-chain migration, changed/new enforcement only. |
-| Artifact IDs or parent links collide | High | Deterministic manifest, duplicate-ID failure, unresolved-parent failure, explicit multi-parent support. |
-| Full pre-commit modifies unrelated files | High | Isolated worktree, before/after path sets, minimal allowed prefixes, stop without auto-revert. |
-| Provider adapters drift or claim false parity | High | Stage 00/Claude canonical source, generator-only mirrors, no-drift validation, explicit Gemini capability limits. |
-| CI change creates a new remote required context | Medium | Add a step to existing `repo-contracts`; do not add a job or mutate branch protection. |
-| Runtime follow-up plans are mistaken for authorization | High | State approval boundary in every spec/plan; create no task evidence or runtime changes. |
-| Multiple agents edit the same file | Medium | Sequential task execution, explicit ownership, close agents, stop on overlap. |
+| Risk                                                       | Impact | Mitigation                                                                                                        |
+| ---------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| Mutable external sources obscure the approved model cutoff | High   | Preserve direct cutoff evidence and use `historical state unverified`; never backdate later facts.                |
+| Audit reports become policy or runtime truth               | High   | Keep Stage 90 advisory; route approved changes to Stage 00/99/04 or runtime follow-up specs.                      |
+| Typed metadata causes mass false positives                 | High   | Advisory report first, type-profile tests, active-chain migration, changed/new enforcement only.                  |
+| Artifact IDs or parent links collide                       | High   | Deterministic manifest, duplicate-ID failure, unresolved-parent failure, explicit multi-parent support.           |
+| Full pre-commit modifies unrelated files                   | High   | Isolated worktree, before/after path sets, minimal allowed prefixes, stop without auto-revert.                    |
+| Provider adapters drift or claim false parity              | High   | Stage 00/Claude canonical source, generator-only mirrors, no-drift validation, explicit Gemini capability limits. |
+| CI change creates a new remote required context            | Medium | Add a step to existing `repo-contracts`; do not add a job or mutate branch protection.                            |
+| Runtime follow-up plans are mistaken for authorization     | High   | State approval boundary in every spec/plan; create no task evidence or runtime changes.                           |
+| Multiple agents edit the same file                         | Medium | Sequential task execution, explicit ownership, close agents, stop on overlap.                                     |
 
 ## Rollback and Recovery
 
@@ -1304,8 +1303,8 @@ git commit -m "docs(task): close agentic audit remediation"
 
 ## Related Documents
 
-- [Parent specification](../../03.specs/123-agentic-engineering-audit-remediation/spec.md)
-- [Specification folder](../../03.specs/123-agentic-engineering-audit-remediation/README.md)
+- [Parent specification](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
+- [Specification folder](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/README.md)
 - [Task evidence](../tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Canonical implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

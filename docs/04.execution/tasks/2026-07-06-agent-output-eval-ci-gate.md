@@ -13,7 +13,7 @@ lightweight CI fixture-freshness gate for agent-output eval fixtures.
 
 ## Inputs
 
-- **Parent Spec**: [Agent output eval CI gate spec](../../03.specs/120-agent-output-eval-ci-gate/spec.md)
+- **Parent Spec**: [Agent output eval CI gate spec](../../98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md)
 - **Parent Plan**: [Agent output eval CI gate plan](../plans/2026-07-06-agent-output-eval-ci-gate.md)
 - **Parent Runner Spec**: [Agent output eval runner spec](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Fixture Reference**: [Agent output eval fixtures](../../90.references/data/governance/agent-output-eval-fixtures.md)
@@ -80,7 +80,7 @@ lightweight CI fixture-freshness gate for agent-output eval fixtures.
 
 ## Related Documents
 
-- **Parent Spec**: [Agent output eval CI gate spec](../../03.specs/120-agent-output-eval-ci-gate/spec.md)
+- **Parent Spec**: [Agent output eval CI gate spec](../../98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md)
 - **Parent Plan**: [Agent output eval CI gate plan](../plans/2026-07-06-agent-output-eval-ci-gate.md)
 - **Parent Runner Spec**: [Agent output eval runner spec](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)

@@ -2,8 +2,7 @@
 status: completed
 artifact_id: spec:128-agentic-audit-harness-consolidation
 artifact_type: spec
-parent_ids:
-  - spec:123-agentic-engineering-audit-remediation
+parent_ids: []
 ---
 
 # Agentic Audit Harness Consolidation Technical Specification (Spec)
@@ -58,7 +57,7 @@ repository contracts and the tracked CI quality workflow.
   deployment, identity, registry, or provider-native adoption decision remains
   owned by a separate approved architecture chain.
 - **Parent Specification**:
-  [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
+  [Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - **Canonical Audit Pack**:
   [Agentic engineering implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Audit Index**:
@@ -74,13 +73,13 @@ repository contracts and the tracked CI quality workflow.
 
 ### Audit Lifecycle Contract
 
-| Surface | Required behavior |
-| --- | --- |
-| Root audit index | Separate the sole canonical current audit, dated historical snapshots, and supersession ledgers. |
+| Surface                         | Required behavior                                                                                                                               |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root audit index                | Separate the sole canonical current audit, dated historical snapshots, and supersession ledgers.                                                |
 | 2026-07-03 and 2026-07-04 packs | Preserve original evidence and add unambiguous as-of/current-route boundaries. Existing files are listed as included reports, not planned work. |
-| 2026-07-05 pack | Remain the only current implementation audit and describe the post-Task-12 tracked state. |
-| 2026-07-07 pack | Remain mapping-only and `superseded`; it cannot supply current counts, status, or recommendations. |
-| Physical paths | Stay stable to preserve completed evidence, generator paths, metadata profiles, and downstream links. |
+| 2026-07-05 pack                 | Remain the only current implementation audit and describe the post-Task-12 tracked state.                                                       |
+| 2026-07-07 pack                 | Remain mapping-only and `superseded`; it cannot supply current counts, status, or recommendations.                                              |
+| Physical paths                  | Stay stable to preserve completed evidence, generator paths, metadata profiles, and downstream links.                                           |
 
 ### Criterion Contract
 
@@ -102,13 +101,13 @@ repository contracts and the tracked CI quality workflow.
 The semantic validator complements the structural criterion parser. Its
 machine-readable closure assertions contain:
 
-| Field | Meaning |
-| --- | --- |
-| `criterion_id` | Existing canonical criterion ID. |
-| `report` | Criterion report that owns the row. |
-| `required_state` | Current state proven by tracked implementation and completed task evidence. |
-| `required_evidence_paths` | Tracked paths that must exist for the closure claim. |
-| `completed_task_ids` | Stage 04 remediation tasks that establish the closure. |
+| Field                     | Meaning                                                                                       |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `criterion_id`            | Existing canonical criterion ID.                                                              |
+| `report`                  | Criterion report that owns the row.                                                           |
+| `required_state`          | Current state proven by tracked implementation and completed task evidence.                   |
+| `required_evidence_paths` | Tracked paths that must exist for the closure claim.                                          |
+| `completed_task_ids`      | Stage 04 remediation tasks that establish the closure.                                        |
 | `forbidden_stale_phrases` | Narrow phrases that would incorrectly describe a completed closure as future or missing work. |
 
 The assertion set is intentionally smaller than the 161-row corpus. It covers
@@ -148,15 +147,15 @@ explicit and route to draft Spec 126.
 
 ### Component Boundary
 
-| Component | Responsibility |
-| --- | --- |
-| Audit documents | Human-reviewable current findings, gaps, evidence, ownership, and approval boundaries. |
-| Structural criterion parser | Exact report/ID/schema/vocabulary completeness for the 11/161 contract. |
-| Semantic closure contract | Machine-readable assertions for deterministic completed remediations. |
-| Semantic freshness validator | Evidence-path, state, completed-task, stale-phrase, and lifecycle routing checks. |
-| Audit matrix generator | Derived coverage, state distribution, and separate structural/semantic results. |
-| Security readiness generator | Scoped and broad vulnerability-control signals without inflated claims. |
-| Repository and CI gates | Deterministic orchestration and visible failure routing. |
+| Component                    | Responsibility                                                                         |
+| ---------------------------- | -------------------------------------------------------------------------------------- |
+| Audit documents              | Human-reviewable current findings, gaps, evidence, ownership, and approval boundaries. |
+| Structural criterion parser  | Exact report/ID/schema/vocabulary completeness for the 11/161 contract.                |
+| Semantic closure contract    | Machine-readable assertions for deterministic completed remediations.                  |
+| Semantic freshness validator | Evidence-path, state, completed-task, stale-phrase, and lifecycle routing checks.      |
+| Audit matrix generator       | Derived coverage, state distribution, and separate structural/semantic results.        |
+| Security readiness generator | Scoped and broad vulnerability-control signals without inflated claims.                |
+| Repository and CI gates      | Deterministic orchestration and visible failure routing.                               |
 
 ### Key Dependencies
 
@@ -212,10 +211,7 @@ generated audit matrix remains derived data and cannot override either source.
     "tests/validation/test_run_agent_precommit_all_files.sh"
   ],
   "completed_task_ids": ["T-AER-009"],
-  "forbidden_stale_phrases": [
-    "controlled wrapper does not yet exist",
-    "Task 9 will add wrapper"
-  ]
+  "forbidden_stale_phrases": ["controlled wrapper does not yet exist", "Task 9 will add wrapper"]
 }
 ```
 
@@ -390,7 +386,7 @@ prefixes before execution.
 
 - [Implementation plan](../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md)
 - [Execution task](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md)
-- [Parent agentic audit remediation spec](../123-agentic-engineering-audit-remediation/spec.md)
+- [Parent agentic audit remediation spec](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Canonical agentic implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Audit references index](../../90.references/audits/README.md)
 - [Audit implementation matrix](../../90.references/data/governance/audit-implementation-matrix.md)

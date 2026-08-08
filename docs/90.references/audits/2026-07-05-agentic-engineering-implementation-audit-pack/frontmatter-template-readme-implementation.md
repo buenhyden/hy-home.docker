@@ -188,4 +188,4 @@ unrelated historical findings remain advisory.
 - [SDLC and document-contract audit](./sdlc-document-contracts-implementation.md)
 - [SDLC quality and formatting summary](./sdlc-quality-formatting-implementation.md)
 - [Implementation overview](./implementation-overview.md)
-- [Spec 123](../../../03.specs/123-agentic-engineering-audit-remediation/spec.md)
+- [Spec 123](../../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)

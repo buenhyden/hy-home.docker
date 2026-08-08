@@ -67,6 +67,6 @@ publication, secret access, or remote deployment.
 - [Completed implementation plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Domain Task evidence owner](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
 - [Program Task evidence owner](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
-- [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)
+- [Umbrella audit specification](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Canonical quality audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
 - [Canonical automation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

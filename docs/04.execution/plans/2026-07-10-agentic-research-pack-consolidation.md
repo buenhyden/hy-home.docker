@@ -33,7 +33,7 @@ status: completed
 ## Overview
 
 This plan implements
-[Spec 122](../../03.specs/122-agentic-research-pack-consolidation/spec.md).
+[Spec 122](../../98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md).
 The specification covers one cohesive documentation product rather than
 independent runtime subsystems: every research domain feeds the same canonical
 pack, cutoff contract, status vocabulary, source rules, index, and supersession
@@ -1077,7 +1077,7 @@ verdict in this document.
 ## Related Documents
 
 - **Spec**:
-  [Agentic Research Pack Consolidation](../../03.specs/122-agentic-research-pack-consolidation/spec.md)
+  [Agentic Research Pack Consolidation](../../98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md)
 - **Task**:
   [Agentic Research Pack Consolidation Task](../tasks/2026-07-10-agentic-research-pack-consolidation.md)
 - **Previous Spec**:

@@ -6,9 +6,6 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
-  - spec:124-compose-runtime-readiness-remediation
-  - spec:125-infrastructure-operations-readiness-remediation
-  - spec:126-security-supply-chain-remediation
   - spec:127-deployment-release-engineering-remediation
 ---
 
@@ -85,9 +82,9 @@ Canonical inputs:
 - [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
 - [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Spec 124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md)
-- [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
-- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
+- [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+- [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
 - the four domain Plans linked under Related Documents.
 

@@ -1,8 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:123-agentic-engineering-audit-remediation
-artifact_type: spec
+artifact_type: archive
 parent_ids: []
+archived_from: docs/03.specs/123-agentic-engineering-audit-remediation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 635f3a7827e64562683429f8e7f1c3230f204559
+archived_blob: 9c5225ef6c0dc23a5a10ed73ff14c01b26e8e723
+preservation_class: git-history
 ---
 
 # Agentic Engineering Audit and Remediation Technical Specification
@@ -32,6 +39,10 @@ The official Claude, OpenAI/Codex, and Gemini model catalog remains bound to
 the previously approved 2026-07-10 10:00 KST cutoff. Current retrieval may
 verify page availability and workspace implementation, but later announcements
 must not be backdated into that catalog.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -66,15 +77,15 @@ must not be backdated into that catalog.
 - **Previous Specification**:
   [../122-agentic-research-pack-consolidation/spec.md](../122-agentic-research-pack-consolidation/spec.md)
 - **Canonical Research Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Canonical Audit Pack**:
-  [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+  [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Overlapping Audit Pack**:
-  [../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md](../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
+  [../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md](../../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
 - **Stage Authoring Matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Documentation Protocol**:
-  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
+  [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
 
 ## Contracts
 
@@ -477,19 +488,29 @@ Runtime, Compose, infrastructure, deployment, secret, remote GitHub,
 branch-protection, and model-policy changes remain outside this specification;
 Specs 124-127 and their plans stay `draft` pending separate approval.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/123-agentic-engineering-audit-remediation/spec.md` | `docs/98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
+- **README**: [README.md](./README.md)
 - [Specification folder](./README.md)
-- [Implementation plan](../../04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md)
-- [Task evidence](../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Previous research consolidation specification](../122-agentic-research-pack-consolidation/spec.md)
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Canonical implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Overlapping implementation audit pack](../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
-- [Research category](../../90.references/research/README.md)
-- [Audit category](../../90.references/audits/README.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- [Canonical research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical implementation audit pack](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Overlapping implementation audit pack](../../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
+- [Research category](../../../90.references/research/README.md)
+- [Audit category](../../../90.references/audits/README.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
+- [Lifecycle status contract](../../../99.templates/support/lifecycle-status.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)

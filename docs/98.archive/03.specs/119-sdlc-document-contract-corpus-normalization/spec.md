@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:119-sdlc-document-contract-corpus-normalization
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: af4a6cb49b238a9e6a26201d03c4732673cc77ec
+archived_blob: b34bb8bb79bed8bc9af621a2d166a6775643198c
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md -->
 
 # SDLC Document Contract Corpus Normalization Technical Specification
 
@@ -26,6 +34,10 @@ with logical commits per wave.
 
 Implementation for this wave is complete. Closure evidence is recorded in the
 paired Stage 04 plan and task files.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -64,27 +76,27 @@ paired Stage 04 plan and task files.
 - **ARD**: Not required. Existing Stage 00 governance and Stage 99 support
   contracts define the architecture boundary.
 - **Related ADRs**:
-  - [Stage 00 canonical adapter model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+  - [Stage 00 canonical adapter model](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
 - **Numbered SDLC path migration**:
-  [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
+  [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../099-template-system-numbered-sdlc-paths/spec.md)
 - **Template contract standardization**:
-  [../100-template-system-contract-standardization/spec.md](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
+  [../100-template-system-contract-standardization/spec.md](../100-template-system-contract-standardization/spec.md)
 - **Document restructure disposition contract**:
-  [../103-document-restructure-audit-contract-archive/spec.md](../103-document-restructure-audit-contract-archive/spec.md)
+  [../103-document-restructure-audit-contract-archive/spec.md](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
 - **Workspace support surface contract**:
-  [../106-workspace-support-surface-contract/spec.md](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
+  [../106-workspace-support-surface-contract/spec.md](../106-workspace-support-surface-contract/spec.md)
 - **Documentation protocol**:
-  [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
+  [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Template governance**:
-  [../../99.templates/support/template-governance.md](../../99.templates/support/template-governance.md)
+  [../../99.templates/support/template-governance.md](../../../99.templates/support/template-governance.md)
 - **Template selection**:
-  [../../99.templates/support/template-selection.md](../../99.templates/support/template-selection.md)
+  [../../99.templates/support/template-selection.md](../../../99.templates/support/template-selection.md)
 - **Frontmatter contract**:
-  [../../99.templates/support/frontmatter-contract.md](../../99.templates/support/frontmatter-contract.md)
+  [../../99.templates/support/frontmatter-contract.md](../../../99.templates/support/frontmatter-contract.md)
 - **Lifecycle status**:
-  [../../99.templates/support/lifecycle-status.md](../../99.templates/support/lifecycle-status.md)
+  [../../99.templates/support/lifecycle-status.md](../../../99.templates/support/lifecycle-status.md)
 - **External rationale**:
   - [NIST SSDF SP 800-218](https://csrc.nist.gov/pubs/sp/800/218/final)
   - [OWASP SAMM](https://owaspsamm.org/model/)
@@ -359,18 +371,28 @@ policy.
   and any residual gap register without touching secrets, raw logs, or runtime
   state.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md` | `docs/98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
+- **README**: [README.md](./README.md)
 - [Spec README](./README.md)
-- [Stage 03 README](../README.md)
-- [Numbered SDLC path migration spec](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
-- [Template contract standardization spec](../../98.archive/03.specs/100-template-system-contract-standardization/spec.md)
-- [Document restructure disposition spec](../103-document-restructure-audit-contract-archive/spec.md)
-- [Workspace support surface contract spec](../../98.archive/03.specs/106-workspace-support-surface-contract/spec.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [Template selection](../../99.templates/support/template-selection.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Lifecycle status](../../99.templates/support/lifecycle-status.md)
-- [Document restructure gap register](../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md)
+- [Stage 03 README](../../../03.specs/README.md)
+- [Numbered SDLC path migration spec](../099-template-system-numbered-sdlc-paths/spec.md)
+- [Template contract standardization spec](../100-template-system-contract-standardization/spec.md)
+- [Document restructure disposition spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
+- [Workspace support surface contract spec](../106-workspace-support-surface-contract/spec.md)
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Template governance](../../../99.templates/support/template-governance.md)
+- [Template selection](../../../99.templates/support/template-selection.md)
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
+- [Lifecycle status](../../../99.templates/support/lifecycle-status.md)
+- [Document restructure gap register](../../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md)

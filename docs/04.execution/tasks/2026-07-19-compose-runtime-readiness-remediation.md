@@ -3,7 +3,6 @@ status: completed
 artifact_id: task:2026-07-19-compose-runtime-readiness-remediation
 artifact_type: task
 parent_ids:
-  - spec:124-compose-runtime-readiness-remediation
   - plan:2026-07-11-compose-runtime-readiness-remediation
 ---
 
@@ -25,7 +24,7 @@ synthetic secret bodies are not evidence consumers.
 
 ## Inputs
 
-- [Spec 124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md)
+- [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - [Compose runtime readiness Plan](../plans/2026-07-11-compose-runtime-readiness-remediation.md)
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - Root `docker-compose.yml` and the approved task-only override
@@ -104,7 +103,7 @@ Approval source:
 - The user approved protected-surface changes and implementation of the local
   operational-readiness program.
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
-  [Spec 124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md),
+  [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
   and the active Plan define the accepted isolated topology and exact commands.
 
 Protected surfaces: local Docker runtime, test-only Compose override, synthetic
@@ -406,13 +405,13 @@ is completed at the approved local-isolated boundary. The implementation
 re-reviews are approved; only final post-evidence whole-branch confirmation
 remains pending.
 
-Deferral destination: data restore routes to [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
+Deferral destination: data restore routes to [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md);
 remote, live, shared, or broader runtime requires a new approved Stage 01-04
 design chain, Task, and explicit human approval.
 
 ## Related Documents
 
-- [Spec 124](../../03.specs/124-compose-runtime-readiness-remediation/spec.md)
+- [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - [Compose Plan](../plans/2026-07-11-compose-runtime-readiness-remediation.md)
 - [Program Task](./2026-07-19-operational-readiness-closure-program.md)
 - [Infrastructure Task](./2026-07-19-infrastructure-operations-readiness-remediation.md)

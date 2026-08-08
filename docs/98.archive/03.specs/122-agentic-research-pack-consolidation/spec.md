@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:122-agentic-research-pack-consolidation
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/122-agentic-research-pack-consolidation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: af4a6cb49b238a9e6a26201d03c4732673cc77ec
+archived_blob: 92a5530e2cc294902184c1dc75bb10826dfeed50
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/122-agentic-research-pack-consolidation/spec.md -->
 
 # Agentic Research Pack Consolidation Technical Specification
 
@@ -27,6 +35,10 @@ Claude, OpenAI/Codex, and Gemini model facts use an evidence cutoff of
 `stable`, `preview`, and `deprecated` states and records model IDs,
 availability surfaces, reasoning controls, tool and agent characteristics,
 coding suitability, task fit, and evidence limitations.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -57,17 +69,17 @@ coding suitability, task fit, and evidence limitations.
   changed.
 - **Related ADRs**: No new architecture decision is introduced.
 - **Previous Spec**:
-  [../104-agentic-research-pack-refresh/spec.md](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
+  [../104-agentic-research-pack-refresh/spec.md](../104-agentic-research-pack-refresh/spec.md)
 - **Canonical Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - **Duplicate Pack**:
   `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
   (path removed after consolidation; see the Superseded Paths table in
-  [research references](../../90.references/research/README.md))
+  [research references](../../../90.references/research/README.md))
 - **Reference Template**:
-  [../../99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md)
+  [../../99.templates/templates/common/reference.template.md](../../../99.templates/templates/common/reference.template.md)
 - **Stage Authoring Matrix**:
-  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 
 ## Contracts
 
@@ -391,16 +403,26 @@ Also perform targeted checks for:
 - **VAL-ARC-010**: All specified documentation and repository checks pass, or
   unrelated failures are explicitly recorded.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/122-agentic-research-pack-consolidation/spec.md` | `docs/98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
+- **README**: [README.md](./README.md)
 - [Spec folder README](./README.md)
-- [Implementation plan](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
-- [Task evidence](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
-- [Previous research refresh specification](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Superseded path mapping for the duplicate research pack](../../90.references/research/README.md) - the pack itself was removed after this specification completed; its canonical destination mapping is preserved in the research category index
-- [Research category README](../../90.references/research/README.md)
-- [Agent governance hub](../../00.agent-governance/README.md)
-- [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
-- [Reference template](../../99.templates/templates/common/reference.template.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
+- [Task evidence](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
+- [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
+- [Canonical research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Superseded path mapping for the duplicate research pack](../../../90.references/research/README.md) - the pack itself was removed after this specification completed; its canonical destination mapping is preserved in the research category index
+- [Research category README](../../../90.references/research/README.md)
+- [Agent governance hub](../../../00.agent-governance/README.md)
+- [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
+- [Reference template](../../../99.templates/templates/common/reference.template.md)

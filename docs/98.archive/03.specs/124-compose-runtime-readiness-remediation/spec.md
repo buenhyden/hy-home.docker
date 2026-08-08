@@ -1,12 +1,18 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:124-compose-runtime-readiness-remediation
-artifact_type: spec
+artifact_type: archive
 parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
-  - spec:123-agentic-engineering-audit-remediation
+archived_from: docs/03.specs/124-compose-runtime-readiness-remediation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: b342a5aea5ffb60b7a0dcde0b567339008e8e0fc
+archived_blob: 8a81dab171627fcb42ea49beee7741ba0f26d17c
+preservation_class: git-history
 ---
 
 # Compose Runtime Readiness Remediation Technical Specification (Spec)
@@ -20,6 +26,10 @@ secret exposure. It owns three canonical audit gaps. PRD 025, ARD 0028, and
 ADR 0028 approve the architecture; the linked Plan and Task own command
 authorization and observed local evidence. Broader or remote execution
 requires a new Task.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -37,12 +47,12 @@ requires a new Task.
 
 ## Boundaries and Inputs
 
-- **PRD**: [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+- **PRD**: [PRD 025](../../../01.requirements/025-operational-readiness-closure.md)
   defines the bounded local value, exact representative scope, and acceptance
   intent.
-- **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ARD**: [ARD 0028](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
   defines the isolated topology, evidence boundary, and cleanup guarantees.
-- **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **ADR**: [ADR 0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
   selects contract-first local-isolated vertical slices.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
   remains the canonical audit lineage.
@@ -105,8 +115,8 @@ log, auth token, credential, or private endpoint payload.
 
 This Spec defines the readiness contract; it does not own observed execution
 evidence or lifecycle conclusions. Observed evidence and current status are
-owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
-and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
+owned by the exact [domain Task](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+and [Program Task](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
@@ -260,16 +270,26 @@ recovery, and cleanup negative paths.
 - **VAL-CRR-004**: Architecture, human, runtime, secret, and remote gates are
   resolved before any service command.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/124-compose-runtime-readiness-remediation/spec.md` | `docs/98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
-- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- **Plan**: [Compose runtime-readiness plan](../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
-- **Task**: [Compose runtime-readiness Task](../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+- **README**: [README.md](./README.md)
+- **PRD**: [Operational readiness closure](../../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **Plan**: [Compose runtime-readiness plan](../../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
+- **Task**: [Compose runtime-readiness Task](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
-- **Compose audit**: [Compose, infrastructure, and operations readiness](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
-- **Research**: [Compose and infrastructure research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)
+- **Compose audit**: [Compose, infrastructure, and operations readiness](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
+- **Research**: [Compose and infrastructure research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)
 - **Infrastructure dependency**: [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md)
 - **Security dependency**: [Spec 126](../126-security-supply-chain-remediation/spec.md)
-- **Deployment dependency**: [Spec 127](../127-deployment-release-engineering-remediation/spec.md)
+- **Deployment dependency**: [Spec 127](../../../03.specs/127-deployment-release-engineering-remediation/spec.md)

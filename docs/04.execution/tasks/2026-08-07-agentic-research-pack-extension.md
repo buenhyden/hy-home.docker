@@ -2,8 +2,7 @@
 status: active
 artifact_id: task:2026-08-07-agentic-research-pack-extension
 artifact_type: task
-parent_ids:
-  - spec:123-agentic-engineering-audit-remediation
+parent_ids: []
 ---
 
 # Task: Agentic Research Pack Extension and Revalidation
@@ -173,21 +172,21 @@ credential, private environment diagnostic, or raw log stream is written.
 
 ## Work Breakdown
 
-| ID         | Unit                                                | Deliverable                                                                                      | Status      |
-| ---------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------- |
-| T-ARPE-001 | Open Task and fix scope                             | This Task document                                                                               | Done        |
-| T-ARPE-002 | Read-only research and fact re-derivation           | Sub-agent findings for three new topics, workspace count drift, and external source revalidation | Done |
-| T-ARPE-003 | New leaf: documentation architecture                | `documentation-architecture.md`                                                                  | Done        |
-| T-ARPE-004 | New leaf: LLM-WIKI system                           | `llm-wiki-system.md`                                                                             | Done        |
-| T-ARPE-005 | New leaf: memory hierarchy                          | `memory-hierarchy.md`                                                                            | Done        |
-| T-ARPE-006 | Revalidate harness, loop, and provider leaves       | Four updated leaves                                                                              | Done        |
-| T-ARPE-007 | Revalidate SDLC and document leaves                 | Four updated leaves                                                                              | Done        |
-| T-ARPE-008 | Revalidate quality, security, and automation leaves | Four updated leaves                                                                              | Done        |
-| T-ARPE-009 | Revalidate baseline, Compose, and catalog leaves    | Three updated leaves                                                                             | Done        |
-| T-ARPE-010 | Update pack README and research README              | Two updated indexes                                                                              | Done        |
-| T-ARPE-011 | Verification and evidence closure                   | Command results and memory handoff refresh                                                       | Done        |
-| T-ARPE-012 | Consolidate same-purpose research documents | Superseded pack removed, mapping folded into the category index, inbound links repaired | Done |
-| T-ARPE-013 | Revalidate blocked sources and remediate drift | Five sources verified, heading conflict resolved, eight of ten drift findings closed | Done |
+| ID         | Unit                                                | Deliverable                                                                                      | Status |
+| ---------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------ |
+| T-ARPE-001 | Open Task and fix scope                             | This Task document                                                                               | Done   |
+| T-ARPE-002 | Read-only research and fact re-derivation           | Sub-agent findings for three new topics, workspace count drift, and external source revalidation | Done   |
+| T-ARPE-003 | New leaf: documentation architecture                | `documentation-architecture.md`                                                                  | Done   |
+| T-ARPE-004 | New leaf: LLM-WIKI system                           | `llm-wiki-system.md`                                                                             | Done   |
+| T-ARPE-005 | New leaf: memory hierarchy                          | `memory-hierarchy.md`                                                                            | Done   |
+| T-ARPE-006 | Revalidate harness, loop, and provider leaves       | Four updated leaves                                                                              | Done   |
+| T-ARPE-007 | Revalidate SDLC and document leaves                 | Four updated leaves                                                                              | Done   |
+| T-ARPE-008 | Revalidate quality, security, and automation leaves | Four updated leaves                                                                              | Done   |
+| T-ARPE-009 | Revalidate baseline, Compose, and catalog leaves    | Three updated leaves                                                                             | Done   |
+| T-ARPE-010 | Update pack README and research README              | Two updated indexes                                                                              | Done   |
+| T-ARPE-011 | Verification and evidence closure                   | Command results and memory handoff refresh                                                       | Done   |
+| T-ARPE-012 | Consolidate same-purpose research documents         | Superseded pack removed, mapping folded into the category index, inbound links repaired          | Done   |
+| T-ARPE-013 | Revalidate blocked sources and remediate drift      | Five sources verified, heading conflict resolved, eight of ten drift findings closed             | Done   |
 
 ## Work Log
 
@@ -292,8 +291,8 @@ Superseded Paths table of the research category index. Spec 122 stays
   three generated-artifact freshness failures this Task introduced were
   resolved by regeneration.
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed
-  --base 19ee47270e3897073ab9a3f86dfd4cce0f4b2e74` reports `selected=24
-  violations=3`. All three are the same `body-heading-missing` finding on the
+--base 19ee47270e3897073ab9a3f86dfd4cce0f4b2e74` reports `selected=24
+violations=3`. All three are the same `body-heading-missing` finding on the
   three new leaves, caused by the recorded heading-contract conflict between
   the two validators. No other changed document has a finding.
 - `bash scripts/validation/check-doc-traceability.sh` passes with
@@ -327,18 +326,18 @@ Ten commits on the current branch, from baseline
 `19ee47270e3897073ab9a3f86dfd4cce0f4b2e74` to
 `46482182632b14ff475b4dac23ae609a6c7a7cba`:
 
-| # | Commit | Unit |
-| --- | --- | --- |
-| 1 | `867a8146` | Task open |
-| 2 | `dabd4a5d` | New leaf: documentation architecture |
-| 3 | `c549bbdb` | New leaf: LLM-WIKI system |
-| 4 | `9e8a21d9` | New leaf: memory hierarchy |
-| 5 | `cbe87555` | Revalidate harness and provider leaves |
-| 6 | `98564c16` | Revalidate SDLC and document leaves |
-| 7 | `ddb78004` | Revalidate quality and security leaves |
-| 8 | `b7fbf151` | Revalidate baseline and infra leaves |
-| 9 | `23d6e31c` | Update research pack indexes |
-| 10 | `46482182` | Stage-contract heading alignment and generated-index refresh |
+| #   | Commit     | Unit                                                         |
+| --- | ---------- | ------------------------------------------------------------ |
+| 1   | `867a8146` | Task open                                                    |
+| 2   | `dabd4a5d` | New leaf: documentation architecture                         |
+| 3   | `c549bbdb` | New leaf: LLM-WIKI system                                    |
+| 4   | `9e8a21d9` | New leaf: memory hierarchy                                   |
+| 5   | `cbe87555` | Revalidate harness and provider leaves                       |
+| 6   | `98564c16` | Revalidate SDLC and document leaves                          |
+| 7   | `ddb78004` | Revalidate quality and security leaves                       |
+| 8   | `b7fbf151` | Revalidate baseline and infra leaves                         |
+| 9   | `23d6e31c` | Update research pack indexes                                 |
+| 10  | `46482182` | Stage-contract heading alignment and generated-index refresh |
 
 ### Commit Logical Unit
 
@@ -401,7 +400,7 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Research category README](../../90.references/research/README.md)
-- [Spec 123 audit remediation](../../03.specs/123-agentic-engineering-audit-remediation/spec.md)
+- [Spec 123 audit remediation](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Predecessor convergence Task](./2026-07-26-agent-governance-canonical-convergence.md)
 - [Current project memory](../../00.agent-governance/memory/current.md)
 - [Task checklists](../../00.agent-governance/rules/task-checklists.md)

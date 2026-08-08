@@ -70,14 +70,6 @@ docs/03.specs/
 ├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
-├── 119-sdlc-document-contract-corpus-normalization/ # Completed SDLC document contract corpus normalization design
-├── 120-agent-output-eval-ci-gate/          # Completed agent-output eval fixture freshness CI gate
-├── 121-dependency-vulnerability-audit-gate/ # Completed Storybook Next.js dependency vulnerability audit gate
-├── 122-agentic-research-pack-consolidation/ # Completed agentic research-pack consolidation; post-closure review PASS/APPROVED
-├── 123-agentic-engineering-audit-remediation/ # Completed agentic audit remediation; I-01 through I-03-R1 resolved
-├── 124-compose-runtime-readiness-remediation/ # Completed local-isolated Compose readiness contract
-├── 125-infrastructure-operations-readiness-remediation/ # Completed representative PostgreSQL recovery contract
-├── 126-security-supply-chain-remediation/ # Completed local sample-service supply-chain contract
 ├── 127-deployment-release-engineering-remediation/ # Completed local promotion and rollback contract
 ├── 128-agentic-audit-harness-consolidation/ # Completed canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
 ├── 129-document-contract-canonicalization/ # Completed contract-first foundation; post-closure findings resolved
@@ -102,14 +94,6 @@ docs/03.specs/
 | Metrics, logs, traces, dashboards, alerts                                                             | `007-observability/spec.md`                                   |
 | Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
 | Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
-| SDLC document contract corpus normalization                                                           | `119-sdlc-document-contract-corpus-normalization/spec.md`     |
-| Agent-output eval fixture freshness CI gate                                                           | `120-agent-output-eval-ci-gate/spec.md`                       |
-| Storybook Next.js dependency vulnerability audit gate                                                 | `121-dependency-vulnerability-audit-gate/spec.md`             |
-| Canonical agentic research-pack consolidation and provider-model cutoff                               | `122-agentic-research-pack-consolidation/spec.md`             |
-| Completed agentic audit remediation; metadata integrity and fail-closed Git discovery                 | `123-agentic-engineering-audit-remediation/spec.md`           |
-| Compose runtime startup, observed readiness, recovery, and teardown                                   | `124-compose-runtime-readiness-remediation/spec.md`           |
-| Infrastructure upgrade, migration, backup, restore, and recovery readiness                            | `125-infrastructure-operations-readiness-remediation/spec.md` |
-| Security supply-chain scanning, SBOM, provenance, signing, and verification                           | `126-security-supply-chain-remediation/spec.md`               |
 | Deployment environments, promotion, release records, and rollback                                     | `127-deployment-release-engineering-remediation/spec.md`      |
 | Canonical audit lifecycle, current-state reassessment, semantic freshness, and QA/CI integration      | `128-agentic-audit-harness-consolidation/spec.md`             |
 | Contract-first document type, template, README profile, and migration foundation                      | `129-document-contract-canonicalization/spec.md`              |
@@ -181,14 +165,6 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
 - **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
-- **SDLC Document Contract Corpus Normalization Spec**: [119-sdlc-document-contract-corpus-normalization/spec.md](./119-sdlc-document-contract-corpus-normalization/spec.md)
-- **Agent Output Eval CI Gate Spec**: [120-agent-output-eval-ci-gate/spec.md](./120-agent-output-eval-ci-gate/spec.md)
-- **Dependency Vulnerability Audit Gate Spec**: [121-dependency-vulnerability-audit-gate/spec.md](./121-dependency-vulnerability-audit-gate/spec.md)
-- **Agentic Research Pack Consolidation Spec**: [122-agentic-research-pack-consolidation/spec.md](./122-agentic-research-pack-consolidation/spec.md)
-- **Agentic Engineering Audit and Remediation Spec**: [123-agentic-engineering-audit-remediation/spec.md](./123-agentic-engineering-audit-remediation/spec.md)
-- **Compose Runtime Readiness Remediation Spec (completed local-isolated contract)**: [124-compose-runtime-readiness-remediation/spec.md](./124-compose-runtime-readiness-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
-- **Infrastructure Operations Readiness Remediation Spec (completed representative-local contract)**: [125-infrastructure-operations-readiness-remediation/spec.md](./125-infrastructure-operations-readiness-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
-- **Security Supply-Chain Remediation Spec (completed local contract)**: [126-security-supply-chain-remediation/spec.md](./126-security-supply-chain-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
 - **Deployment and Release Engineering Remediation Spec (completed local contract)**: [127-deployment-release-engineering-remediation/spec.md](./127-deployment-release-engineering-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
 - **Operational Readiness Program evidence owner**: [Program Task](../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - **Agentic Audit Harness Consolidation Spec**: [128-agentic-audit-harness-consolidation/spec.md](./128-agentic-audit-harness-consolidation/spec.md)

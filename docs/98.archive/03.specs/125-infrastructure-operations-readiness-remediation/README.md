@@ -1,3 +1,7 @@
+---
+layer: archive
+---
+
 # Infrastructure Operations Readiness Remediation
 
 > Completed synthetic-local contract for representative PostgreSQL upgrade, backup, restore, and state-aware recovery evidence.
@@ -8,8 +12,8 @@ This folder owns the completed infrastructure operations follow-up for represent
 upgrade, migration, backup, and restore rehearsals using synthetic PostgreSQL
 state. It does not own observed execution or current lifecycle evidence; those
 are owned by the exact
-[domain Task](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
-and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
+[domain Task](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+and [Program Task](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 Production state, shared backup storage, secrets, remote targets, HA, PITR, and
 organization RTO/RPO remain unauthorized.
 
@@ -50,20 +54,20 @@ organization RTO/RPO remain unauthorized.
 2. Use PRD 025, ARD 0028, ADR 0028, and Spec 124 as the approved predecessor
    chain; do not generalize the representative path to production readiness.
 3. Treat sibling specs as dependency owners; do not copy their requirements.
-4. Use the [domain Task](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
-   and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
+4. Use the [domain Task](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+   and [Program Task](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
    as the sole owners of observed evidence and current lifecycle status;
    require a new approved chain for any broader recovery scope.
 
 ## Related Documents
 
 - [Technical specification](./spec.md)
-- [Operational readiness PRD](../../01.requirements/025-operational-readiness-closure.md)
-- [Operational readiness ARD](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- [Local-isolated evidence ADR](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Completed transition plan](../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
-- [Domain Task evidence owner](../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
-- [Program Task evidence owner](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
+- [Operational readiness PRD](../../../01.requirements/025-operational-readiness-closure.md)
+- [Operational readiness ARD](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- [Local-isolated evidence ADR](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [Completed transition plan](../../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
+- [Domain Task evidence owner](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+- [Program Task evidence owner](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)
-- [Canonical Compose and operations audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
-- [Compose and infrastructure research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)
+- [Canonical Compose and operations audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
+- [Compose and infrastructure research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)

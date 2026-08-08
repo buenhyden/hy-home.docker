@@ -19,7 +19,7 @@ All five waves are complete; this file now preserves final execution evidence.
 
 ## Inputs
 
-- **Parent Spec**: [SDLC document contract corpus normalization spec](../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
+- **Parent Spec**: [SDLC document contract corpus normalization spec](../../98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
 - **Parent Plan**: [SDLC document contract corpus normalization plan](../plans/2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Document Restructure Register**: [Document restructure gap register](../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md)
 
@@ -128,7 +128,7 @@ All five waves are complete; this file now preserves final execution evidence.
 
 ## Related Documents
 
-- **Parent Spec**: [SDLC document contract corpus normalization spec](../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
+- **Parent Spec**: [SDLC document contract corpus normalization spec](../../98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
 - **Parent Plan**: [SDLC document contract corpus normalization plan](../plans/2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Document restructure register**: [../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md](../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/restructure-gap-register.md)
 - **Documentation protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)

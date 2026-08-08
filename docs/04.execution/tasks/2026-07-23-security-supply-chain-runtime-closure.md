@@ -3,7 +3,6 @@ status: completed
 artifact_id: task:2026-07-23-security-supply-chain-runtime-closure
 artifact_type: task
 parent_ids:
-  - spec:126-security-supply-chain-remediation
   - plan:2026-07-11-security-supply-chain-remediation
 ---
 
@@ -30,7 +29,7 @@ the controlled all-files wrapper.
 
 ## Inputs
 
-- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - [Security supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
 - [Existing supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
 - [Operational-readiness Program Task](./2026-07-19-operational-readiness-closure-program.md)
@@ -325,7 +324,7 @@ release, deployment, live, or production scope requires a new approved Stage
 
 ## Related Documents
 
-- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - [Security supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
 - [Existing supply-chain Task](./2026-07-19-security-supply-chain-remediation.md)
 - [Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)

@@ -16,7 +16,7 @@ plan.
 ## Inputs
 
 - **Parent Spec**:
-  [Agentic Research Pack Consolidation](../../03.specs/122-agentic-research-pack-consolidation/spec.md)
+  [Agentic Research Pack Consolidation](../../98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md)
 - **Parent Plan**:
   [Agentic Research Pack Consolidation Plan](../plans/2026-07-10-agentic-research-pack-consolidation.md)
 - **Canonical Research Pack**:
@@ -999,7 +999,7 @@ assigned owner rather than restating vendor facts here.
 | VAL-ARC-005 | verified duplicate content exists once; unsupported content removed | [T-ARC-006 — Duplicate Claim Disposition](#duplicate-claim-disposition) | Thirty-family ledger below and superseded leaf mappings | Covered; independent review reproduced all 30/30 dispositions. |
 | VAL-ARC-006 | duplicate pack and every child superseded/mapped | [T-ARC-006 — Supersession Result](#supersession-result) | Duplicate README mapping plus five template-compliant leaf records | Covered; independent review approved the README and 5/5 leaf tombstones. |
 | VAL-ARC-007 | completed Stage 03/04 and audits preserved as history | [Canonical pack README — Consolidation and Lifecycle Boundary](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md#consolidation-and-lifecycle-boundary) | Direct links to completed Spec 104, its Stage 04 plan/task, and both audit packs | Covered; no historical body deleted or copied. |
-| VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered; independent review confirmed 14 scoped documentation paths and no out-of-scope mutation. |
+| VAL-ARC-008 | no active policy/runtime/CI/provider/model/hook/script/secret/remote change | [Spec 122 — Guardrails](../../98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md#guardrails-if-applicable) | Task 6 changed-file inventory and full diff inspection | Covered; independent review confirmed 14 scoped documentation paths and no out-of-scope mutation. |
 | VAL-ARC-009 | logical commits and task reviews | [Tasks 1-6 Commit and Review Ledger](#tasks-1-6-commit-and-review-ledger) | Exact ranges and final PASS/APPROVED reports below | Covered for Tasks 1-6; whole-branch reviews remain lifecycle gates. |
 | VAL-ARC-010 | specified checks pass or unrelated failure recorded | [Final Lifecycle-Closure Validation Evidence](#final-lifecycle-closure-validation-evidence) | Exact Step 6-8, closure, and postclosure review results | Covered; lifecycle validation and Step 12 postclosure review pass. |
 
@@ -1289,7 +1289,7 @@ entered closure scope.
 ## Related Documents
 
 - **Parent Spec**:
-  [Agentic Research Pack Consolidation](../../03.specs/122-agentic-research-pack-consolidation/spec.md)
+  [Agentic Research Pack Consolidation](../../98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md)
 - **Parent Plan**:
   [Agentic Research Pack Consolidation Plan](../plans/2026-07-10-agentic-research-pack-consolidation.md)
 - **Previous Task Evidence**:

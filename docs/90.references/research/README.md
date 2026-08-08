@@ -68,7 +68,7 @@ research/
 | `2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md` | [provider implementation](./2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md), [provider model landscape](./2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md), [agent model selection](./2026-07-05-agentic-research-pack-refresh/agent-model-selection.md) |
 | `2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md` | [AI agent catalogs](./2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md) |
 
-제거 근거와 이력은 [Spec 122](../../03.specs/122-agentic-research-pack-consolidation/spec.md), [통합 Plan](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md), [통합 Task](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md), [확장 Task](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md)에 남아 있습니다.
+제거 근거와 이력은 [Spec 122](../../98.archive/03.specs/122-agentic-research-pack-consolidation/spec.md), [통합 Plan](../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md), [통합 Task](../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md), [확장 Task](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md)에 남아 있습니다.
 
 ## Naming Rules
 

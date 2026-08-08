@@ -80,4 +80,4 @@ roadmap, or Implemented/Partial labels as current evidence.
 
 - [Canonical implementation audit](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Audit references](../README.md)
-- [Spec 123](../../../03.specs/123-agentic-engineering-audit-remediation/spec.md)
+- [Spec 123](../../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)

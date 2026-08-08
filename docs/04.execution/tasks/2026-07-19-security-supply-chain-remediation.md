@@ -3,7 +3,6 @@ status: completed
 artifact_id: task:2026-07-19-security-supply-chain-remediation
 artifact_type: task
 parent_ids:
-  - spec:126-security-supply-chain-remediation
   - plan:2026-07-11-security-supply-chain-remediation
 ---
 
@@ -31,7 +30,7 @@ evidence.
 
 ## Inputs
 
-- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - [Security supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - `examples/sample-web-service` source and pinned Dockerfile materials
@@ -96,7 +95,7 @@ Approval source:
 - The user approved protected-surface and local CI/QA changes within the
   operational-readiness program.
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
-  [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md), and
+  [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md), and
   the active Plan approve the local fixture/advisory design.
 
 Protected surfaces: the pinned tool registry, sample-service build materials,
@@ -463,7 +462,7 @@ chain and explicit human approval; local accepted verdicts are consumed only by
 
 ## Related Documents
 
-- [Spec 126](../../03.specs/126-security-supply-chain-remediation/spec.md)
+- [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - [Supply-chain Plan](../plans/2026-07-11-security-supply-chain-remediation.md)
 - [Program Task](./2026-07-19-operational-readiness-closure-program.md)
 - [Approved-network runtime closure Task](./2026-07-23-security-supply-chain-runtime-closure.md)

@@ -1,8 +1,16 @@
 ---
-status: completed
+status: archived
+artifact_id: spec:120-agent-output-eval-ci-gate
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/120-agent-output-eval-ci-gate/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: e843691363d606b3601108b8fc1c6d1c84521eb7
+archived_blob: b95a3314f7408ed6dce5e1079d0092521b135bb6
+preservation_class: git-history
 ---
-
-<!-- Target: docs/03.specs/120-agent-output-eval-ci-gate/spec.md -->
 
 # Agent Output Eval CI Gate Technical Specification
 
@@ -13,6 +21,10 @@ agent-output eval fixture catalog and local advisory runner. The gate runs
 `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` so
 CI catches fixture catalog and runner ID drift without scoring arbitrary agent
 outputs or calling external eval services.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -172,10 +184,20 @@ bash scripts/validation/check-repo-contracts.sh
   and progress memory are synchronized.
 - **VAL-AOC-004**: Local workflow/documentation validation passes.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/120-agent-output-eval-ci-gate/spec.md` | `docs/98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **Plan**: [../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md)
-- **Tasks**: [../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md](../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md)
-- **Parent Runner Spec**: [../116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
-- **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
-- **Automation Candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **README**: [README.md](./README.md)
+- **Plan**: [../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md](../../../04.execution/plans/2026-07-06-agent-output-eval-ci-gate.md)
+- **Tasks**: [../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md](../../../04.execution/tasks/2026-07-06-agent-output-eval-ci-gate.md)
+- **Parent Runner Spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
+- **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
+- **Automation Candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

@@ -3,7 +3,6 @@ status: completed
 artifact_id: task:2026-07-19-infrastructure-operations-readiness-remediation
 artifact_type: task
 parent_ids:
-  - spec:125-infrastructure-operations-readiness-remediation
   - plan:2026-07-11-infrastructure-operations-readiness-remediation
 ---
 
@@ -23,7 +22,7 @@ tracked evidence.
 
 ## Inputs
 
-- [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+- [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - [Infrastructure operations Plan](../plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - Exact PostgreSQL source/target pins and deterministic SQL contract in the Plan
@@ -96,7 +95,7 @@ Approval source:
 - The user approved protected-surface changes and the local representative
   recovery implementation in this program.
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
-  [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
+  [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
   and the active Plan approve the synthetic local topology.
 
 Protected surfaces: the exact PostgreSQL test images, anonymous volumes,
@@ -370,12 +369,12 @@ and must not claim database recovery for the stateless sample service.
 Deferral destination: broader, live, shared, remote, or production recovery
 requires a new approved Stage 01-04 chain, explicit human approval, and
 operations/security review. Stateful delivery impact routes to
-[Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+[Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 rather than expanding Spec 127.
 
 ## Related Documents
 
-- [Spec 125](../../03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
+- [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - [Infrastructure Plan](../plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
 - [Program Task](./2026-07-19-operational-readiness-closure-program.md)
 - [Compose Task](./2026-07-19-compose-runtime-readiness-remediation.md)

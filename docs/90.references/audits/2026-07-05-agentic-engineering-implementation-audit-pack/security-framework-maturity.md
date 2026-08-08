@@ -208,9 +208,9 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
-| SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
-| SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | [Draft Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md) |
+| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | [Draft Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
+| SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | [Draft Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
+| SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | [Draft Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
 | SEC-MAT-004 | Define change-scoped threat-model evidence requirements for protected surfaces. | Stage 00 governance update + Stage 04 task evidence |
 | SEC-MAT-005 | Verify authenticated protection/ruleset/environment state, recent named runs, and complete CODEOWNERS enforcement; reconcile any confirmed drift only through a separately approved rollback-bound remote task. | Stage 04 GitHub governance audit |
 

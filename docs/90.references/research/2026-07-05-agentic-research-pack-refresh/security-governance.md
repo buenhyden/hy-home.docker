@@ -2,7 +2,7 @@
 status: active
 artifact_id: reference:agentic-research:security-governance
 artifact_type: reference
-parent_ids: [spec:123-agentic-engineering-audit-remediation]
+parent_ids: []
 reviewed_at: 2026-08-07
 review_cycle: on-source-change
 ---
