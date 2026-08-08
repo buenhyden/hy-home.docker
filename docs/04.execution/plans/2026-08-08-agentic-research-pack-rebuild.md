@@ -1409,6 +1409,7 @@ Its public modes are:
 ```text
 build-package
 verify-package
+verify-assignments
 verify-backfill
 publish-evidence-ref
 verify-authorized
@@ -1422,15 +1423,32 @@ attempt. GREEN must prove the valid two-reviewer path without changing the
 branch, real index, old pack, lifecycle artifacts, or generated outputs.
 
 Add one unique `GATE9-EVIDENCE/v1` marker block to the Task before the first
-package build. Its initial state is `PACKAGE_REVIEW_PENDING`. The only later
-allowed Task mutation is a single transition to `TASK_BACKFILLED` containing
-the proposed deletion manifest/diff and recovery commit; the package hash and
-fixed evidence-ref name; both package-review receipt identities, hashes,
-roles, verdicts, and C/I/M counts; and the explicit statement that actual
-staged and committed deletion reviews remain `Not Run`. Claims,
-destinations, requirements, scopes, allowlist membership, sources, generated
-artifacts, and every byte outside the marker are immutable during that
-transition.
+package build. Its initial state is `PACKAGE_REVIEW_PENDING` with attempt 1.
+There are only two forward marker paths:
+
+```text
+PACKAGE_REVIEW_PENDING(attempt 1) -> TASK_BACKFILLED
+PACKAGE_REVIEW_PENDING(attempt 1) -> ATTEMPT_2_PENDING
+ATTEMPT_2_PENDING                  -> TASK_BACKFILLED
+```
+
+The `ATTEMPT_2_PENDING` transition is allowed only after a create-only attempt
+1 evidence ref records `REJECTED` or `INVALIDATED` before any backfill. It must
+record that ref, package ID, tree identity, terminal state, and finding or
+drift reason. Attempt 2 is not available after `TASK_BACKFILLED`; any closure,
+publication, or authorization failure after backfill is immediately
+`BLOCKED`. An attempt 2 failure is also `BLOCKED`.
+
+The successful transition to `TASK_BACKFILLED` contains the proposed deletion
+manifest/diff and recovery commit; package hash and fixed evidence-ref name;
+both package-review receipt identities, hashes, roles, verdicts, and C/I/M
+counts; and the explicit statement that actual staged and committed deletion
+reviews remain `Not Run`. Claims, destinations, requirements, scopes,
+allowlist membership, sources, generated artifacts, and every byte outside the
+marker are immutable during each marker transition. Between a durably rejected
+attempt 1 and attempt 2 package construction, an implementer may correct only
+the reviewer-identified Task prose outside the marker; that correction becomes
+part of attempt 2's frozen `task-candidate.md`.
 
 Commit the helper, tests, pending marker, and Task evidence as one logical
 unit, then require two fresh independent committed-unit reviews at C0/I0.
@@ -1464,9 +1482,14 @@ the deletion commit exists. A valid destructive row requires the source to be
 physically absent and its rollback command to name the real, already existing
 deletion commit, so pre-populating those rows would be false evidence.
 
-Use attempt 1 unless its immutable state is already `REJECTED` or
-`INVALIDATED`; attempt 2 is the only correction attempt. The helper must use a
-temporary Git index and an exact temporary detached worktree for generator
+The helper, not the caller, derives the next ordinal by enumerating the exact
+Gate 9 evidence-ref prefix and validating every existing ref. Attempt 1 is
+required when no terminal ref exists. Attempt 2 is allowed only when one valid
+attempt 1 ref records pre-backfill `REJECTED` or `INVALIDATED` and the Task is
+`ATTEMPT_2_PENDING` with the same identity. No third ordinal exists. The
+`--attempt` argument asserts that derived value; it does not authorize attempt
+selection or reuse. The helper must use a temporary Git index and an exact
+temporary detached worktree for generator
 writes, clean both in a `finally` path, and leave the current worktree and real
 index unchanged. Build and verify with the exact interface:
 
@@ -1538,14 +1561,39 @@ CHECKPOINT -> BUILT -> PACKAGE_REVIEWED -> TASK_BACKFILLED
 ```
 
 `REJECTED`, `INVALIDATED`, `FOREIGN_REF`, and `BLOCKED` are fail-closed
-states. Dispatch one fresh migration/specification reviewer and one fresh
-quality reviewer. The controller must capture from each spawn the canonical
-agent ID, canonical task path, and the assigned attempt-local run ID; the two
-agent IDs and task paths must differ. Each reviewer returns one exact UTF-8/LF
+states. Except for an untrusted `FOREIGN_REF` collision, every consumed
+attempt, accepted or not, must end in a create-only evidence ref. A
+pre-backfill rejection stores the complete package and all
+available reports/receipts plus a canonical terminal reason; a drift
+invalidation stores the package, drift evidence, and canonical terminal
+reason. Temporary files are not attempt history, and the helper must derive
+the next ordinal only from validated durable refs.
+
+Dispatch one fresh migration/specification reviewer and one fresh quality
+reviewer. Capture each spawn result before accepting a review. The trusted
+controller writes one canonical `assignment-attestation.json` containing the
+package ID/`HEAD`, attempt, source literal
+`collaboration.spawn_agent/result`, controller task `/root`, and exactly two
+role records with the immutable agent ID and canonical task path returned by
+the runtime plus the assigned attempt-local run ID. The two agent IDs and task
+paths must differ. Hash and freeze the attestation before sending the final
+review package; both reviewers must echo its SHA-256. This attestation is the
+explicit trust boundary: Git makes the captured bytes tamper-evident, while
+the controller's observed spawn result—not self-asserted receipt text—binds
+the role to the runtime identity.
+
+```bash
+python3 "$GATE9_HELPER" verify-assignments \
+  --package "$GATE9_PACKAGE" \
+  --attestation "$GATE9_ASSIGNMENT_ATTESTATION"
+```
+
+Each reviewer returns one exact UTF-8/LF
 report plus one canonical JSON package receipt with the package ID and `HEAD`,
 role, all three identity fields, verdict, C/I/M counts, and SHA-256/byte count
-of that exact report. Both receipts must bind the same package, and neither may
-contain a Critical or Important finding.
+of that exact report and the assignment-attestation hash. Both receipts must
+bind the same package and controller attestation, and neither may contain a
+Critical or Important finding.
 
 Verify the receipts before changing the Task:
 
@@ -1554,6 +1602,7 @@ python3 "$GATE9_HELPER" verify-backfill \
   --package "$GATE9_PACKAGE" \
   --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
+  --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --expect-state PACKAGE_REVIEWED
 ```
@@ -1572,6 +1621,7 @@ python3 "$GATE9_HELPER" verify-backfill \
   --package "$GATE9_PACKAGE" \
   --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
+  --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --expect-state TASK_BACKFILLED
 ```
@@ -1580,9 +1630,10 @@ The same two reviewers then receive the immutable package, both reports and
 receipts, and the exact Task before/after/diff tuple. Each returns one exact
 UTF-8/LF closure report plus one canonical closure JSON binding their own
 package receipt and identity to that tuple and to the closure report's
-SHA-256/byte count. Both closures must be C0/I0 and must state that the marker
-matches the receipt while all non-marker bytes are unchanged. Closure hashes
-are deliberately not inserted back into the Task.
+SHA-256/byte count and the same assignment-attestation hash. Both closures
+must be C0/I0 and must state that the marker matches the receipt while all
+non-marker bytes are unchanged. Closure hashes are deliberately not inserted
+back into the Task.
 
 Publish all evidence under this create-only local ref:
 
@@ -1591,11 +1642,28 @@ refs/codex/review-evidence/agentic-research/gate9/v1/
   attempt-N/<package-sha256>
 ```
 
-The evidence commit uses the package `HEAD` as its sole parent and contains
-the complete package below `package/`; exact report/receipt pairs below
-`reviews/migration-specification/` and `reviews/quality/`; exact closure
-report/JSON pairs below the corresponding `closures/` paths; and one canonical
-`evidence.json` plus a root sorted `SHA256SUMS`. No other path is allowed.
+The evidence commit uses the package `HEAD` as its sole parent. Every terminal
+tree contains the complete package below `package/`, canonical
+`evidence.json`, a terminal report, and a root sorted `SHA256SUMS`.
+`REJECTED` adds the controller assignment attestation and every completed exact
+review report/receipt pair; `INVALIDATED` adds the drift proof and any
+attestation already created; `AUTHORIZED` additionally requires both complete
+review pairs and both exact closure report/JSON pairs. Accepted evidence uses
+the named `reviews/migration-specification/`, `reviews/quality/`, and matching
+`closures/` paths. Every tree entry is a regular blob at mode `100644`; no
+other path or mode is allowed for that terminal-state schema.
+
+Evidence publication identity is the tuple `(package HEAD, canonical evidence
+tree OID, canonical commit message)`, not the commit OID. The exact commit
+message is `agentic-research-gate9-evidence/v1`, a blank line, then
+byte-sorted `attempt`, `package-sha256`, and `state` lines with one final LF.
+Author/committer timestamps therefore cannot make an identical retry appear
+foreign. On a create-only race or any nonzero `update-ref`, reread the existing
+ref: identical parent, tree, and message is idempotent success; any difference
+is `FOREIGN_REF`. Tests must cover first publication, identical retry,
+non-identical collision, and concurrent create-race recovery without changing
+the branch, real index, or worktree.
+
 Publish only with
 `git update-ref <ref> <evidence-commit> 0000000000000000000000000000000000000000`.
 An absent ref may be created once; an existing byte-identical ref is an
@@ -1612,6 +1680,7 @@ python3 "$GATE9_HELPER" publish-evidence-ref \
   --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
   --quality-report "$GATE9_QUALITY_REPORT" \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
+  --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --migration-closure-report "$GATE9_MIGRATION_CLOSURE_REPORT" \
   --migration-closure "$GATE9_MIGRATION_CLOSURE" \
   --quality-closure-report "$GATE9_QUALITY_CLOSURE_REPORT" \
@@ -1640,12 +1709,38 @@ projection, byte-identical generated attachments, and no current-worktree or
 real-index drift outside the exact closure-bound Task-only change. Only then is
 Gate 9 `AUTHORIZED`.
 
-Any byte drift, identity collision, C/I finding, rejected closure, or `HEAD`
-change consumes the attempt. Attempt 2 requires a new package and four fresh
-receipt/closure files; it may not overwrite attempt 1. Failure of attempt 2 is
-`BLOCKED` until the user approves a new Plan boundary. If authorization fails,
-keep the old pack and real index intact, retain the rejected evidence in the
-Task, and remove only proved-owned temporary worktrees and package directories.
+Before backfill, any package-review C/I finding or byte drift consumes the
+attempt and requires `publish-evidence-ref --terminal-state REJECTED` or
+`INVALIDATED` before temporary cleanup. Attempt 1 may then transition the Task
+marker to `ATTEMPT_2_PENDING`; the helper requires the matching durable ref and
+derives ordinal 2. Attempt 2 uses a new package, new controller attestation,
+and fresh reviewer report/receipt bytes and may not overwrite attempt 1.
+
+```bash
+python3 "$GATE9_HELPER" publish-evidence-ref \
+  --package "$GATE9_PACKAGE" \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --terminal-state "$GATE9_TERMINAL_STATE" \
+  --terminal-report "$GATE9_TERMINAL_REPORT" \
+  --evidence-ref auto
+```
+
+For `REJECTED`, append every completed `--role-report`/`--role-receipt` pair;
+for `INVALIDATED`, append `--drift-proof`; whenever an assignment attestation
+already exists, append `--assignment-attestation` with its exact path. The
+helper rejects a terminal tree whose state-required path set is incomplete or
+contains an extra path.
+
+After `TASK_BACKFILLED`, any identity collision, closure C/I finding,
+publication conflict, `HEAD` change, Task drift, or authorization failure is
+immediately `BLOCKED`; marker rollback and attempt 2 are forbidden. Any
+attempt 2 failure is also `BLOCKED`. A `FOREIGN_REF` is always immediately
+`BLOCKED` because the namespace cannot be trusted. Resuming a blocked state
+requires explicit user approval and a newly reviewed Plan boundary, not a
+third attempt. Keep the old pack and real index intact, preserve the terminal
+ref or foreign-ref observation in the controller report, do not mutate a
+backfilled Task, and remove only proved-owned temporary worktrees and package
+directories.
 
 - [ ] **Step 5: Delete the old files in the real index**
 
@@ -1682,8 +1777,9 @@ stops the task.
 - [ ] **Step 7: Review the actual staged deletion**
 
 Keep the Task evidence unstaged, confirm the two generated outputs have no
-diff, write the actual cached diff to
-`$DELETION_REVIEW_DIR/actual-deletion.patch`, and
+diff, create a new proved-owned staged-review directory, and write the actual
+cached diff to its `actual-deletion.patch`; do not reuse or mutate the
+authorized Gate 9 package. Then
 dispatch two fresh, independent staged-diff reviewers over that same immutable
 patch: one owns migration/specification compliance and one owns quality.
 Require both separate verdicts at C0/I0. If evidence changes, rebuild the patch
@@ -1692,10 +1788,13 @@ require the immutable patch itself to contain exactly the twenty deletions.
 This verifies the real index before a commit exists.
 
 ```bash
+STAGED_DELETION_REVIEW_DIR=$(mktemp -d \
+  /tmp/agentic-research-staged-deletion-review.XXXXXX)
 git diff --quiet -- \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
-git diff --cached --binary > "$DELETION_REVIEW_DIR/actual-deletion.patch"
+git diff --cached --binary \
+  > "$STAGED_DELETION_REVIEW_DIR/actual-deletion.patch"
 ```
 
 - [ ] **Step 8: Self-review and commit the deletion unit**
