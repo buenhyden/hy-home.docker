@@ -1361,13 +1361,18 @@ promoted target or its lifecycle evidence.
 First add a focused RED assertion to
 `tests/validation/test_document_metadata.py` requiring the audit profile's
 exact allowed-parent sequence to be
-`[spec, plan, task, reference, audit, archive]`; also assert that the other
-profile parent sets are unchanged. Record that the test fails before the
-profile edit. Then:
+`[spec, archive, plan, task, reference, audit]`; inserting `archive`
+immediately after `spec` preserves the existing relative order while making
+the promoted archived-Spec parent sort before the Task parent. The test must
+use a literal expected parent-type mapping for every profile rather than derive
+the unchanged values from the edited registry, so the audit delta is exactly
+one inserted type and no other profile can drift. Record that the test fails
+before the profile edit. Then:
 
 1. restore only `spec:123-agentic-engineering-audit-remediation` to the audit
    overview beside its existing Task parent;
-2. append only `archive` to the audit profile's `allowed_parent_types`; and
+2. insert only `archive` immediately after `spec` in the audit profile's
+   `allowed_parent_types`; and
 3. leave the target-surface manifest, summary, and all other profiles
    byte-identical.
 
