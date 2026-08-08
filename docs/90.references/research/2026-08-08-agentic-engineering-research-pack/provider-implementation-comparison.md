@@ -88,7 +88,7 @@ Stage 00 remains the canonical contract; provider-native files remain adapters.
 | --- | --- | --- | --- | --- |
 | Root instructions | `CLAUDE.md` uses four `@` imports | `AGENTS.md` tells the agent to load four owners in three steps | Stage 00 files are common | Claude transcludes; Codex prose requests tool loading. No live context inspection. |
 | Role adapters | 14 Markdown/YAML agents | 14 TOML agents | 14 Stage 00 roles, one supervisor + 13 workers | Renderer/validator parity, not runtime acceptance. |
-| Function bodies | 24 `.claude/skills/*/SKILL.md`; all 14 roles declare skills | 24 shared `.agents/skills/*/SKILL.md`; zero role TOMLs contain `[[skills.config]]` | 24 canonical function records | Filesystem projection does not prove discovery or invocation. |
+| Function bodies | 24 `.claude/skills/*/SKILL.md`; all 14 roles declare skills | 24 shared `.agents/skills/*/SKILL.md`; official Codex guidance documents name/description/path discovery and loads full `SKILL.md` when selected; zero role TOMLs contain `[[skills.config]]` | 24 canonical function records | Official capability plus filesystem projection does not prove this runtime listed, selected, or invoked any local skill. |
 | Model overlays | 14 model fields; effort distribution: 11 `high`, one `low`, one `xhigh`, one omitted | 14 model and 14 `model_reasoning_effort` fields | Five work profiles select provider-native values | Entitlement and actual spawned model are unverified. |
 | Permission overlays | `permissionMode` per role plus project allow/deny settings | `sandbox_mode` per role; no tracked project `.codex/config.toml` | Two permission profiles and approval boundaries | Active provider/user overrides are unverified. |
 | Hook configuration | 7 events in `.claude/settings.json` | 6 events in `.codex/hooks.json` | Seven semantic events and one shared dispatcher | Native firing not observed; 20 cells configured-not-executed, one unsupported. |
@@ -132,7 +132,7 @@ false parity.
 | Instruction entry and precedence | Bootstrap, provider overlay, scope, JIT stage evidence | `CLAUDE.md`, imports, hierarchy, `.claude/rules/` | `AGENTS.md`/override hierarchy, root-to-CWD concatenation | Stage 00 documents and concise root shims | Render/import for Claude; explicit load sequence for Codex | Claude `@` transclusion; Codex fallback/size/trust rules | Both shims tracked; no nested local rule files used | Metadata/repo checks validate files and links | Codex does not automatically transclude the four Stage 00 bodies named in prose. |
 | Settings and trust | Provider config may narrow behavior but not own policy | JSON scopes and managed/local/project precedence | TOML/hooks layers and project trust | Approval and environment rules | Map semantic permission/event choices into each schema | Managed settings and hook trust stores | Claude settings and Codex hooks tracked; no project Codex config | JSON syntax and provider-surface tests | User/managed layers and Codex trust state unverified. |
 | Role catalog | 14 canonical agent records | `.claude/agents/*.md` | `.codex/agents/*.toml` | Renderer consumes Stage 00 agent bodies | YAML frontmatter/Markdown versus escaped TOML developer instructions | Native file schemas and spawn lifecycle | 14 + 14 adapters, name-set parity | Renderer and contract tests | Runtime acceptance remains `needs_revalidation`. |
-| Function/skill catalog | 24 canonical function records | 24 native skill projections; role `skills` list | 24 shared `.agents` projections; optional per-agent config not emitted | Canonical function Markdown and renderer | Claude injects named skills; Codex discovers shared skills separately | Provider skill discovery/attachment | 24 + 24 files; 14 Claude attachments, zero Codex role attachments | Deterministic renderer tests | Codex role-to-skill attachment parity is absent; live discovery unverified. |
+| Function/skill catalog | 24 canonical function records | 24 native skill projections; role `skills` list | Skill directories with required `SKILL.md`; initial discovery uses name, description, and path, then loads the full file when selected | Canonical function Markdown and renderer | Claude attaches named skills to roles; Codex exposes skill directories for explicit `/skills` or `$` selection and implicit description matching | Provider discovery, context-budget omission, and invocation lifecycle | 24 + 24 files; 14 Claude attachments; 24 shared `.agents` projections; zero Codex role-level `[[skills.config]]` entries | Deterministic renderer tests; official Codex capability verified | Role-level attachment is not required for general Codex skill discovery. This Task did not run Codex to prove all 24 local projections were listed, selected, or invoked; the documented initial-list context budget may omit entries. |
 | Model selection | Five work profiles and status axes | `model` | `model` | One profile selection per role/provider | Exact provider IDs, never aliases copied across vendors | Entitlement, model availability, provider fallback behavior | 14 fields each; 11-model registry | Contract/renderer tests | Live selected model and quality unverified. |
 | Reasoning control | Profile-specific native control | `effort`; omitted for null profile | `model_reasoning_effort` | Work-profile intent | Translate semantic depth to allowed native values | Model-dependent Claude effort; Codex product/runtime levels | Claude 11 high/1 low/1 xhigh/1 omitted; Codex 14 fields | Tests reject schema/policy drift | Claude prose stale; runtime overrides and entitlement unverified. |
 | Delegation/orchestration | One supervisor, 13 workers, scope and handoff contract | Native subagents and optional worktree isolation | Native child threads and orchestration controls | Stage 00 roles and subagent protocol | Provider-native spawn/task envelopes and result transport | Thread UI, background behavior, nested-agent controls | Catalog/projections tracked | Name/schema tests only | No live delegation or depth/concurrency evidence in this Task. |
@@ -182,6 +182,12 @@ All nine minimum official pages were reopened directly at
 no redirect and showed no stable publication/revision identifier. They are
 external mutable primary observations.
 
+The official Codex skills page was separately reopened at
+`2026-08-08T16:07:00+09:00`; it also returned HTTP 200 at the requested URL
+with no redirect and displayed no stable revision identifier. Its facts are
+retrieval-time capability evidence, not proof that this workspace's skills
+were discovered or invoked.
+
 | ID | Direct official source | Verification state and use |
 | --- | --- | --- |
 | C-HOOK | [Claude hooks](https://code.claude.com/docs/en/hooks) | Verified: 31 named events, handler/configuration model, decisions, and lifecycle events. |
@@ -193,6 +199,7 @@ external mutable primary observations.
 | O-INSTR | [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | Verified: discovery, override precedence, root-to-CWD ordering, 32 KiB default limit. |
 | O-CONFIG | [Codex config basics](https://learn.chatgpt.com/docs/config-file/config-basic) | Verified: CLI/project/profile/user/system/default precedence and trusted-project gate. |
 | O-MODEL | [Codex models](https://learn.chatgpt.com/docs/models) | Verified: current model selection and reasoning UI/CLI controls; entitlement not inferred. |
+| O-SKILL | [Codex build skills](https://learn.chatgpt.com/docs/build-skills) | Verified: required `SKILL.md`, progressive disclosure, name/description/path initial discovery, explicit `/skills` or `$` selection, and implicit description matching; local listing, selection, and invocation not inferred. |
 | WS-CATALOG | [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml) | Complete tracked registry measured at Task 3 BASE. |
 | WS-PROVIDER | [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml) | Complete tracked model, harness, loop, and semantic-event registry measured. |
 | WS-CLAUDE | [Claude provider notes](../../../00.agent-governance/providers/claude.md) | Tracked mutable; stale uniform-high effort sentence identified. |
@@ -201,7 +208,7 @@ external mutable primary observations.
 
 ## Maintenance
 
-Reopen the nine official pages and re-derive catalogs, adapters, skills, model
+Reopen all cited official pages and re-derive catalogs, adapters, skills, model
 controls, hook/event cells, dispatcher behavior, tests, and runtime status when
 any owner changes. Record redirects/unavailability as observations, never
 silently reuse an earlier retrieval, and keep local adoption gaps separate from

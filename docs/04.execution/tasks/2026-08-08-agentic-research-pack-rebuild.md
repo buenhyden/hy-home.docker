@@ -111,7 +111,7 @@ summaries.
 | --- | --- | --- | --- |
 | Task 1 | Initialize execution ledgers and immutable baselines | Task 1 checks and committed-unit review ledger | Complete after fix `528c225d`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 2 | Author workspace foundation and scope axis | Requirement, scope, source, and leaf gates | Complete at `9a6e09ca`; specification and quality reviews Approved C0/I0/M0 |
-| Task 3 | Author harness, loop, and provider comparison | Assigned requirement and claim rows plus leaf gates | Implemented as draft leaves; focused validation and self-review PASS; independent review `Not Run` |
+| Task 3 | Author harness, loop, and provider comparison | Assigned requirement and claim rows plus leaf gates | Initial commit complete; initial specification and quality reviews need fixes; fix re-reviews `Not Run` |
 | Task 4 | Author instructions, models, catalogs, and memory | Assigned requirement and claim rows plus leaf gates | Not Run |
 | Task 5 | Author spec-driven SDLC and document contracts | Assigned requirement and claim rows plus leaf gates | Not Run |
 | Task 6 | Author documentation architecture and LLM Wiki | Assigned requirement and claim rows plus leaf gates | Not Run |
@@ -129,11 +129,11 @@ states are intentional and may change only with named evidence and review.
 
 | ID | Requirement text | Primary leaf | Supporting leaves | External source state | Workspace evidence owner | Scopes | Implementation status | Review verdict | Canonical link |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-01 | Harness engineering elements and patterns | `harness-engineering.md` | `loop-engineering.md`, provider comparison, workspace baseline, scope matrix | Nine official Claude/Codex pages verified 2026-08-08; tracked claims use direct owners | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS C0/I0; independent review `Not Run` | [harness engineering](../../90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) |
-| REQ-02 | Loop engineering elements and feedback systems | `loop-engineering.md` | Harness, provider comparison, workspace baseline, scope matrix | Official hooks/subagent pages verified 2026-08-08; tracked claims use direct owners | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS C0/I0; independent review `Not Run` | [loop engineering](../../90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md) |
-| REQ-03 | Systems, environment, and rules needed to apply harness and loop engineering to this workspace | `harness-engineering.md` | Loop, provider comparison, workspace baseline, scope matrix | Official settings/instruction/hook pages verified 2026-08-08; tracked rules remain canonical | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS C0/I0; independent review `Not Run` | [harness engineering](../../90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) |
-| REQ-04 | Current Claude and Codex harness and loop implementation | `provider-implementation-comparison.md` | Harness, loop, workspace baseline, scope matrix | EXT-CLAUDE-* and EXT-CODEX-* verified from nine direct official pages | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; runtime/provider acceptance explicitly unverified | Implementer PASS C0/I0; independent review `Not Run` | [provider implementation comparison](../../90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md) |
-| REQ-05 | Common Claude/Codex environment, rules, systems, translations, and irreducible provider-native differences | `provider-implementation-comparison.md` | Harness, loop, workspace baseline, scope matrix | Nine-page direct provider set verified; mutable retrieval-time observations only | WS-TASK3-HARNESS | 14/14 explicit in leaf | Exact Spec 137 construction matrix implemented; route switch pending | Implementer PASS C0/I0; independent review `Not Run` | [provider implementation comparison](../../90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md#common-construction-matrix) |
+| REQ-01 | Harness engineering elements and patterns | `harness-engineering.md` | `loop-engineering.md`, provider comparison, workspace baseline, scope matrix | Official Claude/Codex pages, including Codex skills, verified 2026-08-08; tracked claims use direct owners | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS C0/I0; initial specification C0/I1/M1 and quality C0/I2/M0 Need fixes; fix re-reviews `Not Run` | [harness engineering](../../90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) |
+| REQ-02 | Loop engineering elements and feedback systems | `loop-engineering.md` | Harness, provider comparison, workspace baseline, scope matrix | Official hooks/subagent pages verified 2026-08-08; tracked claims use direct owners | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS C0/I0; initial specification C0/I1/M1 and quality C0/I2/M0 Need fixes; fix re-reviews `Not Run` | [loop engineering](../../90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md) |
+| REQ-03 | Systems, environment, and rules needed to apply harness and loop engineering to this workspace | `harness-engineering.md` | Loop, provider comparison, workspace baseline, scope matrix | Official settings/instruction/hook/skill pages verified 2026-08-08; tracked rules remain canonical | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS C0/I0; initial specification C0/I1/M1 and quality C0/I2/M0 Need fixes; fix re-reviews `Not Run` | [harness engineering](../../90.references/research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) |
+| REQ-04 | Current Claude and Codex harness and loop implementation | `provider-implementation-comparison.md` | Harness, loop, workspace baseline, scope matrix | EXT-CLAUDE-* and EXT-CODEX-* verified from ten direct official pages | WS-TASK3-HARNESS | 14/14 explicit in leaf | Implemented as draft Stage 90 leaf; runtime/provider acceptance explicitly unverified | Implementer PASS C0/I0; initial specification C0/I1/M1 and quality C0/I2/M0 Need fixes; fix re-reviews `Not Run` | [provider implementation comparison](../../90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md) |
+| REQ-05 | Common Claude/Codex environment, rules, systems, translations, and irreducible provider-native differences | `provider-implementation-comparison.md` | Harness, loop, workspace baseline, scope matrix | Ten-page direct provider set verified; mutable retrieval-time observations only | WS-TASK3-HARNESS | 14/14 explicit in leaf | Exact Spec 137 construction matrix implemented; route switch pending | Implementer PASS C0/I0; initial specification C0/I1/M1 and quality C0/I2/M0 Need fixes; fix re-reviews `Not Run` | [provider implementation comparison](../../90.references/research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md#common-construction-matrix) |
 | REQ-06 | Spec-driven development concepts, workflow, traceability, and enforcement | `spec-driven-sdlc.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-07 | Docker Compose concepts, current workspace implementation, and adoption rules | `docker-compose-infrastructure.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-08 | Infrastructure concepts, topology, controls, operations evidence, and adoption rules | `docker-compose-infrastructure.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
@@ -186,9 +186,10 @@ states are intentional and may change only with named evidence and review.
 
 ### External source ledger
 
-These are required source-family seeds, not verified claims. Retrieval and
-claim association remain `Not Run` until the assigned authoring unit opens the
-source and records its current evidence.
+Rows with a retrieval timestamp and a `Verified` state are current evidence
+for their listed claim IDs. Rows that remain source-family seeds retain
+`Not Run` retrieval and claim association until the assigned authoring unit
+opens the source and records current evidence.
 
 | Source ID | Topic | Authority | Direct URL | Version / revision | Retrieved at | Mutability | Verification state | Claim IDs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -201,6 +202,7 @@ source and records its current evidence.
 | EXT-CODEX-INSTRUCTIONS | Codex AGENTS.md | OpenAI | `https://learn.chatgpt.com/docs/agent-configuration/agents-md` | Retrieval-time page; no stable revision displayed | 2026-08-08T15:48:51+09:00 | External mutable | Verified direct official page; HTTP 200; no redirect; discovery/order/size facts only | REQ-03 through REQ-05 |
 | EXT-CODEX-CONFIG | Codex configuration | OpenAI | `https://learn.chatgpt.com/docs/config-file/config-basic` | Retrieval-time page; no stable revision displayed | 2026-08-08T15:48:51+09:00 | External mutable | Verified direct official page; HTTP 200; no redirect; precedence/trust facts only | REQ-03 through REQ-05 |
 | EXT-CODEX-MODELS | Codex models and reasoning controls | OpenAI | `https://learn.chatgpt.com/docs/models` | Retrieval-time page; no stable revision displayed | 2026-08-08T15:48:51+09:00 | External mutable | Verified direct official page; HTTP 200; no redirect; selection controls do not prove entitlement | REQ-04, REQ-05 |
+| EXT-CODEX-SKILLS | Codex skills | OpenAI | `https://learn.chatgpt.com/docs/build-skills` | Retrieval-time page; no stable revision displayed | 2026-08-08T16:07:00+09:00 | External mutable | Verified direct official page; HTTP 200; no redirect; progressive disclosure and explicit/implicit invocation facts only; local discovery/execution not inferred | REQ-01, REQ-03 through REQ-05 |
 | EXT-COMPOSE | Docker Compose | Docker | `https://docs.docker.com/reference/compose-file/` | Not Run | Not Run | External mutable | Not Run | Not Run |
 | EXT-GHA | GitHub Actions | GitHub | `https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions` | Not Run | Not Run | External mutable | Not Run | Not Run |
 | EXT-DIATAXIS | Documentation architecture | Diataxis | `https://diataxis.fr/` | Not Run | Not Run | External mutable | Not Run | Not Run |
@@ -306,7 +308,8 @@ non-link historical literals with path, stable anchor, reason, and verdict.
 | 2026-08-08 | Task 3 | Backfilled completed Task 1 fix/re-reviews and Task 2 commit/reviews from the ignored SDD ledger before adding Task 3 evidence | Task 1 fix `528c225d`, scoped spec/quality Approved C0/I0/M0; Task 2 `9a6e09ca`, spec/quality Approved C0/I0/M0 |
 | 2026-08-08 | Task 3 | Reopened nine minimum official Claude/Codex pages and checked effective URLs | All HTTP 200 with no redirects; mutable retrieval-time observations recorded |
 | 2026-08-08 | Task 3 | Measured catalogs, projections, adapters, hooks, harness layers, workflow states, loops, semantic bindings, fixtures, regressions, scripts, and tests | 14 agents, 24 functions, 104 memberships, 8 layers, 8 states, 4 loops, 7 events/21 cells, 11 fixtures, 16 regressions |
-| 2026-08-08 | Task 3 | Authored three new leaves and decomposed the three predecessor claim containers | REQ-01 through REQ-05 and 14-scope implications drafted; Task 3 independent review remains `Not Run` |
+| 2026-08-08 | Task 3 | Authored three new leaves and decomposed the three predecessor claim containers | REQ-01 through REQ-05 and 14-scope implications drafted; initial Task 3 reviews recorded below |
+| 2026-08-08 | Task 3 fix 1 | Reopened the official Codex skills page and corrected source, commit, and review-state evidence | HTTP 200 with no redirect; source and ledger corrections applied; fix re-reviews `Not Run` |
 
 ## Verification Evidence
 
@@ -341,6 +344,9 @@ private-state material.
 | `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh` after Task 3 authoring | Working tree | 1 | FAIL, separate predecessor | All Task 3 reference-stage checks cleared; sole failure is `AGC-MEMORY-FORBIDDEN-MATERIAL` in forbidden `memory/current.md` |
 | Task 3 exact 14-scope and construction-matrix checks | Three leaves | 0 | PASS | Every leaf names all 14 scopes; provider leaf contains all ten Spec 137 columns |
 | `git diff --check` after Task 3 edits | Working tree | 0 | PASS | No whitespace errors |
+| Task 3 fix 1 focused metadata check | Spec activation base `35318255` and two owned changed paths | 0 | PASS | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| `curl -sSL` direct Codex build-skills page check | External mutable source, `2026-08-08T16:07:00+09:00` | 0 | PASS | HTTP 200; effective URL remained `https://learn.chatgpt.com/docs/build-skills` |
+| Task 3 fix 1 focused source-reference `rg` and `git diff --check` | Two owned changed paths | 0 | PASS | Source ID, URL, timestamp, initial commit/range, verdict counts, and pending fix re-reviews present; no whitespace errors |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -361,7 +367,9 @@ Task 1 uses only the exact checks named by its Plan.
 | Task 2 implementer self-review | Working tree before Task 2 commit | Task 2 implementer | PASS; C0/I0 | Exactly two new leaves plus this Task ledger; 19/19 category rows, 14/14 scope rows, six outside-enum scopes explicit, `architecture` enum-only explicit, advisory/secret/runtime/remote boundaries preserved |
 | Task 2 specification compliance | `528c225d35d6c986b50f9b997fd08921a8df9a9b..9a6e09ca06d99ae8234199443974c978640f3ae6` | Independent specification reviewer | Approved; C0/I0/M0 | Committed foundation unit met Task 2/Spec 137 requirements |
 | Task 2 documentation quality | `528c225d35d6c986b50f9b997fd08921a8df9a9b..9a6e09ca06d99ae8234199443974c978640f3ae6` | Independent documentation-quality reviewer | Approved; C0/I0/M0 | Committed foundation unit returned a clean quality verdict |
-| Task 3 implementer self-review | Working tree before Task 3 commit | Task 3 implementer | PASS; C0/I0 | Three leaf contracts, exact construction-matrix columns, 14/14 scope implications, source/evidence distinctions, old-claim decomposition, and owned-path boundary verified; independent reviews remain `Not Run` |
+| Task 3 implementer self-review | Working tree before Task 3 commit | Task 3 implementer | PASS; C0/I0 | Three leaf contracts, exact construction-matrix columns, 14/14 scope implications, source/evidence distinctions, old-claim decomposition, and owned-path boundary verified |
+| Task 3 specification compliance | `9a6e09ca06d99ae8234199443974c978640f3ae6..500d4a3e128d20ba8d3717eb6d651bcc71c382df` | Independent specification reviewer | Needs fixes; C0/I1/M1 | Initial review required a direct current Codex skills source and a minor ledger-state correction; fix re-review `Not Run` |
+| Task 3 documentation quality | `9a6e09ca06d99ae8234199443974c978640f3ae6..500d4a3e128d20ba8d3717eb6d651bcc71c382df` | Independent documentation-quality reviewer | Needs fixes; C0/I2/M0 | Initial review found missing Codex skills support and inconsistent Task 3 commit/review/source-ledger evidence; fix re-review `Not Run` |
 
 ## Commit Ledger
 
@@ -370,7 +378,7 @@ Task 1 uses only the exact checks named by its Plan.
 | Task 1 | `c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4`; `docs(task): initialize agentic research rebuild ledger` | Execution ledger and immutable baselines | Task 1 scoped checks | Specification Approved C0/I0/M0; quality Needs fixes C0/I1/M0 |
 | Task 1 fix 1 | `528c225d35d6c986b50f9b997fd08921a8df9a9b`; `docs(task): backfill task 1 review identity` | Review-identity/evidence correction | Focused metadata and diff PASS | Scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 2 | `9a6e09ca06d99ae8234199443974c978640f3ae6`; `docs(research): establish workspace and scope baseline` | Workspace baseline, scope matrix, and execution evidence | Focused metadata/scope/diff PASS; repository contract has separate predecessor | Implementer PASS C0/I0; specification and quality Approved C0/I0/M0 |
-| Task 3 | Commit identity pending this unit; `docs(research): analyze harness loops and providers` | Harness, loop, provider comparison, and execution evidence | Metadata/scope/matrix/diff PASS; repository contract retains only separate Memory predecessor | Implementer PASS C0/I0; independent reviews `Not Run` |
+| Task 3 | `500d4a3e128d20ba8d3717eb6d651bcc71c382df`; `docs(research): analyze harness loops and providers` | Harness, loop, provider comparison, and execution evidence | Metadata/scope/matrix/diff PASS; repository contract retains only separate Memory predecessor | Implementer PASS C0/I0; initial specification Needs fixes C0/I1/M1; initial quality Needs fixes C0/I2/M0; fix re-reviews `Not Run` |
 | Tasks 4-12 | Not Run | Not Run | Not Run | Not Run |
 
 ## Deferred and Blocked Items
@@ -384,10 +392,9 @@ Task 1 uses only the exact checks named by its Plan.
   reveals the separate `AGC-MEMORY-FORBIDDEN-MATERIAL` predecessor in
   `docs/00.agent-governance/memory/current.md`; Task 1 does not modify that
   forbidden path.
-- Claim-level decomposition beyond the two foundation leaves, remaining
-  external-source retrieval, old-path scanning, generated refresh, independent
-  Task 2 reviews, and old-pack deletion are all Not Run. The deletion gate
-  remains closed.
+- Claim-level decomposition for later authoring units, remaining external-source
+  retrieval, old-path scanning, generated refresh, Task 3 fix re-reviews, and
+  old-pack deletion are pending or `Not Run`. The deletion gate remains closed.
 - Push, pull request, merge, remote mutation, and live runtime validation
   remain outside the approved boundary.
 
