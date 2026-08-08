@@ -1708,6 +1708,142 @@ Expected: `27` live specification directories, `32` archived, `violations=0`,
 and `2` contract failures. Then re-run the fence-aware link check from Task 1
 Step 3 and confirm the count is at or below its baseline of 1.
 
+#### Task 13b: Restore the parent edges the migration deleted
+
+Task 13 archived 32 specifications. Every document that named one of them in
+`parent_ids` then tripped `invalid-parent-type`, because no profile listed
+`archive` among its permitted parent types. The migration resolved this by
+emptying `parent_ids` and adding ten `root_exceptions`. That passed every gate
+and is the wrong trade: it deleted 42 traceability edges across 34 documents,
+including this specification's own link to its predecessor.
+
+Specification 136 records traceability coverage of 11 percent as "the largest
+outstanding structural finding". Lowering it further to complete a migration
+inverts the point of the migration. An archive preserves content; it must
+preserve lineage too.
+
+The fix is a registry change, not a script change. `allowed_parent_types` is
+read per profile at `check-document-metadata.py:2628` via
+`raw_profile.get("allowed_parent_types", [])`. The `archive` profile already
+accepts fourteen parent types; only the reverse direction is closed.
+
+**Files:**
+
+- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
+- Modify: the 34 documents whose `parent_ids` were emptied
+
+**Interfaces:**
+
+- Consumes: the migration completed by Task 13.
+- Produces: a corpus where archiving a parent does not sever its children.
+
+- [ ] **Step 1: Recover the deleted edges from Git**
+
+```bash
+cd /home/hy/projects/hy-home.docker
+python3 - <<'PY'
+import subprocess, collections, pathlib
+diff = subprocess.run(
+    ["git", "diff", "af4a6cb4~1..HEAD", "--unified=0", "--", "docs/"],
+    capture_output=True, text=True).stdout
+cur, removed = None, collections.defaultdict(list)
+for line in diff.splitlines():
+    if line.startswith("+++ b/"):
+        cur = line[6:]
+    elif line.startswith("-  - spec:") and cur:
+        removed[cur].append(line[5:].strip())
+pathlib.Path("/tmp/claude-1000/sdlc-convergence/removed-parents.txt").write_text(
+    "\n".join(f"{f}|{','.join(v)}" for f, v in sorted(removed.items())) + "\n")
+print("documents:", len(removed), " edges:", sum(len(v) for v in removed.values()))
+PY
+```
+
+Expected: `documents: 34  edges: 42`.
+
+- [ ] **Step 2: Permit `archive` as a parent type**
+
+In `docs/99.templates/support/document-metadata-profiles.yaml`, append
+`"archive"` to `allowed_parent_types` for the profiles the recovered set
+touches: `spec`, `plan`, `task`, `archive`, and whichever operations profile
+appears in the file list from Step 1. Append; do not rewrite the lists.
+
+Do not add `archive` to profiles no recovered document needs. A permission that
+nothing exercises is the kind of dead rule wave W1 spent four tasks removing.
+
+- [ ] **Step 3: Restore the edges**
+
+Rewrite each document's `parent_ids` to the recovered values. The referenced
+specifications are now at `docs/98.archive/03.specs/<slug>/spec.md`, but
+`artifact_id` values did not change during the migration, so the recorded IDs
+still resolve. Verify that before restoring:
+
+```bash
+python3 - <<'PY'
+import pathlib, re
+ids = set()
+for p in pathlib.Path("docs").rglob("*.md"):
+    m = re.search(r"(?m)^artifact_id:\s*(\S+)", p.read_text(errors="ignore"))
+    if m:
+        ids.add(m.group(1))
+missing = []
+for line in pathlib.Path("/tmp/claude-1000/sdlc-convergence/removed-parents.txt").read_text().splitlines():
+    _, parents = line.split("|", 1)
+    for pid in parents.split(","):
+        if pid and pid not in ids:
+            missing.append(pid)
+print("unresolvable parent ids:", sorted(set(missing)) or "none")
+PY
+```
+
+Every recovered ID must resolve. An unresolvable one means that specification's
+`artifact_id` was derived during migration rather than carried over, and the
+recovered edge needs the derived value instead.
+
+- [ ] **Step 4: Withdraw the root exceptions the migration added**
+
+Ten entries were added to `root_exceptions` to tolerate the emptied
+`parent_ids`. With the edges restored they are unused. Remove exactly those ten;
+leave the pre-existing entry for specification 123 alone.
+
+```bash
+python3 -c "import yaml; print(len(yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml'))['common']['root_exceptions']))"
+```
+
+Expected after removal: `1`.
+
+- [ ] **Step 5: Verify**
+
+```bash
+python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
+bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
+bash scripts/validation/check-doc-traceability.sh 2>&1 | tail -1
+grep -rc '^parent_ids: \[\]$' docs/03.specs docs/04.execution 2>/dev/null | grep -v ':0' | wc -l
+```
+
+Expected: `violations=0`, `2`, traceability PASS, and no document left with an
+empty `parent_ids` that had one before.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add -A
+git commit -m "fix(templates): permit archive as a parent type and restore lineage
+
+Task 13 archived 32 specifications, and every document naming one in parent_ids
+then tripped invalid-parent-type because no profile listed archive among its
+permitted parents. That was resolved by emptying parent_ids and adding ten root
+exceptions, which passed every gate while deleting 42 traceability edges across
+34 documents.
+
+Specification 136 records traceability coverage of 11 percent as the largest
+outstanding structural finding. Lowering it to complete a migration inverts the
+migration's purpose. An archive preserves content; lineage is part of that.
+
+allowed_parent_types is registry data read per profile, not script logic, so
+this is a data change. The archive profile already accepted fourteen parent
+types; only the reverse direction was closed."
+```
+
 #### Task 14: Migrate the 225 completed Stage 04 documents
 
 **Files:**
