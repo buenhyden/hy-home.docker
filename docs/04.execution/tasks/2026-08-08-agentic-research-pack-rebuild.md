@@ -132,6 +132,12 @@ profile insertion, its focused regression, and this Task evidence. Deletion
 gates, packages, old-pack mutation, lifecycle files, generated artifacts,
 remote actions, and push remain closed or out of scope.
 
+Step 0b commit `8a35fe07758926f38d937a5e80bf8dd02dca5292`, exact range
+`62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292`,
+received independent committed-unit specification and quality reviews, both
+Approved C0/I0/M0. This closes only Step 0b; it does not open Phase A or any
+deletion gate.
+
 ## Work Breakdown
 
 | Unit | Description | Validation / evidence | Status |
@@ -146,7 +152,7 @@ remote actions, and push remain closed or out of scope.
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Complete after fix `8d447997`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Complete after fix `44fdb494`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, metadata exceptions, route checks | Complete through fix `6d6e93b6`; route switch, generated navigation, mutable metadata reconciliation, four visible-label repairs, and all-twenty-file projection coverage are implemented; scoped specification and quality re-reviews Approved C0/I0/M0; old-pack deletion and pinned lifecycle-row reconciliation remain Task 11 and the deletion gate stays closed |
-| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 is preserved as a reviewed failed attempt because Phase A measured lifecycle `10/27/10`; Step 0b restores metadata and the exact `9/26/9` lifecycle checkpoint in a four-file TDD unit, with committed-unit reviews pending; deletion gates 1 through 9, package construction, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
+| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 is preserved as a reviewed failed attempt because Phase A measured lifecycle `10/27/10`; Step 0b is reviewed complete at `8a35fe07`, restores metadata and exact lifecycle `9/26/9`, and has committed-unit specification and quality reviews Approved C0/I0/M0; deletion gates 1 through 9, package construction, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
 | Task 12 | Final verification and handoff | Whole-branch checks, reviews, closure, and handoff | Not Run |
 
 ### Requirement matrix
@@ -535,6 +541,7 @@ manifest/summary rows unchanged.
 | 2026-08-09 | Task 11 Step 0b RED | Added a literal expected `allowed_parent_types` mapping for all 21 profiles before editing the registry | Focused test exit 1 as intended; one test ran and failed only because audit lacked `archive` in the required `[spec, archive, plan, task, reference, audit]` sequence |
 | 2026-08-09 | Task 11 Step 0b GREEN | Restored exact promoted audit parents `[spec:123-agentic-engineering-audit-remediation, task:2026-07-11-agentic-engineering-audit-remediation]` and inserted only `archive` immediately after `spec` in the audit profile | Focused regression runs 1/1 PASS; audit metadata `1/0`; full changed metadata `81/0` with eight unchanged legacy exceptions; the audit target again matches the promoted manifest parent order |
 | 2026-08-09 | Task 11 Step 0b surrounding checks | Re-ran the full metadata module and all named surrounding validators without lifecycle or generated writes | Pre-Step0b branch baseline 226 tests/14 unrelated template failures becomes 227/14 with the new focused test PASS, attributable failure delta zero; traceability 46/0 and repository contracts zero-failure PASS; alignment remains 184 with 182 archive-direct links; lifecycle returns exactly `9/26/9`; exact four-file diff only |
+| 2026-08-09 | Task 11 Step 0b committed-unit review closure | Backfilled the immutable implementation identity, exact range and scope, and both independent verdicts | Commit `8a35fe07758926f38d937a5e80bf8dd02dca5292`; range `62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292`; exact four-file scope; specification Approved C0/I0/M0 and quality Approved C0/I0/M0; prior Step 0 `10/27/10` blocker is resolved at exact `9/26/9`, while Phase A and all deletion work remain closed and Not Run |
 
 ## Verification Evidence
 
@@ -678,13 +685,13 @@ private-state material.
 | `bash scripts/validation/check-doc-implementation-alignment.sh` | Pinned 184-finding predecessor / Step 0 commit `3095e5ab` | 1 | FAIL, unchanged predecessor | `failures=184`, `archive_direct_links_total=182`; the Step 0 frontmatter-only parent removal adds no Markdown-link finding, so attributable delta is zero |
 | Task 11 Step 0 exact changed-path review and `git diff --check` | `6bb256b2..3095e5ab` | 0 / 0 | PASS | Exactly the audit overview and this Task ledger changed; no whitespace errors; old pack, deletion package, lifecycle data, generators, and generated outputs remain untouched |
 | First Phase A lifecycle `check-manifest` / `check-promoted` / `check-summary` | Clean reviewed HEAD `5f4e1b72` after Step 0 | 1 / 1 / 1 | FAIL, attributable blocker | Finding totals `10/27/10`; exactly one addition in every mode is `implementation-overview.md` parent mismatch; no Task, package, index, deletion, lifecycle, or generated write followed |
-| Step 0b literal all-profile parent-map regression before/after audit profile edit | Step 0b working tree | 1 / 0 | EXPECTED RED / GREEN | RED runs one test with one failure because audit lacks `archive`; GREEN runs the same one test PASS after only `[spec, archive, plan, task, reference, audit]` is accepted, while the literal mapping fixes all other 20 profiles |
-| Full metadata module before / after Step 0b | Pre-Step0b branch / Step 0b working tree | 1 / 1 | FAIL, unchanged unrelated predecessor | Baseline is 226 tests / 14 template-contract failures; Step 0b is 227 / 14 with the new focused test PASS, so attributable failure delta is zero and the module is not classified PASS |
-| Focused audit metadata / full changed-document metadata after Step 0b | Step 0b working tree, base `35318255` | 0 / 0 | PASS | Focused `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`; full `selected=81 violations=0 legacy_exceptions=8 transition_overrides=0` |
-| Step 0b traceability and isolated repository contracts | Step 0b working tree | 0 / 0 | PASS | Traceability `catalog_pairs_total=46 failures=0`; repository contracts `failures=0` |
-| Step 0b implementation alignment | Pinned 184-finding predecessor / Step 0b working tree | 1 | FAIL, unchanged predecessor | `failures=184`, `archive_direct_links_total=182`; attributable delta zero |
-| Step 0b lifecycle `check-manifest` / `check-promoted` / `check-summary` | Pinned predecessor / Step 0b working tree | 1 / 1 / 1 | FAIL, exact predecessor restored | Exact finding totals return to `9/26/9`; the audit overview mismatch is absent; lifecycle manifest/summary bytes are untouched |
-| Task 11 Step 0b exact changed-path review and `git diff --check` | Plan-fix HEAD `62591cfe` / Step 0b working tree | 0 / 0 | PASS | Exactly audit overview, metadata profile, focused metadata test, and this Task changed; old pack, deletion package, lifecycle data, generators, generated outputs, and real index remain untouched |
+| Step 0b literal all-profile parent-map regression before/after audit profile edit | Step 0b commit `8a35fe07` | 1 / 0 | EXPECTED RED / GREEN | RED runs one test with one failure because audit lacks `archive`; GREEN runs the same one test PASS after only `[spec, archive, plan, task, reference, audit]` is accepted, while the literal mapping fixes all other 20 profiles |
+| Full metadata module before / after Step 0b | Pre-Step0b branch / Step 0b commit `8a35fe07` | 1 / 1 | FAIL, unchanged unrelated predecessor | Baseline is 226 tests / 14 template-contract failures; Step 0b is 227 / 14 with the new focused test PASS, so attributable failure delta is zero and the module is not classified PASS |
+| Focused audit metadata / full changed-document metadata after Step 0b | Step 0b commit `8a35fe07`, base `35318255` | 0 / 0 | PASS | Focused `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`; full `selected=81 violations=0 legacy_exceptions=8 transition_overrides=0` |
+| Step 0b traceability and isolated repository contracts | Step 0b commit `8a35fe07` | 0 / 0 | PASS | Traceability `catalog_pairs_total=46 failures=0`; repository contracts `failures=0` |
+| Step 0b implementation alignment | Pinned 184-finding predecessor / Step 0b commit `8a35fe07` | 1 | FAIL, unchanged predecessor | `failures=184`, `archive_direct_links_total=182`; attributable delta zero |
+| Step 0b lifecycle `check-manifest` / `check-promoted` / `check-summary` | Pinned predecessor / Step 0b commit `8a35fe07` | 1 / 1 / 1 | FAIL, exact predecessor restored | Exact finding totals return to `9/26/9`; the audit overview mismatch is absent; lifecycle manifest/summary bytes are untouched |
+| Task 11 Step 0b exact changed-path review and `git diff --check` | `62591cfe..8a35fe07` | 0 / 0 | PASS | Exactly audit overview, metadata profile, focused metadata test, and this Task changed; old pack, deletion package, lifecycle data, generators, generated outputs, and real index remain untouched |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -777,6 +784,8 @@ backfilled.
 | Task 11 Step 0b Plan-fix specification re-review | `6ebc1b183606058c87f7d6f720c4a5c8a59f3f46..62591cfef86ce6a10e1e005d72f81dace239ef74` | Independent specification reviewer | Approved; C0/I0/M0 | Exact audit sequence inserts only `archive` immediately after `spec`, preserves all other profile order, and requires the promoted Spec parent before the Task |
 | Task 11 Step 0b Plan-fix quality re-review | `6ebc1b183606058c87f7d6f720c4a5c8a59f3f46..62591cfef86ce6a10e1e005d72f81dace239ef74` | Independent quality reviewer | Approved; C0/I0/M0 | TDD, baseline attribution, lifecycle restoration, four-file ownership, and deletion/package closure are internally consistent |
 | Task 11 Step 0b implementer self-review | Working tree before Step 0b commit | Task 11 implementer | PASS; C0/I0/M0 | Exact promoted parent order restored; one literal all-profile regression added; only one audit profile type inserted; focused/full metadata, traceability, repository contracts, alignment attribution, lifecycle `9/26/9`, and four-file diff verified; deletion work remains untouched and Not Run |
+| Task 11 Step 0b committed-unit specification review | `62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292` | Independent specification reviewer | Approved; C0/I0/M0 | Exact four-file implementation satisfies the reviewed Step 0b contract: promoted parent order is restored, only the audit profile gains `archive`, the literal all-profile regression passes, and lifecycle returns to `9/26/9` |
+| Task 11 Step 0b committed-unit quality review | `62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292` | Independent quality reviewer | Approved; C0/I0/M0 | TDD evidence, exact scope, predecessor classification, metadata results, and lifecycle restoration are mutually consistent; full module remains correctly classified 227/14 rather than PASS |
 
 ## Commit Ledger
 
@@ -812,7 +821,7 @@ backfilled.
 | Task 11 Step 0 metadata repair | `3095e5ab1cb194ee32ec58552257392f400be54e`; `docs(audit): clear remediation parent metadata`; range `6bb256b275c701f5a0e6f1aa46a2d74011b6c602..3095e5ab1cb194ee32ec58552257392f400be54e` | Exactly two files: remove one redundant direct archived-Spec parent from the audit overview and record RED/GREEN plus surrounding evidence in this Task ledger | Focused/full metadata PASS; traceability and repository contracts PASS; alignment attributable delta zero; exact two-file diff PASS | Implementer PASS C0/I0/M0; committed-unit specification Approved C0/I0/M0; committed-unit quality Approved C0/I0/M0 |
 | Task 11 Step 0b initial Plan correction | `6ebc1b183606058c87f7d6f720c4a5c8a59f3f46`; `docs(plan): preserve audit lifecycle provenance`; range `5f4e1b72da73d74213ddc401eb25c78e807d4d16..6ebc1b183606058c87f7d6f720c4a5c8a59f3f46` | Replace the failed relation rewrite with a typed archive-parent contract repair | Plan metadata/diff checks | Specification Needs fixes C0/I1/M0 and quality Needs fixes C0/I1/M0 on the same parent-order blocker |
 | Task 11 Step 0b Plan fix | `62591cfef86ce6a10e1e005d72f81dace239ef74`; `docs(plan): order archived audit parents`; range `6ebc1b183606058c87f7d6f720c4a5c8a59f3f46..62591cfef86ce6a10e1e005d72f81dace239ef74` | Insert `archive` immediately after `spec` and require promoted Spec-before-Task parent order | Plan metadata/diff checks | Independent specification and quality re-reviews Approved C0/I0/M0 |
-| Task 11 Step 0b metadata/lifecycle repair | Pending commit; `fix(validation): allow archived audit parents` | Exactly four files: restore the audit's promoted parents, insert one audit parent type, add literal all-profile regression, and record evidence in this Task | Focused RED/GREEN; metadata and surrounding contracts PASS; full module 226/14 to 227/14 with delta zero; alignment unchanged; lifecycle restored `9/26/9`; exact diff PASS | Implementer PASS C0/I0/M0; committed-unit specification and quality reviews pending |
+| Task 11 Step 0b metadata/lifecycle repair | `8a35fe07758926f38d937a5e80bf8dd02dca5292`; `fix(validation): allow archived audit parents`; range `62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292` | Exactly four files: restore the audit's promoted parents, insert one audit parent type, add literal all-profile regression, and record evidence in this Task | Focused RED/GREEN; metadata and surrounding contracts PASS; full module 226/14 to 227/14 with delta zero; alignment unchanged; lifecycle restored `9/26/9`; exact diff PASS | Implementer PASS C0/I0/M0; committed-unit specification Approved C0/I0/M0; committed-unit quality Approved C0/I0/M0 |
 | Tasks 11 deletion and lifecycle / Task 12 | Not Run | Old-pack deletion, lifecycle reconciliation, final verification, and handoff | Not Run | Not Run |
 
 ## Deferred and Blocked Items
@@ -820,12 +829,15 @@ backfilled.
 - Task 11 Step 0 cleared metadata but failed the first fresh Phase A lifecycle
   checkpoint at `10/27/10`, so it remains historical failed-attempt evidence
   despite its C0/I0 committed-unit reviews. Reviewed Plan fix `62591cfe`
-  authorizes Step 0b, whose working tree restores metadata GREEN and exact
-  lifecycle `9/26/9`. Deletion gates 1 through 9 may not restart until the
-  separate four-file Step 0b commit receives independent committed-unit
-  specification and quality reviews at C0/I0. No deletion package, real-index
-  mutation, old-pack mutation, lifecycle reconciliation, generated-artifact
-  write, or push has started.
+  authorizes Step 0b. Commit `8a35fe07758926f38d937a5e80bf8dd02dca5292`
+  and exact range
+  `62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292`
+  restore metadata GREEN and exact lifecycle `9/26/9`; independent
+  committed-unit specification and quality reviews are both Approved C0/I0/M0.
+  Step 0b is reviewed complete, but deletion gates 1 through 9 remain Not Run
+  and closed pending a separate controller handoff. No deletion package,
+  real-index mutation, old-pack mutation, lifecycle reconciliation,
+  generated-artifact write, or push has started.
 - The Task BASE index/coverage failures remain historical predecessors. Task
   10b now passes both canonical LLM Wiki checks at 1,338/1,337; Task 8's
   security readiness FAIL/7-3-3 remains history and the approved Task 10a
