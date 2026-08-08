@@ -1289,9 +1289,11 @@ verdicts. Complete the fix/re-review loop before Task 11.
 - Delete: exactly 20 files under the old pack directory
 - Modify before any deletion review:
   `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md`
-  by removing only its redundant direct parent
-  `spec:123-agentic-engineering-audit-remediation`; retain the completed Task
-  parent that already preserves the archived Spec and Plan lineage
+  by preserving its reviewed direct Spec and Task provenance
+- Modify before any deletion review:
+  `docs/99.templates/support/document-metadata-profiles.yaml` and
+  `tests/validation/test_document_metadata.py` so the audit profile admits an
+  archived SDLC parent without widening any other profile
 - Verify, but expect no byte changes in:
   `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
@@ -1338,14 +1340,46 @@ python3 scripts/validation/check-document-metadata.py \
   docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md
 ```
 
-Remove only the redundant direct Spec parent. Keep
+The first bounded repair removed only the direct Spec parent and kept
 `task:2026-07-11-agentic-engineering-audit-remediation`, whose own typed
-parents retain the archived Spec and current Plan provenance. Rerun the focused
-command for GREEN, then run the full changed-document metadata command against
-`35318255`; both must exit 0. Commit the audit frontmatter and Task evidence as
-a separate logical unit, and require two independent committed-unit reviews at
-C0/I0 before restarting deletion gates 1 through 8. Do not widen the audit
-profile's global allowed-parent types and do not edit lifecycle artifacts.
+parents retain the archived Spec and current Plan provenance. That repair made
+the metadata command GREEN but changed the promoted target's `parent_ids`, so
+the target-surface lifecycle checkpoint increased from `9/26/9` to
+`10/27/10`. Record the attempted repair and its reviews as historical execution
+evidence, but do not treat it as permission to enter the deletion gate.
+
+- [ ] **Step 0b: Reconcile the audit archive-parent contract without lifecycle drift**
+
+The audit overview's direct Spec 123 parent is reviewed target-surface
+provenance and must remain byte-equal to the blocking manifest. The typed audit
+profile currently permits `spec`, `plan`, `task`, `reference`, and `audit`
+parents, but not the same Spec after it is represented by its Stage 98
+`artifact_type: archive`. This creates a lifecycle-dependent type error for an
+otherwise unchanged relation. Resolve the contract rather than rewriting the
+promoted target or its lifecycle evidence.
+
+First add a focused RED assertion to
+`tests/validation/test_document_metadata.py` requiring the audit profile's
+exact allowed-parent sequence to be
+`[spec, plan, task, reference, audit, archive]`; also assert that the other
+profile parent sets are unchanged. Record that the test fails before the
+profile edit. Then:
+
+1. restore only `spec:123-agentic-engineering-audit-remediation` to the audit
+   overview beside its existing Task parent;
+2. append only `archive` to the audit profile's `allowed_parent_types`; and
+3. leave the target-surface manifest, summary, and all other profiles
+   byte-identical.
+
+Run the focused test, the full metadata module, focused and full
+changed-document metadata checks, traceability, repository contracts, and the
+three target-surface lifecycle checkpoint modes. GREEN requires metadata exit
+0 and the lifecycle checkpoint returning exactly to `9/26/9`, with no new
+finding or generated lifecycle write. Commit the overview, typed profile,
+focused test, and Task evidence as one separate logical unit. Require two fresh
+independent committed-unit reviews at C0/I0 before restarting deletion gates 1
+through 8. Any broader parent-type change, manifest/summary mutation, or
+failure to restore `9/26/9` is a blocker.
 
 - [ ] **Step 1: Execute pre-deletion gates 1 through 8**
 
