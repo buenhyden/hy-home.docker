@@ -10,6 +10,7 @@ import os
 import pathlib
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -37,6 +38,15 @@ COVERAGE_GENERATOR: Final = pathlib.PurePosixPath(
     "scripts/knowledge/generate-llm-wiki-coverage.sh"
 )
 REF_PREFIX: Final = "refs/codex/review-evidence/agentic-research/gate9/v1"
+SPEC_PATH: Final = pathlib.PurePosixPath(
+    "docs/03.specs/137-agentic-research-pack-rebuild/spec.md"
+)
+PLAN_PATH: Final = pathlib.PurePosixPath(
+    "docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md"
+)
+TASK_PATH: Final = pathlib.PurePosixPath(
+    "docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md"
+)
 ROLES: Final = ("migration-specification", "quality")
 PACKAGE_ATTACHMENTS: Final = (
     "HEAD.txt",
@@ -144,6 +154,10 @@ def repo_path(root: pathlib.Path, raw: str) -> tuple[pathlib.PurePosixPath, path
 
 def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def nonnegative_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
 
 def canonical_json(value: object) -> bytes:
@@ -291,12 +305,14 @@ def write_task_patch_and_deletion_patch(
 
 
 def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes, bytes]:
+    registry_before = run_git(root, ["worktree", "list", "--porcelain"]).stdout
     holding = pathlib.Path(tempfile.mkdtemp(prefix="gate9-worktree-holding-"))
     worktree = holding / "detached"
-    added = False
+    result: tuple[bytes, bytes] | None = None
+    primary_error: BaseException | None = None
+    cleanup_errors: list[str] = []
     try:
         run_git(root, ["worktree", "add", "--quiet", "--detach", os.fspath(worktree), commit])
-        added = True
         run_git(worktree, ["rm", "-r", "--quiet", "--", OLD_PACK.as_posix()])
         for generator in (INDEX_GENERATOR, COVERAGE_GENERATOR):
             result = subprocess.run(
@@ -316,11 +332,46 @@ def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes,
         tracked_coverage = run_git(root, ["show", f"{commit}:{COVERAGE.as_posix()}"]).stdout
         if projected_index != tracked_index or projected_coverage != tracked_coverage:
             fail("GENERATED_OUTPUT_DRIFT", "projected LLM Wiki outputs differ from HEAD")
-        return projected_index, projected_coverage
+        result = projected_index, projected_coverage
+    except BaseException as error:
+        primary_error = error
     finally:
-        if added:
-            run_git(root, ["worktree", "remove", "--force", os.fspath(worktree)], check=False)
-        shutil.rmtree(holding, ignore_errors=True)
+        registry_during = run_git(root, ["worktree", "list", "--porcelain"], check=False)
+        if registry_during.returncode:
+            cleanup_errors.append("cannot inspect worktree registry")
+        elif f"worktree {worktree.resolve()}\n".encode() in registry_during.stdout:
+            removal = run_git(
+                root,
+                ["worktree", "remove", "--force", os.fspath(worktree)],
+                check=False,
+            )
+            if removal.returncode:
+                cleanup_errors.append("git worktree remove failed")
+                try:
+                    if worktree.exists():
+                        shutil.rmtree(worktree)
+                except OSError as error:
+                    cleanup_errors.append(f"worktree directory cleanup failed: {error}")
+                prune = run_git(
+                    root, ["worktree", "prune", "--expire", "now"], check=False
+                )
+                if prune.returncode:
+                    cleanup_errors.append("git worktree prune failed")
+        try:
+            if holding.exists():
+                shutil.rmtree(holding)
+        except OSError as error:
+            cleanup_errors.append(f"temporary directory cleanup failed: {error}")
+        registry_after = run_git(root, ["worktree", "list", "--porcelain"], check=False)
+        if registry_after.returncode or registry_after.stdout != registry_before:
+            cleanup_errors.append("worktree registry was not restored")
+    if cleanup_errors:
+        fail("WORKTREE_CLEANUP_FAILURE", "; ".join(cleanup_errors))
+    if primary_error is not None:
+        raise primary_error
+    if result is None:
+        fail("GENERATOR_FAILURE", "projection produced no outputs")
+    return result
 
 
 def assignment_run_id(commit: str, attempt: int, role: str) -> str:
@@ -351,21 +402,13 @@ def derive_attempt(root: pathlib.Path, marker: dict[str, Any]) -> int:
         return 1
     if len(refs) == 1 and state == "ATTEMPT_2_PENDING" and attempt == 2:
         evidence_ref = refs[0]
-        commit, leaves = read_ref_leaves(root, evidence_ref)
-        evidence_value = json.loads(leaves["evidence.json"].decode("utf-8"))
-        terminal_state = evidence_value.get("state")
-        if terminal_state not in {"REJECTED", "INVALIDATED"}:
-            fail("ATTEMPT_STATE_MISMATCH", "attempt 1 is not pre-backfill terminal")
-        package_sha256 = evidence_value.get("package_sha256")
-        expected_ref = fixed_evidence_ref(1, str(package_sha256))
-        if evidence_ref != expected_ref or evidence_value.get("attempt") != 1:
+        terminal = replay_terminal_evidence_ref(root, evidence_ref)
+        terminal_state = terminal["state"]
+        package_sha256 = terminal["package_sha256"]
+        tree_oid = terminal["tree"]
+        reason = terminal["reason"]
+        if terminal["attempt"] != 1:
             fail("ATTEMPT_STATE_MISMATCH", "attempt 1 ref identity mismatch")
-        _, tree_oid, _ = commit_identity(root, commit)
-        if terminal_state == "INVALIDATED":
-            drift = json.loads(leaves["drift/drift-proof.json"].decode("utf-8"))
-            reason = drift.get("reason")
-        else:
-            reason = "package-review-rejected"
         expected_attempt_1 = {
             "evidence_ref": evidence_ref,
             "evidence_tree": tree_oid,
@@ -527,14 +570,16 @@ def verify_package_path(
     actual_paths = sorted(path.name for path in package.iterdir())
     if actual_paths != sorted(PACKAGE_ATTACHMENTS):
         fail("ATTACHMENT_SET_DRIFT", repr(actual_paths))
+    if require_read_only:
+        for path in package.iterdir():
+            metadata = path.lstat()
+            if not stat.S_ISREG(metadata.st_mode):
+                fail("ATTACHMENT_TYPE_DRIFT", path.name)
+            if stat.S_IMODE(metadata.st_mode) != 0o444:
+                fail("ATTACHMENT_MODE_DRIFT", path.name)
     package_doc = load_canonical_json(package / "package.json")
     assignments = load_canonical_json(package / "assignments.json")
     gates = load_canonical_json(package / "gate-results.json")
-    del gates
-    if require_read_only:
-        for path in package.iterdir():
-            if path.stat().st_mode & 0o222:
-                fail("MODE_DRIFT", path.name)
     checksums = read_checksum_manifest(package)
     expected_checksum_paths = sorted(set(PACKAGE_ATTACHMENTS) - {"SHA256SUMS"})
     if sorted(checksums) != expected_checksum_paths:
@@ -545,53 +590,101 @@ def verify_package_path(
     package_head = (package / "HEAD.txt").read_text(encoding="ascii").strip()
     if not re.fullmatch(r"[0-9a-f]{40,64}", package_head):
         fail("INVALID_PACKAGE_HEAD", package_head)
-    if package_doc.get("package_head") != package_head or assignments.get("package_head") != package_head:
-        fail("PACKAGE_HEAD_MISMATCH", package_head)
+    if run_git(root, ["cat-file", "-e", f"{package_head}^{{commit}}"], check=False).returncode:
+        fail("INVALID_PACKAGE_HEAD", package_head)
     if require_live_head and head(root) != package_head:
         fail("STALE_HEAD", f"live HEAD differs from package HEAD {package_head}")
-    records = package_doc.get("attachments")
+    attempt = package_doc.get("attempt")
+    if not nonnegative_int(attempt) or attempt not in (1, 2):
+        fail("PACKAGE_SEMANTIC_DRIFT", "invalid package attempt")
     payloads = {
         name: (package / name).read_bytes()
         for name in expected_checksum_paths
         if name != "package.json"
     }
-    if records != package_records(payloads):
-        fail("UNSORTED_ATTACHMENTS", "package.json attachment records differ")
+    expected_package = {
+        "attachments": package_records(payloads),
+        "attempt": attempt,
+        "evidence_ref": "PENDING_PACKAGE_SHA256",
+        "package_head": package_head,
+        "schema": SCHEMA,
+    }
+    if package_doc != expected_package:
+        fail("PACKAGE_SEMANTIC_DRIFT", "package.json")
+    expected_assignments = {
+        "assignments": [
+            {
+                "role": role,
+                "run_id": assignment_run_id(package_head, attempt, role),
+            }
+            for role in ROLES
+        ],
+        "attempt": attempt,
+        "package_head": package_head,
+        "schema": SCHEMA,
+    }
+    if assignments != expected_assignments:
+        fail("PACKAGE_SEMANTIC_DRIFT", "assignments.json")
+    expected_gates = {
+        "attempt": attempt,
+        "gates": [
+            {
+                "gate": ordinal,
+                "predecessor_classification": (
+                    "pinned-184-attributable-delta-zero"
+                    if ordinal == 7
+                    else "pinned-9-26-9"
+                    if ordinal == 8
+                    else "none"
+                ),
+                "result": "PASS",
+            }
+            for ordinal in range(1, 9)
+        ],
+        "package_head": package_head,
+        "schema": SCHEMA,
+    }
+    if gates != expected_gates:
+        fail("PACKAGE_SEMANTIC_DRIFT", "gate-results.json")
+    if (package / "HEAD.txt").read_bytes() != f"{package_head}\n".encode():
+        fail("PACKAGE_SEMANTIC_DRIFT", "HEAD.txt")
     old_manifest = tree_manifest(root, package_head, OLD_PACK)
     new_manifest = tree_manifest(root, package_head, NEW_PACK)
     if (package / "old-manifest.tsv").read_bytes() != old_manifest:
-        fail("MANIFEST_DRIFT", "old-manifest.tsv")
+        fail("PACKAGE_SEMANTIC_DRIFT", "old-manifest.tsv")
     if (package / "new-manifest.tsv").read_bytes() != new_manifest:
-        fail("MANIFEST_DRIFT", "new-manifest.tsv")
+        fail("PACKAGE_SEMANTIC_DRIFT", "new-manifest.tsv")
     old_paths = manifest_paths(old_manifest)
     if len(old_paths) != 20 or len(manifest_paths(new_manifest)) != 20:
         fail("PACK_CARDINALITY", "manifest cardinality")
-    patch = (package / "proposed-deletion.patch").read_text(
-        encoding="utf-8", errors="surrogateescape"
+    del old_paths
+    task_before = run_git(root, ["show", f"{package_head}:{TASK_PATH.as_posix()}"]).stdout
+    candidate = (package / "task-candidate.md").read_bytes()
+    candidate_marker, _ = parse_marker(candidate)
+    expected_state = "PACKAGE_REVIEW_PENDING" if attempt == 1 else "ATTEMPT_2_PENDING"
+    if candidate_marker.get("attempt") != attempt or candidate_marker.get("state") != expected_state:
+        fail("PACKAGE_SEMANTIC_DRIFT", "task-candidate.md marker")
+    task_patch, deletion_patch = write_task_patch_and_deletion_patch(
+        root, package_head, TASK_PATH, candidate
     )
-    diff_paths = re.findall(r"(?m)^diff --git a/(.+?) b/(.+?)$", patch)
-    deleted_modes = re.findall(r"(?m)^deleted file mode ", patch)
-    if len(diff_paths) != 20 or len(deleted_modes) != 20:
-        fail("DELETION_PROJECTION_DRIFT", "expected twenty deleted-file records")
-    if sorted(left for left, right in diff_paths if left == right) != sorted(old_paths):
-        fail("DELETION_PROJECTION_DRIFT", "deleted path set mismatch")
+    semantic_payloads = {
+        "task-before.md": task_before,
+        "task-before-to-candidate.patch": task_patch,
+        "proposed-deletion.patch": deletion_patch,
+        "spec.md": run_git(root, ["show", f"{package_head}:{SPEC_PATH.as_posix()}"]).stdout,
+        "plan.md": run_git(root, ["show", f"{package_head}:{PLAN_PATH.as_posix()}"]).stdout,
+    }
+    for name, expected in semantic_payloads.items():
+        if (package / name).read_bytes() != expected:
+            fail("PACKAGE_SEMANTIC_DRIFT", name)
     tracked_index = run_git(root, ["show", f"{package_head}:{INDEX.as_posix()}"]).stdout
     tracked_coverage = run_git(root, ["show", f"{package_head}:{COVERAGE.as_posix()}"]).stdout
     if (package / "llm-wiki-index.md").read_bytes() != tracked_index:
-        fail("GENERATED_OUTPUT_DRIFT", INDEX.as_posix())
+        fail("PACKAGE_SEMANTIC_DRIFT", INDEX.as_posix())
     if (package / "llm-wiki-stage-category-coverage.md").read_bytes() != tracked_coverage:
-        fail("GENERATED_OUTPUT_DRIFT", COVERAGE.as_posix())
-    expected_assignments = [
-        {
-            "role": role,
-            "run_id": assignment_run_id(package_head, int(package_doc["attempt"]), role),
-        }
-        for role in ROLES
-    ]
-    if assignments.get("assignments") != expected_assignments:
-        fail("ASSIGNMENT_DRIFT", "package role/run-id set mismatch")
+        fail("PACKAGE_SEMANTIC_DRIFT", COVERAGE.as_posix())
     return {
-        "attempt": int(package_doc["attempt"]),
+        "attempt": attempt,
         "assignments": assignments,
         "head": package_head,
         "package_doc": package_doc,
@@ -719,15 +812,17 @@ def validate_receipt(
     report = receipt.get("report")
     if not isinstance(report, dict) or set(report) != {"bytes", "sha256"}:
         fail("INVALID_RECEIPT", f"{role}: invalid report record")
-    if not isinstance(report["bytes"], int) or report["bytes"] < 0 or not re.fullmatch(
+    if not nonnegative_int(report["bytes"]) or not re.fullmatch(
         r"[0-9a-f]{64}", str(report["sha256"])
     ):
         fail("INVALID_RECEIPT", f"{role}: invalid report identity")
     findings = receipt.get("findings")
     if not isinstance(findings, dict) or set(findings) != {"critical", "important", "minor"}:
         fail("INVALID_RECEIPT", f"{role}: invalid findings")
-    if any(not isinstance(findings[key], int) or findings[key] < 0 for key in findings):
+    if any(not nonnegative_int(findings[key]) for key in findings):
         fail("INVALID_RECEIPT", f"{role}: invalid finding count")
+    if receipt.get("verdict") not in {"Approved", "Approved-with-Minor", "Needs fixes"}:
+        fail("INVALID_RECEIPT", f"{role}: invalid verdict")
     if require_approved and (findings["critical"] or findings["important"]):
         fail("LOAD_BEARING_FINDING", role)
     if require_approved and receipt.get("verdict") != "Approved":
@@ -746,6 +841,9 @@ def expected_backfilled_marker(
         receipt = receipts[role]
         reviews[role] = {
             "agent_id": receipt["agent_id"],
+            "assignment_attestation_sha256": receipt[
+                "assignment_attestation_sha256"
+            ],
             "findings": receipt["findings"],
             "receipt_sha256": sha256_bytes(receipt_paths[role].read_bytes()),
             "role": role,
@@ -884,6 +982,11 @@ def file_record(path: str, value: bytes) -> dict[str, object]:
     return {"bytes": len(value), "path": path, "sha256": sha256_bytes(value)}
 
 
+def blob_record(root: pathlib.Path, value: bytes) -> dict[str, object]:
+    oid = run_git(root, ["hash-object", "--stdin"], input_bytes=value).stdout.decode().strip()
+    return {"blob_oid": oid, "bytes": len(value), "sha256": sha256_bytes(value)}
+
+
 def checked_report(path: pathlib.Path, label: str) -> bytes:
     try:
         value = path.read_bytes()
@@ -953,6 +1056,7 @@ def validate_closure(
     if (
         not isinstance(findings, dict)
         or set(findings) != {"critical", "important", "minor"}
+        or any(not nonnegative_int(findings[key]) for key in findings)
         or findings["critical"] != 0
         or findings["important"] != 0
     ):
@@ -1083,8 +1187,8 @@ def build_evidence_leaves(
     leaves["task/task-after.md"] = task_after
     leaves["task/task-candidate-to-after.patch"] = task_patch
     task_tuple = {
-        "after": {"bytes": len(task_after), "sha256": sha256_bytes(task_after)},
-        "before": {"bytes": len(candidate), "sha256": sha256_bytes(candidate)},
+        "after": blob_record(root, task_after),
+        "before": blob_record(root, candidate),
         "diff": {"bytes": len(task_patch), "sha256": sha256_bytes(task_patch)},
     }
     receipt_paths: dict[str, pathlib.Path] = {}
@@ -1102,6 +1206,10 @@ def build_evidence_leaves(
         review_receipt_leaf = f"reviews/{role}/receipt.json"
         closure_report_leaf = f"closures/{role}/report.md"
         closure_leaf = f"closures/{role}/closure.json"
+        if state != "AUTHORIZED" and (
+            closure_report_path is not None or closure_path is not None
+        ):
+            fail("INCOMPLETE_EVIDENCE", f"{state} requires NOT_RUN closure for {role}")
         if report_path is not None and receipt_path is not None:
             report = checked_report(report_path, f"{role} review")
             receipt = validate_receipt(
@@ -1118,7 +1226,7 @@ def build_evidence_leaves(
             receipt_paths[role] = receipt_path
             receipts[role] = receipt
             review_records[role] = {
-                **{key: receipt[key] for key in ("agent_id", "role", "run_id", "task_path", "verdict", "findings")},
+                **{key: receipt[key] for key in ("agent_id", "assignment_attestation_sha256", "role", "run_id", "task_path", "verdict", "findings")},
                 "receipt": file_record(review_receipt_leaf, leaves[review_receipt_leaf]),
                 "report": file_record(review_report_leaf, report),
             }
@@ -1168,18 +1276,47 @@ def build_evidence_leaves(
     elif state == "REJECTED":
         if set(receipts) != set(ROLES):
             fail("INCOMPLETE_EVIDENCE", "REJECTED requires both completed review pairs")
+        if not any(
+            receipt["findings"]["critical"]
+            or receipt["findings"]["important"]
+            or receipt["verdict"] == "Needs fixes"
+            for receipt in receipts.values()
+        ):
+            fail("REJECTED_WITHOUT_FINDING", "both completed reviews are load-bearing clean")
     drift_path = optional_paths.get("drift_proof")
+    invalidation_reason: str | None = None
     if state == "INVALIDATED":
         if drift_path is None:
             fail("INCOMPLETE_EVIDENCE", "INVALIDATED requires drift proof")
         drift_value = load_canonical_json(drift_path)
-        if drift_value.get("kind") != "drift-proof" or drift_value.get("state") != "INVALIDATED":
+        invalidation_reason = drift_value.get("reason")
+        if (
+            not isinstance(invalidation_reason, str)
+            or not invalidation_reason.strip()
+            or invalidation_reason != invalidation_reason.strip()
+            or "\n" in invalidation_reason
+            or "\r" in invalidation_reason
+        ):
+            fail("INVALIDATED_REASON_INVALID", os.fspath(drift_path))
+        if set(drift_value) != {"kind", "reason", "schema", "state"} or (
+            drift_value.get("kind") != "drift-proof"
+            or drift_value.get("state") != "INVALIDATED"
+        ):
             fail("INVALID_DRIFT_PROOF", os.fspath(drift_path))
         leaves["drift/drift-proof.json"] = drift_path.read_bytes()
     else:
         leaves["drift/drift-proof.json"] = sentinel_json(
             "drift-proof", state="NOT_APPLICABLE"
         )
+    expected_terminal = (
+        b"AUTHORIZED\n"
+        if state == "AUTHORIZED"
+        else b"REJECTED: package-review-rejected\n"
+        if state == "REJECTED"
+        else f"INVALIDATED: {invalidation_reason}\n".encode()
+    )
+    if terminal_report != expected_terminal:
+        fail("TERMINAL_REPORT_DRIFT", state)
     evidence_ref = fixed_evidence_ref(
         package_result["attempt"], package_result["package_sha256"]
     )
@@ -1321,6 +1458,83 @@ def materialize_evidence(leaves: Mapping[str, bytes], root: pathlib.Path) -> Non
         path.chmod(0o444)
 
 
+def replay_terminal_evidence_ref(
+    root: pathlib.Path, evidence_ref: str
+) -> dict[str, object]:
+    evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
+    with tempfile.TemporaryDirectory(prefix="gate9-terminal-replay-") as temporary:
+        evidence_root = pathlib.Path(temporary)
+        materialize_evidence(leaves, evidence_root)
+        package = evidence_root / "package"
+        package_result = verify_package_path(
+            root, package, require_live_head=False
+        )
+        evidence = load_canonical_json(evidence_root / "evidence.json")
+        state = evidence.get("state")
+        if state not in {"REJECTED", "INVALIDATED"}:
+            fail("ATTEMPT_STATE_MISMATCH", "attempt 1 is not pre-backfill terminal")
+        expected_ref = fixed_evidence_ref(
+            package_result["attempt"], package_result["package_sha256"]
+        )
+        if evidence_ref != expected_ref:
+            fail("EVIDENCE_REF_MISMATCH", evidence_ref)
+        optional_paths: dict[str, pathlib.Path | None] = {
+            "migration_closure_report": None,
+            "migration_closure": None,
+            "quality_closure_report": None,
+            "quality_closure": None,
+            "drift_proof": (
+                evidence_root / "drift/drift-proof.json"
+                if state == "INVALIDATED"
+                else None
+            ),
+        }
+        for role in ROLES:
+            prefix = "migration" if role == "migration-specification" else "quality"
+            receipt_leaf = f"reviews/{role}/receipt.json"
+            if leaves[receipt_leaf] == sentinel_json("package-review-receipt", role):
+                optional_paths[f"{prefix}_report"] = None
+                optional_paths[f"{prefix}_receipt"] = None
+            else:
+                optional_paths[f"{prefix}_report"] = evidence_root / f"reviews/{role}/report.md"
+                optional_paths[f"{prefix}_receipt"] = evidence_root / receipt_leaf
+        reconstructed = build_evidence_leaves(
+            root,
+            package,
+            package_result,
+            TASK_PATH,
+            evidence_root / "task/task-after.md",
+            state,
+            evidence_root / "terminal/report.md",
+            evidence_root / "assignment-attestation.json",
+            optional_paths,
+        )
+        if reconstructed != leaves:
+            fail("EVIDENCE_SCHEMA_DRIFT", evidence_ref)
+        expected_tree = write_evidence_tree(root, reconstructed)
+        parent, tree_oid, message = commit_identity(root, evidence_commit)
+        expected_message = evidence_commit_message(
+            package_result["attempt"], package_result["package_sha256"], state
+        )
+        if (
+            parent != package_result["head"]
+            or tree_oid != expected_tree
+            or message != expected_message
+        ):
+            fail("EVIDENCE_COMMIT_IDENTITY_DRIFT", evidence_ref)
+        reason = "package-review-rejected"
+        if state == "INVALIDATED":
+            drift = load_canonical_json(evidence_root / "drift/drift-proof.json")
+            reason = drift["reason"]
+        return {
+            "attempt": package_result["attempt"],
+            "package_sha256": package_result["package_sha256"],
+            "reason": reason,
+            "state": state,
+            "tree": tree_oid,
+        }
+
+
 def verify_authorized(args: argparse.Namespace) -> None:
     root = repository_root()
     task_relative, task_path = repo_path(root, args.task)
@@ -1413,6 +1627,7 @@ def verify_authorized(args: argparse.Namespace) -> None:
                     key: receipt[key]
                     for key in (
                         "agent_id",
+                        "assignment_attestation_sha256",
                         "role",
                         "run_id",
                         "task_path",
@@ -1432,8 +1647,8 @@ def verify_authorized(args: argparse.Namespace) -> None:
             receipts,
         )
         task_tuple = {
-            "after": {"bytes": len(live_task), "sha256": sha256_bytes(live_task)},
-            "before": {"bytes": len(candidate), "sha256": sha256_bytes(candidate)},
+            "after": blob_record(root, live_task),
+            "before": blob_record(root, candidate),
             "diff": {
                 "bytes": len(expected_task_patch),
                 "sha256": sha256_bytes(expected_task_patch),

@@ -37,6 +37,16 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def blob_oid(root: pathlib.Path, value: bytes) -> str:
+    return subprocess.run(
+        ["git", "hash-object", "--stdin"],
+        cwd=root,
+        input=value,
+        capture_output=True,
+        check=True,
+    ).stdout.decode().strip()
+
+
 def marker(payload: dict[str, object]) -> str:
     return (
         "<!-- GATE9-EVIDENCE/v1\n"
@@ -126,10 +136,19 @@ class Gate9Fixture:
         if executable:
             path.chmod(path.stat().st_mode | stat.S_IXUSR)
 
-    def run(self, *args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
+    def run(
+        self,
+        *args: str,
+        check: bool = False,
+        env: dict[str, str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        command_env = os.environ.copy()
+        if env:
+            command_env.update(env)
         return subprocess.run(
             ["python3", os.fspath(HELPER), *args],
             cwd=self.root,
+            env=command_env,
             capture_output=True,
             text=True,
             check=check,
@@ -155,6 +174,54 @@ class Gate9Fixture:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(canonical_json(value))
         return path
+
+    def reseal_package(self, package: pathlib.Path) -> None:
+        (package / "package.json").chmod(0o644)
+        (package / "SHA256SUMS").chmod(0o644)
+        package_document = json.loads((package / "package.json").read_text())
+        package_document["attachments"] = [
+            {
+                "bytes": len((package / name).read_bytes()),
+                "path": name,
+                "sha256": sha256_bytes((package / name).read_bytes()),
+            }
+            for name in sorted(
+                set(path.name for path in package.iterdir())
+                - {"SHA256SUMS", "package.json"}
+            )
+        ]
+        (package / "package.json").write_bytes(canonical_json(package_document))
+        checksum_paths = sorted(
+            set(path.name for path in package.iterdir()) - {"SHA256SUMS"}
+        )
+        (package / "SHA256SUMS").write_bytes(
+            b"".join(
+                f"{sha256_bytes((package / name).read_bytes())}  {name}\n".encode()
+                for name in checksum_paths
+            )
+        )
+        for path in package.iterdir():
+            path.chmod(0o444)
+
+    def git_wrapper(
+        self,
+        name: str,
+        body: str,
+    ) -> dict[str, str]:
+        bin_dir = self.root / f"wrapper-{name}"
+        bin_dir.mkdir()
+        wrapper = bin_dir / "git"
+        real_git = shutil.which("git")
+        assert real_git is not None
+        wrapper.write_text(
+            "#!/usr/bin/env bash\nset -eu\nREAL_GIT="
+            + json.dumps(real_git)
+            + "\n"
+            + body,
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o755)
+        return {"PATH": os.fspath(bin_dir) + os.pathsep + os.environ["PATH"]}
 
     def review_materials(self, package: pathlib.Path) -> dict[str, pathlib.Path]:
         package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
@@ -223,6 +290,9 @@ class Gate9Fixture:
             receipt = json.loads(receipt_path.read_text())
             review_records[role] = {
                 "agent_id": receipt["agent_id"],
+                "assignment_attestation_sha256": receipt[
+                    "assignment_attestation_sha256"
+                ],
                 "findings": receipt["findings"],
                 "receipt_sha256": sha256_bytes(receipt_path.read_bytes()),
                 "role": role,
@@ -262,8 +332,16 @@ class Gate9Fixture:
         task_after = (self.root / TASK).read_bytes()
         task_diff = task_transition_patch(self.root, candidate, task_after)
         tuple_record = {
-            "after": {"bytes": len(task_after), "sha256": sha256_bytes(task_after)},
-            "before": {"bytes": len(candidate), "sha256": sha256_bytes(candidate)},
+            "after": {
+                "blob_oid": blob_oid(self.root, task_after),
+                "bytes": len(task_after),
+                "sha256": sha256_bytes(task_after),
+            },
+            "before": {
+                "blob_oid": blob_oid(self.root, candidate),
+                "bytes": len(candidate),
+                "sha256": sha256_bytes(candidate),
+            },
             "diff": {"bytes": len(task_diff), "sha256": sha256_bytes(task_diff)},
         }
         attestation_hash = sha256_bytes(materials["attestation"].read_bytes())
@@ -369,7 +447,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         attachment.write_text("drift\n", encoding="utf-8")
         drift = self.fixture.run("verify-package", "--package", os.fspath(package))
         self.assertNotEqual(0, drift.returncode)
-        self.assertRegex(drift.stderr, "(CHECKSUM_DRIFT|MODE_DRIFT)")
+        self.assertRegex(drift.stderr, "(CHECKSUM_DRIFT|ATTACHMENT_MODE_DRIFT)")
 
     def test_package_verification_rejects_noncanonical_json_and_unsorted_checksums(self) -> None:
         package = self.root / "package"
@@ -379,6 +457,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         assignments.chmod(0o644)
         parsed = json.loads(assignments.read_text(encoding="utf-8"))
         assignments.write_text(json.dumps(parsed, indent=2) + "\n", encoding="utf-8")
+        assignments.chmod(0o444)
         result = self.fixture.run("verify-package", "--package", os.fspath(package))
         self.assertNotEqual(0, result.returncode)
         self.assertIn("NON_CANONICAL_JSON", result.stderr)
@@ -599,7 +678,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         )
         git(self.root, "update-ref", evidence_ref, self.fixture.head)
         terminal = self.root / "terminal.md"
-        terminal.write_text("INVALIDATED\n")
+        terminal.write_text("INVALIDATED: fixture drift\n")
         materials = self.fixture.review_materials(package)
         attestation = materials["attestation"]
         drift = self.fixture.write_json(
@@ -630,6 +709,38 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         )
         self.assertNotEqual(0, collision.returncode)
         self.assertIn("FOREIGN_REF", collision.stderr)
+
+    def test_rejected_terminal_requires_a_load_bearing_review_finding(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        terminal = self.root / "terminal.md"
+        terminal.write_text("REJECTED: package-review-rejected\n")
+        result = self.fixture.run(
+            "publish-evidence-ref",
+            "--package",
+            os.fspath(package),
+            "--task",
+            TASK,
+            "--terminal-state",
+            "REJECTED",
+            "--terminal-report",
+            os.fspath(terminal),
+            "--migration-report",
+            os.fspath(materials["migration-specification-report"]),
+            "--migration-receipt",
+            os.fspath(materials["migration-specification-receipt"]),
+            "--quality-report",
+            os.fspath(materials["quality-report"]),
+            "--quality-receipt",
+            os.fspath(materials["quality-receipt"]),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--evidence-ref",
+            "auto",
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("REJECTED_WITHOUT_FINDING", result.stderr)
 
     def test_invalidated_attempt_one_authorizes_exactly_one_bound_attempt_two(self) -> None:
         package = self.root / "package-one"
@@ -708,6 +819,385 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         )
         self.assertEqual(0, built.returncode, built.stderr)
         self.assertEqual(2, json.loads((package_two / "package.json").read_text())["attempt"])
+
+    def test_invalidated_evidence_requires_nonempty_bound_reason(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        terminal = self.root / "terminal.md"
+        terminal.write_text("INVALIDATED: fixture drift\n")
+        drift = self.fixture.write_json(
+            "drift-missing.json",
+            {"kind": "drift-proof", "schema": SCHEMA, "state": "INVALIDATED"},
+        )
+        result = self.fixture.run(
+            "publish-evidence-ref",
+            "--package",
+            os.fspath(package),
+            "--task",
+            TASK,
+            "--terminal-state",
+            "INVALIDATED",
+            "--terminal-report",
+            os.fspath(terminal),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--drift-proof",
+            os.fspath(drift),
+            "--evidence-ref",
+            "auto",
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("INVALIDATED_REASON_INVALID", result.stderr)
+
+    def test_invalidated_evidence_rejects_empty_reason(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        terminal = self.root / "terminal.md"
+        terminal.write_text("INVALIDATED: fixture drift\n")
+        drift = self.fixture.write_json(
+            "drift-empty.json",
+            {
+                "kind": "drift-proof",
+                "reason": "",
+                "schema": SCHEMA,
+                "state": "INVALIDATED",
+            },
+        )
+        result = self.fixture.run(
+            "publish-evidence-ref",
+            "--package",
+            os.fspath(package),
+            "--task",
+            TASK,
+            "--terminal-state",
+            "INVALIDATED",
+            "--terminal-report",
+            os.fspath(terminal),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--drift-proof",
+            os.fspath(drift),
+            "--evidence-ref",
+            "auto",
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("INVALIDATED_REASON_INVALID", result.stderr)
+
+    def test_package_requires_exact_regular_0444_attachments(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        same_spec = self.root / "same-spec.md"
+        same_spec.write_bytes((package / "spec.md").read_bytes())
+        same_spec.chmod(0o444)
+
+        for name, mutation, expected in (
+            ("0400", lambda path: path.chmod(0o400), "ATTACHMENT_MODE_DRIFT"),
+            ("0440", lambda path: path.chmod(0o440), "ATTACHMENT_MODE_DRIFT"),
+            ("executable", lambda path: path.chmod(0o555), "ATTACHMENT_MODE_DRIFT"),
+            (
+                "directory",
+                lambda path: (path.unlink(), path.mkdir()),
+                "ATTACHMENT_TYPE_DRIFT",
+            ),
+            (
+                "symlink",
+                lambda path: (path.unlink(), path.symlink_to(same_spec)),
+                "ATTACHMENT_TYPE_DRIFT",
+            ),
+        ):
+            with self.subTest(name=name):
+                candidate = self.root / f"mode-{name}"
+                shutil.copytree(package, candidate)
+                target = candidate / "spec.md"
+                mutation(target)
+                result = self.fixture.run(
+                    "verify-package", "--package", os.fspath(candidate)
+                )
+                self.assertNotEqual(0, result.returncode, name)
+                self.assertIn(expected, result.stderr)
+
+    def test_package_replay_rederives_every_semantic_attachment(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+
+        def trailing_deletion_patch(candidate: pathlib.Path) -> None:
+            path = candidate / "proposed-deletion.patch"
+            path.chmod(0o644)
+            path.write_bytes(path.read_bytes() + b"forged trailing bytes\n")
+
+        def false_gate(candidate: pathlib.Path) -> None:
+            path = candidate / "gate-results.json"
+            path.chmod(0o644)
+            value = json.loads(path.read_text())
+            value["gates"][3]["result"] = "FAIL"
+            path.write_bytes(canonical_json(value))
+
+        def forged_task_before(candidate: pathlib.Path) -> None:
+            path = candidate / "task-before.md"
+            path.chmod(0o644)
+            path.write_bytes(b"# forged Task before\n")
+
+        def forged_task_patch(candidate: pathlib.Path) -> None:
+            path = candidate / "task-before-to-candidate.patch"
+            path.chmod(0o644)
+            path.write_bytes(path.read_bytes() + b"forged trailing bytes\n")
+
+        def extra_package_key(candidate: pathlib.Path) -> None:
+            path = candidate / "package.json"
+            path.chmod(0o644)
+            value = json.loads(path.read_text())
+            value["unexpected"] = True
+            path.write_bytes(canonical_json(value))
+
+        for name, mutation in (
+            ("deletion-patch", trailing_deletion_patch),
+            ("gate-results", false_gate),
+            ("task-before", forged_task_before),
+            ("task-transition", forged_task_patch),
+            ("package-schema", extra_package_key),
+        ):
+            with self.subTest(name=name):
+                candidate = self.root / f"semantic-{name}"
+                shutil.copytree(package, candidate)
+                mutation(candidate)
+                self.fixture.reseal_package(candidate)
+                result = self.fixture.run(
+                    "verify-package", "--package", os.fspath(candidate)
+                )
+                self.assertNotEqual(0, result.returncode, name)
+                self.assertIn("PACKAGE_SEMANTIC_DRIFT", result.stderr)
+
+    def test_boolean_finding_counts_are_rejected(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        receipt_path = materials["quality-receipt"]
+        receipt = json.loads(receipt_path.read_text())
+        receipt["findings"]["minor"] = True
+        receipt_path.write_bytes(canonical_json(receipt))
+        result = self.fixture.run(
+            "verify-backfill",
+            "--package",
+            os.fspath(package),
+            "--migration-receipt",
+            os.fspath(materials["migration-specification-receipt"]),
+            "--quality-receipt",
+            os.fspath(receipt_path),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--task",
+            TASK,
+            "--expect-state",
+            "PACKAGE_REVIEWED",
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("INVALID_RECEIPT", result.stderr)
+
+    def test_attempt_two_rejects_forged_terminal_commit_message(self) -> None:
+        package = self.root / "package-one"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
+        terminal = self.root / "terminal.md"
+        terminal.write_text("INVALIDATED: fixture drift\n")
+        drift = self.fixture.write_json(
+            "drift.json",
+            {
+                "kind": "drift-proof",
+                "reason": "fixture drift",
+                "schema": SCHEMA,
+                "state": "INVALIDATED",
+            },
+        )
+        published = self.fixture.run(
+            "publish-evidence-ref",
+            "--package",
+            os.fspath(package),
+            "--task",
+            TASK,
+            "--terminal-state",
+            "INVALIDATED",
+            "--terminal-report",
+            os.fspath(terminal),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--drift-proof",
+            os.fspath(drift),
+            "--evidence-ref",
+            "auto",
+        )
+        self.assertEqual(0, published.returncode, published.stderr)
+        evidence_ref = json.loads(published.stdout)["evidence_ref"]
+        evidence_tree = git(self.root, "show", "-s", "--format=%T", evidence_ref).stdout.strip()
+        forged = subprocess.run(
+            ["git", "commit-tree", evidence_tree, "-p", self.fixture.head],
+            cwd=self.root,
+            input="forged terminal message\n",
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        git(self.root, "update-ref", evidence_ref, forged)
+        attempt_two_marker = {
+            "attempt": 2,
+            "attempt_1": {
+                "evidence_ref": evidence_ref,
+                "evidence_tree": evidence_tree,
+                "package_sha256": package_id,
+                "reason": "fixture drift",
+                "terminal_state": "INVALIDATED",
+            },
+            "schema": SCHEMA,
+            "state": "ATTEMPT_2_PENDING",
+        }
+        task_path = self.root / TASK
+        task_path.write_bytes(
+            task_path.read_bytes().replace(
+                marker(self.fixture.pending_payload).encode(),
+                marker(attempt_two_marker).encode(),
+                1,
+            )
+        )
+        shutil.rmtree(self.root / "evidence")
+        terminal.unlink()
+        drift.unlink()
+        shutil.rmtree(package)
+        result = self.fixture.run(
+            "build-package",
+            "--attempt",
+            "2",
+            "--output",
+            os.fspath(self.root / "package-two"),
+            "--spec",
+            SPEC,
+            "--plan",
+            PLAN,
+            "--task",
+            TASK,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("EVIDENCE_COMMIT_IDENTITY_DRIFT", result.stderr)
+
+    def test_detached_worktree_cleanup_handles_partial_add_and_failed_remove(self) -> None:
+        before = git(self.root, "worktree", "list", "--porcelain").stdout
+        wrappers = {
+            "partial-add": self.fixture.git_wrapper(
+                "partial-add",
+                'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
+                '  "$REAL_GIT" "$@"\n'
+                "  exit 91\n"
+                "fi\n"
+                'exec "$REAL_GIT" "$@"\n',
+            ),
+            "failed-remove": self.fixture.git_wrapper(
+                "failed-remove",
+                'if [[ "$1" == "worktree" && "$2" == "remove" ]]; then exit 91; fi\n'
+                'exec "$REAL_GIT" "$@"\n',
+            ),
+        }
+        for name, environment in wrappers.items():
+            with self.subTest(name=name):
+                if name == "partial-add":
+                    result = self.fixture.run(
+                        "build-package",
+                        "--attempt",
+                        "1",
+                        "--output",
+                        os.fspath(self.root / f"package-{name}"),
+                        "--spec",
+                        SPEC,
+                        "--plan",
+                        PLAN,
+                        "--task",
+                        TASK,
+                        env=environment,
+                    )
+                else:
+                    result = self.fixture.run(
+                        "build-package",
+                        "--attempt",
+                        "1",
+                        "--output",
+                        os.fspath(self.root / f"package-{name}"),
+                        "--spec",
+                        SPEC,
+                        "--plan",
+                        PLAN,
+                        "--task",
+                        TASK,
+                        env=environment,
+                    )
+                self.assertNotEqual(0, result.returncode, name)
+                self.assertEqual(
+                    before,
+                    git(self.root, "worktree", "list", "--porcelain").stdout,
+                    name,
+                )
+
+    def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
+        package = self.root / "package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        self.fixture.backfill_task(package, materials)
+        self.fixture.closure_materials(package, materials)
+        terminal = self.root / "evidence/terminal.md"
+        terminal.write_text("AUTHORIZED\n")
+        before_head = git(self.root, "rev-parse", "HEAD").stdout
+        before_index = git(self.root, "diff", "--cached", "--binary").stdout
+        before_task = (self.root / TASK).read_bytes()
+        race_flag = pathlib.Path(tempfile.gettempdir()) / f"gate9-race-{self.root.name}"
+        race_flag.unlink(missing_ok=True)
+        environment = self.fixture.git_wrapper(
+            "update-ref-race",
+            f'FLAG="{race_flag}"\n'
+            'if [[ "$1" == "update-ref" && "${4:-}" == "0000000000000000000000000000000000000000" && ! -e "$FLAG" ]]; then\n'
+            '  "$REAL_GIT" "$@"\n'
+            '  touch "$FLAG"\n'
+            "  exit 91\n"
+            "fi\n"
+            'exec "$REAL_GIT" "$@"\n',
+        )
+        before_status = git(self.root, "status", "--porcelain").stdout
+        result = self.fixture.run(
+            "publish-evidence-ref",
+            "--package",
+            os.fspath(package),
+            "--task",
+            TASK,
+            "--terminal-state",
+            "AUTHORIZED",
+            "--terminal-report",
+            os.fspath(terminal),
+            "--migration-report",
+            os.fspath(materials["migration-specification-report"]),
+            "--migration-receipt",
+            os.fspath(materials["migration-specification-receipt"]),
+            "--quality-report",
+            os.fspath(materials["quality-report"]),
+            "--quality-receipt",
+            os.fspath(materials["quality-receipt"]),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--migration-closure-report",
+            os.fspath(materials["migration-specification-closure-report"]),
+            "--migration-closure",
+            os.fspath(materials["migration-specification-closure"]),
+            "--quality-closure-report",
+            os.fspath(materials["quality-closure-report"]),
+            "--quality-closure",
+            os.fspath(materials["quality-closure"]),
+            "--evidence-ref",
+            "auto",
+            env=environment,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(before_head, git(self.root, "rev-parse", "HEAD").stdout)
+        self.assertEqual(before_index, git(self.root, "diff", "--cached", "--binary").stdout)
+        self.assertEqual(before_task, (self.root / TASK).read_bytes())
+        self.assertEqual(before_status, git(self.root, "status", "--porcelain").stdout)
+        race_flag.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
