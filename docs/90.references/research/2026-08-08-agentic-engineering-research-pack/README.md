@@ -14,10 +14,11 @@ infrastructure, security에 관한 19개 leaf를 사람 독자가 탐색하도�
 따릅니다.
 
 - 정책과 agent governance: `docs/00.agent-governance/`
-- lifecycle 요구사항, 설계, 실행 evidence: `docs/01.product/`부터
-  `docs/05.operations/`까지의 해당 owner
+- lifecycle 요구사항: `docs/01.requirements/`; architecture decision과 design:
+  `docs/02.architecture/`; implementation contract와 execution evidence:
+  `docs/03.specs/`, `docs/04.execution/`; operations: `docs/05.operations/`
 - runtime/configuration truth: `infra/`, `scripts/`, provider-native runtime surface
-- generated discovery output: `llms.txt`, `docs/90.references/llm/`, 그리고 해당
+- generated discovery output: `llms.txt`, `docs/90.references/llm-wiki/`, 그리고 해당
   generator
 
 ## Category Role
@@ -165,7 +166,7 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   active lifecycle owner를 바꾼 뒤 링크와 분석만 조정합니다.
 - tracked configuration과 runtime/remote evidence를 합치지 않습니다. 실행하지 않은
   validation은 PASS로 기록하지 않습니다.
-- `llms.txt`와 `docs/90.references/llm/`은 generator가 소유합니다. 이 pack 또는
+- `llms.txt`와 `docs/90.references/llm-wiki/`는 generator가 소유합니다. 이 pack 또는
   human router 변경만으로 generated artifact를 손으로 고치지 않습니다.
 - requirement, source, scope, old-claim migration evidence의 canonical execution
   owner는 [Task ledger](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)입니다.
