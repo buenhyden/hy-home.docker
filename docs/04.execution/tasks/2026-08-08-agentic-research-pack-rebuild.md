@@ -311,15 +311,20 @@ Task 1 uses only the exact checks named by its Plan.
 | Review | Range | Reviewer | Verdict | Findings / disposition |
 | --- | --- | --- | --- | --- |
 | Implementer self-review | Working tree before Task 1 commit | Task 1 implementer | PASS | Exact row counts are 35 requirements, 14 scopes, and 20 pinned old-file claim containers; two owned tracked files only; no Critical or Important finding |
-| Specification compliance | `9917fcdadf700e7f68541e73188620e133485470..TASK1_HEAD` | Independent reviewer | Not Run | Controller-owned committed-unit SDD review |
-| Documentation quality | `9917fcdadf700e7f68541e73188620e133485470..TASK1_HEAD` | Independent reviewer | Not Run | Controller-owned committed-unit SDD review |
+| Specification compliance | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Approved; C0/I0/M0 | First committed-unit specification review returned no findings |
+| Documentation quality | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Needs fixes; C0/I1/M0 | Important finding: backfill the known Task 1 commit and review identities; fix re-review Not Run |
 
 ## Commit Ledger
 
 | Unit | Commit identity | Logical unit | Validation | Review state |
 | --- | --- | --- | --- | --- |
-| Task 1 | Subject: `docs(task): initialize agentic research rebuild ledger`; SHA backfilled by the next ledger update | Execution ledger and immutable baselines | Task 1 scoped checks | Independent review Not Run |
+| Task 1 | `c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4`; `docs(task): initialize agentic research rebuild ledger` | Execution ledger and immutable baselines | Task 1 scoped checks | Specification Approved C0/I0/M0; quality Needs fixes C0/I1/M0 |
 | Tasks 2-12 | Not Run | Not Run | Not Run | Not Run |
+
+The Task 1 fix commit identity and scoped re-review verdict remain recorded in
+the ignored SDD progress evidence until a later tracked ledger update can
+backfill both without creating a self-referential commit-SHA claim. No fix
+re-review verdict is claimed in this update.
 
 ## Deferred and Blocked Items
 
