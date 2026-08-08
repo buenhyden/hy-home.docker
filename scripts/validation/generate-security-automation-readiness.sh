@@ -55,6 +55,7 @@ from scripts.validation.ci_gate_contract import (
 )
 from scripts.validation.github_workflow_contract import (
     WorkflowContractError,
+    WorkflowDocument,
     load_workflow_contract,
     load_workflows,
     validate_workflows,
@@ -101,6 +102,57 @@ def read(path_text: str) -> str:
 
 def search_any(text: str, patterns: tuple[str, ...]) -> bool:
     return any(re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE) for pattern in patterns)
+
+
+def has_strict_typed_workflow_shape_and_failure_contexts(
+    documents_by_path: dict[str, WorkflowDocument],
+    workflow_paths: set[str],
+) -> bool:
+    """Add narrow fail-closed shape/failure checks after public validation."""
+    for workflow_path in workflow_paths:
+        document = documents_by_path.get(workflow_path)
+        jobs = document.data.get("jobs") if document is not None else None
+        if not isinstance(jobs, dict):
+            return False
+        for job_id, job in jobs.items():
+            if not isinstance(job_id, str) or not isinstance(job, dict):
+                return False
+            if (
+                "continue-on-error" in job
+                and job["continue-on-error"] is not False
+            ):
+                return False
+            steps = job.get("steps")
+            if not isinstance(steps, list):
+                return False
+            for step in steps:
+                if not isinstance(step, dict):
+                    return False
+                has_run = "run" in step
+                has_uses = "uses" in step
+                if has_run == has_uses:
+                    return False
+                selected = step["run"] if has_run else step["uses"]
+                if not isinstance(selected, str) or not selected.strip():
+                    return False
+                if (
+                    "continue-on-error" in step
+                    and step["continue-on-error"] is not False
+                ):
+                    return False
+                if has_uses and "if" in step:
+                    return False
+                if has_run and "if" in step:
+                    # Preserve the public validator's sole admitted run condition.
+                    admitted_condition = (
+                        workflow_path == ".github/workflows/ci-quality.yml"
+                        and job_id == "docs-implementation-alignment"
+                        and step.get("name") == "Publish QA gate recommendations"
+                        and step["if"] == "always()"
+                    )
+                    if not admitted_condition:
+                        return False
+    return True
 
 
 def resolve_typed_workflow_evidence(
@@ -167,6 +219,12 @@ def resolve_typed_workflow_evidence(
     except GateContractError:
         return empty
 
+    if not has_strict_typed_workflow_shape_and_failure_contexts(
+        documents_by_path,
+        set(documents_by_path),
+    ):
+        return empty
+
     reachable: set[str] = set()
     pending = list(reversed(root_gate_ids))
     while pending:
@@ -200,11 +258,6 @@ def resolve_typed_workflow_evidence(
             for step in steps:
                 uses = step.get("uses") if isinstance(step, dict) else None
                 if isinstance(uses, str):
-                    if (
-                        step.get("if") is not None
-                        or step.get("continue-on-error") is not None
-                    ):
-                        return empty
                     references.add(uses)
         workflow_action_refs[workflow_path] = references
 
@@ -669,8 +722,8 @@ lines.extend(
         "",
         "- Use tracked repository files for readiness claims.",
         "- Admit typed commands and Actions only after complete canonical workflow",
-        "  validation; registered Action evidence must also use an unconditional,",
-        "  failure-propagating parsed `uses` step.",
+        "  validation plus narrow fail-closed job/step shape and failure checks;",
+        "  registered Action evidence must use a single unconditional parsed `uses`.",
         "- Treat this generated snapshot as planning evidence, not active policy or",
         "  runtime truth.",
         "- Do not include secret values, private keys, tokens, shell history, raw",

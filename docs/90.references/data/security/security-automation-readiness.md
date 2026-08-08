@@ -105,8 +105,8 @@ management procedures.
 
 - Use tracked repository files for readiness claims.
 - Admit typed commands and Actions only after complete canonical workflow
-  validation; registered Action evidence must also use an unconditional,
-  failure-propagating parsed `uses` step.
+  validation plus narrow fail-closed job/step shape and failure checks;
+  registered Action evidence must use a single unconditional parsed `uses`.
 - Treat this generated snapshot as planning evidence, not active policy or
   runtime truth.
 - Do not include secret values, private keys, tokens, shell history, raw
