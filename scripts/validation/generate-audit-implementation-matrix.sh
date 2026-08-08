@@ -503,7 +503,7 @@ def build_output() -> tuple[str, list[str]]:
             "- **Governance data index**: [README.md](./README.md)",
             "- **Reference data index**: [../README.md](../README.md)",
             "- **Audit pack index**: [../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)",
-            "- **Spec**: [../../../03.specs/118-audit-implementation-matrix-snapshot/spec.md](../../../03.specs/118-audit-implementation-matrix-snapshot/spec.md)",
+            "- **Spec**: [../../../98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md](../../../98.archive/03.specs/118-audit-implementation-matrix-snapshot/spec.md)",
             "- **Plan**: [../../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md](../../../04.execution/plans/2026-07-06-audit-implementation-matrix-snapshot.md)",
             "- **Task**: [../../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md](../../../04.execution/tasks/2026-07-06-audit-implementation-matrix-snapshot.md)",
             "",
