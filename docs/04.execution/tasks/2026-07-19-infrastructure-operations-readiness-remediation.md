@@ -4,6 +4,7 @@ artifact_id: task:2026-07-19-infrastructure-operations-readiness-remediation
 artifact_type: task
 parent_ids:
   - plan:2026-07-11-infrastructure-operations-readiness-remediation
+  - spec:125-infrastructure-operations-readiness-remediation
 ---
 
 # Task: Infrastructure Operations Readiness Remediation

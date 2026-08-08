@@ -5,6 +5,7 @@ artifact_type: task
 parent_ids:
   - plan:2026-07-11-deployment-release-engineering-remediation
   - plan:2026-07-19-operational-readiness-closure-program
+  - spec:127-deployment-release-engineering-remediation
 ---
 
 # Task: Corrected Delivery Evidence Reconciliation

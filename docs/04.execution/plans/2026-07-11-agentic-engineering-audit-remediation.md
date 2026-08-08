@@ -2,7 +2,8 @@
 status: completed
 artifact_id: plan:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: plan
-parent_ids: []
+parent_ids:
+  - spec:123-agentic-engineering-audit-remediation
 ---
 
 # Agentic Engineering Audit and Remediation Implementation Plan

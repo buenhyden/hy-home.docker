@@ -2,7 +2,8 @@
 status: completed
 artifact_id: plan:2026-07-15-agent-governance-harness-convergence
 artifact_type: plan
-parent_ids: []
+parent_ids:
+  - spec:132-agent-governance-harness-convergence
 ---
 
 # Agent Governance Harness Convergence Implementation Plan

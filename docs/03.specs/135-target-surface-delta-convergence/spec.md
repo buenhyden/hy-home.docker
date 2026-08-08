@@ -4,6 +4,7 @@ artifact_id: spec:135-target-surface-delta-convergence
 artifact_type: spec
 parent_ids:
   - spec:134-agent-governance-canonical-convergence
+  - spec:133-target-surface-contract-convergence
 ---
 
 # Target Surface Delta Convergence Specification

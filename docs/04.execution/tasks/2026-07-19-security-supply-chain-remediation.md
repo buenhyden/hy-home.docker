@@ -4,6 +4,7 @@ artifact_id: task:2026-07-19-security-supply-chain-remediation
 artifact_type: task
 parent_ids:
   - plan:2026-07-11-security-supply-chain-remediation
+  - spec:126-security-supply-chain-remediation
 ---
 
 # Task: Security Supply-Chain Remediation

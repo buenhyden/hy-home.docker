@@ -2,7 +2,8 @@
 status: completed
 artifact_id: plan:2026-07-12-agentic-audit-harness-consolidation
 artifact_type: plan
-parent_ids: []
+parent_ids:
+  - spec:128-agentic-audit-harness-consolidation
 ---
 
 # Agentic Audit Harness Consolidation Implementation Plan

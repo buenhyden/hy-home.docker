@@ -4,6 +4,7 @@ artifact_id: task:2026-07-19-deployment-release-engineering-remediation
 artifact_type: task
 parent_ids:
   - plan:2026-07-11-deployment-release-engineering-remediation
+  - spec:127-deployment-release-engineering-remediation
 ---
 
 # Task: Deployment and Release Engineering Remediation

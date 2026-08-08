@@ -4,6 +4,7 @@ artifact_id: spec:136-sdlc-taxonomy-convergence
 artifact_type: spec
 parent_ids:
   - spec:134-agent-governance-canonical-convergence
+  - spec:131-document-corpus-lifecycle-migration-foundation
 ---
 
 # SDLC Taxonomy Convergence Specification

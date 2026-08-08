@@ -4,6 +4,7 @@ artifact_id: task:2026-07-11-agentic-engineering-audit-remediation
 artifact_type: task
 parent_ids:
   - plan:2026-07-11-agentic-engineering-audit-remediation
+  - spec:123-agentic-engineering-audit-remediation
 ---
 
 # Task: Agentic Engineering Audit and Remediation

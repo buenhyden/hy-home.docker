@@ -6,6 +6,7 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
+  - spec:125-infrastructure-operations-readiness-remediation
 ---
 
 # Infrastructure Operations Readiness Remediation Implementation Plan

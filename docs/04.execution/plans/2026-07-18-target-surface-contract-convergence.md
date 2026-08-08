@@ -2,7 +2,8 @@
 status: completed
 artifact_id: plan:2026-07-18-target-surface-contract-convergence
 artifact_type: plan
-parent_ids: []
+parent_ids:
+  - spec:133-target-surface-contract-convergence
 ---
 
 # Target Surface Contract Convergence Implementation Plan

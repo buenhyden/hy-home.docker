@@ -2,7 +2,8 @@
 status: completed
 artifact_id: plan:2026-07-13-template-contract-system-canonicalization
 artifact_type: plan
-parent_ids: []
+parent_ids:
+  - spec:130-template-contract-system-canonicalization
 ---
 
 # Template Contract System Canonicalization Implementation Plan

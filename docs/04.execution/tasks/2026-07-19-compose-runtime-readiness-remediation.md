@@ -4,6 +4,7 @@ artifact_id: task:2026-07-19-compose-runtime-readiness-remediation
 artifact_type: task
 parent_ids:
   - plan:2026-07-11-compose-runtime-readiness-remediation
+  - spec:124-compose-runtime-readiness-remediation
 ---
 
 # Task: Compose Runtime Readiness Remediation

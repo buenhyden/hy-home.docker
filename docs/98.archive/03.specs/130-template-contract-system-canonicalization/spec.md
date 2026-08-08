@@ -2,7 +2,8 @@
 status: archived
 artifact_id: spec:130-template-contract-system-canonicalization
 artifact_type: archive
-parent_ids: []
+parent_ids:
+  - spec:129-document-contract-canonicalization
 archived_from: docs/03.specs/130-template-contract-system-canonicalization/spec.md
 archived_on: 2026-08-08
 archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.

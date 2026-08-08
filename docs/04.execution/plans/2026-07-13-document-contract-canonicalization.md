@@ -2,7 +2,8 @@
 status: completed
 artifact_id: plan:2026-07-13-document-contract-canonicalization
 artifact_type: plan
-parent_ids: []
+parent_ids:
+  - spec:129-document-contract-canonicalization
 ---
 # Document Contract Canonicalization Implementation Plan
 

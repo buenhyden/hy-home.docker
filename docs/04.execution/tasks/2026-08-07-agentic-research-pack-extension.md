@@ -2,7 +2,8 @@
 status: active
 artifact_id: task:2026-08-07-agentic-research-pack-extension
 artifact_type: task
-parent_ids: []
+parent_ids:
+  - spec:123-agentic-engineering-audit-remediation
 ---
 
 # Task: Agentic Research Pack Extension and Revalidation

@@ -4,6 +4,7 @@ artifact_id: runbook:postgresql-logical-upgrade-restore-rehearsal
 artifact_type: runbook
 parent_ids:
   - task:2026-07-19-infrastructure-operations-readiness-remediation
+  - spec:125-infrastructure-operations-readiness-remediation
 reviewed_at: 2026-07-22
 review_cycle: on-postgresql-pin-change
 ---

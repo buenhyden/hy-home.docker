@@ -6,6 +6,7 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
+  - spec:124-compose-runtime-readiness-remediation
 ---
 
 # Compose Runtime Readiness Remediation Implementation Plan

@@ -2,7 +2,9 @@
 status: active
 artifact_id: spec:134-agent-governance-canonical-convergence
 artifact_type: spec
-parent_ids: []
+parent_ids:
+  - spec:132-agent-governance-harness-convergence
+  - spec:133-target-surface-contract-convergence
 ---
 
 # Agent Governance Canonical Convergence Specification

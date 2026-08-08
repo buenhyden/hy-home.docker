@@ -6,6 +6,10 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
+  - spec:124-compose-runtime-readiness-remediation
+  - spec:125-infrastructure-operations-readiness-remediation
+  - spec:126-security-supply-chain-remediation
+  - spec:127-deployment-release-engineering-remediation
 ---
 
 # Operational Readiness Closure Program Implementation Plan

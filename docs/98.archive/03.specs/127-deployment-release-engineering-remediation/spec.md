@@ -6,6 +6,10 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
+  - spec:123-agentic-engineering-audit-remediation
+  - spec:124-compose-runtime-readiness-remediation
+  - spec:125-infrastructure-operations-readiness-remediation
+  - spec:126-security-supply-chain-remediation
 archived_from: docs/03.specs/127-deployment-release-engineering-remediation/spec.md
 archived_on: 2026-08-08
 archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
