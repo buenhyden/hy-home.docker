@@ -304,6 +304,44 @@ def write_task_patch_and_deletion_patch(
     return task_patch, deletion_patch
 
 
+def prove_detached_removal_scope(worktree: pathlib.Path, commit: str) -> None:
+    if head(worktree) != commit:
+        fail("DETACHED_REMOVAL_SCOPE_DRIFT", "detached worktree HEAD differs")
+    cached = run_git(
+        worktree, ["diff", "--cached", "--quiet", commit, "--"], check=False
+    )
+    if cached.returncode != 0:
+        fail("DETACHED_REMOVAL_SCOPE_DRIFT", "detached index differs from HEAD")
+    expected_paths = sorted(manifest_paths(tree_manifest(worktree, commit, OLD_PACK)))
+    tracked_paths = sorted(
+        filter(
+            None,
+            run_git(
+                worktree, ["ls-files", "--", OLD_PACK.as_posix()]
+            ).stdout.decode().splitlines(),
+        )
+    )
+    if tracked_paths != expected_paths or len(expected_paths) != 20:
+        fail("DETACHED_REMOVAL_SCOPE_DRIFT", "retiring path set differs from HEAD")
+    modified_paths = set(
+        filter(
+            None,
+            run_git(worktree, ["diff", "--name-only", "--"]).stdout.decode().splitlines(),
+        )
+    )
+    untracked_paths = set(
+        filter(
+            None,
+            run_git(
+                worktree, ["ls-files", "--others", "--exclude-standard"]
+            ).stdout.decode().splitlines(),
+        )
+    )
+    outside = sorted((modified_paths | untracked_paths) - set(expected_paths))
+    if outside:
+        fail("DETACHED_REMOVAL_SCOPE_DRIFT", f"outside changes: {outside!r}")
+
+
 def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes, bytes]:
     registry_before = run_git(root, ["worktree", "list", "--porcelain"]).stdout
     holding = pathlib.Path(tempfile.mkdtemp(prefix="gate9-worktree-holding-"))
@@ -313,7 +351,8 @@ def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes,
     cleanup_errors: list[str] = []
     try:
         run_git(root, ["worktree", "add", "--quiet", "--detach", os.fspath(worktree), commit])
-        run_git(worktree, ["rm", "-r", "--quiet", "--", OLD_PACK.as_posix()])
+        prove_detached_removal_scope(worktree, commit)
+        run_git(worktree, ["rm", "-r", "-f", "--quiet", "--", OLD_PACK.as_posix()])
         for generator in (INDEX_GENERATOR, COVERAGE_GENERATOR):
             result = subprocess.run(
                 ["bash", generator.as_posix()],

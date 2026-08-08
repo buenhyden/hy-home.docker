@@ -1399,6 +1399,45 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                     name,
                 )
 
+    def test_detached_projection_forces_only_proved_old_pack_modifications(self) -> None:
+        before = git(self.root, "worktree", "list", "--porcelain").stdout
+        environment = self.fixture.git_wrapper(
+            "modified-old-pack",
+            'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
+            '  "$REAL_GIT" "$@"\n'
+            '  for path in "$5"/' + OLD_PACK + '/*.md; do\n'
+            "    printf 'checkout-local drift\\n' >> \"$path\"\n"
+            "  done\n"
+            '  touch "$GATE9_WRAPPER_MARKER"\n'
+            "  exit 0\n"
+            "fi\n"
+            'exec "$REAL_GIT" "$@"\n',
+        )
+        package = self.root / "package-modified-old-pack"
+        result = self.fixture.run(
+            "build-package",
+            "--attempt",
+            "1",
+            "--output",
+            os.fspath(package),
+            "--spec",
+            SPEC,
+            "--plan",
+            PLAN,
+            "--task",
+            TASK,
+            env=environment,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertTrue(
+            pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file()
+        )
+        verified = self.fixture.run(
+            "verify-package", "--package", os.fspath(package), "--require-live-head"
+        )
+        self.assertEqual(0, verified.returncode, verified.stderr)
+        self.assertEqual(before, git(self.root, "worktree", "list", "--porcelain").stdout)
+
     def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
         package = self.root / "package"
         self.assertEqual(0, self.fixture.build(package).returncode)
