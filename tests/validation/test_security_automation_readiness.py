@@ -280,6 +280,48 @@ jobs:
             "--gate ${{ github.ref }}",
         )
 
+        disabled_gate_step_workflow = base_workflow.replace(
+            "        run: python3 scripts/validation/run-ci-gate.py ",
+            "        if: ${{ false }}\n"
+            "        run: python3 scripts/validation/run-ci-gate.py ",
+        )
+
+        disabled_gate_job_workflow = base_workflow.replace(
+            "  security:\n",
+            "  security:\n    if: ${{ false }}\n",
+            1,
+        )
+
+        non_string_run_workflow = base_workflow.replace(
+            "      - name: Upload SARIF\n",
+            "      - name: Invalid non-string program\n"
+            "        run: 123\n"
+            "      - name: Upload SARIF\n",
+        )
+
+        explicit_shell_workflow = base_workflow.replace(
+            "--profile ci --gate ci.security\n",
+            "--profile ci --gate ci.security\n        shell: bash\n",
+        )
+
+        working_directory_workflow = base_workflow.replace(
+            "--profile ci --gate ci.security\n",
+            "--profile ci --gate ci.security\n"
+            "        working-directory: scripts\n",
+        )
+
+        workflow_defaults_workflow = base_workflow.replace(
+            '"on":\n',
+            "defaults:\n  run:\n    shell: bash\n"
+            '"on":\n',
+        )
+
+        job_defaults_workflow = base_workflow.replace(
+            "  security:\n",
+            "  security:\n    defaults:\n      run:\n        shell: bash\n",
+            1,
+        )
+
         duplicate_gate = copy.deepcopy(base_contract)
         duplicate_gate["gate_nodes"].append(
             copy.deepcopy(duplicate_gate["gate_nodes"][-1])
@@ -318,6 +360,41 @@ jobs:
                 "job uses a dynamic gate expression",
                 base_contract,
                 dynamic_gate_projection_workflow,
+            ),
+            (
+                "registered gate step is disabled",
+                base_contract,
+                disabled_gate_step_workflow,
+            ),
+            (
+                "registered gate job is disabled",
+                base_contract,
+                disabled_gate_job_workflow,
+            ),
+            (
+                "job includes a non-string run program",
+                base_contract,
+                non_string_run_workflow,
+            ),
+            (
+                "gate step declares a shell",
+                base_contract,
+                explicit_shell_workflow,
+            ),
+            (
+                "gate step declares a working directory",
+                base_contract,
+                working_directory_workflow,
+            ),
+            (
+                "workflow declares run defaults",
+                base_contract,
+                workflow_defaults_workflow,
+            ),
+            (
+                "job declares run defaults",
+                base_contract,
+                job_defaults_workflow,
             ),
             ("duplicate gate", duplicate_gate, base_workflow),
             ("duplicate root", duplicate_root, base_workflow),

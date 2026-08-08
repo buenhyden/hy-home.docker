@@ -56,9 +56,10 @@ from scripts.validation.ci_gate_contract import (
     parse_gate_registry,
 )
 from scripts.validation.github_workflow_contract import (
+    ActionDependency,
+    WorkflowContract,
     WorkflowContractError,
-    _job_programs as workflow_job_programs,
-    _static_gate_id as static_gate_id,
+    _workflow_projection_findings as workflow_projection_findings,
     load_workflows,
 )
 
@@ -134,6 +135,65 @@ def resolve_typed_workflow_evidence(
     workflow_registry = contract.get("workflows")
     if not isinstance(workflow_registry, dict):
         return empty
+    actions = contract.get("actions")
+    if not isinstance(actions, dict):
+        return empty
+    action_fields = {
+        "sha",
+        "runtime",
+        "manifest_url",
+        "retrieved_at",
+        "consumers",
+        "security_disposition",
+    }
+    action_dependencies: list[ActionDependency] = []
+    for action_name, registration in actions.items():
+        if (
+            not isinstance(action_name, str)
+            or not action_name
+            or not isinstance(registration, dict)
+            or set(registration) != action_fields
+        ):
+            return empty
+        consumers = registration.get("consumers")
+        scalar_fields = (
+            "sha",
+            "runtime",
+            "manifest_url",
+            "retrieved_at",
+            "security_disposition",
+        )
+        if (
+            any(
+                not isinstance(registration.get(field), str)
+                or not registration.get(field)
+                for field in scalar_fields
+            )
+            or not isinstance(consumers, list)
+            or not consumers
+            or any(
+                not isinstance(consumer, str) or not consumer
+                for consumer in consumers
+            )
+        ):
+            return empty
+        action_dependencies.append(
+            ActionDependency(
+                action=action_name,
+                sha=registration["sha"],
+                runtime=registration["runtime"],
+                manifest_url=registration["manifest_url"],
+                retrieved_at=registration["retrieved_at"],
+                consumers=tuple(consumers),
+                security_disposition=registration["security_disposition"],
+            )
+        )
+    projection_contract = WorkflowContract(
+        schema_version=2,
+        workflows=(),
+        actions=tuple(action_dependencies),
+        gate_registry=registry,
+    )
     documents_by_path = {
         document.path: document
         for document in workflow_documents
@@ -167,33 +227,28 @@ def resolve_typed_workflow_evidence(
                 or not isinstance(actual_job, dict)
             ):
                 return empty
-            expected = expand_gate_ids(
-                registry,
-                "ci",
-                root.root_gate_id,
-                False,
-            )
-            projected: list[str] = []
-            programs = workflow_job_programs(actual_job)
-            if not programs:
-                return empty
-            for program in programs:
-                gate_id = static_gate_id(program)
-                if gate_id is None:
-                    return empty
-                expanded = expand_gate_ids(registry, "ci", gate_id, False)
-                if not set(expanded).issubset(expected):
-                    return empty
-                projected.extend(expanded)
-            if (
-                tuple(projected) != expected
-                or len(projected) != len(set(projected))
-            ):
-                return empty
+            expand_gate_ids(registry, "ci", root.root_gate_id, False)
             rooted_workflows.add(root.workflow)
             root_gate_ids.append(root.root_gate_id)
     except GateContractError:
         return empty
+
+    for workflow_path in rooted_workflows:
+        document = documents_by_path[workflow_path]
+        actual_jobs = document.data.get("jobs")
+        if not isinstance(actual_jobs, dict):
+            return empty
+        try:
+            findings = workflow_projection_findings(
+                workflow_path,
+                document.data,
+                actual_jobs,
+                projection_contract,
+            )
+        except GateContractError:
+            return empty
+        if findings:
+            return empty
 
     reachable: set[str] = set()
     pending = list(reversed(root_gate_ids))
@@ -231,56 +286,15 @@ def resolve_typed_workflow_evidence(
                     references.add(uses)
         workflow_action_refs[workflow_path] = references
 
-    actions = contract.get("actions")
-    if not isinstance(actions, dict):
-        return empty
-    action_fields = {
-        "sha",
-        "runtime",
-        "manifest_url",
-        "retrieved_at",
-        "consumers",
-        "security_disposition",
-    }
     resolved_actions: list[str] = []
-    for action_name, registration in actions.items():
-        if (
-            not isinstance(action_name, str)
-            or not action_name
-            or not isinstance(registration, dict)
-            or set(registration) != action_fields
-        ):
-            return empty
-        sha = registration.get("sha")
-        consumers = registration.get("consumers")
-        scalar_fields = (
-            "sha",
-            "runtime",
-            "manifest_url",
-            "retrieved_at",
-            "security_disposition",
-        )
-        if (
-            any(
-                not isinstance(registration.get(field), str)
-                or not registration.get(field)
-                for field in scalar_fields
-            )
-            or not isinstance(consumers, list)
-            or not consumers
-            or any(
-                not isinstance(consumer, str) or not consumer
-                for consumer in consumers
-            )
-        ):
-            return empty
-        if not isinstance(sha, str) or re.fullmatch(r"[0-9a-f]{40}", sha) is None:
+    for action in action_dependencies:
+        if re.fullmatch(r"[0-9a-f]{40}", action.sha) is None:
             continue
-        action_reference = f"{action_name}@{sha}"
+        action_reference = f"{action.action}@{action.sha}"
         if any(
             consumer in rooted_workflows
             and action_reference in workflow_action_refs.get(consumer, set())
-            for consumer in consumers
+            for consumer in action.consumers
         ):
             resolved_actions.append(action_reference)
 
@@ -732,9 +746,9 @@ lines.extend(
         "## Source Rules",
         "",
         "- Use tracked repository files for readiness claims.",
-        "- Admit typed commands only when parsed workflow jobs project each",
-        "  registered gate root exactly once; admit Actions only from exact",
-        "  parsed `uses` steps.",
+        "- Admit typed commands only when parsed workflow jobs use canonical",
+        "  execution contexts and project each registered gate root exactly once;",
+        "  admit Actions only from exact parsed `uses` steps.",
         "- Treat this generated snapshot as planning evidence, not active policy or",
         "  runtime truth.",
         "- Do not include secret values, private keys, tokens, shell history, raw",
