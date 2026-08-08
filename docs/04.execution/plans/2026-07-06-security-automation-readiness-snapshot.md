@@ -47,31 +47,31 @@ tools yet.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-SAR-001 | Add readiness generator. | `scripts/validation/generate-security-automation-readiness.sh` | VAL-SAR-001, VAL-SAR-002 | Generator write, dry-run, and `--check` pass. |
-| PLN-SAR-002 | Add generated security data reference and category README. | `docs/90.references/data/security/**` | VAL-SAR-001, VAL-SAR-004 | Generated snapshot reports 11 controls and indexes route to it. |
-| PLN-SAR-003 | Wire repo-contract freshness and script inventory. | `check-repo-contracts.sh`, `scripts/README.md` | VAL-SAR-003 | Full repo contracts pass. |
-| PLN-SAR-004 | Update audit/index evidence and close readiness candidate. | Stage 03/04 indexes, Stage 90 audit docs, progress | VAL-SAR-004 | Documentation validation passes. |
+| Task        | Description                                                | Files / Docs Affected                                          | Target REQ               | Validation Criteria                                             |
+| ----------- | ---------------------------------------------------------- | -------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------- |
+| PLN-SAR-001 | Add readiness generator.                                   | `scripts/validation/generate-security-automation-readiness.sh` | VAL-SAR-001, VAL-SAR-002 | Generator write, dry-run, and `--check` pass.                   |
+| PLN-SAR-002 | Add generated security data reference and category README. | `docs/90.references/data/security/**`                          | VAL-SAR-001, VAL-SAR-004 | Generated snapshot reports 11 controls and indexes route to it. |
+| PLN-SAR-003 | Wire repo-contract freshness and script inventory.         | `check-repo-contracts.sh`, `scripts/README.md`                 | VAL-SAR-003              | Full repo contracts pass.                                       |
+| PLN-SAR-004 | Update audit/index evidence and close readiness candidate. | Stage 03/04 indexes, Stage 90 audit docs, progress             | VAL-SAR-004              | Documentation validation passes.                                |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-SAR-001 | Generator | Generate and check readiness snapshot. | `bash scripts/validation/generate-security-automation-readiness.sh`; `bash scripts/validation/generate-security-automation-readiness.sh --check` | Snapshot is fresh. |
-| VAL-PLN-SAR-002 | Generator | Preview generated output. | `bash scripts/validation/generate-security-automation-readiness.sh --dry-run` | Output renders the readiness matrix. |
-| VAL-PLN-SAR-003 | Syntax | Check changed shell scripts. | `bash -n scripts/validation/generate-security-automation-readiness.sh scripts/validation/check-repo-contracts.sh` | No syntax errors. |
-| VAL-PLN-SAR-004 | Hygiene | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check` | No output. |
-| VAL-PLN-SAR-005 | Docs | Check generated docs and traceability. | LLM Wiki freshness, doc traceability, doc implementation alignment | All pass. |
-| VAL-PLN-SAR-006 | Contracts | Check full repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
+| ID              | Level     | Description                            | Command / How to Run                                                                                                                             | Pass Criteria                        |
+| --------------- | --------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| VAL-PLN-SAR-001 | Generator | Generate and check readiness snapshot. | `bash scripts/validation/generate-security-automation-readiness.sh`; `bash scripts/validation/generate-security-automation-readiness.sh --check` | Snapshot is fresh.                   |
+| VAL-PLN-SAR-002 | Generator | Preview generated output.              | `bash scripts/validation/generate-security-automation-readiness.sh --dry-run`                                                                    | Output renders the readiness matrix. |
+| VAL-PLN-SAR-003 | Syntax    | Check changed shell scripts.           | `bash -n scripts/validation/generate-security-automation-readiness.sh scripts/validation/check-repo-contracts.sh`                                | No syntax errors.                    |
+| VAL-PLN-SAR-004 | Hygiene   | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check`                                                                                                  | No output.                           |
+| VAL-PLN-SAR-005 | Docs      | Check generated docs and traceability. | LLM Wiki freshness, doc traceability, doc implementation alignment                                                                               | All pass.                            |
+| VAL-PLN-SAR-006 | Contracts | Check full repository contracts.       | `bash scripts/validation/check-repo-contracts.sh`                                                                                                | `failures=0`.                        |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Snapshot is mistaken for a security certification | Medium | The generated reference states it is planning evidence, not a score, vulnerability result, SBOM, signature, or attestation. |
-| Generator matches its own explanatory text | Medium | The generator excludes itself from scanned workflow/script surfaces. |
-| Security tooling adoption is implied without approval | High | Keep vulnerability/SBOM/attestation/Scorecard items as gaps and route future adoption through Stage 03/04. |
+| Risk                                                  | Impact | Mitigation                                                                                                                  |
+| ----------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------- |
+| Snapshot is mistaken for a security certification     | Medium | The generated reference states it is planning evidence, not a score, vulnerability result, SBOM, signature, or attestation. |
+| Generator matches its own explanatory text            | Medium | The generator excludes itself from scanned workflow/script surfaces.                                                        |
+| Security tooling adoption is implied without approval | High   | Keep vulnerability/SBOM/attestation/Scorecard items as gaps and route future adoption through Stage 03/04.                  |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -93,7 +93,7 @@ tools yet.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/117-security-automation-readiness-snapshot/spec.md](../../98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md)
+- **Spec**: [../../98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md](../../98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md)
 - **Task**: [../tasks/2026-07-06-security-automation-readiness-snapshot.md](../tasks/2026-07-06-security-automation-readiness-snapshot.md)
 - **Generated reference**: [../../90.references/data/security/security-automation-readiness.md](../../90.references/data/security/security-automation-readiness.md)
 - **Security maturity audit**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)

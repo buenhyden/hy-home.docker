@@ -43,29 +43,29 @@ which avoids changing the required job set.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-QGS-001 | Add summary-only workflow step. | `.github/workflows/ci-quality.yml` | VAL-QGS-001, VAL-QGS-002 | Workflow still has the same job IDs and publishes summary output. |
-| PLN-QGS-002 | Add repo-contract regression literals. | `scripts/validation/check-repo-contracts.sh` | VAL-QGS-003 | Repo contracts require the summary step literals. |
-| PLN-QGS-003 | Add Stage 03/04 evidence and update indexes. | Spec, plan, task, README indexes | VAL-QGS-004 | Links and template contracts pass. |
-| PLN-QGS-004 | Update audit/progress/generated evidence. | Stage 90 audit docs, LLM Wiki, Graphify, progress | VAL-QGS-004 | Final validation summary is recorded. |
+| Task        | Description                                  | Files / Docs Affected                             | Target REQ               | Validation Criteria                                               |
+| ----------- | -------------------------------------------- | ------------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| PLN-QGS-001 | Add summary-only workflow step.              | `.github/workflows/ci-quality.yml`                | VAL-QGS-001, VAL-QGS-002 | Workflow still has the same job IDs and publishes summary output. |
+| PLN-QGS-002 | Add repo-contract regression literals.       | `scripts/validation/check-repo-contracts.sh`      | VAL-QGS-003              | Repo contracts require the summary step literals.                 |
+| PLN-QGS-003 | Add Stage 03/04 evidence and update indexes. | Spec, plan, task, README indexes                  | VAL-QGS-004              | Links and template contracts pass.                                |
+| PLN-QGS-004 | Update audit/progress/generated evidence.    | Stage 90 audit docs, LLM Wiki, Graphify, progress | VAL-QGS-004              | Final validation summary is recorded.                             |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-001 | CLI | Check recommendation script output for workflow path. | `bash scripts/validation/recommend-qa-gates.sh --files .github/workflows/ci-quality.yml` | Recommends repo contracts and remote/manual workflow responsibility. |
-| VAL-PLN-002 | Syntax | Check changed shell scripts. | `bash -n scripts/validation/check-repo-contracts.sh scripts/validation/recommend-qa-gates.sh` | No syntax errors. |
-| VAL-PLN-003 | Hygiene | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check` | No output. |
-| VAL-PLN-004 | Docs | Check generated and docs contracts. | LLM Wiki freshness, doc traceability, doc implementation alignment | All pass. |
-| VAL-PLN-005 | Contracts | Check full repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
+| ID          | Level     | Description                                           | Command / How to Run                                                                          | Pass Criteria                                                        |
+| ----------- | --------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| VAL-PLN-001 | CLI       | Check recommendation script output for workflow path. | `bash scripts/validation/recommend-qa-gates.sh --files .github/workflows/ci-quality.yml`      | Recommends repo contracts and remote/manual workflow responsibility. |
+| VAL-PLN-002 | Syntax    | Check changed shell scripts.                          | `bash -n scripts/validation/check-repo-contracts.sh scripts/validation/recommend-qa-gates.sh` | No syntax errors.                                                    |
+| VAL-PLN-003 | Hygiene   | Check whitespace and conflict markers.                | `git diff --check`; `git diff --cached --check`                                               | No output.                                                           |
+| VAL-PLN-004 | Docs      | Check generated and docs contracts.                   | LLM Wiki freshness, doc traceability, doc implementation alignment                            | All pass.                                                            |
+| VAL-PLN-005 | Contracts | Check full repository contracts.                      | `bash scripts/validation/check-repo-contracts.sh`                                             | `failures=0`.                                                        |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Summary step changes required CI semantics | Medium | Add the step inside an existing required job and avoid new job IDs. |
-| Missing base ref causes workflow failure | Medium | Use PR base SHA, push before SHA, `HEAD~1`, then explicit-file fallback. |
+| Risk                                                | Impact | Mitigation                                                                            |
+| --------------------------------------------------- | ------ | ------------------------------------------------------------------------------------- |
+| Summary step changes required CI semantics          | Medium | Add the step inside an existing required job and avoid new job IDs.                   |
+| Missing base ref causes workflow failure            | Medium | Use PR base SHA, push before SHA, `HEAD~1`, then explicit-file fallback.              |
 | Summary output is mistaken for executed QA evidence | Medium | Label output as recommendations and keep task evidence clear that gates are advisory. |
 
 ## Agent Rollout & Evaluation Gates
@@ -88,7 +88,7 @@ which avoids changing the required job set.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
+- **Spec**: [../../98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md](../../98.archive/03.specs/111-qa-gate-recommendation-ci-summary/spec.md)
 - **Task**: [../tasks/2026-07-05-qa-gate-recommendation-ci-summary.md](../tasks/2026-07-05-qa-gate-recommendation-ci-summary.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **CI quality workflow**: [../../../.github/workflows/ci-quality.yml](../../../.github/workflows/ci-quality.yml)

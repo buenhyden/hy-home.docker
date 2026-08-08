@@ -73,35 +73,35 @@ runtime infrastructure, secrets, remote GitHub state, or CI hard gates.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-SDCN-001 | Clean stale numbered PRD/Spec contract guidance. | `docs/01.requirements/README.md`, `docs/00.agent-governance/scopes/meta.md` | `SDCN-GAP-001`, `SDCN-GAP-002` | Targeted stale-guidance scan and repo contracts pass. |
-| PLN-SDCN-002 | Extend validator coverage for active stale guidance. | `scripts/validation/check-repo-contracts.sh`, `.github/ISSUE_TEMPLATE/bug_report.yml` | `SDCN-GAP-003`, `SDCN-GAP-004` | Validator catches representative stale guidance and full repo contracts pass. |
-| PLN-SDCN-003 | Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy. | Stage 90 audit/reference or task evidence, Stage 03/04 indexes if needed | `SDCN-GAP-005`, `SDCN-GAP-006` | Classification table exists; no hard gate added without exception set. |
-| PLN-SDCN-004 | Review and apply approved operations leaf naming polish. | Exact `docs/05.operations/**` candidates and parent README links | `SDCN-GAP-007` | Role separation is preserved; traceability and implementation alignment pass. |
-| PLN-SDCN-005 | Close evidence and generated indexes. | task evidence, progress memory, generated LLM Wiki index/coverage | `SDCN-GAP-008`, closure criteria | Final checks pass; residual gaps are recorded. |
+| Task         | Description                                                               | Files / Docs Affected                                                                 | Target REQ                       | Validation Criteria                                                           |
+| ------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------- |
+| PLN-SDCN-001 | Clean stale numbered PRD/Spec contract guidance.                          | `docs/01.requirements/README.md`, `docs/00.agent-governance/scopes/meta.md`           | `SDCN-GAP-001`, `SDCN-GAP-002`   | Targeted stale-guidance scan and repo contracts pass.                         |
+| PLN-SDCN-002 | Extend validator coverage for active stale guidance.                      | `scripts/validation/check-repo-contracts.sh`, `.github/ISSUE_TEMPLATE/bug_report.yml` | `SDCN-GAP-003`, `SDCN-GAP-004`   | Validator catches representative stale guidance and full repo contracts pass. |
+| PLN-SDCN-003 | Classify Stage 03 sibling README and Stage 04 plan/task lifecycle policy. | Stage 90 audit/reference or task evidence, Stage 03/04 indexes if needed              | `SDCN-GAP-005`, `SDCN-GAP-006`   | Classification table exists; no hard gate added without exception set.        |
+| PLN-SDCN-004 | Review and apply approved operations leaf naming polish.                  | Exact `docs/05.operations/**` candidates and parent README links                      | `SDCN-GAP-007`                   | Role separation is preserved; traceability and implementation alignment pass. |
+| PLN-SDCN-005 | Close evidence and generated indexes.                                     | task evidence, progress memory, generated LLM Wiki index/coverage                     | `SDCN-GAP-008`, closure criteria | Final checks pass; residual gaps are recorded.                                |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-SDCN-001 | Hygiene | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check` | No output. |
-| VAL-PLN-SDCN-002 | Generated Docs | Verify LLM Wiki generated surfaces. | `bash scripts/knowledge/generate-llm-wiki-index.sh --check`; `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | Both pass. |
-| VAL-PLN-SDCN-003 | Traceability | Verify document traceability. | `bash scripts/validation/check-doc-traceability.sh` | `failures=0`. |
-| VAL-PLN-SDCN-004 | Implementation Alignment | Verify active docs still match tracked implementation surfaces. | `bash scripts/validation/check-doc-implementation-alignment.sh` | `failures=0`. |
-| VAL-PLN-SDCN-005 | Syntax | Check repo-contract script syntax after validator edits. | `bash -n scripts/validation/check-repo-contracts.sh` | Zero exit status. |
-| VAL-PLN-SDCN-006 | Repo Contracts | Run the full repository contract gate. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
-| VAL-PLN-SDCN-007 | Targeted Stale Guidance | Verify obsolete active PRD/Spec examples are gone outside approved historical contexts. | Targeted `rg` commands recorded in task evidence | No unapproved active stale guidance remains. |
+| ID               | Level                    | Description                                                                             | Command / How to Run                                                                                                        | Pass Criteria                                |
+| ---------------- | ------------------------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| VAL-PLN-SDCN-001 | Hygiene                  | Check whitespace and conflict markers.                                                  | `git diff --check`; `git diff --cached --check`                                                                             | No output.                                   |
+| VAL-PLN-SDCN-002 | Generated Docs           | Verify LLM Wiki generated surfaces.                                                     | `bash scripts/knowledge/generate-llm-wiki-index.sh --check`; `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | Both pass.                                   |
+| VAL-PLN-SDCN-003 | Traceability             | Verify document traceability.                                                           | `bash scripts/validation/check-doc-traceability.sh`                                                                         | `failures=0`.                                |
+| VAL-PLN-SDCN-004 | Implementation Alignment | Verify active docs still match tracked implementation surfaces.                         | `bash scripts/validation/check-doc-implementation-alignment.sh`                                                             | `failures=0`.                                |
+| VAL-PLN-SDCN-005 | Syntax                   | Check repo-contract script syntax after validator edits.                                | `bash -n scripts/validation/check-repo-contracts.sh`                                                                        | Zero exit status.                            |
+| VAL-PLN-SDCN-006 | Repo Contracts           | Run the full repository contract gate.                                                  | `bash scripts/validation/check-repo-contracts.sh`                                                                           | `failures=0`.                                |
+| VAL-PLN-SDCN-007 | Targeted Stale Guidance  | Verify obsolete active PRD/Spec examples are gone outside approved historical contexts. | Targeted `rg` commands recorded in task evidence                                                                            | No unapproved active stale guidance remains. |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Validator change flags historical evidence. | High | Keep migration-table and completed-evidence exceptions explicit; fall back to advisory evidence if exception set is not stable. |
-| Plan/task naming cleanup rewrites history. | High | Classify first; preserve historical task evidence unless active-consumption conflict is proven. |
-| Operations rename breaks links. | Medium | Use `git mv`, update parent README and related links in the same wave, and run traceability/implementation alignment checks. |
-| README files become policy owners. | Medium | Move durable rules to Stage 00 or Stage 99 support; README updates remain routing/index text. |
-| External sources override local policy. | Medium | Use external sources only as rationale; keep Stage 00 and Stage 99 as policy owners. |
+| Risk                                        | Impact | Mitigation                                                                                                                      |
+| ------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Validator change flags historical evidence. | High   | Keep migration-table and completed-evidence exceptions explicit; fall back to advisory evidence if exception set is not stable. |
+| Plan/task naming cleanup rewrites history.  | High   | Classify first; preserve historical task evidence unless active-consumption conflict is proven.                                 |
+| Operations rename breaks links.             | Medium | Use `git mv`, update parent README and related links in the same wave, and run traceability/implementation alignment checks.    |
+| README files become policy owners.          | Medium | Move durable rules to Stage 00 or Stage 99 support; README updates remain routing/index text.                                   |
+| External sources override local policy.     | Medium | Use external sources only as rationale; keep Stage 00 and Stage 99 as policy owners.                                            |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -131,7 +131,7 @@ runtime infrastructure, secrets, remote GitHub state, or CI hard gates.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/119-sdlc-document-contract-corpus-normalization/spec.md](../../98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
+- **Spec**: [../../98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md](../../98.archive/03.specs/119-sdlc-document-contract-corpus-normalization/spec.md)
 - **Task**: [../tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md](../tasks/2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Numbered path migration spec**: [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md)
 - **Document restructure disposition spec**: [../../03.specs/103-document-restructure-audit-contract-archive/spec.md](../../03.specs/103-document-restructure-audit-contract-archive/spec.md)

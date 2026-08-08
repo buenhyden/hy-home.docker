@@ -46,31 +46,31 @@ event, command provenance, and Gemini's non-native behavioral reminder contract.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-PHM-001 | Add provider hook parity generator. | `scripts/validation/report-provider-hook-parity.sh` | VAL-PHM-001, VAL-PHM-002 | Generator write and `--check` pass. |
-| PLN-PHM-002 | Add generated governance data output. | `docs/90.references/data/governance/provider-hook-parity-matrix.md` | VAL-PHM-001, VAL-PHM-002 | Output includes event matrix, command provenance, and Gemini checklist. |
-| PLN-PHM-003 | Wire repo-contract freshness and script inventory. | `check-repo-contracts.sh`, `scripts/README.md` | VAL-PHM-003 | Full repo contracts pass. |
-| PLN-PHM-004 | Add evidence and close candidate. | Stage 03/04 indexes, Stage 90 indexes, audit docs, progress | VAL-PHM-004 | Documentation validation passes. |
+| Task        | Description                                        | Files / Docs Affected                                               | Target REQ               | Validation Criteria                                                     |
+| ----------- | -------------------------------------------------- | ------------------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| PLN-PHM-001 | Add provider hook parity generator.                | `scripts/validation/report-provider-hook-parity.sh`                 | VAL-PHM-001, VAL-PHM-002 | Generator write and `--check` pass.                                     |
+| PLN-PHM-002 | Add generated governance data output.              | `docs/90.references/data/governance/provider-hook-parity-matrix.md` | VAL-PHM-001, VAL-PHM-002 | Output includes event matrix, command provenance, and Gemini checklist. |
+| PLN-PHM-003 | Wire repo-contract freshness and script inventory. | `check-repo-contracts.sh`, `scripts/README.md`                      | VAL-PHM-003              | Full repo contracts pass.                                               |
+| PLN-PHM-004 | Add evidence and close candidate.                  | Stage 03/04 indexes, Stage 90 indexes, audit docs, progress         | VAL-PHM-004              | Documentation validation passes.                                        |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-PHM-001 | Generator | Generate and check snapshot. | `bash scripts/validation/report-provider-hook-parity.sh`; `bash scripts/validation/report-provider-hook-parity.sh --check` | Output is fresh. |
-| VAL-PLN-PHM-002 | Provider sync | Confirm generated provider adapters remain aligned. | `bash scripts/operations/sync-provider-surfaces.sh --check` | No provider surface drift. |
-| VAL-PLN-PHM-003 | Syntax | Check changed shell scripts. | `bash -n scripts/validation/report-provider-hook-parity.sh scripts/validation/check-repo-contracts.sh` | No syntax errors. |
-| VAL-PLN-PHM-004 | Hygiene | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check` | No output. |
-| VAL-PLN-PHM-005 | Docs | Check generated and docs contracts. | LLM Wiki freshness, doc traceability, doc implementation alignment | All pass. |
-| VAL-PLN-PHM-006 | Contracts | Check full repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
+| ID              | Level         | Description                                         | Command / How to Run                                                                                                       | Pass Criteria              |
+| --------------- | ------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| VAL-PLN-PHM-001 | Generator     | Generate and check snapshot.                        | `bash scripts/validation/report-provider-hook-parity.sh`; `bash scripts/validation/report-provider-hook-parity.sh --check` | Output is fresh.           |
+| VAL-PLN-PHM-002 | Provider sync | Confirm generated provider adapters remain aligned. | `bash scripts/operations/sync-provider-surfaces.sh --check`                                                                | No provider surface drift. |
+| VAL-PLN-PHM-003 | Syntax        | Check changed shell scripts.                        | `bash -n scripts/validation/report-provider-hook-parity.sh scripts/validation/check-repo-contracts.sh`                     | No syntax errors.          |
+| VAL-PLN-PHM-004 | Hygiene       | Check whitespace and conflict markers.              | `git diff --check`; `git diff --cached --check`                                                                            | No output.                 |
+| VAL-PLN-PHM-005 | Docs          | Check generated and docs contracts.                 | LLM Wiki freshness, doc traceability, doc implementation alignment                                                         | All pass.                  |
+| VAL-PLN-PHM-006 | Contracts     | Check full repository contracts.                    | `bash scripts/validation/check-repo-contracts.sh`                                                                          | `failures=0`.              |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Generated matrix is mistaken for active provider policy | Medium | Label it generated audit context and link Stage 00 provider sources. |
-| Gemini row implies native hook support | High | Render Gemini as `behavioral-reminder` and cite Stage 00 no-native-hook boundary. |
-| Personal provider settings are accidentally included | High | Generator reads tracked config only and excludes `.claude/settings.local.json`. |
+| Risk                                                    | Impact | Mitigation                                                                        |
+| ------------------------------------------------------- | ------ | --------------------------------------------------------------------------------- |
+| Generated matrix is mistaken for active provider policy | Medium | Label it generated audit context and link Stage 00 provider sources.              |
+| Gemini row implies native hook support                  | High   | Render Gemini as `behavioral-reminder` and cite Stage 00 no-native-hook boundary. |
+| Personal provider settings are accidentally included    | High   | Generator reads tracked config only and excludes `.claude/settings.local.json`.   |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -94,7 +94,7 @@ event, command provenance, and Gemini's non-native behavioral reminder contract.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/115-provider-hook-parity-matrix/spec.md](../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)
+- **Spec**: [../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md](../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)
 - **Task**: [../tasks/2026-07-06-provider-hook-parity-matrix.md](../tasks/2026-07-06-provider-hook-parity-matrix.md)
 - **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../90.references/data/governance/provider-hook-parity-matrix.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

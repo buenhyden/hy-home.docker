@@ -43,30 +43,30 @@ categories remain present.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-APC-001 | Add audit-pack coverage parser. | `scripts/validation/report-audit-pack-coverage.sh` | VAL-APC-001, VAL-APC-002 | `--check` passes against the current audit pack. |
-| PLN-APC-002 | Wire repo-contract gate and script inventory. | `check-repo-contracts.sh`, `scripts/README.md` | VAL-APC-003 | Full repo contracts pass. |
-| PLN-APC-003 | Add Stage evidence and update audit references. | Spec, plan, task, indexes, audit docs | VAL-APC-004 | Links and documentation validation pass. |
-| PLN-APC-004 | Refresh generated navigation and close memory. | LLM Wiki, Graphify, progress | VAL-APC-004 | Freshness and graph health are recorded. |
+| Task        | Description                                     | Files / Docs Affected                              | Target REQ               | Validation Criteria                              |
+| ----------- | ----------------------------------------------- | -------------------------------------------------- | ------------------------ | ------------------------------------------------ |
+| PLN-APC-001 | Add audit-pack coverage parser.                 | `scripts/validation/report-audit-pack-coverage.sh` | VAL-APC-001, VAL-APC-002 | `--check` passes against the current audit pack. |
+| PLN-APC-002 | Wire repo-contract gate and script inventory.   | `check-repo-contracts.sh`, `scripts/README.md`     | VAL-APC-003              | Full repo contracts pass.                        |
+| PLN-APC-003 | Add Stage evidence and update audit references. | Spec, plan, task, indexes, audit docs              | VAL-APC-004              | Links and documentation validation pass.         |
+| PLN-APC-004 | Refresh generated navigation and close memory.  | LLM Wiki, Graphify, progress                       | VAL-APC-004              | Freshness and graph health are recorded.         |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-APC-001 | CLI | Check audit-pack coverage output. | `bash scripts/validation/report-audit-pack-coverage.sh --check` | Required reports and overview categories pass. |
-| VAL-PLN-APC-002 | Syntax | Check changed shell scripts. | `bash -n scripts/validation/report-audit-pack-coverage.sh scripts/validation/check-repo-contracts.sh` | No syntax errors. |
-| VAL-PLN-APC-003 | Hygiene | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check` | No output. |
-| VAL-PLN-APC-004 | Docs | Check generated and docs contracts. | LLM Wiki freshness, doc traceability, doc implementation alignment | All pass. |
-| VAL-PLN-APC-005 | Contracts | Check full repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
+| ID              | Level     | Description                            | Command / How to Run                                                                                  | Pass Criteria                                  |
+| --------------- | --------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| VAL-PLN-APC-001 | CLI       | Check audit-pack coverage output.      | `bash scripts/validation/report-audit-pack-coverage.sh --check`                                       | Required reports and overview categories pass. |
+| VAL-PLN-APC-002 | Syntax    | Check changed shell scripts.           | `bash -n scripts/validation/report-audit-pack-coverage.sh scripts/validation/check-repo-contracts.sh` | No syntax errors.                              |
+| VAL-PLN-APC-003 | Hygiene   | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check`                                                       | No output.                                     |
+| VAL-PLN-APC-004 | Docs      | Check generated and docs contracts.    | LLM Wiki freshness, doc traceability, doc implementation alignment                                    | All pass.                                      |
+| VAL-PLN-APC-005 | Contracts | Check full repository contracts.       | `bash scripts/validation/check-repo-contracts.sh`                                                     | `failures=0`.                                  |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
+| Risk                                                         | Impact | Mitigation                                                                  |
+| ------------------------------------------------------------ | ------ | --------------------------------------------------------------------------- |
 | Report output is mistaken for refreshed implementation truth | Medium | Label it as coverage output and keep audit conclusions in Stage 90 reports. |
-| Parser breaks on provider comparison tables | Medium | Treat Claude, Codex, and Gemini columns as status columns. |
-| Category list drifts silently | Medium | Repo contracts fail when required overview categories disappear. |
+| Parser breaks on provider comparison tables                  | Medium | Treat Claude, Codex, and Gemini columns as status columns.                  |
+| Category list drifts silently                                | Medium | Repo contracts fail when required overview categories disappear.            |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -89,6 +89,6 @@ categories remain present.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/112-audit-pack-coverage-report/spec.md](../../98.archive/03.specs/112-audit-pack-coverage-report/spec.md)
+- **Spec**: [../../98.archive/03.specs/112-audit-pack-coverage-report/spec.md](../../98.archive/03.specs/112-audit-pack-coverage-report/spec.md)
 - **Task**: [../tasks/2026-07-05-audit-pack-coverage-report.md](../tasks/2026-07-05-audit-pack-coverage-report.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

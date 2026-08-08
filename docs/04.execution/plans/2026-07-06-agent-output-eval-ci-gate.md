@@ -45,30 +45,30 @@ fixture catalog drift, not semantic scoring of every agent response.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
+| Task        | Description                                                | Files / Docs Affected                                                                                                                     | Target REQ               | Validation Criteria                                                                                |
+| ----------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------- |
 | PLN-AOC-001 | Add CI fixture gate and synchronize required-job taxonomy. | `.github/workflows/ci-quality.yml`, `scripts/validation/check-repo-contracts.sh`, `.github/rulesets/main-protection.md`, governance rules | VAL-AOC-001, VAL-AOC-002 | Workflow contains a read-only job that runs `--check-fixtures`, and repo contracts accept the job. |
-| PLN-AOC-002 | Add Stage evidence. | `docs/03.specs/120-*`, Stage 04 plan/task | VAL-AOC-003 | Spec/plan/task link to parent runner and fixture reference. |
-| PLN-AOC-003 | Synchronize audit residual gap wording. | Stage 90 implementation audit pack | VAL-AOC-003 | Audit docs distinguish fixture freshness CI from future semantic scoring gates. |
-| PLN-AOC-004 | Validate and close. | Generated indexes, progress memory | VAL-AOC-004 | Local checks pass or record explicit tool absence. |
+| PLN-AOC-002 | Add Stage evidence.                                        | `docs/03.specs/120-*`, Stage 04 plan/task                                                                                                 | VAL-AOC-003              | Spec/plan/task link to parent runner and fixture reference.                                        |
+| PLN-AOC-003 | Synchronize audit residual gap wording.                    | Stage 90 implementation audit pack                                                                                                        | VAL-AOC-003              | Audit docs distinguish fixture freshness CI from future semantic scoring gates.                    |
+| PLN-AOC-004 | Validate and close.                                        | Generated indexes, progress memory                                                                                                        | VAL-AOC-004              | Local checks pass or record explicit tool absence.                                                 |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-AOC-001 | Runner | Check fixture catalog freshness. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` | `fixtures_check=pass`. |
-| VAL-PLN-AOC-002 | Workflow | Check GitHub Actions workflow syntax when available. | `actionlint .github/workflows/ci-quality.yml` | No findings, or explicit local skip if `actionlint` is unavailable. |
-| VAL-PLN-AOC-003 | Hygiene | Check whitespace and conflict markers. | `git diff --check` | No output. |
-| VAL-PLN-AOC-004 | Docs | Check generated and docs contracts. | LLM Wiki freshness, doc traceability, doc implementation alignment | All pass. |
-| VAL-PLN-AOC-005 | Contracts | Check full repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
+| ID              | Level     | Description                                          | Command / How to Run                                                         | Pass Criteria                                                       |
+| --------------- | --------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| VAL-PLN-AOC-001 | Runner    | Check fixture catalog freshness.                     | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` | `fixtures_check=pass`.                                              |
+| VAL-PLN-AOC-002 | Workflow  | Check GitHub Actions workflow syntax when available. | `actionlint .github/workflows/ci-quality.yml`                                | No findings, or explicit local skip if `actionlint` is unavailable. |
+| VAL-PLN-AOC-003 | Hygiene   | Check whitespace and conflict markers.               | `git diff --check`                                                           | No output.                                                          |
+| VAL-PLN-AOC-004 | Docs      | Check generated and docs contracts.                  | LLM Wiki freshness, doc traceability, doc implementation alignment           | All pass.                                                           |
+| VAL-PLN-AOC-005 | Contracts | Check full repository contracts.                     | `bash scripts/validation/check-repo-contracts.sh`                            | `failures=0`.                                                       |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
+| Risk                                                              | Impact | Mitigation                                                                                |
+| ----------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------- |
 | Fixture freshness is mistaken for semantic agent-output approval. | Medium | Spec, task, and audit wording explicitly keep semantic scoring advisory and future-gated. |
-| CI job grows into a high-latency eval surface. | Medium | Run only the existing `--check-fixtures` mode with a five-minute timeout. |
-| Workflow introduces broad permissions. | High | Use job-level `contents: read` and no write token or secrets. |
+| CI job grows into a high-latency eval surface.                    | Medium | Run only the existing `--check-fixtures` mode with a five-minute timeout.                 |
+| Workflow introduces broad permissions.                            | High   | Use job-level `contents: read` and no write token or secrets.                             |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -90,7 +90,7 @@ fixture catalog drift, not semantic scoring of every agent response.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/120-agent-output-eval-ci-gate/spec.md](../../98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md)
+- **Spec**: [../../98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md](../../98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md)
 - **Task**: [../tasks/2026-07-06-agent-output-eval-ci-gate.md](../tasks/2026-07-06-agent-output-eval-ci-gate.md)
-- **Parent Runner Spec**: [../../03.specs/116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
+- **Parent Runner Spec**: [../../98.archive/03.specs/116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)

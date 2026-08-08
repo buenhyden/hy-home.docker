@@ -25,7 +25,7 @@ parity gap rather than a structural one.
 
 - **Goals**:
   - Derive generated provider agent scope from the Stage 00 catalog `Scope
-    import` literal.
+import` literal.
   - Regenerate Codex and Gemini provider agent adapters.
   - Add repo-contract validation for Claude, Codex, Gemini, and subagent
     protocol role-scope parity.
@@ -49,30 +49,30 @@ parity gap rather than a structural one.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-PSPV-001 | Create Stage 03/04 evidence. | `docs/03.specs/107-provider-semantic-parity-validator/**`, this plan, task evidence, indexes | VAL-SPC-001 | Spec, plan, and task are linked and indexed. |
-| PLN-PSPV-002 | Update provider sync generator to use canonical role scope. | `scripts/operations/sync-provider-surfaces.sh`, generated provider adapters | VAL-SPC-001, VAL-SPC-002 | Provider sync `--write` then `--check` passes. |
-| PLN-PSPV-003 | Add semantic parity repo-contract validation. | `scripts/validation/check-repo-contracts.sh` | VAL-SPC-003, VAL-SPC-004 | Repo contracts fail on role-scope drift and pass on the current tree. |
-| PLN-PSPV-004 | Update audit/progress evidence and close. | Stage 90 audit candidate, progress memory, generated indexes | VAL-SPC-004 | Final validation summary is recorded. |
+| Task         | Description                                                 | Files / Docs Affected                                                                        | Target REQ               | Validation Criteria                                                   |
+| ------------ | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------- |
+| PLN-PSPV-001 | Create Stage 03/04 evidence.                                | `docs/03.specs/107-provider-semantic-parity-validator/**`, this plan, task evidence, indexes | VAL-SPC-001              | Spec, plan, and task are linked and indexed.                          |
+| PLN-PSPV-002 | Update provider sync generator to use canonical role scope. | `scripts/operations/sync-provider-surfaces.sh`, generated provider adapters                  | VAL-SPC-001, VAL-SPC-002 | Provider sync `--write` then `--check` passes.                        |
+| PLN-PSPV-003 | Add semantic parity repo-contract validation.               | `scripts/validation/check-repo-contracts.sh`                                                 | VAL-SPC-003, VAL-SPC-004 | Repo contracts fail on role-scope drift and pass on the current tree. |
+| PLN-PSPV-004 | Update audit/progress evidence and close.                   | Stage 90 audit candidate, progress memory, generated indexes                                 | VAL-SPC-004              | Final validation summary is recorded.                                 |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Generator | Regenerate provider adapters. | `bash scripts/operations/sync-provider-surfaces.sh --write` | Codex/Gemini adapters updated from Stage 00. |
-| VAL-PLN-002 | Generator | Check provider sync freshness. | `bash scripts/operations/sync-provider-surfaces.sh --check` | `sync-provider-surfaces: no drift`. |
-| VAL-PLN-003 | Syntax | Check shell syntax. | `bash -n scripts/operations/sync-provider-surfaces.sh scripts/validation/check-repo-contracts.sh` | No syntax errors. |
-| VAL-PLN-004 | Contracts | Check full repo contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
-| VAL-PLN-005 | Docs | Check docs and generated index. | `bash scripts/validation/check-doc-traceability.sh`; `bash scripts/validation/check-doc-implementation-alignment.sh`; `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | All pass. |
+| ID          | Level     | Description                     | Command / How to Run                                                                                                                                                              | Pass Criteria                                |
+| ----------- | --------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| VAL-PLN-001 | Generator | Regenerate provider adapters.   | `bash scripts/operations/sync-provider-surfaces.sh --write`                                                                                                                       | Codex/Gemini adapters updated from Stage 00. |
+| VAL-PLN-002 | Generator | Check provider sync freshness.  | `bash scripts/operations/sync-provider-surfaces.sh --check`                                                                                                                       | `sync-provider-surfaces: no drift`.          |
+| VAL-PLN-003 | Syntax    | Check shell syntax.             | `bash -n scripts/operations/sync-provider-surfaces.sh scripts/validation/check-repo-contracts.sh`                                                                                 | No syntax errors.                            |
+| VAL-PLN-004 | Contracts | Check full repo contracts.      | `bash scripts/validation/check-repo-contracts.sh`                                                                                                                                 | `failures=0`.                                |
+| VAL-PLN-005 | Docs      | Check docs and generated index. | `bash scripts/validation/check-doc-traceability.sh`; `bash scripts/validation/check-doc-implementation-alignment.sh`; `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | All pass.                                    |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Generated provider adapters become noisy | Medium | Limit generation changes to agent metadata, not prompt bodies or model values. |
-| Validator overreaches into historical docs | Medium | Validate only active Stage 00 catalog, provider adapter files, and subagent protocol. |
-| `.agents` write is blocked by sandbox permissions | Low | Use the approved scoped provider surface write path and record evidence. |
+| Risk                                              | Impact | Mitigation                                                                            |
+| ------------------------------------------------- | ------ | ------------------------------------------------------------------------------------- |
+| Generated provider adapters become noisy          | Medium | Limit generation changes to agent metadata, not prompt bodies or model values.        |
+| Validator overreaches into historical docs        | Medium | Validate only active Stage 00 catalog, provider adapter files, and subagent protocol. |
+| `.agents` write is blocked by sandbox permissions | Low    | Use the approved scoped provider surface write path and record evidence.              |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -95,7 +95,7 @@ parity gap rather than a structural one.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/107-provider-semantic-parity-validator/spec.md](../../98.archive/03.specs/107-provider-semantic-parity-validator/spec.md)
+- **Spec**: [../../98.archive/03.specs/107-provider-semantic-parity-validator/spec.md](../../98.archive/03.specs/107-provider-semantic-parity-validator/spec.md)
 - **Task**: [../tasks/2026-07-05-provider-semantic-parity-validator.md](../tasks/2026-07-05-provider-semantic-parity-validator.md)
 - **Provider capability matrix**: [../../00.agent-governance/rules/provider-capability-matrix.md](../../00.agent-governance/rules/provider-capability-matrix.md)
 - **Provider adapter model**: [../../00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md)

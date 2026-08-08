@@ -45,30 +45,30 @@ Compose corpus.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-CPC-001 | Create Stage 03/04 evidence for the snapshot contract. | `docs/03.specs/108-compose-profile-service-coverage-snapshot/**`, this plan, task evidence, indexes | VAL-CPC-001 | Spec, plan, and task are linked and indexed. |
-| PLN-CPC-002 | Add generator and generated Stage 90 reference. | `scripts/operations/generate-compose-profile-service-coverage.sh`, `docs/90.references/data/docker/compose-profile-service-coverage.md` | VAL-CPC-001, VAL-CPC-002 | Generator write and `--check` pass. |
-| PLN-CPC-003 | Wire script inventory and repo-contract freshness gate. | `scripts/README.md`, `scripts/validation/check-repo-contracts.sh` | VAL-CPC-003, VAL-CPC-004 | Repo contracts fail on stale snapshot and pass on current output. |
-| PLN-CPC-004 | Update audit/progress/index evidence and close. | Stage 90 indexes, audit candidate, progress memory, generated LLM Wiki, Graphify | VAL-CPC-004 | Final validation summary is recorded. |
+| Task        | Description                                             | Files / Docs Affected                                                                                                                   | Target REQ               | Validation Criteria                                               |
+| ----------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| PLN-CPC-001 | Create Stage 03/04 evidence for the snapshot contract.  | `docs/03.specs/108-compose-profile-service-coverage-snapshot/**`, this plan, task evidence, indexes                                     | VAL-CPC-001              | Spec, plan, and task are linked and indexed.                      |
+| PLN-CPC-002 | Add generator and generated Stage 90 reference.         | `scripts/operations/generate-compose-profile-service-coverage.sh`, `docs/90.references/data/docker/compose-profile-service-coverage.md` | VAL-CPC-001, VAL-CPC-002 | Generator write and `--check` pass.                               |
+| PLN-CPC-003 | Wire script inventory and repo-contract freshness gate. | `scripts/README.md`, `scripts/validation/check-repo-contracts.sh`                                                                       | VAL-CPC-003, VAL-CPC-004 | Repo contracts fail on stale snapshot and pass on current output. |
+| PLN-CPC-004 | Update audit/progress/index evidence and close.         | Stage 90 indexes, audit candidate, progress memory, generated LLM Wiki, Graphify                                                        | VAL-CPC-004              | Final validation summary is recorded.                             |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Generator | Generate Compose coverage reference. | `bash scripts/operations/generate-compose-profile-service-coverage.sh` | Reference is generated from tracked Compose files. |
-| VAL-PLN-002 | Generator | Check generated reference freshness. | `bash scripts/operations/generate-compose-profile-service-coverage.sh --check` | Freshness check passes. |
-| VAL-PLN-003 | Syntax | Check shell syntax. | `bash -n scripts/operations/generate-compose-profile-service-coverage.sh scripts/validation/check-repo-contracts.sh` | No syntax errors. |
-| VAL-PLN-004 | Contracts | Check full repo contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
-| VAL-PLN-005 | Docs | Check docs and generated indexes. | `bash scripts/validation/check-doc-traceability.sh`; `bash scripts/validation/check-doc-implementation-alignment.sh`; `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | All pass. |
+| ID          | Level     | Description                          | Command / How to Run                                                                                                                                                              | Pass Criteria                                      |
+| ----------- | --------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| VAL-PLN-001 | Generator | Generate Compose coverage reference. | `bash scripts/operations/generate-compose-profile-service-coverage.sh`                                                                                                            | Reference is generated from tracked Compose files. |
+| VAL-PLN-002 | Generator | Check generated reference freshness. | `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`                                                                                                    | Freshness check passes.                            |
+| VAL-PLN-003 | Syntax    | Check shell syntax.                  | `bash -n scripts/operations/generate-compose-profile-service-coverage.sh scripts/validation/check-repo-contracts.sh`                                                              | No syntax errors.                                  |
+| VAL-PLN-004 | Contracts | Check full repo contracts.           | `bash scripts/validation/check-repo-contracts.sh`                                                                                                                                 | `failures=0`.                                      |
+| VAL-PLN-005 | Docs      | Check docs and generated indexes.    | `bash scripts/validation/check-doc-traceability.sh`; `bash scripts/validation/check-doc-implementation-alignment.sh`; `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | All pass.                                          |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Generated reference is mistaken for runtime truth | Medium | The generated document states that Compose files remain the runtime source of truth. |
-| Generator accidentally includes untracked runtime artifacts | Medium | Use `git ls-files` and filter only tracked Compose paths. |
-| Snapshot becomes stale after Compose changes | Medium | Add generator `--check` to repository contracts. |
+| Risk                                                        | Impact | Mitigation                                                                           |
+| ----------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| Generated reference is mistaken for runtime truth           | Medium | The generated document states that Compose files remain the runtime source of truth. |
+| Generator accidentally includes untracked runtime artifacts | Medium | Use `git ls-files` and filter only tracked Compose paths.                            |
+| Snapshot becomes stale after Compose changes                | Medium | Add generator `--check` to repository contracts.                                     |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -92,7 +92,7 @@ Compose corpus.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md)
+- **Spec**: [../../98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md)
 - **Task**: [../tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](../tasks/2026-07-05-compose-profile-service-coverage-snapshot.md)
 - **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../90.references/data/docker/compose-profile-service-coverage.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

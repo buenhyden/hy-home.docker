@@ -46,31 +46,31 @@ CI gates or model-based eval jobs.
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-AOR-001 | Add local advisory runner. | `scripts/validation/run-agent-output-eval-fixtures.sh` | VAL-AOR-001, VAL-AOR-002 | `--list`, `--check-fixtures`, and stdin scoring smoke pass. |
-| PLN-AOR-002 | Update fixture reference. | `docs/90.references/data/governance/agent-output-eval-fixtures.md` | VAL-AOR-001, VAL-AOR-004 | Fixture catalog names runner and required context paths. |
-| PLN-AOR-003 | Wire repo-contract freshness and script inventory. | `check-repo-contracts.sh`, `scripts/README.md` | VAL-AOR-003 | Full repo contracts pass. |
-| PLN-AOR-004 | Add evidence and close candidate. | Stage 03/04 indexes, Stage 90 audit docs, progress | VAL-AOR-004 | Documentation validation passes. |
+| Task        | Description                                        | Files / Docs Affected                                              | Target REQ               | Validation Criteria                                         |
+| ----------- | -------------------------------------------------- | ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------- |
+| PLN-AOR-001 | Add local advisory runner.                         | `scripts/validation/run-agent-output-eval-fixtures.sh`             | VAL-AOR-001, VAL-AOR-002 | `--list`, `--check-fixtures`, and stdin scoring smoke pass. |
+| PLN-AOR-002 | Update fixture reference.                          | `docs/90.references/data/governance/agent-output-eval-fixtures.md` | VAL-AOR-001, VAL-AOR-004 | Fixture catalog names runner and required context paths.    |
+| PLN-AOR-003 | Wire repo-contract freshness and script inventory. | `check-repo-contracts.sh`, `scripts/README.md`                     | VAL-AOR-003              | Full repo contracts pass.                                   |
+| PLN-AOR-004 | Add evidence and close candidate.                  | Stage 03/04 indexes, Stage 90 audit docs, progress                 | VAL-AOR-004              | Documentation validation passes.                            |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-AOR-001 | Runner | List and check fixture catalog. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --list`; `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` | Fixtures are listed and `fixtures_check=pass`. |
-| VAL-PLN-AOR-002 | Runner | Score a sample output through stdin. | `printf ... \| bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --stdin` | Output includes `result=pass`. |
-| VAL-PLN-AOR-003 | Syntax | Check changed shell scripts. | `bash -n scripts/validation/run-agent-output-eval-fixtures.sh scripts/validation/check-repo-contracts.sh` | No syntax errors. |
-| VAL-PLN-AOR-004 | Hygiene | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check` | No output. |
-| VAL-PLN-AOR-005 | Docs | Check generated and docs contracts. | LLM Wiki freshness, doc traceability, doc implementation alignment | All pass. |
-| VAL-PLN-AOR-006 | Contracts | Check full repository contracts. | `bash scripts/validation/check-repo-contracts.sh` | `failures=0`. |
+| ID              | Level     | Description                            | Command / How to Run                                                                                                                             | Pass Criteria                                  |
+| --------------- | --------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| VAL-PLN-AOR-001 | Runner    | List and check fixture catalog.        | `bash scripts/validation/run-agent-output-eval-fixtures.sh --list`; `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures` | Fixtures are listed and `fixtures_check=pass`. |
+| VAL-PLN-AOR-002 | Runner    | Score a sample output through stdin.   | `printf ... \| bash scripts/validation/run-agent-output-eval-fixtures.sh --fixture AOE-DOC-001 --stdin`                                          | Output includes `result=pass`.                 |
+| VAL-PLN-AOR-003 | Syntax    | Check changed shell scripts.           | `bash -n scripts/validation/run-agent-output-eval-fixtures.sh scripts/validation/check-repo-contracts.sh`                                        | No syntax errors.                              |
+| VAL-PLN-AOR-004 | Hygiene   | Check whitespace and conflict markers. | `git diff --check`; `git diff --cached --check`                                                                                                  | No output.                                     |
+| VAL-PLN-AOR-005 | Docs      | Check generated and docs contracts.    | LLM Wiki freshness, doc traceability, doc implementation alignment                                                                               | All pass.                                      |
+| VAL-PLN-AOR-006 | Contracts | Check full repository contracts.       | `bash scripts/validation/check-repo-contracts.sh`                                                                                                | `failures=0`.                                  |
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| --- | --- | --- |
-| Heuristic score is treated as authoritative | Medium | Output explicitly says the runner is advisory and validators/human review remain authoritative. |
-| Sensitive output is scored and echoed | High | Runner reports block reasons and criteria, not raw output text; sensitive-looking values are block patterns. |
-| Fixture catalog and runner drift | Medium | Repo contracts run `--check-fixtures`. |
+| Risk                                        | Impact | Mitigation                                                                                                   |
+| ------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| Heuristic score is treated as authoritative | Medium | Output explicitly says the runner is advisory and validators/human review remain authoritative.              |
+| Sensitive output is scored and echoed       | High   | Runner reports block reasons and criteria, not raw output text; sensitive-looking values are block patterns. |
+| Fixture catalog and runner drift            | Medium | Repo contracts run `--check-fixtures`.                                                                       |
 
 ## Agent Rollout & Evaluation Gates
 
@@ -92,7 +92,7 @@ CI gates or model-based eval jobs.
 
 ## Related Documents
 
-- **Spec**: [../../03.specs/116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
+- **Spec**: [../../98.archive/03.specs/116-agent-output-eval-runner/spec.md](../../98.archive/03.specs/116-agent-output-eval-runner/spec.md)
 - **Task**: [../tasks/2026-07-06-agent-output-eval-runner.md](../tasks/2026-07-06-agent-output-eval-runner.md)
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
