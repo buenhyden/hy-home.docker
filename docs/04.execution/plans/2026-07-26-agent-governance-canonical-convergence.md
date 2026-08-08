@@ -100,8 +100,8 @@ does not duplicate this implementation design.
 ### Approved Inputs
 
 - [Spec 134](../../03.specs/134-agent-governance-canonical-convergence/spec.md)
-- [Spec 132](../../03.specs/132-agent-governance-harness-convergence/spec.md)
-- [Spec 133](../../03.specs/133-target-surface-contract-convergence/spec.md)
+- [Spec 132](../../98.archive/03.specs/132-agent-governance-harness-convergence/spec.md)
+- [Spec 133](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
 - [Agent catalog](../../00.agent-governance/contracts/agent-catalog.yaml)
 - [Provider model contract](../../00.agent-governance/contracts/provider-models.yaml)

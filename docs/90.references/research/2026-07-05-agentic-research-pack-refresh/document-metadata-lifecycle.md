@@ -298,7 +298,7 @@ and none authorizes a bulk corpus rewrite, which DML-14 reserves.
 - [Keep a Changelog 1.1.2](https://keepachangelog.com/en/1.1.2/) - human-readable release communication
 - [Semantic Versioning 2.0.0](https://semver.org/) - public API version signal
 - [Spec 123](../../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md) - approved metadata keys, audit fields, transition state machine, numbering, and rollout
-- [Spec 129](../../../03.specs/129-document-contract-canonicalization/spec.md) - canonical families, README profiles, parent serialization, Release, and staged foundation scope
+- [Spec 129](../../../98.archive/03.specs/129-document-contract-canonicalization/spec.md) - canonical families, README profiles, parent serialization, Release, and staged foundation scope
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - current workspace metadata ownership and exceptions
 - [Lifecycle status](../../../99.templates/support/lifecycle-status.md) - current status meanings
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - current numbering, templates, and routing

@@ -3,7 +3,6 @@ status: active
 artifact_id: spec:135-target-surface-delta-convergence
 artifact_type: spec
 parent_ids:
-  - spec:133-target-surface-contract-convergence
   - spec:134-agent-governance-canonical-convergence
 ---
 
@@ -136,7 +135,7 @@ target consumer in the Task ledger. Directory adjacency is not authorization.
 
 ### Canonical Inputs
 
-- [Spec 133: Target Surface Contract Convergence](../133-target-surface-contract-convergence/spec.md)
+- [Spec 133: Target Surface Contract Convergence](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Spec 134: Agent Governance Canonical Convergence](../134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)
@@ -768,7 +767,7 @@ and the distinction between local, remote, skipped, and unverified evidence.
 
 ## Related Documents
 
-- [Spec 133: Target Surface Contract Convergence](../133-target-surface-contract-convergence/spec.md)
+- [Spec 133: Target Surface Contract Convergence](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Spec 134: Agent Governance Canonical Convergence](../134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)

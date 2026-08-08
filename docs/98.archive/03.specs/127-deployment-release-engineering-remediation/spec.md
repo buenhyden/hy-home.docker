@@ -1,11 +1,18 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:127-deployment-release-engineering-remediation
-artifact_type: spec
+artifact_type: archive
 parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
+archived_from: docs/03.specs/127-deployment-release-engineering-remediation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 1a4cd1bf9152456ed08a199c5028778e23b86451
+archived_blob: 7a4c2a4d4abdaa3c4892bd82f184403139c2485a
+preservation_class: git-history
 ---
 
 # Deployment and Release Engineering Remediation Technical Specification (Spec)
@@ -18,6 +25,10 @@ health evidence, and rollback. It owns five canonical audit gaps. The local
 design does not authorize CI/CD workflow mutation, GitHub
 Environments/Releases, artifact publication, remote deployment, secret access,
 or a real Release event.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -32,17 +43,17 @@ or a real Release event.
 
 ## Boundaries and Inputs
 
-- **PRD**: [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
+- **PRD**: [PRD 025](../../../01.requirements/025-operational-readiness-closure.md)
   defines local promotion/rollback value and remote non-goals.
-- **ARD**: [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ARD**: [ARD 0028](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
   defines separate baseline/canary projects and upstream verdict boundaries.
-- **ADR**: [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **ADR**: [ADR 0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
   selects verified-artifact local canary, promotion, and previous-identity rollback.
-- **Audit lineage**: [Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
+- **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
   remains the canonical audit lineage.
-- **Direct dependencies**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
-  [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md), and
-  [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) own readiness,
+- **Direct dependencies**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md),
+  [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md), and
+  [Spec 126](../126-security-supply-chain-remediation/spec.md) own readiness,
   recovery, and supply-chain verdicts.
 
 Architecture-changing workflow, environment, target, identity, artifact,
@@ -120,8 +131,8 @@ identity tuples together with exact upstream handoff hashes.
 
 This Spec defines the delivery contract; it does not own observed execution
 evidence or lifecycle conclusions. Observed evidence and current status are
-owned by the exact [domain Task](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
-and [Program Task](../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
+owned by the exact [domain Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+and [Program Task](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md).
 
 ## Core Design
 
@@ -277,18 +288,28 @@ injection, cleanup, and rollback. Remote delivery commands remain out of scope.
 - **VAL-DRE-004**: Architecture, human, runtime, secret, and remote gates are
   resolved before any delivery action.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/127-deployment-release-engineering-remediation/spec.md` | `docs/98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
-- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- **Plan**: [Deployment/release draft plan](../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
-- **Task**: [Delivery rehearsal Task](../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
-- **Umbrella lineage**: [Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
-- **Quality audit**: [SDLC quality and formatting](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
-- **Automation audit**: [Automation candidates](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
-- **Compose audit**: [Compose, infrastructure, and operations readiness](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
-- **Research**: [Automation/pipeline/workflow research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md), [security research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
-- **Runtime dependency**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
-- **Recovery dependency**: [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
-- **Security dependency**: [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
+- **README**: [README.md](./README.md)
+- **PRD**: [Operational readiness closure](../../../01.requirements/025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **Plan**: [Deployment/release draft plan](../../../04.execution/plans/2026-07-11-deployment-release-engineering-remediation.md)
+- **Task**: [Delivery rehearsal Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+- **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
+- **Quality audit**: [SDLC quality and formatting](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
+- **Automation audit**: [Automation candidates](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
+- **Compose audit**: [Compose, infrastructure, and operations readiness](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
+- **Research**: [Automation/pipeline/workflow research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md), [security research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- **Runtime dependency**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md)
+- **Recovery dependency**: [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md)
+- **Security dependency**: [Spec 126](../126-security-supply-chain-remediation/spec.md)

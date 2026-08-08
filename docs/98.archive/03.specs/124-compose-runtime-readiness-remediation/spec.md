@@ -292,4 +292,4 @@ The repository-wide archive mapping is recorded in
 - **Research**: [Compose and infrastructure research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)
 - **Infrastructure dependency**: [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md)
 - **Security dependency**: [Spec 126](../126-security-supply-chain-remediation/spec.md)
-- **Deployment dependency**: [Spec 127](../../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- **Deployment dependency**: [Spec 127](../127-deployment-release-engineering-remediation/spec.md)

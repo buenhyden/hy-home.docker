@@ -390,7 +390,7 @@ rollback step may assume or mutate a published artifact or remote setting.
 - **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
-- **Deployment consumer**: [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- **Deployment consumer**: [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - **Syft v1.48.0 release**: <https://github.com/anchore/syft/releases/tag/v1.48.0>
 - **Grype v0.116.0 release**: <https://github.com/anchore/grype/releases/tag/v0.116.0>
 - **Grype getting started / offline behavior**: <https://oss.anchore.com/docs/guides/vulnerability/getting-started/>

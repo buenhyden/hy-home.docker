@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-18-target-surface-contract-convergence
 artifact_type: plan
-parent_ids:
-  - spec:133-target-surface-contract-convergence
+parent_ids: []
 ---
 
 # Target Surface Contract Convergence Implementation Plan
@@ -635,8 +634,8 @@ Use ordinary `git revert` in reverse dependency order. Do not use
 
 ## Related Documents
 
-- [Spec 133](../../03.specs/133-target-surface-contract-convergence/spec.md)
-- [Spec 131](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
+- [Spec 133](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
+- [Spec 131](../../98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
 - [Execution Task](../tasks/2026-07-18-target-surface-contract-convergence.md)
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)

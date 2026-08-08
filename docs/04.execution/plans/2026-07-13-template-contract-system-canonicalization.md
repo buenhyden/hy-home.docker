@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-13-template-contract-system-canonicalization
 artifact_type: plan
-parent_ids:
-  - spec:130-template-contract-system-canonicalization
+parent_ids: []
 ---
 
 # Template Contract System Canonicalization Implementation Plan
@@ -1322,8 +1321,8 @@ record the exact clean pre-closure commit observed by the wrapper.
 
 ## Related Documents
 
-- [Spec 130](../../03.specs/130-template-contract-system-canonicalization/spec.md)
-- [Spec 129](../../03.specs/129-document-contract-canonicalization/spec.md)
+- [Spec 130](../../98.archive/03.specs/130-template-contract-system-canonicalization/spec.md)
+- [Spec 129](../../98.archive/03.specs/129-document-contract-canonicalization/spec.md)
 - [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Stage 99 template system](../../99.templates/README.md)
 - [Metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)

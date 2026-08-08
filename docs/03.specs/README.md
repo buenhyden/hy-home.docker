@@ -70,13 +70,6 @@ docs/03.specs/
 ├── 102-workspace-document-contract-audit-pack/ # Active workspace document contract audit/disposition spec
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
-├── 127-deployment-release-engineering-remediation/ # Completed local promotion and rollback contract
-├── 128-agentic-audit-harness-consolidation/ # Completed canonical audit lifecycle, current-state, semantic freshness, and QA/CI contract
-├── 129-document-contract-canonicalization/ # Completed contract-first foundation; post-closure findings resolved
-├── 130-template-contract-system-canonicalization/ # Completed template-role, body, validator, and direct-consumer canonicalization
-├── 131-document-corpus-lifecycle-migration-foundation/ # Completed corpus migration manifest, retention, archive, and validation foundation
-├── 132-agent-governance-harness-convergence/ # Completed Stage 00 authority, native provider adapter, catalog, model, loop, and evidence convergence
-├── 133-target-surface-contract-convergence/ # Completed; blocking promotion and final closure reviews passed
 ├── 134-agent-governance-canonical-convergence/ # Active provider, memory, harness, loop, CI, and evidence convergence
 └── README.md                            # This file
 ```
@@ -94,12 +87,6 @@ docs/03.specs/
 | Metrics, logs, traces, dashboards, alerts                                                             | `007-observability/spec.md`                                   |
 | Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
 | Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
-| Deployment environments, promotion, release records, and rollback                                     | `127-deployment-release-engineering-remediation/spec.md`      |
-| Canonical audit lifecycle, current-state reassessment, semantic freshness, and QA/CI integration      | `128-agentic-audit-harness-consolidation/spec.md`             |
-| Contract-first document type, template, README profile, and migration foundation                      | `129-document-contract-canonicalization/spec.md`              |
-| Completed template-role, body-envelope, validator, and direct-consumer canonicalization               | `130-template-contract-system-canonicalization/spec.md`       |
-| Completed document corpus lifecycle migration manifest, retention, archive, and validation foundation | `131-document-corpus-lifecycle-migration-foundation/spec.md`  |
-| Target corpus contract, archive split, deprecated runtime removal, and static QA convergence          | `133-target-surface-contract-convergence/spec.md`             |
 | Active agent-governance provider, memory, harness, loop, CI, and evidence convergence                 | `134-agent-governance-canonical-convergence/spec.md`          |
 | Second-wave document restructure disposition contract                                                 | `103-document-restructure-audit-contract-archive/spec.md`     |
 | Workspace-wide document contract audit/disposition model                                              | `102-workspace-document-contract-audit-pack/spec.md`          |
@@ -165,13 +152,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Spec template**: [../99.templates/templates/sdlc/spec.template.md](../99.templates/templates/sdlc/spec.template.md)
 - **README template**: [../99.templates/templates/common/readme.template.md](../99.templates/templates/common/readme.template.md)
 - **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
-- **Deployment and Release Engineering Remediation Spec (completed local contract)**: [127-deployment-release-engineering-remediation/spec.md](./127-deployment-release-engineering-remediation/spec.md); [domain Task evidence owner](../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
 - **Operational Readiness Program evidence owner**: [Program Task](../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
-- **Agentic Audit Harness Consolidation Spec**: [128-agentic-audit-harness-consolidation/spec.md](./128-agentic-audit-harness-consolidation/spec.md)
-- **Document Contract Canonicalization Spec**: [129-document-contract-canonicalization/spec.md](./129-document-contract-canonicalization/spec.md)
-- **Template Contract System Canonicalization Spec**: [130-template-contract-system-canonicalization/spec.md](./130-template-contract-system-canonicalization/spec.md)
-- **Document Corpus Lifecycle Migration Foundation Spec (completed)**: [131-document-corpus-lifecycle-migration-foundation/spec.md](./131-document-corpus-lifecycle-migration-foundation/spec.md)
-- **Target Surface Contract and Deprecated Runtime Convergence Spec**: [133-target-surface-contract-convergence/spec.md](./133-target-surface-contract-convergence/spec.md)
 - **Agent Governance Canonical Convergence Spec (active)**: [134-agent-governance-canonical-convergence/spec.md](./134-agent-governance-canonical-convergence/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)

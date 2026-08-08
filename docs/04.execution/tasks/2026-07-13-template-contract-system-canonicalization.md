@@ -24,11 +24,11 @@ review, and a separate quality review before its logical commit.
 ## Inputs
 
 - **Approved Spec**:
-  [Spec 130](../../03.specs/130-template-contract-system-canonicalization/spec.md)
+  [Spec 130](../../98.archive/03.specs/130-template-contract-system-canonicalization/spec.md)
 - **Implementation Plan**:
   [Implementation Plan](../plans/2026-07-13-template-contract-system-canonicalization.md)
 - **Parent foundation**:
-  [Spec 129](../../03.specs/129-document-contract-canonicalization/spec.md)
+  [Spec 129](../../98.archive/03.specs/129-document-contract-canonicalization/spec.md)
 - **Canonical audit**:
   [2026-07-05 implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Machine registry**:
@@ -779,7 +779,7 @@ lifecycle closure.
 
 ## Related Documents
 
-- [Spec 130](../../03.specs/130-template-contract-system-canonicalization/spec.md)
+- [Spec 130](../../98.archive/03.specs/130-template-contract-system-canonicalization/spec.md)
 - [Implementation Plan](../plans/2026-07-13-template-contract-system-canonicalization.md)
 - [Stage 99 template system](../../99.templates/README.md)
 - [Template support](../../99.templates/support/README.md)

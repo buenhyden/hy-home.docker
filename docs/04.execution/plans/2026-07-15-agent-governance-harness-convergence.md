@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-15-agent-governance-harness-convergence
 artifact_type: plan
-parent_ids:
-  - spec:132-agent-governance-harness-convergence
+parent_ids: []
 ---
 
 # Agent Governance Harness Convergence Implementation Plan
@@ -1081,7 +1080,7 @@ mutation.
 
 ## Related Documents
 
-- [Spec 132](../../03.specs/132-agent-governance-harness-convergence/spec.md)
+- [Spec 132](../../98.archive/03.specs/132-agent-governance-harness-convergence/spec.md)
 - [Execution Task](../tasks/2026-07-15-agent-governance-harness-convergence.md)
 - [Stage 00 Governance](../../00.agent-governance/README.md)
 - [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)

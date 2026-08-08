@@ -6,7 +6,6 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
-  - spec:127-deployment-release-engineering-remediation
 ---
 
 # Deployment and Release Engineering Remediation Implementation Plan
@@ -69,7 +68,7 @@ Inputs:
 - [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
 - [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [examples/sample-web-service/docker-compose.yml](../../../examples/sample-web-service/docker-compose.yml)
 - Spec 124 readiness result, Spec 125 recovery boundary, and Spec 126 verified
   artifact verdict when available.
@@ -368,7 +367,7 @@ Cleanup may remove only task-owned local projects, networks, and containers.
 - **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
 - **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- **Spec**: [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- **Spec**: [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - **Runtime dependency**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - **Recovery dependency**: [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - **Security dependency**: [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)

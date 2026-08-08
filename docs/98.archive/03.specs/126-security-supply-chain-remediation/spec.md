@@ -312,5 +312,5 @@ The repository-wide archive mapping is recorded in
 - **Security audit**: [Security framework maturity](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
 - **Quality audit**: [SDLC quality and formatting](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
 - **Security research**: [Security governance](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
-- **Deployment consumer**: [Spec 127](../../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- **Deployment consumer**: [Spec 127](../127-deployment-release-engineering-remediation/spec.md)
 - **Runtime consumers**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md), [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md)

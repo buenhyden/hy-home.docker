@@ -18,7 +18,7 @@ close generated evidence.
 ## Inputs
 
 - **Parent Spec**:
-  [Spec 128](../../03.specs/128-agentic-audit-harness-consolidation/spec.md)
+  [Spec 128](../../98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md)
 - **Parent Plan**:
   [Implementation plan](../plans/2026-07-12-agentic-audit-harness-consolidation.md)
 - **Canonical Audit**:
@@ -511,7 +511,7 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 
 ## Related Documents
 
-- [Spec 128](../../03.specs/128-agentic-audit-harness-consolidation/spec.md)
+- [Spec 128](../../98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md)
 - [Implementation plan](../plans/2026-07-12-agentic-audit-harness-consolidation.md)
 - [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Audit implementation matrix](../../90.references/data/governance/audit-implementation-matrix.md)

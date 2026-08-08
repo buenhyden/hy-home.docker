@@ -259,7 +259,7 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - workflow action pinning and required quality-gate contract.
 - [Security automation readiness](../../data/security/security-automation-readiness.md) - generated repo-local security automation readiness snapshot.
 - [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary.
-- [Spec 129](../../../03.specs/129-document-contract-canonicalization/spec.md) - 2026-07-12 read-only remote evidence boundary and later-wave mutation guardrail.
+- [Spec 129](../../../98.archive/03.specs/129-document-contract-canonicalization/spec.md) - 2026-07-12 read-only remote evidence boundary and later-wave mutation guardrail.
 
 ## Maintenance
 

@@ -1,9 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:130-template-contract-system-canonicalization
-artifact_type: spec
-parent_ids:
-  - spec:129-document-contract-canonicalization
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/130-template-contract-system-canonicalization/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: e00e1483e7ab797b354d7c3b22b6d5440e998c14
+archived_blob: 5466bec7ce9688824f8d003e5ae3142785786dcf
+preservation_class: git-history
 ---
 
 # Template Contract System Canonicalization Technical Specification
@@ -21,6 +27,10 @@ fallout, and the already typed document chain. The remaining active,
 operational, historical, archive, and generated corpus is routed into bounded
 follow-up batches with independent validation. This prevents a template cleanup
 from rewriting execution history or inventing review evidence.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Current Evidence
 
@@ -101,11 +111,11 @@ documents, validators, tests, and Git evidence.
 ## Boundaries and Inputs
 
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Agent Governance PRD](../../01.requirements/024-agent-governance-standardization.md)
-- [Agent Governance ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Stage 99 template system](../../99.templates/README.md)
+- [Agent Governance PRD](../../../01.requirements/024-agent-governance-standardization.md)
+- [Agent Governance ARD](../../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
+- [ADR-0027: Stage 00 Canonical Adapter Model](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Stage 99 template system](../../../99.templates/README.md)
 
 ## External Source Basis
 
@@ -578,16 +588,25 @@ fresh final reviewer audits the entire branch before closure.
 - SC-TCS-014: No runtime, secret, deployment, remote GitHub, or global provider
   state changes.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/130-template-contract-system-canonicalization/spec.md` | `docs/98.archive/03.specs/130-template-contract-system-canonicalization/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Agent Governance PRD](../../01.requirements/024-agent-governance-standardization.md)
-- [Agent Governance ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Stage 99 template system](../../99.templates/README.md)
-- [Metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [Template contract](../../99.templates/support/template-contract.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
-- [Common document contract](../../99.templates/support/common-document-contract.md)
+- [Agent Governance PRD](../../../01.requirements/024-agent-governance-standardization.md)
+- [Agent Governance ARD](../../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
+- [ADR-0027: Stage 00 Canonical Adapter Model](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Stage 99 template system](../../../99.templates/README.md)
+- [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
+- [Template contract](../../../99.templates/support/template-contract.md)
+- [Template governance](../../../99.templates/support/template-governance.md)
+- [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)
+- [Common document contract](../../../99.templates/support/common-document-contract.md)

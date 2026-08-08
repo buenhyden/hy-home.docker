@@ -3,7 +3,6 @@ status: completed
 artifact_id: task:2026-07-19-deployment-release-engineering-remediation
 artifact_type: task
 parent_ids:
-  - spec:127-deployment-release-engineering-remediation
   - plan:2026-07-11-deployment-release-engineering-remediation
 ---
 
@@ -47,7 +46,7 @@ identities to one source revision, build context, and producer generation.
 
 ## Inputs
 
-- [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [Deployment/release Plan](../plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - Accepted baseline/candidate Spec 126 verification verdicts
@@ -126,7 +125,7 @@ Approval source:
   production/shared runtime, credential, secret-value, controlled-wrapper, or
   direct all-files pre-commit action.
 - [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
-  [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md),
+  [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md),
   and the active Plan define the exact local rehearsal contract.
 
 Protected surfaces: the sample Compose identity, local verified image
@@ -490,7 +489,7 @@ credential, live-environment, and production expansion.
 
 ## Related Documents
 
-- [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [Deployment/release Plan](../plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Program Task](./2026-07-19-operational-readiness-closure-program.md)
 - [Corrected evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)

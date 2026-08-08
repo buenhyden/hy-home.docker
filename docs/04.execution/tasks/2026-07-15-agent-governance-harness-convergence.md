@@ -1155,7 +1155,7 @@ silently treated as complete.
 
 ## Related Documents
 
-- [Spec 132](../../03.specs/132-agent-governance-harness-convergence/spec.md)
+- [Spec 132](../../98.archive/03.specs/132-agent-governance-harness-convergence/spec.md)
 - [Implementation Plan](../plans/2026-07-15-agent-governance-harness-convergence.md)
 - [Stage 00 Governance](../../00.agent-governance/README.md)
 - [Canonical Agentic Audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

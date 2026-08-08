@@ -2,9 +2,7 @@
 status: active
 artifact_id: spec:134-agent-governance-canonical-convergence
 artifact_type: spec
-parent_ids:
-  - spec:132-agent-governance-harness-convergence
-  - spec:133-target-surface-contract-convergence
+parent_ids: []
 ---
 
 # Agent Governance Canonical Convergence Specification
@@ -130,8 +128,8 @@ Task ledger. Adjacency alone is not authorization.
 
 ### Canonical Inputs
 
-- [Spec 132: Agent Governance Harness Convergence](../132-agent-governance-harness-convergence/spec.md)
-- [Spec 133: Target Surface Contract Convergence](../133-target-surface-contract-convergence/spec.md)
+- [Spec 132: Agent Governance Harness Convergence](../../98.archive/03.specs/132-agent-governance-harness-convergence/spec.md)
+- [Spec 133: Target Surface Contract Convergence](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
 - [Provider-neutral adapter contract](../../00.agent-governance/providers/agents-md.md)
 - [Agent catalog](../../00.agent-governance/contracts/agent-catalog.yaml)

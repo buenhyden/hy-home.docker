@@ -848,7 +848,7 @@ Plans/Tasks.
 
 ## Related Documents
 
-- [Foundation Spec](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
+- [Foundation Spec](../../98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
 - [Foundation Plan](../plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - [Stage 04 Tasks](./README.md)
 - [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

@@ -212,4 +212,4 @@ status: active
 - [Execution plans](../../../04.execution/plans/README.md)
 - [Execution tasks](../../../04.execution/tasks/README.md)
 - [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
-- [Spec 127](../../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)

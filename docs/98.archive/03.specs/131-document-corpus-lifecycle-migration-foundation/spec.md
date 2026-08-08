@@ -1,9 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:131-document-corpus-lifecycle-migration-foundation
-artifact_type: spec
-parent_ids:
-  - spec:130-template-contract-system-canonicalization
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 1ebe7958514ac268768dccc5997a415829cf3458
+archived_blob: 8d7e26bd6a3d676b82d3df0f6405f8e8ad817a8e
+preservation_class: git-history
 ---
 
 # Document Corpus Lifecycle Migration Foundation Technical Specification
@@ -48,6 +54,10 @@ The canonical 2026-07-05 implementation audit remains the current audit route.
 Its dated counts are historical evidence and are not rewritten to resemble this
 baseline; current manifests and generated inventories own program execution
 counts.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Boundaries and Inputs
 
@@ -96,15 +106,15 @@ change, not directory-name symmetry.
 
 - [Spec 130: Template Contract System Canonicalization](../130-template-contract-system-canonicalization/spec.md)
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Agent Governance PRD](../../01.requirements/024-agent-governance-standardization.md)
-- [Agent Governance ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- [Stage 00 adapter ADR](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Stage 99 metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
-- [Common document contract](../../99.templates/support/common-document-contract.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [`_workspace` contract](../../../_workspace/README.md)
+- [Agent Governance PRD](../../../01.requirements/024-agent-governance-standardization.md)
+- [Agent Governance ARD](../../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
+- [Stage 00 adapter ADR](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Stage 99 metadata registry](../../../99.templates/support/document-metadata-profiles.yaml)
+- [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)
+- [Common document contract](../../../99.templates/support/common-document-contract.md)
+- [Template governance](../../../99.templates/support/template-governance.md)
+- [`_workspace` contract](../../../../_workspace/README.md)
 
 ### External Source Basis
 
@@ -496,17 +506,26 @@ The program branch is `codex/document-corpus-lifecycle-migration` in
 `.worktrees/document-corpus-lifecycle-migration`. Root `main` remains untouched
 until the branch is explicitly finished and the user authorizes local merge.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md` | `docs/98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- [Foundation implementation plan](../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
-- [Foundation task evidence](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
-- [Stage 03 specifications](../README.md)
+- [Foundation implementation plan](../../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- [Foundation task evidence](../../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- [Stage 03 specifications](../../../03.specs/README.md)
 - [Spec 130](../130-template-contract-system-canonicalization/spec.md)
 - [Spec 129](../129-document-contract-canonicalization/spec.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Lifecycle status contract](../../99.templates/support/lifecycle-status.md)
-- [Template governance](../../99.templates/support/template-governance.md)
-- [Spec template](../../99.templates/templates/sdlc/spec.template.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
+- [Lifecycle status contract](../../../99.templates/support/lifecycle-status.md)
+- [Template governance](../../../99.templates/support/template-governance.md)
+- [Spec template](../../../99.templates/templates/sdlc/spec.template.md)

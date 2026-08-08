@@ -172,7 +172,7 @@ commands and sequencing. Tasks alone own actual results.
 - **Compose Spec**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - **Infrastructure Spec**: [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - **Supply-chain Spec**: [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
-- **Deployment Spec**: [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- **Deployment Spec**: [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - **Workspace support contract**: [`_workspace`](../../../_workspace/README.md)
 - **Docker Compose readiness guidance**: [Startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - **Sigstore verification guidance**: [Verifying signatures](https://docs.sigstore.dev/cosign/verifying/verify/)

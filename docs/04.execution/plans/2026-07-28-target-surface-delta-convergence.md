@@ -253,7 +253,7 @@ review verdicts. It does not duplicate planned implementation.
 ### Approved Inputs
 
 - [Spec 135](../../03.specs/135-target-surface-delta-convergence/spec.md)
-- [Spec 133](../../03.specs/133-target-surface-contract-convergence/spec.md)
+- [Spec 133](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../../03.specs/134-agent-governance-canonical-convergence/spec.md)
 - [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)
@@ -18981,7 +18981,7 @@ is not applicable because neither surface is mutated.
 
 - [Spec 135](../../03.specs/135-target-surface-delta-convergence/spec.md)
 - [Task ledger](../tasks/2026-07-28-target-surface-delta-convergence.md)
-- [Spec 133](../../03.specs/133-target-surface-contract-convergence/spec.md)
+- [Spec 133](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../../03.specs/134-agent-governance-canonical-convergence/spec.md)
 - [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)

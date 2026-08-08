@@ -6,7 +6,6 @@ parent_ids:
   - prd:025-operational-readiness-closure
   - ard:0028-operational-readiness-closure
   - adr:0028-local-isolated-readiness-evidence
-  - spec:127-deployment-release-engineering-remediation
 ---
 
 # Operational Readiness Closure Program Implementation Plan
@@ -85,7 +84,7 @@ Canonical inputs:
 - [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
-- [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - the four domain Plans linked under Related Documents.
 
 The safe documentation comparison base must be an explicit reviewed Git ref

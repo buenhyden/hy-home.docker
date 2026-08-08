@@ -3,7 +3,6 @@ status: completed
 artifact_id: task:2026-07-26-corrected-delivery-evidence-reconciliation
 artifact_type: task
 parent_ids:
-  - spec:127-deployment-release-engineering-remediation
   - plan:2026-07-11-deployment-release-engineering-remediation
   - plan:2026-07-19-operational-readiness-closure-program
 ---
@@ -39,7 +38,7 @@ and all task-owned resource and publication-path inventories are zero.
 
 ## Inputs
 
-- [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [Delivery Plan](../plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - [Original Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)
@@ -347,7 +346,7 @@ owned.
 
 ## Related Documents
 
-- [Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [Delivery Plan](../plans/2026-07-11-deployment-release-engineering-remediation.md)
 - [Program Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
 - [Original Delivery Task](./2026-07-19-deployment-release-engineering-remediation.md)

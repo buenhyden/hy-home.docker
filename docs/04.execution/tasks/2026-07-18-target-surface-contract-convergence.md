@@ -808,9 +808,9 @@ specific runtime, data, security, deployment, or remote surface.
 
 ## Related Documents
 
-- [Spec 133](../../03.specs/133-target-surface-contract-convergence/spec.md)
+- [Spec 133](../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
 - [Implementation Plan](../plans/2026-07-18-target-surface-contract-convergence.md)
-- [Spec 131](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
+- [Spec 131](../../98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
 - [Canonical audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Task checklists](../../00.agent-governance/rules/task-checklists.md)

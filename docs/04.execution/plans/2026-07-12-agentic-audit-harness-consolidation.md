@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-12-agentic-audit-harness-consolidation
 artifact_type: plan
-parent_ids:
-  - spec:128-agentic-audit-harness-consolidation
+parent_ids: []
 ---
 
 # Agentic Audit Harness Consolidation Implementation Plan
@@ -646,7 +645,7 @@ git commit -m "docs(task): close audit harness consolidation"
 
 ## Related Documents
 
-- [Spec 128](../../03.specs/128-agentic-audit-harness-consolidation/spec.md)
+- [Spec 128](../../98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md)
 - [Execution task](../tasks/2026-07-12-agentic-audit-harness-consolidation.md)
 - [Parent Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
@@ -654,4 +653,4 @@ git commit -m "docs(task): close audit harness consolidation"
 - [Draft Compose follow-up](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - [Draft infrastructure follow-up](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - [Draft security follow-up](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
-- [Draft deployment follow-up](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Draft deployment follow-up](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)

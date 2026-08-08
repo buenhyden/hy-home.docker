@@ -1,8 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:128-agentic-audit-harness-consolidation
-artifact_type: spec
+artifact_type: archive
 parent_ids: []
+archived_from: docs/03.specs/128-agentic-audit-harness-consolidation/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 1a4cd1bf9152456ed08a199c5028778e23b86451
+archived_blob: 6e76ef38d563755ccfa16cf6665218c5aa5091a0
+preservation_class: git-history
 ---
 
 # Agentic Audit Harness Consolidation Technical Specification (Spec)
@@ -24,6 +31,10 @@ The implementation also corrects security-readiness scope inflation by
 separating a scoped ecosystem vulnerability gate from broad dependency SCA and
 container-image scanning. The resulting checks are integrated into local
 repository contracts and the tracked CI quality workflow.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -57,17 +68,17 @@ repository contracts and the tracked CI quality workflow.
   deployment, identity, registry, or provider-native adoption decision remains
   owned by a separate approved architecture chain.
 - **Parent Specification**:
-  [Spec 123](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
+  [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Canonical Audit Pack**:
-  [Agentic engineering implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+  [Agentic engineering implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Audit Index**:
-  [Audit references](../../90.references/audits/README.md)
+  [Audit references](../../../90.references/audits/README.md)
 - **Historical Snapshots**:
-  [2026-07-03 document-contract audit](../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md)
+  [2026-07-03 document-contract audit](../../../90.references/audits/2026-07-03-workspace-document-contract-audit-pack/README.md)
   and
-  [2026-07-04 restructure audit](../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/README.md)
+  [2026-07-04 restructure audit](../../../90.references/audits/2026-07-04-document-restructure-audit-contract-archive/README.md)
 - **Supersession Ledger**:
-  [2026-07-07 audit mapping](../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
+  [2026-07-07 audit mapping](../../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
 
 ## Contracts
 
@@ -382,17 +393,26 @@ prefixes before execution.
   implementer and reviewer verdicts, and the whole branch finishes with zero
   unresolved Critical or Important findings.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/128-agentic-audit-harness-consolidation/spec.md` | `docs/98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- [Implementation plan](../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md)
-- [Execution task](../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md)
-- [Parent agentic audit remediation spec](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
-- [Canonical agentic implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Audit references index](../../90.references/audits/README.md)
-- [Audit implementation matrix](../../90.references/data/governance/audit-implementation-matrix.md)
-- [Security automation readiness](../../90.references/data/security/security-automation-readiness.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Task checklists](../../00.agent-governance/rules/task-checklists.md)
-- [Typed metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [Spec template](../../99.templates/templates/sdlc/spec.template.md)
+- [Implementation plan](../../../04.execution/plans/2026-07-12-agentic-audit-harness-consolidation.md)
+- [Execution task](../../../04.execution/tasks/2026-07-12-agentic-audit-harness-consolidation.md)
+- [Parent agentic audit remediation spec](../123-agentic-engineering-audit-remediation/spec.md)
+- [Canonical agentic implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Audit references index](../../../90.references/audits/README.md)
+- [Audit implementation matrix](../../../90.references/data/governance/audit-implementation-matrix.md)
+- [Security automation readiness](../../../90.references/data/security/security-automation-readiness.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Task checklists](../../../00.agent-governance/rules/task-checklists.md)
+- [Typed metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
+- [Spec template](../../../99.templates/templates/sdlc/spec.template.md)

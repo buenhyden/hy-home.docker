@@ -46,7 +46,7 @@ base was `758aa0d2`; the lifecycle closure comparison base is
 - Specs [124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
   [125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
   [126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md), and
-  [127](../../03.specs/127-deployment-release-engineering-remediation/spec.md)
+  [127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - Domain Tasks linked under Related Documents
 - [Corrected delivery evidence successor Task](./2026-07-26-corrected-delivery-evidence-reconciliation.md)
 - Stage 00 task and controlled-QA contracts

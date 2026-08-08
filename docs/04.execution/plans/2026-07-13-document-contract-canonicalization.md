@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-13-document-contract-canonicalization
 artifact_type: plan
-parent_ids:
-  - spec:129-document-contract-canonicalization
+parent_ids: []
 ---
 # Document Contract Canonicalization Implementation Plan
 
@@ -789,11 +788,11 @@ waves still explicitly pending.
 ## Related Documents
 
 - **Parent Spec**:
-  [Spec 129](../../03.specs/129-document-contract-canonicalization/spec.md)
+  [Spec 129](../../98.archive/03.specs/129-document-contract-canonicalization/spec.md)
 - **Task Evidence**:
   [Document contract canonicalization task](../tasks/2026-07-13-document-contract-canonicalization.md)
 - **Parent Program**:
-  [Spec 128](../../03.specs/128-agentic-audit-harness-consolidation/spec.md)
+  [Spec 128](../../98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md)
 - **Documentation Protocol**:
   [Stage 00 protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - **Metadata Registry**:

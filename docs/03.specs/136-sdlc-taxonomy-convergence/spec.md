@@ -3,7 +3,6 @@ status: draft
 artifact_id: spec:136-sdlc-taxonomy-convergence
 artifact_type: spec
 parent_ids:
-  - spec:131-document-corpus-lifecycle-migration-foundation
   - spec:134-agent-governance-canonical-convergence
 ---
 
@@ -537,7 +536,7 @@ only when its acceptance row holds and the preceding baseline has not regressed.
 
 ## Related Documents
 
-- [Document corpus lifecycle migration foundation](../131-document-corpus-lifecycle-migration-foundation/spec.md)
+- [Document corpus lifecycle migration foundation](../../98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
 - [Agent governance canonical convergence](../134-agent-governance-canonical-convergence/spec.md)
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

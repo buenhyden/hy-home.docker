@@ -1,9 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:132-agent-governance-harness-convergence
-artifact_type: spec
-parent_ids:
-  - spec:128-agentic-audit-harness-consolidation
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/132-agent-governance-harness-convergence/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 8d29431f087ec076f3db87bb147a3d3081e7cf88
+archived_blob: cb76ce6e6881c31ff8e7e52a914bfb1c6740ee75
+preservation_class: git-history
 ---
 
 # Agent Governance Harness Convergence Design Specification
@@ -39,6 +45,10 @@ but its effective authority flows in both directions:
 The canonical July 5 audit pack remains the only current status source. The
 July 7 pack is a superseded mapping aid and must not supply current counts or
 recommendations.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Boundaries and Inputs
 
@@ -532,10 +542,19 @@ Official sources checked on 2026-07-15 KST include:
 External facts are recorded with their observed date and must not be treated as
 permanent provider guarantees.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/132-agent-governance-harness-convergence/spec.md` | `docs/98.archive/03.specs/132-agent-governance-harness-convergence/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
 - [Parent audit harness specification](../128-agentic-audit-harness-consolidation/spec.md)
-- [Canonical Stage 00 governance hub](../../00.agent-governance/README.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
-- [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
+- [Canonical Stage 00 governance hub](../../../00.agent-governance/README.md)
+- [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md)
+- [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)

@@ -17,7 +17,7 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 ## Inputs
 
 - **Parent Spec**:
-  [Spec 129](../../03.specs/129-document-contract-canonicalization/spec.md)
+  [Spec 129](../../98.archive/03.specs/129-document-contract-canonicalization/spec.md)
 - **Parent Plan**:
   [Implementation plan](../plans/2026-07-13-document-contract-canonicalization.md)
 - **Canonical Audit**:
@@ -724,7 +724,7 @@ runtime remain separate approval-gated work.
 ## Related Documents
 
 - **Parent Spec**:
-  [Spec 129](../../03.specs/129-document-contract-canonicalization/spec.md)
+  [Spec 129](../../98.archive/03.specs/129-document-contract-canonicalization/spec.md)
 - **Parent Plan**:
   [Implementation plan](../plans/2026-07-13-document-contract-canonicalization.md)
 - **Stage 00 Governance**:

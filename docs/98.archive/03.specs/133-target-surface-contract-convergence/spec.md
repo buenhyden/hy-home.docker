@@ -1,9 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:133-target-surface-contract-convergence
-artifact_type: spec
-parent_ids:
-  - spec:131-document-corpus-lifecycle-migration-foundation
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/133-target-surface-contract-convergence/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 1ff8a435c7c671b800b3aa9a6f143f425e3ca43e
+archived_blob: 5c2b67c330e384167815bfab0c47434db90f0ac4
+preservation_class: git-history
 ---
 
 # Target Surface Contract and Deprecated Runtime Convergence Design Specification
@@ -49,6 +55,10 @@ Subagent-Driven Development. In particular, the previous compatibility
 retention choice for InfluxDB 2 was superseded: the InfluxDB 2 server Compose
 variant and its obsolete consumers must be removed, while current InfluxDB 3
 Core behavior becomes the sole analytics time-series contract.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Boundaries and Inputs
 
@@ -104,15 +114,15 @@ that requires it. An adjacent file is not in scope merely because it is nearby.
 - [Spec 131: Document Corpus Lifecycle Migration Foundation](../131-document-corpus-lifecycle-migration-foundation/spec.md)
 - [Spec 130: Template Contract System Canonicalization](../130-template-contract-system-canonicalization/spec.md)
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Data analytics PRD](../../01.requirements/005-data-analytics.md)
-- [Data analytics ARD](../../02.architecture/requirements/0012-data-analytics-architecture.md)
-- [Analytics engine ADR](../../02.architecture/decisions/0015-analytics-engine-selection.md)
-- [Data analytics Spec](../005-data-analytics/spec.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
+- [Data analytics PRD](../../../01.requirements/005-data-analytics.md)
+- [Data analytics ARD](../../../02.architecture/requirements/0012-data-analytics-architecture.md)
+- [Analytics engine ADR](../../../02.architecture/decisions/0015-analytics-engine-selection.md)
+- [Data analytics Spec](../../../03.specs/005-data-analytics/spec.md)
+- [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
+- [Corpus migration contract](../../../99.templates/support/corpus-migration-contract.md)
+- [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)
+- [README profile contract](../../../99.templates/support/readme-profile-contract.md)
 
 ### External Source Basis
 
@@ -472,19 +482,28 @@ push, open a PR, merge, or execute the all-files wrapper before the final gate.
 All destructive edits require a reviewed manifest row and reversible logical
 commit.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/133-target-surface-contract-convergence/spec.md` | `docs/98.archive/03.specs/133-target-surface-contract-convergence/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
-- [Stage 03 index](../README.md)
+- [Stage 03 index](../../../03.specs/README.md)
 - [Spec 131: Document Corpus Lifecycle Migration Foundation](../131-document-corpus-lifecycle-migration-foundation/spec.md)
 - [Spec 130: Template Contract System Canonicalization](../130-template-contract-system-canonicalization/spec.md)
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Data analytics Spec](../005-data-analytics/spec.md)
-- [Canonical audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [README profile contract](../../99.templates/support/readme-profile-contract.md)
-- [Common document contract](../../99.templates/support/common-document-contract.md)
-- [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
-- [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
-- [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [Task checklists](../../00.agent-governance/rules/task-checklists.md)
-- [Postflight checklist](../../00.agent-governance/rules/postflight-checklist.md)
+- [Data analytics Spec](../../../03.specs/005-data-analytics/spec.md)
+- [Canonical audit pack](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
+- [README profile contract](../../../99.templates/support/readme-profile-contract.md)
+- [Common document contract](../../../99.templates/support/common-document-contract.md)
+- [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)
+- [Corpus migration contract](../../../99.templates/support/corpus-migration-contract.md)
+- [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)
+- [Task checklists](../../../00.agent-governance/rules/task-checklists.md)
+- [Postflight checklist](../../../00.agent-governance/rules/postflight-checklist.md)

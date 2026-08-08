@@ -458,7 +458,7 @@ final post-evidence whole-branch confirmation remains pending.
 Deferral destination: remote identity, publication, enforcement, registry,
 credential, live, release, or deployment work needs a new approved Stage 01-04
 chain and explicit human approval; local accepted verdicts are consumed only by
-[Spec 127](../../03.specs/127-deployment-release-engineering-remediation/spec.md).
+[Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md).
 
 ## Related Documents
 

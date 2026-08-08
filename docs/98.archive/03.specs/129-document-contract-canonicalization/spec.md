@@ -1,9 +1,15 @@
 ---
-status: completed
+status: archived
 artifact_id: spec:129-document-contract-canonicalization
-artifact_type: spec
-parent_ids:
-  - spec:128-agentic-audit-harness-consolidation
+artifact_type: archive
+parent_ids: []
+archived_from: docs/03.specs/129-document-contract-canonicalization/spec.md
+archived_on: 2026-08-08
+archive_reason: Terminal Stage 03 specification relocated into the content archive after its work completed; the record is retained as evidence, not active guidance.
+archive_disposition: evidence-preserve
+archived_commit: 635f3a7827e64562683429f8e7f1c3230f204559
+archived_blob: 63c4e66f346931b76ad41b7e8e51f916ccbfec12
+preservation_class: git-history
 ---
 
 # Document Contract Canonicalization Technical Specification (Spec)
@@ -28,6 +34,10 @@ Spec 129 owns the foundation only. Later sub-projects own README and provider
 surfaces, SDLC definition documents, execution evidence, operations and
 release documents, references and archives, remaining repository surfaces,
 corpus-wide blocking, and remote GitHub enforcement.
+
+## Archive Metadata
+
+This specification's work reached a terminal state (`completed` or `superseded`); the record is preserved under the `evidence-preserve` disposition rather than kept as an active Stage 03 guidance surface. Provenance resolves through Git history (`preservation_class: git-history`): `archived_commit` identifies the last commit that touched this document at its original path, and `archived_blob` identifies the exact content preserved at that commit.
 
 ## Strategic Boundaries & Non-goals
 
@@ -80,18 +90,18 @@ corpus-wide blocking, and remote GitHub enforcement.
 - **Parent Spec**:
   [Spec 128](../128-agentic-audit-harness-consolidation/spec.md)
 - **Canonical Audit**:
-  [2026-07-05 agentic engineering implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+  [2026-07-05 agentic engineering implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Typed Metadata Contract**:
-  [frontmatter contract](../../99.templates/support/frontmatter-contract.md)
+  [frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
   and
-  [metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+  [metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
 - **Template Contracts**:
-  [template contract](../../99.templates/support/template-contract.md),
-  [template governance](../../99.templates/support/template-governance.md),
+  [template contract](../../../99.templates/support/template-contract.md),
+  [template governance](../../../99.templates/support/template-governance.md),
   and
-  [template selection](../../99.templates/support/template-selection.md)
+  [template selection](../../../99.templates/support/template-selection.md)
 - **Workspace Support Contract**:
-  [`_workspace` contract](../../../_workspace/README.md)
+  [`_workspace` contract](../../../../_workspace/README.md)
 
 ## External Source Basis
 
@@ -574,14 +584,23 @@ as focused RED/GREEN tests before the broad bundle.
 - Runtime deployment and secret values remain unchanged and undisclosed.
 - Every sub-project task review and the final program review are approved.
 
+## Archive Ledger
+
+| Original Path | Archived Path |
+| -------------- | -------------- |
+| `docs/03.specs/129-document-contract-canonicalization/spec.md` | `docs/98.archive/03.specs/129-document-contract-canonicalization/spec.md` |
+
+The repository-wide archive mapping is recorded in
+[../../README.md](../../README.md).
+
 ## Related Documents
 
 - [Spec 128](../128-agentic-audit-harness-consolidation/spec.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
-- [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Template support](../../99.templates/support/README.md)
-- [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
-- [Canonical audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Metadata inventory](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md)
-- [`_workspace` contract](../../../_workspace/README.md)
-- [GitHub governance](../../00.agent-governance/rules/github-governance.md)
+- [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Template support](../../../99.templates/support/README.md)
+- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
+- [Canonical audit pack](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Metadata inventory](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md)
+- [`_workspace` contract](../../../../_workspace/README.md)
+- [GitHub governance](../../../00.agent-governance/rules/github-governance.md)

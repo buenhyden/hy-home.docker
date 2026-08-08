@@ -2,8 +2,7 @@
 status: completed
 artifact_id: plan:2026-07-14-document-corpus-lifecycle-migration-foundation
 artifact_type: plan
-parent_ids:
-  - spec:131-document-corpus-lifecycle-migration-foundation
+parent_ids: []
 ---
 
 # Document Corpus Lifecycle Migration Foundation Implementation Plan
@@ -1775,8 +1774,8 @@ authorize reverting earlier approved work.
 
 ## Related Documents
 
-- [Spec 131](../../03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
-- [Spec 130](../../03.specs/130-template-contract-system-canonicalization/spec.md)
+- [Spec 131](../../98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
+- [Spec 130](../../98.archive/03.specs/130-template-contract-system-canonicalization/spec.md)
 - [Stage 04 Task evidence](../tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
 - [Metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
 - [Frontmatter contract](../../99.templates/support/frontmatter-contract.md)
