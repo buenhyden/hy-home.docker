@@ -114,7 +114,7 @@ summaries.
 | Task 3 | Author harness, loop, and provider comparison | Assigned requirement and claim rows plus leaf gates | Complete after fix `1cd9bc28`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 4 | Author instructions, models, catalogs, and memory | Assigned requirement and claim rows plus leaf gates | Complete after fix `0445a178`; scoped specification Approved C0/I0/M0 and quality Approved-with-Minor C0/I0/M1; ignored-report opening M1 parked |
 | Task 5 | Author spec-driven SDLC and document contracts | Assigned requirement and claim rows plus leaf gates | Complete after fix `25acd862`; scoped specification and quality re-reviews Approved C0/I0/M0 |
-| Task 6 | Author documentation architecture and LLM Wiki | Assigned requirement and claim rows plus leaf gates | Implemented in pending Task 6 commit; focused checks and self-review PASS C0/I0; independent review unclaimed / Not Run |
+| Task 6 | Author documentation architecture and LLM Wiki | Assigned requirement and claim rows plus leaf gates | Fix round 1 applied after initial specification Approved-with-Minor C0/I0/M1 and quality Needs fixes C0/I1/M0; scoped fix re-reviews pending |
 | Task 7 | Author automation, CI/CD, GitHub Actions, and QA | Assigned requirement and claim rows plus leaf gates | Not Run |
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Not Run |
 | Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Not Run |
@@ -150,8 +150,8 @@ states are intentional and may change only with named evidence and review.
 | REQ-19 | Policy role, purpose, trigger, owner, consumer, system, and rules | `sdlc-document-roles.md` | Metadata lifecycle, SDLC | RFC catalog comparison and tracked Stage 99 policy contract verified | WS-TASK5-SDLC | 14/14 explicit in leaf | Separate Policy row implemented | Implementer PASS C0/I0; initial reviews required fixes; scoped specification and quality re-reviews Approved C0/I0/M0 | [Policy role](../../90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md#complete-role-contract) |
 | REQ-20 | Release role, purpose, trigger, owner, consumer, system, and rules, including its deployment-evidence boundary | `sdlc-document-roles.md` | Metadata lifecycle, SDLC | GitHub Releases and SemVer direct pages verified 2026-08-08 | WS-TASK5-SDLC | 14/14 explicit in leaf | Separate Release row and release/deployment boundary implemented; real target unexercised | Implementer PASS C0/I0; initial reviews required fixes; scoped specification and quality re-reviews Approved C0/I0/M0 | [Release boundary](../../90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md#release-version-and-deployment-boundary) |
 | REQ-21 | Runbook role, purpose, trigger, owner, consumer, system, and rules | `sdlc-document-roles.md` | Metadata lifecycle, SDLC | Tracked Stage 99 contract and SRE comparison verified | WS-TASK5-SDLC | 14/14 explicit in leaf | Separate Runbook row implemented | Implementer PASS C0/I0; initial reviews required fixes; scoped specification and quality re-reviews Approved C0/I0/M0 | [Runbook role](../../90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md#complete-role-contract) |
-| REQ-22 | Diataxis tutorial, how-to, reference, and explanation analysis and workspace mapping | `documentation-architecture.md` | SDLC roles, metadata lifecycle, workspace baseline, scope matrix | Rendered Diataxis site HTTP 429/Cloudflare challenge; body `UNVERIFIED`; official upstream source pinned at `957c09ca` and read directly | WS-TASK6-DOCS | 14/14 explicit in leaf | Four reader modes mapped without folders or competing lifecycle taxonomy; route switch pending | Implementer PASS C0/I0; independent review unclaimed / Not Run | [documentation architecture](../../90.references/research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md) |
-| REQ-23 | LLM Wiki architecture, safety, generation, freshness, discovery, and implementation | `llm-wiki-system.md` | Agent instructions, metadata lifecycle, workspace baseline, scope matrix | `llmstxt.org` and `agents.md` HTTP 200; workspace generators and outputs read directly | WS-VALIDATORS, WS-TASK6-DOCS | 14/14 explicit in leaf | Architecture/safety/metadata/discovery traced; both named exact freshness checks FAIL; Task 10 refresh pending | Implementer PASS C0/I0; independent review unclaimed / Not Run | [LLM Wiki system](../../90.references/research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md) |
+| REQ-22 | Diataxis tutorial, how-to, reference, and explanation analysis and workspace mapping | `documentation-architecture.md` | SDLC roles, metadata lifecycle, workspace baseline, scope matrix | Rendered Diataxis site HTTP 429/Cloudflare challenge; body `UNVERIFIED`; official upstream source pinned at `957c09ca` and read directly | WS-TASK6-DOCS | 14/14 explicit in leaf | Four reader modes mapped without folders or competing lifecycle taxonomy; route switch pending | Implementer PASS C0/I0; initial specification Approved-with-Minor C0/I0/M1; initial quality Needs fixes C0/I1/M0; scoped fix re-reviews pending | [documentation architecture](../../90.references/research/2026-08-08-agentic-engineering-research-pack/documentation-architecture.md) |
+| REQ-23 | LLM Wiki architecture, safety, generation, freshness, discovery, and implementation | `llm-wiki-system.md` | Agent instructions, metadata lifecycle, workspace baseline, scope matrix | `llmstxt.org` and `agents.md` HTTP 200; workspace generators and outputs read directly | WS-VALIDATORS, WS-TASK6-DOCS | 14/14 explicit in leaf | Architecture/safety/metadata/discovery traced; both named exact freshness checks FAIL; Task 10 refresh pending | Implementer PASS C0/I0; initial specification Approved-with-Minor C0/I0/M1; initial quality Needs fixes C0/I1/M0; scoped fix re-reviews pending | [LLM Wiki system](../../90.references/research/2026-08-08-agentic-engineering-research-pack/llm-wiki-system.md) |
 | REQ-24 | CI/CD system, rules, implementation, evidence, promotion, deployment, and rollback boundaries | `quality-ci-formatting.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-25 | GitHub Actions workflow, action, permissions, pinning, gate, and remote-enforcement analysis | `quality-ci-formatting.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-26 | QA formatting, linting, testing, syntax, type, coverage, and failure-handling analysis | `quality-ci-formatting.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
@@ -368,6 +368,7 @@ non-link historical literals with path, stable anchor, reason, and verdict.
 | 2026-08-08 | Task 6 | Traced LLM Wiki discovery, both generators, metadata, safety, policy, and actual stored outputs | Root README registers the system; AGENTS is bootstrap-only; both outputs path-only and stale; aggregate contract is not byte-exact freshness proof |
 | 2026-08-08 | Task 6 | Ran both named freshness baselines without regeneration | Index FAIL exit 1; coverage FAIL exit 1; Task 10 remains canonical refresh owner |
 | 2026-08-08 | Task 6 | Authored two Stage 90 leaves and decomposed predecessor claims | REQ-22/23 implemented with four reader modes, all 14 scopes per leaf, safety/privacy/advisory/runtime boundaries, and Task 6 review unclaimed |
+| 2026-08-08 | Task 6 fix 1 | Backfilled exact Task 6 commit identity and initial independent review verdicts | Task 6 `911e3c86beafcdb0c89e4398c8ca76266ebc5aca`; exact range `25acd86225d98151f9149072aff6b60511c62695..911e3c86beafcdb0c89e4398c8ca76266ebc5aca`; specification Approved-with-Minor C0/I0/M1; quality Needs fixes C0/I1/M0; pending-identity finding corrected; scoped fix re-reviews pending |
 
 ## Verification Evidence
 
@@ -423,9 +424,11 @@ private-state material.
 ## Controlled Agent Pre-commit Evidence
 
 The controlled all-files wrapper is outside Task 1 and was not authorized as
-this unit's scoped validation. Command, allowed prefixes, exit status, snapshot
-result, observation boundary, path sets, and disposition are all `Not Run`.
-Task 1 uses only the exact checks named by its Plan.
+that unit's scoped validation. Task 6 fix round 1 likewise does not authorize
+the wrapper: command, allowed prefixes, exit status, snapshot result,
+observation boundary, path sets, and disposition remain `Not Run`. The fix uses
+only focused Task-ledger metadata and diff checks; scoped independent re-reviews
+remain pending.
 
 ## Review Evidence
 
@@ -455,6 +458,8 @@ Task 1 uses only the exact checks named by its Plan.
 | Task 5 scoped specification re-review | `a682d5b14f2d5ce2fd629009f01413703b9f0314..25acd86225d98151f9149072aff6b60511c62695` | Independent specification reviewer | Approved; C0/I0/M0 | Fix round 1 resolved the exact Task 5 commit/review identity finding |
 | Task 5 scoped quality re-review | `a682d5b14f2d5ce2fd629009f01413703b9f0314..25acd86225d98151f9149072aff6b60511c62695` | Independent documentation-quality reviewer | Approved; C0/I0/M0 | Fix round 1 returned a clean scoped verdict |
 | Task 6 implementer self-review | Working tree before Task 6 commit | Task 6 implementer | PASS; C0/I0 | Exactly two new leaves plus this Task ledger; REQ-22/23, site 429/upstream source boundary, four modes, non-taxonomy/non-folder rule, both complete generators, exact freshness distinction, privacy/advisory limits, predecessor decomposition, and 14 scopes per leaf verified; independent review remains unclaimed |
+| Task 6 specification compliance | `25acd86225d98151f9149072aff6b60511c62695..911e3c86beafcdb0c89e4398c8ca76266ebc5aca` | Independent specification reviewer | Approved-with-Minor; C0/I0/M1 | Minor finding: backfill the exact Task 6 commit identity and initial review range; scoped fix re-review pending |
+| Task 6 documentation quality | `25acd86225d98151f9149072aff6b60511c62695..911e3c86beafcdb0c89e4398c8ca76266ebc5aca` | Independent documentation-quality reviewer | Needs fixes; C0/I1/M0 | Important finding: pending Task 6 commit/review identity left the tracked ledger incomplete; scoped fix re-review pending |
 
 ## Commit Ledger
 
@@ -469,7 +474,7 @@ Task 1 uses only the exact checks named by its Plan.
 | Task 4 fix 1 | `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee`; `docs(task): backfill task 4 review identity` | Exact Task 4 identity and initial review correction | Focused metadata and diff PASS | Scoped specification Approved C0/I0/M0; scoped quality Approved-with-Minor C0/I0/M1; ignored-report M1 parked |
 | Task 5 | `a682d5b14f2d5ce2fd629009f01413703b9f0314`; `docs(research): define spec driven SDLC contracts` | Three SDLC/document-contract leaves and execution evidence | Metadata/traceability/assertion/diff PASS; repository contract retains only separate Memory predecessor | Implementer PASS C0/I0; initial specification and quality reviews Needs fixes C0/I1/M0; scoped fix re-reviews pending |
 | Task 5 fix 1 | `25acd86225d98151f9149072aff6b60511c62695`; `docs(task): backfill task 5 review identity` | Exact Task 5 identity and initial review correction | Focused metadata and diff PASS | Scoped specification and quality re-reviews Approved C0/I0/M0 |
-| Task 6 | Pending commit identity; `docs(research): analyze documentation and LLM wiki systems` | Two documentation-system leaves and execution evidence | Metadata/headings/scopes/diff PASS; repository contract retains separate Memory predecessor; named generated checks preserve Task 10-owned FAILs | Implementer PASS C0/I0; independent review unclaimed / Not Run |
+| Task 6 | `911e3c86beafcdb0c89e4398c8ca76266ebc5aca`; `docs(research): analyze documentation and LLM wiki systems` | Two documentation-system leaves and execution evidence | Metadata/headings/scopes/diff PASS; repository contract retains separate Memory predecessor; named generated checks preserve Task 10-owned FAILs | Implementer PASS C0/I0; initial specification Approved-with-Minor C0/I0/M1; initial quality Needs fixes C0/I1/M0; scoped fix re-reviews pending |
 | Tasks 7-12 | Not Run | Not Run | Not Run | Not Run |
 
 ## Deferred and Blocked Items
@@ -484,8 +489,8 @@ Task 1 uses only the exact checks named by its Plan.
   `docs/00.agent-governance/memory/current.md`; Task 1 does not modify that
   forbidden path.
 - Claim-level decomposition for later authoring units, remaining external-source
-  retrieval, old-path scanning, generated refresh, Task 6 committed-unit
-  reviews, and old-pack deletion are pending or `Not Run`. The deletion gate
+  retrieval, old-path scanning, generated refresh, Task 6 scoped fix re-reviews,
+  and old-pack deletion are pending or `Not Run`. The deletion gate
   remains closed. Task 4's ignored-report opening M1 is parked outside tracked
   scope; its appended fix section and this tracked ledger carry current state.
 - Push, pull request, merge, remote mutation, and live runtime validation
