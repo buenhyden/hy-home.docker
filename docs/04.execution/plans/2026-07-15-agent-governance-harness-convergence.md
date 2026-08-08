@@ -1087,6 +1087,6 @@ mutation.
 - [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
 - [Harness Implementation Map](../../00.agent-governance/harness-implementation-map.md)
 - [Canonical Agentic Audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Canonical Agentic Research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical Agentic Research](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Plan Template](../../99.templates/templates/sdlc/plan.template.md)
 - [Task Template](../../99.templates/templates/sdlc/task.template.md)

@@ -163,10 +163,10 @@ runtime cost before adding new gates.
 
 ## Sources
 
-- [Spec-driven SDLC research](../../research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) - SDLC criteria.
-- [Quality CI formatting research](../../research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) - QA/CI/formatting criteria.
-- [Docker Compose infrastructure research](../../research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) - Compose/infrastructure validation criteria.
-- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - security criteria.
+- [Spec-driven SDLC research](../../research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md) - SDLC criteria.
+- [Quality CI formatting research](../../research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md) - QA/CI/formatting criteria.
+- [Docker Compose infrastructure research](../../research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md) - Compose/infrastructure validation criteria.
+- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - security criteria.
 - [Stage 03 README](../../../03.specs/README.md) - spec stage contract.
 - [Stage 04 plans README](../../../04.execution/plans/README.md) - plan stage contract.
 - [Stage 04 tasks README](../../../04.execution/tasks/README.md) - task evidence contract.

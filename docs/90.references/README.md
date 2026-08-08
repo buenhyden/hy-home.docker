@@ -193,17 +193,17 @@ Reference 문서는 active stage의 판단을 돕는 안정적 배경 지식입�
 - [llm-wiki/repository-map.md](./llm-wiki/repository-map.md) - curated tracked-source repository map
 - [llm-wiki/llm-wiki-index.md](./llm-wiki/llm-wiki-index.md) - generated tracked repo-local path index
 - [research/README.md](./research/README.md) - source-backed research category
-- [research/2026-07-05-agentic-research-pack-refresh/README.md](./research/2026-07-05-agentic-research-pack-refresh/README.md) - harness, loop, provider, SDLC, QA research pack index
-- [research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](./research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md) - workspace purpose, roles, gates, contracts, scripts, governance baseline
-- [research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](./research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) - harness engineering components and workspace application analysis
-- [research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](./research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) - agent, eval, CI, human approval loop analysis
-- [research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](./research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) - spec-driven development and SDLC mapping
-- [research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](./research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) - CI/CD, QA, formatting, and secure quality gate analysis
-- [research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](./research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) - Claude, Codex, Gemini provider implementation comparison
-- [research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md](./research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md) - external AI agent catalog patterns and repo-local curated catalog import boundary
-- [research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md](./research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) - Docker Compose and infrastructure harness analysis
-- [research/2026-07-05-agentic-research-pack-refresh/security-governance.md](./research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - security governance and secure SDLC analysis
-- [research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md](./research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md) - automation, pipeline, and workflow analysis
+- [research/2026-08-08-agentic-engineering-research-pack/README.md](./research/2026-08-08-agentic-engineering-research-pack/README.md) - harness, loop, provider, SDLC, QA research pack index
+- [research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md](./research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md) - workspace purpose, roles, gates, contracts, scripts, governance baseline
+- [research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md](./research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md) - harness engineering components and workspace application analysis
+- [research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md](./research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md) - agent, eval, CI, human approval loop analysis
+- [research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md](./research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md) - spec-driven development and SDLC mapping
+- [research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md](./research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md) - CI/CD, QA, formatting, and secure quality gate analysis
+- [research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md](./research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md) - Claude, Codex, Gemini provider implementation comparison
+- [research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md](./research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md) - external AI agent catalog patterns and repo-local curated catalog import boundary
+- [research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md](./research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md) - Docker Compose and infrastructure harness analysis
+- [research/2026-08-08-agentic-engineering-research-pack/security-governance.md](./research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - security governance and secure SDLC analysis
+- [research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md](./research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md) - automation, pipeline, and workflow analysis
 
 ## Stage Handoff
 

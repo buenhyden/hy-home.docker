@@ -687,7 +687,7 @@ artifact ID `task:2026-08-08-agentic-research-pack-rebuild` and direct parent
 - [Stage 03 index](../README.md)
 - [Spec template](../../99.templates/templates/sdlc/spec.template.md)
 - [Stage 90 research index](../../90.references/research/README.md)
-- [Current research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Current research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Stage 98 archive index](../../98.archive/README.md) — canonical route for
   archived `spec:104-agentic-research-pack-refresh` and
   `spec:122-agentic-research-pack-consolidation`

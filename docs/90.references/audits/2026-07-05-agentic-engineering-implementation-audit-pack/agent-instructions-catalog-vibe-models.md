@@ -165,10 +165,10 @@ nothing.
 
 ## Sources
 
-- [Instruction and vibe-coding research](../../research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md)
-- [Pinned catalog research](../../research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md)
-- [Model-selection research](../../research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md)
-- [Provider landscape](../../research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md)
+- [Instruction and vibe-coding research](../../research/2026-08-08-agentic-engineering-research-pack/agent-instructions-vibe-coding.md)
+- [Pinned catalog research](../../research/2026-08-08-agentic-engineering-research-pack/ai-agent-catalogs.md)
+- [Model-selection research](../../research/2026-08-08-agentic-engineering-research-pack/agent-model-selection.md)
+- [Provider landscape](../../research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md)
 - [Agent catalog](../../../00.agent-governance/agents/README.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)

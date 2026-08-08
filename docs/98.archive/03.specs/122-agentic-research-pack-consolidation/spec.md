@@ -71,7 +71,7 @@ This specification's work reached a terminal state (`completed` or `superseded`)
 - **Previous Spec**:
   [../104-agentic-research-pack-refresh/spec.md](../104-agentic-research-pack-refresh/spec.md)
 - **Canonical Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Duplicate Pack**:
   `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
   (path removed after consolidation; see the Superseded Paths table in
@@ -419,7 +419,7 @@ The repository-wide archive mapping is recorded in
 - [Implementation plan](../../../04.execution/plans/2026-07-10-agentic-research-pack-consolidation.md)
 - [Task evidence](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
 - [Previous research refresh specification](../104-agentic-research-pack-refresh/spec.md)
-- [Canonical research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Superseded path mapping for the duplicate research pack](../../../90.references/research/README.md) - the pack itself was removed after this specification completed; its canonical destination mapping is preserved in the research category index
 - [Research category README](../../../90.references/research/README.md)
 - [Agent governance hub](../../../00.agent-governance/README.md)

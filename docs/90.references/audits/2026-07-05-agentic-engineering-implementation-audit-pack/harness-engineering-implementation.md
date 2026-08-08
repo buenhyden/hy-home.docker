@@ -112,8 +112,8 @@ introduced here.
 
 ## Sources
 
-- [Harness research](../../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md)
-- [Provider comparison research](../../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md)
+- [Harness research](../../research/2026-08-08-agentic-engineering-research-pack/harness-engineering.md)
+- [Provider comparison research](../../research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md)
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)

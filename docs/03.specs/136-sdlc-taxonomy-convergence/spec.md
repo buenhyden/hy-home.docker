@@ -545,5 +545,5 @@ only when its acceptance row holds and the preceding baseline has not regressed.
 - [Template selection](../../99.templates/support/template-selection.md)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
 - [Lifecycle status](../../99.templates/support/lifecycle-status.md)
-- [Spec-driven development and SDLC reference](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md)
+- [Spec-driven development and SDLC reference](../../90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md)
 - [Current project memory](../../00.agent-governance/memory/current.md)

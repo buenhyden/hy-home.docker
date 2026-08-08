@@ -642,6 +642,6 @@ Use ordinary `git revert` in reverse dependency order. Do not use
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
 - [Corpus migration contract](../../99.templates/support/corpus-migration-contract.md)
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Canonical audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Task checklists](../../00.agent-governance/rules/task-checklists.md)

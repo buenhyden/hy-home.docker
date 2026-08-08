@@ -108,7 +108,7 @@ does not duplicate this implementation design.
 - [Artifact contract](../../00.agent-governance/contracts/agent-governance-artifacts.yaml)
 - [Memory contract](../../00.agent-governance/memory/README.md)
 - [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Canonical research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 
 ### Current External Sources
 
@@ -1235,6 +1235,6 @@ Every task must produce:
 - [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)
 - [Quality scope](../../00.agent-governance/scopes/qa.md)
-- [Canonical research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)

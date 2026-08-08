@@ -48,7 +48,7 @@ Superseded provenance only; not current implementation evidence.
 ## Sources
 
 - [Canonical audit README](../2026-07-05-agentic-engineering-implementation-audit-pack/README.md) - current audit boundary.
-- [Provider research](../../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) - current provider criteria.
+- [Provider research](../../research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md) - current provider criteria.
 
 ## Maintenance
 

@@ -87,6 +87,10 @@ SAFE_SUFFIXES = {
     ".yml",
 }
 
+RETIRING_PACK_PREFIX = (
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/"
+)
+
 EXCLUDED_PREFIXES = (
     "graphify-out/",
     "volumes/",
@@ -94,6 +98,7 @@ EXCLUDED_PREFIXES = (
     ".git/",
     "projects/storybook/nextjs/.next/",
     "projects/storybook/nextjs/node_modules/",
+    RETIRING_PACK_PREFIX,
 )
 
 EXCLUDED_PARTS = {

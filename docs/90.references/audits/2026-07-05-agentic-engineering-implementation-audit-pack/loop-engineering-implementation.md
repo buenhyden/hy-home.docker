@@ -102,7 +102,7 @@ requirements.
 
 ## Sources
 
-- [Loop research](../../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)
+- [Loop research](../../research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md)
 - [Agent-output fixtures](../../data/governance/agent-output-eval-fixtures.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)

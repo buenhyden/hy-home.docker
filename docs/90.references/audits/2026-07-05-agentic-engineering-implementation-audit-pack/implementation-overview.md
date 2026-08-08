@@ -241,7 +241,7 @@ tracked workflow/script surfaces.
 
 ## Sources
 
-- [Agentic engineering research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md) - criteria source.
+- [Agentic engineering research pack](../../research/2026-08-08-agentic-engineering-research-pack/README.md) - criteria source.
 - [Audit pack task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) - source inventory and validation evidence.
 - [Stage 00 governance hub](../../../00.agent-governance/README.md) - governance SSoT.
 - [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - common capability mapping.
@@ -272,6 +272,6 @@ tracked workflow/script surfaces.
 - [SDLC and document-contract implementation audit](./sdlc-document-contracts-implementation.md)
 - [Frontmatter, template, and README implementation audit](./frontmatter-template-readme-implementation.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
-- [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Research pack](../../research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - [Audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)

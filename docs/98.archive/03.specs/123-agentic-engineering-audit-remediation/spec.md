@@ -77,7 +77,7 @@ This specification's work reached a terminal state (`completed` or `superseded`)
 - **Previous Specification**:
   [../122-agentic-research-pack-consolidation/spec.md](../122-agentic-research-pack-consolidation/spec.md)
 - **Canonical Research Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Canonical Audit Pack**:
   [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Overlapping Audit Pack**:
@@ -504,7 +504,7 @@ The repository-wide archive mapping is recorded in
 - [Implementation plan](../../../04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Task evidence](../../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Previous research consolidation specification](../122-agentic-research-pack-consolidation/spec.md)
-- [Canonical research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Canonical implementation audit pack](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Overlapping implementation audit pack](../../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
 - [Research category](../../../90.references/research/README.md)

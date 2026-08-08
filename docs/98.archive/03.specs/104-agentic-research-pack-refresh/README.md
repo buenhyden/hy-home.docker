@@ -69,6 +69,6 @@ agentic-research-pack-refresh/
 
 - [spec.md](./spec.md)
 - [docs/03.specs README](../../../03.specs/README.md)
-- [agentic engineering research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [agentic engineering research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [research references](../../../90.references/research/README.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

@@ -281,7 +281,7 @@ The repository-wide archive mapping is recorded in
 - **Task**: [PostgreSQL recovery Task](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
 - **Compose/operations audit**: [Canonical readiness audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
-- **Research**: [Compose and infrastructure research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)
+- **Research**: [Compose and infrastructure research](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md)
 - **Runtime dependency**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md)
 - **Security dependency**: [Spec 126](../126-security-supply-chain-remediation/spec.md)
 - **Deployment dependency**: [Spec 127](../127-deployment-release-engineering-remediation/spec.md)

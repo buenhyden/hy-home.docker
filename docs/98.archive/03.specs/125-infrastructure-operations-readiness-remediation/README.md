@@ -70,4 +70,4 @@ organization RTO/RPO remain unauthorized.
 - [Program Task evidence owner](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - [Umbrella audit specification](../123-agentic-engineering-audit-remediation/spec.md)
 - [Canonical Compose and operations audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
-- [Compose and infrastructure research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md)
+- [Compose and infrastructure research](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md)
