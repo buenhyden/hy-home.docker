@@ -1056,6 +1056,12 @@ re-review loop before Task 10.
   pre-deletion review window
 - Create: `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` for the
   exact-prefix exclusion and sibling-route retention contract
+- Modify: `scripts/validation/check-document-metadata.py` and
+  `docs/99.templates/support/document-corpus-migration-contract.yaml` to
+  remove the retiring pack from active target-surface and migration-exception
+  registries
+- Modify: `tests/validation/test_document_metadata.py` with a focused
+  no-retiring-prefix regression for those active registries
 - Modify: execution Task ledgers
 
 **Interfaces:**
@@ -1081,6 +1087,31 @@ not edit it directly. Record each permitted non-link literal by path, stable
 anchor, reason, and reviewer. Write the exact reviewed non-generated
 changed-consumer paths, one per line, to
 `/tmp/agentic-research-route-paths.txt`; this scratch file is never committed.
+
+- [ ] **Step 1a: Remove the retiring pack from active metadata registries**
+
+The complete post-route literal scan must not allowlist active validator or
+template configuration. Add a focused RED assertion to
+`tests/validation/test_document_metadata.py` proving the retiring prefix is
+absent from `TARGET_SURFACE_DIRECT_SOURCE_PATHS`,
+`APPROVED_MIGRATION_PATHS`, and the matching
+`waves.target-surface-convergence.direct_source_paths` YAML list. Before the
+production edit, record the exact failure set: seven direct-source entries in
+both Python and YAML and sixteen approved-migration entries in Python.
+
+Remove only entries below the exact retiring directory from both active
+registries. Do not retarget these exception/source-snapshot entries to the new
+pack: the new documents must satisfy current metadata contracts without a
+migration exception. Preserve every audit-pack and similarly named Stage 04
+entry. Run the full focused module after GREEN:
+
+```bash
+python3 -m unittest tests.validation.test_document_metadata -v
+```
+
+Expected: the new regression and the existing Python/YAML parity checks PASS,
+and the complete literal scan reports no retiring-pack value in active
+validator or template configuration.
 
 - [ ] **Step 2: Pass the separately approved security-generator prerequisite**
 
@@ -1201,14 +1232,17 @@ git diff --check
 
 Confirm every line in the scratch path list is a classified route consumer,
 self-review the route, generator/test, and generated diffs, then stage only
-that list, the two generators, the focused test, the two generated outputs,
-and the Task:
+that list, the two generators, their focused test, the metadata validator,
+its focused test, the migration YAML, the two generated outputs, and the Task:
 
 ```bash
 git add --pathspec-from-file=/tmp/agentic-research-route-paths.txt
 git add scripts/knowledge/generate-llm-wiki-index.sh \
   scripts/knowledge/generate-llm-wiki-coverage.sh \
   tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
+  scripts/validation/check-document-metadata.py \
+  tests/validation/test_document_metadata.py \
+  docs/99.templates/support/document-corpus-migration-contract.yaml \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
   docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
@@ -1548,6 +1582,7 @@ progress and is clean after each commit.
 | Broken historical link after deletion | Whole tracked-text scan and zero clickable exceptions | Restore old pack from deletion parent and repair routes |
 | Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
 | Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
+| Active metadata registries retain paths scheduled for deletion | Focused Python/YAML no-retiring-prefix regression and exact-entry removal | Revert the route-switch unit, keep both packs, and repair registry parity before deletion |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
@@ -1567,6 +1602,7 @@ pack are forbidden.
 | Pack complete | 19 leaves, 35/35 requirements, 14/14 scopes, source/claim completeness | Human route switch |
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
+| Active registry retirement reviewed | Exact 7 Python/YAML direct-source and 16 Python migration-exception removals with focused regression | Task 10 route-switch commit and old-pack deletion |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS | `git rm` |
 | Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
@@ -1601,7 +1637,7 @@ pack are forbidden.
 - [Spec 137](../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 - [Execution Tasks index](../tasks/README.md)
 - [Research references](../../90.references/research/README.md)
-- [Current pack pending retirement](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Current pack pending retirement](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Reference template](../../99.templates/templates/common/reference.template.md)
 - [Task template](../../99.templates/templates/sdlc/task.template.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
