@@ -1056,12 +1056,11 @@ re-review loop before Task 10.
   pre-deletion review window
 - Create: `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` for the
   exact-prefix exclusion and sibling-route retention contract
-- Modify: `scripts/validation/check-document-metadata.py` and
-  `docs/99.templates/support/document-corpus-migration-contract.yaml` to
-  remove the retiring pack from active target-surface and migration-exception
-  registries
+- Modify: `scripts/validation/check-document-metadata.py` to remove only the
+  retiring pack's sixteen mutable `APPROVED_MIGRATION_PATHS` exceptions while
+  preserving the seven commit-pinned target-surface baseline selectors
 - Modify: `tests/validation/test_document_metadata.py` with a focused
-  no-retiring-prefix regression for those active registries
+  mutable-exception removal and immutable-baseline preservation regression
 - Modify: execution Task ledgers
 
 **Interfaces:**
@@ -1088,30 +1087,59 @@ anchor, reason, and reviewer. Write the exact reviewed non-generated
 changed-consumer paths, one per line, to
 `/tmp/agentic-research-route-paths.txt`; this scratch file is never committed.
 
-- [ ] **Step 1a: Remove the retiring pack from active metadata registries**
+- [ ] **Step 1a: Retire mutable metadata exceptions and preserve pinned baseline evidence**
 
-The complete post-route literal scan must not allowlist active validator or
-template configuration. Add a focused RED assertion to
-`tests/validation/test_document_metadata.py` proving the retiring prefix is
-absent from `TARGET_SURFACE_DIRECT_SOURCE_PATHS`,
-`APPROVED_MIGRATION_PATHS`, and the matching
-`waves.target-surface-convergence.direct_source_paths` YAML list. Before the
-production edit, record the exact failure set: seven direct-source entries in
-both Python and YAML and sixteen approved-migration entries in Python.
+The seven paths in `TARGET_SURFACE_DIRECT_SOURCE_PATHS` and the matching YAML
+list are not current routing exceptions: they select files from baseline
+commit `32c40e11747bc0bd03789c24861d2e5d60c0e999` for an already reviewed,
+blocking 483-row manifest. Preserve those exact seven selectors, their seven
+manifest rows, and seven plain-text summary rows as immutable historical
+evidence. Record all four owning files in the reviewed non-link allowlist with
+the wave, baseline commit, stable anchors, and reason. Require the canonical
+`check-manifest`, `check-promoted`, and `check-summary` modes to pass; do not
+regenerate or silently re-promote the historical manifest.
 
-Remove only entries below the exact retiring directory from both active
-registries. Do not retarget these exception/source-snapshot entries to the new
-pack: the new documents must satisfy current metadata contracts without a
-migration exception. Preserve every audit-pack and similarly named Stage 04
-entry. Run the full focused module after GREEN:
+By contrast, the sixteen old-pack entries in `APPROVED_MIGRATION_PATHS` are
+mutable current exceptions and may not survive deletion. Add a focused RED
+assertion proving those sixteen entries exist before the production edit.
+Then remove only those exact-prefix exceptions from
+`scripts/validation/check-document-metadata.py`. Do not replace them with new
+pack entries: the new documents must satisfy current metadata contracts
+without a migration exception.
+
+The GREEN test must assert all of these boundaries directly:
+
+- old and new research-pack prefixes are both absent from
+  `APPROVED_MIGRATION_PATHS`;
+- the exact seven Python/YAML baseline selectors remain equal;
+- the promoted manifest and generated summary retain exactly seven matching
+  historical rows and stay pinned to the original wave/baseline;
+- the pre/post exception-set difference is exactly the sixteen old-pack rows;
+- audit-pack exceptions and the Spec 123/related Stage 04 sentinels are
+  unchanged.
+
+Run:
 
 ```bash
 python3 -m unittest tests.validation.test_document_metadata -v
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-manifest --wave target-surface-convergence
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-promoted
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode check-summary --wave target-surface-convergence
 ```
 
-Expected: the new regression and the existing Python/YAML parity checks PASS,
-and the complete literal scan reports no retiring-pack value in active
-validator or template configuration.
+The root branch baseline for these lifecycle checks is already nonzero:
+`check-manifest=9`, `check-promoted=25`, and `check-summary=9`. The Task 10
+pre-route Plan-correction baseline is `9/26/9`; the additional promoted finding
+is recorded workstream evidence outside these seven rows. Expected: the new
+regression and existing parity checks PASS; all seven pinned rows remain
+byte-identical in the manifest/summary; no lifecycle finding is attributable to
+the mutable-exception removal; and totals do not increase. Do not report the
+three lifecycle commands as PASS. The complete literal scan reports no
+retiring-pack value in mutable migration exceptions; only reviewed
+pinned-baseline literals remain in these four historical-evidence owners.
 
 - [ ] **Step 2: Pass the separately approved security-generator prerequisite**
 
@@ -1233,7 +1261,7 @@ git diff --check
 Confirm every line in the scratch path list is a classified route consumer,
 self-review the route, generator/test, and generated diffs, then stage only
 that list, the two generators, their focused test, the metadata validator,
-its focused test, the migration YAML, the two generated outputs, and the Task:
+its focused test, the two generated outputs, and the Task:
 
 ```bash
 git add --pathspec-from-file=/tmp/agentic-research-route-paths.txt
@@ -1242,7 +1270,6 @@ git add scripts/knowledge/generate-llm-wiki-index.sh \
   tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
   scripts/validation/check-document-metadata.py \
   tests/validation/test_document_metadata.py \
-  docs/99.templates/support/document-corpus-migration-contract.yaml \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
   docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
@@ -1263,6 +1290,11 @@ verdicts. Complete the fix/re-review loop before Task 11.
   `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
   after rerunning their generators against the proposed and actual deletion
+- Modify: `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml`
+  by changing exactly seven pinned old-pack result rows from same-path
+  `preserve` to evidenced `delete` rows with new-pack canonical replacements
+- Modify: `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md`
+  only through the lifecycle summary generator
 - Modify: execution Task ledger with proposed-deletion, staged-deletion,
   recoverability, freshness, review, and commit evidence
 
@@ -1294,6 +1326,21 @@ git show HEAD:docs/90.references/research/2026-07-05-agentic-research-pack-refre
 
 - [ ] **Step 3: Build a non-destructive proposed-deletion package**
 
+Before building the package, change exactly the seven pinned old-pack manifest
+rows. Keep each `source_path`, baseline identity/type/status/parents, and the
+wave baseline immutable. Set `target_path: null`, `disposition: delete`, the
+reviewed new-pack README/leaf as `canonical_replacement`, and
+`preservation_class: git-history`. Record non-empty commands, sources,
+repository paths, zero-consumer scan, and rollback evidence; start both row
+review verdicts as `pending`. This represents deletion with a replacement
+without requiring the new pack to reuse the old artifact IDs. Regenerate the
+summary only through:
+
+```bash
+python3 scripts/validation/check-document-corpus-lifecycle.py \
+  --mode generate-summary --wave target-surface-convergence
+```
+
 Use a temporary Git index to model the twenty deletions without changing the
 real index or removing a worktree file. The two generators inherit the
 temporary index and therefore render the proposed post-deletion state:
@@ -1311,15 +1358,18 @@ GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" \
 GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git add \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
+  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml \
+  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md \
   docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git diff --cached --binary \
   > "$DELETION_REVIEW_DIR/proposed-deletion.patch"
 ```
 
-Inspect the proposed patch and confirm it contains exactly twenty deletions and
-the current Task evidence. Both generated artifacts must be byte-identical to
-the Task 10 route-switch versions. Any generated-output diff is an unexpected
-projection change and stops deletion review.
+Inspect the proposed patch and confirm it contains exactly twenty deletions,
+the seven-row lifecycle manifest delete/replacement transition, its regenerated
+summary, and the current Task evidence. Both LLM Wiki artifacts must be
+byte-identical to the Task 10 route-switch versions. Any LLM output diff is an
+unexpected projection change and stops deletion review.
 
 - [ ] **Step 4: Satisfy pre-deletion gate 9**
 
@@ -1327,7 +1377,8 @@ Dispatch independent migration/specification and quality reviewers with the
 proposed patch, old/new manifests, immutable old blobs, claim ledger,
 recoverability evidence, and Task brief. Require C0/I0 and record the proposed
 deletion diff, recovery commit, and reviewer verdict in the Task. If recording
-the verdict changes the Task, refresh the temporary-index patch and rerun both
+the verdict changes the Task, set the seven lifecycle row verdicts to `pass`,
+regenerate the summary, refresh the temporary-index patch, and rerun both
 independent reviewers so the reviewed proposal includes that evidence. Do not
 touch the real index until gate 9 passes. Both separate verdicts must cover the
 same final package. If the gate fails,
@@ -1369,6 +1420,11 @@ traceability, document alignment delta, repository contracts,
 requirement/scope/claim audit, and diff hygiene. Any regression restores the
 directory from the parent commit and stops the task.
 
+Also run the three lifecycle commands from Task 10 Step 1a. Require zero
+finding for all seven transitioned rows and totals no greater than the pinned root
+predecessor `9 manifest / 25 promoted / 9 summary`. These commands are not
+claimed PASS while unrelated predecessor findings remain.
+
 - [ ] **Step 7: Review the actual staged deletion**
 
 Stage the Task, confirm the two generated outputs have no diff, write the
@@ -1384,7 +1440,10 @@ commit exists.
 git diff --quiet -- \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
-git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git add \
+  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml \
+  docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 git diff --cached --binary > "$DELETION_REVIEW_DIR/actual-deletion.patch"
 ```
 
@@ -1397,9 +1456,9 @@ git commit -m "docs(research): retire superseded agentic research pack"
 ```
 
 The `git rm` entries are already staged; confirm the staged set is exactly the
-twenty deletions and the Task update. The two regenerated LLM Wiki artifacts
-must not appear in the staged set because the reviewed filter makes deletion a
-no-op for their safe-path projection.
+twenty deletions, the lifecycle manifest and summary, and the Task update. The
+two regenerated LLM Wiki artifacts must not appear in the staged set because
+the reviewed filter makes deletion a no-op for their safe-path projection.
 
 - [ ] **Step 9: Review the committed deletion unit**
 
@@ -1582,7 +1641,8 @@ progress and is clean after each commit.
 | Broken historical link after deletion | Whole tracked-text scan and zero clickable exceptions | Restore old pack from deletion parent and repair routes |
 | Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
 | Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
-| Active metadata registries retain paths scheduled for deletion | Focused Python/YAML no-retiring-prefix regression and exact-entry removal | Revert the route-switch unit, keep both packs, and repair registry parity before deletion |
+| Mutable metadata exceptions retain paths scheduled for deletion | Remove the exact sixteen exceptions; separately preserve and verify the seven commit-pinned baseline selectors and promoted evidence | Revert the route-switch unit, keep both packs, and restore the reviewed baseline/exception boundary |
+| Deletion makes a promoted baseline result target disappear | In the deletion package, convert exactly seven immutable baseline rows to evidenced delete-with-replacement results and regenerate the summary | Restore the manifest/summary from the deletion parent and keep the old pack until the seven-row package is reviewed |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
@@ -1602,7 +1662,8 @@ pack are forbidden.
 | Pack complete | 19 leaves, 35/35 requirements, 14/14 scopes, source/claim completeness | Human route switch |
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
-| Active registry retirement reviewed | Exact 7 Python/YAML direct-source and 16 Python migration-exception removals with focused regression | Task 10 route-switch commit and old-pack deletion |
+| Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
+| Lifecycle result mapping reviewed | Proposed and staged packages contain the same seven evidenced delete-with-replacement rows, generated summary, zero row-attributable finding, and no predecessor increase | Deletion commit |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS | `git rm` |
 | Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
@@ -1637,7 +1698,7 @@ pack are forbidden.
 - [Spec 137](../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 - [Execution Tasks index](../tasks/README.md)
 - [Research references](../../90.references/research/README.md)
-- [Current pack pending retirement](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+- [New canonical pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Reference template](../../99.templates/templates/common/reference.template.md)
 - [Task template](../../99.templates/templates/sdlc/task.template.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

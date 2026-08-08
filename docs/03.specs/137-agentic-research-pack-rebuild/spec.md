@@ -450,6 +450,8 @@ disposition, and final result. The initial inventory is closed as follows:
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | Tracked safe-path set or canonical route changes | `scripts/knowledge/generate-llm-wiki-index.sh` | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Regenerate after the canonical route switch and require PASS. | Not run; Task-owned |
 | `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` | Tracked Stage/category path set changes | `scripts/knowledge/generate-llm-wiki-coverage.sh` | `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | FAIL | Regenerate after the canonical route switch and require PASS; the baseline FAIL is not acceptable at deletion. | Not run; Task-owned |
+| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml` | Commit-pinned target-surface baseline plus reviewed result mapping | Reviewed manifest edited under `check-document-corpus-lifecycle.py` | `check-manifest --wave target-surface-convergence` plus `check-promoted` | Root baseline already FAILS with 9 manifest and 25 promoted findings | Preserve the seven baseline source selectors; in the deletion unit, change only their result mapping from same-path `preserve` to reviewed `delete` rows with the new pack as `canonical_replacement`, Git-history preservation, and complete evidence. Require zero finding attributable to those rows and no increase over the pinned predecessor. | Newly discovered; Task-owned |
+| `docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md` | Reviewed target-surface manifest changes | `check-document-corpus-lifecycle.py --mode generate-summary --wave target-surface-convergence` | `check-summary --wave target-surface-convergence` | Root baseline already FAILS with the same 9 manifest findings | Regenerate only after the seven reviewed result mappings change; require byte-exact summary ownership, zero attributable finding, and no increase over the pinned predecessor. | Newly discovered; Task-owned |
 | `docs/90.references/data/security/security-automation-readiness.md` | Security controls, scripts, workflows, or typed workflow registry changes | `scripts/validation/generate-security-automation-readiness.sh` | `bash scripts/validation/generate-security-automation-readiness.sh --check` | FAIL | Preserve the FAIL as a predecessor because the generator misreads the typed workflow registry. Do not regenerate a known-invalid snapshot or cite it as current truth. Fixing the generator requires separately approved non-documentation scope; the new security leaf reports the snapshot as stale and derives tracked evidence directly. This predecessor does not block old-pack deletion when recorded exactly. | Classified predecessor; Task must re-observe |
 | `graphify-out/**` | Tracked corpus changes | Graphify workspace updater | `bash scripts/knowledge/report-graphify-health.sh` after an explicitly authorized refresh | Advisory and stale at `f8a72211` | Keep advisory and unchanged in this documentation-only workstream; do not use the stale graph as current evidence. | No refresh authorized |
 
@@ -483,8 +485,14 @@ outside the retiring directory and must be retargeted, including links in
 historical documents. Non-link historical literals may remain only when they
 describe a factual old event and have an explicit claim-ledger disposition.
 The Task owns the exact allowlist by path, line or stable anchor, reason, and
-review verdict. Current routers, generated navigation, provider or config
-paths, and canonical-owner statements have no allowlist.
+review verdict. Current routers, generated navigation, mutable provider or
+configuration routes/exceptions, and canonical-owner statements have no
+allowlist. An exact non-link path may remain in a commit-pinned, already
+reviewed historical baseline selector, its immutable manifest, or generated
+summary only when removing it would rewrite that historical evidence. Such a
+row must identify the pinned baseline/wave in the allowlist, must not act as a
+current route or migration exception, and must remain covered by the baseline's
+canonical promoted-manifest and summary checks.
 
 The deterministic evidence set is:
 
@@ -562,9 +570,13 @@ Deletion of the old twenty files is authorized only when all of these are true:
    over its pinned 184-finding archive-link predecessor; and the whole
    repository contract check passes—a missing dependency or other environment
    failure pauses deletion until that gate can run successfully;
-8. LLM Wiki and other affected generated artifacts pass their canonical named
+8. LLM Wiki and security-readiness artifacts pass their canonical named
    freshness checks, and a repository-contract pass is not accepted as a
-   substitute; and
+   substitute. The newly discovered promoted lifecycle manifest/summary may
+   carry only their pinned root-branch `9 manifest / 25 promoted / 9 summary`
+   predecessor when every retiring-pack row has zero finding and totals do not
+   increase; this exception does not apply to byte-exact freshness generators;
+   and
 9. the Task records the before/after file manifest, deletion diff, recovery
    commit, and reviewer verdict.
 
