@@ -558,6 +558,66 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_profile_lists_reject_non_string_members(self) -> None:
         self.mutate_and_load(lambda values: values["profiles"]["spec"]["required"].append(7))
 
+    def test_allowed_parent_types_are_exact_by_profile(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        expected = {
+            "prd": [],
+            "ard": ["prd"],
+            "adr": ["prd", "ard"],
+            "spec": ["prd", "ard", "adr", "spec", "archive"],
+            "plan": ["prd", "ard", "adr", "spec", "archive"],
+            "task": ["spec", "plan", "task", "archive"],
+            "guide": ["spec", "plan", "task", "policy"],
+            "policy": ["prd", "ard", "adr", "spec", "plan", "task"],
+            "runbook": ["spec", "plan", "task", "guide", "policy", "archive"],
+            "incident": ["runbook"],
+            "postmortem": ["incident"],
+            "release": ["spec", "plan", "task"],
+            "reference": [
+                "prd",
+                "ard",
+                "adr",
+                "spec",
+                "plan",
+                "task",
+                "guide",
+                "policy",
+                "runbook",
+                "reference",
+            ],
+            "audit": ["spec", "archive", "plan", "task", "reference", "audit"],
+            "readme": [],
+            "repo-support": [],
+            "generated": [],
+            "template-source": [],
+            "governance": [],
+            "archive": [
+                "prd",
+                "ard",
+                "adr",
+                "spec",
+                "plan",
+                "task",
+                "guide",
+                "policy",
+                "runbook",
+                "incident",
+                "postmortem",
+                "release",
+                "reference",
+                "audit",
+            ],
+            "unsupported": [],
+        }
+
+        self.assertEqual(
+            expected,
+            {
+                profile_name: profile["allowed_parent_types"]
+                for profile_name, profile in profiles["profiles"].items()
+            },
+        )
+
     def test_transitions_reject_unknown_statuses(self) -> None:
         self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))
 

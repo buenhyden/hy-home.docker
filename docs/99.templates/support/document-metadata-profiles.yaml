@@ -1155,7 +1155,7 @@ profiles:
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, plan, task, reference, audit]
+    allowed_parent_types: [spec, archive, plan, task, reference, audit]
     allow_empty_parents: true
     disposition: migration candidate
 

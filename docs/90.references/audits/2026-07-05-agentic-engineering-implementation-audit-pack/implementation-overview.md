@@ -3,6 +3,7 @@ status: active
 artifact_id: audit:agentic-engineering-implementation:overview
 artifact_type: audit
 parent_ids:
+  - spec:123-agentic-engineering-audit-remediation
   - task:2026-07-11-agentic-engineering-audit-remediation
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:overview]
 reviewed_at: 2026-07-27
