@@ -120,20 +120,32 @@ The execution resource is pinned to the installed Superpowers 6.2.0 skill at:
 `/home/hy/.codex/plugins/cache/openai-curated-remote/superpowers/6.2.0/skills/subagent-driven-development/`
 
 Before Task 1, verify `SKILL.md`, `implementer-prompt.md`,
-`task-reviewer-prompt.md`, `re-review-prompt.md`, and the three executable
+`task-reviewer-prompt.md`, `re-review-prompt.md`, and the three versioned shell
 scripts `scripts/sdd-workspace`, `scripts/task-brief`, and
 `scripts/review-package`. Initialize this Plan's ignored SDD workspace with:
 
 ```bash
-/home/hy/.codex/plugins/cache/openai-curated-remote/superpowers/6.2.0/skills/subagent-driven-development/scripts/sdd-workspace \
+bash /home/hy/.codex/plugins/cache/openai-curated-remote/superpowers/6.2.0/skills/subagent-driven-development/scripts/sdd-workspace \
   docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md
 ```
 
-Create each brief with the same versioned `scripts/task-brief` plus the Plan
-path and numeric task ID. Create every task or final review package with the
-same versioned `scripts/review-package` plus Plan path, recorded BASE, and
-current HEAD. Prompts come from the three pinned Markdown templates above; the
-five-round breaker and ledger lines follow the pinned `SKILL.md` verbatim.
+The installed 6.2.0 files are readable shell scripts but do not carry an
+executable mode bit. Therefore invoke all three through `bash` and always pass
+an explicit output path so `task-brief`/`review-package` never attempt their
+internal direct call to `sdd-workspace`:
+
+```bash
+bash /home/hy/.codex/plugins/cache/openai-curated-remote/superpowers/6.2.0/skills/subagent-driven-development/scripts/task-brief \
+  docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md TASK_NUMBER \
+  .superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/task-TASK_NUMBER-brief.md
+bash /home/hy/.codex/plugins/cache/openai-curated-remote/superpowers/6.2.0/skills/subagent-driven-development/scripts/review-package \
+  docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md BASE HEAD \
+  .superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/review-BASE..HEAD.diff
+```
+
+Replace the uppercase placeholders with literal task/range values. Prompts
+come from the three pinned Markdown templates above; the five-round breaker
+and ledger lines follow the pinned `SKILL.md` verbatim.
 If this exact resource is unavailable, stop before dispatch rather than falling
 back to an unreviewed inline workflow; re-pinning a different installed version
 requires a reviewed Plan update.
