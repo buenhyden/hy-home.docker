@@ -110,7 +110,7 @@ summaries.
 | Unit | Description | Validation / evidence | Status |
 | --- | --- | --- | --- |
 | Task 1 | Initialize execution ledgers and immutable baselines | Task 1 checks and committed-unit review ledger | Implemented; independent review `Not Run` |
-| Task 2 | Author workspace foundation and scope axis | Requirement, scope, source, and leaf gates | Not Run |
+| Task 2 | Author workspace foundation and scope axis | Requirement, scope, source, and leaf gates | Implemented; implementer review PASS; independent review `Not Run` |
 | Task 3 | Author harness, loop, and provider comparison | Assigned requirement and claim rows plus leaf gates | Not Run |
 | Task 4 | Author instructions, models, catalogs, and memory | Assigned requirement and claim rows plus leaf gates | Not Run |
 | Task 5 | Author spec-driven SDLC and document contracts | Assigned requirement and claim rows plus leaf gates | Not Run |
@@ -159,8 +159,8 @@ states are intentional and may change only with named evidence and review.
 | REQ-28 | External AI-agent catalog analysis using the official agency-agents repository and local import boundary | `ai-agent-catalogs.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-29 | Task-characteristic agent model, tier, effort, settings, evaluation, fallback, and change rules | `agent-model-selection.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-30 | Short-term, long-term, and domain memory plus promotion, retrieval, retention, eviction/deletion, archival, partition, privacy, and management rules | `memory-hierarchy.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| REQ-31 | Current workspace baseline for every research category | `workspace-baseline.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| REQ-32 | Explicit analysis and disposition for all fourteen workspace scopes | `scope-application-matrix.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
+| REQ-31 | Current workspace baseline for every research category | `workspace-baseline.md` | `scope-application-matrix.md` | EXT-NIST verified as fixed comparison context; workspace claims use tracked sources | WS-TASK2-FOUNDATION | All 14 through the scope matrix | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS; independent review `Not Run` | [workspace baseline](../../90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md) |
+| REQ-32 | Explicit analysis and disposition for all fourteen workspace scopes | `scope-application-matrix.md` | `workspace-baseline.md` | EXT-NIST verified as fixed comparison context; scope claims use tracked sources | WS-SCOPES, WS-CONTRACTS, WS-TASK2-FOUNDATION | 14/14 explicit dispositions | Implemented as draft Stage 90 leaf; route switch pending | Implementer PASS; independent review `Not Run` | [scope application matrix](../../90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md) |
 | REQ-33 | New authorship plus claim-level validation and integration before old-pack deletion | Pack README and Task migration ledger | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task verification ledger | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
 | REQ-35 | Logical-unit commits, independent reviews, final verification, and branch handoff | Plan and Task | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
@@ -169,20 +169,20 @@ states are intentional and may change only with named evidence and review.
 
 | Scope | Governance owner | Applicable leaves | Current state | Rules / exceptions | Evidence owner | Validation owner | Catalog reachability | Review verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `agentic` | `docs/00.agent-governance/scopes/agentic.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `architecture` | `docs/00.agent-governance/scopes/architecture.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `backend` | `docs/00.agent-governance/scopes/backend.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `common` | `docs/00.agent-governance/scopes/common.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `docs` | `docs/00.agent-governance/scopes/docs.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `entry` | `docs/00.agent-governance/scopes/entry.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `frontend` | `docs/00.agent-governance/scopes/frontend.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `infra` | `docs/00.agent-governance/scopes/infra.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `meta` | `docs/00.agent-governance/scopes/meta.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `mobile` | `docs/00.agent-governance/scopes/mobile.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `ops` | `docs/00.agent-governance/scopes/ops.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `product` | `docs/00.agent-governance/scopes/product.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `qa` | `docs/00.agent-governance/scopes/qa.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
-| `security` | `docs/00.agent-governance/scopes/security.md` | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run | Not Run |
+| `agentic` | `docs/00.agent-governance/scopes/agentic.md` | Agentic leaves, automation | Implemented definitions; runtime unverified | Stage 00/provider parity and approval gates | `hook-developer`, `skill-creator` | `rules-engineer`; provider/repo contracts | Enum + 4 agents | Implementer PASS; independent `Not Run` |
+| `architecture` | `docs/00.agent-governance/scopes/architecture.md` | SDLC, roles, Compose, security, automation | Partial; 53 Stage 02 files; runtime protocols unverified | ADR/Spec ownership before adoption | System Architect persona; Stage 02 path owner `infra-implementer` | Metadata/repo contracts and architecture review | Enum only; 0 agents | Implementer PASS; independent `Not Run` |
+| `backend` | `docs/00.agent-governance/scopes/backend.md` | Quality/security/Compose when surface exists | Not Applicable to current application corpus | Requires approved backend Spec and surface | Backend persona; no typed agent | Future layer owner plus QA/security | Outside enum; 0 agents | Implementer PASS; independent `Not Run` |
+| `common` | `docs/00.agent-governance/scopes/common.md` | Instructions, metadata, docs, quality, security | Partial; shared gates exist; some claimed roots absent | No direct pre-commit/lint/format | Cross-layer implementer | `code-reviewer`; scoped checks | Enum + 1 agent | Implementer PASS; independent `Not Run` |
+| `docs` | `docs/00.agent-governance/scopes/docs.md` | SDLC/docs/metadata/LLM Wiki/memory; all leaves as references | Implemented corpus; later route integration pending | Explicit approval, template, link, generator rules | `doc-writer` | Metadata/repo contracts and docs review | Enum + 1 agent | Implementer PASS; independent `Not Run` |
+| `entry` | `docs/00.agent-governance/scopes/entry.md` | Compose, security, automation, quality | Partial; 16 gateway files; edge/runtime unverified | Route through infra; concrete runtime approval | `infra-implementer` | `iac-reviewer`, `drift-detector` | Outside enum; 0 agents | Implementer PASS; independent `Not Run` |
+| `frontend` | `docs/00.agent-governance/scopes/frontend.md` | Quality, automation, security, instructions | Partial; Storybook fixture, no product frontend proof | Treat current sandbox as QA-owned | Existing Storybook owner `code-reviewer` | Frontend/Storybook quality gates | Outside enum; 0 agents | Implementer PASS; independent `Not Run` |
+| `infra` | `docs/00.agent-governance/scopes/infra.md` | Compose, security, automation, quality, harness environment | Implemented definitions; runtime unverified | Compose pre-flight; targeted approval/rollback; no secrets | `infra-implementer` | `iac-reviewer`, `drift-detector` | Enum + 3 agents | Implementer PASS; independent `Not Run` |
+| `meta` | `docs/00.agent-governance/scopes/meta.md` | Metadata, docs architecture, LLM Wiki, roles, SDLC | Partial; validator-backed subject, missing typed route | Route through docs; Meta ADR for structure | `doc-writer` | Metadata/corpus/repo contracts | Outside enum; 0 agents | Implementer PASS; independent `Not Run` |
+| `mobile` | `docs/00.agent-governance/scopes/mobile.md` | Quality/security/automation after surface exists | Not Applicable; 0 tracked mobile sources | Requires approved product/Spec/surface | Mobile persona; no typed agent | Future layer owner plus QA/security | Outside enum; 0 agents | Implementer PASS; independent `Not Run` |
+| `ops` | `docs/00.agent-governance/scopes/ops.md` | Automation, quality, Compose, security, roles | Partial; tracked ops surfaces; outcomes unverified | Incident/runtime evidence stays in owners | `incident-responder`, `ci-cd-engineer` | Independent ops/infra review | Enum + 2 agents | Implementer PASS; independent `Not Run` |
+| `product` | `docs/00.agent-governance/scopes/product.md` | SDLC, roles, documentation architecture | Partial; 26 Stage 01 files; typed owner missing | Human approval before Spec and Stage 01 mutation | Product persona/human stakeholder | Human approval plus docs gates | Outside enum; 0 agents | Implementer PASS; independent `Not Run` |
+| `qa` | `docs/00.agent-governance/scopes/qa.md` | Harness, loop, automation, quality, security, LLM Wiki | Partial; extensive gates; remote state unverified | Smallest applicable check; docs coverage N/A; no direct pre-commit | `qa-engineer` | `eval-engineer` | Enum + 2 agents | Implementer PASS; independent `Not Run` |
+| `security` | `docs/00.agent-governance/scopes/security.md` | Security, Compose, quality, automation, provider/harness | Partial; tracked controls; secret/runtime/remote excluded | Metadata-only secret evidence and concrete approval | Relevant layer implementer | `security-auditor` and named gates | Enum + 1 read-only agent | Implementer PASS; independent `Not Run` |
 
 ### External source ledger
 
@@ -197,7 +197,7 @@ source and records its current evidence.
 | EXT-COMPOSE | Docker Compose | Docker | `https://docs.docker.com/reference/compose-file/` | Not Run | Not Run | External mutable | Not Run | Not Run |
 | EXT-GHA | GitHub Actions | GitHub | `https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions` | Not Run | Not Run | External mutable | Not Run | Not Run |
 | EXT-DIATAXIS | Documentation architecture | Diataxis | `https://diataxis.fr/` | Not Run | Not Run | External mutable | Not Run | Not Run |
-| EXT-NIST | Secure SDLC | NIST | `https://csrc.nist.gov/pubs/sp/800/218/final` | Not Run | Not Run | External fixed | Not Run | Not Run |
+| EXT-NIST | Secure SDLC | NIST | `https://csrc.nist.gov/pubs/sp/800/218/final` | SP 800-218 v1.1 | 2026-08-08 | External fixed | Verified direct primary page; HTTP 200; comparison only | REQ-31, REQ-32 |
 | EXT-OWASP | Secure SDLC | OWASP | `https://owaspsamm.org/model/` | Not Run | Not Run | External mutable | Not Run | Not Run |
 | EXT-SLSA | Supply chain | SLSA | `https://slsa.dev/spec/v1.2/` | v1.2 | Not Run | External fixed | Not Run | Not Run |
 | EXT-OPENSSF | Supply chain | OpenSSF | `https://github.com/ossf/scorecard` | Not Run | Not Run | External mutable | Not Run | Not Run |
@@ -210,9 +210,10 @@ source and records its current evidence.
 | WS-SPEC-137 | `docs/03.specs/137-agentic-research-pack-rebuild/spec.md` | `artifact_id: spec:137-agentic-research-pack-rebuild` | `353182551d47c4232bceb58e573abd55b846420a` | Verified tracked input | Does not prove runtime or remote state | REQ-01 through REQ-35 |
 | WS-PLAN | `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md` | `artifact_id: plan:2026-08-08-agentic-research-pack-rebuild` | `9917fcdadf700e7f68541e73188620e133485470` | Verified tracked input | Prospective plan, not execution proof | REQ-33 through REQ-35 |
 | WS-OLD-PACK | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` | `find` plus `git ls-tree -r HEAD` | `9917fcdadf700e7f68541e73188620e133485470` | 20 files / 20 blobs verified | Historical input only | REQ-33, REQ-34 |
-| WS-SCOPES | `docs/00.agent-governance/scopes/` | Fourteen normative filenames from the active Plan | `9917fcdadf700e7f68541e73188620e133485470` | Paths instantiated; content analysis Not Run | Tracked governance only | REQ-32 |
-| WS-CONTRACTS | `docs/00.agent-governance/contracts/` | Typed registries and provider/model contracts | `9917fcdadf700e7f68541e73188620e133485470` | Not Run | Tracked definitions do not prove execution | Not Run |
+| WS-SCOPES | `docs/00.agent-governance/scopes/` | Fourteen normative filenames plus complete content analysis | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | 14/14 verified and dispositioned | Tracked governance only | REQ-32 |
+| WS-CONTRACTS | `docs/00.agent-governance/contracts/` | Parsed agent and provider-model registries | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | 8 scopes, 14 agents, 24 functions, 5 profiles, 11 models verified | Tracked definitions do not prove execution | REQ-31, REQ-32 |
 | WS-VALIDATORS | `scripts/knowledge/`, `scripts/validation/` | Task 1 baseline commands | `9917fcdadf700e7f68541e73188620e133485470` | Observed in verification ledger | Local command results only | REQ-23, REQ-24, REQ-26, REQ-27, REQ-34, REQ-35 |
+| WS-TASK2-FOUNDATION | New foundation leaves | Required derivations, tracked inventory, and scope matrix | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | Draft leaves implemented; focused metadata/diff gates PASS; repo contract retains separate predecessor | No runtime, remote, private, or ignored-state proof | REQ-31, REQ-32 |
 
 ### Old-claim migration ledger
 
@@ -275,6 +276,10 @@ non-link historical literals with path, stable anchor, reason, and verdict.
 | 2026-08-08 | Task 1 | Created `/tmp/agentic-research-validation-venv` and installed `scripts/requirements.txt` | Install PASS; `html5lib 1.1` import PASS |
 | 2026-08-08 | Task 1 | Ran repository contract through the isolated environment | Missing-dependency failure removed; separate memory predecessor remained |
 | 2026-08-08 | Task 1 | Ran scoped metadata, traceability, whitespace, row-count, and changed-path checks | PASS; self-review found no Critical or Important issue |
+| 2026-08-08 | Task 2 | Re-measured tracked corpus, scope files, typed registries, provider adapters, workflows, scripts, templates, stages, and infra | 1,646 paths; 14 scopes; 28 active Spec directories; 32 archived Specs; all reported counts derived at `528c225d` |
+| 2026-08-08 | Task 2 | Analyzed fourteen scopes plus persona and complete typed catalog | 14/14 dispositions; exact six outside enum recorded; `architecture` enum-only distinction preserved |
+| 2026-08-08 | Task 2 | Authored workspace baseline and scope matrix from the Stage 90 contract | Two draft leaves cover 19 categories, 14 scopes, adoption rules, limits, owners, and dated sources |
+| 2026-08-08 | Task 2 | Ran focused gates and implementer self-review | Metadata and diff PASS; repository contract retains only the separate Memory predecessor; C0/I0 |
 
 ## Verification Evidence
 
@@ -298,6 +303,13 @@ private-state material.
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 35318255 --changed-path docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md --changed-path docs/04.execution/tasks/README.md` | Spec activation base | 0 | PASS | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0` |
 | `bash scripts/validation/check-doc-traceability.sh` | Working tree | 0 | PASS | `catalog_pairs_total=46 failures=0` |
 | `git diff --check` | Working tree | 0 | PASS | No whitespace errors |
+| Required Task 2 derivation set | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | 0 | PASS | 1,646 tracked paths; exactly 14 scopes; 28 active Spec directories; 32 archived `spec.md` files |
+| `curl -sSL` direct NIST SP 800-218 page check | External fixed source, 2026-08-08 | 0 | PASS | HTTP 200; comparison context only |
+| Task 2 exact metadata command for both foundation leaves | Spec activation base `35318255` | 0 | PASS | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| First isolated Task 2 repository-contract run | Working tree before heading correction | 1 | FAIL, attributable plus predecessor | Found two missing `## Repository Role` headings and separate `AGC-MEMORY-FORBIDDEN-MATERIAL`; headings corrected in owned leaves |
+| `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh` after correction | Working tree | 1 | FAIL, separate predecessor | Task 2 reference-stage findings cleared; sole reported failure is `AGC-MEMORY-FORBIDDEN-MATERIAL` in forbidden `memory/current.md` |
+| Task 2 exact fourteen-scope `rg` command | Both foundation leaves | 0 | PASS | `## Scope Implications` and every normative scope name present |
+| `git diff --check` after Task 2 edits | Working tree | 0 | PASS | No whitespace errors |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -313,13 +325,15 @@ Task 1 uses only the exact checks named by its Plan.
 | Implementer self-review | Working tree before Task 1 commit | Task 1 implementer | PASS | Exact row counts are 35 requirements, 14 scopes, and 20 pinned old-file claim containers; two owned tracked files only; no Critical or Important finding |
 | Specification compliance | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Approved; C0/I0/M0 | First committed-unit specification review returned no findings |
 | Documentation quality | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Needs fixes; C0/I1/M0 | Important finding: backfill the known Task 1 commit and review identities; fix re-review Not Run |
+| Task 2 implementer self-review | Working tree before Task 2 commit | Task 2 implementer | PASS; C0/I0 | Exactly two new leaves plus this Task ledger; 19/19 category rows, 14/14 scope rows, six outside-enum scopes explicit, `architecture` enum-only explicit, advisory/secret/runtime/remote boundaries preserved |
 
 ## Commit Ledger
 
 | Unit | Commit identity | Logical unit | Validation | Review state |
 | --- | --- | --- | --- | --- |
 | Task 1 | `c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4`; `docs(task): initialize agentic research rebuild ledger` | Execution ledger and immutable baselines | Task 1 scoped checks | Specification Approved C0/I0/M0; quality Needs fixes C0/I1/M0 |
-| Tasks 2-12 | Not Run | Not Run | Not Run | Not Run |
+| Task 2 | Commit identity pending this unit; `docs(research): establish workspace and scope baseline` | Workspace baseline, scope matrix, and execution evidence | Focused metadata/scope/diff PASS; repository contract has separate predecessor | Implementer PASS C0/I0; independent reviews `Not Run` |
+| Tasks 3-12 | Not Run | Not Run | Not Run | Not Run |
 
 The Task 1 fix commit identity and scoped re-review verdict remain recorded in
 the ignored SDD progress evidence until a later tracked ledger update can
@@ -337,10 +351,10 @@ re-review verdict is claimed in this update.
   reveals the separate `AGC-MEMORY-FORBIDDEN-MATERIAL` predecessor in
   `docs/00.agent-governance/memory/current.md`; Task 1 does not modify that
   forbidden path.
-- Claim-level decomposition, external-source retrieval, workspace
-  re-measurement, scope disposition, old-path scanning, generated refresh,
-  independent reviews, and old-pack deletion are all Not Run. The deletion
-  gate remains closed.
+- Claim-level decomposition beyond the two foundation leaves, remaining
+  external-source retrieval, old-path scanning, generated refresh, independent
+  Task 2 reviews, and old-pack deletion are all Not Run. The deletion gate
+  remains closed.
 - Push, pull request, merge, remote mutation, and live runtime validation
   remain outside the approved boundary.
 
