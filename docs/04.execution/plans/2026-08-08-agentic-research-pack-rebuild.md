@@ -1294,6 +1294,10 @@ verdicts. Complete the fix/re-review loop before Task 11.
   `docs/99.templates/support/document-metadata-profiles.yaml` and
   `tests/validation/test_document_metadata.py` so the audit profile admits an
   archived SDLC parent without widening any other profile
+- Add before any new Gate 9 attempt:
+  `scripts/validation/agentic-research-gate9-evidence.py` and
+  `tests/validation/test_agentic_research_gate9_evidence.py` for canonical
+  package, receipt, closure, evidence-ref, and authorization validation
 - Verify, but expect no byte changes in:
   `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
@@ -1386,6 +1390,54 @@ independent committed-unit reviews at C0/I0 before restarting deletion gates 1
 through 8. Any broader parent-type change, manifest/summary mutation, or
 failure to restore `9/26/9` is a blocker.
 
+- [ ] **Step 0c: Install and review the finite Gate 9 evidence contract**
+
+The previously reviewed temporary packages were built at
+`6025478eddc1e0a15e2633b195b1781e9ce1d031`. They became stale when later
+Plan commits advanced `HEAD` and are historical diagnostics only. They cannot
+authorize deletion and must not be copied into a new attempt.
+
+Add `scripts/validation/agentic-research-gate9-evidence.py` and
+`tests/validation/test_agentic_research_gate9_evidence.py`. The helper owns
+only this deletion gate's evidence state; it must never remove a worktree file,
+write a generated output in the current worktree, write the real Git index,
+advance the current branch, or update a remote ref. Generator writes are
+allowed only inside the exact proved-owned temporary detached worktree used by
+`build-package`, and that worktree must be removed on success or failure.
+Its public modes are:
+
+```text
+build-package
+verify-package
+verify-backfill
+publish-evidence-ref
+verify-authorized
+```
+
+Use TDD. RED must cover stale package `HEAD`, attachment or checksum drift,
+non-canonical JSON, unsorted attachment sets, duplicate/colliding reviewers,
+any Critical or Important count, a Task edit outside the one Gate 9 marker,
+dirty real-index state, an existing non-identical evidence ref, and a third
+attempt. GREEN must prove the valid two-reviewer path without changing the
+branch, real index, old pack, lifecycle artifacts, or generated outputs.
+
+Add one unique `GATE9-EVIDENCE/v1` marker block to the Task before the first
+package build. Its initial state is `PACKAGE_REVIEW_PENDING`. The only later
+allowed Task mutation is a single transition to `TASK_BACKFILLED` containing
+the proposed deletion manifest/diff and recovery commit; the package hash and
+fixed evidence-ref name; both package-review receipt identities, hashes,
+roles, verdicts, and C/I/M counts; and the explicit statement that actual
+staged and committed deletion reviews remain `Not Run`. Claims,
+destinations, requirements, scopes, allowlist membership, sources, generated
+artifacts, and every byte outside the marker are immutable during that
+transition.
+
+Commit the helper, tests, pending marker, and Task evidence as one logical
+unit, then require two fresh independent committed-unit reviews at C0/I0.
+Record those reviews in a separate Task-only closure commit before entering a
+Gate 9 attempt. The first package must therefore be rebuilt at the resulting
+clean committed `HEAD`; neither existing `/tmp` package is reusable.
+
 - [ ] **Step 1: Execute pre-deletion gates 1 through 8**
 
 Confirm in the Task: 20/20 old files pinned; every unique claim mapped; every
@@ -1412,67 +1464,188 @@ the deletion commit exists. A valid destructive row requires the source to be
 physically absent and its rollback command to name the real, already existing
 deletion commit, so pre-populating those rows would be false evidence.
 
-Use a temporary Git index to model only the twenty deletions without changing
-the real index or removing a worktree file. The LLM Wiki generators inherit the
-temporary index and must render bytes identical to the Task 10b outputs:
+Use attempt 1 unless its immutable state is already `REJECTED` or
+`INVALIDATED`; attempt 2 is the only correction attempt. The helper must use a
+temporary Git index and an exact temporary detached worktree for generator
+writes, clean both in a `finally` path, and leave the current worktree and real
+index unchanged. Build and verify with the exact interface:
 
 ```bash
-DELETION_REVIEW_DIR=$(mktemp -d /tmp/agentic-research-deletion-review.XXXXXX)
-DELETION_REVIEW_INDEX="$DELETION_REVIEW_DIR/index"
-GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git read-tree HEAD
-GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git rm -r --cached \
-  docs/90.references/research/2026-07-05-agentic-research-pack-refresh
-GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" \
-  bash scripts/knowledge/generate-llm-wiki-index.sh
-GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" \
-  bash scripts/knowledge/generate-llm-wiki-coverage.sh
-GIT_INDEX_FILE="$DELETION_REVIEW_INDEX" git diff --cached --binary \
-  > "$DELETION_REVIEW_DIR/proposed-deletion.patch"
+GATE9_HELPER=scripts/validation/agentic-research-gate9-evidence.py
+GATE9_PACKAGE=$(mktemp -d /tmp/agentic-research-gate9-attempt-1.XXXXXX)
+python3 "$GATE9_HELPER" build-package \
+  --attempt 1 \
+  --output "$GATE9_PACKAGE" \
+  --spec docs/03.specs/137-agentic-research-pack-rebuild/spec.md \
+  --plan docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+python3 "$GATE9_HELPER" verify-package \
+  --package "$GATE9_PACKAGE" \
+  --require-live-head
 ```
 
-Inspect the proposed patch and confirm it contains exactly twenty deletions.
-Provide the current unstaged Task evidence, old/new file manifests, and both
-byte-identical LLM Wiki outputs alongside that patch as review-package
-attachments. Any generated-output diff or manifest/summary mutation in this
-pre-deletion package stops deletion review.
+`build-package` must fail unless the real index is clean, `HEAD` is the
+committed reviewed evidence-contract checkpoint, the old and new packs are
+exactly 20 files each, the Task has exactly one pending marker, and the only
+worktree change is that Task. It must write this exact sorted attachment set:
+
+```text
+HEAD.txt
+SHA256SUMS
+assignments.json
+gate-results.json
+llm-wiki-index.md
+llm-wiki-stage-category-coverage.md
+new-manifest.tsv
+old-manifest.tsv
+package.json
+plan.md
+proposed-deletion.patch
+spec.md
+task-before.md
+task-before-to-candidate.patch
+task-candidate.md
+```
+
+`old-manifest.tsv` and `new-manifest.tsv` are byte-sorted
+`mode<TAB>type<TAB>object<TAB>path` rows from the package `HEAD`.
+`proposed-deletion.patch` is binary-safe and contains exactly twenty `D`
+paths and twenty deleted-file modes under the retiring prefix, with no other
+status. The two generated attachments come from the temporary projected index
+and must be byte-identical to the tracked Task 10b outputs. `gate-results.json`
+records gates 1 through 8 and their pinned predecessor classifications.
+`assignments.json` contains exactly the `migration-specification` and `quality`
+roles. Each has a deterministic attempt-local run ID derived from the package
+`HEAD`, attempt number, and role; the later receipt must add the immutable
+agent ID and canonical task path returned by the subagent runtime.
+
+All JSON uses schema `agentic-research-gate9/v1`, UTF-8, LF, recursively
+sorted keys, compact separators, and one final newline. `package.json` lists
+the other payload attachments in byte-sorted path order with their SHA-256 and
+byte count. `SHA256SUMS` is a byte-sorted GNU-format checksum list over every
+attachment except itself. The SHA-256 of the exact `SHA256SUMS` bytes is the
+package ID. After verification, make every attachment mode `0444`; any later
+byte, mode, path-set, `HEAD`, Task, generated-output, manifest, or lifecycle
+drift sets the attempt to `INVALIDATED`.
 
 - [ ] **Step 4: Satisfy pre-deletion gate 9**
 
-Dispatch independent migration/specification and quality reviewers with the
-proposed patch, old/new manifests, immutable old blobs, claim ledger,
-recoverability evidence, and Task brief. Require C0/I0. Each reviewer must
-author an immutable receipt outside the package that records the package
-checksum-manifest hash, package HEAD, role, reviewer identity, verdict and
-C/I/M counts. Both receipts must cover the same immutable package.
+The finite state sequence is:
 
-This receipt boundary prevents a self-referential review loop: the reviewed
-Task snapshot necessarily says its own package reviews are pending, while
-recording those verdicts changes the Task bytes. After both package receipts
-exist, backfill the Task exactly once with the proposed deletion diff, recovery
-commit, package hash, receipt hashes, and separate verdicts. The allowed
-post-review Task delta is limited to those receipt fields and a clarification
-that proposed-package review is complete while actual staged and committed
-deletion reviews remain Not Run. It may not change claims, destinations,
-requirements, scopes, allowlist membership, source evidence, the deletion
-patch, manifests, or generated outputs.
+```text
+CHECKPOINT -> BUILT -> PACKAGE_REVIEWED -> TASK_BACKFILLED
+           -> CLOSURE_REVIEWED -> REF_PUBLISHED -> AUTHORIZED
+```
 
-Both original reviewers must then inspect that exact Task-only backfill diff
-against their receipts and author separate immutable closure confirmations
-keyed to the Task diff hash. Do not insert the closure confirmations back into
-the Task; doing so would recreate the same fixed-point problem. Gate 9 passes
-when the package receipts and closure confirmations are C0/I0, their hashes are
-recorded in the controller evidence, and the real index remains clean. Any
-Task change outside the allowed receipt-only delta invalidates the package and
-requires a full rebuild and both package reviews again. Do not touch the real
-index until gate 9 passes. If the gate fails, restore only the two
-generator-owned worktree files from `HEAD`, keep the old pack intact, and
-return the findings to the implementer:
+`REJECTED`, `INVALIDATED`, `FOREIGN_REF`, and `BLOCKED` are fail-closed
+states. Dispatch one fresh migration/specification reviewer and one fresh
+quality reviewer. The controller must capture from each spawn the canonical
+agent ID, canonical task path, and the assigned attempt-local run ID; the two
+agent IDs and task paths must differ. Each reviewer returns one exact UTF-8/LF
+report plus one canonical JSON package receipt with the package ID and `HEAD`,
+role, all three identity fields, verdict, C/I/M counts, and SHA-256/byte count
+of that exact report. Both receipts must bind the same package, and neither may
+contain a Critical or Important finding.
+
+Verify the receipts before changing the Task:
 
 ```bash
-git restore --source=HEAD -- \
-  docs/90.references/llm-wiki/llm-wiki-index.md \
-  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+python3 "$GATE9_HELPER" verify-backfill \
+  --package "$GATE9_PACKAGE" \
+  --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
+  --quality-receipt "$GATE9_QUALITY_RECEIPT" \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --expect-state PACKAGE_REVIEWED
 ```
+
+Then transition the Task marker exactly once from `PACKAGE_REVIEW_PENDING` to
+`TASK_BACKFILLED`. Its before bytes are `task-candidate.md`; its after bytes
+must differ only inside that marker. The marker records the before/after
+20-file manifest identity, proposed patch hash, recovery `HEAD`, package ID,
+fixed evidence ref, both receipt identities/hashes/verdicts, and actual staged
+and committed deletion reviews as `Not Run`. The helper computes the binary
+Task diff, before/after Git blob OIDs, SHA-256 values, and byte counts. Any
+other Task edit rejects the attempt.
+
+```bash
+python3 "$GATE9_HELPER" verify-backfill \
+  --package "$GATE9_PACKAGE" \
+  --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
+  --quality-receipt "$GATE9_QUALITY_RECEIPT" \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --expect-state TASK_BACKFILLED
+```
+
+The same two reviewers then receive the immutable package, both reports and
+receipts, and the exact Task before/after/diff tuple. Each returns one exact
+UTF-8/LF closure report plus one canonical closure JSON binding their own
+package receipt and identity to that tuple and to the closure report's
+SHA-256/byte count. Both closures must be C0/I0 and must state that the marker
+matches the receipt while all non-marker bytes are unchanged. Closure hashes
+are deliberately not inserted back into the Task.
+
+Publish all evidence under this create-only local ref:
+
+```text
+refs/codex/review-evidence/agentic-research/gate9/v1/
+  attempt-N/<package-sha256>
+```
+
+The evidence commit uses the package `HEAD` as its sole parent and contains
+the complete package below `package/`; exact report/receipt pairs below
+`reviews/migration-specification/` and `reviews/quality/`; exact closure
+report/JSON pairs below the corresponding `closures/` paths; and one canonical
+`evidence.json` plus a root sorted `SHA256SUMS`. No other path is allowed.
+Publish only with
+`git update-ref <ref> <evidence-commit> 0000000000000000000000000000000000000000`.
+An absent ref may be created once; an existing byte-identical ref is an
+idempotent success; any other existing value is `FOREIGN_REF` and stops. The
+ref is local, append-free review evidence: it does not advance the branch or
+real index, must remain reachable through Task 12 and branch handoff, and must
+not be pushed without a separate user decision.
+
+```bash
+python3 "$GATE9_HELPER" publish-evidence-ref \
+  --package "$GATE9_PACKAGE" \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --migration-report "$GATE9_MIGRATION_REPORT" \
+  --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
+  --quality-report "$GATE9_QUALITY_REPORT" \
+  --quality-receipt "$GATE9_QUALITY_RECEIPT" \
+  --migration-closure-report "$GATE9_MIGRATION_CLOSURE_REPORT" \
+  --migration-closure "$GATE9_MIGRATION_CLOSURE" \
+  --quality-closure-report "$GATE9_QUALITY_CLOSURE_REPORT" \
+  --quality-closure "$GATE9_QUALITY_CLOSURE" \
+  --evidence-ref auto
+```
+
+Run the terminal check immediately after publication and again immediately
+before `git rm`:
+
+```bash
+python3 "$GATE9_HELPER" verify-authorized \
+  --package "$GATE9_PACKAGE" \
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --evidence-ref auto \
+  --require-live-head \
+  --require-clean-real-index \
+  --require-task-only-worktree
+```
+
+`verify-authorized` must prove live `HEAD == package HEAD == evidence-ref
+parent`, the exact package/evidence attachment sets and checksums, canonical
+schemas, distinct role/identity bindings, receipt-to-closure identity, exact
+Task before/after/diff and marker transition, C/I=0, exact twenty-file
+projection, byte-identical generated attachments, and no current-worktree or
+real-index drift outside the exact closure-bound Task-only change. Only then is
+Gate 9 `AUTHORIZED`.
+
+Any byte drift, identity collision, C/I finding, rejected closure, or `HEAD`
+change consumes the attempt. Attempt 2 requires a new package and four fresh
+receipt/closure files; it may not overwrite attempt 1. Failure of attempt 2 is
+`BLOCKED` until the user approves a new Plan boundary. If authorization fails,
+keep the old pack and real index intact, retain the rejected evidence in the
+Task, and remove only proved-owned temporary worktrees and package directories.
 
 - [ ] **Step 5: Delete the old files in the real index**
 
@@ -1856,6 +2029,8 @@ progress and is clean after each commit.
 | Deletion makes promoted baseline result targets disappear | Commit only the independently reviewed twenty-file deletion first; then use its real SHA to encode seven retiring rows and the historical Spec 133 row as reviewed delete results, close the six-row advisory-delta predecessor, and regenerate both summaries canonically | Revert the deletion commit if the post-delete lifecycle unit cannot reach target-manifest/summary PASS; otherwise revert only the lifecycle-evidence commit and re-review its bounded package |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
+| Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical package builder, one marker-only backfill, same-reviewer closures, create-only content-addressed evidence ref, and live-HEAD revalidation | Invalidate the attempt without staging; preserve the old pack; use the one fresh correction attempt or return to user-approved Plan work |
+| Gate 9 evidence ref collides or becomes unreachable | Create-only CAS, exact ref/tree/checksum verification, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED`; never overwrite the ref and never infer authorization from `/tmp` artifacts |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
 | Secret/runtime/remote boundary crossed | Read-only tracked evidence and explicit exclusions | Stop immediately; exclude value/output; seek new authority if required |
 
@@ -1874,9 +2049,10 @@ pack are forbidden.
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
+| Gate 9 evidence contract reviewed | Focused RED/GREEN suite, exact package/receipt/closure schemas, create-only local evidence-ref publication, and two committed-unit C0/I0 reviews | Any new Gate 9 attempt and old-pack deletion |
 | Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
-| Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS | `git rm` |
+| Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live package/evidence ref | `git rm` |
 | Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
 
 ## Completion Criteria
