@@ -1050,6 +1050,12 @@ re-review loop before Task 10.
   through its canonical generator
 - Modify: `docs/90.references/llm-wiki/llm-wiki-index.md` through its generator
 - Modify: `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` through its generator
+- Modify: `scripts/knowledge/generate-llm-wiki-index.sh` and
+  `scripts/knowledge/generate-llm-wiki-coverage.sh` to exclude only the exact
+  retiring research-pack directory while it remains tracked during the
+  pre-deletion review window
+- Create: `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` for the
+  exact-prefix exclusion and sibling-route retention contract
 - Modify: execution Task ledgers
 
 **Interfaces:**
@@ -1122,19 +1128,41 @@ Run the normal two-reviewer committed-unit SDD protocol over this exact commit
 range. Both specification and quality verdicts must be C0/I0 before any human
 or LLM route switch.
 
-- [ ] **Step 4: Regenerate LLM Wiki outputs canonically**
+- [ ] **Step 4: Correct the retiring-path projection and regenerate LLM Wiki outputs canonically**
 
-Run:
+The existing generators enumerate every safe path returned by `git ls-files`.
+While both packs coexist, a canonical write therefore recreates twenty
+clickable old-pack rows and makes the zero-clickable-reference pre-deletion
+gate impossible to satisfy. Treat this as a fail-closed generator defect, not
+as a historical-literal exception: generated navigation has no allowlist.
+
+First add focused RED fixtures proving that both generators include the exact
+retiring prefix before the production change. Then add a shared, literal
+prefix exclusion for only:
+
+```text
+docs/90.references/research/2026-07-05-agentic-research-pack-refresh/
+```
+
+The GREEN assertions must prove that all twenty retiring-pack paths are absent
+from both generator inventories, the new `2026-08-08` pack remains present,
+and similarly named Stage 04 Plan/Task history remains present. Do not use a
+substring or date-wide exclusion. Run:
 
 ```bash
+python3 -m unittest \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion -v
 bash scripts/knowledge/generate-llm-wiki-index.sh
 bash scripts/knowledge/generate-llm-wiki-coverage.sh
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 ```
 
-Expected: both checks PASS. Inspect diffs for only path/count changes justified
-by the new and retiring routes.
+Expected: the focused test and both checks PASS. Inspect diffs for only the
+new-pack additions, exact retiring-pack exclusions, and derived count changes.
+After the old pack is actually deleted, the same filter becomes a no-op over
+`git ls-files`; it remains explicit lifecycle documentation until a separately
+reviewed cleanup removes it.
 
 - [ ] **Step 5: Run the pre-deletion path/link checks**
 
@@ -1157,12 +1185,16 @@ git diff --check
 - [ ] **Step 6: Self-review and commit the route-switch unit**
 
 Confirm every line in the scratch path list is a classified route consumer,
-self-review the route and generated diffs, then stage only that list, the two
-generated outputs, and the Task:
+self-review the route, generator/test, and generated diffs, then stage only
+that list, the two generators, the focused test, the two generated outputs,
+and the Task:
 
 ```bash
 git add --pathspec-from-file=/tmp/agentic-research-route-paths.txt
-git add docs/90.references/llm-wiki/llm-wiki-index.md \
+git add scripts/knowledge/generate-llm-wiki-index.sh \
+  scripts/knowledge/generate-llm-wiki-coverage.sh \
+  tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
+  docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md \
   docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 git commit -m "docs(research): switch agentic pack links and indexes"
@@ -1492,6 +1524,7 @@ progress and is clean after each commit.
 | Scope or requirement omission | Closed 35-row and 14-row matrices | Stop pack routing until missing row has a reviewed destination |
 | Broken historical link after deletion | Whole tracked-text scan and zero clickable exceptions | Restore old pack from deletion parent and repair routes |
 | Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
+| Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
@@ -1510,6 +1543,7 @@ pack are forbidden.
 | Unit review | Specification and quality reviews C0/I0 over committed `BASE..HEAD` | Next task |
 | Pack complete | 19 leaves, 35/35 requirements, 14/14 scopes, source/claim completeness | Human route switch |
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
+| LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS | `git rm` |
 | Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
