@@ -1287,6 +1287,11 @@ verdicts. Complete the fix/re-review loop before Task 11.
 **Files:**
 
 - Delete: exactly 20 files under the old pack directory
+- Modify before any deletion review:
+  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md`
+  by removing only its redundant direct parent
+  `spec:123-agentic-engineering-audit-remediation`; retain the completed Task
+  parent that already preserves the archived Spec and Plan lineage
 - Verify, but expect no byte changes in:
   `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`
@@ -1312,6 +1317,35 @@ verdicts. Complete the fix/re-review loop before Task 11.
   clickable old-path references, fresh LLM outputs, and all pre-deletion
   validation evidence.
 - Produces: sole active canonical pack and a recoverable deletion commit.
+
+- [ ] **Step 0: Clear the changed-document metadata blocker in a reviewed unit**
+
+The Task 10 route switch makes the active audit overview part of the changed
+document set. Its frontmatter currently names both the completed remediation
+Task and the now-archived Spec 123 as direct parents. The audit profile permits
+the Task parent but not an archive parent, so the mandatory changed-document
+metadata gate fails with one `invalid-parent-type` finding. This is a real
+deletion blocker, not an allowed predecessor.
+
+Use the existing validator as the RED test and record the single expected
+finding before editing:
+
+```bash
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed \
+  --base-ref 35318255 \
+  --changed-path \
+  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md
+```
+
+Remove only the redundant direct Spec parent. Keep
+`task:2026-07-11-agentic-engineering-audit-remediation`, whose own typed
+parents retain the archived Spec and current Plan provenance. Rerun the focused
+command for GREEN, then run the full changed-document metadata command against
+`35318255`; both must exit 0. Commit the audit frontmatter and Task evidence as
+a separate logical unit, and require two independent committed-unit reviews at
+C0/I0 before restarting deletion gates 1 through 8. Do not widen the audit
+profile's global allowed-parent types and do not edit lifecycle artifacts.
 
 - [ ] **Step 1: Execute pre-deletion gates 1 through 8**
 
