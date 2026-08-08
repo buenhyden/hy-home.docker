@@ -162,15 +162,38 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
             for filename in PACK_FILES:
                 self.assertNotIn(f"{RETIRING_PREFIX}{filename}", decoded_index)
                 self.assertNotIn(f"{RETIRING_PREFIX}{filename}", decoded_coverage)
+                self.assertIn(f"{NEW_PREFIX}{filename}", decoded_index)
 
-            for retained_path in (
-                f"{NEW_PREFIX}README.md",
-                SIBLING_PATH,
-                PLAN_PATH,
-                TASK_PATH,
-            ):
+            for retained_path in (SIBLING_PATH, PLAN_PATH, TASK_PATH):
                 self.assertIn(retained_path, decoded_index)
                 self.assertIn(retained_path, decoded_coverage)
+
+            for filename in PACK_FILES:
+                retained_path = f"{NEW_PREFIX}{filename}"
+                run(
+                    ["git", "rm", "--cached", "--quiet", retained_path],
+                    cwd=root,
+                )
+                run(["bash", str(COVERAGE_GENERATOR)], cwd=root)
+                without_path_metrics = coverage_metrics(
+                    (root / COVERAGE_OUTPUT).read_text(encoding="utf-8")
+                )
+                expected_delta = {
+                    "safe paths": -1,
+                    "docs/90.references": -1,
+                    "Reference and template docs": -1,
+                    "folder index": -1 if filename == "README.md" else 0,
+                    "Markdown reference": 0 if filename == "README.md" else -1,
+                }
+                self.assertEqual(
+                    expected_delta,
+                    {
+                        label: without_path_metrics[label] - coexisting_metrics[label]
+                        for label in coexisting_metrics
+                    },
+                    msg=f"new-pack coverage projection omitted {retained_path}",
+                )
+                run(["git", "add", retained_path], cwd=root)
 
 
 if __name__ == "__main__":

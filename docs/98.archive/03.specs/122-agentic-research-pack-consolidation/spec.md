@@ -71,7 +71,7 @@ This specification's work reached a terminal state (`completed` or `superseded`)
 - **Previous Spec**:
   [../104-agentic-research-pack-refresh/spec.md](../104-agentic-research-pack-refresh/spec.md)
 - **Canonical Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+  [../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Duplicate Pack**:
   `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
   (path removed after consolidation; see the Superseded Paths table in
