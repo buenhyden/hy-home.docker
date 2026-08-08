@@ -4,9 +4,12 @@ import copy
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import tempfile
 import unittest
+
+import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -38,14 +41,8 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
     ) -> str:
         with tempfile.TemporaryDirectory(prefix="security-readiness-") as temporary:
             root = pathlib.Path(temporary)
-            files = {
+            overrides = {
                 GENERATOR: (ROOT / GENERATOR).read_text(encoding="utf-8"),
-                "scripts/validation/ci_gate_contract.py": (
-                    ROOT / "scripts/validation/ci_gate_contract.py"
-                ).read_text(encoding="utf-8"),
-                "scripts/validation/github_workflow_contract.py": (
-                    ROOT / "scripts/validation/github_workflow_contract.py"
-                ).read_text(encoding="utf-8"),
                 ".github/workflow-contract.yml": json.dumps(
                     workflow_contract, indent=2
                 ),
@@ -54,13 +51,30 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
                 ".github/dependabot.yml": "package-ecosystem: npm\n",
                 ".gitleaks.toml": "[allowlist]\n",
                 ".pre-commit-config.yaml": "- id: gitleaks\n",
-                "scripts/validation/check-repo-contracts.sh": "# workflow security\n",
-                "scripts/validation/check-template-security-baseline.sh": "#!/bin/sh\n",
-                "scripts/hardening/check-all-hardening.sh": "#!/bin/sh\n",
-                "scripts/validation/ci_gate_adapters.py": "# typed adapter\n",
-                "scripts/validation/unwired.py": "# intentionally unwired\n",
             }
-            for relative, content in files.items():
+            fixture_paths = subprocess.run(
+                [
+                    "git",
+                    "ls-files",
+                    "scripts",
+                    "tests/validation/test_run_ci_precommit.sh",
+                    ".github/workflows",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.splitlines()
+            for relative in fixture_paths:
+                if relative in overrides:
+                    continue
+                source = ROOT / relative
+                if not source.is_file():
+                    continue
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, destination)
+            for relative, content in overrides.items():
                 path = root / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding="utf-8")
@@ -81,139 +95,14 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
             return result.stdout
 
     def typed_fixture(self) -> tuple[dict[str, object], str]:
-        upload_sha = "a" * 40
-        workflow_text = f"""\
-name: Typed security gate fixture
-"on":
-  pull_request:
-permissions:
-  contents: read
-jobs:
-  security:
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Run typed security gate
-        run: python3 scripts/validation/run-ci-gate.py --profile ci --gate ci.security
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@{upload_sha}
-"""
-
-        def leaf(
-            suite_key: str,
-            entrypoint: str,
-            argv: list[str],
-        ) -> dict[str, object]:
-            return {
-                "gate_id": f"leaf.{suite_key}",
-                "kind": "leaf",
-                "suite_key": suite_key,
-                "entrypoint": entrypoint,
-                "argv": argv,
-                "cwd": ".",
-                "allowed_env_keys": [],
-                "timeout_minutes": 10,
-                "profiles": ["ci"],
-                "opaque": True,
-            }
-
-        contract: dict[str, object] = {
-            "schema_version": 2,
-            "workflows": {
-                ".github/workflows/ci-quality.yml": {
-                    "name": "Typed security gate fixture",
-                    "classification": "required-quality",
-                    "triggers": {"pull_request": None},
-                    "permissions": {"contents": "read"},
-                    "concurrency": None,
-                    "jobs": {
-                        "security": {
-                            "permissions": {
-                                "actions": "read",
-                                "contents": "read",
-                                "security-events": "write",
-                            },
-                            "runs_on": "ubuntu-latest",
-                            "timeout_minutes": 10,
-                        }
-                    },
-                }
-            },
-            "gate_nodes": [
-                {
-                    "gate_id": "ci.security",
-                    "kind": "aggregate",
-                    "profiles": ["ci"],
-                    "opaque": False,
-                    "children": [
-                        "leaf.zizmor",
-                        "leaf.repo-contracts",
-                        "leaf.hardening",
-                        "leaf.template-security",
-                        "leaf.scoped-npm-audit",
-                    ],
-                },
-                leaf(
-                    "zizmor",
-                    "scripts/validation/ci_gate_adapters.py",
-                    ["run-zizmor-sarif"],
-                ),
-                leaf(
-                    "repo-contracts",
-                    "scripts/validation/check-repo-contracts.sh",
-                    [],
-                ),
-                leaf(
-                    "hardening",
-                    "scripts/hardening/check-all-hardening.sh",
-                    [],
-                ),
-                leaf(
-                    "template-security",
-                    "scripts/validation/check-template-security-baseline.sh",
-                    [],
-                ),
-                leaf(
-                    "scoped-npm-audit",
-                    "scripts/validation/ci_gate_adapters.py",
-                    [
-                        "run-npm",
-                        "audit",
-                        "--audit-level=high",
-                        "--prefix",
-                        "projects/storybook/nextjs",
-                    ],
-                ),
-                leaf(
-                    "unwired-broad-sca",
-                    "scripts/validation/unwired.py",
-                    ["osv-scanner"],
-                ),
-            ],
-            "job_roots": [
-                {
-                    "workflow": ".github/workflows/ci-quality.yml",
-                    "job_id": "security",
-                    "root_gate_id": "ci.security",
-                    "classification": "required-quality",
-                }
-            ],
-            "profile_roots": [],
-            "actions": {
-                "github/codeql-action/upload-sarif": {
-                    "sha": upload_sha,
-                    "runtime": "node24",
-                    "manifest_url": "https://example.invalid/action.yml",
-                    "retrieved_at": "2026-08-08T00:00:00Z",
-                    "consumers": [".github/workflows/ci-quality.yml"],
-                    "security_disposition": "fixture-only",
-                }
-            },
-        }
+        loaded = yaml.safe_load(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        assert isinstance(loaded, dict)
+        contract: dict[str, object] = loaded
+        workflow_text = (
+            ROOT / ".github/workflows/ci-quality.yml"
+        ).read_text(encoding="utf-8")
         return contract, workflow_text
 
     def test_typed_workflow_evidence_requires_reachable_gates_and_actions(
@@ -241,90 +130,116 @@ jobs:
     def test_malformed_or_mismatched_gate_graph_fails_closed(self) -> None:
         base_contract, base_workflow = self.typed_fixture()
 
+        def gate_node(contract: dict[str, object], gate_id: str) -> dict[str, object]:
+            return next(
+                node
+                for node in contract["gate_nodes"]
+                if node["gate_id"] == gate_id
+            )
+
+        gate_program = (
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.zizmor"
+        )
+
         cycle = copy.deepcopy(base_contract)
-        cycle["gate_nodes"][0]["children"].append("ci.security")
+        gate_node(cycle, "ci.zizmor")["children"].append("ci.zizmor")
 
         non_string_child = copy.deepcopy(base_contract)
-        non_string_child["gate_nodes"][0]["children"].append(42)
+        gate_node(non_string_child, "ci.zizmor")["children"].append(42)
 
         absent_actual_job_workflow = base_workflow.replace(
-            "  security:\n", "  actual-security:\n", 1
+            "  zizmor:\n", "  actual-zizmor:\n", 1
         )
 
         missing_gate_projection_workflow = base_workflow.replace(
-            "run: python3 scripts/validation/run-ci-gate.py "
-            "--profile ci --gate ci.security",
+            "run: " + gate_program,
             "run: echo no-registered-gate",
         )
 
         wrong_gate_projection_workflow = base_workflow.replace(
-            "--gate ci.security",
-            "--gate leaf.unwired-broad-sca",
+            "--gate ci.zizmor",
+            "--gate ci.infrastructure-hardening",
         )
 
         partial_gate_projection_workflow = base_workflow.replace(
-            "--gate ci.security",
-            "--gate leaf.zizmor",
+            "--gate ci.infrastructure-hardening",
+            "--gate leaf.infrastructure-hardening",
         )
 
         duplicate_gate_projection_workflow = base_workflow.replace(
-            "      - name: Upload SARIF\n",
-            "      - name: Run typed security gate again\n"
-            "        run: python3 scripts/validation/run-ci-gate.py "
-            "--profile ci --gate ci.security\n"
-            "      - name: Upload SARIF\n",
+            "      - name: Upload SARIF file\n",
+            "      - name: Run zizmor gate again\n"
+            f"        run: {gate_program}\n"
+            "      - name: Upload SARIF file\n",
         )
 
         dynamic_gate_projection_workflow = base_workflow.replace(
-            "--gate ci.security",
+            "--gate ci.zizmor",
             "--gate ${{ github.ref }}",
         )
 
         disabled_gate_step_workflow = base_workflow.replace(
-            "        run: python3 scripts/validation/run-ci-gate.py ",
-            "        if: ${{ false }}\n"
-            "        run: python3 scripts/validation/run-ci-gate.py ",
+            f"        run: {gate_program}",
+            "        if: ${{ false }}\n" f"        run: {gate_program}",
         )
 
         disabled_gate_job_workflow = base_workflow.replace(
-            "  security:\n",
-            "  security:\n    if: ${{ false }}\n",
+            "  zizmor:\n",
+            "  zizmor:\n    if: ${{ false }}\n",
             1,
         )
 
         non_string_run_workflow = base_workflow.replace(
-            "      - name: Upload SARIF\n",
+            "      - name: Upload SARIF file\n",
             "      - name: Invalid non-string program\n"
             "        run: 123\n"
-            "      - name: Upload SARIF\n",
+            "      - name: Upload SARIF file\n",
         )
 
         explicit_shell_workflow = base_workflow.replace(
-            "--profile ci --gate ci.security\n",
-            "--profile ci --gate ci.security\n        shell: bash\n",
+            gate_program + "\n",
+            gate_program + "\n        shell: bash\n",
         )
 
         working_directory_workflow = base_workflow.replace(
-            "--profile ci --gate ci.security\n",
-            "--profile ci --gate ci.security\n"
+            gate_program + "\n",
+            gate_program + "\n"
             "        working-directory: scripts\n",
         )
 
         workflow_defaults_workflow = base_workflow.replace(
-            '"on":\n',
+            "on:\n",
             "defaults:\n  run:\n    shell: bash\n"
-            '"on":\n',
+            "on:\n",
         )
 
         job_defaults_workflow = base_workflow.replace(
-            "  security:\n",
-            "  security:\n    defaults:\n      run:\n        shell: bash\n",
+            "  zizmor:\n",
+            "  zizmor:\n    defaults:\n      run:\n        shell: bash\n",
+            1,
+        )
+
+        failure_weakening_workflow = base_workflow.replace(
+            gate_program + "\n",
+            gate_program + "\n"
+            "        continue-on-error: true\n",
+        )
+
+        disabled_sarif_action_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - name: Upload SARIF file\n        if: ${{ false }}\n",
+        )
+
+        missing_sarif_permission_workflow = base_workflow.replace(
+            "      security-events: write\n",
+            "",
             1,
         )
 
         duplicate_gate = copy.deepcopy(base_contract)
         duplicate_gate["gate_nodes"].append(
-            copy.deepcopy(duplicate_gate["gate_nodes"][-1])
+            copy.deepcopy(gate_node(duplicate_gate, "leaf.zizmor"))
         )
 
         duplicate_root = copy.deepcopy(base_contract)
@@ -396,6 +311,21 @@ jobs:
                 base_contract,
                 job_defaults_workflow,
             ),
+            (
+                "registered gate step weakens failures",
+                base_contract,
+                failure_weakening_workflow,
+            ),
+            (
+                "SARIF action step is disabled",
+                base_contract,
+                disabled_sarif_action_workflow,
+            ),
+            (
+                "SARIF permission is missing",
+                base_contract,
+                missing_sarif_permission_workflow,
+            ),
             ("duplicate gate", duplicate_gate, base_workflow),
             ("duplicate root", duplicate_root, base_workflow),
         )
@@ -414,17 +344,20 @@ jobs:
 
     def test_invalid_or_comment_only_action_evidence_fails_closed(self) -> None:
         base_contract, base_workflow = self.typed_fixture()
+        upload_sha = base_contract["actions"][
+            "github/codeql-action/upload-sarif"
+        ]["sha"]
 
         invalid_sha_contract = copy.deepcopy(base_contract)
         invalid_sha_contract["actions"]["github/codeql-action/upload-sarif"][
             "sha"
         ] = "v4"
-        invalid_sha_workflow = base_workflow.replace("@" + "a" * 40, "@v4")
+        invalid_sha_workflow = base_workflow.replace("@" + upload_sha, "@v4")
 
         comment_only_workflow = base_workflow.replace(
-            "        uses: github/codeql-action/upload-sarif@" + "a" * 40,
+            "        uses: github/codeql-action/upload-sarif@" + upload_sha,
             "        run: echo no-action\n"
-            "        # uses: github/codeql-action/upload-sarif@" + "a" * 40,
+            "        # uses: github/codeql-action/upload-sarif@" + upload_sha,
         )
 
         for name, contract, workflow in (

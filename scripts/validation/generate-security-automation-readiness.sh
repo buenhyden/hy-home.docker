@@ -52,15 +52,12 @@ from dataclasses import dataclass
 from scripts.validation.ci_gate_contract import (
     GateContractError,
     expand_gate_ids,
-    load_contract_document,
-    parse_gate_registry,
 )
 from scripts.validation.github_workflow_contract import (
-    ActionDependency,
-    WorkflowContract,
     WorkflowContractError,
-    _workflow_projection_findings as workflow_projection_findings,
+    load_workflow_contract,
     load_workflows,
+    validate_workflows,
 )
 
 MODE = sys.argv[1]
@@ -111,15 +108,18 @@ def resolve_typed_workflow_evidence(
     workflow_paths: tuple[str, ...],
 ) -> TypedWorkflowEvidence:
     empty = TypedWorkflowEvidence("", "", ())
+    if contract_path != ".github/workflow-contract.yml":
+        return empty
     try:
         repository_root = pathlib.Path.cwd().resolve()
-        contract = load_contract_document(repository_root)
-        registry = parse_gate_registry(contract, contract_path)
+        contract = load_workflow_contract(repository_root)
+        if validate_workflows(repository_root, contract):
+            return empty
         workflow_documents = load_workflows(repository_root)
     except (GateContractError, WorkflowContractError, OSError):
         return empty
-    if contract_path != ".github/workflow-contract.yml":
-        return empty
+
+    registry = contract.gate_registry
 
     root_identities = tuple(
         (root.workflow, root.job_id, root.root_gate_id)
@@ -132,68 +132,8 @@ def resolve_typed_workflow_evidence(
     ):
         return empty
 
-    workflow_registry = contract.get("workflows")
-    if not isinstance(workflow_registry, dict):
-        return empty
-    actions = contract.get("actions")
-    if not isinstance(actions, dict):
-        return empty
-    action_fields = {
-        "sha",
-        "runtime",
-        "manifest_url",
-        "retrieved_at",
-        "consumers",
-        "security_disposition",
-    }
-    action_dependencies: list[ActionDependency] = []
-    for action_name, registration in actions.items():
-        if (
-            not isinstance(action_name, str)
-            or not action_name
-            or not isinstance(registration, dict)
-            or set(registration) != action_fields
-        ):
-            return empty
-        consumers = registration.get("consumers")
-        scalar_fields = (
-            "sha",
-            "runtime",
-            "manifest_url",
-            "retrieved_at",
-            "security_disposition",
-        )
-        if (
-            any(
-                not isinstance(registration.get(field), str)
-                or not registration.get(field)
-                for field in scalar_fields
-            )
-            or not isinstance(consumers, list)
-            or not consumers
-            or any(
-                not isinstance(consumer, str) or not consumer
-                for consumer in consumers
-            )
-        ):
-            return empty
-        action_dependencies.append(
-            ActionDependency(
-                action=action_name,
-                sha=registration["sha"],
-                runtime=registration["runtime"],
-                manifest_url=registration["manifest_url"],
-                retrieved_at=registration["retrieved_at"],
-                consumers=tuple(consumers),
-                security_disposition=registration["security_disposition"],
-            )
-        )
-    projection_contract = WorkflowContract(
-        schema_version=2,
-        workflows=(),
-        actions=tuple(action_dependencies),
-        gate_registry=registry,
-    )
+    workflow_registry = {spec.path: spec for spec in contract.workflows}
+    action_dependencies = contract.actions
     documents_by_path = {
         document.path: document
         for document in workflow_documents
@@ -205,11 +145,6 @@ def resolve_typed_workflow_evidence(
     try:
         for root in registry.job_roots:
             workflow_spec = workflow_registry.get(root.workflow)
-            registered_jobs = (
-                workflow_spec.get("jobs")
-                if isinstance(workflow_spec, dict)
-                else None
-            )
             document = documents_by_path.get(root.workflow)
             actual_jobs = document.data.get("jobs") if document is not None else None
             actual_job = (
@@ -219,10 +154,9 @@ def resolve_typed_workflow_evidence(
             )
             if (
                 root.workflow not in workflow_paths
-                or not isinstance(workflow_spec, dict)
-                or root.classification != workflow_spec.get("classification")
-                or not isinstance(registered_jobs, dict)
-                or root.job_id not in registered_jobs
+                or workflow_spec is None
+                or root.classification != workflow_spec.classification
+                or root.job_id not in workflow_spec.jobs
                 or not isinstance(actual_jobs, dict)
                 or not isinstance(actual_job, dict)
             ):
@@ -232,23 +166,6 @@ def resolve_typed_workflow_evidence(
             root_gate_ids.append(root.root_gate_id)
     except GateContractError:
         return empty
-
-    for workflow_path in rooted_workflows:
-        document = documents_by_path[workflow_path]
-        actual_jobs = document.data.get("jobs")
-        if not isinstance(actual_jobs, dict):
-            return empty
-        try:
-            findings = workflow_projection_findings(
-                workflow_path,
-                document.data,
-                actual_jobs,
-                projection_contract,
-            )
-        except GateContractError:
-            return empty
-        if findings:
-            return empty
 
     reachable: set[str] = set()
     pending = list(reversed(root_gate_ids))
@@ -283,6 +200,11 @@ def resolve_typed_workflow_evidence(
             for step in steps:
                 uses = step.get("uses") if isinstance(step, dict) else None
                 if isinstance(uses, str):
+                    if (
+                        step.get("if") is not None
+                        or step.get("continue-on-error") is not None
+                    ):
+                        return empty
                     references.add(uses)
         workflow_action_refs[workflow_path] = references
 
@@ -746,9 +668,9 @@ lines.extend(
         "## Source Rules",
         "",
         "- Use tracked repository files for readiness claims.",
-        "- Admit typed commands only when parsed workflow jobs use canonical",
-        "  execution contexts and project each registered gate root exactly once;",
-        "  admit Actions only from exact parsed `uses` steps.",
+        "- Admit typed commands and Actions only after complete canonical workflow",
+        "  validation; registered Action evidence must also use an unconditional,",
+        "  failure-propagating parsed `uses` step.",
         "- Treat this generated snapshot as planning evidence, not active policy or",
         "  runtime truth.",
         "- Do not include secret values, private keys, tokens, shell history, raw",
