@@ -134,7 +134,7 @@ remain closed or out of scope.
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Complete after fix `8d447997`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Complete after fix `44fdb494`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, metadata exceptions, route checks | Complete through fix `6d6e93b6`; route switch, generated navigation, mutable metadata reconciliation, four visible-label repairs, and all-twenty-file projection coverage are implemented; scoped specification and quality re-reviews Approved C0/I0/M0; old-pack deletion and pinned lifecycle-row reconciliation remain Task 11 and the deletion gate stays closed |
-| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 metadata repair implemented and verified; committed-unit reviews pending; deletion gates, package construction, old-pack deletion, and lifecycle reconciliation remain Not Run |
+| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 metadata repair is reviewed complete at `3095e5ab`; committed-unit specification and quality reviews Approved C0/I0/M0; deletion gates 1 through 9, package construction, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
 | Task 12 | Final verification and handoff | Whole-branch checks, reviews, closure, and handoff | Not Run |
 
 ### Requirement matrix
@@ -517,6 +517,7 @@ manifest/summary rows unchanged.
 | 2026-08-08 | Task 11 Step 0 RED | Ran the focused changed-document metadata command against `35318255` before editing | Exit 1 as intended; `selected=1 violations=1 legacy_exceptions=0 transition_overrides=0`; the sole finding was `invalid-parent-type` for direct parent `spec:123-agentic-engineering-audit-remediation` |
 | 2026-08-08 | Task 11 Step 0 GREEN | Removed only the redundant direct Spec 123 parent and retained `task:2026-07-11-agentic-engineering-audit-remediation` | Focused metadata exits 0 at `selected=1 violations=0`; full changed-document metadata exits 0 at `selected=81 violations=0 legacy_exceptions=8 transition_overrides=0` |
 | 2026-08-08 | Task 11 Step 0 surrounding checks | Re-ran traceability, repository contracts, implementation alignment, and diff hygiene | Traceability PASS at 46/0; repository contracts PASS with zero failures; alignment remains the exact 184-finding predecessor with 182 archive-direct links and attributable delta zero; two-file diff only and no deletion/package/lifecycle/generated mutation |
+| 2026-08-09 | Task 11 Step 0 committed-unit review closure | Backfilled the immutable repair identity, exact range and scope, and both independent verdicts | Commit `3095e5ab1cb194ee32ec58552257392f400be54e`; range `6bb256b275c701f5a0e6f1aa46a2d74011b6c602..3095e5ab1cb194ee32ec58552257392f400be54e`; exactly the audit overview and this Task ledger; specification Approved C0/I0/M0 and quality Approved C0/I0/M0; gates 1 through 9 and all deletion work remain closed and Not Run |
 
 ## Verification Evidence
 
@@ -653,12 +654,12 @@ private-state material.
 | Complete old-slug scan plus Task allowlist set comparison | Tracked text outside old pack and stale/advisory Graphify plus focused tests | 0 | PASS | 34/34 residual paths classified; 308 exact occurrences across 280 matching lines = 303 non-test plus 5 focused-test literals; raw Graphify-inclusive tracked scan is separately 3,730 occurrences / 3,702 lines / 47 paths; zero old-pack Markdown destinations and no unclassified reviewed-source path |
 | Bash syntax, ShellCheck, Python compilation, and `git diff --check` | Task 10b generators/test and complete diff | 0 each | PASS | Both shell generators and the Python fixture parse cleanly; ShellCheck and whitespace hygiene pass |
 | Focused audit metadata command before Task 11 Step 0 edit | Plan-correction HEAD `6bb256b275c701f5a0e6f1aa46a2d74011b6c602`, base `35318255` | 1 | EXPECTED RED | `selected=1 violations=1 legacy_exceptions=0 transition_overrides=0`; sole `invalid-parent-type` finding names direct archive parent `spec:123-agentic-engineering-audit-remediation` |
-| Same focused audit metadata command after Task 11 Step 0 edit | Step 0 working tree, base `35318255` | 0 | GREEN / PASS | `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`; completed Task parent remains |
-| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 35318255` | Step 0 working tree | 0 | PASS | `selected=81 violations=0 legacy_exceptions=8 transition_overrides=0`; the prior single deletion blocker is cleared without widening parent-type policy |
-| `bash scripts/validation/check-doc-traceability.sh` | Step 0 working tree | 0 | PASS | `catalog_pairs_total=46 failures=0` |
-| `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh` | Step 0 working tree | 0 | PASS | Repository Docker/docs contracts synchronized; `failures=0` |
-| `bash scripts/validation/check-doc-implementation-alignment.sh` | Pinned 184-finding predecessor / Step 0 working tree | 1 | FAIL, unchanged predecessor | `failures=184`, `archive_direct_links_total=182`; the Step 0 frontmatter-only parent removal adds no Markdown-link finding, so attributable delta is zero |
-| Task 11 Step 0 exact changed-path review and `git diff --check` | Plan-correction HEAD `6bb256b2` / Step 0 working tree | 0 / 0 | PASS | Exactly the audit overview and this Task ledger changed; no whitespace errors; old pack, deletion package, lifecycle data, generators, and generated outputs remain untouched |
+| Same focused audit metadata command after Task 11 Step 0 edit | Step 0 commit `3095e5ab`, base `35318255` | 0 | GREEN / PASS | `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`; completed Task parent remains |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 35318255` | Step 0 commit `3095e5ab` | 0 | PASS | `selected=81 violations=0 legacy_exceptions=8 transition_overrides=0`; the prior single deletion blocker is cleared without widening parent-type policy |
+| `bash scripts/validation/check-doc-traceability.sh` | Step 0 commit `3095e5ab` | 0 | PASS | `catalog_pairs_total=46 failures=0` |
+| `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh` | Step 0 commit `3095e5ab` | 0 | PASS | Repository Docker/docs contracts synchronized; `failures=0` |
+| `bash scripts/validation/check-doc-implementation-alignment.sh` | Pinned 184-finding predecessor / Step 0 commit `3095e5ab` | 1 | FAIL, unchanged predecessor | `failures=184`, `archive_direct_links_total=182`; the Step 0 frontmatter-only parent removal adds no Markdown-link finding, so attributable delta is zero |
+| Task 11 Step 0 exact changed-path review and `git diff --check` | `6bb256b2..3095e5ab` | 0 / 0 | PASS | Exactly the audit overview and this Task ledger changed; no whitespace errors; old pack, deletion package, lifecycle data, generators, and generated outputs remain untouched |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -744,6 +745,8 @@ backfilled.
 | Task 11 Step 0 Plan-correction specification review | `85a7eb50c4d1e48bc76e0697f0494acb81de1299..6bb256b275c701f5a0e6f1aa46a2d74011b6c602` | Independent specification reviewer | Approved; C0/I0/M0 | The Plan now treats the one changed-document metadata finding as a real pre-deletion blocker and defines the exact two-file, one-parent repair before any deletion gate rerun |
 | Task 11 Step 0 Plan-correction quality review | `85a7eb50c4d1e48bc76e0697f0494acb81de1299..6bb256b275c701f5a0e6f1aa46a2d74011b6c602` | Independent quality reviewer | Approved; C0/I0/M0 | RED/GREEN, full metadata, review, deletion-package, and lifecycle boundaries are internally consistent and fail closed |
 | Task 11 Step 0 implementer self-review | Working tree before Step 0 commit | Task 11 implementer | PASS; C0/I0/M0 | Exactly one redundant direct parent removed; Task parent and lineage retained; focused/full metadata, traceability, repository contracts, alignment attribution, two-file scope, and diff hygiene verified; deletion gates/package/old pack/lifecycle remain untouched and Not Run |
+| Task 11 Step 0 committed-unit specification review | `6bb256b275c701f5a0e6f1aa46a2d74011b6c602..3095e5ab1cb194ee32ec58552257392f400be54e` | Independent specification reviewer | Approved; C0/I0/M0 | Exact two-file scope matches the reviewed correction; the redundant direct archived-Spec parent is removed, the completed Task parent and lineage remain, and all recorded RED/GREEN and surrounding evidence satisfy Step 0 without opening deletion work |
+| Task 11 Step 0 committed-unit quality review | `6bb256b275c701f5a0e6f1aa46a2d74011b6c602..3095e5ab1cb194ee32ec58552257392f400be54e` | Independent quality reviewer | Approved; C0/I0/M0 | Audit metadata and Task evidence are mutually consistent; exact scope, validation attribution, and fail-closed boundaries are clear, with gates 1 through 9, package, deletion, and lifecycle work still Not Run |
 
 ## Commit Ledger
 
@@ -776,18 +779,20 @@ backfilled.
 | Task 10b fix 1 | `6d6e93b613417f53c69d1e798df4396465739f35`; `fix(validation): complete agentic route switch`; range `186aceee6192c7311c67710d76b660faca43c78f..6d6e93b613417f53c69d1e798df4396465739f35` | Eight files: this Task ledger, four archived Specs, metadata validator and focused test, and LLM focused test; sixteen exception removals, immutable seven-row regression, four visible-label corrections, all-twenty-file LLM coverage; zero deletions and old pack untouched | RED/GREEN and LLM/security freshness PASS; repository contract `failures=0`; alignment 184 unchanged; controller BASE 225/14 versus fix 226/14 with attributable delta zero; lifecycle unchanged `9/26/9`, not PASS; owned metadata, traceability, and diff PASS; residual source corpus exact `308/280/34` plus five test literals | Implementer PASS C0/I0/M0; scoped specification Approved C0/I0/M0; scoped quality Approved C0/I0/M0; all initial I3/M1 and I1 findings resolved |
 | Task 10b ledger closure | Pending commit; `docs(task): close task 10b route review` | Ledger-only backfill of exact fix identity, eight-file evidence, and fresh review closure | Focused Task metadata PASS at selected 1 / violations 0; diff check PASS | Closure commit self-identity pending; fix-range specification and quality re-reviews Approved C0/I0/M0 |
 | Task 11 Step 0 Plan correction | `6bb256b275c701f5a0e6f1aa46a2d74011b6c602`; `docs(plan): clear audit metadata deletion gate` | Fail-closed one-parent audit metadata remediation before any deletion review | Plan metadata/diff checks | Independent specification and quality reviews Approved C0/I0/M0 |
-| Task 11 Step 0 metadata repair | Pending commit; `docs(audit): clear remediation parent metadata` | Remove one redundant direct archived-Spec parent and record exact RED/GREEN plus surrounding evidence | Focused/full metadata PASS; traceability and repository contracts PASS; alignment attributable delta zero; two-file diff PASS | Implementer self-review PASS C0/I0/M0; committed-unit specification and quality reviews pending |
+| Task 11 Step 0 metadata repair | `3095e5ab1cb194ee32ec58552257392f400be54e`; `docs(audit): clear remediation parent metadata`; range `6bb256b275c701f5a0e6f1aa46a2d74011b6c602..3095e5ab1cb194ee32ec58552257392f400be54e` | Exactly two files: remove one redundant direct archived-Spec parent from the audit overview and record RED/GREEN plus surrounding evidence in this Task ledger | Focused/full metadata PASS; traceability and repository contracts PASS; alignment attributable delta zero; exact two-file diff PASS | Implementer PASS C0/I0/M0; committed-unit specification Approved C0/I0/M0; committed-unit quality Approved C0/I0/M0 |
 | Tasks 11 deletion and lifecycle / Task 12 | Not Run | Old-pack deletion, lifecycle reconciliation, final verification, and handoff | Not Run | Not Run |
 
 ## Deferred and Blocked Items
 
 - Task 11 Step 0 clears the single changed-document metadata blocker under
   reviewed Plan correction `6bb256b275c701f5a0e6f1aa46a2d74011b6c602`.
-  Focused and full metadata now pass, but deletion gates 1 through 8 may not
-  restart until this separate two-file commit receives independent
-  committed-unit specification and quality reviews at C0/I0. No deletion
-  package, old-pack mutation, lifecycle reconciliation, or generated-artifact
-  write has started.
+  Commit `3095e5ab1cb194ee32ec58552257392f400be54e` and exact range
+  `6bb256b275c701f5a0e6f1aa46a2d74011b6c602..3095e5ab1cb194ee32ec58552257392f400be54e`
+  received independent committed-unit specification and quality reviews,
+  both Approved C0/I0/M0. Step 0 is reviewed complete, but deletion gates 1
+  through 9 remain Not Run and closed pending a separate controller handoff;
+  no deletion package, old-pack mutation, lifecycle reconciliation, or
+  generated-artifact write has started.
 - The Task BASE index/coverage failures remain historical predecessors. Task
   10b now passes both canonical LLM Wiki checks at 1,338/1,337; Task 8's
   security readiness FAIL/7-3-3 remains history and the approved Task 10a
