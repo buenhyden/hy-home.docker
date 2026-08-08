@@ -43,12 +43,22 @@ python3 - "$mode" "$OUTPUT" <<'PY'
 from __future__ import annotations
 
 import collections
-import json
 import pathlib
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
+
+from scripts.validation.ci_gate_contract import (
+    GateContractError,
+    expand_gate_ids,
+    load_contract_document,
+    parse_gate_registry,
+)
+from scripts.validation.github_workflow_contract import (
+    WorkflowContractError,
+    load_workflows,
+)
 
 MODE = sys.argv[1]
 OUTPUT = pathlib.Path(sys.argv[2])
@@ -97,113 +107,158 @@ def resolve_typed_workflow_evidence(
     contract_path: str,
     workflow_paths: tuple[str, ...],
 ) -> TypedWorkflowEvidence:
+    empty = TypedWorkflowEvidence("", "", ())
     try:
-        contract = json.loads(read(contract_path))
-    except (json.JSONDecodeError, OSError):
-        contract = {}
-    if not isinstance(contract, dict):
-        return TypedWorkflowEvidence("", "", ())
+        repository_root = pathlib.Path.cwd().resolve()
+        contract = load_contract_document(repository_root)
+        registry = parse_gate_registry(contract, contract_path)
+        workflow_documents = load_workflows(repository_root)
+    except (GateContractError, WorkflowContractError, OSError):
+        return empty
+    if contract_path != ".github/workflow-contract.yml":
+        return empty
 
-    workflows = contract.get("workflows")
-    gate_nodes = contract.get("gate_nodes")
-    job_roots = contract.get("job_roots")
-    actions = contract.get("actions")
+    root_identities = tuple(
+        (root.workflow, root.job_id, root.root_gate_id)
+        for root in registry.job_roots
+    )
+    root_jobs = tuple((root.workflow, root.job_id) for root in registry.job_roots)
     if (
-        not isinstance(workflows, dict)
-        or not isinstance(gate_nodes, list)
-        or not isinstance(job_roots, list)
+        len(set(root_identities)) != len(root_identities)
+        or len(set(root_jobs)) != len(root_jobs)
     ):
-        return TypedWorkflowEvidence("", "", ())
+        return empty
 
-    nodes: dict[str, dict[str, object]] = {}
-    duplicate_gate_ids: set[str] = set()
-    for candidate in gate_nodes:
-        if not isinstance(candidate, dict):
-            continue
-        gate_id = candidate.get("gate_id")
-        if not isinstance(gate_id, str) or not gate_id:
-            continue
-        if gate_id in nodes:
-            duplicate_gate_ids.add(gate_id)
-        nodes[gate_id] = candidate
-    for gate_id in duplicate_gate_ids:
-        nodes.pop(gate_id, None)
-
-    root_gate_ids: list[str] = []
+    workflow_registry = contract.get("workflows")
+    if not isinstance(workflow_registry, dict):
+        return empty
+    documents_by_path = {
+        document.path: document
+        for document in workflow_documents
+        if document.path in workflow_paths
+    }
+    node_by_id = {node.gate_id: node for node in registry.nodes}
     rooted_workflows: set[str] = set()
-    for root in job_roots:
-        if not isinstance(root, dict):
+    root_gate_ids: list[str] = []
+    try:
+        for root in registry.job_roots:
+            workflow_spec = workflow_registry.get(root.workflow)
+            registered_jobs = (
+                workflow_spec.get("jobs")
+                if isinstance(workflow_spec, dict)
+                else None
+            )
+            document = documents_by_path.get(root.workflow)
+            actual_jobs = document.data.get("jobs") if document is not None else None
+            actual_job = (
+                actual_jobs.get(root.job_id)
+                if isinstance(actual_jobs, dict)
+                else None
+            )
+            if (
+                root.workflow not in workflow_paths
+                or not isinstance(workflow_spec, dict)
+                or root.classification != workflow_spec.get("classification")
+                or not isinstance(registered_jobs, dict)
+                or root.job_id not in registered_jobs
+                or not isinstance(actual_jobs, dict)
+                or not isinstance(actual_job, dict)
+            ):
+                return empty
+            expand_gate_ids(registry, "ci", root.root_gate_id, False)
+            rooted_workflows.add(root.workflow)
+            root_gate_ids.append(root.root_gate_id)
+    except GateContractError:
+        return empty
+
+    reachable: set[str] = set()
+    pending = list(reversed(root_gate_ids))
+    while pending:
+        gate_id = pending.pop()
+        if gate_id in reachable:
             continue
-        workflow = root.get("workflow")
-        job_id = root.get("job_id")
-        root_gate_id = root.get("root_gate_id")
-        workflow_contract = workflows.get(workflow) if isinstance(workflow, str) else None
-        jobs = workflow_contract.get("jobs") if isinstance(workflow_contract, dict) else None
-        if (
-            workflow not in workflow_paths
-            or not isinstance(job_id, str)
-            or not isinstance(jobs, dict)
-            or job_id not in jobs
-            or not isinstance(root_gate_id, str)
-            or root_gate_id not in nodes
-        ):
-            continue
-        rooted_workflows.add(workflow)
-        root_gate_ids.append(root_gate_id)
+        node = node_by_id[gate_id]
+        reachable.add(gate_id)
+        pending.extend(reversed(node.children))
 
     commands: list[str] = []
-    reachable: set[str] = set()
+    for node in registry.nodes:
+        if node.gate_id not in reachable or node.entrypoint is None:
+            continue
+        entrypoint = node.entrypoint.as_posix()
+        if not exists(entrypoint):
+            return empty
+        commands.append(" ".join((entrypoint, *node.argv)))
 
-    def visit(gate_id: str) -> None:
-        if gate_id in reachable:
-            return
-        node = nodes.get(gate_id)
-        if node is None:
-            return
-        reachable.add(gate_id)
-        kind = node.get("kind")
-        if kind == "aggregate":
-            children = node.get("children")
-            if isinstance(children, list):
-                for child in children:
-                    if isinstance(child, str):
-                        visit(child)
-            return
-        if kind not in {"leaf", "setup"}:
-            return
-        entrypoint = node.get("entrypoint")
-        argv = node.get("argv")
-        if (
-            not isinstance(entrypoint, str)
-            or not exists(entrypoint)
-            or not isinstance(argv, list)
-        ):
-            return
-        arguments = tuple(argument for argument in argv if isinstance(argument, str))
-        if len(arguments) != len(argv):
-            return
-        commands.append(" ".join((entrypoint, *arguments)))
+    workflow_action_refs: dict[str, set[str]] = {}
+    for workflow_path in rooted_workflows:
+        document = documents_by_path[workflow_path]
+        actual_jobs = document.data.get("jobs")
+        if not isinstance(actual_jobs, dict):
+            return empty
+        references: set[str] = set()
+        for job in actual_jobs.values():
+            steps = job.get("steps") if isinstance(job, dict) else None
+            if not isinstance(steps, list):
+                continue
+            for step in steps:
+                uses = step.get("uses") if isinstance(step, dict) else None
+                if isinstance(uses, str):
+                    references.add(uses)
+        workflow_action_refs[workflow_path] = references
 
-    for root_gate_id in root_gate_ids:
-        visit(root_gate_id)
-
+    actions = contract.get("actions")
+    if not isinstance(actions, dict):
+        return empty
+    action_fields = {
+        "sha",
+        "runtime",
+        "manifest_url",
+        "retrieved_at",
+        "consumers",
+        "security_disposition",
+    }
     resolved_actions: list[str] = []
-    if isinstance(actions, dict):
-        for action, registration in actions.items():
-            if not isinstance(action, str) or not isinstance(registration, dict):
-                continue
-            sha = registration.get("sha")
-            consumers = registration.get("consumers")
-            if not isinstance(sha, str) or not isinstance(consumers, list):
-                continue
-            action_reference = f"{action}@{sha}"
-            if any(
-                isinstance(consumer, str)
-                and consumer in rooted_workflows
-                and action_reference in read(consumer)
+    for action_name, registration in actions.items():
+        if (
+            not isinstance(action_name, str)
+            or not action_name
+            or not isinstance(registration, dict)
+            or set(registration) != action_fields
+        ):
+            return empty
+        sha = registration.get("sha")
+        consumers = registration.get("consumers")
+        scalar_fields = (
+            "sha",
+            "runtime",
+            "manifest_url",
+            "retrieved_at",
+            "security_disposition",
+        )
+        if (
+            any(
+                not isinstance(registration.get(field), str)
+                or not registration.get(field)
+                for field in scalar_fields
+            )
+            or not isinstance(consumers, list)
+            or not consumers
+            or any(
+                not isinstance(consumer, str) or not consumer
                 for consumer in consumers
-            ):
-                resolved_actions.append(action_reference)
+            )
+        ):
+            return empty
+        if not isinstance(sha, str) or re.fullmatch(r"[0-9a-f]{40}", sha) is None:
+            continue
+        action_reference = f"{action_name}@{sha}"
+        if any(
+            consumer in rooted_workflows
+            and action_reference in workflow_action_refs.get(consumer, set())
+            for consumer in consumers
+        ):
+            resolved_actions.append(action_reference)
 
     return TypedWorkflowEvidence(
         "\n".join(commands),
@@ -653,6 +708,8 @@ lines.extend(
         "## Source Rules",
         "",
         "- Use tracked repository files for readiness claims.",
+        "- Admit typed commands and Actions only from canonical contract gates",
+        "  that match parsed workflow jobs and exact `uses` steps.",
         "- Treat this generated snapshot as planning evidence, not active policy or",
         "  runtime truth.",
         "- Do not include secret values, private keys, tokens, shell history, raw",

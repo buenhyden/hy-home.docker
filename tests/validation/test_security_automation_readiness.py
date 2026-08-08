@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import pathlib
 import re
@@ -39,6 +40,12 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
             root = pathlib.Path(temporary)
             files = {
                 GENERATOR: (ROOT / GENERATOR).read_text(encoding="utf-8"),
+                "scripts/validation/ci_gate_contract.py": (
+                    ROOT / "scripts/validation/ci_gate_contract.py"
+                ).read_text(encoding="utf-8"),
+                "scripts/validation/github_workflow_contract.py": (
+                    ROOT / "scripts/validation/github_workflow_contract.py"
+                ).read_text(encoding="utf-8"),
                 ".github/workflow-contract.yml": json.dumps(
                     workflow_contract, indent=2
                 ),
@@ -73,13 +80,12 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             return result.stdout
 
-    def test_typed_workflow_evidence_requires_reachable_gates_and_actions(
-        self,
-    ) -> None:
+    def typed_fixture(self) -> tuple[dict[str, object], str]:
         upload_sha = "a" * 40
         workflow_text = f"""\
 name: Typed security gate fixture
-on: [pull_request]
+"on":
+  pull_request:
 permissions:
   contents: read
 jobs:
@@ -88,29 +94,61 @@ jobs:
       actions: read
       contents: read
       security-events: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - run: python3 scripts/validation/run-ci-gate.py --gate ci.security
-      - uses: github/codeql-action/upload-sarif@{upload_sha}
+      - name: Run typed security gate
+        run: python3 scripts/validation/run-ci-gate.py --gate ci.security
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@{upload_sha}
 """
-        for raw_literal in (
-            "run-zizmor-sarif",
-            "check-all-hardening.sh",
-            "check-template-security-baseline.sh",
-            "npm audit",
-        ):
-            self.assertNotIn(raw_literal, workflow_text)
 
-        contract = {
+        def leaf(
+            suite_key: str,
+            entrypoint: str,
+            argv: list[str],
+        ) -> dict[str, object]:
+            return {
+                "gate_id": f"leaf.{suite_key}",
+                "kind": "leaf",
+                "suite_key": suite_key,
+                "entrypoint": entrypoint,
+                "argv": argv,
+                "cwd": ".",
+                "allowed_env_keys": [],
+                "timeout_minutes": 10,
+                "profiles": ["ci"],
+                "opaque": True,
+            }
+
+        contract: dict[str, object] = {
             "schema_version": 2,
             "workflows": {
                 ".github/workflows/ci-quality.yml": {
-                    "jobs": {"security": {}}
+                    "name": "Typed security gate fixture",
+                    "classification": "required-quality",
+                    "triggers": {"pull_request": None},
+                    "permissions": {"contents": "read"},
+                    "concurrency": None,
+                    "jobs": {
+                        "security": {
+                            "permissions": {
+                                "actions": "read",
+                                "contents": "read",
+                                "security-events": "write",
+                            },
+                            "runs_on": "ubuntu-latest",
+                            "timeout_minutes": 10,
+                        }
+                    },
                 }
             },
             "gate_nodes": [
                 {
                     "gate_id": "ci.security",
                     "kind": "aggregate",
+                    "profiles": ["ci"],
+                    "opaque": False,
                     "children": [
                         "leaf.zizmor",
                         "leaf.repo-contracts",
@@ -119,64 +157,76 @@ jobs:
                         "leaf.scoped-npm-audit",
                     ],
                 },
-                {
-                    "gate_id": "leaf.zizmor",
-                    "kind": "leaf",
-                    "entrypoint": "scripts/validation/ci_gate_adapters.py",
-                    "argv": ["run-zizmor-sarif"],
-                },
-                {
-                    "gate_id": "leaf.repo-contracts",
-                    "kind": "leaf",
-                    "entrypoint": "scripts/validation/check-repo-contracts.sh",
-                    "argv": [],
-                },
-                {
-                    "gate_id": "leaf.hardening",
-                    "kind": "leaf",
-                    "entrypoint": "scripts/hardening/check-all-hardening.sh",
-                    "argv": [],
-                },
-                {
-                    "gate_id": "leaf.template-security",
-                    "kind": "leaf",
-                    "entrypoint": "scripts/validation/check-template-security-baseline.sh",
-                    "argv": [],
-                },
-                {
-                    "gate_id": "leaf.scoped-npm-audit",
-                    "kind": "leaf",
-                    "entrypoint": "scripts/validation/ci_gate_adapters.py",
-                    "argv": [
+                leaf(
+                    "zizmor",
+                    "scripts/validation/ci_gate_adapters.py",
+                    ["run-zizmor-sarif"],
+                ),
+                leaf(
+                    "repo-contracts",
+                    "scripts/validation/check-repo-contracts.sh",
+                    [],
+                ),
+                leaf(
+                    "hardening",
+                    "scripts/hardening/check-all-hardening.sh",
+                    [],
+                ),
+                leaf(
+                    "template-security",
+                    "scripts/validation/check-template-security-baseline.sh",
+                    [],
+                ),
+                leaf(
+                    "scoped-npm-audit",
+                    "scripts/validation/ci_gate_adapters.py",
+                    [
                         "run-npm",
                         "audit",
                         "--audit-level=high",
                         "--prefix",
                         "projects/storybook/nextjs",
                     ],
-                },
-                {
-                    "gate_id": "leaf.unwired-broad-sca",
-                    "kind": "leaf",
-                    "entrypoint": "scripts/validation/unwired.py",
-                    "argv": ["osv-scanner"],
-                },
+                ),
+                leaf(
+                    "unwired-broad-sca",
+                    "scripts/validation/unwired.py",
+                    ["osv-scanner"],
+                ),
             ],
             "job_roots": [
                 {
                     "workflow": ".github/workflows/ci-quality.yml",
                     "job_id": "security",
                     "root_gate_id": "ci.security",
+                    "classification": "required-quality",
                 }
             ],
             "profile_roots": [],
             "actions": {
                 "github/codeql-action/upload-sarif": {
                     "sha": upload_sha,
+                    "runtime": "node24",
+                    "manifest_url": "https://example.invalid/action.yml",
+                    "retrieved_at": "2026-08-08T00:00:00Z",
                     "consumers": [".github/workflows/ci-quality.yml"],
+                    "security_disposition": "fixture-only",
                 }
             },
         }
+        return contract, workflow_text
+
+    def test_typed_workflow_evidence_requires_reachable_gates_and_actions(
+        self,
+    ) -> None:
+        contract, workflow_text = self.typed_fixture()
+        for raw_literal in (
+            "run-zizmor-sarif",
+            "check-all-hardening.sh",
+            "check-template-security-baseline.sh",
+            "npm audit",
+        ):
+            self.assertNotIn(raw_literal, workflow_text)
         output = self.render_fixture(contract, workflow_text)
 
         for control_id in ("002", "003", "005", "008"):
@@ -187,6 +237,79 @@ jobs:
         self.assertIn(
             "| SEC-AUTO-012 | Broad dependency SCA coverage | Gap |", output
         )
+
+    def test_malformed_or_mismatched_gate_graph_fails_closed(self) -> None:
+        base_contract, base_workflow = self.typed_fixture()
+
+        cycle = copy.deepcopy(base_contract)
+        cycle["gate_nodes"][0]["children"].append("ci.security")
+
+        non_string_child = copy.deepcopy(base_contract)
+        non_string_child["gate_nodes"][0]["children"].append(42)
+
+        absent_actual_job_workflow = base_workflow.replace(
+            "  security:\n", "  actual-security:\n", 1
+        )
+
+        duplicate_gate = copy.deepcopy(base_contract)
+        duplicate_gate["gate_nodes"].append(
+            copy.deepcopy(duplicate_gate["gate_nodes"][-1])
+        )
+
+        duplicate_root = copy.deepcopy(base_contract)
+        duplicate_root["job_roots"].append(
+            copy.deepcopy(duplicate_root["job_roots"][0])
+        )
+
+        cases = (
+            ("aggregate cycle", cycle, base_workflow),
+            ("non-string aggregate child", non_string_child, base_workflow),
+            ("job absent from actual workflow", base_contract, absent_actual_job_workflow),
+            ("duplicate gate", duplicate_gate, base_workflow),
+            ("duplicate root", duplicate_root, base_workflow),
+        )
+        for name, contract, workflow in cases:
+            with self.subTest(name=name):
+                output = self.render_fixture(contract, workflow)
+                for control_id in ("002", "003", "005", "008"):
+                    self.assertNotRegex(
+                        output,
+                        rf"(?m)^\| SEC-AUTO-{control_id} \|.*\| Implemented \|",
+                    )
+                self.assertIn(
+                    "| SEC-AUTO-012 | Broad dependency SCA coverage | Gap |",
+                    output,
+                )
+
+    def test_invalid_or_comment_only_action_evidence_fails_closed(self) -> None:
+        base_contract, base_workflow = self.typed_fixture()
+
+        invalid_sha_contract = copy.deepcopy(base_contract)
+        invalid_sha_contract["actions"]["github/codeql-action/upload-sarif"][
+            "sha"
+        ] = "v4"
+        invalid_sha_workflow = base_workflow.replace("@" + "a" * 40, "@v4")
+
+        comment_only_workflow = base_workflow.replace(
+            "        uses: github/codeql-action/upload-sarif@" + "a" * 40,
+            "        run: echo no-action\n"
+            "        # uses: github/codeql-action/upload-sarif@" + "a" * 40,
+        )
+
+        for name, contract, workflow in (
+            ("non-40-hex action SHA", invalid_sha_contract, invalid_sha_workflow),
+            ("action reference only in YAML comment", base_contract, comment_only_workflow),
+        ):
+            with self.subTest(name=name):
+                output = self.render_fixture(contract, workflow)
+                self.assertNotRegex(
+                    output,
+                    r"(?m)^\| SEC-AUTO-002 \|.*\| Implemented \|",
+                )
+                self.assertIn(
+                    "| SEC-AUTO-012 | Broad dependency SCA coverage | Gap |",
+                    output,
+                )
 
     def test_supply_chain_fixture_contract_keeps_broad_sca_open(self) -> None:
         output = self.render()
@@ -218,7 +341,7 @@ jobs:
         self.assertIn("| Partially Implemented | 1 |", output)
         self.assertIn("| Gap | 1 |", output)
 
-    def test_broad_supply_chain_gaps_route_to_draft_spec_126(self) -> None:
+    def test_broad_supply_chain_gaps_route_to_archived_spec_126(self) -> None:
         output = self.render()
         spec_126 = (
             "[Spec 126]"
@@ -243,7 +366,8 @@ jobs:
             security_audit,
         )
 
-    def test_canonical_automation_leaf_routes_broad_gaps_to_spec_126(self) -> None:
+    def test_historical_audit_label_points_to_archived_spec_126(self) -> None:
+        """The audited `draft` label is historical; its target is archived."""
         automation_audit = (AUDIT_PACK / "automation-candidates.md").read_text(
             encoding="utf-8"
         )
