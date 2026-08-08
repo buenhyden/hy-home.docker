@@ -43,6 +43,7 @@ python3 - "$mode" "$OUTPUT" <<'PY'
 from __future__ import annotations
 
 import collections
+import json
 import pathlib
 import re
 import subprocess
@@ -60,6 +61,13 @@ class Control:
     status: str
     evidence: tuple[str, ...]
     gap: str
+
+
+@dataclass(frozen=True)
+class TypedWorkflowEvidence:
+    command_text: str
+    action_text: str
+    reachable_gate_ids: tuple[str, ...]
 
 
 def git_ls_files() -> set[str]:
@@ -81,9 +89,127 @@ def read(path_text: str) -> str:
     return path.read_text(errors="ignore")
 
 
-def grep_any(paths: tuple[str, ...], patterns: tuple[str, ...]) -> bool:
-    combined = "\n".join(read(path) for path in paths)
-    return any(re.search(pattern, combined, flags=re.IGNORECASE | re.MULTILINE) for pattern in patterns)
+def search_any(text: str, patterns: tuple[str, ...]) -> bool:
+    return any(re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE) for pattern in patterns)
+
+
+def resolve_typed_workflow_evidence(
+    contract_path: str,
+    workflow_paths: tuple[str, ...],
+) -> TypedWorkflowEvidence:
+    try:
+        contract = json.loads(read(contract_path))
+    except (json.JSONDecodeError, OSError):
+        contract = {}
+    if not isinstance(contract, dict):
+        return TypedWorkflowEvidence("", "", ())
+
+    workflows = contract.get("workflows")
+    gate_nodes = contract.get("gate_nodes")
+    job_roots = contract.get("job_roots")
+    actions = contract.get("actions")
+    if (
+        not isinstance(workflows, dict)
+        or not isinstance(gate_nodes, list)
+        or not isinstance(job_roots, list)
+    ):
+        return TypedWorkflowEvidence("", "", ())
+
+    nodes: dict[str, dict[str, object]] = {}
+    duplicate_gate_ids: set[str] = set()
+    for candidate in gate_nodes:
+        if not isinstance(candidate, dict):
+            continue
+        gate_id = candidate.get("gate_id")
+        if not isinstance(gate_id, str) or not gate_id:
+            continue
+        if gate_id in nodes:
+            duplicate_gate_ids.add(gate_id)
+        nodes[gate_id] = candidate
+    for gate_id in duplicate_gate_ids:
+        nodes.pop(gate_id, None)
+
+    root_gate_ids: list[str] = []
+    rooted_workflows: set[str] = set()
+    for root in job_roots:
+        if not isinstance(root, dict):
+            continue
+        workflow = root.get("workflow")
+        job_id = root.get("job_id")
+        root_gate_id = root.get("root_gate_id")
+        workflow_contract = workflows.get(workflow) if isinstance(workflow, str) else None
+        jobs = workflow_contract.get("jobs") if isinstance(workflow_contract, dict) else None
+        if (
+            workflow not in workflow_paths
+            or not isinstance(job_id, str)
+            or not isinstance(jobs, dict)
+            or job_id not in jobs
+            or not isinstance(root_gate_id, str)
+            or root_gate_id not in nodes
+        ):
+            continue
+        rooted_workflows.add(workflow)
+        root_gate_ids.append(root_gate_id)
+
+    commands: list[str] = []
+    reachable: set[str] = set()
+
+    def visit(gate_id: str) -> None:
+        if gate_id in reachable:
+            return
+        node = nodes.get(gate_id)
+        if node is None:
+            return
+        reachable.add(gate_id)
+        kind = node.get("kind")
+        if kind == "aggregate":
+            children = node.get("children")
+            if isinstance(children, list):
+                for child in children:
+                    if isinstance(child, str):
+                        visit(child)
+            return
+        if kind not in {"leaf", "setup"}:
+            return
+        entrypoint = node.get("entrypoint")
+        argv = node.get("argv")
+        if (
+            not isinstance(entrypoint, str)
+            or not exists(entrypoint)
+            or not isinstance(argv, list)
+        ):
+            return
+        arguments = tuple(argument for argument in argv if isinstance(argument, str))
+        if len(arguments) != len(argv):
+            return
+        commands.append(" ".join((entrypoint, *arguments)))
+
+    for root_gate_id in root_gate_ids:
+        visit(root_gate_id)
+
+    resolved_actions: list[str] = []
+    if isinstance(actions, dict):
+        for action, registration in actions.items():
+            if not isinstance(action, str) or not isinstance(registration, dict):
+                continue
+            sha = registration.get("sha")
+            consumers = registration.get("consumers")
+            if not isinstance(sha, str) or not isinstance(consumers, list):
+                continue
+            action_reference = f"{action}@{sha}"
+            if any(
+                isinstance(consumer, str)
+                and consumer in rooted_workflows
+                and action_reference in read(consumer)
+                for consumer in consumers
+            ):
+                resolved_actions.append(action_reference)
+
+    return TypedWorkflowEvidence(
+        "\n".join(commands),
+        "\n".join(resolved_actions),
+        tuple(sorted(reachable)),
+    )
 
 
 def link(path_text: str) -> str:
@@ -107,17 +233,31 @@ SCRIPT_PATHS = tuple(
     )
 )
 SECURITY_CODE_SURFACES = WORKFLOW_PATHS + SCRIPT_PATHS + (".pre-commit-config.yaml",)
+WORKFLOW_CONTRACT_PATH = ".github/workflow-contract.yml"
+TYPED_WORKFLOW_EVIDENCE = resolve_typed_workflow_evidence(
+    WORKFLOW_CONTRACT_PATH,
+    WORKFLOW_PATHS,
+)
 SECURITY_SCAN_EVIDENCE = (
     ".github/workflows/ci-quality.yml",
+    WORKFLOW_CONTRACT_PATH,
     "scripts/README.md",
     ".pre-commit-config.yaml",
 )
 SECURITY_SCAN_SUMMARY = (
     f"Scanned tracked workflow/script surfaces: {len(WORKFLOW_PATHS)} workflows, "
-    f"{len(SCRIPT_PATHS)} scripts, and `.pre-commit-config.yaml`."
+    f"{len(SCRIPT_PATHS)} scripts, `.pre-commit-config.yaml`, and "
+    f"{len(TYPED_WORKFLOW_EVIDENCE.reachable_gate_ids)} reachable typed gates."
 )
 
 ci_text = "\n".join(read(path) for path in WORKFLOW_PATHS)
+security_automation_text = "\n".join(
+    (
+        *(read(path) for path in SECURITY_CODE_SURFACES),
+        TYPED_WORKFLOW_EVIDENCE.command_text,
+        TYPED_WORKFLOW_EVIDENCE.action_text,
+    )
+)
 precommit_text = read(".pre-commit-config.yaml")
 dependabot_text = read(".github/dependabot.yml")
 
@@ -126,10 +266,23 @@ has_codeowners = exists(".github/CODEOWNERS")
 has_ruleset_record = exists(".github/rulesets/main-protection.md")
 has_gitleaks = exists(".gitleaks.toml") and "gitleaks" in precommit_text.lower()
 has_dependabot = exists(".github/dependabot.yml") and "package-ecosystem" in dependabot_text
-has_workflow_security = "permissions:" in ci_text and "zizmor" in ci_text and "upload-sarif" in ci_text
-has_hardening = exists("scripts/hardening/check-all-hardening.sh") and "check-all-hardening.sh" in ci_text
-has_template_security = exists("scripts/validation/check-template-security-baseline.sh") and "check-template-security-baseline.sh" in ci_text
-has_repo_contracts = exists("scripts/validation/check-repo-contracts.sh") and "workflow security" in read("scripts/validation/check-repo-contracts.sh").lower()
+has_workflow_security = (
+    "permissions:" in ci_text
+    and "run-zizmor-sarif" in TYPED_WORKFLOW_EVIDENCE.command_text
+    and "github/codeql-action/upload-sarif@" in TYPED_WORKFLOW_EVIDENCE.action_text
+)
+has_hardening = (
+    exists("scripts/hardening/check-all-hardening.sh")
+    and "scripts/hardening/check-all-hardening.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
+)
+has_template_security = (
+    exists("scripts/validation/check-template-security-baseline.sh")
+    and "scripts/validation/check-template-security-baseline.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
+)
+has_repo_contracts = (
+    exists("scripts/validation/check-repo-contracts.sh")
+    and "scripts/validation/check-repo-contracts.sh" in TYPED_WORKFLOW_EVIDENCE.command_text
+)
 has_tech_stack_provenance = all(
     exists(path)
     for path in (
@@ -143,11 +296,11 @@ has_tech_stack_provenance = all(
 has_scoped_ecosystem_gate = bool(
     re.search(
         r"npm\s+audit\s+--audit-level=high\s+--prefix\s+projects/storybook/nextjs",
-        ci_text,
+        TYPED_WORKFLOW_EVIDENCE.command_text,
     )
 )
-has_broad_dependency_sca = grep_any(
-    SECURITY_CODE_SURFACES,
+has_broad_dependency_sca = search_any(
+    security_automation_text,
     (
         r"\bosv-scanner\b",
         r"\bsnyk\b",
@@ -156,16 +309,16 @@ has_broad_dependency_sca = grep_any(
         r"\bgovulncheck\b",
     ),
 )
-has_container_scan = grep_any(
-    SECURITY_CODE_SURFACES,
+has_container_scan = search_any(
+    security_automation_text,
     (
         r"\btrivy\b.*(?:image|fs)",
         r"\bgrype\b",
         r"docker\s+scout\s+cves",
     ),
 )
-has_sbom_generation = grep_any(
-    SECURITY_CODE_SURFACES,
+has_sbom_generation = search_any(
+    security_automation_text,
     (
         r"\bsyft\b",
         r"\bcyclonedx\b",
@@ -173,16 +326,16 @@ has_sbom_generation = grep_any(
         r"\bnpm\s+sbom\b",
     ),
 )
-has_attestation = grep_any(
-    SECURITY_CODE_SURFACES,
+has_attestation = search_any(
+    security_automation_text,
     (
         r"\bcosign\s+",
         r"slsa-framework/slsa-github-generator",
         r"actions/attest",
     ),
 )
-has_scorecard = grep_any(
-    SECURITY_CODE_SURFACES,
+has_scorecard = search_any(
+    security_automation_text,
     (
         r"ossf/scorecard",
         r"scorecard-action",
@@ -322,7 +475,7 @@ if not has_scoped_ecosystem_gate:
             "Stage 03 security spec + Stage 04 plan",
         )
     )
-spec_126_route = "[Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+spec_126_route = "[Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)"
 if not has_sbom_generation:
     follow_up_rows.append(
         (
@@ -366,11 +519,14 @@ if not has_container_scan:
 
 if residual_security_gaps:
     if len(residual_security_gaps) == 1:
-        residual_sentence = residual_security_gaps[0]
+        residual_finding = (
+            f"- {residual_security_gaps[0]} remains a gap in tracked "
+            "workflow/script surfaces."
+        )
     else:
         residual_sentence = ", ".join(residual_security_gaps[:-1])
         residual_sentence = f"{residual_sentence}, and {residual_security_gaps[-1]}"
-    residual_finding = f"- {residual_sentence} are still gaps in tracked workflow/script surfaces."
+        residual_finding = f"- {residual_sentence} are still gaps in tracked workflow/script surfaces."
 else:
     residual_finding = "- No tracked security automation gap remains in this readiness snapshot."
 
@@ -509,7 +665,8 @@ lines.extend(
         "- [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.",
         "- [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.",
         "- [Security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) - framework coverage and gap baseline.",
-        "- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - secure SDLC and supply-chain reference context.",
+        "- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.",
+        "- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.",
         "- [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.",
         "",
         "## Maintenance",
@@ -528,7 +685,7 @@ lines.extend(
         "- [reference data index](../README.md)",
         "- [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)",
         "- [automation candidates](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
-        "- [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)",
+        "- [security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md)",
         "",
     ]
 )

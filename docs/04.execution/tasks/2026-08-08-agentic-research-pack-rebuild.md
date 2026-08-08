@@ -105,6 +105,13 @@ independently recoverable from the pinned BASE and blob IDs. Evidence records
 only paths, identifiers, commands, exit classifications, and redacted-safe
 summaries.
 
+On 2026-08-08 (Asia/Seoul), the user explicitly approved the narrow Task 10
+prerequisite with the wording, "Implement ONLY Task10 approved
+generator-repair sub-unit." That approval covers the security-readiness
+generator, its focused tests, its generator-owned snapshot, and this Task
+ledger only. It does not authorize the remaining human/LLM route switch,
+old-pack deletion, runtime or remote mutation, secrets, Graphify, or push.
+
 ## Work Breakdown
 
 | Unit | Description | Validation / evidence | Status |
@@ -117,8 +124,8 @@ summaries.
 | Task 6 | Author documentation architecture and LLM Wiki | Assigned requirement and claim rows plus leaf gates | Complete after fix `c57d33f3`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 7 | Author automation, CI/CD, GitHub Actions, and QA | Assigned requirement and claim rows plus leaf gates | Complete after fix `910ce5f3`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Complete after fix `8d447997`; scoped specification and quality re-reviews Approved C0/I0/M0 |
-| Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Implementation committed at `09c1fe19`; initial specification and quality reviews Needs fixes C0/I1/M0 on the same pseudo-route finding; fix round 1 applied; scoped re-reviews pending |
-| Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, route checks | Not Run |
+| Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Complete after fix `44fdb494`; scoped specification and quality re-reviews Approved C0/I0/M0 |
+| Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, route checks | Security-generator prerequisite implemented and self-reviewed; commit identity pending and independent reviews Not Run; remaining route switch Not Run |
 | Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Not Run |
 | Task 12 | Final verification and handoff | Whole-branch checks, reviews, closure, and handoff | Not Run |
 
@@ -162,7 +169,7 @@ states are intentional and may change only with named evidence and review.
 | REQ-31 | Current workspace baseline for every research category | `workspace-baseline.md` | `scope-application-matrix.md` | EXT-NIST verified as fixed comparison context; workspace claims use tracked sources | WS-TASK2-FOUNDATION | All 14 through the scope matrix | Implemented as draft Stage 90 leaf; human route switched; machine routes remain Task 10 | Implementer PASS; specification and quality Approved C0/I0/M0 | [workspace baseline](../../90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md) |
 | REQ-32 | Explicit analysis and disposition for all fourteen workspace scopes | `scope-application-matrix.md` | `workspace-baseline.md` | EXT-NIST verified as fixed comparison context; scope claims use tracked sources | WS-SCOPES, WS-CONTRACTS, WS-TASK2-FOUNDATION | 14/14 explicit dispositions | Implemented as draft Stage 90 leaf; human route switched; machine routes remain Task 10 | Implementer PASS; specification and quality Approved C0/I0/M0 | [scope application matrix](../../90.references/research/2026-08-08-agentic-engineering-research-pack/scope-application-matrix.md) |
 | REQ-33 | New authorship plus claim-level validation and integration before old-pack deletion | `README.md` | Task old-claim migration ledger | All authoring source rows carry reviewed retrieval and verification dispositions | WS-OLD-PACK and Task 2-8 evidence owners | 14/14 routes in pack index and dispositions in scope matrix | Implemented in Task 9: exact 20-file pack, 19 direct leaf links, claim-level migration closure, parent human route, and corrected canonical-owner paths | Task 9 implementer self-review PASS C0/I0; initial specification and quality Needs fixes C0/I1/M0 on the same pseudo-route finding; fix round 1 applied; scoped re-reviews pending | [canonical pack index](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md) |
-| REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task `Generated-artifact inventory` | Pack migration state and parent human router | Source retrieval is complete; generated freshness predecessors remain named | WS-VALIDATORS | Task 10 must preserve all 14 dispositions | Not Run: Task 10 owns repository-wide cross-links, stale-path control, and generated refresh | Not Run: Task 10 independent review pending | [generated-artifact inventory](#generated-artifact-inventory) |
+| REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task `Generated-artifact inventory` | Pack migration state and parent human router | Source retrieval is complete; generated freshness predecessors remain named | WS-VALIDATORS, WS-TASK10A-SECURITY | Task 10 must preserve all 14 dispositions | Partial: approved security generator/snapshot prerequisite is fresh at 11/1/1; repository-wide cross-links and LLM outputs remain Not Run | Task 10a self-review PASS C0/I0/M0; independent reviews Not Run | [generated-artifact inventory](#generated-artifact-inventory) |
 | REQ-35 | Logical-unit commits, independent reviews, final verification, and branch handoff | Task `Commit Ledger` | Implementation Plan and Review Evidence | No new external source required for final execution closure | WS-PLAN and WS-VALIDATORS | Task 12 must retain all 14 dispositions | Not Run: Task 12 owns final verification, independent whole-branch reviews, and handoff | Not Run: Task 12 independent reviews pending | [commit ledger](#commit-ledger) |
 
 ### Normative scope ledger
@@ -260,6 +267,7 @@ remain bounded to their recorded retrieval time.
 | WS-TASK7-AUTOMATION | `.github/workflow-contract.yml`, seven workflows, desired ruleset proposal, public observation, pre-commit, typed runners/adapters, tests, and Storybook project configs | Focused contract check, four profile `--list` expansions, anchor-aware Action parse, tracked file counts, direct source reads, and absence scans | `c57d33f37843802f7692261c50801f0dd966d7cb` | 7 workflows/23 jobs; 80 nodes (48 leaf/26 aggregate/6 setup); 16 CI roots; 3 local profiles; 8 actions/32 resolved SHA pins; expansions CI 38, local 34/32/35; 24 pre-commit hooks; 22 Python and 2 shell tests; 3 Storybook stories and four 90% thresholds; two draft leaves with 14 scopes each | Static/list evidence only; no 34-leaf run, all-files wrapper, full Python discovery, frontend execution, hosted run, applied ruleset, secret, environment, deployment, promotion, artifact, attestation, or rollback proof | REQ-24 through REQ-26 |
 | WS-TASK8-INFRA | Root and 47 infra Compose variants, coverage/provenance generators and outputs, infra/security scopes, shared templates/exceptions, hardening, and operations owners | Required `--check`/`--dry-run` routes, hardening entry point, tracked YAML parse, exact SLO/exception searches, and no Compose/Docker execution | `910ce5f36641635118c64b1aa6cfe48f86ecde14` | 48 files, 168 entries/138 names, 25 profiles, 17 root includes/60 entries, 168/168 `infra_net`; 39 port-bearing services/62 mappings with 37 outside gateway; 102 top-level volumes/0 backup labels; 18 components/21 curated images (20 pinned/1 approved floating); two draft leaves with 14 scopes each | Configuration/static evidence only; no rendered Compose, runtime network/port/secret/volume/health, backup/restore, latency, deployment, or rollback proof | REQ-07, REQ-08 |
 | WS-TASK8-SECURITY | Security/approval scopes, typed workflow contract, CI/pre-commit, readiness generator/snapshot, hardening/exceptions, disclosure, and supply-chain registries/scripts | Read-only readiness `--check`/`--dry-run`, typed gate resolution, hardening run, source verification, and metadata-only secret inventory | `910ce5f36641635118c64b1aa6cfe48f86ecde14` | Readiness `--check` FAIL stale; dry-run 13 controls = 7/3/3 over 7 workflows/37 scripts; typed resolution supports semantic 11/1/1 with one broad-SCA gap; 70 root secret IDs and 107/168 secret-bearing entries; no value read | No scanner, SBOM, signature, Scorecard, hosted GitHub, secret value, provider private state, incident exercise, runtime posture, or release/deployment proof | REQ-27 |
+| WS-TASK10A-SECURITY | `.github/workflow-contract.yml`, registered CI workflows/actions, reachable gate entrypoints/argv, security-readiness generator/tests/snapshot | Focused RED/GREEN fixture, focused discovery suite, typed workflow-contract validation, canonical generator write/check, exact generated diff | `44fdb4942a3c512ad5b218a7cb0b0bdb0b920c29` | Resolver follows valid job roots through aggregate children, admits tracked reachable leaf/setup commands and exact-SHA actions used by rooted workflows, and ignores an unwired broad-SCA token; 13 controls = 11 Implemented / 1 Partially Implemented / 1 Gap; snapshot fresh | Static tracked evidence only; no scanner, hosted workflow, remote enforcement, runtime, or secret-value proof | REQ-27, REQ-34 |
 
 ### Old-claim migration ledger
 
@@ -353,7 +361,7 @@ does not by itself open the Task 11 deletion gate.
 | --- | --- | --- | --- | --- | --- | --- |
 | `docs/90.references/llm-wiki/llm-wiki-index.md` | Tracked safe-path set or canonical route changes | `scripts/knowledge/generate-llm-wiki-index.sh` | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Design-time PASS; Task 1 observation FAIL, exit 1: stale index | Regenerate after route switch and require PASS; preserve observed drift | Not Run |
 | `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` | Tracked Stage/category path set changes | `scripts/knowledge/generate-llm-wiki-coverage.sh` | `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | Design-time FAIL; Task 1 observation FAIL, exit 1: stale coverage | Regenerate after route switch and require PASS | Not Run |
-| `docs/90.references/data/security/security-automation-readiness.md` | Security controls, scripts, workflows, or typed workflow registry changes | `scripts/validation/generate-security-automation-readiness.sh` | `bash scripts/validation/generate-security-automation-readiness.sh --check` | Design-time FAIL; Task 1 observation FAIL, exit 1: stale snapshot | Preserve classified predecessor; do not regenerate known-invalid output without separate approval | Task 8 `--check` FAIL exit 1 preserved; dry-run 7/3/3 over 37 scripts exposes typed-registry false downgrades; no write; Task 10 blocked pending approval |
+| `docs/90.references/data/security/security-automation-readiness.md` | Security controls, scripts, workflows, or typed workflow registry changes | `scripts/validation/generate-security-automation-readiness.sh` | `bash scripts/validation/generate-security-automation-readiness.sh --check` | Design-time FAIL; Task 1 and Task 8 observations preserved as stale/7-3-3 predecessors | Separate approval obtained; repair with focused RED/GREEN evidence, then regenerate canonically and require PASS | Task 10a canonical write/check PASS; 13 controls = 11 Implemented / 1 Partially Implemented / 1 Gap; broad dependency SCA remains the only Gap; both research destinations use the 2026-08-08 security leaf |
 | `graphify-out/**` | Tracked corpus changes | Graphify workspace updater | `bash scripts/knowledge/report-graphify-health.sh` after explicitly authorized refresh | Advisory and stale at `f8a72211`; no refresh authorized | Keep advisory and unchanged; corroborate against tracked sources | Not Run |
 
 ### Old-path allowlist
@@ -418,6 +426,11 @@ non-link historical literals with path, stable anchor, reason, and verdict.
 | 2026-08-08 | Task 9 | Switched only the parent research human router | New pack canonical; old pack mapped as superseded and left untouched; no generated, script, governance, runtime, or security-readiness mutation |
 | 2026-08-08 | Task 9 fix 1 prerequisite | Backfilled exact Task 9 implementation identity and initial independent reviews | Task 9 `09c1fe19a588de1c42a4e56b290711e9599f89ce`; exact range `8d447997dc46b90ffbab32f22d7e4bdbc22a3cb4..09c1fe19a588de1c42a4e56b290711e9599f89ce`; specification and quality both Needs fixes C0/I1/M0 on the same malformed lifecycle/generated-owner pseudo-route finding |
 | 2026-08-08 | Task 9 fix 1 | Corrected canonical-owner paths in the pack README | Lifecycle routes now name existing Stage 01-05 owners explicitly; generated discovery names `docs/90.references/llm-wiki/`; exact path existence and stale-pseudo-route absence assertions added; no parent, old-pack, generator, or generated change |
+| 2026-08-08 | Task 10a prerequisite backfill | Backfilled Task 9 fix identity and scoped re-reviews before Task 10a evidence | Fix `44fdb4942a3c512ad5b218a7cb0b0bdb0b920c29`; exact range `09c1fe19a588de1c42a4e56b290711e9599f89ce..44fdb4942a3c512ad5b218a7cb0b0bdb0b920c29`; scoped specification and quality re-reviews Approved C0/I0/M0 |
+| 2026-08-08 | Task 10a approval | Recorded the user's explicit narrow generator-repair approval | "Implement ONLY Task10 approved generator-repair sub-unit"; four owned tracked paths only; remote/runtime/secret/route-switch/deletion boundaries unchanged |
+| 2026-08-08 | Task 10a RED | Added a deterministic temp-repository fixture with generic raw workflow text, reachable typed security commands/action, and an unwired `osv-scanner` token | Exact focused test exited 1 because `SEC-AUTO-002` remained Partially Implemented when the generator ignored typed evidence |
+| 2026-08-08 | Task 10a GREEN | Added structured job-root reachability, command/adapter, and exact-SHA action resolution; retained raw workflow text for permissions | Exact focused test and 6-test suite PASS; output is 11/1/1; unwired broad-SCA evidence is ignored and `SEC-AUTO-012` remains Gap |
+| 2026-08-08 | Task 10a generated artifact | Ran the canonical security-readiness write and byte-exact check after retargeting the generator's two research destinations | Write PASS; `--check` PASS; full generated diff inspected; no hand edit |
 
 ## Verification Evidence
 
@@ -499,6 +512,12 @@ private-state material.
 | Task 9 fix 1 traceability and closure checks | Task 9 fix working tree | 0 / 0 | PASS | Traceability reports 46 pairs and zero failures; closure remains 20 files, 19 direct links, 35 requirements, 14 scopes, 20 predecessor files, and zero open source/old-claim rows |
 | Task 9 fix 1 canonical-path assertion | Pack README | 0 | PASS | Eleven unique inline-code repository paths exist and both forbidden pseudo-routes, `docs/01.product/` and `docs/90.references/llm/`, occur zero times |
 | `git diff --check` after Task 9 fix 1 | Task 9 fix working tree | 0 | PASS | No whitespace errors before final evidence/report update |
+| `python3 -m unittest tests.validation.test_security_automation_readiness.SecurityAutomationReadinessTests.test_typed_workflow_evidence_requires_reachable_gates_and_actions -v` before production edit | Task 10a BASE `44fdb494` | 1 | EXPECTED RED | New fixture failed on `SEC-AUTO-002` because raw workflow text lacked the command literals and typed gate/action evidence was not resolved |
+| Same exact focused test after production edit | Task 10a working tree | 0 | GREEN | Reachable typed gates/actions support `SEC-AUTO-002/003/005/008`; unwired `osv-scanner` does not close `SEC-AUTO-012` |
+| `python3 -m unittest discover -s tests/validation -p 'test_security_automation_readiness.py' -v` | Task 10a working tree | 0 | PASS | 6 tests passed; canonical output assertions require 13 controls = 11/1/1 and preserve broad dependency SCA as the only Gap |
+| `python3 scripts/validation/check-github-workflow-contract.py` | Task 10a working tree | 0 | PASS | Typed contract validates with 7 workflows, 23 jobs, and 8 actions |
+| `bash scripts/validation/generate-security-automation-readiness.sh` | Task 10a working tree | 0 | PASS, canonical write | Generator wrote the snapshot with 13 controls; no snapshot hand edit |
+| `bash scripts/validation/generate-security-automation-readiness.sh --check` | Task 10a working tree | 0 | PASS | Snapshot is byte-exactly fresh at 11 Implemented / 1 Partially Implemented / 1 Gap |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -555,6 +574,9 @@ backfilled.
 | Task 9 specification compliance | `8d447997dc46b90ffbab32f22d7e4bdbc22a3cb4..09c1fe19a588de1c42a4e56b290711e9599f89ce` | Independent specification reviewer | Needs fixes; C0/I1/M0 | Important finding: replace nonexistent `docs/01.product/` and `docs/90.references/llm/` pseudo-routes with canonical existing owners |
 | Task 9 documentation quality | `8d447997dc46b90ffbab32f22d7e4bdbc22a3cb4..09c1fe19a588de1c42a4e56b290711e9599f89ce` | Independent documentation-quality reviewer | Needs fixes; C0/I1/M0 | Same important finding: the pack index linked readers to malformed lifecycle and generated-discovery owner paths |
 | Task 9 fix 1 implementer self-review | Working tree before fix commit | Task 9 implementer | PASS; C0/I0 | Both pseudo-routes removed, canonical owners named without parallel authority, every asserted repository path exists, Task 9 identity/reviews backfilled, REQ-34/35 remain pending, and owned scope is exactly README plus Task ledger |
+| Task 9 fix 1 scoped specification re-review | `09c1fe19a588de1c42a4e56b290711e9599f89ce..44fdb4942a3c512ad5b218a7cb0b0bdb0b920c29` | Independent specification reviewer | Approved; C0/I0/M0 | Fix round 1 resolved the malformed canonical-owner routes |
+| Task 9 fix 1 scoped quality re-review | `09c1fe19a588de1c42a4e56b290711e9599f89ce..44fdb4942a3c512ad5b218a7cb0b0bdb0b920c29` | Independent documentation-quality reviewer | Approved; C0/I0/M0 | Fix round 1 returned a clean scoped verdict |
+| Task 10a generator-repair self-review | Working tree before Task 10a commit | Task 10a implementer | PASS; C0/I0/M0 | Structured reachability is fail-closed for absent, duplicate, malformed, missing-entrypoint, and unwired evidence; raw permissions remain separate; exact four-file ownership, 11/1/1 totals, canonical write/check, two new research routes, and broad-SCA Gap verified; independent reviews Not Run |
 
 ## Commit Ledger
 
@@ -576,23 +598,24 @@ backfilled.
 | Task 8 | `99bcb8a7902c69aecc5774e8d2008c6cae645224`; `docs(research): analyze infrastructure and security` | Compose/infrastructure and security-governance leaves plus execution evidence | Focused metadata/coverage/provenance/hardening/headings/scopes/diff PASS; readiness and repository contract retain named FAILs | Implementer PASS C0/I0; initial specification and quality Needs fixes C0/I1/M0 |
 | Task 8 fix 1 | `8d447997dc46b90ffbab32f22d7e4bdbc22a3cb4`; `docs(task): backfill task 8 review identity` | Exact Task 8 identity and initial review correction | Focused metadata/path/diff PASS | Scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 9 | `09c1fe19a588de1c42a4e56b290711e9599f89ce`; `docs(research): route canonical agentic research pack` | Pack README, parent human router, and execution evidence | Metadata, traceability, deterministic coverage, and diff PASS; generated checks preserve named stale FAILs; repository contract reports only the forbidden-memory predecessor and was interrupted after non-termination | Implementer self-review PASS C0/I0; initial specification and quality Needs fixes C0/I1/M0 on the same pseudo-route finding |
-| Task 9 fix 1 | Pending; `docs(research): fix canonical pack owner routes` | Canonical lifecycle/generated-discovery owner routes and Task 9 review-identity backfill | Focused metadata, traceability, closure, canonical-path existence, stale-pseudo-route absence, and diff checks PASS | Implementer self-review PASS C0/I0; scoped specification and quality re-reviews pending |
-| Tasks 10-12 | Not Run | Not Run | Not Run | Not Run |
+| Task 9 fix 1 | `44fdb4942a3c512ad5b218a7cb0b0bdb0b920c29`; `docs(research): fix canonical pack owner routes` | Canonical lifecycle/generated-discovery owner routes and Task 9 review-identity backfill | Focused metadata, traceability, closure, canonical-path existence, stale-pseudo-route absence, and diff checks PASS | Implementer self-review PASS C0/I0; scoped specification and quality re-reviews Approved C0/I0/M0 |
+| Task 10a security generator prerequisite | Pending; `fix(validation): resolve typed security automation gates` | Structured typed workflow resolution, focused regression, canonical security snapshot, and execution evidence | RED/GREEN, 6-test focused suite, workflow-contract validation, canonical write/check, metadata/diff checks | Implementer self-review PASS C0/I0/M0; independent specification and quality reviews Not Run |
+| Task 10 route switch and Tasks 11-12 | Not Run | Not Run | Not Run | Not Run |
 
 ## Deferred and Blocked Items
 
 - The LLM Wiki index is stale at Task BASE even though it passed at design
   time. The observation is carried forward for the route-switch unit.
-- LLM Wiki coverage and security readiness remain their known FAIL
-  predecessors. Task 8 confirmed the readiness generator's typed-registry
-  semantic defect without writing output; Task 10 remains blocked pending
-  separate approval to repair and test the generator.
+- LLM Wiki coverage remains its known FAIL predecessor. Task 8's security
+  readiness FAIL/7-3-3 observation remains historical evidence; the separately
+  approved Task 10a repair now passes its canonical check at 11/1/1. Task 10's
+  remaining route switch and both independent reviews remain Not Run.
 - The isolated repository-contract run removes the `html5lib` blocker but
   reveals the separate `AGC-MEMORY-FORBIDDEN-MATERIAL` predecessor in
   `docs/00.agent-governance/memory/current.md`; Task 1 does not modify that
   forbidden path.
-- Repository-wide old-path scanning, generated refresh, Task 9 scoped fix
-  re-reviews and exact fix commit identity, Task 10/12 execution, and old-pack
+- Repository-wide old-path scanning, LLM generated refresh, Task 10 route
+  switching/reviews, Task 12 execution, and old-pack
   deletion remain pending or `Not Run`. The deletion gate remains closed.
   Task 4's ignored-report opening M1 is parked outside tracked scope; its
   appended fix section and this tracked ledger carry current state.
