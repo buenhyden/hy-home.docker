@@ -102,6 +102,7 @@ docs/04.execution/plans/
 ├── 2026-07-15-agent-governance-harness-convergence.md # Completed agent-governance and provider-harness convergence plan
 ├── 2026-07-18-target-surface-contract-convergence.md # Completed; blocking promotion and final closure reviews passed
 ├── 2026-07-26-agent-governance-canonical-convergence.md # Active agent-governance canonical convergence plan
+├── 2026-08-08-agentic-research-pack-rebuild.md # Active source-backed agentic research pack rebuild plan
 ├── 2026-07-19-operational-readiness-closure-program.md # Completed local-isolated orchestration for Specs 124-127
 ├── 2026-07-11-compose-runtime-readiness-remediation.md # Completed local Compose readiness plan
 ├── 2026-07-11-infrastructure-operations-readiness-remediation.md # Completed synthetic PostgreSQL recovery plan
@@ -220,6 +221,7 @@ task evidence or progress log records the same item as unresolved.
 - **Agent Governance Harness Convergence Plan (completed; post-closure review pending)**: [2026-07-15-agent-governance-harness-convergence.md](./2026-07-15-agent-governance-harness-convergence.md)
 - **Target Surface Contract Convergence Plan**: [2026-07-18-target-surface-contract-convergence.md](./2026-07-18-target-surface-contract-convergence.md)
 - **Agent Governance Canonical Convergence Plan (active)**: [2026-07-26-agent-governance-canonical-convergence.md](./2026-07-26-agent-governance-canonical-convergence.md)
+- **Agentic Engineering Research Pack Rebuild Plan (active)**: [2026-08-08-agentic-research-pack-rebuild.md](./2026-08-08-agentic-research-pack-rebuild.md)
 - **Operational Readiness Closure Program Plan (completed local-isolated contract)**: [Plan](./2026-07-19-operational-readiness-closure-program.md); [Program Task evidence owner](../tasks/2026-07-19-operational-readiness-closure-program.md)
 - **Compose Runtime Readiness Remediation Plan (completed local contract)**: [Plan](./2026-07-11-compose-runtime-readiness-remediation.md); [domain Task evidence owner](../tasks/2026-07-19-compose-runtime-readiness-remediation.md)
 - **Infrastructure Operations Readiness Remediation Plan (completed representative-local contract)**: [Plan](./2026-07-11-infrastructure-operations-readiness-remediation.md); [domain Task evidence owner](../tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
