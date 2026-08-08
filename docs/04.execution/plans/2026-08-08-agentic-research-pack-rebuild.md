@@ -1440,11 +1440,31 @@ pre-deletion package stops deletion review.
 
 Dispatch independent migration/specification and quality reviewers with the
 proposed patch, old/new manifests, immutable old blobs, claim ledger,
-recoverability evidence, and Task brief. Require C0/I0 and record the proposed
-deletion diff, recovery commit, and separate reviewer verdicts in the Task.
-Refresh the package and rerun both reviewers whenever that evidence changes.
-Do not touch the real index until gate 9 passes. Both separate verdicts must
-cover the same final package. If the gate fails, restore only the two
+recoverability evidence, and Task brief. Require C0/I0. Each reviewer must
+author an immutable receipt outside the package that records the package
+checksum-manifest hash, package HEAD, role, reviewer identity, verdict and
+C/I/M counts. Both receipts must cover the same immutable package.
+
+This receipt boundary prevents a self-referential review loop: the reviewed
+Task snapshot necessarily says its own package reviews are pending, while
+recording those verdicts changes the Task bytes. After both package receipts
+exist, backfill the Task exactly once with the proposed deletion diff, recovery
+commit, package hash, receipt hashes, and separate verdicts. The allowed
+post-review Task delta is limited to those receipt fields and a clarification
+that proposed-package review is complete while actual staged and committed
+deletion reviews remain Not Run. It may not change claims, destinations,
+requirements, scopes, allowlist membership, source evidence, the deletion
+patch, manifests, or generated outputs.
+
+Both original reviewers must then inspect that exact Task-only backfill diff
+against their receipts and author separate immutable closure confirmations
+keyed to the Task diff hash. Do not insert the closure confirmations back into
+the Task; doing so would recreate the same fixed-point problem. Gate 9 passes
+when the package receipts and closure confirmations are C0/I0, their hashes are
+recorded in the controller evidence, and the real index remains clean. Any
+Task change outside the allowed receipt-only delta invalidates the package and
+requires a full rebuild and both package reviews again. Do not touch the real
+index until gate 9 passes. If the gate fails, restore only the two
 generator-owned worktree files from `HEAD`, keep the old pack intact, and
 return the findings to the implementer:
 
