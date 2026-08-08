@@ -422,6 +422,41 @@ def derive_attempt(root: pathlib.Path, marker: dict[str, Any]) -> int:
     fail("ATTEMPT_STATE_MISMATCH", "durable refs and Task marker do not authorize an attempt")
 
 
+def validate_package_prehistory(
+    root: pathlib.Path, attempt: int, marker: dict[str, Any]
+) -> None:
+    if attempt == 1:
+        return
+    if attempt != 2 or marker.get("state") != "ATTEMPT_2_PENDING":
+        fail("ATTEMPT_PREHISTORY_INVALID", "package is not a bounded attempt 2")
+    attempt_one = marker.get("attempt_1")
+    expected_keys = {
+        "evidence_ref",
+        "evidence_tree",
+        "package_sha256",
+        "reason",
+        "terminal_state",
+    }
+    if not isinstance(attempt_one, dict) or set(attempt_one) != expected_keys:
+        fail("ATTEMPT_PREHISTORY_INVALID", "attempt-1 marker binding is malformed")
+    evidence_ref = attempt_one.get("evidence_ref")
+    if not isinstance(evidence_ref, str):
+        fail("ATTEMPT_PREHISTORY_INVALID", "attempt-1 evidence ref is missing")
+    try:
+        terminal = replay_terminal_evidence_ref(root, evidence_ref)
+    except Gate9Error as error:
+        fail("ATTEMPT_PREHISTORY_INVALID", f"{error.code}: {error.detail}")
+    expected_attempt_one = {
+        "evidence_ref": evidence_ref,
+        "evidence_tree": terminal["tree"],
+        "package_sha256": terminal["package_sha256"],
+        "reason": terminal["reason"],
+        "terminal_state": terminal["state"],
+    }
+    if terminal["attempt"] != 1 or attempt_one != expected_attempt_one:
+        fail("ATTEMPT_PREHISTORY_INVALID", "attempt-1 terminal binding differs")
+
+
 def package_records(payloads: Mapping[str, bytes]) -> list[dict[str, object]]:
     return [
         {"bytes": len(payloads[path]), "path": path, "sha256": sha256_bytes(payloads[path])}
@@ -664,6 +699,7 @@ def verify_package_path(
     expected_state = "PACKAGE_REVIEW_PENDING" if attempt == 1 else "ATTEMPT_2_PENDING"
     if candidate_marker.get("attempt") != attempt or candidate_marker.get("state") != expected_state:
         fail("PACKAGE_SEMANTIC_DRIFT", "task-candidate.md marker")
+    validate_package_prehistory(root, attempt, candidate_marker)
     task_patch, deletion_patch = write_task_patch_and_deletion_patch(
         root, package_head, TASK_PATH, candidate
     )
