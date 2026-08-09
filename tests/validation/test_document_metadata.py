@@ -7317,6 +7317,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
                 "ls-files",
                 "docs/00.agent-governance",
                 "docs/99.templates",
+                "docs/98.archive/README.md",
                 ".agents/skills",
                 ".claude/skills",
             ],
@@ -7341,6 +7342,18 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             re.compile(r"\bStage ?04\b", re.IGNORECASE),
             re.compile(r"NNN-<feature-id>"),
         )
+        retired_archive_publications = (
+            re.compile(r"docs/98\.archive/<original-stage>"),
+            re.compile(r"(?:docs/)?98\.archive/0[1-5]\.[a-z]+/"),
+            re.compile(
+                r"(?:docs/)?98\.archive/[^\s`|]*(?:YYYY|(?:19|20)[0-9]{2}(?:-[0-9]{2}-[0-9]{2})?)(?:[-/])"
+            ),
+            re.compile(r"content-archive", re.IGNORECASE),
+        )
+        archive_publication_surfaces = {
+            "docs/98.archive/README.md",
+            "docs/99.templates/support/template-selection.md",
+        }
         violations: list[str] = []
         for relative_path in tracked:
             if relative_path in bounded_contexts or relative_path.startswith(
@@ -7350,14 +7363,74 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             path = ROOT / relative_path
             if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
                 continue
+            in_bounded_archive_ledger = False
             for line_number, line in enumerate(
                 path.read_text(encoding="utf-8").splitlines(), 1
             ):
+                if relative_path == "docs/98.archive/README.md":
+                    if line == "## Non-Authoritative Historical Provenance Ledger":
+                        in_bounded_archive_ledger = True
+                        continue
+                    if line == "### End Non-Authoritative Historical Provenance Ledger":
+                        in_bounded_archive_ledger = False
+                        continue
+                    if in_bounded_archive_ledger:
+                        continue
                 if any(fragment in line for fragment in allowed_negative_lines):
                     continue
-                if any(pattern.search(line) for pattern in retired_publications):
+                patterns = retired_publications
+                if relative_path in archive_publication_surfaces:
+                    patterns += retired_archive_publications
+                if any(pattern.search(line) for pattern in patterns):
                     violations.append(f"{relative_path}:{line_number}:{line.strip()}")
         self.assertEqual([], violations)
+
+    def test_archive_selection_and_readme_publish_only_typed_stage98_routes(self) -> None:
+        selection = (
+            ROOT / "docs/99.templates/support/template-selection.md"
+        ).read_text(encoding="utf-8")
+        expected_rows = (
+            "| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-<id>-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive change Task (`change-task`) | `docs/98.archive/changes/chg-<id>-<slug>/task.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive tombstone (`tombstone`) | `docs/98.archive/tombstones/{01.requirements,02.architecture,03.specs,05.operations}/<stable-id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive migration (`migration`) | `docs/98.archive/migrations/mig-<id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
+        )
+        for row in expected_rows:
+            self.assertEqual(1, selection.count(row), row)
+        self.assertNotIn("docs/98.archive/<original-stage>", selection)
+
+        readme = (ROOT / "docs/98.archive/README.md").read_text(encoding="utf-8")
+        marker = "## Non-Authoritative Historical Provenance Ledger"
+        end_marker = "### End Non-Authoritative Historical Provenance Ledger"
+        self.assertEqual(1, readme.count(marker))
+        self.assertEqual(1, readme.count(end_marker))
+        before, remainder = readme.split(marker, 1)
+        ledger, after = remainder.split(end_marker, 1)
+        active = before + after
+        for literal in (
+            "changes/chg-<id>-<slug>/plan.md",
+            "changes/chg-<id>-<slug>/task.md",
+            "tombstones/<stage>/<stable-id>-<slug>.md",
+            "migrations/mig-<id>-<slug>.md",
+        ):
+            self.assertIn(literal, active)
+        for retired in (
+            "content-archive",
+            "content-archive.template.md",
+            "소스 stage 구조를 그대로 미러링",
+            "98.archive/<original-stage>/",
+            "YYYY/",
+            "YYYY-MM-DD",
+        ):
+            self.assertNotIn(retired, active)
+        self.assertNotRegex(active, r"(?:docs/)?98\.archive/0[1-5]\.[a-z]+/")
+        self.assertNotRegex(
+            active,
+            r"(?:docs/)?98\.archive/[^\s`|]*(?:YYYY|(?:19|20)[0-9]{2}(?:-[0-9]{2}-[0-9]{2})?)(?:[-/])",
+        )
+        self.assertIn("non-authoritative", ledger.lower())
+        self.assertIn("not routing", ledger.lower())
+        self.assertIn("docs/98.archive/04.execution/", ledger)
 
     def test_typed_role_dates_and_single_archive_target_are_exact(self) -> None:
         profiles = self.profiles["profiles"]

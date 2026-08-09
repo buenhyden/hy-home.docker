@@ -29,7 +29,10 @@ template source.
 | Release | `docs/05.operations/releases/rel-<id>-<slug>/release.md` | [release.template.md](../templates/operations/release.template.md) |
 | Reference | `docs/90.references/{data,learning,llm-wiki,research}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
 | Audit | `docs/90.references/audits/**/*.md` except the generated metadata inventory | [audit.template.md](../templates/common/audit.template.md) |
-| Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-<id>-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive change Task (`change-task`) | `docs/98.archive/changes/chg-<id>-<slug>/task.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive tombstone (`tombstone`) | `docs/98.archive/tombstones/{01.requirements,02.architecture,03.specs,05.operations}/<stable-id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |
+| Archive migration (`migration`) | `docs/98.archive/migrations/mig-<id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |
 | README | `README.md`, `docs/README.md`, folder `README.md` files | [readme.template.md](../templates/common/readme.template.md) |
 
 ## Corpus Migration Selection Boundary

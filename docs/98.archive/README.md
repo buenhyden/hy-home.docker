@@ -6,24 +6,27 @@ layer: archive
 
 # 98.archive
 
-> 승인된 manifest 결과를 가리키는 validated typed provenance tombstone stage이며, current guidance나 stale 원문 저장소가 아닙니다.
+> 승인된 typed Stage 98 기록의 단일 대상이며, current guidance나 일반 본문
+> 저장소가 아닙니다.
 
 ## Overview
 
-`docs/98.archive/`는 원문 보존 공간이 아니라 migration 추적 공간입니다.
-Archive tombstone은 full typed provenance and preservation contract를 충족하는
-간결한 관계 기록입니다. Identity, relation, disposition, immutable Git
-provenance, preservation metadata를 검증하며, `current_replacement` is disposition-conditional입니다. 관계와 보존 필드는 검증된 계약이 허용할 때만
-존재하고, 정확한 조건은 Stage 99 sole human owners와 machine registries로
-라우팅합니다. Tombstone은 stale 본문을 다시 노출하지 않습니다.
+`docs/98.archive/`는 문서 archive의 유일한 대상입니다. README를 제외한 모든
+파일은 다음 네 machine profile 가운데 정확히 하나를 선택합니다.
 
-`docs/98.archive/`는 두 가지 역할을 구분합니다. Tombstone
-(`archive.template.md`)은 경로 리다이렉트만 담당하며 본문을 보존하지 않고,
-content archive (`content-archive.template.md`)는 종료된 작업의 본문을
-소스 stage 구조를 그대로 미러링해 보존합니다. 둘 다 `status: archived`를
-사용하며, 정확한 필수/선택/금지 필드는
-[archive and retention contract](../99.templates/support/archive-retention-contract.md)의
-Archive Roles 표를 따릅니다.
+- `change-plan`: `changes/chg-<id>-<slug>/plan.md`
+- `change-task`: `changes/chg-<id>-<slug>/task.md`
+- `tombstone`: `tombstones/<stage>/<stable-id>-<slug>.md`; `<stage>`는
+  `01.requirements`, `02.architecture`, `03.specs`, `05.operations` 중 하나
+- `migration`: `migrations/mig-<id>-<slug>.md`
+
+Change Plan과 Task는 완료된 한 change packet의 본문과 상관관계를 보존합니다.
+Tombstone은 제거된 원문을 복제하지 않는 간결한 provenance 기록이고,
+Migration은 경로 변경 ledger를 보존합니다. 모든 ID와 경로는 stable하며 날짜는
+`archived_at` 같은 typed frontmatter에만 기록합니다. 정확한 필드 조건은
+[archive and retention contract](../99.templates/support/archive-retention-contract.md)와
+[metadata profiles](../99.templates/support/document-metadata-profiles.yaml)를
+따릅니다.
 
 ## Audience
 
@@ -35,40 +38,44 @@ Archive Roles 표를 따릅니다.
 
 ### In Scope
 
-- 승인된 manifest와 archive profile을 통과한 whole-document provenance tombstone
-- 검증된 identity, relation, disposition, Git provenance, preservation 추적
-- disposition과 preservation class에 따라 조건부로 허용된 관계/보존 필드
-- archive migration ledger
-- 검증된 provenance tombstone과 승인된 immutable evidence snapshot 경로
+- 완료된 change packet의 상관된 Plan과 Task
+- stable source identity를 유지하는 간결한 tombstone
+- stable `mig-<id>` identity를 사용하는 migration record
+- 검증된 relation, disposition, Git provenance, preservation metadata
+- 아래의 명시적으로 bounded된 historical provenance ledger
 
 ### Out of Scope
 
 - 현재 판단 기준으로 사용할 요구사항, 설계, spec, plan, task, 운영 절차
-- 원문 stale body 보존
+- change packet이 아닌 제거 문서의 원문 본문 보존
+- source stage를 복제하는 archive directory
+- 날짜나 연도 partition을 archive identity로 사용
 - active 문서의 Related Documents 대상
 
 ## Structure
 
 ```text
 98.archive/
-├── 01.requirements/     # Stage 01에서 제거된 문서 tombstone
-├── 02.architecture/     # Stage 02에서 제거된 문서 tombstone
-├── 03.specs/            # Stage 03에서 제거된 문서 tombstone
-├── 04.execution/        # Stage 04에서 제거된 문서 tombstone
-├── 05.operations/       # Stage 05에서 제거된 문서 tombstone
-└── README.md            # This file
+├── changes/
+│   └── chg-<id>-<slug>/
+│       ├── plan.md
+│       └── task.md
+├── tombstones/
+│   ├── 01.requirements/
+│   ├── 02.architecture/
+│   ├── 03.specs/
+│   └── 05.operations/
+│       └── <stable-id>-<slug>.md
+├── migrations/
+│   └── mig-<id>-<slug>.md
+└── README.md
 ```
 
-## Migration Ledger
+## Non-Authoritative Historical Provenance Ledger
 
-아래 표는 현재 `hand-maintained`이며 `transitional until Wave D`입니다.
-Generated ledger라고 주장하지 않으며, Wave D에서 기존 tombstone의 provenance를
-정비하고 canonical lifecycle generator를 승인하기 전까지 이 상태를 유지합니다.
-분류와 증거 조건은
-[corpus migration contract](../99.templates/support/corpus-migration-contract.md),
-archive provenance와 retention 조건은
-[archive and retention contract](../99.templates/support/archive-retention-contract.md)를
-따릅니다.
+이 절은 이전 archive 이동의 non-authoritative historical provenance만 보존하며
+not routing입니다. 아래의 retired 경로는 현재 target이나 template 선택 지침이
+아닙니다. 새 기록과 migrated 기록은 위의 typed stable 경로만 사용합니다.
 
 | Original Path                                                                           | Archive Path                                                                                       | Reason                                                                                                                                           | Current Replacement                                                                                      |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
@@ -140,12 +147,18 @@ under the `evidence-preserve` disposition; see each `spec.md`'s own
 | `docs/03.specs/132-agent-governance-harness-convergence/spec.md`            | `docs/98.archive/03.specs/132-agent-governance-harness-convergence/spec.md`            |
 | `docs/03.specs/133-target-surface-contract-convergence/spec.md`             | `docs/98.archive/03.specs/133-target-surface-contract-convergence/spec.md`             |
 
+### End Non-Authoritative Historical Provenance Ledger
+
 ## How to Work in This Area
 
-1. 승인된 manifest에서 대상과 소비자, 대체 문서, 보존 근거를 검토합니다.
-2. Git provenance와 confidentiality 검증을 통과한 결과만 canonical Archive template로 작성합니다.
-3. Active 문서는 tombstone을 current guidance로 역링크하지 않습니다.
-4. Wave D 전에는 이 hand-maintained ledger를 Task 근거와 함께 갱신하며 generated output이라고 표시하지 않습니다.
+1. 기록 목적에 따라 `change-plan`, `change-task`, `tombstone`, `migration` 중
+   하나의 profile과 stable target을 선택합니다.
+2. 승인된 manifest, source identity, consumers, replacement, Git provenance,
+   confidentiality evidence를 검증합니다.
+3. [archive template](../99.templates/templates/common/archive.template.md)로
+   작성하고 metadata 및 path identity gate를 통과합니다.
+4. Active 문서는 Stage 98을 current guidance로 링크하지 않습니다.
+5. Retired 경로의 조회에는 위의 bounded ledger와 Git provenance만 사용합니다.
 
 ## Related Documents
 
@@ -153,6 +166,6 @@ under the `evidence-preserve` disposition; see each `spec.md`'s own
 - [stage authoring matrix](../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../00.agent-governance/rules/documentation-protocol.md)
 - [archive template](../99.templates/templates/common/archive.template.md)
-- [content archive template](../99.templates/templates/common/content-archive.template.md)
-- [corpus migration contract](../99.templates/support/corpus-migration-contract.md)
+- [document corpus migration contract](../99.templates/support/document-corpus-migration-contract.yaml)
+- [metadata profiles](../99.templates/support/document-metadata-profiles.yaml)
 - [archive and retention contract](../99.templates/support/archive-retention-contract.md)
