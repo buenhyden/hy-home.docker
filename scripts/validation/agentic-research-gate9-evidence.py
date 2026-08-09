@@ -117,6 +117,7 @@ class PinnedScratch:
     """Own scratch objects only through pinned directory descriptors."""
 
     def __init__(self, prefix: str = "gate9-") -> None:
+        self._owner_pid = os.getpid()
         base_path = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
         flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
         try:
@@ -145,13 +146,16 @@ class PinnedScratch:
                 if descriptor is not None:
                     os.close(descriptor)
             fail("SCRATCH_SCOPE_DRIFT", f"cannot pin scratch directories: {error}")
-        self.path = pathlib.Path(f"/proc/self/fd/{self._scratch_fd}")
+        self._path = pathlib.Path(
+            f"/proc/{self._owner_pid}/fd/{self._scratch_fd}"
+        )
         self._directories: dict[str, tuple[int, RegisteredScratchEntry]] = {}
         self._files: dict[str, RegisteredScratchEntry] = {}
         self._file_contracts: dict[
             str, tuple[int, tuple[int, int] | None]
         ] = {}
         self._closed = False
+        self._prove_process_fd_path()
 
     @staticmethod
     def _directory_identity(descriptor: int) -> tuple[int, int, int]:
@@ -160,8 +164,42 @@ class PinnedScratch:
             fail("SCRATCH_SCOPE_DRIFT", "pinned descriptor is not a directory")
         return metadata.st_dev, metadata.st_ino, stat.S_IMODE(metadata.st_mode)
 
+    def _prove_process_fd_path(self) -> None:
+        if os.getpid() != self._owner_pid:
+            fail("SCRATCH_SCOPE_DRIFT", "scratch owner process changed")
+        expected_path = pathlib.Path(
+            f"/proc/{self._owner_pid}/fd/{self._scratch_fd}"
+        )
+        if self._path != expected_path:
+            fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor path changed")
+        if self._directory_identity(self._scratch_fd) != self._scratch_identity:
+            fail("SCRATCH_SCOPE_DRIFT", "scratch descriptor identity changed")
+        try:
+            link_metadata = self._path.lstat()
+            if not stat.S_ISLNK(link_metadata.st_mode):
+                fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor is not a symlink")
+            flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC
+            descriptor = os.open(self._path, flags)
+            try:
+                observed = self._directory_identity(descriptor)
+            finally:
+                os.close(descriptor)
+        except OSError as error:
+            fail(
+                "SCRATCH_SCOPE_DRIFT",
+                f"cannot prove scratch process descriptor: {error}",
+            )
+        if observed != self._scratch_identity:
+            fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor identity changed")
+
+    @property
+    def path(self) -> pathlib.Path:
+        self._prove_process_fd_path()
+        return self._path
+
     @property
     def pass_fds(self) -> tuple[int, ...]:
+        self._prove_process_fd_path()
         return (
             self._base_fd,
             self._holding_fd,
@@ -267,6 +305,7 @@ class PinnedScratch:
         self._closed = True
         cleanup_errors: list[str] = []
         try:
+            self._prove_process_fd_path()
             base_metadata = self._base_path.lstat()
             holding_metadata = self.holding_path.lstat()
             if (

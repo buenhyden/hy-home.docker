@@ -1542,6 +1542,88 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             projection.deletion_statuses,
         )
 
+    def test_production_generator_grandchild_git_reads_pinned_projected_index(
+        self,
+    ) -> None:
+        task_path = self.root / TASK
+        task_path.write_bytes(
+            subprocess.run(
+                ["git", "show", f"HEAD:{TASK}"],
+                cwd=self.root,
+                capture_output=True,
+                check=True,
+            ).stdout
+        )
+        generator_paths = (
+            "scripts/knowledge/generate-llm-wiki-index.sh",
+            "scripts/knowledge/generate-llm-wiki-coverage.sh",
+        )
+        required_paths = (
+            ".claude/agents/doc-writer.md",
+            "docs/00.agent-governance/agents/agents/doc-writer.md",
+            "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
+            "docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md",
+            "docs/90.references/data/knowledge/README.md",
+            "docs/03.specs/096-llm-wiki-agent-first-completion/spec.md",
+            "docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md",
+            "docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md",
+            "docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md",
+            "docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md",
+            "docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md",
+        )
+        for relative in generator_paths:
+            shutil.copy2(ROOT / relative, self.root / relative)
+        for relative in required_paths:
+            if not (self.root / relative).exists():
+                self.fixture.write(relative, "# Fixture required path\n")
+        git(self.root, "add", *generator_paths, *required_paths)
+
+        rendered: dict[str, bytes] = {}
+        for relative, output in zip(generator_paths, (INDEX, COVERAGE), strict=True):
+            result = subprocess.run(
+                ["bash", relative, "--stdout"],
+                cwd=self.root,
+                capture_output=True,
+                check=True,
+            )
+            rendered[output] = result.stdout
+            (self.root / output).write_bytes(result.stdout)
+        git(self.root, "add", INDEX, COVERAGE)
+        git(self.root, "commit", "--quiet", "-m", "fixture production generators")
+
+        prior_reviewed_code_head = self.fixture.reviewed_code_head
+        self.fixture.reviewed_code_head = git(
+            self.root, "rev-parse", "HEAD"
+        ).stdout.strip()
+        task_path.write_text(
+            task_path.read_text(encoding="utf-8").replace(
+                prior_reviewed_code_head,
+                self.fixture.reviewed_code_head,
+            ),
+            encoding="utf-8",
+        )
+        git(self.root, "add", TASK)
+        git(self.root, "commit", "--quiet", "-m", "fixture reviewed closure")
+        self.fixture.head = git(self.root, "rev-parse", "HEAD").stdout.strip()
+        task_path.write_text(
+            task_path.read_text(encoding="utf-8") + "\nCandidate gate results.\n",
+            encoding="utf-8",
+        )
+
+        before = self.fixture.repository_state()
+        with tempfile.TemporaryDirectory(
+            prefix="gate9-production-generator-package-"
+        ) as package_parent:
+            package = pathlib.Path(package_parent) / "package"
+            built = self.fixture.build(package)
+            self.assertEqual(0, built.returncode, built.stderr)
+            self.assertEqual(rendered[INDEX], (package / "llm-wiki-index.md").read_bytes())
+            self.assertEqual(
+                rendered[COVERAGE],
+                (package / "llm-wiki-stage-category-coverage.md").read_bytes(),
+            )
+        self.assertEqual(before, self.fixture.repository_state())
+
     def test_projected_index_rejects_outside_status_drift(self) -> None:
         before = self.fixture.repository_state()
         environment = self.fixture.git_wrapper(
