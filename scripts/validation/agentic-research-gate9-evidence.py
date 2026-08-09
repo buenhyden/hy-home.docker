@@ -340,9 +340,27 @@ class PinnedScratch:
                 finally:
                     os.close(descriptor)
             if cleanup_errors:
-                fail("SCRATCH_CLEANUP_FAILURE", "; ".join(cleanup_errors))
-            os.rmdir("scratch", dir_fd=self._holding_fd)
-            os.rmdir(self._holding_name, dir_fd=self._base_fd)
+                fail(
+                    "SCRATCH_CLEANUP_FAILURE",
+                    "; ".join(cleanup_errors)
+                    + f"; retained proved holding at {self.holding_path}",
+                )
+            try:
+                os.rmdir("scratch", dir_fd=self._holding_fd)
+            except OSError as error:
+                fail(
+                    "SCRATCH_CLEANUP_FAILURE",
+                    f"scratch directory is not proved empty: {error}; "
+                    f"retained proved holding at {self.holding_path}",
+                )
+            try:
+                os.rmdir(self._holding_name, dir_fd=self._base_fd)
+            except OSError as error:
+                fail(
+                    "SCRATCH_CLEANUP_FAILURE",
+                    f"holding directory cannot be removed: {error}; "
+                    f"retained proved holding at {self.holding_path}",
+                )
         finally:
             for descriptor in (self._scratch_fd, self._holding_fd, self._base_fd):
                 try:
@@ -726,6 +744,17 @@ def require_full_commit_oid(
     return value
 
 
+def prove_live_head(
+    root: pathlib.Path,
+    expected: str,
+    *,
+    code: str,
+) -> None:
+    current = require_full_commit_oid(root, head(root), code=code)
+    if current != expected:
+        fail(code, "current HEAD differs from the preflight live HEAD")
+
+
 def assert_unambiguous_history(root: pathlib.Path) -> None:
     replacements = run_git(
         root,
@@ -844,6 +873,7 @@ def authority_preflight(
     )
     if bindings != [reviewed_oid.encode()]:
         fail("REVIEWED_CODE_DRIFT", "Task does not bind the exact reviewed code OID")
+    prove_live_head(root, live_oid, code="UNTRUSTED_PACKAGE_HEAD")
     return AuthorityProof(live_oid, reviewed_oid, tuple(live_blobs))
 
 
@@ -903,8 +933,12 @@ def snapshot_directory_tree(root: pathlib.Path) -> tuple[tuple[str, str, int, in
     return tuple(rows)
 
 
-def capture_repository_snapshot(root: pathlib.Path) -> RepositorySnapshot:
-    old_paths = tuple(manifest_paths(tree_manifest(root, head(root), OLD_PACK)))
+def capture_repository_snapshot(
+    root: pathlib.Path,
+    expected_head: str,
+) -> RepositorySnapshot:
+    prove_live_head(root, expected_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
+    old_paths = tuple(manifest_paths(tree_manifest(root, expected_head, OLD_PACK)))
     old_files = tuple(
         (
             path,
@@ -933,7 +967,7 @@ def capture_repository_snapshot(root: pathlib.Path) -> RepositorySnapshot:
         ["for-each-ref", "--format=%(refname) %(objectname)", f"{REF_PREFIX}/"],
     ).stdout
     return RepositorySnapshot(
-        head(root),
+        expected_head,
         capture_real_index(root),
         old_files,
         outputs,
@@ -1061,10 +1095,12 @@ def authoritative_projection(
     )
     if package_oid != proof.live_head:
         fail("UNTRUSTED_PACKAGE_HEAD", "package HEAD differs from live reviewed HEAD")
-    snapshot = capture_repository_snapshot(root)
+    prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
+    snapshot = capture_repository_snapshot(root, proof.live_head)
     primary_error: BaseException | None = None
     projection: AuthoritativeProjection | None = None
     try:
+        prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
         generator_blobs = {
             INDEX_GENERATOR: run_git(
                 root, ["cat-file", "blob", proof.code_blob_oids[1]]
@@ -1186,6 +1222,7 @@ def authoritative_projection(
                 env=environment,
                 pass_fds=scratch.pass_fds,
             ).stdout
+            prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
             index_bytes = generator_stdout(
                 root,
                 scratch,
@@ -1195,6 +1232,7 @@ def authoritative_projection(
                 expected_index,
                 INDEX_GENERATOR,
             )
+            prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
             coverage_bytes = generator_stdout(
                 root,
                 scratch,
@@ -1220,6 +1258,7 @@ def authoritative_projection(
         primary_error = error
     try:
         prove_repository_snapshot(root, snapshot)
+        prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
     except BaseException as invariant_error:
         primary_error = invariant_error
     if primary_error is not None:
@@ -1449,8 +1488,10 @@ def build_package(args: argparse.Namespace) -> None:
     }
     payloads["package.json"] = canonical_json(package_document)
     output = pathlib.Path(args.output).resolve()
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     ensure_empty_output(output)
     package_id = write_package(output, payloads)
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(canonical_json({"package_sha256": package_id, "state": "BUILT"}).decode(), end="")
 
 
@@ -1610,6 +1651,7 @@ def verify_package_path(
         package / "llm-wiki-stage-category-coverage.md"
     ).read_bytes() != projection.coverage_markdown:
         fail("PACKAGE_SEMANTIC_DRIFT", COVERAGE.as_posix())
+    prove_live_head(root, live_reviewed_head, code="UNTRUSTED_PACKAGE_HEAD")
     return {
         "attempt": attempt,
         "assignments": assignments,
@@ -1628,6 +1670,7 @@ def verify_package(args: argparse.Namespace) -> None:
         live_reviewed_head=authority.live_head,
         reviewed_code_head=authority.reviewed_code_head,
     )
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(canonical_json({"package_sha256": result["package_sha256"], "state": "VERIFIED"}).decode(), end="")
 
 
@@ -1691,6 +1734,7 @@ def verify_assignments(args: argparse.Namespace) -> None:
     )
     attestation_path = pathlib.Path(args.attestation).resolve()
     load_attestation(package_result, attestation_path)
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(
         canonical_json(
             {
@@ -1873,6 +1917,7 @@ def verify_backfill(args: argparse.Namespace) -> None:
         receipt_paths,
         receipts,
     )
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(canonical_json({"state": args.expect_state}).decode(), end="")
 
 
@@ -2365,13 +2410,16 @@ def publish_evidence_ref(args: argparse.Namespace) -> None:
             "EVIDENCE_PATH_SET_DRIFT",
             repr(sorted(set(leaves) ^ EVIDENCE_LEAF_PATHS)),
         )
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     tree_oid = write_evidence_tree(root, leaves)
     message = evidence_commit_message(
         package_result["attempt"], package_result["package_sha256"], args.terminal_state
     )
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     evidence_commit = create_or_reuse_ref(
         root, evidence_ref, package_result["head"], tree_oid, message
     )
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(
         canonical_json(
             {
@@ -2429,6 +2477,47 @@ def read_ref_leaves(
     return commit, leaves
 
 
+def preflight_evidence_ref_authority(
+    root: pathlib.Path,
+    evidence_commit: str,
+    leaves: Mapping[str, bytes],
+    live_reviewed_head: str,
+) -> None:
+    parent, _, _ = commit_identity(root, evidence_commit)
+    if parent != live_reviewed_head:
+        fail(
+            "EVIDENCE_COMMIT_IDENTITY_DRIFT",
+            "evidence commit parent differs from live reviewed HEAD",
+        )
+    raw_package_head = leaves.get("package/HEAD.txt")
+    try:
+        package_head = (
+            raw_package_head.decode("ascii").strip()
+            if raw_package_head is not None
+            else ""
+        )
+    except UnicodeDecodeError as error:
+        fail("EVIDENCE_COMMIT_IDENTITY_DRIFT", f"package HEAD is not ASCII: {error}")
+    package_oid = require_full_commit_oid(
+        root,
+        package_head,
+        code="EVIDENCE_COMMIT_IDENTITY_DRIFT",
+    )
+    if (
+        package_oid != live_reviewed_head
+        or raw_package_head != f"{package_oid}\n".encode()
+    ):
+        fail(
+            "EVIDENCE_COMMIT_IDENTITY_DRIFT",
+            "evidence package HEAD differs from live reviewed HEAD",
+        )
+    prove_live_head(
+        root,
+        live_reviewed_head,
+        code="EVIDENCE_COMMIT_IDENTITY_DRIFT",
+    )
+
+
 def materialize_evidence(
     leaves: Mapping[str, bytes], scratch: PinnedScratch
 ) -> pathlib.Path:
@@ -2444,6 +2533,12 @@ def replay_terminal_evidence_ref(
     reviewed_code_head: str,
 ) -> dict[str, object]:
     evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
+    preflight_evidence_ref_authority(
+        root,
+        evidence_commit,
+        leaves,
+        live_reviewed_head,
+    )
     with PinnedScratch("gate9-terminal-replay-") as scratch:
         evidence_root = materialize_evidence(leaves, scratch)
         package = evidence_root / "package"
@@ -2547,6 +2642,12 @@ def verify_authorized(args: argparse.Namespace) -> None:
     task_marker, _ = parse_marker(live_task)
     evidence_ref = resolve_evidence_ref(task_marker, args.evidence_ref)
     evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
+    preflight_evidence_ref_authority(
+        root,
+        evidence_commit,
+        leaves,
+        authority.live_head,
+    )
     with PinnedScratch("gate9-ref-replay-") as scratch:
         evidence_root = materialize_evidence(leaves, scratch)
         package = evidence_root / "package"
@@ -2734,6 +2835,7 @@ def verify_authorized(args: argparse.Namespace) -> None:
         assert_clean_real_index(root)
     if args.require_task_only_worktree:
         assert_task_only_worktree(root, task_relative)
+    prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(
         canonical_json(
             {

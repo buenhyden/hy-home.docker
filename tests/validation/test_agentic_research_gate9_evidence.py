@@ -1844,6 +1844,114 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                     self.assertEqual("AUTHORIZED", json.loads(result.stdout)["state"])
                     self.assertEqual(before, self.fixture.repository_state())
 
+    def test_projection_rejects_live_head_advance_after_preflight(self) -> None:
+        module_spec = importlib.util.spec_from_file_location("gate9_head_race", HELPER)
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        original_capture = module.capture_repository_snapshot
+        advanced = False
+
+        def advance_before_capture(root: pathlib.Path, expected_head: str) -> object:
+            nonlocal advanced
+            if not advanced:
+                git(root, "commit", "--quiet", "--allow-empty", "-m", "advance after preflight")
+                advanced = True
+            return original_capture(root, expected_head)
+
+        module.capture_repository_snapshot = advance_before_capture
+        with self.assertRaises(module.Gate9Error) as caught:
+            module.authoritative_projection(
+                self.root,
+                self.fixture.head,
+                self.fixture.head,
+                self.fixture.reviewed_code_head,
+            )
+        self.assertIn(
+            caught.exception.code,
+            {"PROJECTED_INDEX_SCOPE_DRIFT", "UNTRUSTED_PACKAGE_HEAD"},
+        )
+        self.assertTrue(advanced)
+
+    def test_authorized_ref_wrong_parent_rejects_before_generator_execution(
+        self,
+    ) -> None:
+        marker_path = self.root / "wrong-parent-generator-executed"
+        self.fixture.advance_reviewed_generator(
+            "scripts/knowledge/generate-llm-wiki-index.sh",
+            "#!/usr/bin/env bash\nset -eu\n"
+            "if [[ ${1:-} == --stdout && $# == 1 ]]; then "
+            "printf executed > "
+            + json.dumps(os.fspath(marker_path))
+            + "; printf 'fixed index\\n'; "
+            "elif [[ $# == 0 ]]; then printf 'fixed index\\n' > "
+            + INDEX
+            + "; else exit 2; fi\n",
+        )
+        package = self.root / "wrong-parent-package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        _, evidence_ref = self.fixture.authorize_package(package)
+        marker_path.unlink(missing_ok=True)
+
+        evidence_commit = git(self.root, "rev-parse", evidence_ref).stdout.strip()
+        tree = git(self.root, "show", "-s", "--format=%T", evidence_commit).stdout.strip()
+        raw_commit = git(self.root, "cat-file", "commit", evidence_commit).stdout
+        _, separator, message = raw_commit.partition("\n\n")
+        self.assertEqual("\n\n", separator)
+        forged = subprocess.run(
+            [
+                "git",
+                "commit-tree",
+                tree,
+                "-p",
+                self.fixture.reviewed_code_head,
+            ],
+            cwd=self.root,
+            input=message,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        git(self.root, "update-ref", evidence_ref, forged, evidence_commit)
+
+        result = self.fixture.run(
+            "verify-authorized",
+            "--package-from-ref",
+            "--task",
+            TASK,
+            "--evidence-ref",
+            evidence_ref,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("EVIDENCE_COMMIT_IDENTITY_DRIFT", result.stderr)
+        self.assertFalse(marker_path.exists())
+
+    def test_pinned_scratch_unregistered_index_lock_fails_closed(self) -> None:
+        module_spec = importlib.util.spec_from_file_location("gate9_index_lock", HELPER)
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        owner = module.PinnedScratch("gate9-index-lock-")
+        holding = owner.holding_path
+        try:
+            owner.create_file("index", b"scratch index\n")
+            (owner.path / "index.lock").write_bytes(b"unregistered\n")
+            with self.assertRaises(Exception) as caught:
+                owner.close()
+            self.assertIsInstance(caught.exception, module.Gate9Error)
+            self.assertEqual("SCRATCH_CLEANUP_FAILURE", caught.exception.code)
+            self.assertIn(os.fspath(holding), caught.exception.detail)
+            self.assertEqual(
+                b"unregistered\n",
+                (holding / "scratch/index.lock").read_bytes(),
+            )
+        finally:
+            shutil.rmtree(holding, ignore_errors=True)
+
     def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
         package = self.root / "package"
         self.assertEqual(0, self.fixture.build(package).returncode)
