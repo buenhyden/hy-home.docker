@@ -304,69 +304,684 @@ def write_task_patch_and_deletion_patch(
     return task_patch, deletion_patch
 
 
-def prove_detached_removal_scope(worktree: pathlib.Path, commit: str) -> None:
-    if head(worktree) != commit:
-        fail("DETACHED_REMOVAL_SCOPE_DRIFT", "detached worktree HEAD differs")
-    cached = run_git(
-        worktree, ["diff", "--cached", "--quiet", commit, "--"], check=False
+def exclusive_regular_bytes(
+    path: pathlib.Path,
+    code: str,
+    label: str,
+) -> tuple[tuple[int, int], int, bytes]:
+    try:
+        metadata = path.lstat()
+        canonical = path.resolve(strict=True)
+        literal = path.absolute()
+        if (
+            canonical != literal
+            or not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_nlink != 1
+        ):
+            fail(code, f"{label} is not canonical, exclusive, and regular")
+        descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+        try:
+            opened = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(opened.st_mode)
+                or opened.st_nlink != 1
+                or (opened.st_dev, opened.st_ino)
+                != (metadata.st_dev, metadata.st_ino)
+            ):
+                fail(code, f"{label} changed before safe read")
+            chunks: list[bytes] = []
+            while chunk := os.read(descriptor, 1024 * 1024):
+                chunks.append(chunk)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        fail(code, f"{label} cannot be read safely: {error}")
+    return (
+        (metadata.st_dev, metadata.st_ino),
+        stat.S_IMODE(metadata.st_mode),
+        b"".join(chunks),
     )
-    if cached.returncode != 0:
-        fail("DETACHED_REMOVAL_SCOPE_DRIFT", "detached index differs from HEAD")
+
+
+def capture_real_index(
+    root: pathlib.Path,
+) -> tuple[pathlib.Path, tuple[int, int], int, bytes]:
+    git_dir_value = run_git(root, ["rev-parse", "--absolute-git-dir"]).stdout.decode().strip()
+    index_value = run_git(
+        root,
+        ["rev-parse", "--path-format=absolute", "--git-path", "index"],
+    ).stdout.decode().strip()
+    top_level_value = run_git(root, ["rev-parse", "--show-toplevel"]).stdout.decode().strip()
+    try:
+        git_dir = pathlib.Path(git_dir_value).resolve(strict=True)
+        top_level = pathlib.Path(top_level_value).resolve(strict=True)
+    except OSError as error:
+        fail("REAL_INDEX_SCOPE_DRIFT", f"caller Git identity cannot be resolved: {error}")
+    index_path = pathlib.Path(index_value).absolute()
+    if top_level != root.resolve(strict=True) or index_path != git_dir / "index":
+        fail("REAL_INDEX_SCOPE_DRIFT", "caller index path is not owned by the repository")
+    identity, mode, value = exclusive_regular_bytes(
+        index_path,
+        "REAL_INDEX_SCOPE_DRIFT",
+        "caller index",
+    )
+    return index_path, identity, mode, value
+
+
+def prove_real_index_unchanged(
+    snapshot: tuple[pathlib.Path, tuple[int, int], int, bytes],
+) -> None:
+    path, expected_identity, expected_mode, expected_value = snapshot
+    identity, mode, value = exclusive_regular_bytes(
+        path,
+        "REAL_INDEX_SCOPE_DRIFT",
+        "caller index",
+    )
+    if (
+        identity != expected_identity
+        or mode != expected_mode
+        or value != expected_value
+    ):
+        fail("REAL_INDEX_SCOPE_DRIFT", "caller index changed during projection")
+
+
+def prove_owned_worktree_root(
+    holding: pathlib.Path,
+    worktree: pathlib.Path,
+    expected: tuple[int, int] | None = None,
+) -> tuple[int, int]:
+    try:
+        holding_metadata = holding.lstat()
+        worktree_metadata = worktree.lstat()
+        holding_literal = holding.absolute()
+        worktree_literal = worktree.absolute()
+        holding_canonical = holding.resolve(strict=True)
+        worktree_canonical = worktree.resolve(strict=True)
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"literal worktree path cannot be inspected: {error}",
+        )
+    identity = (worktree_metadata.st_dev, worktree_metadata.st_ino)
+    if (
+        not stat.S_ISDIR(holding_metadata.st_mode)
+        or not stat.S_ISDIR(worktree_metadata.st_mode)
+        or holding_canonical != holding_literal
+        or worktree_canonical != worktree_literal
+        or worktree_literal.parent != holding_literal
+        or worktree_literal.name != "detached"
+        or (expected is not None and identity != expected)
+    ):
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            "temporary worktree is not the literal owned holding child",
+        )
+    return identity
+
+
+def control_file_target(
+    path: pathlib.Path,
+    anchor: pathlib.Path,
+    *,
+    prefix: bytes = b"",
+) -> pathlib.Path:
+    _, _, value = exclusive_regular_bytes(
+        path,
+        "DETACHED_PROJECTION_SCOPE_DRIFT",
+        "linked-worktree control file",
+    )
+    if not value.startswith(prefix):
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            "linked-worktree control file has the wrong prefix",
+        )
+    raw_target = value[len(prefix) :]
+    if not raw_target.endswith(b"\n") or b"\n" in raw_target[:-1]:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            "linked-worktree control file is malformed",
+        )
+    target = pathlib.Path(os.fsdecode(raw_target[:-1]))
+    if not target.is_absolute():
+        target = anchor / target
+    try:
+        return target.resolve(strict=True)
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"linked-worktree control target cannot be resolved: {error}",
+        )
+
+
+def owned_linked_git_dir(
+    root: pathlib.Path,
+    holding: pathlib.Path,
+    worktree: pathlib.Path,
+    worktree_identity: tuple[int, int],
+) -> tuple[pathlib.Path, pathlib.Path]:
+    prove_owned_worktree_root(holding, worktree, worktree_identity)
+    common_value = run_git(
+        root,
+        ["rev-parse", "--path-format=absolute", "--git-common-dir"],
+    ).stdout.decode().strip()
+    try:
+        common_dir = pathlib.Path(common_value).resolve(strict=True)
+        git_file = worktree.absolute() / ".git"
+        admin_parent = (common_dir / "worktrees").resolve(strict=True)
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"linked-worktree ownership path cannot be resolved: {error}",
+        )
+    candidates: list[pathlib.Path] = []
+    try:
+        entries = tuple(admin_parent.iterdir())
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"linked-worktree registry cannot be inspected: {error}",
+        )
+    for entry in entries:
+        try:
+            metadata = entry.lstat()
+            backlink = control_file_target(entry / "gitdir", entry)
+        except Gate9Error:
+            continue
+        if stat.S_ISDIR(metadata.st_mode) and backlink == git_file:
+            candidates.append(entry.resolve(strict=True))
+    if len(candidates) != 1:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"expected one owned linked-worktree registry entry, found {len(candidates)}",
+        )
+    git_dir = candidates[0]
+    if git_dir.parent != admin_parent:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            "owned Git directory is outside the linked-worktree registry",
+        )
+    return common_dir, git_dir
+
+
+def detached_index_environment(
+    holding: pathlib.Path,
+    worktree: pathlib.Path,
+    worktree_identity: tuple[int, int],
+    common_dir: pathlib.Path,
+    git_dir: pathlib.Path,
+    real_index: tuple[pathlib.Path, tuple[int, int], int, bytes],
+) -> dict[str, str]:
+    prove_real_index_unchanged(real_index)
+    prove_owned_worktree_root(holding, worktree, worktree_identity)
+    owned_worktree = worktree.absolute()
+    git_file = owned_worktree / ".git"
+    pointer = control_file_target(git_file, owned_worktree, prefix=b"gitdir: ")
+    backlink = control_file_target(git_dir / "gitdir", git_dir)
+    linked_common = control_file_target(git_dir / "commondir", git_dir)
+    if pointer != git_dir or backlink != git_file or linked_common != common_dir:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            "temporary worktree Git ownership is not bidirectional",
+        )
+    values = {
+        "git_dir": run_git(worktree, ["rev-parse", "--absolute-git-dir"]),
+        "common_dir": run_git(
+            worktree,
+            ["rev-parse", "--path-format=absolute", "--git-common-dir"],
+        ),
+        "index": run_git(
+            worktree,
+            ["rev-parse", "--path-format=absolute", "--git-path", "index"],
+        ),
+        "top_level": run_git(worktree, ["rev-parse", "--show-toplevel"]),
+    }
+    try:
+        proven = {
+            name: pathlib.Path(result.stdout.decode().strip()).resolve(strict=True)
+            for name, result in values.items()
+        }
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"detached Git identity cannot be resolved: {error}",
+        )
+    expected_index = git_dir / "index"
+    try:
+        expected_index_resolved = expected_index.resolve(strict=True)
+        index_metadata = expected_index.lstat()
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"linked-worktree index identity cannot be inspected: {error}",
+        )
+    index_identity = (index_metadata.st_dev, index_metadata.st_ino)
+    real_index_identity = real_index[1]
+    if (
+        proven["git_dir"] != git_dir
+        or proven["common_dir"] != common_dir
+        or proven["index"] != expected_index_resolved
+        or proven["top_level"] != owned_worktree
+        or not stat.S_ISREG(index_metadata.st_mode)
+        or index_metadata.st_nlink != 1
+        or index_identity == real_index_identity
+    ):
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            "index is not exclusively owned by the temporary linked worktree",
+        )
+    return {"GIT_INDEX_FILE": os.fspath(expected_index)}
+
+
+def restore_owned_git_pointer(
+    worktree: pathlib.Path,
+    git_dir: pathlib.Path,
+) -> str | None:
+    git_file = worktree / ".git"
+    expected = f"gitdir: {git_dir}\n".encode()
+    try:
+        metadata = git_file.lstat()
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            return "temporary .git pointer is not exclusive and regular"
+        if git_file.read_bytes() == expected:
+            return None
+        descriptor = os.open(
+            git_file,
+            os.O_WRONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+        )
+        try:
+            opened = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(opened.st_mode)
+                or opened.st_nlink != 1
+                or (opened.st_dev, opened.st_ino)
+                != (metadata.st_dev, metadata.st_ino)
+            ):
+                return "temporary .git pointer changed before cleanup"
+            os.ftruncate(descriptor, 0)
+            os.write(descriptor, expected)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        return f"temporary .git pointer restoration failed: {error}"
+    return None
+
+
+def nul_paths(value: bytes) -> list[str]:
+    if not value:
+        return []
+    if not value.endswith(b"\0"):
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "Git path output is not NUL-terminated")
+    return [
+        raw.decode("utf-8", "surrogateescape")
+        for raw in value[:-1].split(b"\0")
+    ]
+
+
+def prove_detached_projection_source(
+    worktree: pathlib.Path,
+    commit: str,
+    environment: Mapping[str, str],
+) -> list[str]:
+    if head(worktree) != commit:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached worktree HEAD differs")
+    symbolic = run_git(worktree, ["symbolic-ref", "--quiet", "HEAD"], check=False)
+    if symbolic.returncode == 0:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "temporary worktree is not detached")
+    if symbolic.returncode != 1:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached HEAD cannot be proven")
+    committed_tree = run_git(
+        worktree, ["rev-parse", f"{commit}^{{tree}}"]
+    ).stdout.decode().strip()
+    indexed_tree = run_git(
+        worktree, ["write-tree"], env=environment
+    ).stdout.decode().strip()
+    if indexed_tree != committed_tree:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached index differs from HEAD")
     expected_paths = sorted(manifest_paths(tree_manifest(worktree, commit, OLD_PACK)))
     tracked_paths = sorted(
-        filter(
-            None,
+        nul_paths(
             run_git(
-                worktree, ["ls-files", "--", OLD_PACK.as_posix()]
-            ).stdout.decode().splitlines(),
+                worktree,
+                ["ls-files", "-z", "--", OLD_PACK.as_posix()],
+                env=environment,
+            ).stdout
         )
     )
     if tracked_paths != expected_paths or len(expected_paths) != 20:
-        fail("DETACHED_REMOVAL_SCOPE_DRIFT", "retiring path set differs from HEAD")
-    modified_paths = set(
-        filter(
-            None,
-            run_git(worktree, ["diff", "--name-only", "--"]).stdout.decode().splitlines(),
-        )
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "retiring path set differs from HEAD")
+    return expected_paths
+
+
+def prove_detached_projected_index(
+    worktree: pathlib.Path,
+    commit: str,
+    expected_paths: Sequence[str],
+    environment: Mapping[str, str],
+) -> None:
+    if head(worktree) != commit:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached worktree HEAD changed")
+    remaining = nul_paths(
+        run_git(
+            worktree,
+            ["ls-files", "-z", "--", OLD_PACK.as_posix()],
+            env=environment,
+        ).stdout
     )
-    untracked_paths = set(
-        filter(
-            None,
-            run_git(
-                worktree, ["ls-files", "--others", "--exclude-standard"]
-            ).stdout.decode().splitlines(),
-        )
+    if remaining:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "retiring paths remain indexed")
+    raw_status = run_git(
+        worktree,
+        ["diff", "--cached", "--name-status", "--no-renames", "-z", commit, "--"],
+        env=environment,
+    ).stdout
+    fields = nul_paths(raw_status)
+    if len(fields) % 2:
+        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "projected status is malformed")
+    statuses = sorted(
+        (fields[index], fields[index + 1])
+        for index in range(0, len(fields), 2)
     )
-    outside = sorted((modified_paths | untracked_paths) - set(expected_paths))
-    if outside:
-        fail("DETACHED_REMOVAL_SCOPE_DRIFT", f"outside changes: {outside!r}")
+    expected = sorted(("D", path) for path in expected_paths)
+    if statuses != expected:
+        fail(
+            "DETACHED_PROJECTION_SCOPE_DRIFT",
+            f"expected exact retiring deletions, found {statuses!r}",
+        )
+
+
+def materialize_trusted_generator(
+    root: pathlib.Path,
+    commit: str,
+    generator: pathlib.PurePosixPath,
+    destination: pathlib.Path,
+) -> pathlib.Path:
+    value = run_git(root, ["show", f"{commit}:{generator.as_posix()}"]).stdout
+    destination.write_bytes(value)
+    destination.chmod(0o500)
+    return destination
+
+
+def projection_output_identity(
+    holding: pathlib.Path,
+    worktree: pathlib.Path,
+    worktree_identity: tuple[int, int],
+    relative: pathlib.PurePosixPath,
+    expected: tuple[int, int] | None = None,
+) -> tuple[pathlib.Path, tuple[int, int]]:
+    prove_owned_worktree_root(holding, worktree, worktree_identity)
+    try:
+        owned_worktree = worktree.absolute()
+        root_metadata = owned_worktree.lstat()
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+            f"projection root cannot be inspected: {error}",
+        )
+    if not stat.S_ISDIR(root_metadata.st_mode):
+        fail("DETACHED_PROJECTION_OUTPUT_UNSAFE", "projection root is not a directory")
+    parent = owned_worktree
+    for part in relative.parts[:-1]:
+        parent /= part
+        try:
+            metadata = parent.lstat()
+        except OSError as error:
+            fail(
+                "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+                f"projection output parent cannot be inspected: {error}",
+            )
+        if not stat.S_ISDIR(metadata.st_mode):
+            fail(
+                "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+                f"projection output parent is not a real directory: {relative}",
+            )
+    target = parent / relative.name
+    try:
+        metadata = target.lstat()
+        resolved = target.resolve(strict=True)
+        resolved.relative_to(owned_worktree)
+    except (OSError, ValueError) as error:
+        fail(
+            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+            f"projection output cannot be contained: {error}",
+        )
+    identity = (metadata.st_dev, metadata.st_ino)
+    if (
+        resolved != target
+        or not stat.S_ISREG(metadata.st_mode)
+        or stat.S_IMODE(metadata.st_mode) != 0o644
+        or metadata.st_nlink != 1
+        or (expected is not None and identity != expected)
+    ):
+        fail(
+            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+            f"projection output is not an exclusive tracked regular file: {relative}",
+        )
+    return target, identity
+
+
+def seed_projection_output(
+    target: pathlib.Path,
+    identity: tuple[int, int],
+    sentinel: bytes,
+) -> None:
+    try:
+        descriptor = os.open(
+            target,
+            os.O_WRONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+        )
+        try:
+            metadata = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(metadata.st_mode)
+                or stat.S_IMODE(metadata.st_mode) != 0o644
+                or metadata.st_nlink != 1
+                or (metadata.st_dev, metadata.st_ino) != identity
+            ):
+                fail(
+                    "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+                    "projection output changed before sentinel write",
+                )
+            os.ftruncate(descriptor, 0)
+            offset = 0
+            while offset < len(sentinel):
+                offset += os.write(descriptor, sentinel[offset:])
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+            f"projection sentinel cannot be written safely: {error}",
+        )
+
+
+def read_projection_output(
+    target: pathlib.Path,
+    identity: tuple[int, int],
+) -> bytes:
+    try:
+        descriptor = os.open(
+            target,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+        )
+        try:
+            metadata = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(metadata.st_mode)
+                or stat.S_IMODE(metadata.st_mode) != 0o644
+                or metadata.st_nlink != 1
+                or (metadata.st_dev, metadata.st_ino) != identity
+            ):
+                fail(
+                    "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+                    "projection output changed before safe read",
+                )
+            chunks: list[bytes] = []
+            while chunk := os.read(descriptor, 1024 * 1024):
+                chunks.append(chunk)
+            return b"".join(chunks)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        fail(
+            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+            f"projection output cannot be read safely: {error}",
+        )
+
+
+def trusted_system_tool(name: str) -> str:
+    candidate = shutil.which(name, path=os.defpath)
+    if candidate is None:
+        fail("GENERATOR_FAILURE", f"trusted system tool is unavailable: {name}")
+    try:
+        resolved = pathlib.Path(candidate).resolve(strict=True)
+        metadata = resolved.lstat()
+    except OSError as error:
+        fail("GENERATOR_FAILURE", f"trusted system tool cannot be resolved: {error}")
+    if not stat.S_ISREG(metadata.st_mode) or not os.access(resolved, os.X_OK):
+        fail("GENERATOR_FAILURE", f"trusted system tool is not executable: {name}")
+    return os.fspath(resolved)
 
 
 def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes, bytes]:
+    real_index = capture_real_index(root)
     registry_before = run_git(root, ["worktree", "list", "--porcelain"]).stdout
     holding = pathlib.Path(tempfile.mkdtemp(prefix="gate9-worktree-holding-"))
     worktree = holding / "detached"
     result: tuple[bytes, bytes] | None = None
     primary_error: BaseException | None = None
     cleanup_errors: list[str] = []
+    owned_git_dir: pathlib.Path | None = None
+    worktree_identity: tuple[int, int] | None = None
     try:
         run_git(root, ["worktree", "add", "--quiet", "--detach", os.fspath(worktree), commit])
-        prove_detached_removal_scope(worktree, commit)
-        run_git(worktree, ["rm", "-r", "-f", "--quiet", "--", OLD_PACK.as_posix()])
-        for generator in (INDEX_GENERATOR, COVERAGE_GENERATOR):
-            result = subprocess.run(
-                ["bash", generator.as_posix()],
+        prove_real_index_unchanged(real_index)
+        worktree_identity = prove_owned_worktree_root(holding, worktree)
+        common_dir, owned_git_dir = owned_linked_git_dir(
+            root,
+            holding,
+            worktree,
+            worktree_identity,
+        )
+        environment = detached_index_environment(
+            holding,
+            worktree,
+            worktree_identity,
+            common_dir,
+            owned_git_dir,
+            real_index,
+        )
+        prove_real_index_unchanged(real_index)
+        prove_owned_worktree_root(holding, worktree, worktree_identity)
+        expected_paths = prove_detached_projection_source(
+            worktree, commit, environment
+        )
+        prove_real_index_unchanged(real_index)
+        prove_owned_worktree_root(holding, worktree, worktree_identity)
+        run_git(
+            worktree,
+            ["rm", "--cached", "-r", "-f", "--", OLD_PACK.as_posix()],
+            env=environment,
+        )
+        prove_real_index_unchanged(real_index)
+        prove_owned_worktree_root(holding, worktree, worktree_identity)
+        prove_detached_projected_index(
+            worktree, commit, expected_paths, environment
+        )
+        trusted_generators = holding / "trusted-generators"
+        trusted_generators.mkdir()
+        output_paths = (INDEX, COVERAGE)
+        outputs = {
+            output: projection_output_identity(
+                holding,
+                worktree,
+                worktree_identity,
+                output,
+            )
+            for output in output_paths
+        }
+        trusted_bash = trusted_system_tool("bash")
+        trusted_git = pathlib.Path(trusted_system_tool("git"))
+        trusted_python = pathlib.Path(trusted_system_tool("python3"))
+        trusted_path = os.pathsep.join(
+            dict.fromkeys(
+                (os.fspath(trusted_git.parent), os.fspath(trusted_python.parent))
+            )
+        )
+        generator_environment = {
+            "GIT_INDEX_FILE": environment["GIT_INDEX_FILE"],
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PATH": trusted_path,
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONSAFEPATH": "1",
+        }
+        generators = (
+            (INDEX_GENERATOR, INDEX),
+            (COVERAGE_GENERATOR, COVERAGE),
+        )
+        for ordinal, (generator, output) in enumerate(generators):
+            prove_real_index_unchanged(real_index)
+            for checked_output, (_, identity) in outputs.items():
+                projection_output_identity(
+                    holding,
+                    worktree,
+                    worktree_identity,
+                    checked_output,
+                    identity,
+                )
+            target, identity = outputs[output]
+            sentinel = (
+                b"GATE9-PROJECTION-SENTINEL\0"
+                + hashlib.sha256(f"{commit}:{output}".encode()).digest()
+            )
+            seed_projection_output(target, identity, sentinel)
+            projection_output_identity(
+                holding,
+                worktree,
+                worktree_identity,
+                output,
+                identity,
+            )
+            if read_projection_output(target, identity) != sentinel:
+                fail(
+                    "DETACHED_PROJECTION_OUTPUT_UNSAFE",
+                    f"projection sentinel was not written exactly: {output}",
+                )
+            trusted_generator = materialize_trusted_generator(
+                root,
+                commit,
+                generator,
+                trusted_generators / f"generator-{ordinal}.sh",
+            )
+            generator_result = subprocess.run(
+                [trusted_bash, os.fspath(trusted_generator)],
                 cwd=worktree,
+                env=generator_environment,
                 capture_output=True,
                 check=False,
             )
-            if result.returncode:
+            if generator_result.returncode:
                 fail(
                     "GENERATOR_FAILURE",
-                    f"{generator}: {result.stderr.decode('utf-8', 'replace').strip()}",
+                    f"{generator}: {generator_result.stderr.decode('utf-8', 'replace').strip()}",
                 )
-        projected_index = (worktree / pathlib.Path(*INDEX.parts)).read_bytes()
-        projected_coverage = (worktree / pathlib.Path(*COVERAGE.parts)).read_bytes()
+            prove_real_index_unchanged(real_index)
+            for checked_output, (_, checked_identity) in outputs.items():
+                projection_output_identity(
+                    holding,
+                    worktree,
+                    worktree_identity,
+                    checked_output,
+                    checked_identity,
+                )
+        prove_real_index_unchanged(real_index)
+        prove_owned_worktree_root(holding, worktree, worktree_identity)
+        prove_detached_projected_index(
+            worktree, commit, expected_paths, environment
+        )
+        projected_index = read_projection_output(*outputs[INDEX])
+        projected_coverage = read_projection_output(*outputs[COVERAGE])
         tracked_index = run_git(root, ["show", f"{commit}:{INDEX.as_posix()}"]).stdout
         tracked_coverage = run_git(root, ["show", f"{commit}:{COVERAGE.as_posix()}"]).stdout
         if projected_index != tracked_index or projected_coverage != tracked_coverage:
@@ -375,27 +990,59 @@ def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes,
     except BaseException as error:
         primary_error = error
     finally:
+        owned_root = False
+        if worktree_identity is not None:
+            try:
+                prove_owned_worktree_root(holding, worktree, worktree_identity)
+                owned_root = True
+            except Gate9Error as error:
+                if primary_error is None:
+                    primary_error = error
+        if owned_git_dir is not None and owned_root:
+            pointer_error = restore_owned_git_pointer(worktree, owned_git_dir)
+            if pointer_error is not None:
+                cleanup_errors.append(pointer_error)
+        redirected_root = False
+        try:
+            if stat.S_ISLNK(worktree.lstat().st_mode):
+                worktree.unlink()
+                redirected_root = True
+        except FileNotFoundError:
+            pass
+        except OSError as error:
+            cleanup_errors.append(f"redirected worktree unlink failed: {error}")
         registry_during = run_git(root, ["worktree", "list", "--porcelain"], check=False)
         if registry_during.returncode:
             cleanup_errors.append("cannot inspect worktree registry")
-        elif f"worktree {worktree.resolve()}\n".encode() in registry_during.stdout:
-            removal = run_git(
-                root,
-                ["worktree", "remove", "--force", os.fspath(worktree)],
-                check=False,
-            )
-            if removal.returncode:
-                cleanup_errors.append("git worktree remove failed")
-                try:
-                    if worktree.exists():
-                        shutil.rmtree(worktree)
-                except OSError as error:
-                    cleanup_errors.append(f"worktree directory cleanup failed: {error}")
+        elif f"worktree {worktree.absolute()}\n".encode() in registry_during.stdout:
+            if redirected_root:
                 prune = run_git(
                     root, ["worktree", "prune", "--expire", "now"], check=False
                 )
                 if prune.returncode:
                     cleanup_errors.append("git worktree prune failed")
+            else:
+                removal = run_git(
+                    root,
+                    ["worktree", "remove", "--force", os.fspath(worktree)],
+                    check=False,
+                )
+                if removal.returncode:
+                    cleanup_errors.append("git worktree remove failed")
+                    try:
+                        if worktree.is_symlink():
+                            worktree.unlink()
+                        elif worktree.exists():
+                            shutil.rmtree(worktree)
+                    except OSError as error:
+                        cleanup_errors.append(
+                            f"worktree directory cleanup failed: {error}"
+                        )
+                    prune = run_git(
+                        root, ["worktree", "prune", "--expire", "now"], check=False
+                    )
+                    if prune.returncode:
+                        cleanup_errors.append("git worktree prune failed")
         try:
             if holding.exists():
                 shutil.rmtree(holding)
@@ -404,6 +1051,16 @@ def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes,
         registry_after = run_git(root, ["worktree", "list", "--porcelain"], check=False)
         if registry_after.returncode or registry_after.stdout != registry_before:
             cleanup_errors.append("worktree registry was not restored")
+        try:
+            prove_real_index_unchanged(real_index)
+        except Gate9Error as error:
+            if primary_error is None:
+                primary_error = error
+            elif not (
+                isinstance(primary_error, Gate9Error)
+                and primary_error.code == "REAL_INDEX_SCOPE_DRIFT"
+            ):
+                cleanup_errors.append(str(error))
     if cleanup_errors:
         fail("WORKTREE_CLEANUP_FAILURE", "; ".join(cleanup_errors))
     if primary_error is not None:
