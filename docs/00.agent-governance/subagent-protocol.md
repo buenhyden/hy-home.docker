@@ -54,7 +54,7 @@ changes are valid only when the same task updates all coupled surfaces:
 - provider adapter generation logic,
 - generated provider adapters,
 - repository validators that enforce allowed values,
-- Stage 04 task evidence with the exact approved value, target role, source of
+- co-located Task evidence with the exact approved value, target role, source of
   evidence, and provider sync result.
 
 If the task does not name a concrete model value, role, provider, and validation
@@ -133,7 +133,7 @@ they are retry/event controls, not a second lifecycle.
    `skipped_checks`. Never include raw logs, auth files, credentials, tokens,
    secret values, or shell history.
 6. Never silently discard output. Record the value-free failure code and the
-   unresolved gap in Stage 04 task evidence.
+   unresolved gap in co-located Task evidence.
 
 ## 6. Lifecycle
 
@@ -146,7 +146,7 @@ Failed validation returns to `implement`; rejected design remains in
 `design/plan`; missing authority remains in `approval`; review remediation
 returns to `implement`. An exhausted attempt bound stops. Ignored
 `_workspace/repo-support/` scratch files remain task-local; promote durable
-non-secret outcomes to Stage 04, Stage 90, or bounded Stage 00 Memory before
+non-secret outcomes to the co-located Task, Stage 90, or bounded Stage 00 Memory before
 handoff, and never delete user-created scratch without explicit approval.
 
 ## Related Documents

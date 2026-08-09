@@ -89,7 +89,7 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - Direct agent execution of all-files pre-commit is prohibited. At the approved
   final QA gate, use only
   `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
-  Git-visible, non-ignored repository paths in Stage 04 evidence.
+  Git-visible, non-ignored repository paths in co-located Task evidence.
 - After instruction updates, start a fresh run or reload context so new guidance is effective.
 
 ## Related Documents

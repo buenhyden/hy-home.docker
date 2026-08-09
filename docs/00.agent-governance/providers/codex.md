@@ -94,7 +94,7 @@ with a safe comparison base. Codex hooks provide routing and advisory context;
 the checked command output is the validation evidence. Direct agent execution
 of all-files pre-commit remains prohibited. At an approved final QA gate, use
 only `scripts/validation/run-agent-precommit-all-files.sh` and record the
-reviewed Git-visible, non-ignored repository paths in Stage 04 evidence.
+reviewed Git-visible, non-ignored repository paths in co-located Task evidence.
 
 ## 6. Current Hook Contract
 

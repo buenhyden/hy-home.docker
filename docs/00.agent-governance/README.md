@@ -55,7 +55,7 @@ layer: agentic
   copied into non-canonical active docs paths.
 - **Memory**: `memory/current.md` is the bounded active handoff; other notes are
   advisory durable context, and `memory/progress.md` is append-preserved
-  historical navigation. Execution evidence belongs in the applicable Stage 04
+  historical navigation. Execution evidence belongs in the applicable co-located
   Task, and memory never overrides active governance.
 - **QA & CI/CD**: shared verification policy in `rules/github-governance.md`,
   `scopes/qa.md`, scripts, and CI docs. Providers execute the same policy with

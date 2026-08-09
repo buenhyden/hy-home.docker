@@ -47,14 +47,14 @@ copyable source.
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| API spec | `docs/03.specs/NNN-<feature-id>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
-| Agent design | `docs/03.specs/NNN-<feature-id>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
-| Data model | `docs/03.specs/NNN-<feature-id>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
-| Service | `docs/03.specs/NNN-<feature-id>/service.md`; registered draft fixture `examples/sample-web-service/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
-| Tests | `docs/03.specs/NNN-<feature-id>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
-| OpenAPI | `docs/03.specs/NNN-<feature-id>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
-| GraphQL | `docs/03.specs/NNN-<feature-id>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
-| Protobuf | `docs/03.specs/NNN-<feature-id>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
+| API spec | `docs/03.specs/spec-<id>-<slug>/api-spec.md` | [api-spec.template.md](../templates/spec-contracts/api-spec.template.md) |
+| Agent design | `docs/03.specs/spec-<id>-<slug>/agent-design.md` | [agent-design.template.md](../templates/spec-contracts/agent-design.template.md) |
+| Data model | `docs/03.specs/spec-<id>-<slug>/data-model.md` | [data-model.template.md](../templates/spec-contracts/data-model.template.md) |
+| Service | `docs/03.specs/spec-<id>-<slug>/service.md`; registered draft fixture `examples/sample-web-service/service.md` | [service.template.md](../templates/spec-contracts/service.template.md) |
+| Tests | `docs/03.specs/spec-<id>-<slug>/tests.md` | [tests.template.md](../templates/spec-contracts/tests.template.md) |
+| OpenAPI | `docs/03.specs/spec-<id>-<slug>/contracts/openapi.yaml` | [openapi.template.yaml](../templates/spec-contracts/openapi.template.yaml) |
+| GraphQL | `docs/03.specs/spec-<id>-<slug>/contracts/schema.graphql` | [schema.template.graphql](../templates/spec-contracts/schema.template.graphql) |
+| Protobuf | `docs/03.specs/spec-<id>-<slug>/contracts/service.proto` | [service.template.proto](../templates/spec-contracts/service.template.proto) |
 
 ## Governance Template Mapping
 

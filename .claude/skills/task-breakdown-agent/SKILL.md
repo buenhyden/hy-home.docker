@@ -24,7 +24,7 @@ An approved Plan, dependency map, acceptance criteria, and protected-surface dec
 
 ## Outputs
 
-- Bounded work units suitable for Stage 04 task evidence and logical commits.
+- Bounded work units suitable for co-located Task evidence and logical commits.
 
 ## Gates
 

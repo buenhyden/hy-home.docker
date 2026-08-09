@@ -37,7 +37,7 @@ current-memory bounds must be known before the shared handoff is updated.
 
 - The record stays within 32 KiB and 400 lines and preserves the registered
   seven-section envelope.
-- Evidence remains value-free and resolves to canonical Stage 03 or Stage 04
+- Evidence remains value-free and resolves to a canonical stable Spec or co-located Task
   owners.
 - Active policy remains in rules, scopes, provider overlays, and typed
   contracts rather than Memory.
@@ -53,4 +53,4 @@ not pass.
 - [Documentation writer role](../../../docs/00.agent-governance/agents/agents/doc-writer.md)
 - [Governance memory contract](../../../docs/00.agent-governance/memory/README.md)
 - [Current project memory](../../../docs/00.agent-governance/memory/current.md)
-- [Spec 134](../../../docs/03.specs/134-agent-governance-canonical-convergence/spec.md)
+- [Spec 134](../../../docs/03.specs/spec-0134-agent-governance-canonical-convergence/spec.md)

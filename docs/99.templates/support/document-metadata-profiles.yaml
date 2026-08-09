@@ -85,10 +85,229 @@ document_families:
     ]
 
 archive_profiles:
-  sdlc-archive:
-    path_globs: [docs/98.archive/**/*.md]
+  change-plan:
+    path_globs: [docs/98.archive/changes/chg-*/plan.md]
     template: docs/99.templates/templates/common/archive.template.md
     artifact_type: archive
+    id_pattern: 'plan-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'chg-(?P<identity>[0-9]{4})-[a-z0-9][a-z0-9-]*'
+    artifact_id_identity_pattern: 'plan-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required:
+      [
+        status,
+        artifact_id,
+        artifact_type,
+        parent_ids,
+        archived_from,
+        archived_at,
+        archive_reason,
+        archive_disposition,
+        archived_commit,
+        archived_blob,
+        preservation_class,
+      ]
+    optional:
+      [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden:
+      [
+        reviewed_at,
+        next_review_at,
+        type,
+        document_type,
+        template_type,
+        owner,
+        links,
+        generated_by,
+      ]
+    allowed_statuses: [archived]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        incident,
+        postmortem,
+        release,
+        reference,
+        audit,
+        archive,
+      ]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
+
+  change-task:
+    path_globs: [docs/98.archive/changes/chg-*/task.md]
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    id_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    path_identity: inherited
+    parent_id_pattern: 'chg-(?P<identity>[0-9]{4})-[a-z0-9][a-z0-9-]*'
+    artifact_id_identity_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    identity_capture: identity
+    required:
+      [
+        status,
+        artifact_id,
+        artifact_type,
+        parent_ids,
+        archived_from,
+        archived_at,
+        archive_reason,
+        archive_disposition,
+        archived_commit,
+        archived_blob,
+        preservation_class,
+      ]
+    optional:
+      [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden:
+      [
+        reviewed_at,
+        next_review_at,
+        type,
+        document_type,
+        template_type,
+        owner,
+        links,
+        generated_by,
+      ]
+    allowed_statuses: [archived]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        incident,
+        postmortem,
+        release,
+        reference,
+        audit,
+        archive,
+      ]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
+
+  tombstone:
+    path_globs:
+      - docs/98.archive/tombstones/01.requirements/*.md
+      - docs/98.archive/tombstones/02.architecture/*.md
+      - docs/98.archive/tombstones/03.specs/*.md
+      - docs/98.archive/tombstones/05.operations/*.md
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    id_pattern: '(?:(?:prd|srs|interface)-[0-9]{3}|(?:ad|adr|spec|ops|guide|policy|runbook|inc|postmortem|rel|ref)-[0-9]{4})'
+    path_identity: direct
+    parent_id_pattern: null
+    artifact_id_identity_pattern: null
+    identity_capture: null
+    required:
+      [
+        status,
+        artifact_id,
+        artifact_type,
+        parent_ids,
+        archived_from,
+        archived_at,
+        archive_reason,
+        archive_disposition,
+        archived_commit,
+        archived_blob,
+        preservation_class,
+      ]
+    optional:
+      [layer, supersedes, current_replacement, snapshot_path, content_sha256, snapshot_reason]
+    forbidden:
+      [
+        reviewed_at,
+        next_review_at,
+        type,
+        document_type,
+        template_type,
+        owner,
+        links,
+        generated_by,
+      ]
+    allowed_statuses: [archived]
+    allowed_parent_types:
+      [
+        prd,
+        srs,
+        interface-requirement,
+        architecture-description,
+        adr,
+        spec,
+        plan,
+        task,
+        guide,
+        policy,
+        runbook,
+        incident,
+        postmortem,
+        release,
+        reference,
+        audit,
+        archive,
+      ]
+    allow_empty_parents: true
+    disposition: archive exception
+    conditions:
+      replacement:
+        field: current_replacement
+        required_for: [superseded, duplicate, conflict]
+        forbidden_for: [withdrawn]
+        optional_for: [evidence-preserve]
+      snapshot:
+        fields: [snapshot_path, content_sha256, snapshot_reason]
+        required_for: [immutable-snapshot]
+        forbidden_for: [git-history]
+
+  migration:
+    path_globs: [docs/98.archive/migrations/mig-*.md]
+    template: docs/99.templates/templates/common/archive.template.md
+    artifact_type: archive
+    id_pattern: 'mig-[0-9]{4}'
+    path_identity: direct
+    parent_id_pattern: null
+    artifact_id_identity_pattern: null
+    identity_capture: null
     required:
       [
         status,
@@ -632,7 +851,14 @@ template_roles:
   archive:
     source: docs/99.templates/templates/common/archive.template.md
     artifact_profile: archive
-    target_globs: [docs/98.archive/**/*.md]
+    target_globs:
+      - docs/98.archive/changes/chg-*/plan.md
+      - docs/98.archive/changes/chg-*/task.md
+      - docs/98.archive/tombstones/01.requirements/*.md
+      - docs/98.archive/tombstones/02.architecture/*.md
+      - docs/98.archive/tombstones/03.specs/*.md
+      - docs/98.archive/tombstones/05.operations/*.md
+      - docs/98.archive/migrations/mig-*.md
     required_headings:
       ['## Overview', '## Archive Metadata', '## Archive Ledger', '## Related Documents']
     conditional_headings: ['## Current Replacement', '## Preserved Evidence']

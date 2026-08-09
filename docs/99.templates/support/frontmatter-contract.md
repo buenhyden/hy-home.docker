@@ -109,9 +109,10 @@ non-angle markers such as `YYYY-MM-DD` remain field-specific.
 Spec 123 is the sole approved cross-cutting root exception in this rollout; its
 empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 
-Archive tombstones keep semantic `artifact_type: archive` and select only
-`sdlc-archive` beneath `docs/98.archive/**`. They use the archive lifecycle
-profile and the provenance fields
+Archive records keep semantic `artifact_type: archive` and select exactly one
+typed `change-plan`, `change-task`, `tombstone`, or `migration` identity beneath
+`docs/98.archive/**`. README paths remain owned by the explicit archive README
+profile. Archive records use the archive lifecycle profile and provenance fields
 required by the registry. Conditional replacement and snapshot fields are
 present only when the archive profile admits them; their human interpretation
 is owned by the

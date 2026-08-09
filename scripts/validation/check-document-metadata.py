@@ -729,6 +729,11 @@ ARCHIVE_PROFILE_KEYS = frozenset(
         "path_globs",
         "template",
         "artifact_type",
+        "id_pattern",
+        "path_identity",
+        "parent_id_pattern",
+        "artifact_id_identity_pattern",
+        "identity_capture",
         "required",
         "optional",
         "forbidden",
@@ -739,7 +744,12 @@ ARCHIVE_PROFILE_KEYS = frozenset(
         "conditions",
     }
 )
-EXPECTED_ARCHIVE_PROFILE_NAMES = ("sdlc-archive",)
+EXPECTED_ARCHIVE_PROFILE_NAMES = (
+    "change-plan",
+    "change-task",
+    "tombstone",
+    "migration",
+)
 EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
     {
         "adr",
@@ -1601,6 +1611,35 @@ def classify_archive_profile(path: pathlib.Path, profiles: dict[str, object]) ->
     return matches[0]
 
 
+def archive_identity_profile(path: pathlib.Path, profiles: dict[str, object]) -> str | None:
+    """Return the typed Stage 98 identity family, including malformed paths.
+
+    Exact archive classification remains the acceptance boundary. This broader
+    family router exists only so an invalid dated or misshapen Stage 98 path is
+    still checked by the Task 1 stable-identity validator and receives the
+    deterministic identity findings that explain why it is invalid.
+    """
+
+    normalized = pathlib.PurePosixPath(path.as_posix())
+    parts = normalized.parts
+    prefix = ("docs", "98.archive")
+    if normalized.is_absolute() or parts[:2] != prefix or len(parts) < 4:
+        return None
+    family = parts[2]
+    if family == "changes" and normalized.name == "plan.md":
+        candidate = "change-plan"
+    elif family == "changes" and normalized.name == "task.md":
+        candidate = "change-task"
+    elif family == "tombstones":
+        candidate = "tombstone"
+    elif family == "migrations":
+        candidate = "migration"
+    else:
+        return None
+    archive_profiles = profiles.get("archive_profiles", {})
+    return candidate if isinstance(archive_profiles, dict) and candidate in archive_profiles else None
+
+
 def readme_frontmatter_consumer(path: pathlib.Path, profiles: dict[str, object]) -> str | None:
     """Return the profile-declared consumer; metadata content never infers one."""
 
@@ -2425,11 +2464,13 @@ def validate_record(
     common, profile_map = _profile_mapping(profiles)
     raw_profile = profile_map.get(record.artifact_type)
     profile_label = record.artifact_type
+    archive_profile_error: ProfileError | None = None
     if record.artifact_type == "archive":
         try:
             profile_label = classify_archive_profile(record.path, profiles)
         except ProfileError as error:
-            return [_finding(record, "archive-profile", str(error))]
+            archive_profile_error = error
+            profile_label = archive_identity_profile(record.path, profiles) or "archive"
         archive_profiles = profiles.get("archive_profiles", {})
         raw_profile = (
             archive_profiles.get(profile_label)
@@ -2437,9 +2478,13 @@ def validate_record(
             else None
         )
     if not isinstance(raw_profile, dict):
+        if archive_profile_error is not None:
+            return [_finding(record, "archive-profile", str(archive_profile_error))]
         return [_finding(record, "unknown-profile", f"profile is not configured: {record.artifact_type}")]
     typed_manifest = manifest if isinstance(manifest, Manifest) else Manifest(dict(manifest), {}, {})
     findings: list[Finding] = []
+    if archive_profile_error is not None:
+        findings.append(_finding(record, "archive-profile", str(archive_profile_error)))
     if record.parse_error:
         parse_code = record.parse_error_code or "malformed-yaml"
         findings.append(_finding(record, f"frontmatter-{parse_code}", record.parse_error))
@@ -2661,10 +2706,15 @@ def validate_record(
         and isinstance(raw_profile.get("id_pattern"), str)
         and isinstance(raw_profile.get("path_identity"), str)
     ):
+        identity_profiles = (
+            {record.artifact_type: raw_profile}
+            if record.artifact_type == "archive"
+            else profile_map
+        )
         for taxonomy_finding in validate_stable_identity(
             pathlib.PurePosixPath(record.path.as_posix()),
             record.metadata,
-            profile_map,
+            identity_profiles,
         ):
             findings.append(
                 _finding(
@@ -4264,6 +4314,53 @@ def load_profiles(
             raise ProfileError(f"archive profile {profile_name} template must be canonical")
         if archive_profile.get("artifact_type") != "archive":
             raise ProfileError(f"archive profile {profile_name} must keep semantic archive type")
+        id_pattern = archive_profile.get("id_pattern")
+        if not isinstance(id_pattern, str) or not id_pattern:
+            raise ProfileError(f"archive profile {profile_name} id_pattern must be a non-empty regex")
+        try:
+            re.compile(id_pattern)
+        except re.error as error:
+            raise ProfileError(
+                f"archive profile {profile_name} id_pattern must compile"
+            ) from error
+        path_identity = archive_profile.get("path_identity")
+        identity_fields = (
+            "parent_id_pattern",
+            "artifact_id_identity_pattern",
+            "identity_capture",
+        )
+        if path_identity == "direct":
+            if any(archive_profile.get(field) is not None for field in identity_fields):
+                raise ProfileError(
+                    f"archive profile {profile_name} direct identity must not define correlation fields"
+                )
+        elif path_identity == "inherited":
+            if not all(
+                isinstance(archive_profile.get(field), str)
+                and archive_profile[field]
+                for field in identity_fields
+            ):
+                raise ProfileError(
+                    f"archive profile {profile_name} inherited identity requires exact correlation fields"
+                )
+            try:
+                parent_pattern = re.compile(archive_profile["parent_id_pattern"])
+                artifact_pattern = re.compile(
+                    archive_profile["artifact_id_identity_pattern"]
+                )
+            except re.error as error:
+                raise ProfileError(
+                    f"archive profile {profile_name} correlation patterns must compile"
+                ) from error
+            capture = archive_profile["identity_capture"]
+            if capture not in parent_pattern.groupindex or capture not in artifact_pattern.groupindex:
+                raise ProfileError(
+                    f"archive profile {profile_name} correlation patterns must expose identity_capture"
+                )
+        else:
+            raise ProfileError(
+                f"archive profile {profile_name} path_identity must be direct or inherited"
+            )
         for group in ("required", "optional", "forbidden"):
             values = archive_profile.get(group)
             if not isinstance(values, list) or not all(

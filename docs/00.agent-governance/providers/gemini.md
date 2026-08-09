@@ -83,7 +83,7 @@ adapter. Stage 00 remains canonical.
 - **Controlled all-files QA**: Direct agent execution of all-files pre-commit is
   prohibited. At an approved final QA gate, invoke only
   `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
-  Git-visible, non-ignored repository paths in Stage 04 evidence.
+  Git-visible, non-ignored repository paths in co-located Task evidence.
 
 ## 7. Operational Practices
 

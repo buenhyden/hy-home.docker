@@ -25,13 +25,13 @@ Operational behavior must be implemented and verified; commands, expected outcom
 
 ## Outputs
 
-- One typed runbook in `docs/05.operations/runbooks/` with executable, topic-specific procedure.
+- One typed runbook at `docs/05.operations/<domain>/ops-<id>-<slug>/runbook.md` with executable, topic-specific procedure.
 
 ## Gates
 
 - Procedures are executable and expected outcomes are observable.
 - Rollback/recovery and escalation are explicit.
-- Incident packets use `incidents/YYYY/INC-###-<incident-title>/`; the paired
+- Incident packets use `docs/05.operations/incidents/inc-<id>-<slug>/`; the paired
   postmortem filename is fixed: Filename: `postmortem.md`.
 
 ## Failure Handling

@@ -405,24 +405,24 @@ A document without this section is **INCOMPLETE** regardless of content quality.
 
 **R4 — Operations Profile Compliance (BLOCKING):**
 Every non-README leaf document under `docs/05.operations/` MUST satisfy its
-bucket's purpose-profile contract. Profile compliance is machine-verified by
+stable domain/subject purpose-profile contract. Profile compliance is machine-verified by
 `check-repo-contracts.sh` (section "Operations purpose profile contract").
 
-- `guides/**` required: `## Usage` (enforced now); `## Common Checks`,
-  `## Runbook Handoff` (Phase 4 script update will add enforcement).
+- `<domain>/ops-<id>-<slug>/guide.md` requires `## Usage` and
+  `## Common Checks`. `## Runbook Handoff` is conditional on a sibling Runbook.
   Forbidden in guides: `## Policy Scope`, `## Controls`, `## Exceptions`,
   `## Review Cadence`, `### When to Use`, `#### Procedure`.
-- `policies/**` required: `## Policy Scope`, `## Controls`, `## Verification`,
+- `<domain>/ops-<id>-<slug>/policy.md` requires `## Policy Scope`, `## Controls`, `## Verification`,
   `## Review Cadence`. Forbidden in policies: `## Usage`, `## Runbook Handoff`,
   `### When to Use`, `#### Procedure`.
-- `runbooks/**` required: `## When to Use`, `## Procedure`, `## Evidence`,
+- `<domain>/ops-<id>-<slug>/runbook.md` requires `## When to Use`, `## Procedure`, `## Evidence`,
   `## Escalation`. Forbidden in runbooks: `## Usage`,
   `## Policy Scope`, `## Controls`, `## Exceptions`, `## Review Cadence`.
-- `incidents/YYYY/INC-###-<title>/INC-###-<title>.md` documents use
+- `incidents/inc-<id>-<slug>/incident.md` documents use
   `incident.template.md` (active incident record).
-- `incidents/YYYY/INC-###-<title>/postmortem.md` documents use
+- `incidents/inc-<id>-<slug>/postmortem.md` documents use
   `postmortem.template.md` (post-incident review).
-- `releases/YYYY-MM-DD-release-name.md` documents use the registry `release`
+- `releases/rel-<id>-<slug>/release.md` documents use the registry `release`
   profile and `release.template.md`; create one only from evidence for an
   actual release event. A changelog or readiness runbook is not a Release
   record, and deployment runtime remains separately owned.

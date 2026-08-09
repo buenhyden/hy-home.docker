@@ -24,13 +24,49 @@ provenance under that root and never create an active compatibility, redirect,
 or legacy profile. Each path matches one registered archive selector and uses
 its registered template.
 
-### `sdlc-archive`
+### `change-plan`
 
 Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
 
 Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
 
 Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+The retained `plan.md` has `plan-<id>` identity inherited from its
+`changes/chg-<id>-<slug>/` packet directory.
+
+### `change-task`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+The retained `task.md` has `task-<id>-<sequence>` identity inherited from its
+`changes/chg-<id>-<slug>/` packet directory.
+
+### `tombstone`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+Tombstones preserve the removed document's stable ID in a direct
+`tombstones/<stage>/<stable-id>-<slug>.md` path.
+
+### `migration`
+
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+
+Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
+
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+
+Migration records use direct `mig-<id>` identity at
+`migrations/mig-<id>-<slug>.md`.
 
 Within the SDLC optional field set, `current_replacement` is required for
 `superseded`, `duplicate`, and `conflict`; forbidden for `withdrawn`; and
@@ -46,7 +82,7 @@ The preservation classes are `git-history`, `immutable-snapshot`.
 resolve to that exact blob. The tombstone remains concise and never presents
 the removed body as current truth.
 
-For an SDLC tombstone, a verified withdrawal has no replacement, so the
+For a Stage 98 archive record, a verified withdrawal has no replacement, so the
 `current_replacement` key and `## Current Replacement` section are absent.
 Sentinel text must not fabricate a replacement. The direction of `supersedes`,
 direct parents, identity, and status still comes from the shared metadata
@@ -54,7 +90,7 @@ owner.
 
 ## Snapshot Admission and Confidentiality
 
-For `sdlc-archive`, Git history is the default preservation route. An immutable
+For every typed Stage 98 selector, Git history is the default preservation route. An immutable
 snapshot is admitted only for an evidence-preserve disposition with explicit
 audit, legal, or approved evidence need. It requires all three snapshot fields
 and the `## Preserved Evidence` section.

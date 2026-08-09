@@ -611,19 +611,31 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_archive_profiles_are_exactly_path_selected(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         archive_profiles = profiles["archive_profiles"]
-        self.assertEqual(["sdlc-archive"], list(archive_profiles))
         self.assertEqual(
-            ["docs/98.archive/**/*.md"],
-            archive_profiles["sdlc-archive"]["path_globs"],
+            ["change-plan", "change-task", "tombstone", "migration"],
+            list(archive_profiles),
         )
-        self.assertEqual(
-            "docs/99.templates/templates/common/archive.template.md",
-            archive_profiles["sdlc-archive"]["template"],
-        )
-        self.assertEqual(
-            "archive",
-            archive_profiles["sdlc-archive"]["artifact_type"],
-        )
+        expected_globs = {
+            "change-plan": ["docs/98.archive/changes/chg-*/plan.md"],
+            "change-task": ["docs/98.archive/changes/chg-*/task.md"],
+            "tombstone": [
+                "docs/98.archive/tombstones/01.requirements/*.md",
+                "docs/98.archive/tombstones/02.architecture/*.md",
+                "docs/98.archive/tombstones/03.specs/*.md",
+                "docs/98.archive/tombstones/05.operations/*.md",
+            ],
+            "migration": ["docs/98.archive/migrations/mig-*.md"],
+        }
+        for name, profile in archive_profiles.items():
+            with self.subTest(profile=name):
+                self.assertEqual(expected_globs[name], profile["path_globs"])
+                self.assertEqual(
+                    "docs/99.templates/templates/common/archive.template.md",
+                    profile["template"],
+                )
+                self.assertEqual("archive", profile["artifact_type"])
+                self.assertIsInstance(profile["id_pattern"], str)
+                self.assertIn(profile["path_identity"], {"direct", "inherited"})
 
     def test_archive_profile_rejects_unknown_condition_fields(self) -> None:
         def add_unknown_condition(values) -> None:
@@ -1614,7 +1626,7 @@ class ArtifactInferenceTests(unittest.TestCase):
             "docs/05.operations/releases/rel-0001-example/release.md": "release",
             "docs/90.references/research/example.md": "reference",
             "docs/90.references/audits/example.md": "audit",
-            "docs/98.archive/04.execution/example.md": "archive",
+            "docs/98.archive/migrations/mig-0001-example.md": "archive",
             "archive/Windows-Network-IP.md": "unsupported",
             "docs/99.templates/templates/sdlc/spec.template.md": "template-source",
             "docs/00.agent-governance/rules/example.md": "governance",
@@ -1628,7 +1640,10 @@ class ArtifactInferenceTests(unittest.TestCase):
     def test_archive_paths_match_exactly_one_semantic_profile(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         cases = {
-            "docs/98.archive/04.execution/example.md": "sdlc-archive",
+            "docs/98.archive/changes/chg-0001-example/plan.md": "change-plan",
+            "docs/98.archive/changes/chg-0001-example/task.md": "change-task",
+            "docs/98.archive/tombstones/03.specs/spec-0001-example.md": "tombstone",
+            "docs/98.archive/migrations/mig-0001-example.md": "migration",
         }
         for path_text, expected in cases.items():
             path = pathlib.Path(path_text)
@@ -1870,7 +1885,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/05.operations/releases/rel-0901-fixture/release.md": ("release", "release"),
             "docs/90.references/research/fixture.md": ("reference", "reference"),
             "docs/90.references/audits/fixture.md": ("audit", "audit"),
-            "docs/98.archive/03.specs/fixture.md": ("archive", "archive"),
+            "docs/98.archive/tombstones/03.specs/spec-0901-fixture.md": ("archive", "archive"),
             "README.md": ("readme", "readme"),
             "docs/00.agent-governance/memory/fixture.md": ("governance", "memory"),
             "docs/00.agent-governance/memory/progress.md": ("governance", "progress"),
@@ -1970,7 +1985,7 @@ class MetadataValidationTests(unittest.TestCase):
     ):
         values: dict[str, object] = {
             "status": "archived",
-            "artifact_id": "archive:03-specs-example-task",
+            "artifact_id": "mig-0001",
             "artifact_type": "archive",
             "parent_ids": [],
             "archived_from": "docs/03.specs/spec-0123-example/task.md",
@@ -1986,7 +2001,7 @@ class MetadataValidationTests(unittest.TestCase):
         for key in remove:
             values.pop(key, None)
         return self.record(
-            "docs/98.archive/04.execution/example.md",
+            "docs/98.archive/migrations/mig-0001-example.md",
             values,
             "archive",
         )
@@ -2333,9 +2348,12 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_archive_provenance_types_are_validated(self) -> None:
         record = self.record(
-            "docs/98.archive/03.specs/spec-0123-example/task.md",
+            "docs/98.archive/migrations/mig-0123-example.md",
             {
                 "status": "archived",
+                "artifact_id": "mig-0123",
+                "artifact_type": "archive",
+                "parent_ids": [],
                 "archived_from": ["docs/03.specs/spec-0123-example/task.md"],
                 "archived_at": "not-a-date",
                 "archive_reason": 7,
@@ -2573,10 +2591,10 @@ class MetadataValidationTests(unittest.TestCase):
 
     def test_archive_template_transition_does_not_relax_target_requirements(self) -> None:
         record = self.record(
-            "docs/98.archive/03.specs/spec-0123-new-target/task.md",
+            "docs/98.archive/migrations/mig-0123-new-target.md",
             {
                 "status": "archived",
-                "artifact_id": "archive:04-execution-new-target",
+                "artifact_id": "mig-0123",
                 "artifact_type": "archive",
                 "parent_ids": [],
                 "archived_from": "docs/03.specs/spec-0123-new-target/task.md",
@@ -3122,7 +3140,7 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/rel-0901-fixture/release.md",
             "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
             "docs/99.templates/templates/common/audit.template.md": "docs/90.references/audits/fixture.md",
-            "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/03.specs/901-fixture/spec.md",
+            "docs/99.templates/templates/common/archive.template.md": "docs/98.archive/migrations/mig-0901-fixture.md",
             "docs/99.templates/templates/spec-contracts/agent-design.template.md": "docs/03.specs/spec-0901-fixture/agent-design.md",
             "docs/99.templates/templates/spec-contracts/api-spec.template.md": "docs/03.specs/spec-0901-fixture/api-spec.md",
             "docs/99.templates/templates/spec-contracts/data-model.template.md": "docs/03.specs/spec-0901-fixture/data-model.md",
@@ -3233,6 +3251,7 @@ class TemplateMetadataTests(unittest.TestCase):
             "incident": "inc-0901",
             "postmortem": "postmortem-0901",
             "release": "rel-0901",
+            "archive": "mig-0901",
         }
         for source_path, target_type in typed_roles.items():
             with self.subTest(source=source_path, target=targets[source_path]):
@@ -5810,12 +5829,12 @@ class CheckerCliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             init_git(root)
-            path = "docs/98.archive/03.specs/spec-0123-new-target/task.md"
+            path = "docs/98.archive/migrations/mig-0123-new-target.md"
             write_doc(
                 root / path,
                 {
                     "status": "archived",
-                    "artifact_id": "archive:03-specs-new-target-task",
+                    "artifact_id": "mig-0123",
                     "artifact_type": "archive",
                     "parent_ids": [],
                     "archived_from": "docs/03.specs/spec-0123-new-target/task.md",
@@ -7277,6 +7296,69 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             self.assertTrue(set(role["required_headings"]).issubset(headings))
             self.assertFalse(set(role["forbidden_headings"]) & headings)
 
+        protocol = (
+            ROOT / "docs/00.agent-governance/rules/documentation-protocol.md"
+        ).read_text(encoding="utf-8")
+        operations_contract = protocol.split(
+            "**R4 — Operations Profile Compliance (BLOCKING):**", 1
+        )[1].split("## 8.5.", 1)[0]
+        self.assertIn("conditional on a sibling Runbook", operations_contract)
+        self.assertNotRegex(
+            operations_contract,
+            r"(?is)guides?[^\n]*(?:required|must)[^\n]*Runbook Handoff",
+        )
+
+    def test_active_stage00_and_stage99_publications_reject_retired_routes(self) -> None:
+        tracked = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(ROOT),
+                "ls-files",
+                "docs/00.agent-governance",
+                "docs/99.templates",
+                ".agents/skills",
+                ".claude/skills",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+        bounded_contexts = {
+            "docs/99.templates/support/archive-retention-contract.md",
+            "docs/99.templates/support/document-corpus-migration-contract.yaml",
+        }
+        allowed_negative_lines = {
+            "Stage 04 is not an active target.",
+            "no Stage 04 target, ARD role, dated identity, or parallel Operations role",
+        }
+        retired_publications = (
+            re.compile(r"(?:docs/)?03\.specs/(?:NNN|[0-9]{3})(?:-|/|<)"),
+            re.compile(r"docs/04\.execution/(?:plans|tasks)"),
+            re.compile(r"docs/05\.operations/(?:guides|policies|runbooks)/"),
+            re.compile(r"docs/05\.operations/(?:incidents|releases)/(?:YYYY|[0-9]{4})"),
+            re.compile(r"releases/YYYY-MM-DD"),
+            re.compile(r"\bStage ?04\b", re.IGNORECASE),
+            re.compile(r"NNN-<feature-id>"),
+        )
+        violations: list[str] = []
+        for relative_path in tracked:
+            if relative_path in bounded_contexts or relative_path.startswith(
+                "docs/00.agent-governance/memory/"
+            ):
+                continue
+            path = ROOT / relative_path
+            if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
+                continue
+            for line_number, line in enumerate(
+                path.read_text(encoding="utf-8").splitlines(), 1
+            ):
+                if any(fragment in line for fragment in allowed_negative_lines):
+                    continue
+                if any(pattern.search(line) for pattern in retired_publications):
+                    violations.append(f"{relative_path}:{line_number}:{line.strip()}")
+        self.assertEqual([], violations)
+
     def test_typed_role_dates_and_single_archive_target_are_exact(self) -> None:
         profiles = self.profiles["profiles"]
         self.assertIn("completed_at", profiles["plan"]["optional"])
@@ -7284,9 +7366,15 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         self.assertIn("occurred_at", profiles["incident"]["required"])
         self.assertIn("resolved_at", profiles["incident"]["optional"])
         self.assertIn("released_at", profiles["release"]["required"])
-        self.assertEqual(["sdlc-archive"], list(self.profiles["archive_profiles"]))
-        archive = self.profiles["archive_profiles"]["sdlc-archive"]
-        self.assertIn("archived_at", archive["required"])
+        archive_profiles = self.profiles["archive_profiles"]
+        self.assertEqual(
+            ["change-plan", "change-task", "tombstone", "migration"],
+            list(archive_profiles),
+        )
+        for archive in archive_profiles.values():
+            self.assertIn("archived_at", archive["required"])
+            self.assertIn("id_pattern", archive)
+            self.assertIn(archive["path_identity"], {"direct", "inherited"})
         self.assertNotIn("archived_on", self.profiles["common"]["frontmatter_order"])
         for role in ("spec", "plan", "task", "runbook"):
             self.assertNotIn("archive", profiles[role]["allowed_parent_types"])
@@ -7374,6 +7462,96 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
                     for finding in metadata.validate_record(child, self.profiles, manifest)
                 }
                 self.assertIn("invalid-parent-type", codes)
+
+    @staticmethod
+    def _archive_frontmatter(artifact_id: str) -> dict[str, object]:
+        return {
+            "status": "archived",
+            "artifact_id": artifact_id,
+            "artifact_type": "archive",
+            "parent_ids": [],
+            "archived_from": "docs/03.specs/spec-0136-example/task.md",
+            "archived_at": "2026-08-07",
+            "archive_reason": "Stable archive fixture.",
+            "archive_disposition": "withdrawn",
+            "archived_commit": "a" * 40,
+            "archived_blob": "b" * 40,
+            "preservation_class": "git-history",
+        }
+
+    def test_archive_selectors_accept_only_approved_stable_shapes(self) -> None:
+        cases = {
+            "docs/98.archive/changes/chg-0001-example/plan.md": (
+                "change-plan",
+                "plan-0001",
+            ),
+            "docs/98.archive/changes/chg-0001-example/task.md": (
+                "change-task",
+                "task-0001-01",
+            ),
+            "docs/98.archive/tombstones/03.specs/spec-0136-example.md": (
+                "tombstone",
+                "spec-0136",
+            ),
+            "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md": (
+                "migration",
+                "mig-0001",
+            ),
+        }
+        for path_text, (selector, artifact_id) in cases.items():
+            with self.subTest(path=path_text):
+                path = pathlib.Path(path_text)
+                self.assertEqual(selector, metadata.classify_archive_profile(path, self.profiles))
+                record = metadata.Record(
+                    path,
+                    self._archive_frontmatter(artifact_id),
+                    "archive",
+                )
+                identity_codes = {
+                    finding.code
+                    for finding in metadata.validate_record(
+                        record,
+                        self.profiles,
+                        metadata.build_manifest([record]),
+                    )
+                    if finding.code
+                    in {"artifact-id-invalid", "path-id-mismatch", "dated-path-identity"}
+                }
+                self.assertEqual(set(), identity_codes)
+
+        self.assertEqual(
+            "archive",
+            metadata.classify_readme_profile(
+                pathlib.Path("docs/98.archive/README.md"), self.profiles
+            ),
+        )
+
+    def test_metadata_cli_rejects_unstable_archive_identities(self) -> None:
+        cases = {
+            "docs/98.archive/migrations/2026-08-07-retired.md": "mig-0001",
+            "docs/98.archive/migrations/mig-0002-retired.md": "archive:anything",
+            "docs/98.archive/migrations/mig-0003-retired.md": "mig-0004",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            for path_text, artifact_id in cases.items():
+                write_doc(
+                    root / path_text,
+                    self._archive_frontmatter(artifact_id),
+                    body_with_headings(
+                        "## Overview",
+                        "## Archive Metadata",
+                        "## Archive Ledger",
+                        "## Related Documents",
+                    ),
+                )
+            commit_all(root)
+            result = run_checker(root, "report")
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("dated-path-identity", result.stdout)
+            self.assertIn("artifact-id-invalid", result.stdout)
+            self.assertIn("path-id-mismatch", result.stdout)
 
 
 if __name__ == "__main__":
