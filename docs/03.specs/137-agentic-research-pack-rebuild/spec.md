@@ -31,10 +31,10 @@ The rebuilt pack covers harness engineering, loop engineering, Claude and
 Codex implementation status, provider-neutral rules and environments,
 spec-driven development, Docker Compose, infrastructure, the SDLC and its
 document roles, Diataxis, LLM Wiki design, CI/CD, GitHub Actions, QA, security,
-external AI-agent catalogs, task-aware model selection, and short-term,
-long-term, and domain memory. Each topic combines current primary external
-sources with measurements of the tracked workspace and reports the limits of
-that evidence.
+verification and validation, external AI-agent catalogs, task-aware model
+selection, and short-term, long-term, and domain memory. Each topic combines
+current primary external sources with measurements of the tracked workspace
+and reports the limits of that evidence.
 
 This is a rebuild rather than an in-place refresh. The current pack contains
 valuable evidence, but successive migrations and provider releases have made
@@ -51,8 +51,8 @@ settings, or deployment state.
 
 ### Approved scope
 
-- Author one new canonical research pack with one README and nineteen new leaf
-  documents.
+- Author one new canonical research pack with exactly twenty-one files: one
+  README and twenty new leaf documents.
 - Research the requested categories using current official documentation,
   standards, primary papers, and official repositories wherever available.
 - Re-measure the workspace surfaces relevant to every topic and all fourteen
@@ -114,7 +114,7 @@ may not be converted into a pass by omission.
 ### Normative requirement inventory
 
 The implementation requirement matrix uses the following closed set. A
-one-hundred-percent result means all thirty-five identifiers have a reviewed
+one-hundred-percent result means all thirty-six identifiers have a reviewed
 destination and evidence state; additional discoveries may add rows but may
 not remove or merge these rows.
 
@@ -155,6 +155,7 @@ not remove or merge these rows.
 | REQ-33 | New authorship plus claim-level validation and integration before old-pack deletion | pack README and Task migration ledger |
 | REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task verification ledger |
 | REQ-35 | Logical-unit commits, independent reviews, final verification, and branch handoff | Plan and Task |
+| REQ-36 | Primary-source research and current-workspace implementation-and-gap analysis for verification and validation systems and rules that distinguishes conformance verification from intended-use and stakeholder-need validation and covers static and dynamic methods, evidence and traceability, independence and risk-based depth, environments, data, oracles, defect disposition, release acceptance, monitoring, and revalidation across all fourteen scopes | `verification-validation.md` |
 
 ### Source and evidence classes
 
@@ -176,10 +177,13 @@ must not infer a current fact from an older pack.
 
 The source ledger must include, as applicable, the official Claude Code,
 OpenAI/Codex, Docker Compose, GitHub Actions, Diataxis, NIST, OWASP, SLSA,
-OpenSSF, and agency-agents sources. Technical claims must prefer these primary
-sources over commentary. Provider capability pages are mutable and must be
-reopened during execution; immutable repository evidence must pin a commit or
-release when a precise count or schema is claimed.
+OpenSSF, agency-agents, IEEE 1012-2024, ISO/IEC/IEEE 12207:2026, and current
+NASA systems-engineering guidance. Technical claims must prefer these primary
+sources over commentary. Provider capability pages and standards status routes
+are mutable and must be reopened during execution; immutable repository
+evidence must pin a commit or release when a precise count or schema is
+claimed. Full normative claims from paywalled standards require licensed
+access; public route and abstract evidence supports only the claims it exposes.
 
 ## Contracts
 
@@ -189,14 +193,15 @@ The final active route is exactly:
 
 `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/`
 
-The directory contains one README and these nineteen newly authored leaves:
+The directory contains exactly twenty-one files: one README and these twenty
+newly authored leaves:
 
 | Group | Leaf documents |
 | --- | --- |
 | Foundation | `workspace-baseline.md`, `scope-application-matrix.md` |
 | Agentic engineering | `harness-engineering.md`, `loop-engineering.md`, `provider-implementation-comparison.md`, `agent-instructions-vibe-coding.md`, `provider-model-landscape.md`, `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md` |
 | SDLC and documentation | `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `documentation-architecture.md`, `llm-wiki-system.md` |
-| Delivery quality | `automation-pipeline-workflow.md`, `quality-ci-formatting.md` |
+| Delivery quality and V&V | `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `verification-validation.md` |
 | Infrastructure and security | `docker-compose-infrastructure.md`, `security-governance.md` |
 
 The pack stays flat to preserve a short and predictable Stage 90 route. The
@@ -222,6 +227,18 @@ their derivation command or registry owner and baseline. Provider-neutral
 recommendations must separate common semantic intent from provider-native
 mechanisms.
 
+The REQ-36 leaf must additionally provide one workspace owner table with the
+exact tracked path, command, baseline-specific count where applicable,
+verification or validation classification, gap, and runtime limit. It must
+distinguish `configured`, `reachable`, `selected`, `executed`, `passed`,
+`reviewed`, `hosted`, `enforced`, `runtime-observed`, and `UNVERIFIED` states;
+remeasure mutable counts during implementation; and state what readers must
+not infer about provider behavior, GitHub enforcement, Compose runtime,
+security posture, release acceptance, or generated freshness. Its detailed
+system model and workspace-adoption rules belong under `Definitions / Facts`
+so the leaf retains the pack's exact nine-heading reference profile, including
+separate `Maintenance` and `Related Documents` sections.
+
 ### Migration contract
 
 The existing directory
@@ -238,6 +255,29 @@ The manifest is execution evidence and belongs in the Task, not the research
 pack. The old files may be deleted only after all records have a disposition,
 all retained material has a canonical destination, and the deletion gates in
 Verification pass.
+
+### Gate 9 evidence architecture boundary
+
+The user approved the following high-level boundary for the final deletion
+evidence gate on 2026-08-09. The implementation Plan owns the executable
+schemas, commands, error taxonomy, finite-attempt state machine, tests, and
+review sequence within this boundary.
+
+- Temporary scratch-directory, temporary Git-index, and linked-worktree
+  projection mechanisms are eliminated from every Gate 9 helper path.
+- The deletion projection is computed pathlessly from the reviewed Git root
+  tree with content-addressed tree and blob operations. Package construction
+  may append Git objects needed for that projection, but it may not delete or
+  rewrite objects, mutate a branch, index, or worktree, or clean up unreachable
+  objects; ordinary Git garbage collection owns their eventual reclamation.
+- Each generator receives its exact canonical path manifest through a fresh,
+  sealed anonymous `memfd`. A filesystem-path, pipe, or unsealed fallback is
+  not an authority channel.
+- The review package is one canonical, atomically published, read-only bundle
+  file whose attachment identities and bytes are verified without extraction.
+- No package-build or replay mode mutates generated artifacts, lifecycle
+  records, remote state, or Git refs. A separately reviewed create-only
+  evidence-ref publication remains the only permitted Gate 9 ref mutation.
 
 ### Historical-evidence boundary
 
@@ -262,10 +302,12 @@ Implementation proceeds through logical commits with no mixed concerns:
 8. Diataxis and LLM Wiki leaves;
 9. automation, CI/CD, GitHub Actions, and QA leaves;
 10. Docker Compose, infrastructure, and security leaves;
-11. pack README and parent research router;
-12. clickable-link and generated-artifact switch;
-13. deletion of the old twenty-file pack; and
-14. final verification, independent review, Task closure, and memory evidence.
+11. verification and validation leaf plus its requirement, source, scope, and
+    routing evidence;
+12. pack README and parent research router;
+13. clickable-link and generated-artifact switch;
+14. deletion of the old twenty-file pack; and
+15. final verification, independent review, Task closure, and memory evidence.
 
 Commit boundaries may be split further when independent review finds a
 material concern. They may not be collapsed across the old-pack deletion gate.
@@ -326,6 +368,7 @@ deliberate omissions remain inspectable.
 | External AI agents and local catalog | `ai-agent-catalogs.md` | model selection, instructions, harness |
 | Task-aware models and settings | `agent-model-selection.md` | model landscape, provider comparison, AI-agent catalogs |
 | Memory hierarchy and management | `memory-hierarchy.md` | loop, instructions, provider comparison |
+| Verification and validation | `verification-validation.md` | workspace baseline, scope matrix, SDLC, automation, QA, security, release evidence |
 
 The requirement matrix must show every user-requested item, its primary leaf,
 supporting leaves, external source status, workspace evidence owner, scope
@@ -549,8 +592,8 @@ Each leaf must pass:
 
 Before routing switches, the new pack must pass:
 
-- nineteen-of-nineteen leaf presence and README routing coverage;
-- one-hundred-percent requirement-matrix coverage;
+- twenty-of-twenty leaf presence and README routing coverage;
+- thirty-six-of-thirty-six requirement-matrix coverage;
 - one-hundred-percent coverage of the fourteen normative scopes;
 - source-ledger completeness for load-bearing external claims;
 - no unsupported live-runtime or remote-enforcement claims; and
@@ -565,7 +608,7 @@ Deletion of the old twenty files is authorized only when all of these are true:
 3. every omission has a reason and preserved provenance;
 4. clickable references to the old pack are zero across all tracked text
    outside the retiring directory;
-5. requirement and scope coverage are both complete;
+5. all thirty-six requirements and all fourteen scopes are complete;
 6. independent reviews have zero unresolved Critical or Important findings;
 7. changed-document metadata and traceability pass; document implementation
    alignment reports zero findings attributable to this work and no increase
@@ -606,7 +649,8 @@ After deletion, run and record at least:
 - the complete retiring-path literal scan, historical allowlist reconciliation,
   and broken-link scan covering all tracked text and generated documents;
 - `git diff --check` and an exact changed-file review;
-- a source/requirement/scope/claim-ledger completeness audit; and
+- a source/thirty-six-requirement/fourteen-scope/claim-ledger completeness
+  audit; and
 - final whole-branch specification and quality review.
 
 A pass is valid only for the exact committed range reviewed. If a final fix
@@ -615,10 +659,11 @@ changes that range, the affected checks and final review must be repeated.
 ### Completion and branch handoff
 
 The specification is complete only when the new pack is the sole active
-canonical research pack, the old twenty files are deleted after the gates,
-current routes and generated artifacts resolve to the new path, the Task and
-memory evidence accurately record results and residual failures, and final
-review approves the exact branch range.
+canonical research pack with exactly twenty-one files—one README and twenty
+reviewed leaves—the old twenty files are deleted after the gates, current
+routes and generated artifacts resolve to the new path, the Task and memory
+evidence accurately record results and residual failures, and final review
+approves the exact branch range.
 
 The finishing workflow then presents the user with the verified branch state
 and explicit integration choices. No push, pull request, merge, or branch
