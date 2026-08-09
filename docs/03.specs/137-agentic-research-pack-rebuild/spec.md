@@ -10,12 +10,20 @@ parent_ids:
 
 # Agentic Engineering Research Pack Rebuild Specification
 
-**Conversation design approval date:** 2026-08-08 (Asia/Seoul)
+**Original conversation design approval date:** 2026-08-08 (Asia/Seoul)
 
-The user approved the design direction in conversation. The written artifact
-then passed independent specification and documentation reviews with zero
-Critical or Important findings and is active for Stage 04 planning. Old-pack
-deletion authority remains conditional on every pre-deletion gate below.
+**V&V and Gate 9 amendment approval date:** 2026-08-09 (Asia/Seoul)
+
+The user approved the original design direction in conversation. That written
+artifact then passed independent specification and documentation reviews with
+zero Critical or Important findings and became active for Stage 04 planning.
+Those verdicts cover the original artifact only. The 2026-08-09 amendment that
+adds REQ-36, the twenty-one-file cardinality, and the Gate 9 architecture
+boundary is user-approved, while its exact fixed commit range and independent
+amendment-review verdicts remain pending. The Stage 04 Task must record the
+actual range and verdicts after the fixed commit is reviewed; the Spec must not
+self-assert them. Old-pack deletion authority remains conditional on every
+pre-deletion gate below.
 
 ## Overview
 
@@ -155,7 +163,7 @@ not remove or merge these rows.
 | REQ-33 | New authorship plus claim-level validation and integration before old-pack deletion | pack README and Task migration ledger |
 | REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task verification ledger |
 | REQ-35 | Logical-unit commits, independent reviews, final verification, and branch handoff | Plan and Task |
-| REQ-36 | Primary-source research and current-workspace implementation-and-gap analysis for verification and validation systems and rules that distinguishes conformance verification from intended-use and stakeholder-need validation and covers static and dynamic methods, evidence and traceability, independence and risk-based depth, environments, data, oracles, defect disposition, release acceptance, monitoring, and revalidation across all fourteen scopes | `verification-validation.md` |
+| REQ-36 | Primary-source research and current-workspace implementation-and-gap analysis for verification and validation systems and rules that distinguishes conformance verification from intended-use and stakeholder-need validation and covers V&V planning, entry and readiness criteria, success and exit or completion criteria, static and dynamic methods, evidence and traceability, independence and risk-based depth, environments, data, oracles, defect disposition, acceptance and decision authority, residual-risk acceptance, release acceptance, monitoring, and revalidation across all fourteen scopes | `verification-validation.md` |
 
 ### Source and evidence classes
 
@@ -234,10 +242,22 @@ distinguish `configured`, `reachable`, `selected`, `executed`, `passed`,
 `reviewed`, `hosted`, `enforced`, `runtime-observed`, and `UNVERIFIED` states;
 remeasure mutable counts during implementation; and state what readers must
 not infer about provider behavior, GitHub enforcement, Compose runtime,
-security posture, release acceptance, or generated freshness. Its detailed
-system model and workspace-adoption rules belong under `Definitions / Facts`
-so the leaf retains the pack's exact nine-heading reference profile, including
-separate `Maintenance` and `Related Documents` sections.
+security posture, release acceptance, or generated freshness. It must define
+the V&V planning boundary, entry and readiness criteria, success and exit or
+completion criteria, acceptance and decision authority, defect disposition,
+and residual-risk acceptance route. Green CI or Stage 90 advice alone cannot
+grant acceptance authority; absent downstream authority and evidence remains
+`UNVERIFIED`.
+
+The Stage 90 reference template requires seven H2 headings: `Overview`,
+`Purpose`, `Scope`, `Definitions / Facts`, `Sources`, `Maintenance`, and
+`Related Documents`. This pack convention adds `Repository Role` and
+`Scope Implications`; it is not an additional registry requirement. The
+REQ-36 leaf therefore uses exactly these nine H2 headings in order:
+`Overview`, `Purpose`, `Repository Role`, `Scope`, `Definitions / Facts`,
+`Scope Implications`, `Sources`, `Maintenance`, and `Related Documents`. Its
+detailed system model and workspace-adoption rules belong under
+`Definitions / Facts` as H3 sections.
 
 ### Migration contract
 
