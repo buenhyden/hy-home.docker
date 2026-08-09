@@ -1071,6 +1071,8 @@ the only current contract consumed by Task 10, Gate 9, and Task 12.
   `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md`
 - Modify:
   `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md`
+- Modify the parent category router:
+  `docs/90.references/research/README.md`
 - Modify these supporting owner leaves only to add precise supporting
   cross-links; `workspace-baseline.md` and `scope-application-matrix.md` also
   receive the required body cardinality/applicability updates, while the other
@@ -1099,8 +1101,9 @@ the only current contract consumed by Task 10, Gate 9, and Task 12.
   report, the ignored workspace audit, the current tracked owner files, the
   14-scope matrix, and the independently reviewed Plan-amendment range.
 - Produces: REQ-36 owner `verification-validation.md`, exactly 20 reviewed
-  leaves/21 pack files, 36/36 Task coverage, current Stage 03 routing, explicit
-  topical cross-links, and fresh generated navigation.
+  leaves/21 pack files, the exact 18-path implementation scope, 36/36 Task
+  coverage, current Stage 03 and parent-category routing, explicit topical
+  cross-links, and fresh generated navigation.
 
 - [ ] **Step 1: Backfill immutable amendment authority in one Task-only unit**
 
@@ -1208,6 +1211,14 @@ duplicate their detailed matrices. Update the Task requirement/source/scope/
 workspace/generated ledgers and correct exactly the two stale `Draft` labels
 for Spec 137 in `docs/03.specs/README.md` to `Active`.
 
+Update exactly two current cardinality lines in the parent research README:
+the structure-tree comment changes `19-leaf pack` to `20-leaf / 21-file pack`,
+and the localized canonical-route sentence changes its leaf count from 19 to
+20 and states that the pack contains 21 total files. Preserve its category
+router structure: the parent links to the pack README, which owns the 20 direct
+leaf routes. Do not add a direct `verification-validation.md` link to the
+parent because that router does not enumerate individual leaves.
+
 - [ ] **Step 4: Regenerate and prove the 21-file machine route**
 
 First add a RED method
@@ -1247,6 +1258,8 @@ no folder-index delta. The index changes from 1,338 to 1,339
 path rows; coverage safe paths from 1,337 to 1,338;
 `docs/90.references` from 95 to 96; `Reference and template docs` from 142 to
 143; `Markdown reference` from 840 to 841; and `folder index` remains 221.
+The parent research README is already tracked, so correcting its two text
+lines changes none of these path-set or generated cardinalities.
 Any other cardinality delta must be explained by an exact independently
 reviewed path-set change before Gate 9. Subsequent proposed/actual deletion
 runs are no-ops for these outputs because the exact retiring prefix is already
@@ -1277,25 +1290,32 @@ assert "README.md" in files
 assert "verification-validation.md" in files
 assert len([path for path in files if path != "README.md"]) == 20
 PY
+git diff --name-only "$VV_TASK_BASE" --
 git diff --check
 ```
 
 Expected: metadata, traceability, repository contracts, both generator checks,
 and diff hygiene PASS; implementation alignment has zero attributable delta
 and no increase over the pinned 184-finding predecessor; the Task proves
-36/36 requirements and 14/14 scopes. The embedded assertion is read-only and
-contains no placeholder values.
+36/36 requirements and 14/14 scopes. The changed-path listing contains the
+exact 18-path implementation scope, including the parent research README. The
+embedded pack assertion is read-only with no placeholder values; Step 7 adds
+the exact parent-router assertions required by the current recovery.
+Self-review must distinguish that final 18-path scope from the immutable
+initial 17-path commit described in Step 6.
 
 - [ ] **Step 6: Stage, commit, and independently review the V&V unit**
 
 Stage exactly the new leaf, pack README, ten supporting leaves, Stage 03
-README, Task, the focused generator test, and two generated outputs:
+README, Task, the parent research README, the focused generator test, and two
+generated outputs:
 
 ```bash
 git add \
   docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md \
   docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md \
   docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{workspace-baseline,scope-application-matrix,spec-driven-sdlc,sdlc-document-roles,document-metadata-lifecycle,llm-wiki-system,automation-pipeline-workflow,quality-ci-formatting,docker-compose-infrastructure,security-governance}.md \
+  docs/90.references/research/README.md \
   docs/03.specs/README.md \
   docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
@@ -1306,12 +1326,119 @@ git diff --cached --check
 git commit -m "docs(research): add verification and validation system"
 ```
 
-The staged listing must contain exactly these seventeen paths. Dispatch fresh
-independent specification and documentation-quality reviewers over the exact
-implementation range; both must return C0/I0/M0. Fix/re-review through the
-five-round breaker. Only the reviewed final implementation and its Task
-evidence may feed Task 10 or Gate 9; ignored research reports are advisory
-inputs, not durable authority.
+The normative staged listing contains exactly these 18 paths. Execution
+instead produced immutable initial commit
+`139ced00f7008f7161891aef6debfd67cefcfe7a`, exact range
+`ac51a53211887a12bb18e2209aa3af1af6eb4b7f..139ced00f7008f7161891aef6debfd67cefcfe7a`,
+with the previous 17-path listing and omitted only
+`docs/90.references/research/README.md`. Do not amend, rebase, replace, or
+otherwise rewrite that history. Its documentation-quality review returned
+Needs fixes C0/I1/M0 because the two current parent-router cardinality lines
+still described 19 leaves. The initial 17-path commit is therefore evidence,
+not the final implementation contract; continue only through Step 7 after
+this Plan correction receives its required independent reviews.
+
+- [ ] **Step 7: Correct the parent router in one bounded two-path fix**
+
+Start from clean reviewed Plan-correction `HEAD`, prove that
+`139ced00f7008f7161891aef6debfd67cefcfe7a` is an ancestor, and capture that
+`HEAD` as `VV_ROUTER_FIX_BASE`. Modify exactly the parent research README and
+the execution Task. In the parent README, change only these two current lines:
+
+1. Make the structure-tree suffix exactly
+   `# Canonical human route for the rebuilt 20-leaf / 21-file pack`.
+2. In the localized canonical-route sentence, replace the 19-leaf count with
+   20 leaves and add the 21-total-file count. Preserve its single link to the
+   pack README and add no direct leaf route.
+
+In the Task, preserve the initial implementation commit and exact 17-path
+range as immutable history; record the documentation-quality Needs fixes
+C0/I1/M0 receipt supplied by the controller, the omitted parent-router path,
+the exact two-line correction, and the final exact 18-path unique scope. Set
+the two-path fix identity and both scoped re-reviews to `Not Run` until their
+immutable evidence exists. Do not forward-claim review closure, Step 0e, Gate
+9, deletion, runtime observation, remote state, or generated-output changes.
+
+```bash
+git merge-base --is-ancestor \
+  139ced00f7008f7161891aef6debfd67cefcfe7a HEAD
+VV_ROUTER_FIX_BASE=$(git rev-parse --verify HEAD)
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed --base-ref "$VV_ROUTER_FIX_BASE" \
+  --changed-path docs/90.references/research/README.md \
+  --changed-path \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/check-doc-implementation-alignment.sh
+env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
+  bash scripts/validation/check-repo-contracts.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 -m unittest \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
+  -v
+python3 - <<'PY'
+from pathlib import Path
+
+parent = Path("docs/90.references/research/README.md").read_text(encoding="utf-8")
+tree_route = (
+    "2026-08-08-agentic-engineering-research-pack/ # Canonical human route "
+    "for the rebuilt 20-leaf / 21-file pack"
+)
+pack_route = (
+    "[2026-08-08-agentic-engineering-research-pack/README.md]"
+    "(./2026-08-08-agentic-engineering-research-pack/README.md)"
+)
+assert parent.count("19-leaf pack") == 0
+assert parent.count("19\uac1c leaf") == 0
+assert parent.count(tree_route) == 1
+assert parent.count("20\uac1c leaf, 21\uac1c file") == 1
+assert parent.count(pack_route) == 1
+assert "verification-validation.md" not in parent
+PY
+git diff --quiet "$VV_ROUTER_FIX_BASE" -- \
+  docs/90.references/llm-wiki/llm-wiki-index.md \
+  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+test "$(git diff --numstat "$VV_ROUTER_FIX_BASE" -- \
+  docs/90.references/research/README.md)" = \
+  $'2\t2\tdocs/90.references/research/README.md'
+test "$(git diff --name-only "$VV_ROUTER_FIX_BASE" -- | wc -l)" -eq 2
+git diff --name-only "$VV_ROUTER_FIX_BASE" --
+git diff --check
+```
+
+Expected: metadata `selected=2 violations=0`; traceability, repository
+contracts, both generator checks, the focused test, and diff hygiene PASS;
+alignment has no attributable increase over the pinned predecessor. The
+changed set is exactly the parent README and Task. The generated outputs stay
+byte-identical at 1,339/1,338 because this is an already-tracked content edit,
+not a path-set change. Self-review must report the final implementation as the
+union of the immutable initial 17 paths and the parent README: exactly 18
+unique paths, with the Task intentionally revisited in the fix.
+
+Stage and commit only the bounded fix:
+
+```bash
+git add \
+  docs/90.references/research/README.md \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "docs(research): correct verification validation parent route"
+```
+
+The staged listing is exactly two paths. Dispatch fresh independent
+specification and documentation-quality reviewers over
+`VV_ROUTER_FIX_BASE..HEAD`; both must return C0/I0/M0. Any correction receives
+its own commit and both scoped re-reviews within the five-round breaker. After
+the reviews, use the existing Task-only immutable-evidence closure and final
+closure-integrity reviews; no downstream gate opens before those receipts are
+durable. If rollback is required, first set
+`VV_ROUTER_FIX_OID=$(git rev-parse --verify HEAD)` at the exact two-path fix,
+then use targeted `git revert --no-commit "$VV_ROUTER_FIX_OID"`; never rewrite
+or remove `139ced00`. Only the reviewed 18-path final implementation and its
+Task evidence may feed Task 10, Step 0e, or Gate 9. Ignored research reports
+remain advisory inputs, not durable authority.
 
 ### Task 10: Switch cross-links and machine-generated routes
 
@@ -3368,6 +3495,7 @@ progress and is clean after each commit.
 | Unavailable/paywalled source | `UNVERIFIED` boundary | Remove unsupported conclusion; retain historical pointer only |
 | Scope or requirement omission | Closed 36-row and 14-row matrices | Stop pack routing until missing row has a reviewed destination |
 | V&V source status or workspace count is copied past its evidence | Reopen current official IEEE 1012-2024, ISO/IEC/IEEE 12207:2026, NASA, NIST, and GitHub primary routes; remeasure owner commands; preserve paywall and runtime/remote limits | Mark the affected claim `UNVERIFIED`, revert the V&V unit if needed, and repeat both independent reviews before Gate 9 |
+| Parent research router retains the pre-amendment leaf count | Treat the immutable 17-path `139ced00` commit as historical evidence; require the separately reviewed two-path parent-README/Task fix, exact two-line assertions, and final 18-path unique-scope self-review | Targeted revert of the two-path fix only; keep `139ced00` unchanged, retain 1,339/1,338 generated bytes, and keep Step 0e and Gate 9 closed until a corrected fix is reviewed |
 | Broken historical link after deletion | Whole tracked-text scan and zero clickable exceptions | Restore old pack from deletion parent and repair routes |
 | Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
 | Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
@@ -3394,7 +3522,7 @@ pack are forbidden.
 | Ledger ready | Task tables, old blobs, baseline results reviewed | Leaf authoring |
 | Unit review | Specification and quality reviews C0/I0 over committed `BASE..HEAD` | Next task |
 | Pack complete | 20 leaves/21 files, 36/36 requirements, 14/14 scopes, source/claim completeness | Human route switch and Gate 9 |
-| Verification and validation unit reviewed | Task-only amendment evidence, exact nine-H2 REQ-36 leaf, current primary-source/status/paywall boundaries, remeasured owner table, all 14 scopes, README/cross-links/Stage 03 status, 1,339/1,338 generated cardinalities, and two independent C0/I0/M0 reviews | Task 10 finalization, Phase A, and Gate 9 |
+| Verification and validation unit reviewed | Task-only amendment evidence; immutable 17-path initial commit `139ced00`; separately reviewed two-path parent-router/Task fix; exact final 18-path unique scope; parent router states 20 leaves/21 files and still links only the pack README; exact nine-H2 REQ-36 leaf; current primary-source/status/paywall boundaries; remeasured owner table; all 14 scopes; README/cross-links/Stage 03 status; unchanged 1,339/1,338 generated cardinalities; and both correction and closure-integrity reviews at C0/I0/M0 | Task 10 finalization, Phase A, and Gate 9 |
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
@@ -3408,6 +3536,9 @@ pack are forbidden.
 
 - The 2026-08-08 directory contains exactly one README and twenty reviewed
   leaves and is the sole active canonical research pack.
+- The parent research router states exactly 20 leaves/21 files, links once to
+  the pack README, and does not directly enumerate the V&V leaf; the reviewed
+  final Task 9a implementation scope contains exactly 18 unique paths.
 - Every REQ-01 through REQ-36 row has a reviewed canonical destination.
 - Every one of the fourteen normative scopes has a reviewed disposition.
 - Every load-bearing external claim has direct source, access date, mutability,
