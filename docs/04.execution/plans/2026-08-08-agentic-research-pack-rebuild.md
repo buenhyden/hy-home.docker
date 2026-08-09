@@ -1456,17 +1456,24 @@ part of attempt 2's frozen `task-candidate.md`.
 Commit the helper, tests, pending marker, and Task evidence as one logical
 unit, then require two fresh independent committed-unit reviews at C0/I0.
 Record those reviews in a separate Task-only closure commit before entering a
-Gate 9 attempt. Round 5 did not satisfy that gate: Step 0d records its blocking
-reviews and defines the separately approved recovery unit that must close
-before Phase A. The first package must therefore be rebuilt at the resulting
-clean committed `HEAD`; neither existing `/tmp` package is reusable.
+Gate 9 attempt. Round 5 did not satisfy that gate: the Step 0d prerequisite
+below first closes the Task's stale review evidence, then the separately
+approved recovery unit must close before Phase A. The first package must
+therefore be rebuilt at the resulting clean, live reviewed `HEAD`; neither
+existing `/tmp` package is reusable.
 
 - [ ] **Step 0d: Recover Gate 9 with an index-only stdout projection before Phase A**
 
 On 2026-08-09 (Asia/Seoul), after the Step 0c round-5 breaker, the user
-explicitly approved the recommended separate recovery design: a temporary Git
-index seeded from the package `HEAD` plus `--stdout` execution of the two
-canonical LLM Wiki generators. The round-5 implementation commit is
+explicitly approved this Plan correction and the recommended separately
+bounded recovery design: a temporary Git index plus `--stdout` execution of
+the two canonical LLM Wiki generators. That approval does not authorize
+executing the round-5 helper, a package-selected or historical generator blob,
+constructing or consuming a Gate 9 package, publishing an evidence ref,
+staging deletion, or any other closed action. Recovery implementation may
+start only after the Task-only evidence prerequisite below is committed and
+independently approved; all unsafe execution remains prohibited. The round-5
+implementation commit is
 `4796b46225a019343888557343ca7ca9938fb36a`, exact range
 `71cff032aed5f469d59b4f8406b5d9b78a9a4e8d..4796b46225a019343888557343ca7ca9938fb36a`.
 Its fresh committed-unit specification review returned C0/I1/M1 and its fresh
@@ -1488,12 +1495,56 @@ for a new user decision. Phase A, Gate 9 package construction, evidence-ref
 publication, real-index staging, old-pack deletion, lifecycle reconciliation,
 Task 12, remote actions, and push remain closed throughout Step 0d.
 
+**Pre-implementation prerequisite — close the round-5 Task evidence only:**
+
+1. From the clean Plan-correction `HEAD`, modify only
+   `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`.
+   Replace the stale round-5 identity and `Not Run` review claims with exact
+   commit `4796b46225a019343888557343ca7ca9938fb36a`, exact range
+   `71cff032aed5f469d59b4f8406b5d9b78a9a4e8d..4796b46225a019343888557343ca7ca9938fb36a`,
+   the formal specification verdict C0/I1/M1, and the formal Python/security
+   verdict C0/I1/M0. Adjudicate Step 0c as `BLOCKED`, record the exact
+   2026-08-09 approval boundary above, keep Gate 9/deletion/lifecycle/Phase A
+   closed, and record Step 0d implementation and its reviews as `Not Run`.
+   Do not imply that approval waived either blocker or authorized unsafe
+   package-controlled execution.
+2. Validate the focused Task-only delta before commit:
+
+   ```bash
+   STEP0D_TASK_BASE=$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify HEAD)
+   python3 scripts/validation/check-document-metadata.py \
+     --mode check-changed \
+     --base-ref "$STEP0D_TASK_BASE" \
+     --changed-path \
+     docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+   git diff --check
+   git diff --name-only "$STEP0D_TASK_BASE" --
+   ```
+
+   The final command must list only the Task, and the diff must contain no
+   implementation or generated-output change.
+3. Commit that one-file evidence closure with exact subject
+   `docs(task): record gate 9 recovery approval`. Dispatch two fresh,
+   independent committed-unit reviews over that exact Task-only range: one
+   specification review and one Python/security review. Both must return
+   C0/I0/M0. The Task-only commit becomes the clean reviewed closure `HEAD`
+   only after both verdicts arrive; it does not self-assert those verdicts.
+   Record their immutable receipts in the controller evidence for later Task
+   closure, then start recovery round 1 from that unchanged reviewed `HEAD`.
+   Any finding keeps Step 0d `Not Run` and returns to Plan correction.
+   Immediately after commit, require
+   `git diff --name-only "$STEP0D_TASK_BASE" HEAD --` to print only the Task
+   path and `git diff --check "$STEP0D_TASK_BASE" HEAD --` to pass.
+
 **Exact implementation scope (six files):**
 
 1. Modify
    `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
-   for the approval, prior blocker verdicts, RED/GREEN results, exact commit
-   range, two independent review verdicts, and unchanged closed-gate state.
+   to preserve the already reviewed approval/blocker closure, record Step 0d
+   RED/GREEN/full command evidence and recovery round state, leave the new
+   implementation reviews `Not Run`, and preserve the closed-gate state. The
+   later Task-only closure—not this six-file commit—records the exact
+   implementation commit/range and completed review verdicts.
 2. Modify `scripts/validation/agentic-research-gate9-evidence.py` for the
    projected-index authority verifier and descriptor-pinned scratch lifecycle.
 3. Modify `tests/validation/test_agentic_research_gate9_evidence.py` for the
@@ -1529,38 +1580,71 @@ remain exit 2 and diagnostics remain on stderr.
 
 - Replace `projected_generated_outputs(root, commit)` and all production
   linked-worktree helpers with one index-only projection result containing the
-  package `HEAD`, initial tree OID, final tree OID, exact old-path tuple, exact
-  `D` status tuple, proposed binary deletion patch, and both generated stdout
-  byte strings.
-- Seed a new scratch index with `git read-tree $PACKAGE_HEAD`, then require
-  `git write-tree == $PACKAGE_HEAD^{tree}` before mutation. Enumerate the old
-  prefix from both `git ls-tree` and the projected index, require the same
-  byte-sorted twenty paths, and feed only that exact NUL-delimited tuple to
-  `git update-index --force-remove -z --stdin`; no recursive pathspec is
-  permitted. Require
-  `git diff --cached --name-status --no-renames -z $PACKAGE_HEAD --` to contain
-  exactly twenty `D` records and no outside path. Recheck the final projected
-  tree and generate the binary patch from this same index.
-- Read each generator blob and its object identity from the package `HEAD`,
-  hold those exact bytes independently of checkout-local script content, and
-  execute them with trusted Bash as `bash -s -- --stdout`. Pass the generator
-  bytes on stdin, run from the repository root, and use only the projected
-  `GIT_INDEX_FILE`, trusted system `PATH`, `LANG`, `LC_ALL`, and the existing
-  Python no-user-site/no-bytecode safety variables. Do not execute a checkout
-  script and do not write or seed either generated output.
-- The projection must compare each stdout result both to its matching package
-  attachment and to `git show $PACKAGE_HEAD:$CANONICAL_OUTPUT`. Empty output,
-  exit-zero no-op output, non-UTF-8/non-LF output, stdout noise, package drift,
-  or tracked-HEAD drift fails closed.
-- Make the authoritative package verifier perform this projection freshly for
+  package `HEAD`, live reviewed `HEAD`, reviewed Step 0d code commit, initial
+  tree OID, final tree OID, exact old-path tuple, exact `D` status tuple,
+  proposed binary deletion patch, and both generated stdout byte strings.
+- Add one common authority preflight used by `build-package`,
   `verify-package`, `verify-assignments`, `verify-backfill`,
-  `publish-evidence-ref`, and both `verify-authorized --package` and
-  `verify-authorized --package-from-ref`. `build-package` uses the same
-  projector. A command-local in-memory memo keyed by repository identity and
-  package `HEAD` may deduplicate identical replays inside one CLI invocation;
-  no process-global, filesystem, ref, or cross-command cache is allowed.
-  Attempt-2 terminal-prehistory replay must use the same verifier rather than
-  an attachment-only path.
+  `publish-evidence-ref`, and both `verify-authorized` package sources. Every
+  invocation requires `--require-live-head`,
+  `--live-reviewed-head FULL_OID`, and `--reviewed-code-head FULL_OID`;
+  omission of any binding fails with `LIVE_HEAD_REQUIRED` and exit 2 before
+  projection or shell execution. In particular,
+  `verify-package --package ...` without the live binding is verification
+  usage failure, cannot execute a generator, and cannot authorize projection.
+- Before reading or executing either generator blob, set
+  `GIT_NO_REPLACE_OBJECTS=1` for every Git lookup and fail closed if the
+  repository has any `refs/replace/*`, a non-empty common-dir `info/grafts`, a
+  shallow boundary/common-dir `shallow` file, or reports a shallow repository.
+  Parse package `HEAD`, `--live-reviewed-head`, current live `HEAD`, and
+  `--reviewed-code-head` only as full object-format-width immutable commit
+  OIDs; never resolve user-controlled revision syntax. Require package
+  `HEAD ==` current live `HEAD == --live-reviewed-head`, where the supplied
+  live OID is the exact independently reviewed closure `HEAD`. Reject
+  arbitrary, abbreviated, historical, grafted,
+  replaced, missing, or package-selected alternate commits before any
+  generator bytes reach Bash.
+- Bind the executable code independently of package choice. Require the
+  reviewed Step 0d code commit to be the exact full OID recorded by the final
+  recovery review, prove it is an unambiguous ancestor of live `HEAD`, and
+  compare the blob OIDs for the helper and both canonical generators at live
+  `HEAD` with those at that reviewed commit. Also require those three tracked
+  paths to have no real-index or worktree modification. Any mismatch fails
+  before generator-object read or shell execution. Only after this proof may
+  the helper read the two generator bytes from the already proved live
+  reviewed `HEAD`; it must never read executable bytes from a differing
+  package-selected commit.
+- After that equality proof, seed a new scratch index with
+  `git read-tree $PACKAGE_HEAD`, then require
+  `git write-tree` to equal both `$PACKAGE_HEAD^{tree}` and
+  `$LIVE_REVIEWED_HEAD^{tree}` before mutation.
+  Enumerate the old prefix from both `git ls-tree` and the projected index,
+  require the same byte-sorted twenty paths, and feed only that exact
+  NUL-delimited tuple to `git update-index --force-remove -z --stdin`; no
+  recursive pathspec is permitted. Require
+  `git diff --cached --name-status --no-renames -z $PACKAGE_HEAD --` to
+  contain exactly twenty `D` records and no outside path. Recheck the final
+  projected tree and generate the binary patch from this same index.
+- Hold the proved live-HEAD generator bytes independently of checkout-local
+  script content and execute them with trusted Bash as
+  `bash -s -- --stdout`. Pass the generator bytes on stdin, run from the
+  repository root, and use only the projected `GIT_INDEX_FILE`, trusted system
+  `PATH`, `LANG`, `LC_ALL`, and the existing Python
+  no-user-site/no-bytecode safety variables. Do not execute a checkout script
+  and do not write or seed either generated output.
+- Decode stdout strictly as UTF-8, require LF-only Markdown with one canonical
+  terminal LF and no diagnostic/noise, and compare its exact bytes both to the
+  package attachment and to
+  `git show $LIVE_REVIEWED_HEAD:$CANONICAL_OUTPUT`. Empty output, exit-zero
+  no-op output, non-UTF-8 bytes, CR/CRLF, extra stdout, package drift, or
+  tracked-live-HEAD drift fails closed with no repository write.
+- Make the authoritative package verifier repeat the preflight and projection
+  freshly for every public mode above. A command-local in-memory memo keyed by
+  repository identity, package `HEAD`, live reviewed `HEAD`, reviewed code
+  OID, and proved helper/generator blob OIDs may deduplicate identical replays
+  inside one CLI invocation; no process-global, filesystem, ref, or
+  cross-command cache is allowed. Attempt-2 terminal-prehistory replay must
+  use the same verifier rather than an attachment-only path.
 - Keep all existing package, receipt, closure, evidence-tree, marker, and
   create-only ref schemas byte-compatible. Step 0d changes projection authority
   and generator transport only; it does not widen evidence states, attempts,
@@ -1596,9 +1680,13 @@ the existing evidence-schema errors:
 
 | Error | Required trigger |
 | --- | --- |
+| `LIVE_HEAD_REQUIRED` | a package-consuming mode omits `--require-live-head`, `--live-reviewed-head`, or `--reviewed-code-head`, or supplies a non-full/non-commit OID; reject with exit 2 before projection or shell |
+| `AMBIGUOUS_GIT_HISTORY` | replace refs, grafts, shallow history, replacement-aware resolution, or another non-immutable commit interpretation is present |
+| `UNTRUSTED_PACKAGE_HEAD` | package `HEAD`, supplied live reviewed `HEAD`, and current live `HEAD` are not the same exact full commit OID |
+| `REVIEWED_CODE_DRIFT` | helper/generator live blob OIDs differ from the reviewed Step 0d code commit, that commit is not an unambiguous ancestor, or a bound tracked code path is dirty in the real index/worktree |
 | `PROJECTED_INDEX_SCOPE_DRIFT` | scratch/index ownership, initial tree, real-index alias, or package-HEAD binding cannot be proved |
 | `PROJECTED_DELETION_DRIFT` | old-path cardinality/set or exact twenty-`D`/zero-outside status differs |
-| `GENERATOR_STDOUT_DRIFT` | stdout is empty/noisy/noncanonical or differs from the package attachment or tracked package `HEAD` |
+| `GENERATOR_STDOUT_DRIFT` | stdout is empty/noisy/noncanonical or differs from the package attachment or tracked live reviewed `HEAD` output |
 | `SCRATCH_SCOPE_DRIFT` | a pinned scratch ancestor or registered child is substituted or cannot be re-proved |
 | `SCRATCH_CLEANUP_FAILURE` | proved direct-child cleanup cannot complete without recursive or unproved deletion |
 | `PACKAGE_SEMANTIC_DRIFT` | a resealed attachment, manifest, patch, or other package semantic differs from the freshly derived result |
@@ -1607,10 +1695,19 @@ Implement in small TDD slices:
 
 1. **RED — pin generator stdout and authority failures.** Add the new test
    methods before production edits. Require stdout byte parity/no write for
-   both generators; exact initial tree and twenty-`D` projection; outside-index
-   drift rejection; forged exit-zero no-op generator plus canonically resealed
-   package rejection through every public authority mode; ancestor-substitution
-   victim preservation; no linked-worktree command/registry drift; and valid
+   both generators; conflicting `--check --stdout`/`--stdout --check`, extra
+   `--stdout extra`, and unknown-argument cases for each generator returning
+   exit 2 with empty stdout, stderr-only diagnostics, and unchanged output
+   paths; exact initial tree and twenty-`D` projection; outside-index drift
+   rejection; empty, noisy, CR/CRLF, and non-UTF-8 stdout rejection by the
+   projector without a repository write; and forged exit-zero no-op generator
+   plus canonically resealed package rejection through every public authority
+   mode. Put a marker-writing malicious/no-op generator in a valid non-live
+   commit and package/ref fixtures that select it; each package-consuming mode
+   must return `UNTRUSTED_PACKAGE_HEAD` before the marker, generator mutation,
+   or shell execution can occur. Also cover missing live-binding flags,
+   replace/graft/shallow ambiguity, ancestor-substitution victim preservation,
+   no linked-worktree command/registry drift, and valid
    `verify-authorized --package` plus `--package-from-ref` replay with
    branch/index/output/old-pack invariants.
    Run:
@@ -1618,21 +1715,31 @@ Implement in small TDD slices:
    ```bash
    python3 -m unittest \
      tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_stdout_mode_is_byte_exact_and_write_free \
+     tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_generator_cli_rejects_conflicting_and_extra_arguments_without_writes \
      tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projected_index_proves_exact_twenty_deletions_without_worktree_mutation \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projected_index_rejects_outside_status_drift \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projector_rejects_empty_noisy_crlf_and_non_utf8_stdout_without_writes \
      tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_every_public_mode_reprojects_and_rejects_resealed_noop_generator \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_non_live_package_generator_is_rejected_before_shell_across_all_modes \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_package_authority_requires_live_binding_and_unambiguous_history \
      tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_pinned_scratch_cleanup_preserves_victim_after_ancestor_substitution \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projection_never_invokes_worktree_or_drifts_registry \
      tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_valid_package_and_ref_replay_preserve_repository_state \
      -v
    ```
 
-   RED must fail only for the missing `--stdout`, still-present linked-worktree
-   projector/recursive cleanup, missing fresh authority replay, or missing
-   exact-status/invariant enforcement. Fixture setup errors, environment errors,
-   or an already-green assertion are not accepted as RED evidence.
+   RED must fail only for the missing strict generator parser/`--stdout`,
+   still-present linked-worktree projector/recursive cleanup, missing
+   live-reviewed-code preflight/fresh authority replay, or missing
+   stdout/exact-status/invariant enforcement. Fixture setup errors,
+   environment errors, a created malicious execution marker, a repository
+   mutation, or an already-green assertion are not accepted as RED evidence.
 
 2. **GREEN A — add stdout without changing canonical bytes.** Implement
-   `--stdout` in both generators, keep write/check paths unchanged, and make the
-   retiring-pack fixture prove output inode/mode/bytes are unchanged. Require:
+   one strict zero-or-one-argument parser and `--stdout` in both generators,
+   keep write/check paths unchanged, reject every conflicting/extra argument
+   before rendering, and make the retiring-pack fixture prove output
+   inode/mode/bytes are unchanged on success and usage failure. Require:
 
    ```bash
    bash scripts/knowledge/generate-llm-wiki-index.sh --stdout | \
@@ -1641,20 +1748,35 @@ Implement in small TDD slices:
      cmp - docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
    bash scripts/knowledge/generate-llm-wiki-index.sh --check
    bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+   python3 -m unittest \
+     tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_generator_cli_rejects_conflicting_and_extra_arguments_without_writes \
+     -v
    ```
 
 3. **GREEN B — replace projection and cleanup.** Implement the pinned scratch
-   owner, temporary-index tree/path/status proof, HEAD-blob stdin execution,
-   minimal environment, exact patch/output comparisons, and direct-child-only
-   cleanup. Delete the obsolete linked-worktree projection and recursive
-   cleanup code; do not retain a fallback branch.
+   owner, live/reviewed-code/Git-history preflight, temporary-index
+   tree/path/status proof, proved-live-HEAD blob stdin execution, minimal
+   environment, strict UTF-8/LF Markdown parsing, exact patch/output
+   comparisons, and direct-child-only cleanup. Delete the obsolete
+   linked-worktree projection and recursive cleanup code; do not retain a
+   fallback branch. Require the two projector negative methods to pass before
+   routing any authority mode:
+
+   ```bash
+   python3 -m unittest \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projector_rejects_empty_noisy_crlf_and_non_utf8_stdout_without_writes \
+     tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_package_authority_requires_live_binding_and_unambiguous_history \
+     -v
+   ```
 
 4. **GREEN C — make every authority path replay.** Route all six public modes
    and both authorized package sources through the authoritative projector,
    add command-local memoization only after correctness tests pass, and build a
    forged no-op/resealed package plus manually forged ref fixture so neither
-   package inputs nor ref-only inputs can bypass projection. Run the exact RED
-   command again and require every named method to pass.
+   package inputs nor ref-only inputs can bypass projection. The non-live
+   fixture must contain executable marker/mutation bytes and prove zero
+   execution through each mode. Run the exact RED command again and require
+   every named method to pass.
 
 5. **Full regression and evidence.** Run the existing classes by their current
    module/class names:
@@ -1700,8 +1822,15 @@ commit/range, commands, results, unchanged invariants, and both verdicts in a
 Task-only closure commit with subject
 `docs(task): close gate 9 projection recovery`. A review fix starts the next
 recovery round and repeats RED/GREEN/full checks plus both reviews over the new
-committed delta. Do not start Phase A until the recovery closure is committed,
-the worktree and real index are clean, and both final verdicts are C0/I0/M0.
+committed delta. After the Task-only closure is committed, dispatch two final,
+fresh independent closure-integrity reviews—specification and
+Python/security—over the exact recovery base through that closure `HEAD`.
+Both must return C0/I0/M0; their reviewed target OID is
+`GATE9_LIVE_REVIEWED_HEAD`, while the last reviewed six-file implementation
+commit is `GATE9_REVIEWED_CODE_HEAD`. These external receipts do not trigger a
+self-referential Task edit. Do not start Phase A until the recovery closure is
+committed and reviewed, the worktree and real index are clean, and both the
+implementation and closure-integrity review pairs are C0/I0/M0.
 
 - [ ] **Step 1: Execute Phase A pre-deletion gates 1 through 8**
 
@@ -1736,24 +1865,39 @@ attempt 1 ref records pre-backfill `REJECTED` or `INVALIDATED` and the Task is
 `ATTEMPT_2_PENDING` with the same identity. No third ordinal exists. The
 `--attempt` argument asserts that derived value; it does not authorize attempt
 selection or reuse. The helper must use the descriptor-pinned temporary Git
-index and HEAD-blob `--stdout` generator projection reviewed in Step 0d, clean
-only proved direct scratch children in a `finally` path, and leave the current
-worktree, real index, linked-worktree registry, old pack, and generated outputs
-unchanged. Build and verify with the exact interface:
+index and proved-live-reviewed-HEAD `--stdout` generator projection reviewed
+in Step 0d, clean only proved direct scratch children in a `finally` path, and
+leave the current worktree, real index, linked-worktree registry, old pack, and
+generated outputs unchanged. Build and verify with the exact interface:
 
 ```bash
 GATE9_HELPER=scripts/validation/agentic-research-gate9-evidence.py
 GATE9_PACKAGE=$(mktemp -d /tmp/agentic-research-gate9-attempt-1.XXXXXX)
+GATE9_LIVE_REVIEWED_HEAD=$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify HEAD)
+GATE9_REVIEWED_CODE_HEAD=$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify HEAD^)
 python3 "$GATE9_HELPER" build-package \
   --attempt 1 \
   --output "$GATE9_PACKAGE" \
   --spec docs/03.specs/137-agentic-research-pack-rebuild/spec.md \
   --plan docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md \
-  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+  --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 python3 "$GATE9_HELPER" verify-package \
   --package "$GATE9_PACKAGE" \
-  --require-live-head
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
+
+The Task must record `GATE9_REVIEWED_CODE_HEAD` as the final Step 0d
+implementation commit and its two C0/I0/M0 implementation reviews. The two
+external closure-integrity receipts bind `GATE9_LIVE_REVIEWED_HEAD` to the
+subsequent Task-only closure commit without inserting that commit's identity
+back into itself. The helper rejects an inferred `HEAD^` that does not equal
+the Task-recorded code OID, and the controller must supply the closure OID from
+both matching receipts; the shell derivations are convenience, not authority.
 
 `build-package` must fail unless the real index is clean, `HEAD` is the
 committed reviewed evidence-contract checkpoint, the old and new packs are
@@ -1837,7 +1981,10 @@ the role to the runtime identity.
 ```bash
 python3 "$GATE9_HELPER" verify-assignments \
   --package "$GATE9_PACKAGE" \
-  --attestation "$GATE9_ASSIGNMENT_ATTESTATION"
+  --attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
 Each reviewer returns one exact UTF-8/LF
@@ -1858,7 +2005,10 @@ python3 "$GATE9_HELPER" verify-backfill \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
   --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
-  --expect-state PACKAGE_REVIEWED
+  --expect-state PACKAGE_REVIEWED \
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
 Then transition the Task marker exactly once from `PACKAGE_REVIEW_PENDING` to
@@ -1877,7 +2027,10 @@ python3 "$GATE9_HELPER" verify-backfill \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
   --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
-  --expect-state TASK_BACKFILLED
+  --expect-state TASK_BACKFILLED \
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
 The same two reviewers then receive the immutable package, both reports and
@@ -1974,7 +2127,10 @@ python3 "$GATE9_HELPER" publish-evidence-ref \
   --migration-closure "$GATE9_MIGRATION_CLOSURE" \
   --quality-closure-report "$GATE9_QUALITY_CLOSURE_REPORT" \
   --quality-closure "$GATE9_QUALITY_CLOSURE" \
-  --evidence-ref auto
+  --evidence-ref auto \
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
 Run the terminal check immediately after publication and again immediately
@@ -1986,6 +2142,8 @@ python3 "$GATE9_HELPER" verify-authorized \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --evidence-ref auto \
   --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD" \
   --require-clean-real-index \
   --require-task-only-worktree
 python3 "$GATE9_HELPER" verify-authorized \
@@ -1993,13 +2151,17 @@ python3 "$GATE9_HELPER" verify-authorized \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --evidence-ref auto \
   --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD" \
   --require-clean-real-index \
   --require-task-only-worktree
 ```
 
-`verify-authorized` must prove live `HEAD == package HEAD == evidence-ref
-parent`, the exact package/evidence attachment sets and checksums, canonical
-schemas, distinct role/identity bindings, receipt-to-closure identity, exact
+`verify-authorized` must first prove current live `HEAD ==` supplied live
+reviewed `HEAD == package HEAD == evidence-ref parent`, plus the exact reviewed
+helper/generator code binding, then prove package/evidence attachment sets and
+checksums, canonical schemas, distinct role/identity bindings,
+receipt-to-closure identity, exact
 Task before/after/diff and marker transition, C/I=0, exact twenty-file
 projection, byte-identical generated attachments, and no current-worktree or
 real-index drift outside the exact closure-bound Task-only change. Only then is
@@ -2025,7 +2187,10 @@ python3 "$GATE9_HELPER" publish-evidence-ref \
   --terminal-state "$GATE9_TERMINAL_STATE" \
   --terminal-report "$GATE9_TERMINAL_REPORT" \
   --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
-  --evidence-ref auto
+  --evidence-ref auto \
+  --require-live-head \
+  --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
 For `REJECTED`, append both completed `--role-report`/`--role-receipt` pairs;
@@ -2432,7 +2597,7 @@ progress and is clean after each commit.
 | Deletion makes promoted baseline result targets disappear | Commit only the independently reviewed twenty-file deletion first; then use its real SHA to encode seven retiring rows and the historical Spec 133 row as reviewed delete results, close the six-row advisory-delta predecessor, and regenerate both summaries canonically | Revert the deletion commit if the post-delete lifecycle unit cannot reach target-manifest/summary PASS; otherwise revert only the lifecycle-evidence commit and re-review its bounded package |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
-| Gate 9 verifier accepts resealed attachments without re-projecting package `HEAD` | Step 0d temporary-index replay in every public authority mode, exact twenty-`D` proof, HEAD-blob `--stdout` execution, and package/tracked-HEAD byte comparison | Stop before Phase A; keep the old pack, real index, refs, lifecycle files, and generated outputs unchanged; use only the independently bounded Step 0d recovery loop |
+| Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes | Step 0d pre-implementation Task evidence closure; replace/graft/shallow rejection; exact package/live-reviewed-HEAD and reviewed-code blob binding before shell; temporary-index replay in every live-bound public authority mode; exact twenty-`D` proof; and proved-live-HEAD `--stdout` byte comparison | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0d recovery loop |
 | Gate 9 scratch cleanup follows a substituted ancestor or mutates linked-worktree state | Descriptor-pinned scratch access, proved direct-child unlink/rmdir only, no recursive cleanup, and zero production worktree add/remove/prune calls | Fail closed with the victim untouched; report any unremoved proved scratch object and do not use a destructive fallback |
 | Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical package builder, one marker-only backfill, same-reviewer closures, create-only content-addressed evidence ref, fresh index-only live-HEAD revalidation, and Step 0d C0/I0/M0 closure | Invalidate the attempt without staging; preserve the old pack; use the one fresh correction attempt or return to user-approved Plan work |
 | Gate 9 evidence ref collides or becomes unreachable | Create-only CAS, exact ref/tree/checksum verification, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED`; never overwrite the ref and never infer authorization from `/tmp` artifacts |
@@ -2454,7 +2619,7 @@ pack are forbidden.
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
-| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0d recovery: exact six-file scope, stdout parity/no write, fresh projection in every authority mode, descriptor-pinned cleanup, new five-round breaker, and fresh specification plus Python/security committed-unit reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
+| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0d recovery: reviewed Task-only blocker/approval prerequisite, exact six-file scope, strict stdout/parser/no-write behavior, live-reviewed-HEAD and reviewed-code binding before shell, fresh projection in every authority mode, descriptor-pinned cleanup, new five-round breaker, and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
 | Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live package/evidence ref | `git rm` |
