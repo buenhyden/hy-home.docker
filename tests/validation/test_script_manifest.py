@@ -97,6 +97,24 @@ MANDATORY_DISPOSITIONS = {
     "scripts/validation/recommend-qa-gates.sh": "merge",
     "scripts/validation/report-provider-hook-parity.sh": "merge",
 }
+KNOWN_TOMBSTONE_REPLACEMENTS = {
+    "docs/98.archive/05.operations/guides/03-security/01.setup.md": (
+        "docs/05.operations/03-security/ops-0016-vault/guide.md",
+    ),
+    "docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md": (
+        "docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md",
+    ),
+    "docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md": (
+        "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
+    ),
+    "docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md": (
+        "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
+    ),
+    "docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md": (
+        "docs/05.operations/09-tooling/ops-0069-terrakube/guide.md",
+        "docs/05.operations/09-tooling/ops-0068-terraform/guide.md",
+    ),
+}
 
 
 def tracked_paths(pathspec: str) -> set[str]:
@@ -130,6 +148,18 @@ def frontmatter(text: str) -> dict[str, object]:
         return {}
     value = yaml.safe_load(text.split("---\n", 2)[1]) or {}
     return value if isinstance(value, dict) else {}
+
+
+def markdown_code_paths(text: str) -> list[str]:
+    return re.findall(r"`(docs/[^`]+)`", text)
+
+
+def declared_tombstone_replacements(text: str) -> list[str]:
+    for line in text.splitlines():
+        if re.match(r"\|\s*Current replacement\s*\|", line, re.IGNORECASE):
+            cells = line.strip().strip("|").split("|", 1)
+            return markdown_code_paths(cells[1])
+    return []
 
 
 def _python_imports_target(reference: str, target: str) -> bool:
@@ -555,6 +585,51 @@ class ScriptManifestTests(unittest.TestCase):
                 replacement = row["replacement"]
                 if replacement is not None:
                     self.assertFalse(str(replacement).startswith("docs/98.archive/"))
+
+    def test_baseline_tombstone_replacements_are_preserved_as_stable_targets(self) -> None:
+        index_replacements: dict[str, list[str]] = {}
+        for line in git_text("docs/98.archive/README.md").splitlines():
+            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+            if len(cells) != 4:
+                continue
+            archived_paths = markdown_code_paths(cells[1])
+            if len(archived_paths) == 1:
+                index_replacements[archived_paths[0]] = markdown_code_paths(cells[3])
+
+        checked: set[str] = set()
+        for legacy_path, row in self.ledger_by_path.items():
+            if row["action"] != "archive" or not legacy_path.startswith(
+                "docs/98.archive/05.operations/"
+            ):
+                continue
+            declarations = declared_tombstone_replacements(git_text(legacy_path))
+            if not declarations:
+                continue
+            checked.add(legacy_path)
+            with self.subTest(path=legacy_path):
+                self.assertEqual(declarations, index_replacements.get(legacy_path))
+                translated: list[str] = []
+                for declaration in declarations:
+                    self.assertIn(declaration, self.ledger_by_path)
+                    target = self.ledger_by_path[declaration]["stable_path"]
+                    self.assertIsInstance(target, str)
+                    self.assertFalse(str(target).startswith("docs/98.archive/"))
+                    self.assertIsNotNone(stable_target_type(str(target)), target)
+                    translated.append(str(target))
+
+                self.assertIsNotNone(row["replacement"])
+                self.assertEqual(translated[0], row["replacement"])
+                preserved_evidence = f"{row['replacement']} {row['reason']}"
+                for target in translated:
+                    self.assertIn(target, preserved_evidence)
+                if legacy_path in KNOWN_TOMBSTONE_REPLACEMENTS:
+                    self.assertEqual(
+                        KNOWN_TOMBSTONE_REPLACEMENTS[legacy_path],
+                        tuple(translated),
+                    )
+
+        known_paths = set(KNOWN_TOMBSTONE_REPLACEMENTS)
+        self.assertEqual(known_paths, checked & known_paths)
 
     def test_active_stage04_sources_follow_owning_spec_and_never_archive(self) -> None:
         for path, row in self.ledger_by_path.items():

@@ -5543,16 +5543,16 @@ records:
   stable_path: docs/98.archive/tombstones/05.operations/ref-0028-01-setup.md
   artifact_id: ref-0028
   action: archive
-  replacement: null
+  replacement: docs/05.operations/03-security/ops-0016-vault/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0028-01-setup.md; remove 1 resolved inbound archive link(s); no active replacement is declared for this retired capability.
+  reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/03-security/vault.md, translated through its ledger row to active target docs/05.operations/03-security/ops-0016-vault/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md
   stable_path: docs/98.archive/tombstones/05.operations/ref-0029-ksql-streaming.md
   artifact_id: ref-0029
   action: archive
-  replacement: null
+  replacement: docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0029-ksql-streaming.md; remove 1 resolved inbound archive link(s); no active replacement is declared for this retired capability.
+  reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/04-data/analytics/ksqldb.md, translated through its ledger row to active target docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md
   stable_path: docs/98.archive/tombstones/05.operations/ref-0030-01-airflow-dag-dev.md
   artifact_id: ref-0030
@@ -5571,23 +5571,23 @@ records:
   stable_path: docs/98.archive/tombstones/05.operations/ref-0032-01-llm-inference.md
   artifact_id: ref-0032
   action: archive
-  replacement: null
+  replacement: docs/05.operations/08-ai/ops-0056-ollama/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0032-01-llm-inference.md; remove 1 resolved inbound archive link(s); no active replacement is declared for this retired capability.
+  reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/08-ai/ollama.md, translated through its ledger row to active target docs/05.operations/08-ai/ops-0056-ollama/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md
   stable_path: docs/98.archive/tombstones/05.operations/ref-0033-local-llm-setup.md
   artifact_id: ref-0033
   action: archive
-  replacement: null
+  replacement: docs/05.operations/08-ai/ops-0056-ollama/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0033-local-llm-setup.md; remove 1 resolved inbound archive link(s); no active replacement is declared for this retired capability.
+  reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/08-ai/ollama.md, translated through its ledger row to active target docs/05.operations/08-ai/ops-0056-ollama/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md
   stable_path: docs/98.archive/tombstones/05.operations/ref-0034-01-iac-automation.md
   artifact_id: ref-0034
   action: archive
-  replacement: null
+  replacement: docs/05.operations/09-tooling/ops-0069-terrakube/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0034-01-iac-automation.md; remove 1 resolved inbound archive link(s); no active replacement is declared for this retired capability.
+  reason: Archive terminal baseline source as typed provenance; the baseline archive index and tombstone declare both docs/05.operations/guides/09-tooling/terrakube.md and docs/05.operations/guides/09-tooling/terraform.md in that order. Preserve the primary declaration as active target docs/05.operations/09-tooling/ops-0069-terrakube/guide.md; merge the secondary declaration into active target docs/05.operations/09-tooling/ops-0068-terraform/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/policies/07-workflow/airbyte.md
   stable_path: docs/98.archive/tombstones/05.operations/ref-0035-airbyte.md
   artifact_id: ref-0035
