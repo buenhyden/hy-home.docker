@@ -62,9 +62,9 @@ organization RTO/RPO remain unauthorized.
 ## Related Documents
 
 - [Technical specification](./spec.md)
-- [Operational readiness PRD](../../../01.requirements/025-operational-readiness-closure.md)
-- [Operational readiness ARD](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- [Local-isolated evidence ADR](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [Operational readiness PRD](../../../01.requirements/prd-025-operational-readiness-closure.md)
+- [Operational readiness Architecture Description](../../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- [Local-isolated evidence ADR](../../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - [Completed transition plan](../../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
 - [Domain Task evidence owner](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
 - [Program Task evidence owner](../../../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)

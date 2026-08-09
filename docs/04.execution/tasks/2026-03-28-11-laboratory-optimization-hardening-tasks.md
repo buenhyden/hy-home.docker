@@ -85,9 +85,9 @@ This document tracks the `11-laboratory` optimization and hardening execution ta
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/022-laboratory-optimization-hardening.md](../../01.requirements/022-laboratory-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md)
-- **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
+- **PRD**: [../01.requirements/prd-022-laboratory-optimization-hardening.md](../../01.requirements/prd-022-laboratory-optimization-hardening.md)
+- **ARD**: [../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
+- **ADR**: [../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - **Guide**: [../../05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md)
 - **Policy**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)

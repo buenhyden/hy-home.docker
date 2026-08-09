@@ -40,9 +40,9 @@ base was `758aa0d2`; the lifecycle closure comparison base is
 ## Inputs
 
 - [Operational readiness closure Plan](../plans/2026-07-19-operational-readiness-closure-program.md)
-- [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
-- [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [PRD 025](../../01.requirements/prd-025-operational-readiness-closure.md)
+- [Architecture Description 0028](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - Specs [124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
   [125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
   [126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md), and

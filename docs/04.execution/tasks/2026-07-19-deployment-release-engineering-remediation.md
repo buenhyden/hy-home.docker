@@ -125,7 +125,7 @@ Approval source:
   only, with no network, pull, build, remote, registry, Release,
   production/shared runtime, credential, secret-value, controlled-wrapper, or
   direct all-files pre-commit action.
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md),
   [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md),
   and the active Plan define the exact local rehearsal contract.
 

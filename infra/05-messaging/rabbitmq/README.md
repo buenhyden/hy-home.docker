@@ -101,7 +101,7 @@ Definition export/import, queue purge/delete, vhost/user mutation, and replay ar
 
 ## Related Documents
 
-- **ARD**: [Messaging architecture](../../../docs/02.architecture/requirements/0005-messaging-architecture.md)
+- **ARD**: [Messaging architecture](../../../docs/02.architecture/descriptions/ad-0005-messaging-architecture.md)
 - **Guide**: [RabbitMQ guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md)
 - **Policy**: [RabbitMQ policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md)
 - **Runbook**: [RabbitMQ runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md)

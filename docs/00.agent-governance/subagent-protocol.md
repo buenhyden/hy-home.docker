@@ -154,9 +154,9 @@ handoff, and never delete user-created scratch without explicit approval.
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `docs/01.requirements/024-agent-governance-standardization.md`
-- `docs/02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
-- `docs/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
+- `docs/01.requirements/prd-024-agent-governance-standardization.md`
+- `docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
+- `docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
 - `AGENTS.md` — Runtime Surfaces
 - `docs/00.agent-governance/agents/README.md`
 - `.claude/agents/workflow-supervisor.md`

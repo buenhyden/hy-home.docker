@@ -95,7 +95,7 @@ Approval source:
 
 - The user approved protected-surface and local CI/QA changes within the
   operational-readiness program.
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md),
   [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md), and
   the active Plan approve the local fixture/advisory design.
 

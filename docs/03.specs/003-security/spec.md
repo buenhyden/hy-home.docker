@@ -16,11 +16,11 @@ This document defines the optimization/hardening implementation contract for `in
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/015-security-optimization-hardening.md](../../01.requirements/015-security-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0018-security-optimization-hardening-architecture.md](../../02.architecture/requirements/0018-security-optimization-hardening-architecture.md)
+- **PRD**: [../../01.requirements/prd-015-security-optimization-hardening.md](../../01.requirements/prd-015-security-optimization-hardening.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/0003-vault-as-secrets-manager.md](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
-  - [../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md](../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md)
+  - [../../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

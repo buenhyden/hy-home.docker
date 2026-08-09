@@ -100,4 +100,4 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-workflow/n8n.md)
 - [Recovery runbook](../../runbooks/07-workflow/n8n.md)
-- [07-workflow architecture](../../../02.architecture/requirements/0007-workflow-architecture.md)
+- [07-workflow architecture](../../../02.architecture/descriptions/ad-0007-workflow-architecture.md)

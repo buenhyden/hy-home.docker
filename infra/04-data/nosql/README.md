@@ -49,7 +49,7 @@ nosql/
 
 ## Related Documents
 
-- **Architecture**: [Data Tier ARD](../../../docs/02.architecture/requirements/0004-data-architecture.md)
+- **Architecture**: [Data Tier Architecture Description](../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
 - **Guides**: [NoSQL Guides](../../../docs/05.operations/guides/04-data/nosql/README.md)
 - **Policies**: [NoSQL Policies](../../../docs/05.operations/policies/04-data/nosql/README.md)
 - **Runbooks**: [NoSQL Runbooks](../../../docs/05.operations/runbooks/04-data/nosql/README.md)

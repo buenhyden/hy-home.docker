@@ -76,7 +76,7 @@ This specification's work reached a terminal state (`completed` or `superseded`)
 - **ARD**: Not required. Existing Stage 00 governance and Stage 99 support
   contracts define the architecture boundary.
 - **Related ADRs**:
-  - [Stage 00 canonical adapter model](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+  - [Stage 00 canonical adapter model](../../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - **Numbered SDLC path migration**:
   [../../98.archive/03.specs/099-template-system-numbered-sdlc-paths/spec.md](../099-template-system-numbered-sdlc-paths/spec.md)
 - **Template contract standardization**:

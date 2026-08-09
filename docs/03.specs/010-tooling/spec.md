@@ -23,11 +23,11 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/021-tooling-optimization-hardening.md](../../01.requirements/021-tooling-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md](../../02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md)
+- **PRD**: [../../01.requirements/prd-021-tooling-optimization-hardening.md](../../01.requirements/prd-021-tooling-optimization-hardening.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/0009-tooling-services.md](../../02.architecture/decisions/0009-tooling-services.md)
-  - [../../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/adr-0009-tooling-services.md](../../02.architecture/decisions/adr-0009-tooling-services.md)
+  - [../../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

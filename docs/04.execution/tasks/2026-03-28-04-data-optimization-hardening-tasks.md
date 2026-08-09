@@ -76,9 +76,9 @@ This document tracks the `04-data` optimization and hardening implementation tas
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/016-data-optimization-hardening.md](../../01.requirements/016-data-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0019-data-optimization-hardening-architecture.md](../../02.architecture/requirements/0019-data-optimization-hardening-architecture.md)
-- **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
+- **PRD**: [../01.requirements/prd-016-data-optimization-hardening.md](../../01.requirements/prd-016-data-optimization-hardening.md)
+- **ARD**: [../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md)
+- **ADR**: [../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-04-data-optimization-hardening-plan.md](../plans/2026-03-28-04-data-optimization-hardening-plan.md)
 - **Guide**: [../../05.operations/guides/04-data/optimization/optimization-hardening.md](../../05.operations/guides/04-data/optimization/optimization-hardening.md)
 - **Policy**: [../../05.operations/policies/04-data/optimization/optimization-hardening.md](../../05.operations/policies/04-data/optimization/optimization-hardening.md)

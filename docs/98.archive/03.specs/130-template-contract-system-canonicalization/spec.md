@@ -112,9 +112,9 @@ documents, validators, tests, and Git evidence.
 ## Boundaries and Inputs
 
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Agent Governance PRD](../../../01.requirements/024-agent-governance-standardization.md)
-- [Agent Governance ARD](../../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- [ADR-0027: Stage 00 Canonical Adapter Model](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- [Agent Governance PRD](../../../01.requirements/prd-024-agent-governance-standardization.md)
+- [Agent Governance Architecture Description](../../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
+- [ADR-0027: Stage 00 Canonical Adapter Model](../../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Stage 99 template system](../../../99.templates/README.md)
 
@@ -601,9 +601,9 @@ The repository-wide archive mapping is recorded in
 ## Related Documents
 
 - [Spec 129: Document Contract Canonicalization](../129-document-contract-canonicalization/spec.md)
-- [Agent Governance PRD](../../../01.requirements/024-agent-governance-standardization.md)
-- [Agent Governance ARD](../../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- [ADR-0027: Stage 00 Canonical Adapter Model](../../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- [Agent Governance PRD](../../../01.requirements/prd-024-agent-governance-standardization.md)
+- [Agent Governance Architecture Description](../../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
+- [ADR-0027: Stage 00 Canonical Adapter Model](../../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - [Canonical implementation audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Stage 99 template system](../../../99.templates/README.md)
 - [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)

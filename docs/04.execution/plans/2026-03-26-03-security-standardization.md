@@ -19,9 +19,9 @@ Standardize the `03-security` tier documentation system to improve architecture 
 
 ### 1. Document Creation
 
-- **PRD**: [003-security.md](../../01.requirements/003-security.md)
-- **ARD**: [0003-security-architecture.md](../../02.architecture/requirements/0003-security-architecture.md)
-- **ADR**: [0003-vault-as-secrets-manager.md](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
+- **PRD**: [003-security.md](../../01.requirements/prd-003-security.md)
+- **ARD**: [0003-security-architecture.md](../../02.architecture/descriptions/ad-0003-security-architecture.md)
+- **ADR**: [0003-vault-as-secrets-manager.md](../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md)
 - **Spec**: [003-security/spec.md](../../03.specs/003-security/spec.md)
 
 ### 2. README Refactoring
@@ -76,7 +76,7 @@ This historical plan exists to organize the work described in the existing goal 
 
 ## Related Documents
 
-- [Security PRD](../../01.requirements/003-security.md)
-- [Security ARD](../../02.architecture/requirements/0003-security-architecture.md)
-- [Vault ADR](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
+- [Security PRD](../../01.requirements/prd-003-security.md)
+- [Security Architecture Description](../../02.architecture/descriptions/ad-0003-security-architecture.md)
+- [Vault ADR](../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md)
 - [Security spec](../../03.specs/003-security/spec.md)

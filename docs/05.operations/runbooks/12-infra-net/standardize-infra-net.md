@@ -19,8 +19,8 @@ status: active
 
 ### Canonical References
 
-- [../../../02.architecture/requirements/0026-standardize-infra-net.md](../../../02.architecture/requirements/0026-standardize-infra-net.md)
-- [../../../02.architecture/decisions/0026-standardize-infra-net.md](../../../02.architecture/decisions/0026-standardize-infra-net.md)
+- [../../../02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../../02.architecture/descriptions/ad-0026-standardize-infra-net.md)
+- [../../../02.architecture/decisions/adr-0026-standardize-infra-net.md](../../../02.architecture/decisions/adr-0026-standardize-infra-net.md)
 - [../../../03.specs/098-standardize-infra-net/spec.md](../../../03.specs/098-standardize-infra-net/spec.md)
 - [../../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 - [../../policies/12-infra-net/standardize-infra-net.md](../../policies/12-infra-net/standardize-infra-net.md)

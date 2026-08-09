@@ -95,7 +95,7 @@ Approval source:
 
 - The user approved protected-surface changes and the local representative
   recovery implementation in this program.
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md),
   [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md),
   and the active Plan approve the synthetic local topology.
 

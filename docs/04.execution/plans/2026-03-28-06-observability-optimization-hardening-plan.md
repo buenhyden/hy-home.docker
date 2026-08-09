@@ -87,9 +87,9 @@ This document is the optimization/hardening implementation plan for `infra/06-ob
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/018-observability-optimization-hardening.md](../../01.requirements/018-observability-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
-- **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
+- **PRD**: [../01.requirements/prd-018-observability-optimization-hardening.md](../../01.requirements/prd-018-observability-optimization-hardening.md)
+- **ARD**: [../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md)
+- **ADR**: [../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/06-observability/optimization-hardening.md)

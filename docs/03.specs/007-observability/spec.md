@@ -16,11 +16,11 @@ This document defines the optimization/hardening implementation contract for the
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/018-observability-optimization-hardening.md](../../01.requirements/018-observability-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
+- **PRD**: [../../01.requirements/prd-018-observability-optimization-hardening.md](../../01.requirements/prd-018-observability-optimization-hardening.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/0006-lgtm-stack-selection.md](../../02.architecture/decisions/0006-lgtm-stack-selection.md)
-  - [../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/adr-0006-lgtm-stack-selection.md](../../02.architecture/decisions/adr-0006-lgtm-stack-selection.md)
+  - [../../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

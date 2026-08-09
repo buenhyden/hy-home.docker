@@ -66,9 +66,9 @@ production release event, paid job, or credential change.
 
 Inputs:
 
-- [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
-- [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [PRD 025](../../01.requirements/prd-025-operational-readiness-closure.md)
+- [Architecture Description 0028](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - [examples/sample-web-service/docker-compose.yml](../../../examples/sample-web-service/docker-compose.yml)
 - Spec 124 readiness result, Spec 125 recovery boundary, and Spec 126 verified
@@ -365,9 +365,9 @@ Cleanup may remove only task-owned local projects, networks, and containers.
 
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
-- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/prd-025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - **Runtime dependency**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - **Recovery dependency**: [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)

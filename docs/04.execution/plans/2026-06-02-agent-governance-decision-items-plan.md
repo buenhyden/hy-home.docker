@@ -146,9 +146,9 @@ original non-goal boundary only for repo-tracked, validator-backed changes.
 
 ## Related Documents
 
-- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/024-agent-governance-standardization.md)
-- **ARD**: [Agent Governance Canonical Adapter ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/prd-024-agent-governance-standardization.md)
+- **ARD**: [Agent Governance Canonical Adapter Architecture Description](../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
+- **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - **Missing Items Implementation Task**: [Agent Governance Missing Items Implementation Task](../tasks/2026-06-02-agent-governance-missing-items-implementation.md)
 - **Stage 00 Governance Hub**: [AI Agent Governance Hub](../../00.agent-governance/README.md)
 - **Stage Authoring Matrix**: [Stage Authoring Matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

@@ -103,7 +103,7 @@ Approval source:
 
 - The user approved protected-surface changes and implementation of the local
   operational-readiness program.
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md),
   [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md),
   and the active Plan define the accepted isolated topology and exact commands.
 

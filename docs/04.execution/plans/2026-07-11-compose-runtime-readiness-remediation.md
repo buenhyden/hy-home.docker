@@ -64,9 +64,9 @@ secret-value inspection, remote observability, registry access, or deployment.
 
 Inputs:
 
-- [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
-- [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [PRD 025](../../01.requirements/prd-025-operational-readiness-closure.md)
+- [Architecture Description 0028](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - root [docker-compose.yml](../../../docker-compose.yml)
 - [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh)
@@ -317,9 +317,9 @@ plan and routes to Spec 125.
 
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
-- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/prd-025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Spec 124](../../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
 - **Infrastructure dependency**: [Spec 125](../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
 - **Docker Compose `up --wait` reference**: <https://docs.docker.com/reference/cli/docker/compose/up/>

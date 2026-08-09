@@ -62,7 +62,7 @@ docs/
 | I need to... | Go to |
 | --- | --- |
 | define user value or requirements | `01.requirements/` |
-| describe architecture requirements | `02.architecture/requirements/` |
+| describe architecture | `02.architecture/descriptions/` |
 | record an architecture decision | `02.architecture/decisions/` |
 | write a technical specification | `03.specs/` |
 | plan implementation work | `04.execution/plans/` |
@@ -81,7 +81,7 @@ docs/
 | Old Path | New Path |
 | --- | --- |
 | `docs/01.prd/` | `docs/01.requirements/` |
-| `docs/02.ard/` | `docs/02.architecture/requirements/` |
+| `docs/02.ard/` | `docs/02.architecture/descriptions/` |
 | `docs/03.adr/` | `docs/02.architecture/decisions/` |
 | `docs/04.specs/` | `docs/03.specs/` |
 | `docs/05.plans/` | `docs/04.execution/plans/` |
@@ -134,7 +134,7 @@ docs/
 | Stage | Responsibility | Template |
 | --- | --- | --- |
 | `01.requirements/` | 문제, 사용자 가치, scope, acceptance criteria | `99.templates/templates/sdlc/prd.template.md` |
-| `02.architecture/requirements/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `99.templates/templates/sdlc/ard.template.md` |
+| `02.architecture/descriptions/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `99.templates/templates/sdlc/architecture-description.template.md` |
 | `02.architecture/decisions/` | 선택, 대안, consequence를 남기는 결정 기록 | `99.templates/templates/sdlc/adr.template.md` |
 | `03.specs/` | 구현 계약, interface, data/config contract, verification | `99.templates/templates/sdlc/spec.template.md` |
 | `04.execution/plans/` | 실행 순서, risk control, verification plan | `99.templates/templates/sdlc/plan.template.md` |
@@ -160,7 +160,7 @@ docs/
 | 문서 유형 | 위치 | 템플릿 |
 | --- | --- | --- |
 | Requirements | `01.requirements/` | `99.templates/templates/sdlc/prd.template.md` |
-| Architecture Requirements | `02.architecture/requirements/` | `99.templates/templates/sdlc/ard.template.md` |
+| Architecture Description | `02.architecture/descriptions/` | `99.templates/templates/sdlc/architecture-description.template.md` |
 | Architecture Decision | `02.architecture/decisions/` | `99.templates/templates/sdlc/adr.template.md` |
 | Spec | `03.specs/` | `99.templates/templates/sdlc/spec.template.md` |
 | API Spec | feature directory `api-spec.md` | `99.templates/templates/spec-contracts/api-spec.template.md` |

@@ -89,9 +89,9 @@ This document is the optimization/hardening implementation plan for `infra/02-au
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/014-auth-optimization-hardening.md](../../01.requirements/014-auth-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0014-auth-optimization-hardening-architecture.md](../../02.architecture/requirements/0014-auth-optimization-hardening-architecture.md)
-- **ADR**: [../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md](../../02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md)
+- **PRD**: [../01.requirements/prd-014-auth-optimization-hardening.md](../../01.requirements/prd-014-auth-optimization-hardening.md)
+- **ARD**: [../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md)
+- **ADR**: [../02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md](../../02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md)
 - **Spec**: [../03.specs/002-auth/spec.md](../../03.specs/002-auth/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](../tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 - **Operations**: [../../05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md)

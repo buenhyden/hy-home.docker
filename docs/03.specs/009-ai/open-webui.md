@@ -19,9 +19,9 @@ This specification defines the technical design and implementation contract for 
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/013-ai-open-webui.md](../../01.requirements/013-ai-open-webui.md)
-- **ARD**: [../../02.architecture/requirements/0013-open-webui-architecture.md](../../02.architecture/requirements/0013-open-webui-architecture.md)
-- **Related ADRs**: [../../02.architecture/decisions/0016-open-webui-implementation.md](../../02.architecture/decisions/0016-open-webui-implementation.md)
+- **PRD**: [../../01.requirements/prd-013-ai-open-webui.md](../../01.requirements/prd-013-ai-open-webui.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0013-open-webui-architecture.md](../../02.architecture/descriptions/ad-0013-open-webui-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/adr-0016-open-webui-implementation.md](../../02.architecture/decisions/adr-0016-open-webui-implementation.md)
 
 ## Contracts
 

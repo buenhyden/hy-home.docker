@@ -74,7 +74,7 @@ docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-clus
 - **Policies**: [docs/05.operations/policies/04-data/relational/README.md](../../../docs/05.operations/policies/04-data/relational/README.md)
 - **Runbooks**: [docs/05.operations/runbooks/04-data/relational/README.md](../../../docs/05.operations/runbooks/04-data/relational/README.md)
 - **Service Guide**: [postgresql-cluster guide](../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
-- **ARD**: [docs/02.architecture/requirements/0004-data-architecture.md](../../../docs/02.architecture/requirements/0004-data-architecture.md)
+- **ARD**: [docs/02.architecture/descriptions/ad-0004-data-architecture.md](../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

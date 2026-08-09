@@ -23,7 +23,7 @@ status: active
 
 ### Canonical References
 
-- ARD: [07-workflow Architecture](../../../02.architecture/requirements/0007-workflow-architecture.md)
+- ARD: [07-workflow Architecture](../../../02.architecture/descriptions/ad-0007-workflow-architecture.md)
 - Usage: [n8n System Usage](../../guides/07-workflow/n8n.md)
 - Policy: [n8n Operations Policy](../../policies/07-workflow/n8n.md)
 

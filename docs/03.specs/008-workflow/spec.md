@@ -23,11 +23,11 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/019-workflow-optimization-hardening.md](../../01.requirements/019-workflow-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md)
+- **PRD**: [../../01.requirements/prd-019-workflow-optimization-hardening.md](../../01.requirements/prd-019-workflow-optimization-hardening.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md](../../02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
-  - [../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md](../../02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md)
+  - [../../02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0022-workflow-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

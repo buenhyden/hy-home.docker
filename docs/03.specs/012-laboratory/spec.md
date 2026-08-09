@@ -25,11 +25,11 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/022-laboratory-optimization-hardening.md](../../01.requirements/022-laboratory-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md)
+- **PRD**: [../../01.requirements/prd-022-laboratory-optimization-hardening.md](../../01.requirements/prd-022-laboratory-optimization-hardening.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
 - **Related ADRs**:
-  - [../../02.architecture/decisions/0011-laboratory-services.md](../../02.architecture/decisions/0011-laboratory-services.md)
-  - [../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
+  - [../../02.architecture/decisions/adr-0011-laboratory-services.md](../../02.architecture/decisions/adr-0011-laboratory-services.md)
+  - [../../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 

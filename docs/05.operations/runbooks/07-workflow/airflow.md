@@ -23,7 +23,7 @@ status: active
 
 ### Canonical References
 
-- ARD: [07-workflow Architecture](../../../02.architecture/requirements/0007-workflow-architecture.md)
+- ARD: [07-workflow Architecture](../../../02.architecture/descriptions/ad-0007-workflow-architecture.md)
 - Usage: [Airflow System Usage](../../guides/07-workflow/airflow.md)
 - Policy: [Airflow Operations Policy](../../policies/07-workflow/airflow.md)
 

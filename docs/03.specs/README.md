@@ -144,7 +144,7 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 ## Related Documents
 
 - **PRD**: [../01.requirements/README.md](../01.requirements/README.md)
-- **ARD**: [../02.architecture/requirements/README.md](../02.architecture/requirements/README.md)
+- **ARD**: [../02.architecture/descriptions/README.md](../02.architecture/descriptions/README.md)
 - **ADR**: [../02.architecture/decisions/README.md](../02.architecture/decisions/README.md)
 - **Plan**: [../04.execution/plans/README.md](../04.execution/plans/README.md)
 - **Tasks**: [../04.execution/tasks/README.md](../04.execution/tasks/README.md)

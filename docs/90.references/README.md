@@ -109,7 +109,7 @@ README 파일은 `docs/99.templates/templates/common/readme.template.md`의 기�
 | Source-backed external research and repo-local analysis pack | `docs/90.references/research/` |
 | Learning roadmap and theory reference | `docs/90.references/learning/` |
 | LLM navigation map and generated path index | `docs/90.references/llm-wiki/` |
-| Architecture requirement | `docs/02.architecture/requirements/` |
+| Architecture description | `docs/02.architecture/descriptions/` |
 | Architecture decision | `docs/02.architecture/decisions/` |
 | Technical implementation contract | `docs/03.specs/` |
 | Implementation plan or evidence | `docs/04.execution/` |

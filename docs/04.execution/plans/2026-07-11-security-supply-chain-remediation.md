@@ -67,9 +67,9 @@ claim a SLSA level, or turn Scorecard into a deterministic CI blocker.
 
 Inputs:
 
-- [PRD 025](../../01.requirements/025-operational-readiness-closure.md)
-- [ARD 0028](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- [ADR 0028](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- [PRD 025](../../01.requirements/prd-025-operational-readiness-closure.md)
+- [Architecture Description 0028](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- [ADR 0028](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - [examples/sample-web-service](../../../examples/sample-web-service/README.md)
 - existing security audit:
@@ -387,9 +387,9 @@ rollback step may assume or mutate a published artifact or remote setting.
 
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/025-operational-readiness-closure.md)
-- **ARD**: [Operational readiness closure architecture](../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/prd-025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Spec 126](../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
 - **Deployment consumer**: [Spec 127](../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
 - **Syft v1.48.0 release**: <https://github.com/anchore/syft/releases/tag/v1.48.0>

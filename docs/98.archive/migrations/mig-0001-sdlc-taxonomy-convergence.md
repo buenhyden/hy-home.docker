@@ -584,12 +584,12 @@ records:
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Move baseline active source to stable typed target docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md; migrate 27 resolved inbound link(s) with it.
 - legacy_path: docs/02.architecture/requirements/README.md
-  stable_path: docs/02.architecture/requirements/README.md
+  stable_path: docs/02.architecture/descriptions/README.md
   artifact_id: null
-  action: rewrite
+  action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Rewrite baseline active source in place for the approved target profile; preserve 7 resolved inbound link(s).
+  reason: Move the baseline Architecture Description index to the approved descriptions root; migrate 7 resolved inbound link(s) and leave no compatibility path.
 - legacy_path: docs/03.specs/001-gateway/README.md
   stable_path: null
   artifact_id: spec-0001
@@ -5610,6 +5610,12 @@ records:
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Rewrite baseline untyped source in place for the approved target profile; preserve 68 resolved inbound link(s).
 ```
+
+## Execution Evidence
+
+| Wave | Mapping state | Git provenance | Consumer state | Commit |
+| :-- | :-- | :-- | :-- | :-- |
+| Task 4 — Stage 01/02 | 76 moves executed: 25 PRDs, 25 Architecture Descriptions, 25 ADRs, and the Description README; the original README rewrite-row defect is corrected above | Git rename index preserves every source-to-target relation | Tracked inbound links migrated to stable targets; final validation evidence is recorded in the Task 4 report | pending root-controller commit |
 
 ## Related Documents
 

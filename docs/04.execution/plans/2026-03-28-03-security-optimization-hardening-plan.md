@@ -87,9 +87,9 @@ This document is the optimization/hardening implementation plan for `infra/03-se
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/015-security-optimization-hardening.md](../../01.requirements/015-security-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0018-security-optimization-hardening-architecture.md](../../02.architecture/requirements/0018-security-optimization-hardening-architecture.md)
-- **ADR**: [../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
+- **PRD**: [../01.requirements/prd-015-security-optimization-hardening.md](../../01.requirements/prd-015-security-optimization-hardening.md)
+- **ARD**: [../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md)
+- **ADR**: [../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/003-security/spec.md](../../03.specs/003-security/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)

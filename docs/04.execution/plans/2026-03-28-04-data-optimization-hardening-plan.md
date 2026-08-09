@@ -91,9 +91,9 @@ This document is the optimization/hardening implementation plan for `infra/04-da
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/016-data-optimization-hardening.md](../../01.requirements/016-data-optimization-hardening.md)
-- **ARD**: [../02.architecture/requirements/0019-data-optimization-hardening-architecture.md](../../02.architecture/requirements/0019-data-optimization-hardening-architecture.md)
-- **ADR**: [../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md)
+- **PRD**: [../01.requirements/prd-016-data-optimization-hardening.md](../../01.requirements/prd-016-data-optimization-hardening.md)
+- **ARD**: [../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md)
+- **ADR**: [../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/adr-0019-04-data-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/004-data/spec.md](../../03.specs/004-data/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md](../tasks/2026-03-28-04-data-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/04-data/optimization/optimization-hardening.md](../../05.operations/guides/04-data/optimization/optimization-hardening.md)

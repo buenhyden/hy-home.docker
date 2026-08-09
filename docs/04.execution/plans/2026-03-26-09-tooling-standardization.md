@@ -65,7 +65,7 @@ This historical plan exists to organize the work described in the existing goal 
 
 ## Related Documents
 
-- **PRD**: [010-tooling.md](../../01.requirements/010-tooling.md)
-- **ARD**: [0009-tooling-architecture.md](../../02.architecture/requirements/0009-tooling-architecture.md)
+- **PRD**: [010-tooling.md](../../01.requirements/prd-010-tooling.md)
+- **ARD**: [0009-tooling-architecture.md](../../02.architecture/descriptions/ad-0009-tooling-architecture.md)
 - **Spec**: [010-tooling/spec.md](../../03.specs/010-tooling/spec.md)
-- **ADR**: [0009-tooling-services.md](../../02.architecture/decisions/0009-tooling-services.md)
+- **ADR**: [0009-tooling-services.md](../../02.architecture/decisions/adr-0009-tooling-services.md)

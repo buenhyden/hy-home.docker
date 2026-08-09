@@ -113,7 +113,7 @@ postgresql-cluster/
 - **Guide**: [docs/05.operations/guides/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
 - **Policy**: [docs/05.operations/policies/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/policies/04-data/relational/postgresql-cluster.md)
 - **Runbook**: [docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md)
-- **ARD**: [docs/02.architecture/requirements/0004-data-architecture.md](../../../../docs/02.architecture/requirements/0004-data-architecture.md)
+- **ARD**: [docs/02.architecture/descriptions/ad-0004-data-architecture.md](../../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

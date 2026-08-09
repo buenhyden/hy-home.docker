@@ -19,7 +19,7 @@ This document is the technical specification for the May 2026 workspace-wide aud
 ## Related Inputs
 
 - **PRD**: No matching PRD; this is an iterative workspace governance audit session.
-- **ARD**: [../../02.architecture/requirements/README.md](../../02.architecture/requirements/README.md)
+- **ARD**: [../../02.architecture/descriptions/README.md](../../02.architecture/descriptions/README.md)
 - **Related ADRs**: No matching ADRs.
 
 ## Contracts

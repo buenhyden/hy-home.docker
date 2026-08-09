@@ -55,7 +55,7 @@ The infrastructure configuration for the `04-data` tier is already complete, but
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/004-data.md](../../01.requirements/004-data.md)
-- **ARD**: [../../02.architecture/requirements/0004-data-architecture.md](../../02.architecture/requirements/0004-data-architecture.md)
+- **PRD**: [../../01.requirements/prd-004-data.md](../../01.requirements/prd-004-data.md)
+- **ARD**: [../../02.architecture/descriptions/ad-0004-data-architecture.md](../../02.architecture/descriptions/ad-0004-data-architecture.md)
 - **Spec**: [../../03.specs/004-data/spec.md](../../03.specs/004-data/spec.md)
-- **ADR**: [../../02.architecture/decisions/0004-postgresql-ha-patroni.md](../../02.architecture/decisions/0004-postgresql-ha-patroni.md)
+- **ADR**: [../../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md](../../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md)

@@ -444,7 +444,7 @@ Agents must not auto-assign these numbers without confirming with this table.
 | Range     | Location                             | Reason                  |
 | --------- | ------------------------------------ | ----------------------- |
 | 0012–0014 | `docs/02.architecture/decisions/`    | Reserved / legacy merge |
-| 0015–0017 | `docs/02.architecture/requirements/` | Reserved / legacy merge |
+| 0015–0017 | `docs/02.architecture/descriptions/` | Reserved / legacy merge |
 
 Update this table when a number is consumed or definitively retired.
 

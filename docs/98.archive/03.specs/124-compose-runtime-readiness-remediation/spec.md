@@ -48,12 +48,12 @@ This specification's work reached a terminal state (`completed` or `superseded`)
 
 ## Boundaries and Inputs
 
-- **PRD**: [PRD 025](../../../01.requirements/025-operational-readiness-closure.md)
+- **PRD**: [PRD 025](../../../01.requirements/prd-025-operational-readiness-closure.md)
   defines the bounded local value, exact representative scope, and acceptance
   intent.
-- **ARD**: [ARD 0028](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
+- **ARD**: [Architecture Description 0028](../../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
   defines the isolated topology, evidence boundary, and cleanup guarantees.
-- **ADR**: [ADR 0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **ADR**: [ADR 0028](../../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
   selects contract-first local-isolated vertical slices.
 - **Audit lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)
   remains the canonical audit lineage.
@@ -283,9 +283,9 @@ The repository-wide archive mapping is recorded in
 ## Related Documents
 
 - **README**: [README.md](./README.md)
-- **PRD**: [Operational readiness closure](../../../01.requirements/025-operational-readiness-closure.md)
-- **ARD**: [Operational readiness closure architecture](../../../02.architecture/requirements/0028-operational-readiness-closure.md)
-- **ADR**: [ADR-0028 local-isolated readiness evidence](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
+- **PRD**: [Operational readiness closure](../../../01.requirements/prd-025-operational-readiness-closure.md)
+- **ARD**: [Operational readiness closure architecture](../../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
+- **ADR**: [ADR-0028 local-isolated readiness evidence](../../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - **Plan**: [Compose runtime-readiness plan](../../../04.execution/plans/2026-07-11-compose-runtime-readiness-remediation.md)
 - **Task**: [Compose runtime-readiness Task](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
 - **Umbrella lineage**: [Spec 123](../123-agentic-engineering-audit-remediation/spec.md)

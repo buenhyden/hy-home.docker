@@ -90,9 +90,9 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Traceability (Golden 5)
 
-- **PRD**: [07-workflow PRD](../../../docs/01.requirements/008-workflow.md)
-- **ARD**: [07-workflow ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
-- **ADR**: [N8N Integration ADR](../../../docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
+- **PRD**: [07-workflow PRD](../../../docs/01.requirements/prd-008-workflow.md)
+- **ARD**: [07-workflow Architecture Description](../../../docs/02.architecture/descriptions/ad-0007-workflow-architecture.md)
+- **ADR**: [N8N Integration ADR](../../../docs/02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md)
 - **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/008-workflow/spec.md)
 - **Plan**: [07-workflow Implementation Plan](../../../docs/04.execution/plans/2026-03-26-07-workflow-standardization.md)
 

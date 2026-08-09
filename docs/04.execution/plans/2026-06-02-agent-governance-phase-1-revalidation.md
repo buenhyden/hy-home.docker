@@ -139,9 +139,9 @@ The current plan preserves that chain. Graphify remains advisory when `report-gr
 
 ## Related Documents
 
-- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/024-agent-governance-standardization.md)
-- **ARD**: [Agent Governance Canonical Adapter ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
-- **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/prd-024-agent-governance-standardization.md)
+- **ARD**: [Agent Governance Canonical Adapter Architecture Description](../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
+- **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - **Task**: [Agent Governance Phase 1 Revalidation Task](../tasks/2026-06-02-agent-governance-phase-1-revalidation.md)
 - **Baseline Plan**: [Agent Governance Decision Items Implementation Plan](./2026-06-02-agent-governance-decision-items-plan.md)
 - **Baseline Task**: [Agent Governance Missing Items Implementation Task](../tasks/2026-06-02-agent-governance-missing-items-implementation.md)

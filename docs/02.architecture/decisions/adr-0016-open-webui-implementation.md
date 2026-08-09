@@ -1,0 +1,70 @@
+---
+status: active
+artifact_id: adr-0016
+artifact_type: adr
+parent_ids:
+  - ad-0013
+created: 2026-03-27
+updated: 2026-08-10
+---
+# ADR-0016: Open WebUI as Primary AI/RAG Interface
+
+---
+
+## Overview
+
+이 문서는 Open WebUI를 `hy-home.docker` 에코시스템의 기본 AI 인터페이스 및 RAG(Retrieval-Augmented Generation) 오케스트레이터로 선정함에 따른 아키텍처 결정 기록이다.
+
+## Context and Decision Drivers
+
+Local LLM interaction requires a user-friendly, feature-complete interface that supports document-based knowledge expansion (RAG). We need a solution that integrates natively with Ollama and Qdrant while supporting modern web standards and security (SSO).
+
+## Decision
+
+- Use **Open WebUI** (formerly Ollama WebUI) as the primary entry point for AI chat.
+- **Decision 1**: Deploy Svelte-based Open WebUI for premium frontend.
+- **Decision 2**: Use SQLite for state persistence (chat history).
+- **Decision 3**: Integrate with Traefik SSO middleware for auth.
+- **Decision 4**: Use Ollama as primary inference engine.
+
+## Follow-up Decisions
+
+performance.
+
+## Explicit Non-goals
+
+- Custom development of a chat UI from scratch.
+- Real-time multi-modal streaming without local model support.
+
+## Consequences
+
+- **Positive**:
+  - Unified, aesthetic interface for all local models.
+  - Out-of-the-box support for RAG with PDF/Text/Web sources.
+  - Active community and frequent updates.
+- **Trade-offs**:
+  - Increased GPU/System memory consumption for the Svelte/Python backend.
+  - Dependency on external vector stores for production-grade scaling.
+
+## Considered Options
+
+### [LibreChat]
+
+- Good: Highly customizable, supports many providers.
+- Bad: More complex setup for local RAG compared to Open WebUI's native Ollama integration.
+
+### [Ollama CLI]
+
+- Good: Extremely lightweight.
+- Bad: No visual RAG, no multi-user history, high barrier for non-technical users.
+
+## Confirmation
+
+이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Related Documents
+
+- **PRD**: [../../01.requirements/prd-013-ai-open-webui.md](../../01.requirements/prd-013-ai-open-webui.md)
+- **Architecture Description**: [../descriptions/ad-0013-open-webui-architecture.md](../descriptions/ad-0013-open-webui-architecture.md)
+- **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/009-ai/open-webui.md)
+- **Plan**: [../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)

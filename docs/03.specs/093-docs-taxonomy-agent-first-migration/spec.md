@@ -51,7 +51,7 @@ This specification defines the migration of the `hy-home.docker` documentation t
 
 ```text
 docs/01.requirements/
-docs/02.architecture/requirements/
+docs/02.architecture/descriptions/
 docs/02.architecture/decisions/
 docs/03.specs/
 docs/04.execution/plans/

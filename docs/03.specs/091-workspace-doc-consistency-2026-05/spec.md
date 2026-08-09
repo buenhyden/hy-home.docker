@@ -142,7 +142,7 @@ cd "$BASE"
 grep "^# " docs/02.architecture/decisions/*.md | grep -v "ADR-[0-9]\{4\}:"
 
 # ARD (ARD) suffix
-grep "^# " docs/02.architecture/requirements/*.md | grep -v "(ARD)"
+grep "^# " docs/02.architecture/descriptions/*.md | grep -v "Architecture Description"
 
 # Spec Agent Role section
 grep -rL "## Agent Role" docs/03.specs/*/spec.md
@@ -166,7 +166,7 @@ bash scripts/validation/check-doc-traceability.sh
 ## Success Criteria & Verification Plan
 
 - **VAL-SPC-001**: `grep "^# " docs/02.architecture/decisions/*.md | grep -v "ADR-[0-9]\{4\}:"` returns an empty result, excluding README; ADR title format is 100% compliant.
-- **VAL-SPC-002**: `grep "^# " docs/02.architecture/requirements/*.md | grep -v "(ARD)"` returns an empty result, excluding README; ARD title format is 100% compliant.
+- **VAL-SPC-002**: `grep "^# " docs/02.architecture/descriptions/*.md | grep -v "Architecture Description"` returns an empty result, excluding README; Architecture Description title format is 100% compliant.
 - **VAL-SPC-003**: `grep -rL "## Agent Role" docs/03.specs/*/spec.md` returns an empty result; all specs have the Agent Role section.
 - **VAL-SPC-004**: `grep -rl "^## Applies To" docs/05.operations/policies/` returns an empty result; Policy Scope headings are 100% unified.
 - **VAL-SPC-005**: operations docs have 0 missing status frontmatter fields.
