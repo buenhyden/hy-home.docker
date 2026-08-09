@@ -261,6 +261,7 @@ target and timestamp; never promote tracked intent to applied state.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Quality, CI, and formatting](./quality-ci-formatting.md)
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)

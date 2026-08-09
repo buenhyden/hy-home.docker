@@ -42,7 +42,8 @@ owners, and remote state requires separate control-plane evidence.
 - Current Stage 01-05, Stage 90, Stage 98, and Stage 99 corpus observations.
 - Provider adapters, workflows, scripts, templates, Compose definitions, and
   infrastructure paths that are visible to Git.
-- The nineteen planned research leaves and their current evidence readiness.
+- The original nineteen-leaf baseline and the approved Task 9a amendment that
+  adds `verification-validation.md` as the twentieth research leaf.
 
 ### Out of scope
 
@@ -136,9 +137,10 @@ unverified here.
 
 ### Research-category readiness
 
-This table covers the nineteen-leaf pack contract. `Current evidence` is a
-tracked starting point, not a substitute for each later leaf's source and claim
-review.
+This table preserves the original nineteen-leaf baseline contract. The approved
+2026-08-09 amendment adds a twentieth row for V&V without forward-updating the
+1,646-path measurements above. `Current evidence` is a tracked starting point,
+not a substitute for each leaf's source and claim review.
 
 | Research leaf / category | Current tracked evidence | Baseline state and limit |
 | --- | --- | --- |
@@ -161,6 +163,7 @@ review.
 | `quality-ci-formatting.md` | 41 validation files and 10 pre-commit repositories | Partial; local gates exist, remote required-check enforcement is unverified. |
 | `docker-compose-infrastructure.md` | 49 Compose-named YAML files in 11 infra domains | Partial; definitions exist, no containers were started and runtime health is unverified. |
 | `security-governance.md` | hardening, security, validation, incident, and supply-chain surfaces | Partial; tracked controls exist, secret values/private state were not inspected, and runtime/remote enforcement is unverified. |
+| `verification-validation.md` | Task 9a base `ac51a532`; 1,669 tracked files before the staged leaf, 14 scopes, typed workflow and named freshness owners | Implemented as current cross-system V&V analysis; static/local verification is strong, while provider, hosted GitHub, Compose runtime, security posture, release acceptance, and residual-risk authority remain `UNVERIFIED`. |
 
 ### Workspace adoption environment and rules
 
@@ -193,8 +196,9 @@ Current gaps and first owners are:
 - domain-memory lifecycle beyond bounded governance Memory: a future approved
   Stage 03 specification;
 - CD promotion/deployment evidence: a future approved delivery/release chain;
-- stale generated LLM Wiki and security readiness predecessors: the Task's
-  later route-switch/security units, using only canonical generators;
+- historical stale generated LLM Wiki and security-readiness predecessors:
+  preserved in the Task; current named freshness is remeasured by Task 9a
+  rather than inferred from this older baseline;
 - runtime, remote, and provider observations: remain `Unverified` until a
   separately approved evidence-gathering task executes them.
 
@@ -238,7 +242,7 @@ below so a topic-first reader encounters all fourteen scopes.
 
 Re-measure this document when tracked path sets, Stage 00 typed registries,
 stage corpus routes, workflows, scripts, template families, Compose paths, or
-the nineteen-leaf pack contract changes. Preserve the baseline commit and dated
+the twenty-leaf pack contract changes. Preserve the baseline commit and dated
 command result when interpreting an older count. Do not refresh Graphify or any
 generated artifact by hand; use its canonical owner in the separately approved
 unit.
@@ -246,6 +250,7 @@ unit.
 ## Related Documents
 
 - [Scope application matrix](./scope-application-matrix.md)
+- [Verification and validation](./verification-validation.md)
 - [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 - [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)

@@ -994,6 +994,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md](../research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md) | Markdown reference |
 | [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md](../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) | Markdown reference |
 | [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md](../research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md) | Markdown reference |
+| [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md](../research/2026-08-08-agentic-engineering-research-pack/verification-validation.md) | Markdown reference |
 | [docs/90.references/research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md](../research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |

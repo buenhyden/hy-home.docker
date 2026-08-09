@@ -230,6 +230,7 @@ enforcement, runtime acceptance, and deployment evidence in separate fields.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Automation pipeline and workflow topology](./automation-pipeline-workflow.md)
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)

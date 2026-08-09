@@ -161,6 +161,7 @@ deployment/runtime proof.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Spec-driven SDLC](./spec-driven-sdlc.md)
 - [Document metadata lifecycle](./document-metadata-lifecycle.md)
 - [Workspace baseline](./workspace-baseline.md)

@@ -220,6 +220,7 @@ outcomes from tracked documentation alone.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [SDLC document roles](./sdlc-document-roles.md)
 - [Document metadata lifecycle](./document-metadata-lifecycle.md)
 - [Workspace baseline](./workspace-baseline.md)

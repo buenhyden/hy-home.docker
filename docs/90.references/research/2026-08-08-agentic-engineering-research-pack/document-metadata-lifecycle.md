@@ -256,6 +256,7 @@ unexercised template/profile without changing historical evidence by analogy.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Spec-driven SDLC](./spec-driven-sdlc.md)
 - [SDLC document roles](./sdlc-document-roles.md)
 - [Workspace baseline](./workspace-baseline.md)

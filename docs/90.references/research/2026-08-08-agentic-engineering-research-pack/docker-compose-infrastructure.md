@@ -277,6 +277,7 @@ maintainers with Infra/DevOps, Entry, Security, and Operations review.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Workspace baseline](./workspace-baseline.md)
 - [Scope application matrix](./scope-application-matrix.md)
 - [Security governance](./security-governance.md)

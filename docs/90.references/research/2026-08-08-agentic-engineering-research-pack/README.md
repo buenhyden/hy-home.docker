@@ -8,7 +8,7 @@ status: active
 ## Overview
 
 이 pack은 agentic engineering, SDLC, documentation, delivery quality,
-infrastructure, security에 관한 19개 leaf를 사람 독자가 탐색하도록 연결합니다.
+verification and validation, infrastructure, security에 관한 20개 leaf를 사람 독자가 탐색하도록 연결합니다.
 분석과 adoption boundary를 제공하지만 정책, 승인, 실행 상태, runtime truth를
 새로 정의하지 않습니다. 충돌할 때는 이 pack이 아니라 아래 canonical owner를
 따릅니다.
@@ -49,7 +49,7 @@ generated output 수동 편집은 포함하지 않습니다.
 
 ## Structure
 
-이 README가 pack-level human router이며, 아래 19개 topic leaf가 분석 본문을
+이 README가 pack-level human router이며, 아래 20개 topic leaf가 분석 본문을
 소유합니다. 별도의 nested policy, plan, runbook, generated artifact는 없습니다.
 
 ## Pack Map
@@ -58,7 +58,7 @@ generated output 수동 편집은 포함하지 않습니다.
 
 | Leaf | Use it for |
 | --- | --- |
-| [Workspace baseline](./workspace-baseline.md) | 19개 연구 category의 current tracked baseline, evidence owner, gap |
+| [Workspace baseline](./workspace-baseline.md) | 원래 19개 연구 category와 Task 9a V&V amendment를 포함한 현재 20개 leaf의 tracked baseline, evidence owner, gap |
 | [Scope application matrix](./scope-application-matrix.md) | normative 14-scope axis와 각 scope의 adoption disposition |
 
 ### Agentic Engineering
@@ -90,6 +90,7 @@ generated output 수동 편집은 포함하지 않습니다.
 | --- | --- |
 | [Automation pipeline workflow](./automation-pipeline-workflow.md) | local automation topology, GitHub Actions expansion, promotion gaps |
 | [Quality, CI, and formatting](./quality-ci-formatting.md) | formatting/lint/type/test/build/coverage gate와 failure propagation |
+| [Verification and validation](./verification-validation.md) | conformance와 intended use의 구분, evidence state, acceptance authority, residual risk, monitoring/revalidation |
 
 ### Infrastructure and Security
 
@@ -106,8 +107,9 @@ generated output 수동 편집은 포함하지 않습니다.
    harness, loop, provider, instruction, model, catalog, memory 순으로 읽습니다.
 3. 요구사항에서 장기 운영 문서까지의 chain은
    [SDLC and Documentation](#sdlc-and-documentation)을 읽습니다.
-4. workflow, gate, formatting, test evidence는
-   [Delivery and Quality](#delivery-and-quality)을 읽습니다.
+4. workflow, gate, formatting, test, release-readiness evidence는
+   [Delivery and Quality](#delivery-and-quality)과
+   [Verification and validation](./verification-validation.md)을 함께 읽습니다.
 5. Compose/runtime 경계와 secure delivery는
    [Infrastructure and Security](#infrastructure-and-security)를 함께 읽습니다.
 6. 특정 workspace scope에 적용할 때는 다음 14-scope route와 foundation의
@@ -117,6 +119,9 @@ generated output 수동 편집은 포함하지 않습니다.
 
 이 표는 topic entry를 고르는 human route입니다. 실제 적용 여부와 owner는
 scope matrix와 해당 scope의 canonical contract가 결정합니다.
+모든 row의 conformance, intended-use, acceptance, residual-risk 판단은
+[Verification and validation](./verification-validation.md)을 cross-cutting route로
+함께 사용하며, 이것은 열다섯 번째 scope를 만들지 않습니다.
 
 | Scope | First pack route | Adoption boundary |
 | --- | --- | --- |
@@ -137,10 +142,12 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 
 ## Current State and Gaps
 
-- 이 directory는 이 README와 19개 reviewed leaf, 합계 20개 파일로 구성됩니다.
-  35개 Spec requirement에는 각각 하나의 canonical destination이 있으며,
-  REQ-33의 pack assembly는 Task 9에서 완료되었습니다. REQ-34 route/generated
-  cleanup은 Task 10, REQ-35 final review와 handoff는 Task 12가 실행합니다.
+- 이 directory는 이 README와 20개 leaf, 합계 21개 파일로 구성됩니다.
+  36개 Spec requirement에는 각각 하나의 canonical destination이 있습니다.
+  Task 9의 원래 20-file/19-leaf/35-requirement assembly와 review는 historical
+  evidence로 유지되고, REQ-36과 21/20/36 current contract는 Task 9a가 별도
+  logical unit으로 구현합니다. REQ-34 route/generated cleanup의 원래 20-file
+  결과는 Task 10, REQ-35 final review와 handoff는 Task 12가 소유합니다.
 - 14개 normative scope는 모두 disposition을 가집니다. `architecture`는
   enum-only이고 `backend`, `docs`, `entry`, `frontend`, `meta`, `mobile`은
   catalog enum 밖의 명시적 scope입니다.
@@ -148,14 +155,15 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   deployment/live Compose 상태는 검증되지 않았습니다. delivery promotion,
   typed memory lifecycle, catalog reachability, backup/SLO/port ownership에도
   후속 gap이 남습니다.
-- LLM Wiki index와 coverage output, security-readiness output은 알려진 stale 또는
-  fail-closed predecessor입니다. 이 Task 9 route switch는 generator를 실행하거나
-  output을 수정하지 않습니다. exact regeneration과 cross-link scan은 Task 10의
-  승인 및 검증 범위입니다.
-- isolated repository-contract check의 알려진 실패는 forbidden
-  `docs/00.agent-governance/memory/current.md`에 대한
-  `AGC-MEMORY-FORBIDDEN-MATERIAL`입니다. 이 pack은 그 실패를 PASS로 분류하지
-  않습니다.
+- Task 10b의 LLM Wiki predecessor는 1,338 index row와 1,337 coverage path에서
+  fresh했고, Task 9a는 staged 21번째 leaf를 canonical generator로 반영해
+  1,339/1,338 target을 검증합니다. security readiness는 11 implemented, 1 partial,
+  1 gap으로 fresh하며 broad dependency SCA가 유일한 gap입니다. 더 오래된 stale/
+  fail-closed 결과는 Task의 historical predecessor로 유지됩니다.
+- repository contract, metadata, traceability, alignment, generator freshness,
+  workflow/security/Compose/provenance 결과는 각 Task command와 candidate에만
+  적용됩니다. local PASS를 runtime, remote enforcement, release acceptance로
+  확장하지 않습니다.
 
 ## Maintenance and Canonical-owner Boundaries
 
@@ -170,6 +178,9 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   human router 변경만으로 generated artifact를 손으로 고치지 않습니다.
 - requirement, source, scope, old-claim migration evidence의 canonical execution
   owner는 [Task ledger](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)입니다.
+- V&V source, workspace count, acceptance-authority, monitoring 또는 generated
+  path set이 바뀌면 official source를 다시 열고 owner command와 두 LLM Wiki
+  freshness gate를 재실행합니다.
 
 ## How to Work in This Area
 
@@ -187,6 +198,9 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 - `2026-07-05-agentic-research-pack-refresh/`는 삭제하거나 수정하지 않았으며
   superseded historical input으로 남아 있습니다. claim-level disposition과
   destination은 Task ledger에 보존됩니다.
+- `verification-validation.md`는 old-pack claim predecessor가 없는 REQ-36 신규
+  leaf입니다. 이 추가는 retiring pack의 exact 20 files를 바꾸거나 Task 11의
+  deletion authority를 넓히지 않습니다.
 - parent research README의 human route와 superseded mapping만 이 Task에서
   전환합니다. repository-wide cross-link와 generated machine route는 Task 10,
   old-pack 삭제 gate는 Task 11이 소유합니다.

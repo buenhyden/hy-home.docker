@@ -29,7 +29,7 @@ SIBLING_PATH = (
 PLAN_PATH = "docs/04.execution/plans/2026-07-05-agentic-research-pack-refresh.md"
 TASK_PATH = "docs/04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md"
 
-PACK_FILES = (
+RETIRING_PACK_FILES = (
     "README.md",
     "agent-instructions-vibe-coding.md",
     "agent-model-selection.md",
@@ -50,6 +50,9 @@ PACK_FILES = (
     "security-governance.md",
     "spec-driven-sdlc.md",
     "workspace-baseline.md",
+)
+NEW_PACK_FILES = tuple(
+    sorted((*RETIRING_PACK_FILES, "verification-validation.md"))
 )
 
 
@@ -108,8 +111,10 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(REPOSITORY_ROOT / generator, target)
 
-        for filename in PACK_FILES:
+        for filename in RETIRING_PACK_FILES:
             write_fixture_file(root, f"{RETIRING_PREFIX}{filename}")
+
+        for filename in NEW_PACK_FILES:
             write_fixture_file(root, f"{NEW_PREFIX}{filename}")
 
         for retained_path in (SIBLING_PATH, PLAN_PATH, TASK_PATH):
@@ -170,16 +175,18 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
 
             decoded_index = coexisting_index.decode()
             decoded_coverage = coexisting_coverage.decode()
-            for filename in PACK_FILES:
+            for filename in RETIRING_PACK_FILES:
                 self.assertNotIn(f"{RETIRING_PREFIX}{filename}", decoded_index)
                 self.assertNotIn(f"{RETIRING_PREFIX}{filename}", decoded_coverage)
+
+            for filename in NEW_PACK_FILES:
                 self.assertIn(f"{NEW_PREFIX}{filename}", decoded_index)
 
             for retained_path in (SIBLING_PATH, PLAN_PATH, TASK_PATH):
                 self.assertIn(retained_path, decoded_index)
                 self.assertIn(retained_path, decoded_coverage)
 
-            for filename in PACK_FILES:
+            for filename in NEW_PACK_FILES:
                 retained_path = f"{NEW_PREFIX}{filename}"
                 run(
                     ["git", "rm", "--cached", "--quiet", retained_path],
@@ -205,6 +212,26 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
                     msg=f"new-pack coverage projection omitted {retained_path}",
                 )
                 run(["git", "add", retained_path], cwd=root)
+
+    def test_verification_validation_leaf_changes_only_new_pack_cardinality(
+        self,
+    ) -> None:
+        self.assertEqual(20, len(RETIRING_PACK_FILES))
+        self.assertEqual(21, len(NEW_PACK_FILES))
+        self.assertEqual(
+            set(RETIRING_PACK_FILES) | {"verification-validation.md"},
+            set(NEW_PACK_FILES),
+        )
+
+        production_pack = REPOSITORY_ROOT / NEW_PREFIX
+        production_files = sorted(
+            path.name for path in production_pack.iterdir() if path.is_file()
+        )
+        self.assertEqual(list(NEW_PACK_FILES), production_files)
+        self.assertIn(
+            "(./verification-validation.md)",
+            (production_pack / "README.md").read_text(encoding="utf-8"),
+        )
 
     def test_stdout_mode_is_byte_exact_and_write_free(self) -> None:
         for generator, output in (

@@ -221,6 +221,7 @@ an aggregate contract result.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Documentation architecture](./documentation-architecture.md)
 - [Document metadata lifecycle](./document-metadata-lifecycle.md)
 - [Agent instructions and vibe coding](./agent-instructions-vibe-coding.md)

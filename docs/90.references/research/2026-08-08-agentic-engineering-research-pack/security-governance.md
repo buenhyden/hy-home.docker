@@ -242,6 +242,7 @@ Security, QA, Infra, and Operations review.
 
 ## Related Documents
 
+- [Verification and validation](./verification-validation.md)
 - [Docker Compose and infrastructure](./docker-compose-infrastructure.md)
 - [Automation pipeline and workflow](./automation-pipeline-workflow.md)
 - [Quality, CI, and formatting](./quality-ci-formatting.md)
