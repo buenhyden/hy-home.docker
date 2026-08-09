@@ -1,8 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_DIR="$(git rev-parse --show-toplevel)"
-cd "$BASE_DIR"
+manifest_env_count=0
+if [[ ${GATE9_LLM_MANIFEST_FD+x} == x ]]; then
+  manifest_env_count=$((manifest_env_count + 1))
+fi
+if [[ ${GATE9_LLM_MANIFEST_SIZE+x} == x ]]; then
+  manifest_env_count=$((manifest_env_count + 1))
+fi
+if [[ ${GATE9_LLM_MANIFEST_SHA256+x} == x ]]; then
+  manifest_env_count=$((manifest_env_count + 1))
+fi
+
+if (( manifest_env_count != 0 && manifest_env_count != 3 )); then
+  echo "FAIL: Gate 9 LLM manifest environment must be all-or-none" >&2
+  exit 1
+elif (( manifest_env_count == 3 )); then
+  if (( $# != 1 )) || [[ $1 != "--stdout" ]]; then
+    echo "FAIL: Gate 9 LLM manifest mode requires sole argument --stdout" >&2
+    exit 1
+  fi
+else
+  BASE_DIR="$(git rev-parse --show-toplevel)"
+  cd "$BASE_DIR"
+fi
 
 usage() {
   cat <<'EOF'
@@ -46,8 +67,13 @@ python3 - "$mode" <<'PY'
 from __future__ import annotations
 
 import collections
+import fcntl
+import hashlib
+import hmac
 import os
 import pathlib
+import re
+import stat
 import subprocess
 import sys
 
@@ -125,6 +151,174 @@ GENERATED_OR_LOCK_FILES = (
     "pnpm-lock.yaml",
     "yarn.lock",
 )
+
+MANIFEST_ENV_NAMES = (
+    "GATE9_LLM_MANIFEST_FD",
+    "GATE9_LLM_MANIFEST_SIZE",
+    "GATE9_LLM_MANIFEST_SHA256",
+)
+MANIFEST_SCHEMA = b"schema=agentic-research-llm-wiki-manifest/v1"
+MAX_MANIFEST_BYTES = 8 * 1024 * 1024
+REQUIRED_SEALS = (
+    fcntl.F_SEAL_SEAL
+    | fcntl.F_SEAL_SHRINK
+    | fcntl.F_SEAL_GROW
+    | fcntl.F_SEAL_WRITE
+)
+
+
+def manifest_error(detail: str) -> None:
+    print(f"FAIL: invalid Gate 9 LLM manifest: {detail}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def canonical_decimal(value: str, label: str) -> int:
+    if re.fullmatch(r"0|[1-9][0-9]*", value) is None:
+        manifest_error(f"{label} is not canonical decimal")
+    return int(value)
+
+
+def validate_manifest_path(path_bytes: bytes) -> str:
+    if not path_bytes:
+        manifest_error("path is empty")
+    if any(byte < 0x20 or byte == 0x7F for byte in path_bytes):
+        manifest_error("path contains a control byte")
+    try:
+        path_text = path_bytes.decode("utf-8", errors="strict")
+    except UnicodeDecodeError:
+        manifest_error("path is not strict UTF-8")
+    if path_text.startswith("/") or path_text.endswith("/") or "\\" in path_text:
+        manifest_error("path is not a complete relative POSIX path")
+    parts = path_text.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        manifest_error("path has an unsafe POSIX component")
+    return path_text
+
+
+def read_gate9_manifest() -> list[str] | None:
+    unexpected = sorted(
+        name
+        for name in os.environ
+        if name.startswith("GATE9_LLM_MANIFEST_") and name not in MANIFEST_ENV_NAMES
+    )
+    if unexpected:
+        manifest_error(f"unexpected environment variable: {unexpected[0]}")
+    present = tuple(name in os.environ for name in MANIFEST_ENV_NAMES)
+    if any(present) and not all(present):
+        manifest_error("environment is partial")
+    if not any(present):
+        return None
+    if MODE != "stdout":
+        manifest_error("internal mode requires --stdout")
+
+    descriptor = canonical_decimal(os.environ[MANIFEST_ENV_NAMES[0]], "fd")
+    declared_size = canonical_decimal(os.environ[MANIFEST_ENV_NAMES[1]], "size")
+    declared_digest = os.environ[MANIFEST_ENV_NAMES[2]]
+    if declared_size == 0 or declared_size > MAX_MANIFEST_BYTES:
+        manifest_error("size is outside the 1..8 MiB bound")
+    if re.fullmatch(r"[0-9a-f]{64}", declared_digest) is None:
+        manifest_error("SHA-256 is not canonical lowercase hex")
+
+    try:
+        before = os.fstat(descriptor)
+        current_offset = os.lseek(descriptor, 0, os.SEEK_CUR)
+        seals = fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
+        descriptor_target = os.readlink(f"/proc/self/fd/{descriptor}")
+    except (OSError, ValueError) as error:
+        manifest_error(f"descriptor validation failed: {error}")
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 0:
+        manifest_error("descriptor is not an unlinked regular file")
+    if not descriptor_target.startswith("/memfd:") or not descriptor_target.endswith(
+        " (deleted)"
+    ):
+        manifest_error("descriptor is not a memfd")
+    if current_offset != 0:
+        manifest_error("descriptor offset is not zero")
+    if before.st_size != declared_size:
+        manifest_error("declared size does not match descriptor size")
+    if seals & REQUIRED_SEALS != REQUIRED_SEALS:
+        manifest_error("descriptor lacks required seals")
+
+    chunks: list[bytes] = []
+    remaining = declared_size
+    try:
+        while remaining:
+            chunk = os.read(descriptor, min(remaining, 1024 * 1024))
+            if not chunk:
+                manifest_error("descriptor ended before declared size")
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        if os.read(descriptor, 1) != b"":
+            manifest_error("descriptor has bytes beyond declared size")
+        after = os.fstat(descriptor)
+    except OSError as error:
+        manifest_error(f"descriptor read failed: {error}")
+    if (
+        before.st_dev,
+        before.st_ino,
+        before.st_mode,
+        before.st_nlink,
+        before.st_size,
+    ) != (
+        after.st_dev,
+        after.st_ino,
+        after.st_mode,
+        after.st_nlink,
+        after.st_size,
+    ):
+        manifest_error("descriptor identity changed during read")
+
+    payload = b"".join(chunks)
+    if not hmac.compare_digest(hashlib.sha256(payload).hexdigest(), declared_digest):
+        manifest_error("SHA-256 mismatch")
+    if not payload.endswith(b"\0"):
+        manifest_error("payload lacks terminal NUL")
+    records = payload.split(b"\0")
+    records.pop()
+    if len(records) < 5 or records[0] != MANIFEST_SCHEMA:
+        manifest_error("schema record is missing or invalid")
+
+    object_format_record = records[1]
+    if object_format_record == b"object-format=sha1":
+        oid_length = 40
+    elif object_format_record == b"object-format=sha256":
+        oid_length = 64
+    else:
+        manifest_error("object format is invalid")
+    oid_pattern = re.compile(rb"[0-9a-f]{" + str(oid_length).encode() + rb"}")
+    for record, prefix, label in (
+        (records[2], b"live-commit=", "live commit"),
+        (records[3], b"projected-tree=", "projected tree"),
+    ):
+        if not record.startswith(prefix):
+            manifest_error(f"{label} record is missing")
+        oid = record[len(prefix) :]
+        if oid_pattern.fullmatch(oid) is None or oid == b"0" * oid_length:
+            manifest_error(f"{label} OID is invalid")
+
+    if not records[4].startswith(b"count="):
+        manifest_error("count record is missing")
+    try:
+        count_text = records[4][len(b"count=") :].decode("ascii", errors="strict")
+    except UnicodeDecodeError:
+        manifest_error("count is not ASCII")
+    count = canonical_decimal(count_text, "count")
+    path_records = records[5:]
+    if len(path_records) != count:
+        manifest_error("count does not match path records")
+    if path_records != sorted(path_records) or len(set(path_records)) != len(
+        path_records
+    ):
+        manifest_error("paths are not byte-sorted and unique")
+    manifest_paths = [validate_manifest_path(path_bytes) for path_bytes in path_records]
+    path_set = set(manifest_paths)
+    for path_text in manifest_paths:
+        prefix = ""
+        for part in path_text.split("/")[:-1]:
+            prefix = f"{prefix}/{part}" if prefix else part
+            if prefix in path_set:
+                manifest_error("paths have a file/directory prefix collision")
+    return manifest_paths
 
 
 def git_ls_files() -> set[str]:
@@ -380,9 +574,17 @@ def render(paths: list[str]) -> str:
     return "\n".join(lines) + "\n"
 
 
-tracked = git_ls_files()
-tracked.update(path for path in REQUIRED_LOCAL_PATHS if pathlib.Path(path).exists())
-safe_paths = sorted(path for path in tracked if pathlib.Path(path).exists() and is_safe_candidate(path))
+manifest_paths = read_gate9_manifest()
+if manifest_paths is None:
+    tracked = git_ls_files()
+    tracked.update(path for path in REQUIRED_LOCAL_PATHS if pathlib.Path(path).exists())
+    safe_paths = sorted(
+        path
+        for path in tracked
+        if pathlib.Path(path).exists() and is_safe_candidate(path)
+    )
+else:
+    safe_paths = [path for path in manifest_paths if is_safe_candidate(path)]
 generated = render(safe_paths)
 
 if MODE == "stdout":

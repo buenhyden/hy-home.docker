@@ -4,8 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import dataclasses
-import enum
+import fcntl
 import hashlib
 import json
 import os
@@ -21,6 +22,10 @@ from typing import Any, Final
 
 
 SCHEMA: Final = "agentic-research-gate9/v1"
+BUNDLE_SCHEMA: Final = "agentic-research-gate9-bundle/v1"
+BUILD_RECEIPT_SCHEMA: Final = "agentic-research-gate9-build-receipt/v1"
+BUNDLE_MAX_BYTES: Final = 32 * 1024 * 1024
+CONTROL_MAX_BYTES: Final = 4 * 1024 * 1024
 OLD_PACK: Final = pathlib.PurePosixPath(
     "docs/90.references/research/2026-07-05-agentic-research-pack-refresh"
 )
@@ -106,506 +111,58 @@ def fail(code: str, detail: str) -> None:
 
 
 @dataclasses.dataclass(frozen=True)
-class RegisteredScratchEntry:
-    parent_fd: int
-    name: str
-    identity: tuple[int, int]
-    mode: int
-    is_directory: bool
+class RawTreeEntry:
+    mode: bytes
+    object_type: bytes
+    oid: bytes
+    name: bytes
 
 
-class ScratchOwnership(enum.Enum):
-    ABSENT = "absent"
-    CREATED_UNBOUND = "created-unbound"
-    BOUND = "bound"
-
-
-class PinnedScratch:
-    """Own scratch objects only through pinned directory descriptors."""
-
-    def __init__(self, prefix: str = "gate9-") -> None:
-        self._owner_pid = os.getpid()
-        base_path = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
-        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
-        self._base_fd: int | None = None
-        self._holding_fd: int | None = None
-        self._scratch_fd: int | None = None
-        self._holding_name: str | None = None
-        self._base_identity: tuple[int, int, int] | None = None
-        self._holding_identity: tuple[int, int, int] | None = None
-        self._scratch_identity: tuple[int, int, int] | None = None
-        self._holding_state = ScratchOwnership.ABSENT
-        self._scratch_state = ScratchOwnership.ABSENT
-        try:
-            self._base_fd = os.open(base_path, flags)
-            self._base_path = base_path
-            self._base_identity = self._directory_identity(self._base_fd)
-            for _ in range(128):
-                holding_name = f"{prefix}{secrets.token_hex(12)}"
-                try:
-                    os.mkdir(holding_name, mode=0o700, dir_fd=self._base_fd)
-                    break
-                except FileExistsError:
-                    continue
-            else:
-                fail("SCRATCH_SCOPE_DRIFT", "cannot allocate unique scratch holding")
-            self._holding_name = holding_name
-            self.holding_path = self._base_path / holding_name
-            self._holding_state = ScratchOwnership.CREATED_UNBOUND
-            self._holding_fd = os.open(holding_name, flags, dir_fd=self._base_fd)
-            self._holding_identity = self._directory_identity(self._holding_fd)
-            holding_metadata = os.stat(
-                holding_name,
-                dir_fd=self._base_fd,
-                follow_symlinks=False,
-            )
-            if not stat.S_ISDIR(holding_metadata.st_mode):
-                fail("SCRATCH_SCOPE_DRIFT", "scratch holding is not a directory")
-            observed_holding_identity = (
-                holding_metadata.st_dev,
-                holding_metadata.st_ino,
-                stat.S_IMODE(holding_metadata.st_mode),
-            )
-            if observed_holding_identity != self._holding_identity:
-                fail("SCRATCH_SCOPE_DRIFT", "scratch holding identity changed")
-            self._holding_state = ScratchOwnership.BOUND
-            os.mkdir("scratch", mode=0o700, dir_fd=self._holding_fd)
-            self._scratch_state = ScratchOwnership.CREATED_UNBOUND
-            self._scratch_fd = os.open("scratch", flags, dir_fd=self._holding_fd)
-            self._scratch_identity = self._directory_identity(self._scratch_fd)
-            scratch_metadata = os.stat(
-                "scratch",
-                dir_fd=self._holding_fd,
-                follow_symlinks=False,
-            )
-            if not stat.S_ISDIR(scratch_metadata.st_mode):
-                fail("SCRATCH_SCOPE_DRIFT", "scratch directory is not a directory")
-            observed_scratch_identity = (
-                scratch_metadata.st_dev,
-                scratch_metadata.st_ino,
-                stat.S_IMODE(scratch_metadata.st_mode),
-            )
-            if observed_scratch_identity != self._scratch_identity:
-                fail("SCRATCH_SCOPE_DRIFT", "scratch directory identity changed")
-            self._scratch_state = ScratchOwnership.BOUND
-            self._path = pathlib.Path(
-                f"/proc/{self._owner_pid}/fd/{self._scratch_fd}"
-            )
-            self._directories: dict[str, tuple[int, RegisteredScratchEntry]] = {}
-            self._files: dict[str, RegisteredScratchEntry] = {}
-            self._file_contracts: dict[
-                str, tuple[int, tuple[int, int] | None]
-            ] = {}
-            self._closed = False
-            self._prove_process_fd_path()
-        except BaseException as error:
-            primary_error = error
-            if isinstance(error, OSError):
-                primary_error = Gate9Error(
-                    "SCRATCH_SCOPE_DRIFT",
-                    f"cannot pin scratch directories: {error}",
-                )
-            self._rollback_initialization(primary_error)
-
-    @staticmethod
-    def _directory_identity(descriptor: int) -> tuple[int, int, int]:
-        metadata = os.fstat(descriptor)
-        if not stat.S_ISDIR(metadata.st_mode):
-            fail("SCRATCH_SCOPE_DRIFT", "pinned descriptor is not a directory")
-        return metadata.st_dev, metadata.st_ino, stat.S_IMODE(metadata.st_mode)
-
-    def _prove_process_fd_path(self) -> None:
-        if os.getpid() != self._owner_pid:
-            fail("SCRATCH_SCOPE_DRIFT", "scratch owner process changed")
-        expected_path = pathlib.Path(
-            f"/proc/{self._owner_pid}/fd/{self._scratch_fd}"
-        )
-        if self._path != expected_path:
-            fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor path changed")
-        if self._directory_identity(self._scratch_fd) != self._scratch_identity:
-            fail("SCRATCH_SCOPE_DRIFT", "scratch descriptor identity changed")
-        try:
-            link_metadata = self._path.lstat()
-            if not stat.S_ISLNK(link_metadata.st_mode):
-                fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor is not a symlink")
-            flags = os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC
-            descriptor = os.open(self._path, flags)
-            try:
-                observed = self._directory_identity(descriptor)
-            finally:
-                os.close(descriptor)
-        except OSError as error:
-            fail(
-                "SCRATCH_SCOPE_DRIFT",
-                f"cannot prove scratch process descriptor: {error}",
-            )
-        if observed != self._scratch_identity:
-            fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor identity changed")
-
-    def _rollback_initialization(self, primary_error: BaseException) -> None:
-        cleanup_error: BaseException | None = None
-        try:
-            if self._base_fd is not None:
-                if self._base_identity is None:
-                    raise OSError("pinned scratch base identity is unavailable")
-                if self._directory_identity(self._base_fd) != self._base_identity:
-                    raise OSError("pinned scratch base identity changed")
-            if self._holding_state is ScratchOwnership.CREATED_UNBOUND:
-                raise OSError(
-                    "pinned scratch holding identity is unbound; retained without removal"
-                )
-            if self._holding_state is ScratchOwnership.BOUND:
-                if (
-                    self._base_fd is None
-                    or self._holding_fd is None
-                    or self._holding_name is None
-                    or self._holding_identity is None
-                ):
-                    raise OSError("pinned scratch holding identity is unavailable")
-                if self._directory_identity(self._holding_fd) != self._holding_identity:
-                    raise OSError("pinned scratch holding descriptor identity changed")
-                holding_metadata = os.stat(
-                    self._holding_name,
-                    dir_fd=self._base_fd,
-                    follow_symlinks=False,
-                )
-                if (
-                    not stat.S_ISDIR(holding_metadata.st_mode)
-                    or (
-                        holding_metadata.st_dev,
-                        holding_metadata.st_ino,
-                        stat.S_IMODE(holding_metadata.st_mode),
-                    )
-                    != self._holding_identity
-                ):
-                    raise OSError("pinned scratch holding identity changed")
-            if self._scratch_state is ScratchOwnership.CREATED_UNBOUND:
-                raise OSError(
-                    "pinned scratch directory identity is unbound; retained without removal"
-                )
-            if self._scratch_state is ScratchOwnership.BOUND:
-                if (
-                    self._holding_fd is None
-                    or self._scratch_fd is None
-                    or self._scratch_identity is None
-                ):
-                    raise OSError("pinned scratch directory identity is unavailable")
-                if self._directory_identity(self._scratch_fd) != self._scratch_identity:
-                    raise OSError("pinned scratch descriptor identity changed")
-                scratch_metadata = os.stat(
-                    "scratch",
-                    dir_fd=self._holding_fd,
-                    follow_symlinks=False,
-                )
-                if (
-                    not stat.S_ISDIR(scratch_metadata.st_mode)
-                    or (
-                        scratch_metadata.st_dev,
-                        scratch_metadata.st_ino,
-                        stat.S_IMODE(scratch_metadata.st_mode),
-                    )
-                    != self._scratch_identity
-                ):
-                    raise OSError("pinned scratch directory identity changed")
-            if self._scratch_state is ScratchOwnership.BOUND:
-                os.rmdir("scratch", dir_fd=self._holding_fd)
-            if self._holding_state is ScratchOwnership.BOUND:
-                os.rmdir(self._holding_name, dir_fd=self._base_fd)
-        except BaseException as error:
-            cleanup_error = error
-        finally:
-            self._closed = True
-            for descriptor in (self._scratch_fd, self._holding_fd, self._base_fd):
-                if descriptor is None:
-                    continue
-                try:
-                    os.close(descriptor)
-                except OSError:
-                    pass
-        if cleanup_error is not None:
-            raise Gate9Error(
-                "SCRATCH_CLEANUP_FAILURE",
-                f"initial scratch rollback failed: {cleanup_error}; "
-                f"{self._retained_holding_identity()}",
-            ) from primary_error
-        raise primary_error
-
-    def _retained_holding_identity(self) -> str:
-        if self._holding_identity is None:
-            return "retained holding identity unavailable"
-        device, inode, mode = self._holding_identity
-        return f"retained holding identity dev={device} ino={inode} mode={mode:#o}"
-
-    @property
-    def path(self) -> pathlib.Path:
-        self._prove_process_fd_path()
-        return self._path
-
-    @property
-    def pass_fds(self) -> tuple[int, ...]:
-        self._prove_process_fd_path()
-        return (
-            self._base_fd,
-            self._holding_fd,
-            self._scratch_fd,
-            *(descriptor for descriptor, _ in self._directories.values()),
-        )
-
-    def _parent_for(self, relative: pathlib.PurePosixPath) -> tuple[int, str]:
-        if relative.is_absolute() or ".." in relative.parts or not relative.parts:
-            fail("SCRATCH_SCOPE_DRIFT", f"unsafe scratch path: {relative}")
-        parent_fd = self._scratch_fd
-        accumulated: list[str] = []
-        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
-        for part in relative.parts[:-1]:
-            accumulated.append(part)
-            key = "/".join(accumulated)
-            if key not in self._directories:
-                descriptor: int | None = None
-                try:
-                    os.mkdir(part, mode=0o700, dir_fd=parent_fd)
-                    descriptor = os.open(part, flags, dir_fd=parent_fd)
-                    identity = self._directory_identity(descriptor)
-                    metadata = os.stat(part, dir_fd=parent_fd, follow_symlinks=False)
-                    observed = (
-                        metadata.st_dev,
-                        metadata.st_ino,
-                        stat.S_IMODE(metadata.st_mode),
-                    )
-                    if not stat.S_ISDIR(metadata.st_mode) or observed != identity:
-                        fail(
-                            "SCRATCH_SCOPE_DRIFT",
-                            "scratch directory changed before identity binding",
-                        )
-                except BaseException as error:
-                    if descriptor is not None:
-                        os.close(descriptor)
-                    if isinstance(error, OSError):
-                        fail(
-                            "SCRATCH_SCOPE_DRIFT",
-                            f"cannot create scratch directory: {error}",
-                        )
-                    raise
-                entry = RegisteredScratchEntry(
-                    parent_fd,
-                    part,
-                    (identity[0], identity[1]),
-                    identity[2],
-                    True,
-                )
-                self._directories[key] = descriptor, entry
-            parent_fd = self._directories[key][0]
-        return parent_fd, relative.name
-
-    def create_file(
-        self,
-        relative: str,
-        value: bytes = b"",
-        *,
-        mode: int = 0o600,
-    ) -> pathlib.Path:
-        pure = pathlib.PurePosixPath(relative)
-        parent_fd, name = self._parent_for(pure)
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
-        try:
-            descriptor = os.open(name, flags, mode, dir_fd=parent_fd)
-            try:
-                offset = 0
-                while offset < len(value):
-                    offset += os.write(descriptor, value[offset:])
-                metadata = os.fstat(descriptor)
-                observed = os.stat(
-                    name,
-                    dir_fd=parent_fd,
-                    follow_symlinks=False,
-                )
-            finally:
-                os.close(descriptor)
-        except OSError as error:
-            fail("SCRATCH_SCOPE_DRIFT", f"cannot create scratch file {relative}: {error}")
-        identity = (metadata.st_dev, metadata.st_ino)
-        file_mode = stat.S_IMODE(metadata.st_mode)
+def _parse_raw_tree_records(
+    raw: bytes,
+    object_width: int,
+    *,
+    allow_paths: bool,
+) -> tuple[RawTreeEntry, ...]:
+    if object_width not in {40, 64} or (raw and not raw.endswith(b"\0")):
+        fail("PROJECTED_TREE_SCOPE_DRIFT", "malformed raw tree stream")
+    records: list[RawTreeEntry] = []
+    previous_key: bytes | None = None
+    for row in raw[:-1].split(b"\0") if raw else ():
+        metadata, separator, name = row.partition(b"\t")
+        fields = metadata.split(b" ")
+        if not separator or len(fields) != 3:
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "malformed raw tree record")
+        mode, object_type, oid = fields
+        valid_pair = (mode, object_type) in {
+            (b"040000", b"tree"),
+            (b"100644", b"blob"),
+            (b"100755", b"blob"),
+            (b"120000", b"blob"),
+            (b"160000", b"commit"),
+        }
+        components = name.split(b"/")
         if (
-            not stat.S_ISREG(metadata.st_mode)
-            or metadata.st_nlink != 1
-            or not stat.S_ISREG(observed.st_mode)
-            or observed.st_nlink != 1
-            or (observed.st_dev, observed.st_ino) != identity
-            or stat.S_IMODE(observed.st_mode) != file_mode
+            not valid_pair
+            or len(oid) != object_width
+            or re.fullmatch(rb"[0-9a-f]+", oid) is None
+            or not name
+            or b"\0" in name
+            or (not allow_paths and b"/" in name)
+            or any(component in {b"", b".", b".."} for component in components)
         ):
-            fail("SCRATCH_SCOPE_DRIFT", f"scratch file changed before binding: {relative}")
-        self._files[pure.as_posix()] = RegisteredScratchEntry(
-            parent_fd,
-            name,
-            identity,
-            file_mode,
-            False,
-        )
-        return self.path / pathlib.Path(*pure.parts)
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "unsafe or noncanonical raw tree record")
+        ordering_key = name + (b"/" if object_type == b"tree" else b"")
+        if previous_key is not None and ordering_key <= previous_key:
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "raw tree records are not Git-sorted")
+        records.append(RawTreeEntry(mode, object_type, oid, name))
+        previous_key = ordering_key
+    return tuple(records)
 
-    def register_file(
-        self,
-        relative: str,
-        *,
-        forbidden_identity: tuple[int, int] | None = None,
-    ) -> pathlib.Path:
-        pure = pathlib.PurePosixPath(relative)
-        parent_fd, name = self._parent_for(pure)
-        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
-        try:
-            descriptor = os.open(name, flags, dir_fd=parent_fd)
-            try:
-                metadata = os.fstat(descriptor)
-                observed = os.stat(
-                    name,
-                    dir_fd=parent_fd,
-                    follow_symlinks=False,
-                )
-            finally:
-                os.close(descriptor)
-        except OSError as error:
-            fail("PROJECTED_INDEX_SCOPE_DRIFT", f"scratch file is missing: {error}")
-        identity = (metadata.st_dev, metadata.st_ino)
-        mode = stat.S_IMODE(metadata.st_mode)
-        contract = self._file_contracts.get(pure.as_posix())
-        if contract is None:
-            contract = (mode, forbidden_identity)
-            self._file_contracts[pure.as_posix()] = contract
-        expected_mode, forbidden = contract
-        if (
-            not stat.S_ISREG(metadata.st_mode)
-            or metadata.st_nlink != 1
-            or not stat.S_ISREG(observed.st_mode)
-            or observed.st_nlink != 1
-            or (observed.st_dev, observed.st_ino) != identity
-            or stat.S_IMODE(observed.st_mode) != mode
-            or mode != expected_mode
-            or (forbidden is not None and identity == forbidden)
-        ):
-            fail("PROJECTED_INDEX_SCOPE_DRIFT", f"scratch file is not exclusive: {relative}")
-        self._files[pure.as_posix()] = RegisteredScratchEntry(
-            parent_fd,
-            name,
-            identity,
-            mode,
-            False,
-        )
-        return self.path / pathlib.Path(*pure.parts)
 
-    def close(self) -> None:
-        if self._closed:
-            return
-        self._closed = True
-        cleanup_errors: list[str] = []
-        try:
-            self._prove_process_fd_path()
-            base_metadata = self._base_path.lstat()
-            holding_metadata = self.holding_path.lstat()
-            if (
-                (
-                    base_metadata.st_dev,
-                    base_metadata.st_ino,
-                    stat.S_IMODE(base_metadata.st_mode),
-                )
-                != self._base_identity
-                or not stat.S_ISDIR(base_metadata.st_mode)
-                or (
-                    holding_metadata.st_dev,
-                    holding_metadata.st_ino,
-                    stat.S_IMODE(holding_metadata.st_mode),
-                )
-                != self._holding_identity
-                or not stat.S_ISDIR(holding_metadata.st_mode)
-            ):
-                fail(
-                    "SCRATCH_SCOPE_DRIFT",
-                    "visible scratch ancestor changed; "
-                    f"{self._retained_holding_identity()}",
-                )
-            scratch_metadata = os.stat(
-                "scratch", dir_fd=self._holding_fd, follow_symlinks=False
-            )
-            if (
-                scratch_metadata.st_dev,
-                scratch_metadata.st_ino,
-                stat.S_IMODE(scratch_metadata.st_mode),
-            ) != self._scratch_identity:
-                fail("SCRATCH_SCOPE_DRIFT", "pinned scratch directory changed")
-            for key in sorted(self._files, key=lambda value: value.count("/"), reverse=True):
-                entry = self._files[key]
-                try:
-                    metadata = os.stat(
-                        entry.name,
-                        dir_fd=entry.parent_fd,
-                        follow_symlinks=False,
-                    )
-                    if (
-                        not stat.S_ISREG(metadata.st_mode)
-                        or metadata.st_nlink != 1
-                        or (metadata.st_dev, metadata.st_ino) != entry.identity
-                        or stat.S_IMODE(metadata.st_mode) != entry.mode
-                    ):
-                        raise OSError(f"registered file identity changed: {key}")
-                    os.unlink(entry.name, dir_fd=entry.parent_fd)
-                except OSError as error:
-                    cleanup_errors.append(str(error))
-            for key in sorted(
-                self._directories,
-                key=lambda value: value.count("/"),
-                reverse=True,
-            ):
-                descriptor, entry = self._directories[key]
-                try:
-                    metadata = os.stat(
-                        entry.name,
-                        dir_fd=entry.parent_fd,
-                        follow_symlinks=False,
-                    )
-                    if (
-                        not stat.S_ISDIR(metadata.st_mode)
-                        or (metadata.st_dev, metadata.st_ino) != entry.identity
-                        or stat.S_IMODE(metadata.st_mode) != entry.mode
-                    ):
-                        raise OSError(f"registered directory identity changed: {key}")
-                    os.rmdir(entry.name, dir_fd=entry.parent_fd)
-                except OSError as error:
-                    cleanup_errors.append(str(error))
-                finally:
-                    os.close(descriptor)
-            if cleanup_errors:
-                fail(
-                    "SCRATCH_CLEANUP_FAILURE",
-                    "; ".join(cleanup_errors)
-                    + f"; {self._retained_holding_identity()}",
-                )
-            try:
-                os.rmdir("scratch", dir_fd=self._holding_fd)
-            except OSError as error:
-                fail(
-                    "SCRATCH_CLEANUP_FAILURE",
-                    f"scratch directory is not proved empty: {error}; "
-                    f"{self._retained_holding_identity()}",
-                )
-            try:
-                os.rmdir(self._holding_name, dir_fd=self._base_fd)
-            except OSError as error:
-                fail(
-                    "SCRATCH_CLEANUP_FAILURE",
-                    f"holding directory cannot be removed: {error}; "
-                    f"{self._retained_holding_identity()}",
-                )
-        finally:
-            for descriptor in (self._scratch_fd, self._holding_fd, self._base_fd):
-                try:
-                    os.close(descriptor)
-                except OSError:
-                    pass
-
-    def __enter__(self) -> PinnedScratch:
-        return self
-
-    def __exit__(self, *_: object) -> None:
-        self.close()
+def parse_raw_tree_records(raw: bytes, object_width: int) -> tuple[RawTreeEntry, ...]:
+    """Parse one raw ``git ls-tree -z`` level with byte-exact names."""
+    return _parse_raw_tree_records(raw, object_width, allow_paths=False)
 
 
 def run_git(
@@ -616,8 +173,19 @@ def run_git(
     input_bytes: bytes | None = None,
     check: bool = True,
     pass_fds: Sequence[int] = (),
+    isolate_config: bool = False,
 ) -> subprocess.CompletedProcess[bytes]:
-    command_env = os.environ.copy()
+    command_env = (
+        {
+            "GIT_CONFIG_GLOBAL": "/dev/null",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "PATH": os.defpath,
+        }
+        if isolate_config
+        else os.environ.copy()
+    )
     command_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     if env:
         command_env.update(env)
@@ -676,7 +244,7 @@ def canonical_json(value: object) -> bytes:
     ).encode("utf-8")
 
 
-def load_canonical_json(path: pathlib.Path) -> dict[str, Any]:
+def load_canonical_json(path: pathlib.Path | MemoryBlob) -> dict[str, Any]:
     try:
         raw = path.read_bytes()
         value = json.loads(raw.decode("utf-8"))
@@ -688,6 +256,23 @@ def load_canonical_json(path: pathlib.Path) -> dict[str, Any]:
         fail("NON_CANONICAL_JSON", path.name)
     if value.get("schema") != SCHEMA:
         fail("INVALID_SCHEMA", path.name)
+    return value
+
+
+def load_canonical_json_bytes(
+    raw: bytes,
+    label: str,
+    *,
+    schema: str = SCHEMA,
+) -> dict[str, Any]:
+    try:
+        value = json.loads(raw.decode("utf-8", "strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        fail("INVALID_JSON", f"{label}: {error}")
+    if not isinstance(value, dict) or raw != canonical_json(value):
+        fail("NON_CANONICAL_JSON", label)
+    if value.get("schema") != schema:
+        fail("INVALID_SCHEMA", label)
     return value
 
 
@@ -756,15 +341,35 @@ def assert_task_only_worktree(root: pathlib.Path, task: pathlib.PurePosixPath) -
 def tree_manifest(root: pathlib.Path, commit: str, prefix: pathlib.PurePosixPath) -> bytes:
     raw = run_git(
         root,
-        ["ls-tree", "-r", "--full-tree", commit, "--", prefix.as_posix()],
+        ["ls-tree", "-r", "-z", "--full-tree", commit, "--", prefix.as_posix()],
     ).stdout
+    try:
+        records = _parse_raw_tree_records(
+            raw,
+            object_format_width(root),
+            allow_paths=True,
+        )
+    except Gate9Error as error:
+        fail("INVALID_TREE_MANIFEST", f"{error.code}: {error.detail}")
     rows: list[bytes] = []
-    for line in raw.splitlines():
-        metadata, separator, path = line.partition(b"\t")
-        fields = metadata.split()
-        if not separator or len(fields) != 3:
-            fail("INVALID_TREE_MANIFEST", line.decode("utf-8", "replace"))
-        rows.append(b"\t".join((*fields, path)) + b"\n")
+    prefix_bytes = prefix.as_posix().encode("utf-8", "strict") + b"/"
+    for record in records:
+        if record.mode != b"100644" or record.object_type != b"blob":
+            fail("INVALID_TREE_MANIFEST", "manifest contains a non-regular blob")
+        _verify_object(root, record, "INVALID_TREE_MANIFEST")
+        if not record.name.startswith(prefix_bytes) or any(
+            byte in record.name for byte in (b"\t", b"\r", b"\n")
+        ):
+            fail("INVALID_TREE_MANIFEST", "manifest path is outside prefix or not TSV-safe")
+        try:
+            path = record.name.decode("utf-8", "strict")
+            _safe_mapping_path(path)
+        except (UnicodeDecodeError, Gate9Error) as error:
+            fail("INVALID_TREE_MANIFEST", f"unsafe manifest path: {error}")
+        rows.append(
+            b"\t".join((record.mode, record.object_type, record.oid, record.name))
+            + b"\n"
+        )
     return b"".join(sorted(rows))
 
 
@@ -778,42 +383,47 @@ def manifest_paths(value: bytes) -> list[str]:
     return paths
 
 
-def write_task_patch(
+def _mapping_patch(
+    root: pathlib.Path,
+    task: pathlib.PurePosixPath,
+    before: bytes,
+    after: bytes,
+) -> bytes:
+    before_tree = build_tree_from_mapping(
+        root, {task.as_posix(): ("100644", before)}
+    )
+    after_tree = build_tree_from_mapping(
+        root, {task.as_posix(): ("100644", after)}
+    )
+    return run_git(
+        root,
+        [
+            "-c",
+            "core.attributesFile=/dev/null",
+            "diff-tree",
+            "-r",
+            "--no-commit-id",
+            "--no-ext-diff",
+            "--no-textconv",
+            "--binary",
+            "--full-index",
+            before_tree,
+            after_tree,
+            "--",
+            task.as_posix(),
+        ],
+        isolate_config=True,
+    ).stdout
+
+
+def _task_candidate_patch(
     root: pathlib.Path,
     commit: str,
     task: pathlib.PurePosixPath,
     candidate: bytes,
 ) -> bytes:
-    with PinnedScratch("gate9-task-index-") as scratch:
-        index_path = scratch.path / "index"
-        environment = {"GIT_INDEX_FILE": os.fspath(index_path)}
-        run_git(
-            root,
-            ["read-tree", commit],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        )
-        scratch.register_file("index")
-        candidate_oid = run_git(
-            root,
-            ["hash-object", "-w", "--stdin"],
-            input_bytes=candidate,
-        ).stdout.decode().strip()
-        run_git(
-            root,
-            ["update-index", "--cacheinfo", "100644", candidate_oid, task.as_posix()],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        )
-        scratch.register_file("index")
-        result = run_git(
-            root,
-            ["diff", "--cached", "--binary", "--full-index", commit, "--", task.as_posix()],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        ).stdout
-        scratch.register_file("index")
-        return result
+    before = run_git(root, ["show", f"{commit}:{task.as_posix()}"]).stdout
+    return _mapping_patch(root, task, before, candidate)
 
 
 def exclusive_regular_bytes(
@@ -919,6 +529,16 @@ class AuthoritativeProjection:
 
 
 @dataclasses.dataclass(frozen=True)
+class ProjectedRootTree:
+    initial_tree_oid: str
+    final_tree_oid: str
+    old_paths: tuple[str, ...]
+    projected_paths: tuple[str, ...]
+    deletion_statuses: tuple[tuple[str, str], ...]
+    proposed_deletion_patch: bytes
+
+
+@dataclasses.dataclass(frozen=True)
 class RepositorySnapshot:
     head: str
     real_index: tuple[pathlib.Path, tuple[int, int], int, bytes]
@@ -960,6 +580,456 @@ def object_format_width(root: pathlib.Path) -> int:
     if value not in widths:
         fail("AMBIGUOUS_GIT_HISTORY", f"unsupported object format: {value}")
     return widths[value]
+
+
+def object_format_name(root: pathlib.Path) -> str:
+    value = run_git(root, ["rev-parse", "--show-object-format"]).stdout.decode().strip()
+    if value not in {"sha1", "sha256"}:
+        fail("PROJECTED_TREE_SCOPE_DRIFT", f"unsupported object format: {value}")
+    return value
+
+
+def _raw_tree_bytes(entries: Sequence[RawTreeEntry]) -> bytes:
+    return b"".join(
+        entry.mode
+        + b" "
+        + entry.object_type
+        + b" "
+        + entry.oid
+        + b"\t"
+        + entry.name
+        + b"\0"
+        for entry in entries
+    )
+
+
+def _verify_object(root: pathlib.Path, entry: RawTreeEntry, code: str) -> None:
+    result = run_git(root, ["cat-file", "-t", entry.oid.decode("ascii")], check=False)
+    expected = entry.object_type + b"\n"
+    if result.returncode or result.stdout != expected:
+        fail(code, f"missing or mistyped object for {entry.name!r}")
+
+
+def _emit_verified_tree(
+    root: pathlib.Path,
+    entries: Sequence[RawTreeEntry],
+    *,
+    code: str,
+) -> str:
+    ordered = tuple(
+        sorted(
+            entries,
+            key=lambda entry: entry.name
+            + (b"/" if entry.object_type == b"tree" else b""),
+        )
+    )
+    if len({entry.name for entry in ordered}) != len(ordered):
+        fail(code, "duplicate tree entry")
+    for entry in ordered:
+        _verify_object(root, entry, code)
+    value = _raw_tree_bytes(ordered)
+    result = run_git(root, ["mktree", "-z"], input_bytes=value)
+    tree_oid = result.stdout.decode("ascii", "strict").strip()
+    width = object_format_width(root)
+    if re.fullmatch(rf"[0-9a-f]{{{width}}}", tree_oid) is None:
+        fail(code, "mktree returned a malformed OID")
+    reread = run_git(root, ["ls-tree", "-z", tree_oid]).stdout
+    if parse_raw_tree_records(reread, width) != ordered:
+        fail(code, "mktree reread differs from supplied entries")
+    return tree_oid
+
+
+def _safe_mapping_path(raw: object) -> tuple[bytes, ...]:
+    if not isinstance(raw, str) or not raw or raw.startswith("/"):
+        fail("PROJECTED_TREE_SCOPE_DRIFT", "mapping path is not relative")
+    try:
+        encoded = raw.encode("utf-8", "strict")
+    except UnicodeEncodeError as error:
+        fail("PROJECTED_TREE_SCOPE_DRIFT", f"mapping path is not UTF-8: {error}")
+    components = tuple(encoded.split(b"/"))
+    if any(part in {b"", b".", b".."} or b"\0" in part for part in components):
+        fail("PROJECTED_TREE_SCOPE_DRIFT", "mapping path contains unsafe components")
+    return components
+
+
+def build_tree_from_mapping(
+    root: pathlib.Path,
+    mapping: Mapping[str, tuple[str, bytes]],
+) -> str:
+    """Hash a validated path/mode/bytes mapping into a verified Git tree."""
+    trie: dict[bytes, object] = {}
+    for raw_path, raw_leaf in mapping.items():
+        if (
+            not isinstance(raw_leaf, tuple)
+            or len(raw_leaf) != 2
+            or raw_leaf[0] not in {"100644", "100755", "120000"}
+            or not isinstance(raw_leaf[1], bytes)
+        ):
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "invalid logical leaf")
+        parts = _safe_mapping_path(raw_path)
+        node = trie
+        for part in parts[:-1]:
+            child = node.get(part)
+            if child is None:
+                child = {}
+                node[part] = child
+            if not isinstance(child, dict):
+                fail("PROJECTED_TREE_SCOPE_DRIFT", "file/directory prefix collision")
+            node = child
+        if parts[-1] in node:
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "duplicate or prefix-colliding path")
+        node[parts[-1]] = raw_leaf
+
+    width = object_format_width(root)
+
+    def emit(node: Mapping[bytes, object]) -> str:
+        entries: list[RawTreeEntry] = []
+        for name in sorted(node):
+            value = node[name]
+            if isinstance(value, dict):
+                child_oid = emit(value)
+                entry = RawTreeEntry(
+                    b"040000", b"tree", child_oid.encode("ascii"), name
+                )
+            else:
+                logical_mode, content = value
+                oid = run_git(
+                    root,
+                    ["hash-object", "-w", "--stdin"],
+                    input_bytes=content,
+                ).stdout.strip()
+                if len(oid) != width:
+                    fail("PROJECTED_TREE_SCOPE_DRIFT", "hash-object OID width drift")
+                entry = RawTreeEntry(
+                    logical_mode.encode("ascii"), b"blob", oid, name
+                )
+            entries.append(entry)
+        return _emit_verified_tree(root, entries, code="PROJECTED_TREE_SCOPE_DRIFT")
+
+    return emit(trie)
+
+
+def _tree_level(root: pathlib.Path, tree_oid: str, width: int) -> tuple[RawTreeEntry, ...]:
+    entries = parse_raw_tree_records(
+        run_git(root, ["ls-tree", "-z", tree_oid]).stdout,
+        width,
+    )
+    for entry in entries:
+        _verify_object(root, entry, "PROJECTED_TREE_SCOPE_DRIFT")
+    return entries
+
+
+def _recursive_tree_paths(
+    root: pathlib.Path,
+    tree_oid: str,
+    width: int,
+) -> tuple[bytes, ...]:
+    records = _parse_raw_tree_records(
+        run_git(root, ["ls-tree", "-r", "-z", "--full-tree", tree_oid]).stdout,
+        width,
+        allow_paths=True,
+    )
+    paths: list[bytes] = []
+    for entry in records:
+        if entry.object_type != b"blob":
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "projected recursive entry is not a blob")
+        _verify_object(root, entry, "PROJECTED_TREE_SCOPE_DRIFT")
+        paths.append(entry.name)
+    if len(set(paths)) != len(paths):
+        fail("PROJECTED_TREE_SCOPE_DRIFT", "projected paths are not unique")
+    return tuple(sorted(paths))
+
+
+def _decode_projected_paths(paths: Sequence[bytes]) -> tuple[str, ...]:
+    decoded: list[str] = []
+    for raw in paths:
+        try:
+            value = raw.decode("utf-8", "strict")
+        except UnicodeDecodeError as error:
+            fail("PROJECTED_TREE_SCOPE_DRIFT", f"projected path is not UTF-8: {error}")
+        _safe_mapping_path(value)
+        decoded.append(value)
+    return tuple(decoded)
+
+
+def _diff_tree_bytes(
+    root: pathlib.Path,
+    initial_tree: str,
+    final_tree: str,
+    mode_args: Sequence[str],
+) -> bytes:
+    return run_git(
+        root,
+        [
+            "-c",
+            "core.attributesFile=/dev/null",
+            "diff-tree",
+            "-r",
+            "--no-commit-id",
+            "--no-renames",
+            "--no-ext-diff",
+            "--no-textconv",
+            *mode_args,
+            initial_tree,
+            final_tree,
+        ],
+        env={"GIT_ATTR_SOURCE": initial_tree},
+        isolate_config=True,
+    ).stdout
+
+
+def project_root_tree(
+    root: pathlib.Path,
+    commit: str,
+    retiring_path: pathlib.PurePosixPath = OLD_PACK,
+) -> ProjectedRootTree:
+    """Remove one exact subtree by rebuilding only its four ancestor trees."""
+    width = object_format_width(root)
+    initial_tree = commit_tree_oid(root, commit)
+    if len(retiring_path.parts) != 4:
+        fail("PROJECTED_TREE_SCOPE_DRIFT", "retiring path must have four components")
+    ancestry: list[tuple[tuple[RawTreeEntry, ...], RawTreeEntry]] = []
+    current_tree = initial_tree
+    for component in retiring_path.parts:
+        entries = _tree_level(root, current_tree, width)
+        component_bytes = component.encode("utf-8", "strict")
+        matches = [entry for entry in entries if entry.name == component_bytes]
+        if len(matches) != 1 or matches[0].mode != b"040000" or matches[0].object_type != b"tree":
+            fail("PROJECTED_TREE_SCOPE_DRIFT", f"missing tree ancestor: {component}")
+        ancestry.append((entries, matches[0]))
+        current_tree = matches[0].oid.decode("ascii")
+
+    old_records = _parse_raw_tree_records(
+        run_git(root, ["ls-tree", "-r", "-z", "--full-tree", current_tree]).stdout,
+        width,
+        allow_paths=True,
+    )
+    old_relative: list[bytes] = []
+    for entry in old_records:
+        if entry.mode != b"100644" or entry.object_type != b"blob":
+            fail("PROJECTED_DELETION_DRIFT", "retiring subtree is not all regular blobs")
+        _verify_object(root, entry, "PROJECTED_TREE_SCOPE_DRIFT")
+        old_relative.append(entry.name)
+    if len(old_relative) != 20 or len(set(old_relative)) != 20:
+        fail("PROJECTED_DELETION_DRIFT", "retiring subtree is not exact 20/20")
+
+    replacement_oid: str | None = None
+    for depth, (entries, target) in enumerate(reversed(ancestry)):
+        if depth == 0:
+            replaced = [entry for entry in entries if entry.name != target.name]
+        else:
+            if replacement_oid is None:
+                fail("PROJECTED_TREE_SCOPE_DRIFT", "ancestor replacement is missing")
+            replaced = [
+                RawTreeEntry(entry.mode, entry.object_type, replacement_oid.encode(), entry.name)
+                if entry.name == target.name
+                else entry
+                for entry in entries
+            ]
+        replacement_oid = _emit_verified_tree(
+            root,
+            replaced,
+            code="PROJECTED_TREE_SCOPE_DRIFT",
+        )
+    if replacement_oid is None or replacement_oid == initial_tree:
+        fail("PROJECTED_DELETION_DRIFT", "projected root tree did not change")
+    final_tree = replacement_oid
+
+    initial_paths = _recursive_tree_paths(root, initial_tree, width)
+    final_paths = _recursive_tree_paths(root, final_tree, width)
+    old_prefix = retiring_path.as_posix().encode() + b"/"
+    expected_deleted = tuple(sorted(old_prefix + path for path in old_relative))
+    observed_deleted = tuple(sorted(set(initial_paths) - set(final_paths)))
+    if (
+        observed_deleted != expected_deleted
+        or set(final_paths) - set(initial_paths)
+        or any(path.startswith(old_prefix) for path in final_paths)
+    ):
+        fail("PROJECTED_DELETION_DRIFT", "projected path-set delta is not exact")
+
+    name_status = _diff_tree_bytes(
+        root, initial_tree, final_tree, ("--name-status", "-z")
+    )
+    fields = nul_paths(name_status, code="PROJECTED_DELETION_DRIFT")
+    if len(fields) % 2:
+        fail("PROJECTED_DELETION_DRIFT", "name-status output is malformed")
+    statuses = tuple((fields[index], fields[index + 1]) for index in range(0, len(fields), 2))
+    expected_decoded = _decode_projected_paths(expected_deleted)
+    expected_statuses = tuple(("D", path) for path in expected_decoded)
+    if statuses != expected_statuses:
+        fail("PROJECTED_DELETION_DRIFT", "name-status deletion set drift")
+
+    raw_diff = _diff_tree_bytes(root, initial_tree, final_tree, ("--raw", "-z"))
+    raw_fields = raw_diff[:-1].split(b"\0") if raw_diff.endswith(b"\0") else []
+    if len(raw_fields) != 40:
+        fail("PROJECTED_DELETION_DRIFT", "raw deletion output cardinality drift")
+    for index in range(0, len(raw_fields), 2):
+        header, raw_path = raw_fields[index], raw_fields[index + 1]
+        if not header.endswith(b" D") or raw_path != expected_deleted[index // 2]:
+            fail("PROJECTED_DELETION_DRIFT", "raw deletion output drift")
+
+    patch = _diff_tree_bytes(
+        root,
+        initial_tree,
+        final_tree,
+        ("--binary", "--full-index"),
+    )
+    if patch.count(b"deleted file mode 100644") != 20:
+        fail("PROJECTED_DELETION_DRIFT", "binary patch deletion cardinality drift")
+    return ProjectedRootTree(
+        initial_tree,
+        final_tree,
+        expected_decoded,
+        _decode_projected_paths(final_paths),
+        statuses,
+        patch,
+    )
+
+
+def _generator_manifest_bytes(
+    root: pathlib.Path,
+    live_commit: str,
+    projected: ProjectedRootTree,
+) -> bytes:
+    fields = (
+        b"schema=agentic-research-llm-wiki-manifest/v1",
+        f"object-format={object_format_name(root)}".encode(),
+        f"live-commit={live_commit}".encode(),
+        f"projected-tree={projected.final_tree_oid}".encode(),
+        f"count={len(projected.projected_paths)}".encode(),
+        *(path.encode("utf-8", "strict") for path in projected.projected_paths),
+    )
+    value = b"\0".join(fields) + b"\0"
+    if len(value) > 8 * 1024 * 1024:
+        fail("GENERATOR_MANIFEST_OVERSIZE", "projected manifest exceeds 8 MiB")
+    return value
+
+
+def _sealed_manifest_fd(value: bytes) -> int:
+    try:
+        descriptor = os.memfd_create(
+            "gate9-llm-manifest",
+            os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING,
+        )
+        offset = 0
+        while offset < len(value):
+            written = os.write(descriptor, value[offset:])
+            if written <= 0:
+                fail("GENERATOR_MANIFEST_INVALID", "manifest write did not progress")
+            offset += written
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        required = (
+            fcntl.F_SEAL_SEAL
+            | fcntl.F_SEAL_SHRINK
+            | fcntl.F_SEAL_GROW
+            | fcntl.F_SEAL_WRITE
+        )
+        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, required)
+        if fcntl.fcntl(descriptor, fcntl.F_GET_SEALS) & required != required:
+            fail("GENERATOR_MANIFEST_INVALID", "manifest seals are incomplete")
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 0:
+            fail("GENERATOR_MANIFEST_INVALID", "manifest is not an anonymous memfd")
+        return descriptor
+    except Gate9Error:
+        raise
+    except (AttributeError, OSError) as error:
+        fail("GENERATOR_MANIFEST_INVALID", f"cannot seal manifest: {error}")
+
+
+def _run_generator_from_manifest(
+    root: pathlib.Path,
+    generator_bytes: bytes,
+    manifest: bytes,
+    expected_live: bytes,
+    expected_package: bytes | None,
+    label: pathlib.PurePosixPath,
+) -> bytes:
+    descriptor = _sealed_manifest_fd(manifest)
+    try:
+        trusted_bash = trusted_system_tool("bash")
+        trusted_python = pathlib.Path(trusted_system_tool("python3"))
+        environment = {
+            "GATE9_LLM_MANIFEST_FD": str(descriptor),
+            "GATE9_LLM_MANIFEST_SHA256": sha256_bytes(manifest),
+            "GATE9_LLM_MANIFEST_SIZE": str(len(manifest)),
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PATH": os.fspath(trusted_python.parent),
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONSAFEPATH": "1",
+        }
+        result = subprocess.run(
+            [trusted_bash, "-s", "--", "--stdout"],
+            cwd=root,
+            env=environment,
+            input=generator_bytes,
+            capture_output=True,
+            check=False,
+            pass_fds=(descriptor,),
+        )
+    finally:
+        os.close(descriptor)
+    if result.returncode:
+        fail(
+            "GENERATOR_STDOUT_DRIFT",
+            f"{label} exited {result.returncode}: "
+            f"{result.stderr.decode('utf-8', 'replace').strip()}",
+        )
+    try:
+        decoded = result.stdout.decode("utf-8", "strict")
+    except UnicodeDecodeError as error:
+        fail("GENERATOR_STDOUT_DRIFT", f"{label} is not UTF-8: {error}")
+    if (
+        not result.stdout
+        or result.stderr
+        or "\r" in decoded
+        or not result.stdout.endswith(b"\n")
+        or result.stdout.endswith(b"\n\n")
+        or result.stdout != expected_live
+    ):
+        fail("GENERATOR_STDOUT_DRIFT", f"{label} output is not canonical/live")
+    if expected_package is not None and result.stdout != expected_package:
+        fail("PACKAGE_SEMANTIC_DRIFT", f"{label} attachment differs from projection")
+    return result.stdout
+
+
+def fresh_authority_replay(
+    root: pathlib.Path,
+    proof: AuthorityProof,
+    projected: ProjectedRootTree,
+    *,
+    expected_index: bytes | None = None,
+    expected_coverage: bytes | None = None,
+) -> tuple[bytes, bytes]:
+    manifest = _generator_manifest_bytes(root, proof.live_head, projected)
+    outputs: list[bytes] = []
+    for offset, (generator_path, output_path, expected_package) in enumerate(
+        (
+            (INDEX_GENERATOR, INDEX, expected_index),
+            (COVERAGE_GENERATOR, COVERAGE, expected_coverage),
+        ),
+        start=1,
+    ):
+        generator_bytes = run_git(
+            root, ["cat-file", "blob", proof.code_blob_oids[offset]]
+        ).stdout
+        expected_live = run_git(
+            root,
+            ["cat-file", "blob", tracked_blob_oid(root, proof.live_head, output_path)],
+        ).stdout
+        outputs.append(
+            _run_generator_from_manifest(
+                root,
+                generator_bytes,
+                manifest,
+                expected_live,
+                expected_package,
+                generator_path,
+            )
+        )
+    return outputs[0], outputs[1]
 
 
 def require_full_commit_oid(
@@ -1030,21 +1100,39 @@ def tracked_blob_oid(
 ) -> str:
     raw = run_git(
         root,
-        ["ls-tree", "--full-tree", commit, "--", path.as_posix()],
+        ["ls-tree", "-z", "--full-tree", commit, "--", path.as_posix()],
     ).stdout
-    rows = raw.splitlines()
-    if len(rows) != 1:
+    try:
+        records = _parse_raw_tree_records(
+            raw,
+            object_format_width(root),
+            allow_paths=True,
+        )
+    except Gate9Error as error:
+        fail("REVIEWED_CODE_DRIFT", f"{path}: {error.code}: {error.detail}")
+    if len(records) != 1:
         fail("REVIEWED_CODE_DRIFT", f"tracked code path is missing: {path}")
-    metadata, separator, raw_path = rows[0].partition(b"\t")
-    fields = metadata.split()
+    record = records[0]
+    expected_mode = (
+        b"100755"
+        if path
+        in {
+            pathlib.PurePosixPath(
+                "scripts/validation/agentic-research-gate9-evidence.py"
+            ),
+            INDEX_GENERATOR,
+            COVERAGE_GENERATOR,
+        }
+        else b"100644"
+    )
     if (
-        not separator
-        or raw_path.decode("utf-8", "surrogateescape") != path.as_posix()
-        or len(fields) != 3
-        or fields[1] != b"blob"
+        record.name != path.as_posix().encode("utf-8", "strict")
+        or record.mode != expected_mode
+        or record.object_type != b"blob"
     ):
         fail("REVIEWED_CODE_DRIFT", f"tracked code identity is malformed: {path}")
-    return fields[2].decode("ascii")
+    _verify_object(root, record, "REVIEWED_CODE_DRIFT")
+    return record.oid.decode("ascii", "strict")
 
 
 def authority_preflight(
@@ -1250,67 +1338,6 @@ def nul_paths(value: bytes, *, code: str) -> list[str]:
     ]
 
 
-def generator_stdout(
-    root: pathlib.Path,
-    scratch: PinnedScratch,
-    index_environment: Mapping[str, str],
-    generator_bytes: bytes,
-    expected_live: bytes,
-    expected_package: bytes | None,
-    label: pathlib.PurePosixPath,
-) -> bytes:
-    trusted_bash = trusted_system_tool("bash")
-    trusted_git = pathlib.Path(trusted_system_tool("git"))
-    trusted_python = pathlib.Path(trusted_system_tool("python3"))
-    environment = {
-        "GIT_INDEX_FILE": index_environment["GIT_INDEX_FILE"],
-        "GIT_NO_REPLACE_OBJECTS": "1",
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "PATH": os.pathsep.join(
-            dict.fromkeys(
-                (os.fspath(trusted_git.parent), os.fspath(trusted_python.parent))
-            )
-        ),
-        "PYTHONDONTWRITEBYTECODE": "1",
-        "PYTHONNOUSERSITE": "1",
-        "PYTHONSAFEPATH": "1",
-    }
-    result = subprocess.run(
-        [trusted_bash, "-s", "--", "--stdout"],
-        cwd=root,
-        env=environment,
-        input=generator_bytes,
-        capture_output=True,
-        check=False,
-        pass_fds=scratch.pass_fds,
-    )
-    scratch.register_file("index")
-    if result.returncode:
-        fail(
-            "GENERATOR_STDOUT_DRIFT",
-            f"{label} exited {result.returncode}: "
-            f"{result.stderr.decode('utf-8', 'replace').strip()}",
-        )
-    try:
-        decoded = result.stdout.decode("utf-8", "strict")
-    except UnicodeDecodeError as error:
-        fail("GENERATOR_STDOUT_DRIFT", f"{label} is not UTF-8: {error}")
-    if (
-        not result.stdout
-        or result.stderr
-        or "\r" in decoded
-        or not result.stdout.endswith(b"\n")
-        or result.stdout.endswith(b"\n\n")
-    ):
-        fail("GENERATOR_STDOUT_DRIFT", f"{label} stdout is not canonical LF Markdown")
-    if result.stdout != expected_live:
-        fail("GENERATOR_STDOUT_DRIFT", f"{label} stdout differs from live HEAD")
-    if expected_package is not None and result.stdout != expected_package:
-        fail("PACKAGE_SEMANTIC_DRIFT", f"{label} attachment differs from projection")
-    return result.stdout
-
-
 def authoritative_projection(
     root: pathlib.Path,
     package_head: object,
@@ -1328,178 +1355,47 @@ def authoritative_projection(
     )
     if package_oid != proof.live_head:
         fail("UNTRUSTED_PACKAGE_HEAD", "package HEAD differs from live reviewed HEAD")
-    prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
     snapshot = capture_repository_snapshot(root, proof.live_head)
     primary_error: BaseException | None = None
-    projection: AuthoritativeProjection | None = None
+    result: AuthoritativeProjection | None = None
     try:
-        prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
-        generator_blobs = {
-            INDEX_GENERATOR: run_git(
-                root, ["cat-file", "blob", proof.code_blob_oids[1]]
-            ).stdout,
-            COVERAGE_GENERATOR: run_git(
-                root, ["cat-file", "blob", proof.code_blob_oids[2]]
-            ).stdout,
-        }
-        tracked_outputs = {
-            INDEX: run_git(
-                root,
-                ["cat-file", "blob", tracked_blob_oid(root, proof.live_head, INDEX)],
-            ).stdout,
-            COVERAGE: run_git(
-                root,
-                ["cat-file", "blob", tracked_blob_oid(root, proof.live_head, COVERAGE)],
-            ).stdout,
-        }
-        initial_tree = commit_tree_oid(root, package_oid)
-        with PinnedScratch("gate9-index-") as scratch:
-            index_path = scratch.path / "index"
-            environment = {"GIT_INDEX_FILE": os.fspath(index_path)}
-            run_git(
-                root,
-                ["read-tree", package_oid],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            )
-            scratch.register_file(
-                "index",
-                forbidden_identity=snapshot.real_index[1],
-            )
-            indexed_tree = run_git(
-                root,
-                ["write-tree"],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            ).stdout.decode().strip()
-            if indexed_tree != initial_tree or initial_tree != commit_tree_oid(root, proof.live_head):
-                fail("PROJECTED_INDEX_SCOPE_DRIFT", "initial projected tree differs from live HEAD")
-            tree_paths = tuple(
-                sorted(
-                    manifest_paths(tree_manifest(root, package_oid, OLD_PACK)),
-                    key=os.fsencode,
-                )
-            )
-            indexed_paths = tuple(
-                sorted(
-                    nul_paths(
-                        run_git(
-                            root,
-                            ["ls-files", "-z", "--", OLD_PACK.as_posix()],
-                            env=environment,
-                            pass_fds=scratch.pass_fds,
-                        ).stdout,
-                        code="PROJECTED_INDEX_SCOPE_DRIFT",
-                    )
-                )
-            )
-            if tree_paths != indexed_paths or len(tree_paths) != 20:
-                fail(
-                    "PROJECTED_DELETION_DRIFT",
-                    f"retiring path tuple is not exact 20/20: tree={tree_paths!r} index={indexed_paths!r}",
-                )
-            removal = b"".join(os.fsencode(path) + b"\0" for path in tree_paths)
-            run_git(
-                root,
-                ["update-index", "--force-remove", "-z", "--stdin"],
-                env=environment,
-                input_bytes=removal,
-                pass_fds=scratch.pass_fds,
-            )
-            scratch.register_file("index")
-            raw_status = run_git(
-                root,
-                [
-                    "diff",
-                    "--cached",
-                    "--name-status",
-                    "--no-renames",
-                    "-z",
-                    package_oid,
-                    "--",
-                ],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            ).stdout
-            fields = nul_paths(raw_status, code="PROJECTED_DELETION_DRIFT")
-            if len(fields) % 2:
-                fail("PROJECTED_DELETION_DRIFT", "projected status is malformed")
-            statuses = tuple(
-                (fields[index], fields[index + 1])
-                for index in range(0, len(fields), 2)
-            )
-            expected_statuses = tuple(("D", path) for path in tree_paths)
-            if statuses != expected_statuses:
-                fail(
-                    "PROJECTED_DELETION_DRIFT",
-                    f"expected exact twenty deletions, found {statuses!r}",
-                )
-            if run_git(
-                root,
-                ["ls-files", "-z", "--", OLD_PACK.as_posix()],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            ).stdout:
-                fail("PROJECTED_DELETION_DRIFT", "retiring paths remain in projected index")
-            final_tree = run_git(
-                root,
-                ["write-tree"],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            ).stdout.decode().strip()
-            if final_tree == initial_tree:
-                fail("PROJECTED_DELETION_DRIFT", "projected deletion did not change the tree")
-            patch = run_git(
-                root,
-                ["diff", "--cached", "--binary", "--full-index", package_oid, "--"],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            ).stdout
-            prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
-            index_bytes = generator_stdout(
-                root,
-                scratch,
-                environment,
-                generator_blobs[INDEX_GENERATOR],
-                tracked_outputs[INDEX],
-                expected_index,
-                INDEX_GENERATOR,
-            )
-            prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
-            coverage_bytes = generator_stdout(
-                root,
-                scratch,
-                environment,
-                generator_blobs[COVERAGE_GENERATOR],
-                tracked_outputs[COVERAGE],
-                expected_coverage,
-                COVERAGE_GENERATOR,
-            )
-            projection = AuthoritativeProjection(
-                package_oid,
-                proof.live_head,
-                proof.reviewed_code_head,
-                initial_tree,
-                final_tree,
-                tree_paths,
-                statuses,
-                patch,
-                index_bytes,
-                coverage_bytes,
-            )
+        projected = project_root_tree(root, package_oid)
+        if (
+            projected.initial_tree_oid != commit_tree_oid(root, proof.live_head)
+            or projected.initial_tree_oid != commit_tree_oid(root, package_oid)
+        ):
+            fail("PROJECTED_TREE_SCOPE_DRIFT", "initial root tree binding drift")
+        index_bytes, coverage_bytes = fresh_authority_replay(
+            root,
+            proof,
+            projected,
+            expected_index=expected_index,
+            expected_coverage=expected_coverage,
+        )
+        result = AuthoritativeProjection(
+            package_oid,
+            proof.live_head,
+            proof.reviewed_code_head,
+            projected.initial_tree_oid,
+            projected.final_tree_oid,
+            projected.old_paths,
+            projected.deletion_statuses,
+            projected.proposed_deletion_patch,
+            index_bytes,
+            coverage_bytes,
+        )
     except BaseException as error:
         primary_error = error
     try:
         prove_repository_snapshot(root, snapshot)
-        prove_live_head(root, proof.live_head, code="PROJECTED_INDEX_SCOPE_DRIFT")
+        prove_live_head(root, proof.live_head, code="PROJECTED_TREE_SCOPE_DRIFT")
     except BaseException as invariant_error:
         primary_error = invariant_error
     if primary_error is not None:
         raise primary_error
-    if projection is None:
-        fail("PROJECTED_INDEX_SCOPE_DRIFT", "projection produced no result")
-    return projection
-
+    if result is None:
+        fail("PROJECTED_TREE_SCOPE_DRIFT", "projection produced no result")
+    return result
 
 def assignment_run_id(commit: str, attempt: int, role: str) -> str:
     return sha256_bytes(f"{commit}\0{attempt}\0{role}".encode())
@@ -1540,12 +1436,14 @@ def derive_attempt(
             authority.reviewed_code_head,
         )
         terminal_state = terminal["state"]
+        bundle_sha256 = terminal["bundle_sha256"]
         package_sha256 = terminal["package_sha256"]
         tree_oid = terminal["tree"]
         reason = terminal["reason"]
         if terminal["attempt"] != 1:
             fail("ATTEMPT_STATE_MISMATCH", "attempt 1 ref identity mismatch")
         expected_attempt_1 = {
+            "bundle_sha256": bundle_sha256,
             "evidence_ref": evidence_ref,
             "evidence_tree": tree_oid,
             "package_sha256": package_sha256,
@@ -1571,6 +1469,7 @@ def validate_package_prehistory(
         fail("ATTEMPT_PREHISTORY_INVALID", "package is not a bounded attempt 2")
     attempt_one = marker.get("attempt_1")
     expected_keys = {
+        "bundle_sha256",
         "evidence_ref",
         "evidence_tree",
         "package_sha256",
@@ -1592,6 +1491,7 @@ def validate_package_prehistory(
     except Gate9Error as error:
         fail("ATTEMPT_PREHISTORY_INVALID", f"{error.code}: {error.detail}")
     expected_attempt_one = {
+        "bundle_sha256": terminal["bundle_sha256"],
         "evidence_ref": evidence_ref,
         "evidence_tree": terminal["tree"],
         "package_sha256": terminal["package_sha256"],
@@ -1616,23 +1516,284 @@ def checksum_manifest(payloads: Mapping[str, bytes]) -> bytes:
     )
 
 
-def ensure_empty_output(path: pathlib.Path) -> None:
-    if path.exists():
-        if not path.is_dir() or any(path.iterdir()):
-            fail("OUTPUT_NOT_EMPTY", os.fspath(path))
-    else:
-        path.mkdir(parents=True)
+@dataclasses.dataclass(frozen=True)
+class BundleData:
+    path: pathlib.Path | None
+    outer_bytes: bytes
+    bundle_sha256: str
+    package_sha256: str
+    attachments: Mapping[str, bytes]
 
 
-def write_package(output: pathlib.Path, payloads: Mapping[str, bytes]) -> str:
-    for name, value in payloads.items():
-        (output / name).write_bytes(value)
-    sums = checksum_manifest(payloads)
-    (output / "SHA256SUMS").write_bytes(sums)
-    package_id = sha256_bytes(sums)
-    for attachment in output.iterdir():
-        attachment.chmod(0o444)
-    return package_id
+@dataclasses.dataclass(frozen=True)
+class MemoryBlob:
+    name: str
+    value: bytes
+
+    def read_bytes(self) -> bytes:
+        return self.value
+
+
+def read_control_file_once(path: pathlib.Path | str, label: str) -> MemoryBlob:
+    supplied = pathlib.Path(path).absolute()
+    descriptor: int | None = None
+    try:
+        descriptor = os.open(
+            supplied,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+        )
+        before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or before.st_size < 1
+            or before.st_size > CONTROL_MAX_BYTES
+        ):
+            fail("CONTROL_FILE_DRIFT", f"{label} is not an exclusive bounded file")
+        if os.lseek(descriptor, 0, os.SEEK_CUR) != 0:
+            fail("CONTROL_FILE_DRIFT", f"{label} offset is not zero")
+        chunks: list[bytes] = []
+        observed = 0
+        while observed < before.st_size:
+            chunk = os.read(descriptor, min(1024 * 1024, before.st_size - observed))
+            if not chunk:
+                fail("CONTROL_FILE_DRIFT", f"{label} ended before its stated size")
+            chunks.append(chunk)
+            observed += len(chunk)
+        if os.read(descriptor, 1):
+            fail("CONTROL_FILE_DRIFT", f"{label} exceeds its stated size")
+        after = os.fstat(descriptor)
+        if (
+            (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+            != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+            or after.st_nlink != 1
+            or not stat.S_ISREG(after.st_mode)
+        ):
+            fail("CONTROL_FILE_DRIFT", f"{label} changed during its bounded read")
+        value = b"".join(chunks)
+    except Gate9Error:
+        raise
+    except OSError as error:
+        fail("CONTROL_FILE_DRIFT", f"{label}: {error}")
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+    return MemoryBlob(supplied.name, value)
+
+
+def _bundle_bytes(payloads: Mapping[str, bytes]) -> tuple[bytes, str]:
+    if set(payloads) != set(PACKAGE_ATTACHMENTS):
+        fail("BUNDLE_SCHEMA_DRIFT", "attachment path set differs")
+    package_sha256 = sha256_bytes(payloads["SHA256SUMS"])
+    records = [
+        {
+            "base64": base64.b64encode(payloads[path]).decode("ascii"),
+            "bytes": len(payloads[path]),
+            "mode": "0444",
+            "path": path,
+            "sha256": sha256_bytes(payloads[path]),
+        }
+        for path in sorted(payloads, key=lambda value: value.encode("utf-8"))
+    ]
+    outer = canonical_json(
+        {
+            "attachments": records,
+            "kind": "gate9-package-bundle",
+            "package_sha256": package_sha256,
+            "schema": BUNDLE_SCHEMA,
+        }
+    )
+    if not outer or len(outer) > BUNDLE_MAX_BYTES:
+        fail("BUNDLE_SIZE_DRIFT", "canonical bundle size is outside bounds")
+    return outer, package_sha256
+
+
+def _decode_bundle_bytes(value: bytes, path: pathlib.Path | None) -> BundleData:
+    if not value or len(value) > BUNDLE_MAX_BYTES:
+        fail("BUNDLE_SIZE_DRIFT", "bundle size is outside bounds")
+    try:
+        document = load_canonical_json_bytes(value, "bundle", schema=BUNDLE_SCHEMA)
+    except Gate9Error as error:
+        fail("BUNDLE_SCHEMA_DRIFT", f"{error.code}: {error.detail}")
+    if set(document) != {"attachments", "kind", "package_sha256", "schema"}:
+        fail("BUNDLE_SCHEMA_DRIFT", "outer key set drift")
+    if document.get("kind") != "gate9-package-bundle":
+        fail("BUNDLE_SCHEMA_DRIFT", "outer kind drift")
+    rows = document.get("attachments")
+    if not isinstance(rows, list) or len(rows) != len(PACKAGE_ATTACHMENTS):
+        fail("BUNDLE_SCHEMA_DRIFT", "attachment record count drift")
+    payloads: dict[str, bytes] = {}
+    observed_order: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict) or set(row) != {"base64", "bytes", "mode", "path", "sha256"}:
+            fail("BUNDLE_SCHEMA_DRIFT", "attachment record key drift")
+        name = row.get("path")
+        encoded = row.get("base64")
+        if (
+            not isinstance(name, str)
+            or name not in PACKAGE_ATTACHMENTS
+            or name in payloads
+            or row.get("mode") != "0444"
+            or not isinstance(encoded, str)
+            or not nonnegative_int(row.get("bytes"))
+        ):
+            fail("BUNDLE_SCHEMA_DRIFT", "attachment identity drift")
+        try:
+            raw = base64.b64decode(encoded.encode("ascii"), validate=True)
+        except (UnicodeEncodeError, ValueError) as error:
+            fail("BUNDLE_SCHEMA_DRIFT", f"invalid base64 for {name}: {error}")
+        if (
+            base64.b64encode(raw).decode("ascii") != encoded
+            or len(raw) != row["bytes"]
+            or sha256_bytes(raw) != row.get("sha256")
+        ):
+            fail("BUNDLE_SCHEMA_DRIFT", f"attachment content drift: {name}")
+        payloads[name] = raw
+        observed_order.append(name)
+    if observed_order != sorted(PACKAGE_ATTACHMENTS):
+        fail("BUNDLE_SCHEMA_DRIFT", "attachment order drift")
+    expected_sums = checksum_manifest(
+        {name: raw for name, raw in payloads.items() if name != "SHA256SUMS"}
+    )
+    package_sha256 = sha256_bytes(payloads["SHA256SUMS"])
+    if (
+        payloads["SHA256SUMS"] != expected_sums
+        or document.get("package_sha256") != package_sha256
+    ):
+        fail("BUNDLE_SCHEMA_DRIFT", "checksum or package identity drift")
+    rebuilt, rebuilt_package = _bundle_bytes(payloads)
+    if rebuilt != value or rebuilt_package != package_sha256:
+        fail("BUNDLE_TRANSPORT_DRIFT", "canonical bundle reconstruction drift")
+    return BundleData(path, value, sha256_bytes(value), package_sha256, payloads)
+
+
+def write_atomic_bundle(attempt: int, payloads: Mapping[str, bytes]) -> BundleData:
+    outer, _ = _bundle_bytes(payloads)
+    parent_fd: int | None = None
+    descriptor: int | None = None
+    path: pathlib.Path | None = None
+    try:
+        parent_fd = os.open(
+            "/tmp", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+        )
+        for _ in range(128):
+            token = secrets.token_hex(16)
+            if re.fullmatch(r"[0-9a-f]{32}", token) is None:
+                fail("BUNDLE_CREATE_FAILURE", "random token is not canonical hex")
+            name = f"agentic-research-gate9-attempt-{attempt}-{token}.bundle.json"
+            try:
+                descriptor = os.open(
+                    name,
+                    os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                    0o600,
+                    dir_fd=parent_fd,
+                )
+                path = pathlib.Path("/tmp") / name
+                break
+            except FileExistsError:
+                continue
+        if descriptor is None or path is None:
+            fail("BUNDLE_CREATE_FAILURE", "bundle collision budget exhausted")
+        before = os.fstat(descriptor)
+        offset = 0
+        while offset < len(outer):
+            written = os.write(descriptor, outer[offset:])
+            if written <= 0:
+                fail("BUNDLE_CREATE_FAILURE", "bundle write did not progress")
+            offset += written
+        os.fsync(descriptor)
+        os.fchmod(descriptor, 0o444)
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        readback = bytearray()
+        while len(readback) < len(outer):
+            chunk = os.read(descriptor, min(1024 * 1024, len(outer) - len(readback)))
+            if not chunk:
+                fail("BUNDLE_CREATE_FAILURE", "bundle readback ended early")
+            readback.extend(chunk)
+        if os.read(descriptor, 1):
+            fail("BUNDLE_CREATE_FAILURE", "bundle readback exceeds expected size")
+        after = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(after.st_mode)
+            or after.st_nlink != 1
+            or stat.S_IMODE(after.st_mode) != 0o444
+            or after.st_size != len(outer)
+            or (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino)
+            or bytes(readback) != outer
+        ):
+            fail("BUNDLE_CREATE_FAILURE", "bundle same-FD readback drift")
+        os.fsync(parent_fd)
+    except Gate9Error:
+        raise
+    except OSError as error:
+        fail("BUNDLE_CREATE_FAILURE", str(error))
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        if parent_fd is not None:
+            os.close(parent_fd)
+    return _decode_bundle_bytes(outer, path)
+
+
+def read_bundle_once(path: pathlib.Path | str) -> BundleData:
+    supplied = pathlib.Path(path)
+    if supplied.parent != pathlib.Path("/tmp") or not re.fullmatch(
+        r"agentic-research-gate9-attempt-[12]-[0-9a-f]{32}\.bundle\.json",
+        supplied.name,
+    ):
+        fail("BUNDLE_READ_FAILURE", "bundle is not a literal /tmp direct child")
+    parent_fd: int | None = None
+    descriptor: int | None = None
+    try:
+        parent_fd = os.open(
+            "/tmp", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+        )
+        descriptor = os.open(
+            supplied.name,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+            dir_fd=parent_fd,
+        )
+        before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or stat.S_IMODE(before.st_mode) != 0o444
+            or before.st_size < 1
+        ):
+            fail("BUNDLE_READ_FAILURE", "bundle is not an exclusive 0444 regular file")
+        if before.st_size > BUNDLE_MAX_BYTES:
+            fail("BUNDLE_SIZE_DRIFT", "bundle exceeds 32 MiB")
+        if os.lseek(descriptor, 0, os.SEEK_CUR) != 0:
+            fail("BUNDLE_READ_FAILURE", "bundle descriptor offset is not zero")
+        chunks: list[bytes] = []
+        observed = 0
+        while observed < before.st_size:
+            chunk = os.read(descriptor, min(1024 * 1024, before.st_size - observed))
+            if not chunk:
+                fail("BUNDLE_SIZE_DRIFT", "bundle ended before declared size")
+            chunks.append(chunk)
+            observed += len(chunk)
+        if os.read(descriptor, 1):
+            fail("BUNDLE_SIZE_DRIFT", "bundle has bytes beyond declared size")
+        after = os.fstat(descriptor)
+        if (
+            (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+            != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+            or after.st_nlink != 1
+            or stat.S_IMODE(after.st_mode) != 0o444
+        ):
+            fail("BUNDLE_READ_FAILURE", "bundle changed during bounded read")
+        value = b"".join(chunks)
+    except Gate9Error:
+        raise
+    except OSError as error:
+        fail("BUNDLE_READ_FAILURE", str(error))
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        if parent_fd is not None:
+            os.close(parent_fd)
+    return _decode_bundle_bytes(value, supplied)
 
 
 def build_package(args: argparse.Namespace) -> None:
@@ -1655,9 +1816,9 @@ def build_package(args: argparse.Namespace) -> None:
         fail("ATTEMPT_STATE_MISMATCH", f"derived {derived_attempt}, asserted {args.attempt}")
     old_manifest = tree_manifest(root, current_head, OLD_PACK)
     new_manifest = tree_manifest(root, current_head, NEW_PACK)
-    if len(manifest_paths(old_manifest)) != 20 or len(manifest_paths(new_manifest)) != 20:
-        fail("PACK_CARDINALITY", "old and new packs must each contain exactly 20 files")
-    task_patch = write_task_patch(
+    if len(manifest_paths(old_manifest)) != 20 or len(manifest_paths(new_manifest)) != 21:
+        fail("PACK_CARDINALITY", "old/new packs must be exact 20/21 files")
+    task_patch = _task_candidate_patch(
         root, current_head, task_relative, candidate
     )
     projection = authoritative_projection(
@@ -1720,16 +1881,25 @@ def build_package(args: argparse.Namespace) -> None:
         "schema": SCHEMA,
     }
     payloads["package.json"] = canonical_json(package_document)
-    output = pathlib.Path(args.output).resolve()
+    payloads["SHA256SUMS"] = checksum_manifest(payloads)
     prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
-    ensure_empty_output(output)
-    package_id = write_package(output, payloads)
+    bundle = write_atomic_bundle(args.attempt, payloads)
     prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
-    print(canonical_json({"package_sha256": package_id, "state": "BUILT"}).decode(), end="")
+    print(
+        canonical_json(
+            {
+                "bundle_path": os.fspath(bundle.path),
+                "bundle_sha256": bundle.bundle_sha256,
+                "package_sha256": bundle.package_sha256,
+                "schema": BUILD_RECEIPT_SCHEMA,
+                "state": "BUILT",
+            }
+        ).decode(),
+        end="",
+    )
 
 
-def read_checksum_manifest(package: pathlib.Path) -> dict[str, str]:
-    raw = (package / "SHA256SUMS").read_bytes()
+def read_checksum_manifest(raw: bytes) -> dict[str, str]:
     rows = raw.splitlines(keepends=True)
     result: dict[str, str] = {}
     pattern = re.compile(rb"^(?P<digest>[0-9a-f]{64})  (?P<path>[^\r\n]+)\n$")
@@ -1746,55 +1916,44 @@ def read_checksum_manifest(package: pathlib.Path) -> dict[str, str]:
     return result
 
 
-def verify_package_path(
+def verify_package_mapping(
     root: pathlib.Path,
-    package: pathlib.Path,
+    package: Mapping[str, bytes],
     *,
+    bundle_sha256: str,
     live_reviewed_head: str,
     reviewed_code_head: str,
-    require_read_only: bool = True,
 ) -> dict[str, Any]:
-    if not package.is_dir():
-        fail("MISSING_PACKAGE", os.fspath(package))
-    actual_paths = sorted(path.name for path in package.iterdir())
+    actual_paths = sorted(package)
     if actual_paths != sorted(PACKAGE_ATTACHMENTS):
         fail("ATTACHMENT_SET_DRIFT", repr(actual_paths))
     try:
-        package_head = (package / "HEAD.txt").read_text(encoding="ascii").strip()
-    except (OSError, UnicodeDecodeError) as error:
+        package_head = package["HEAD.txt"].decode("ascii").strip()
+    except UnicodeDecodeError as error:
         fail("UNTRUSTED_PACKAGE_HEAD", f"package HEAD cannot be read: {error}")
     projection = authoritative_projection(
         root,
         package_head,
         live_reviewed_head,
         reviewed_code_head,
-        expected_index=(package / "llm-wiki-index.md").read_bytes(),
-        expected_coverage=(
-            package / "llm-wiki-stage-category-coverage.md"
-        ).read_bytes(),
+        expected_index=package["llm-wiki-index.md"],
+        expected_coverage=package["llm-wiki-stage-category-coverage.md"],
     )
-    if require_read_only:
-        for path in package.iterdir():
-            metadata = path.lstat()
-            if not stat.S_ISREG(metadata.st_mode):
-                fail("ATTACHMENT_TYPE_DRIFT", path.name)
-            if stat.S_IMODE(metadata.st_mode) != 0o444:
-                fail("ATTACHMENT_MODE_DRIFT", path.name)
-    package_doc = load_canonical_json(package / "package.json")
-    assignments = load_canonical_json(package / "assignments.json")
-    gates = load_canonical_json(package / "gate-results.json")
-    checksums = read_checksum_manifest(package)
+    package_doc = load_canonical_json_bytes(package["package.json"], "package.json")
+    assignments = load_canonical_json_bytes(package["assignments.json"], "assignments.json")
+    gates = load_canonical_json_bytes(package["gate-results.json"], "gate-results.json")
+    checksums = read_checksum_manifest(package["SHA256SUMS"])
     expected_checksum_paths = sorted(set(PACKAGE_ATTACHMENTS) - {"SHA256SUMS"})
     if sorted(checksums) != expected_checksum_paths:
         fail("ATTACHMENT_SET_DRIFT", "checksum path set mismatch")
     for name, expected in checksums.items():
-        if sha256_bytes((package / name).read_bytes()) != expected:
+        if sha256_bytes(package[name]) != expected:
             fail("CHECKSUM_DRIFT", name)
     attempt = package_doc.get("attempt")
     if not nonnegative_int(attempt) or attempt not in (1, 2):
         fail("PACKAGE_SEMANTIC_DRIFT", "invalid package attempt")
     payloads = {
-        name: (package / name).read_bytes()
+        name: package[name]
         for name in expected_checksum_paths
         if name != "package.json"
     }
@@ -1842,20 +2001,20 @@ def verify_package_path(
     }
     if gates != expected_gates:
         fail("PACKAGE_SEMANTIC_DRIFT", "gate-results.json")
-    if (package / "HEAD.txt").read_bytes() != f"{package_head}\n".encode():
+    if package["HEAD.txt"] != f"{package_head}\n".encode():
         fail("PACKAGE_SEMANTIC_DRIFT", "HEAD.txt")
     old_manifest = tree_manifest(root, package_head, OLD_PACK)
     new_manifest = tree_manifest(root, package_head, NEW_PACK)
-    if (package / "old-manifest.tsv").read_bytes() != old_manifest:
+    if package["old-manifest.tsv"] != old_manifest:
         fail("PACKAGE_SEMANTIC_DRIFT", "old-manifest.tsv")
-    if (package / "new-manifest.tsv").read_bytes() != new_manifest:
+    if package["new-manifest.tsv"] != new_manifest:
         fail("PACKAGE_SEMANTIC_DRIFT", "new-manifest.tsv")
     old_paths = manifest_paths(old_manifest)
-    if len(old_paths) != 20 or len(manifest_paths(new_manifest)) != 20:
+    if len(old_paths) != 20 or len(manifest_paths(new_manifest)) != 21:
         fail("PACK_CARDINALITY", "manifest cardinality")
     del old_paths
     task_before = run_git(root, ["show", f"{package_head}:{TASK_PATH.as_posix()}"]).stdout
-    candidate = (package / "task-candidate.md").read_bytes()
+    candidate = package["task-candidate.md"]
     candidate_marker, _ = parse_marker(candidate)
     expected_state = "PACKAGE_REVIEW_PENDING" if attempt == 1 else "ATTEMPT_2_PENDING"
     if candidate_marker.get("attempt") != attempt or candidate_marker.get("state") != expected_state:
@@ -1867,7 +2026,7 @@ def verify_package_path(
         live_reviewed_head,
         reviewed_code_head,
     )
-    task_patch = write_task_patch(root, package_head, TASK_PATH, candidate)
+    task_patch = _task_candidate_patch(root, package_head, TASK_PATH, candidate)
     semantic_payloads = {
         "task-before.md": task_before,
         "task-before-to-candidate.patch": task_patch,
@@ -1876,13 +2035,14 @@ def verify_package_path(
         "plan.md": run_git(root, ["show", f"{package_head}:{PLAN_PATH.as_posix()}"]).stdout,
     }
     for name, expected in semantic_payloads.items():
-        if (package / name).read_bytes() != expected:
+        if package[name] != expected:
             fail("PACKAGE_SEMANTIC_DRIFT", name)
-    if (package / "llm-wiki-index.md").read_bytes() != projection.index_markdown:
+    if package["llm-wiki-index.md"] != projection.index_markdown:
         fail("PACKAGE_SEMANTIC_DRIFT", INDEX.as_posix())
     if (
-        package / "llm-wiki-stage-category-coverage.md"
-    ).read_bytes() != projection.coverage_markdown:
+        package["llm-wiki-stage-category-coverage.md"]
+        != projection.coverage_markdown
+    ):
         fail("PACKAGE_SEMANTIC_DRIFT", COVERAGE.as_posix())
     prove_live_head(root, live_reviewed_head, code="UNTRUSTED_PACKAGE_HEAD")
     return {
@@ -1890,30 +2050,43 @@ def verify_package_path(
         "assignments": assignments,
         "head": package_head,
         "package_doc": package_doc,
-        "package_sha256": sha256_bytes((package / "SHA256SUMS").read_bytes()),
+        "package_sha256": sha256_bytes(package["SHA256SUMS"]),
+        "bundle_sha256": bundle_sha256,
     }
 
 
 def verify_package(args: argparse.Namespace) -> None:
     root = repository_root()
     authority = authority_from_args(root, args)
-    result = verify_package_path(
+    bundle = read_bundle_once(args.bundle)
+    result = verify_package_mapping(
         root,
-        pathlib.Path(args.package).resolve(),
+        bundle.attachments,
+        bundle_sha256=bundle.bundle_sha256,
         live_reviewed_head=authority.live_head,
         reviewed_code_head=authority.reviewed_code_head,
     )
     prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
-    print(canonical_json({"package_sha256": result["package_sha256"], "state": "VERIFIED"}).decode(), end="")
+    print(
+        canonical_json(
+            {
+                "bundle_sha256": result["bundle_sha256"],
+                "package_sha256": result["package_sha256"],
+                "state": "VERIFIED",
+            }
+        ).decode(),
+        end="",
+    )
 
 
 def load_attestation(
-    package_result: dict[str, Any], attestation_path: pathlib.Path
+    package_result: dict[str, Any], attestation_path: pathlib.Path | MemoryBlob
 ) -> dict[str, Any]:
     attestation = load_canonical_json(attestation_path)
     expected_keys = {
         "assignments",
         "attempt",
+        "bundle_sha256",
         "controller_task",
         "kind",
         "package_head",
@@ -1925,6 +2098,7 @@ def load_attestation(
         fail("INVALID_ATTESTATION", "unexpected assignment-attestation schema")
     if (
         attestation.get("attempt") != package_result["attempt"]
+        or attestation.get("bundle_sha256") != package_result["bundle_sha256"]
         or attestation.get("package_head") != package_result["head"]
         or attestation.get("package_sha256") != package_result["package_sha256"]
         or attestation.get("source") != "collaboration.spawn_agent/result"
@@ -1952,26 +2126,28 @@ def load_attestation(
     if rows != expected_rows:
         fail("INVALID_ATTESTATION", "role records must follow package role order")
     if len({row["agent_id"] for row in rows}) != 2 or len({row["task_path"] for row in rows}) != 2:
-        fail("IDENTITY_COLLISION", "reviewers must have distinct agent IDs and task paths")
+        fail("INVALID_ATTESTATION", "reviewers must have distinct agent IDs and task paths")
     return attestation
 
 
 def verify_assignments(args: argparse.Namespace) -> None:
     root = repository_root()
     authority = authority_from_args(root, args)
-    package_result = verify_package_path(
+    bundle = read_bundle_once(args.bundle)
+    package_result = verify_package_mapping(
         root,
-        pathlib.Path(args.package).resolve(),
+        bundle.attachments,
+        bundle_sha256=bundle.bundle_sha256,
         live_reviewed_head=authority.live_head,
         reviewed_code_head=authority.reviewed_code_head,
     )
-    attestation_path = pathlib.Path(args.attestation).resolve()
-    load_attestation(package_result, attestation_path)
+    attestation = read_control_file_once(args.attestation, "assignment attestation")
+    load_attestation(package_result, attestation)
     prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
     print(
         canonical_json(
             {
-                "assignment_attestation_sha256": sha256_bytes(attestation_path.read_bytes()),
+                "assignment_attestation_sha256": sha256_bytes(attestation.value),
                 "state": "ASSIGNED",
             }
         ).decode(),
@@ -1980,7 +2156,7 @@ def verify_assignments(args: argparse.Namespace) -> None:
 
 
 def validate_receipt(
-    path: pathlib.Path,
+    path: pathlib.Path | MemoryBlob,
     role: str,
     package_result: dict[str, Any],
     attestation: dict[str, Any],
@@ -1993,6 +2169,7 @@ def validate_receipt(
         "agent_id",
         "assignment_attestation_sha256",
         "attempt",
+        "bundle_sha256",
         "findings",
         "kind",
         "package_head",
@@ -2011,6 +2188,7 @@ def validate_receipt(
         "agent_id": identity["agent_id"],
         "assignment_attestation_sha256": attestation_sha256,
         "attempt": package_result["attempt"],
+        "bundle_sha256": package_result["bundle_sha256"],
         "package_head": package_result["head"],
         "package_sha256": package_result["package_sha256"],
         "role": role,
@@ -2041,9 +2219,9 @@ def validate_receipt(
 
 
 def expected_backfilled_marker(
-    package: pathlib.Path,
+    package: Mapping[str, bytes],
     package_result: dict[str, Any],
-    receipt_paths: Mapping[str, pathlib.Path],
+    receipt_paths: Mapping[str, pathlib.Path | MemoryBlob],
     receipts: Mapping[str, dict[str, Any]],
 ) -> dict[str, Any]:
     reviews: dict[str, Any] = {}
@@ -2065,14 +2243,15 @@ def expected_backfilled_marker(
         "actual_committed_deletion_review": "Not Run",
         "actual_staged_deletion_review": "Not Run",
         "attempt": package_result["attempt"],
+        "bundle_sha256": package_result["bundle_sha256"],
         "evidence_ref": fixed_evidence_ref(
             package_result["attempt"], package_result["package_sha256"]
         ),
-        "new_manifest_sha256": sha256_bytes((package / "new-manifest.tsv").read_bytes()),
-        "old_manifest_sha256": sha256_bytes((package / "old-manifest.tsv").read_bytes()),
+        "new_manifest_sha256": sha256_bytes(package["new-manifest.tsv"]),
+        "old_manifest_sha256": sha256_bytes(package["old-manifest.tsv"]),
         "package_sha256": package_result["package_sha256"],
         "proposed_deletion_patch_sha256": sha256_bytes(
-            (package / "proposed-deletion.patch").read_bytes()
+            package["proposed-deletion.patch"]
         ),
         "recovery_head": package_result["head"],
         "reviews": reviews,
@@ -2082,14 +2261,14 @@ def expected_backfilled_marker(
 
 
 def validate_task_state(
-    package: pathlib.Path,
+    package: Mapping[str, bytes],
     package_result: dict[str, Any],
     task_path: pathlib.Path,
     expect_state: str,
-    receipt_paths: Mapping[str, pathlib.Path],
+    receipt_paths: Mapping[str, pathlib.Path | MemoryBlob],
     receipts: Mapping[str, dict[str, Any]],
 ) -> None:
-    candidate = (package / "task-candidate.md").read_bytes()
+    candidate = package["task-candidate.md"]
     current = task_path.read_bytes()
     candidate_marker, candidate_span = parse_marker(candidate)
     current_marker, current_span = parse_marker(current)
@@ -2115,19 +2294,25 @@ def validate_task_state(
 def verify_backfill(args: argparse.Namespace) -> None:
     root = repository_root()
     authority = authority_from_args(root, args)
-    package = pathlib.Path(args.package).resolve()
-    package_result = verify_package_path(
+    bundle = read_bundle_once(args.bundle)
+    package = bundle.attachments
+    package_result = verify_package_mapping(
         root,
         package,
+        bundle_sha256=bundle.bundle_sha256,
         live_reviewed_head=authority.live_head,
         reviewed_code_head=authority.reviewed_code_head,
     )
-    attestation_path = pathlib.Path(args.assignment_attestation).resolve()
+    attestation_path = read_control_file_once(
+        args.assignment_attestation, "assignment attestation"
+    )
     attestation = load_attestation(package_result, attestation_path)
     attestation_sha256 = sha256_bytes(attestation_path.read_bytes())
     receipt_paths = {
-        "migration-specification": pathlib.Path(args.migration_receipt).resolve(),
-        "quality": pathlib.Path(args.quality_receipt).resolve(),
+        "migration-specification": read_control_file_once(
+            args.migration_receipt, "migration receipt"
+        ),
+        "quality": read_control_file_once(args.quality_receipt, "quality receipt"),
     }
     receipts = {
         role: validate_receipt(
@@ -2160,57 +2345,7 @@ def task_transition_patch(
     after: bytes,
     task: pathlib.PurePosixPath,
 ) -> bytes:
-    with PinnedScratch("gate9-task-transition-") as scratch:
-        environment = {"GIT_INDEX_FILE": os.fspath(scratch.path / "index")}
-        run_git(
-            root,
-            ["read-tree", "--empty"],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        )
-        scratch.register_file("index")
-        before_oid = run_git(
-            root, ["hash-object", "-w", "--stdin"], env=environment, input_bytes=before
-        ).stdout.decode().strip()
-        run_git(
-            root,
-            ["update-index", "--add", "--cacheinfo", "100644", before_oid, task.as_posix()],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        )
-        scratch.register_file("index")
-        before_tree = run_git(
-            root,
-            ["write-tree"],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        ).stdout.decode().strip()
-        after_oid = run_git(
-            root, ["hash-object", "-w", "--stdin"], env=environment, input_bytes=after
-        ).stdout.decode().strip()
-        run_git(
-            root,
-            ["update-index", "--cacheinfo", "100644", after_oid, task.as_posix()],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        )
-        scratch.register_file("index")
-        result = run_git(
-            root,
-            [
-                "diff",
-                "--cached",
-                "--binary",
-                "--full-index",
-                before_tree,
-                "--",
-                task.as_posix(),
-            ],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        ).stdout
-        scratch.register_file("index")
-        return result
+    return _mapping_patch(root, task, before, after)
 
 
 def file_record(path: str, value: bytes) -> dict[str, object]:
@@ -2222,7 +2357,7 @@ def blob_record(root: pathlib.Path, value: bytes) -> dict[str, object]:
     return {"blob_oid": oid, "bytes": len(value), "sha256": sha256_bytes(value)}
 
 
-def checked_report(path: pathlib.Path, label: str) -> bytes:
+def checked_report(path: pathlib.Path | MemoryBlob, label: str) -> bytes:
     try:
         value = path.read_bytes()
         decoded = value.decode("utf-8")
@@ -2242,10 +2377,10 @@ def validate_report_binding(receipt: dict[str, Any], report: bytes, role: str) -
 
 
 def validate_closure(
-    path: pathlib.Path,
+    path: pathlib.Path | MemoryBlob,
     report: bytes,
     role: str,
-    receipt_path: pathlib.Path,
+    receipt_path: pathlib.Path | MemoryBlob,
     receipt: dict[str, Any],
     attestation_sha256: str,
     task_tuple: dict[str, Any],
@@ -2255,6 +2390,7 @@ def validate_closure(
         "agent_id",
         "assignment_attestation_sha256",
         "attempt",
+        "bundle_sha256",
         "findings",
         "kind",
         "marker_match",
@@ -2275,6 +2411,7 @@ def validate_closure(
         "agent_id": receipt["agent_id"],
         "assignment_attestation_sha256": attestation_sha256,
         "attempt": receipt["attempt"],
+        "bundle_sha256": receipt["bundle_sha256"],
         "package_receipt_sha256": sha256_bytes(receipt_path.read_bytes()),
         "package_sha256": receipt["package_sha256"],
         "role": role,
@@ -2325,39 +2462,11 @@ def evidence_commit_message(attempt: int, package_sha256: str, state: str) -> by
     ).encode()
 
 
-def write_evidence_tree(root: pathlib.Path, leaves: Mapping[str, bytes]) -> str:
-    with PinnedScratch("gate9-evidence-index-") as scratch:
-        environment = {"GIT_INDEX_FILE": os.fspath(scratch.path / "index")}
-        run_git(
-            root,
-            ["read-tree", "--empty"],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        )
-        scratch.register_file("index")
-        for path in sorted(leaves):
-            oid = run_git(
-                root,
-                ["hash-object", "-w", "--stdin"],
-                env=environment,
-                input_bytes=leaves[path],
-                pass_fds=scratch.pass_fds,
-            ).stdout.decode().strip()
-            run_git(
-                root,
-                ["update-index", "--add", "--cacheinfo", "100644", oid, path],
-                env=environment,
-                pass_fds=scratch.pass_fds,
-            )
-            scratch.register_file("index")
-        result = run_git(
-            root,
-            ["write-tree"],
-            env=environment,
-            pass_fds=scratch.pass_fds,
-        ).stdout.decode().strip()
-        scratch.register_file("index")
-        return result
+def _evidence_tree(root: pathlib.Path, leaves: Mapping[str, bytes]) -> str:
+    return build_tree_from_mapping(
+        root,
+        {path: ("100644", value) for path, value in leaves.items()},
+    )
 
 
 def commit_identity(root: pathlib.Path, commit: str) -> tuple[str, str, bytes]:
@@ -2398,9 +2507,16 @@ def create_or_reuse_ref(
         ["commit-tree", tree_oid, "-p", package_head],
         input_bytes=message,
     ).stdout.decode().strip()
+    width = object_format_width(root)
+    if (
+        re.fullmatch(rf"[0-9a-f]{{{width}}}", commit) is None
+        or run_git(root, ["cat-file", "-t", commit], check=False).stdout != b"commit\n"
+        or not matches(commit)
+    ):
+        fail("INVALID_EVIDENCE_COMMIT", "commit-tree identity drift")
     update = run_git(
         root,
-        ["update-ref", evidence_ref, commit, "0" * 40],
+        ["update-ref", evidence_ref, commit, "0" * width],
         check=False,
     )
     if update.returncode == 0:
@@ -2414,25 +2530,23 @@ def create_or_reuse_ref(
 
 def build_evidence_leaves(
     root: pathlib.Path,
-    package: pathlib.Path,
+    package: Mapping[str, bytes],
     package_result: dict[str, Any],
     task_relative: pathlib.PurePosixPath,
-    task_path: pathlib.Path,
+    task_path: pathlib.Path | MemoryBlob,
     state: str,
-    terminal_report_path: pathlib.Path,
-    attestation_path: pathlib.Path,
-    optional_paths: Mapping[str, pathlib.Path | None],
+    terminal_report_path: pathlib.Path | MemoryBlob,
+    attestation_path: pathlib.Path | MemoryBlob,
+    optional_paths: Mapping[str, pathlib.Path | MemoryBlob | None],
 ) -> dict[str, bytes]:
     attestation = load_attestation(package_result, attestation_path)
     attestation_bytes = attestation_path.read_bytes()
     attestation_sha256 = sha256_bytes(attestation_bytes)
-    leaves = {
-        f"package/{name}": (package / name).read_bytes() for name in PACKAGE_ATTACHMENTS
-    }
+    leaves = {f"package/{name}": package[name] for name in PACKAGE_ATTACHMENTS}
     leaves["assignment-attestation.json"] = attestation_bytes
     terminal_report = checked_report(terminal_report_path, "terminal report")
     leaves["terminal/report.md"] = terminal_report
-    candidate = (package / "task-candidate.md").read_bytes()
+    candidate = package["task-candidate.md"]
     task_after = task_path.read_bytes() if state == "AUTHORIZED" else candidate
     task_patch = task_transition_patch(root, candidate, task_after, task_relative) if state == "AUTHORIZED" else b""
     leaves["task/task-after.md"] = task_after
@@ -2548,12 +2662,12 @@ def build_evidence_leaves(
             or "\n" in invalidation_reason
             or "\r" in invalidation_reason
         ):
-            fail("INVALIDATED_REASON_INVALID", os.fspath(drift_path))
+            fail("INVALIDATED_REASON_INVALID", drift_path.name)
         if set(drift_value) != {"kind", "reason", "schema", "state"} or (
             drift_value.get("kind") != "drift-proof"
             or drift_value.get("state") != "INVALIDATED"
         ):
-            fail("INVALID_DRIFT_PROOF", os.fspath(drift_path))
+            fail("INVALID_DRIFT_PROOF", drift_path.name)
         leaves["drift/drift-proof.json"] = drift_path.read_bytes()
     else:
         leaves["drift/drift-proof.json"] = sentinel_json(
@@ -2574,6 +2688,7 @@ def build_evidence_leaves(
     evidence = {
         "assignment": file_record("assignment-attestation.json", attestation_bytes),
         "attempt": package_result["attempt"],
+        "bundle_sha256": package_result["bundle_sha256"],
         "closures": closure_records,
         "drift": file_record("drift/drift-proof.json", leaves["drift/drift-proof.json"]),
         "evidence_ref": evidence_ref,
@@ -2599,10 +2714,12 @@ def build_evidence_leaves(
 def publish_evidence_ref(args: argparse.Namespace) -> None:
     root = repository_root()
     authority = authority_from_args(root, args)
-    package = pathlib.Path(args.package).resolve()
-    package_result = verify_package_path(
+    bundle = read_bundle_once(args.bundle)
+    package = bundle.attachments
+    package_result = verify_package_mapping(
         root,
         package,
+        bundle_sha256=bundle.bundle_sha256,
         live_reviewed_head=authority.live_head,
         reviewed_code_head=authority.reviewed_code_head,
     )
@@ -2624,7 +2741,9 @@ def publish_evidence_ref(args: argparse.Namespace) -> None:
         "drift_proof",
     )
     optional_paths = {
-        name: pathlib.Path(getattr(args, name)).resolve() if getattr(args, name) else None
+        name: read_control_file_once(getattr(args, name), name.replace("_", " "))
+        if getattr(args, name)
+        else None
         for name in optional_names
     }
     leaves = build_evidence_leaves(
@@ -2634,8 +2753,8 @@ def publish_evidence_ref(args: argparse.Namespace) -> None:
         task_relative,
         task_path,
         args.terminal_state,
-        pathlib.Path(args.terminal_report).resolve(),
-        pathlib.Path(args.assignment_attestation).resolve(),
+        read_control_file_once(args.terminal_report, "terminal report"),
+        read_control_file_once(args.assignment_attestation, "assignment attestation"),
         optional_paths,
     )
     if set(leaves) != EVIDENCE_LEAF_PATHS:
@@ -2644,7 +2763,7 @@ def publish_evidence_ref(args: argparse.Namespace) -> None:
             repr(sorted(set(leaves) ^ EVIDENCE_LEAF_PATHS)),
         )
     prove_live_head(root, authority.live_head, code="UNTRUSTED_PACKAGE_HEAD")
-    tree_oid = write_evidence_tree(root, leaves)
+    tree_oid = _evidence_tree(root, leaves)
     message = evidence_commit_message(
         package_result["attempt"], package_result["package_sha256"], args.terminal_state
     )
@@ -2656,6 +2775,7 @@ def publish_evidence_ref(args: argparse.Namespace) -> None:
     print(
         canonical_json(
             {
+                "bundle_sha256": package_result["bundle_sha256"],
                 "evidence_commit": evidence_commit,
                 "evidence_ref": evidence_ref,
                 "state": args.terminal_state,
@@ -2684,19 +2804,43 @@ def read_ref_leaves(
     )
     if ref_result.returncode:
         fail("MISSING_EVIDENCE_REF", evidence_ref)
-    commit = ref_result.stdout.decode().strip()
-    listing = run_git(root, ["ls-tree", "-r", "--full-tree", commit]).stdout
+    try:
+        raw_commit = ref_result.stdout.decode("ascii", "strict").strip()
+    except UnicodeDecodeError as error:
+        fail("INVALID_EVIDENCE_TREE", f"ref OID is not ASCII: {error}")
+    commit = require_full_commit_oid(root, raw_commit, code="INVALID_EVIDENCE_TREE")
+    width = object_format_width(root)
+    listing = run_git(
+        root, ["ls-tree", "-r", "-z", "--full-tree", commit]
+    ).stdout
+    try:
+        records = _parse_raw_tree_records(
+            listing,
+            width,
+            allow_paths=True,
+        )
+    except Gate9Error as error:
+        fail("INVALID_EVIDENCE_TREE", f"{error.code}: {error.detail}")
     leaves: dict[str, bytes] = {}
-    for line in listing.splitlines():
-        metadata, separator, raw_path = line.partition(b"\t")
-        fields = metadata.split()
-        if not separator or len(fields) != 3:
-            fail("INVALID_EVIDENCE_TREE", line.decode("utf-8", "replace"))
-        mode, object_type, _ = fields
-        path = raw_path.decode("utf-8")
-        if mode != b"100644" or object_type != b"blob":
-            fail("EVIDENCE_MODE_DRIFT", path)
-        leaves[path] = run_git(root, ["show", f"{commit}:{path}"]).stdout
+    for record in records:
+        if record.mode != b"100644" or record.object_type != b"blob":
+            fail("EVIDENCE_MODE_DRIFT", record.name.decode("utf-8", "replace"))
+        _verify_object(root, record, "INVALID_EVIDENCE_TREE")
+        try:
+            path = record.name.decode("utf-8", "strict")
+            _safe_mapping_path(path)
+        except (UnicodeDecodeError, Gate9Error) as error:
+            fail("INVALID_EVIDENCE_TREE", f"unsafe evidence path: {error}")
+        if path in leaves:
+            fail("INVALID_EVIDENCE_TREE", f"duplicate evidence path: {path}")
+        blob = run_git(
+            root,
+            ["cat-file", "blob", record.oid.decode("ascii")],
+            check=False,
+        )
+        if blob.returncode:
+            fail("INVALID_EVIDENCE_TREE", f"cannot read evidence blob: {path}")
+        leaves[path] = blob.stdout
     if set(leaves) != EVIDENCE_LEAF_PATHS:
         fail(
             "EVIDENCE_PATH_SET_DRIFT",
@@ -2751,14 +2895,6 @@ def preflight_evidence_ref_authority(
     )
 
 
-def materialize_evidence(
-    leaves: Mapping[str, bytes], scratch: PinnedScratch
-) -> pathlib.Path:
-    for relative, value in leaves.items():
-        scratch.create_file(relative, value, mode=0o444)
-    return scratch.path
-
-
 def replay_terminal_evidence_ref(
     root: pathlib.Path,
     evidence_ref: str,
@@ -2772,298 +2908,258 @@ def replay_terminal_evidence_ref(
         leaves,
         live_reviewed_head,
     )
-    with PinnedScratch("gate9-terminal-replay-") as scratch:
-        evidence_root = materialize_evidence(leaves, scratch)
-        package = evidence_root / "package"
-        package_result = verify_package_path(
-            root,
-            package,
-            live_reviewed_head=live_reviewed_head,
-            reviewed_code_head=reviewed_code_head,
+    package = {
+        name: leaves[f"package/{name}"] for name in PACKAGE_ATTACHMENTS
+    }
+    outer, package_sha256 = _bundle_bytes(package)
+    bundle = _decode_bundle_bytes(outer, None)
+    if bundle.package_sha256 != package_sha256:
+        fail("BUNDLE_TRANSPORT_DRIFT", "ref package reconstruction drift")
+    package_result = verify_package_mapping(
+        root,
+        package,
+        bundle_sha256=bundle.bundle_sha256,
+        live_reviewed_head=live_reviewed_head,
+        reviewed_code_head=reviewed_code_head,
+    )
+    evidence = load_canonical_json_bytes(leaves["evidence.json"], "evidence.json")
+    state = evidence.get("state")
+    if state not in {"REJECTED", "INVALIDATED"}:
+        fail("ATTEMPT_STATE_MISMATCH", "attempt 1 is not pre-backfill terminal")
+    expected_ref = fixed_evidence_ref(
+        package_result["attempt"], package_result["package_sha256"]
+    )
+    if evidence_ref != expected_ref:
+        fail("EVIDENCE_REF_MISMATCH", evidence_ref)
+    optional_paths: dict[str, MemoryBlob | None] = {
+        "migration_closure_report": None,
+        "migration_closure": None,
+        "quality_closure_report": None,
+        "quality_closure": None,
+        "drift_proof": (
+            MemoryBlob("drift-proof.json", leaves["drift/drift-proof.json"])
+            if state == "INVALIDATED"
+            else None
+        ),
+    }
+    for role in ROLES:
+        prefix = "migration" if role == "migration-specification" else "quality"
+        receipt_leaf = f"reviews/{role}/receipt.json"
+        if leaves[receipt_leaf] == sentinel_json("package-review-receipt", role):
+            optional_paths[f"{prefix}_report"] = None
+            optional_paths[f"{prefix}_receipt"] = None
+        else:
+            optional_paths[f"{prefix}_report"] = MemoryBlob(
+                "report.md", leaves[f"reviews/{role}/report.md"]
+            )
+            optional_paths[f"{prefix}_receipt"] = MemoryBlob(
+                "receipt.json", leaves[receipt_leaf]
+            )
+    reconstructed = build_evidence_leaves(
+        root,
+        package,
+        package_result,
+        TASK_PATH,
+        MemoryBlob("task-after.md", leaves["task/task-after.md"]),
+        state,
+        MemoryBlob("report.md", leaves["terminal/report.md"]),
+        MemoryBlob("assignment-attestation.json", leaves["assignment-attestation.json"]),
+        optional_paths,
+    )
+    if reconstructed != leaves:
+        fail("EVIDENCE_SCHEMA_DRIFT", evidence_ref)
+    expected_tree = _evidence_tree(root, reconstructed)
+    parent, tree_oid, message = commit_identity(root, evidence_commit)
+    expected_message = evidence_commit_message(
+        package_result["attempt"], package_result["package_sha256"], state
+    )
+    if (
+        parent != package_result["head"]
+        or tree_oid != expected_tree
+        or message != expected_message
+    ):
+        fail("EVIDENCE_COMMIT_IDENTITY_DRIFT", evidence_ref)
+    reason = "package-review-rejected"
+    if state == "INVALIDATED":
+        drift = load_canonical_json_bytes(
+            leaves["drift/drift-proof.json"], "drift-proof.json"
         )
-        evidence = load_canonical_json(evidence_root / "evidence.json")
-        state = evidence.get("state")
-        if state not in {"REJECTED", "INVALIDATED"}:
-            fail("ATTEMPT_STATE_MISMATCH", "attempt 1 is not pre-backfill terminal")
-        expected_ref = fixed_evidence_ref(
-            package_result["attempt"], package_result["package_sha256"]
-        )
-        if evidence_ref != expected_ref:
-            fail("EVIDENCE_REF_MISMATCH", evidence_ref)
-        optional_paths: dict[str, pathlib.Path | None] = {
-            "migration_closure_report": None,
-            "migration_closure": None,
-            "quality_closure_report": None,
-            "quality_closure": None,
-            "drift_proof": (
-                evidence_root / "drift/drift-proof.json"
-                if state == "INVALIDATED"
-                else None
-            ),
-        }
-        for role in ROLES:
-            prefix = "migration" if role == "migration-specification" else "quality"
-            receipt_leaf = f"reviews/{role}/receipt.json"
-            if leaves[receipt_leaf] == sentinel_json("package-review-receipt", role):
-                optional_paths[f"{prefix}_report"] = None
-                optional_paths[f"{prefix}_receipt"] = None
-            else:
-                optional_paths[f"{prefix}_report"] = evidence_root / f"reviews/{role}/report.md"
-                optional_paths[f"{prefix}_receipt"] = evidence_root / receipt_leaf
-        reconstructed = build_evidence_leaves(
-            root,
-            package,
-            package_result,
-            TASK_PATH,
-            evidence_root / "task/task-after.md",
-            state,
-            evidence_root / "terminal/report.md",
-            evidence_root / "assignment-attestation.json",
-            optional_paths,
-        )
-        if reconstructed != leaves:
-            fail("EVIDENCE_SCHEMA_DRIFT", evidence_ref)
-        expected_tree = write_evidence_tree(root, reconstructed)
-        parent, tree_oid, message = commit_identity(root, evidence_commit)
-        expected_message = evidence_commit_message(
-            package_result["attempt"], package_result["package_sha256"], state
-        )
-        if (
-            parent != package_result["head"]
-            or tree_oid != expected_tree
-            or message != expected_message
-        ):
-            fail("EVIDENCE_COMMIT_IDENTITY_DRIFT", evidence_ref)
-        reason = "package-review-rejected"
-        if state == "INVALIDATED":
-            drift = load_canonical_json(evidence_root / "drift/drift-proof.json")
-            reason = drift["reason"]
-        return {
-            "attempt": package_result["attempt"],
-            "package_sha256": package_result["package_sha256"],
-            "reason": reason,
-            "state": state,
-            "tree": tree_oid,
-        }
-
+        reason = drift["reason"]
+    return {
+        "attempt": package_result["attempt"],
+        "bundle_sha256": package_result["bundle_sha256"],
+        "package_sha256": package_result["package_sha256"],
+        "reason": reason,
+        "state": state,
+        "tree": tree_oid,
+    }
 
 def verify_authorized(args: argparse.Namespace) -> None:
     root = repository_root()
     authority = authority_from_args(root, args)
-    if args.package:
-        external_package = pathlib.Path(args.package).resolve()
-        if not external_package.is_dir():
-            fail("MISSING_PACKAGE", os.fspath(external_package))
-        try:
-            external_head = (external_package / "HEAD.txt").read_text(
-                encoding="ascii"
-            ).strip()
-        except (OSError, UnicodeDecodeError) as error:
-            fail("UNTRUSTED_PACKAGE_HEAD", f"package HEAD cannot be read: {error}")
-        external_oid = require_full_commit_oid(
-            root,
-            external_head,
-            code="UNTRUSTED_PACKAGE_HEAD",
-        )
-        if external_oid != authority.live_head:
-            fail(
-                "UNTRUSTED_PACKAGE_HEAD",
-                "package HEAD differs from live reviewed HEAD",
-            )
     task_relative, task_path = repo_path(root, args.task)
     live_task = task_path.read_bytes()
     task_marker, _ = parse_marker(live_task)
     evidence_ref = resolve_evidence_ref(task_marker, args.evidence_ref)
     evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
-    preflight_evidence_ref_authority(
+    preflight_evidence_ref_authority(root, evidence_commit, leaves, authority.live_head)
+    external_bundle = read_bundle_once(args.bundle) if args.bundle else None
+    package = {name: leaves[f"package/{name}"] for name in PACKAGE_ATTACHMENTS}
+    ref_outer, _ = _bundle_bytes(package)
+    ref_bundle = _decode_bundle_bytes(ref_outer, None)
+    if external_bundle is not None:
+        if (
+            external_bundle.package_sha256 != ref_bundle.package_sha256
+            or external_bundle.outer_bytes != ref_bundle.outer_bytes
+            or external_bundle.bundle_sha256 != ref_bundle.bundle_sha256
+            or external_bundle.attachments != package
+        ):
+            fail("BUNDLE_TRANSPORT_DRIFT", "external and ref bundles differ")
+    package_result = verify_package_mapping(
         root,
-        evidence_commit,
-        leaves,
-        authority.live_head,
+        package,
+        bundle_sha256=ref_bundle.bundle_sha256,
+        live_reviewed_head=authority.live_head,
+        reviewed_code_head=authority.reviewed_code_head,
     )
-    with PinnedScratch("gate9-ref-replay-") as scratch:
-        evidence_root = materialize_evidence(leaves, scratch)
-        package = evidence_root / "package"
-        package_result = verify_package_path(
-            root,
-            package,
-            live_reviewed_head=authority.live_head,
-            reviewed_code_head=authority.reviewed_code_head,
+    evidence = load_canonical_json_bytes(leaves["evidence.json"], "evidence.json")
+    expected_evidence_keys = {
+        "assignment", "attempt", "bundle_sha256", "closures", "drift",
+        "evidence_ref", "package_head", "package_sha256", "reviews", "schema",
+        "state", "task", "terminal_report",
+    }
+    if set(evidence) != expected_evidence_keys or evidence.get("state") != "AUTHORIZED":
+        fail("NOT_AUTHORIZED", evidence_ref)
+    if (
+        evidence.get("attempt") != package_result["attempt"]
+        or evidence.get("bundle_sha256") != package_result["bundle_sha256"]
+        or evidence.get("package_head") != package_result["head"]
+        or evidence.get("package_sha256") != package_result["package_sha256"]
+        or evidence.get("evidence_ref") != evidence_ref
+    ):
+        fail("EVIDENCE_BINDING_DRIFT", evidence_ref)
+    expected_message = evidence_commit_message(
+        package_result["attempt"], package_result["package_sha256"], "AUTHORIZED"
+    )
+    commit_parent, commit_tree, commit_message = commit_identity(root, evidence_commit)
+    expected_tree = _evidence_tree(root, leaves)
+    if (
+        commit_parent != package_result["head"]
+        or commit_tree != expected_tree
+        or commit_message != expected_message
+    ):
+        fail("EVIDENCE_COMMIT_IDENTITY_DRIFT", evidence_ref)
+    if live_task != leaves["task/task-after.md"]:
+        fail("TASK_AFTER_DRIFT", task_relative.as_posix())
+    candidate = package["task-candidate.md"]
+    expected_task_patch = task_transition_patch(root, candidate, live_task, task_relative)
+    if leaves["task/task-candidate-to-after.patch"] != expected_task_patch:
+        fail("TASK_PATCH_DRIFT", task_relative.as_posix())
+    attestation_path = MemoryBlob(
+        "assignment-attestation.json", leaves["assignment-attestation.json"]
+    )
+    attestation = load_attestation(package_result, attestation_path)
+    attestation_sha256 = sha256_bytes(attestation_path.read_bytes())
+    receipt_paths = {
+        role: MemoryBlob("receipt.json", leaves[f"reviews/{role}/receipt.json"])
+        for role in ROLES
+    }
+    receipts: dict[str, dict[str, Any]] = {}
+    review_records: dict[str, dict[str, Any]] = {}
+    for role in ROLES:
+        report_path = f"reviews/{role}/report.md"
+        receipt_leaf = f"reviews/{role}/receipt.json"
+        report = checked_report(
+            MemoryBlob("report.md", leaves[report_path]), f"{role} review"
         )
-        if args.package:
-            external_package = pathlib.Path(args.package).resolve()
-            external_result = verify_package_path(
-                root,
-                external_package,
-                live_reviewed_head=authority.live_head,
-                reviewed_code_head=authority.reviewed_code_head,
-            )
-            if external_result["package_sha256"] != package_result["package_sha256"]:
-                fail("PACKAGE_ID_DRIFT", os.fspath(external_package))
-            for name in PACKAGE_ATTACHMENTS:
-                if (external_package / name).read_bytes() != (package / name).read_bytes():
-                    fail("PACKAGE_ATTACHMENT_DRIFT", name)
-        evidence = load_canonical_json(evidence_root / "evidence.json")
-        expected_evidence_keys = {
-            "assignment",
-            "attempt",
-            "closures",
-            "drift",
-            "evidence_ref",
-            "package_head",
-            "package_sha256",
-            "reviews",
-            "schema",
-            "state",
-            "task",
-            "terminal_report",
-        }
-        if set(evidence) != expected_evidence_keys or evidence.get("state") != "AUTHORIZED":
-            fail("NOT_AUTHORIZED", evidence_ref)
-        if (
-            evidence.get("attempt") != package_result["attempt"]
-            or evidence.get("package_head") != package_result["head"]
-            or evidence.get("package_sha256") != package_result["package_sha256"]
-            or evidence.get("evidence_ref") != evidence_ref
-        ):
-            fail("EVIDENCE_BINDING_DRIFT", evidence_ref)
-        expected_message = evidence_commit_message(
-            package_result["attempt"], package_result["package_sha256"], "AUTHORIZED"
+        receipt = validate_receipt(
+            receipt_paths[role], role, package_result, attestation,
+            attestation_sha256, require_approved=True,
         )
-        commit_parent, commit_tree, commit_message = commit_identity(root, evidence_commit)
-        expected_tree = write_evidence_tree(root, leaves)
-        if (
-            commit_parent != package_result["head"]
-            or commit_tree != expected_tree
-            or commit_message != expected_message
-        ):
-            fail("EVIDENCE_COMMIT_IDENTITY_DRIFT", evidence_ref)
-        if live_task != leaves["task/task-after.md"]:
-            fail("TASK_AFTER_DRIFT", task_relative.as_posix())
-        candidate = leaves["package/task-candidate.md"]
-        expected_task_patch = task_transition_patch(root, candidate, live_task, task_relative)
-        if leaves["task/task-candidate-to-after.patch"] != expected_task_patch:
-            fail("TASK_PATCH_DRIFT", task_relative.as_posix())
-        attestation_path = evidence_root / "assignment-attestation.json"
-        attestation = load_attestation(package_result, attestation_path)
-        attestation_sha256 = sha256_bytes(attestation_path.read_bytes())
-        receipt_paths = {
-            role: evidence_root / f"reviews/{role}/receipt.json" for role in ROLES
-        }
-        receipts: dict[str, dict[str, Any]] = {}
-        review_records: dict[str, dict[str, Any]] = {}
-        for role in ROLES:
-            report_path = f"reviews/{role}/report.md"
-            receipt_leaf = f"reviews/{role}/receipt.json"
-            report = checked_report(evidence_root / report_path, f"{role} review")
-            receipt = validate_receipt(
-                receipt_paths[role],
-                role,
-                package_result,
-                attestation,
-                attestation_sha256,
-                require_approved=True,
-            )
-            validate_report_binding(receipt, report, role)
-            receipts[role] = receipt
-            review_records[role] = {
-                **{
-                    key: receipt[key]
-                    for key in (
-                        "agent_id",
-                        "assignment_attestation_sha256",
-                        "role",
-                        "run_id",
-                        "task_path",
-                        "verdict",
-                        "findings",
-                    )
-                },
-                "receipt": file_record(receipt_leaf, leaves[receipt_leaf]),
-                "report": file_record(report_path, report),
-            }
-        validate_task_state(
-            package,
-            package_result,
-            task_path,
-            "TASK_BACKFILLED",
-            receipt_paths,
-            receipts,
-        )
-        task_tuple = {
-            "after": blob_record(root, live_task),
-            "before": blob_record(root, candidate),
-            "diff": {
-                "bytes": len(expected_task_patch),
-                "sha256": sha256_bytes(expected_task_patch),
+        validate_report_binding(receipt, report, role)
+        receipts[role] = receipt
+        review_records[role] = {
+            **{
+                key: receipt[key]
+                for key in (
+                    "agent_id", "assignment_attestation_sha256", "role", "run_id",
+                    "task_path", "verdict", "findings",
+                )
             },
+            "receipt": file_record(receipt_leaf, leaves[receipt_leaf]),
+            "report": file_record(report_path, report),
         }
-        closure_records: dict[str, dict[str, Any]] = {}
-        for role in ROLES:
-            closure_report_path = f"closures/{role}/report.md"
-            closure_leaf = f"closures/{role}/closure.json"
-            closure_report = checked_report(
-                evidence_root / closure_report_path, f"{role} closure"
-            )
-            closure = validate_closure(
-                evidence_root / closure_leaf,
-                closure_report,
-                role,
-                receipt_paths[role],
-                receipts[role],
-                attestation_sha256,
-                task_tuple,
-            )
-            closure_records[role] = {
-                **{
-                    key: closure[key]
-                    for key in (
-                        "agent_id",
-                        "role",
-                        "run_id",
-                        "task_path",
-                        "verdict",
-                        "findings",
-                    )
-                },
-                "closure": file_record(closure_leaf, leaves[closure_leaf]),
-                "report": file_record(closure_report_path, closure_report),
-            }
-        drift = load_canonical_json(evidence_root / "drift/drift-proof.json")
-        if drift != {
-            "kind": "drift-proof",
-            "schema": SCHEMA,
-            "state": "NOT_APPLICABLE",
-        }:
-            fail("INVALID_DRIFT_PROOF", "AUTHORIZED drift slot")
-        terminal_report = checked_report(
-            evidence_root / "terminal/report.md", "terminal report"
+    validate_task_state(
+        package,
+        package_result,
+        MemoryBlob("task-after.md", live_task),
+        "TASK_BACKFILLED",
+        receipt_paths,
+        receipts,
+    )
+    task_tuple = {
+        "after": blob_record(root, live_task),
+        "before": blob_record(root, candidate),
+        "diff": {
+            "bytes": len(expected_task_patch),
+            "sha256": sha256_bytes(expected_task_patch),
+        },
+    }
+    closure_records: dict[str, dict[str, Any]] = {}
+    for role in ROLES:
+        closure_report_path = f"closures/{role}/report.md"
+        closure_leaf = f"closures/{role}/closure.json"
+        closure_report = checked_report(
+            MemoryBlob("report.md", leaves[closure_report_path]), f"{role} closure"
         )
-        expected_evidence = {
-            "assignment": file_record(
-                "assignment-attestation.json", leaves["assignment-attestation.json"]
-            ),
-            "attempt": package_result["attempt"],
-            "closures": closure_records,
-            "drift": file_record(
-                "drift/drift-proof.json", leaves["drift/drift-proof.json"]
-            ),
-            "evidence_ref": evidence_ref,
-            "package_head": package_result["head"],
-            "package_sha256": package_result["package_sha256"],
-            "reviews": review_records,
-            "schema": SCHEMA,
-            "state": "AUTHORIZED",
-            "task": {
-                "after": file_record("task/task-after.md", live_task),
-                "candidate_to_after_patch": file_record(
-                    "task/task-candidate-to-after.patch", expected_task_patch
-                ),
+        closure = validate_closure(
+            MemoryBlob("closure.json", leaves[closure_leaf]), closure_report, role,
+            receipt_paths[role], receipts[role], attestation_sha256, task_tuple,
+        )
+        closure_records[role] = {
+            **{
+                key: closure[key]
+                for key in (
+                    "agent_id", "role", "run_id", "task_path", "verdict", "findings",
+                )
             },
-            "terminal_report": file_record("terminal/report.md", terminal_report),
+            "closure": file_record(closure_leaf, leaves[closure_leaf]),
+            "report": file_record(closure_report_path, closure_report),
         }
-        if evidence != expected_evidence:
-            fail("EVIDENCE_SCHEMA_DRIFT", evidence_ref)
+    drift = load_canonical_json_bytes(
+        leaves["drift/drift-proof.json"], "drift-proof.json"
+    )
+    if drift != {
+        "kind": "drift-proof", "schema": SCHEMA, "state": "NOT_APPLICABLE",
+    }:
+        fail("INVALID_DRIFT_PROOF", "AUTHORIZED drift slot")
+    terminal_report = checked_report(
+        MemoryBlob("report.md", leaves["terminal/report.md"]), "terminal report"
+    )
+    expected_evidence = {
+        "assignment": file_record(
+            "assignment-attestation.json", leaves["assignment-attestation.json"]
+        ),
+        "attempt": package_result["attempt"],
+        "bundle_sha256": package_result["bundle_sha256"],
+        "closures": closure_records,
+        "drift": file_record("drift/drift-proof.json", leaves["drift/drift-proof.json"]),
+        "evidence_ref": evidence_ref,
+        "package_head": package_result["head"],
+        "package_sha256": package_result["package_sha256"],
+        "reviews": review_records,
+        "schema": SCHEMA,
+        "state": "AUTHORIZED",
+        "task": {
+            "after": file_record("task/task-after.md", live_task),
+            "candidate_to_after_patch": file_record(
+                "task/task-candidate-to-after.patch", expected_task_patch
+            ),
+        },
+        "terminal_report": file_record("terminal/report.md", terminal_report),
+    }
+    if evidence != expected_evidence:
+        fail("EVIDENCE_SCHEMA_DRIFT", evidence_ref)
     if args.require_clean_real_index:
         assert_clean_real_index(root)
     if args.require_task_only_worktree:
@@ -3072,6 +3168,7 @@ def verify_authorized(args: argparse.Namespace) -> None:
     print(
         canonical_json(
             {
+                "bundle_sha256": package_result["bundle_sha256"],
                 "evidence_commit": evidence_commit,
                 "evidence_ref": evidence_ref,
                 "state": "AUTHORIZED",
@@ -3079,7 +3176,6 @@ def verify_authorized(args: argparse.Namespace) -> None:
         ).decode(),
         end="",
     )
-
 
 def add_authority_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--require-live-head", action="store_true")
@@ -3092,20 +3188,19 @@ def make_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="mode", required=True)
     build = subparsers.add_parser("build-package")
     build.add_argument("--attempt", type=int, required=True)
-    build.add_argument("--output", required=True)
     build.add_argument("--spec", required=True)
     build.add_argument("--plan", required=True)
     build.add_argument("--task", required=True)
     add_authority_arguments(build)
     verify = subparsers.add_parser("verify-package")
-    verify.add_argument("--package", required=True)
+    verify.add_argument("--bundle", required=True)
     add_authority_arguments(verify)
     assignments = subparsers.add_parser("verify-assignments")
-    assignments.add_argument("--package", required=True)
+    assignments.add_argument("--bundle", required=True)
     assignments.add_argument("--attestation", required=True)
     add_authority_arguments(assignments)
     backfill = subparsers.add_parser("verify-backfill")
-    backfill.add_argument("--package", required=True)
+    backfill.add_argument("--bundle", required=True)
     backfill.add_argument("--migration-receipt", required=True)
     backfill.add_argument("--quality-receipt", required=True)
     backfill.add_argument("--assignment-attestation", required=True)
@@ -3115,7 +3210,7 @@ def make_parser() -> argparse.ArgumentParser:
     )
     add_authority_arguments(backfill)
     publish = subparsers.add_parser("publish-evidence-ref")
-    publish.add_argument("--package", required=True)
+    publish.add_argument("--bundle", required=True)
     publish.add_argument("--task", required=True)
     publish.add_argument(
         "--terminal-state", choices=("AUTHORIZED", "REJECTED", "INVALIDATED"), required=True
@@ -3135,8 +3230,8 @@ def make_parser() -> argparse.ArgumentParser:
     add_authority_arguments(publish)
     authorized = subparsers.add_parser("verify-authorized")
     package_source = authorized.add_mutually_exclusive_group(required=True)
-    package_source.add_argument("--package")
-    package_source.add_argument("--package-from-ref", action="store_true")
+    package_source.add_argument("--bundle")
+    package_source.add_argument("--bundle-from-ref", action="store_true")
     authorized.add_argument("--task", required=True)
     authorized.add_argument("--evidence-ref", required=True)
     add_authority_arguments(authorized)

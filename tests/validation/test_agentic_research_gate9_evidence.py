@@ -1,33 +1,54 @@
 from __future__ import annotations
 
+import ast
+import base64
 import hashlib
 import importlib.util
 import json
 import os
 import pathlib
 import re
+import secrets
 import shutil
 import stat
 import subprocess
 import sys
 import tempfile
 import unittest
+from collections.abc import Mapping
 from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 HELPER = ROOT / "scripts/validation/agentic-research-gate9-evidence.py"
 SCHEMA = "agentic-research-gate9/v1"
+BUNDLE_SCHEMA = "agentic-research-gate9-bundle/v1"
+BUILD_RECEIPT_SCHEMA = "agentic-research-gate9-build-receipt/v1"
 OLD_PACK = "docs/90.references/research/2026-07-05-agentic-research-pack-refresh"
 NEW_PACK = "docs/90.references/research/2026-08-08-agentic-engineering-research-pack"
 TASK = "docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md"
 SPEC = "docs/03.specs/137-agentic-research-pack-rebuild/spec.md"
 PLAN = "docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md"
 INDEX = "docs/90.references/llm-wiki/llm-wiki-index.md"
-COVERAGE = (
-    "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"
-)
+COVERAGE = "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"
 ROLES = ("migration-specification", "quality")
+PACKAGE_ATTACHMENTS = (
+    "HEAD.txt",
+    "SHA256SUMS",
+    "assignments.json",
+    "gate-results.json",
+    "llm-wiki-index.md",
+    "llm-wiki-stage-category-coverage.md",
+    "new-manifest.tsv",
+    "old-manifest.tsv",
+    "package.json",
+    "plan.md",
+    "proposed-deletion.patch",
+    "spec.md",
+    "task-before.md",
+    "task-before-to-candidate.patch",
+    "task-candidate.md",
+)
 AUTHORITY_MODES = {
     "build-package",
     "verify-package",
@@ -49,6 +70,52 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def logical_package_fixture() -> dict[str, bytes]:
+    payloads = {
+        name: f"fixture:{name}\n".encode()
+        for name in PACKAGE_ATTACHMENTS
+        if name != "SHA256SUMS"
+    }
+    payloads["SHA256SUMS"] = b"".join(
+        f"{sha256_bytes(payloads[name])}  {name}\n".encode()
+        for name in sorted(payloads)
+    )
+    return payloads
+
+
+def git(
+    root: pathlib.Path,
+    *args: str,
+    check: bool = True,
+    input_bytes: bytes | None = None,
+    env: Mapping[str, str] | None = None,
+) -> subprocess.CompletedProcess[bytes]:
+    command_env = os.environ.copy()
+    if env:
+        command_env.update(env)
+    return subprocess.run(
+        ["git", *args],
+        cwd=root,
+        env=command_env,
+        input=input_bytes,
+        capture_output=True,
+        check=check,
+    )
+
+
+def marker(payload: Mapping[str, object]) -> bytes:
+    return b"<!-- GATE9-EVIDENCE/v1\n" + canonical_json(payload) + b"-->"
+
+
+def parse_marker(value: bytes) -> dict[str, object]:
+    matched = re.search(
+        rb"<!-- GATE9-EVIDENCE/v1\n(?P<payload>\{[^\r\n]*\}\n)-->", value
+    )
+    if matched is None:
+        raise AssertionError("fixture Task marker is missing")
+    return json.loads(matched.group("payload"))
+
+
 def regular_file_snapshot(path: pathlib.Path) -> tuple[int, int, int, bytes]:
     metadata = path.lstat()
     return (
@@ -59,102 +126,128 @@ def regular_file_snapshot(path: pathlib.Path) -> tuple[int, int, int, bytes]:
     )
 
 
-def blob_oid(root: pathlib.Path, value: bytes) -> str:
-    return subprocess.run(
-        ["git", "hash-object", "--stdin"],
-        cwd=root,
-        input=value,
-        capture_output=True,
-        check=True,
-    ).stdout.decode().strip()
+def _mapping_tree(root: pathlib.Path, files: Mapping[str, bytes]) -> str:
+    trie: dict[bytes, object] = {}
+    for raw_path, value in files.items():
+        parts = [os.fsencode(part) for part in pathlib.PurePosixPath(raw_path).parts]
+        node = trie
+        for part in parts[:-1]:
+            child = node.setdefault(part, {})
+            if not isinstance(child, dict):
+                raise AssertionError("fixture prefix collision")
+            node = child
+        if parts[-1] in node:
+            raise AssertionError("fixture duplicate path")
+        blob = git(root, "hash-object", "-w", "--stdin", input_bytes=value).stdout.strip()
+        node[parts[-1]] = blob
 
+    def emit(node: dict[bytes, object]) -> bytes:
+        rows = bytearray()
+        for name in sorted(node):
+            value = node[name]
+            if isinstance(value, dict):
+                object_type = b"tree"
+                mode = b"040000"
+                oid = emit(value)
+            else:
+                object_type = b"blob"
+                mode = b"100644"
+                oid = value
+            rows.extend(mode + b" " + object_type + b" " + oid + b"\t" + name + b"\0")
+        return git(root, "mktree", "-z", input_bytes=bytes(rows)).stdout.strip()
 
-def marker(payload: dict[str, object]) -> str:
-    return (
-        "<!-- GATE9-EVIDENCE/v1\n"
-        + canonical_json(payload).decode()
-        + "-->"
-    )
-
-
-def git(root: pathlib.Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        ["git", *args],
-        cwd=root,
-        capture_output=True,
-        text=True,
-        check=check,
-    )
+    return emit(trie).decode("ascii")
 
 
 def task_transition_patch(root: pathlib.Path, before: bytes, after: bytes) -> bytes:
-    with tempfile.TemporaryDirectory(prefix="gate9-task-patch-") as temporary:
-        environment = os.environ.copy()
-        environment["GIT_INDEX_FILE"] = os.fspath(pathlib.Path(temporary) / "index")
+    before_tree = _mapping_tree(root, {TASK: before})
+    after_tree = _mapping_tree(root, {TASK: after})
+    return git(
+        root,
+        "diff-tree",
+        "-r",
+        "--no-commit-id",
+        "--binary",
+        "--full-index",
+        before_tree,
+        after_tree,
+        "--",
+        TASK,
+    ).stdout
 
-        def raw_git(*args: str, input_bytes: bytes | None = None) -> bytes:
-            return subprocess.run(
-                ["git", *args],
-                cwd=root,
-                env=environment,
-                input=input_bytes,
-                capture_output=True,
-                check=True,
-            ).stdout
 
-        raw_git("read-tree", "--empty")
-        before_oid = raw_git("hash-object", "-w", "--stdin", input_bytes=before).decode().strip()
-        raw_git("update-index", "--add", "--cacheinfo", "100644", before_oid, TASK)
-        before_tree = raw_git("write-tree").decode().strip()
-        after_oid = raw_git("hash-object", "-w", "--stdin", input_bytes=after).decode().strip()
-        raw_git("update-index", "--cacheinfo", "100644", after_oid, TASK)
-        return raw_git("diff", "--cached", "--binary", "--full-index", before_tree, "--", TASK)
+def load_helper(name: str = "gate9_evidence_test") -> object:
+    spec = importlib.util.spec_from_file_location(name, HELPER)
+    if spec is None or spec.loader is None:
+        raise AssertionError("Gate 9 helper module cannot be loaded")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 class Gate9Fixture:
     def __init__(self, root: pathlib.Path) -> None:
         self.root = root
+        self.bundle_paths: list[pathlib.Path] = []
         self.wrapper_dirs: list[pathlib.Path] = []
+        self.generator_log = pathlib.Path(
+            f"/tmp/gate9-generator-calls-{secrets.token_hex(16)}.log"
+        )
         git(root, "init", "--quiet")
         git(root, "config", "user.name", "Gate Nine Test")
         git(root, "config", "user.email", "gate9@example.invalid")
-        for ordinal in range(20):
+
+        self.write(f"{OLD_PACK}/README.md", "# retiring pack\n")
+        self.write(f"{OLD_PACK}/.gitattributes", "*.md diff=hostile\n")
+        for ordinal in range(18):
             self.write(f"{OLD_PACK}/file-{ordinal:02d}.md", f"old {ordinal}\n")
-            self.write(f"{NEW_PACK}/file-{ordinal:02d}.md", f"new {ordinal}\n")
-        self.write(SPEC, "# Spec\n")
-        self.write(PLAN, "# Plan\n")
+        self.write(f"{NEW_PACK}/README.md", "# canonical pack\n")
+        for ordinal in range(20):
+            self.write(f"{NEW_PACK}/leaf-{ordinal:02d}.md", f"new {ordinal}\n")
+        self.weird_siblings = (
+            "docs/90.references/research/sibling\tname.md",
+            "docs/90.references/research/sibling\nname.md",
+        )
+        for sibling in self.weird_siblings:
+            self.write(sibling, "preserved sibling\n")
+
+        requirements = "\n".join(
+            f"- REQ-{ordinal:02d}: fixture requirement {ordinal}"
+            for ordinal in range(1, 37)
+        )
+        self.write(SPEC, f"# Spec\n\n{requirements}\n")
+        self.write(PLAN, "# Plan\n\nApproved Step 0e fixture.\n")
         self.write(INDEX, "fixed index\n")
         self.write(COVERAGE, "fixed coverage\n")
-        self.write(
-            "scripts/knowledge/generate-llm-wiki-index.sh",
-            "#!/usr/bin/env bash\nset -eu\n"
-            + "if [[ ${1:-} == --stdout && $# == 1 ]]; then printf 'fixed index\\n'; "
-            + "elif [[ $# == 0 ]]; then printf 'fixed index\\n' > "
-            + INDEX
-            + "; else exit 2; fi\n",
-            executable=True,
+        self._write_generator(
+            "scripts/knowledge/generate-llm-wiki-index.sh", "fixed index\n", INDEX
         )
-        self.write(
+        self._write_generator(
             "scripts/knowledge/generate-llm-wiki-coverage.sh",
-            "#!/usr/bin/env bash\nset -eu\n"
-            + "if [[ ${1:-} == --stdout && $# == 1 ]]; then printf 'fixed coverage\\n'; "
-            + "elif [[ $# == 0 ]]; then printf 'fixed coverage\\n' > "
-            + COVERAGE
-            + "; else exit 2; fi\n",
-            executable=True,
+            "fixed coverage\n",
+            COVERAGE,
         )
         self.pending_payload: dict[str, object] = {
             "attempt": 1,
             "schema": SCHEMA,
             "state": "PACKAGE_REVIEW_PENDING",
         }
-        self.write(TASK, "# Task\n\n" + marker(self.pending_payload) + "\n")
+        self.write(
+            TASK,
+            "# Task\n\n"
+            + "36/36 requirements verified.\n\n"
+            + requirements
+            + "\n\n"
+            + marker(self.pending_payload).decode()
+            + "\n",
+        )
         helper_path = self.root / HELPER.relative_to(ROOT)
         helper_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(HELPER, helper_path)
         git(root, "add", ".")
         git(root, "commit", "--quiet", "-m", "fixture reviewed code")
-        self.reviewed_code_head = git(root, "rev-parse", "HEAD").stdout.strip()
+        self.reviewed_code_head = git(root, "rev-parse", "HEAD").stdout.decode().strip()
         task_path = root / TASK
         task_path.write_text(
             task_path.read_text(encoding="utf-8")
@@ -163,11 +256,39 @@ class Gate9Fixture:
         )
         git(root, "add", TASK)
         git(root, "commit", "--quiet", "-m", "fixture reviewed closure")
-        self.head = git(root, "rev-parse", "HEAD").stdout.strip()
+        self.head = git(root, "rev-parse", "HEAD").stdout.decode().strip()
         task_path.write_text(
             task_path.read_text(encoding="utf-8") + "\nCandidate gate results.\n",
             encoding="utf-8",
         )
+
+    def _write_generator(self, relative: str, output: str, tracked_output: str) -> None:
+        script = f"""#!/usr/bin/env bash
+set -euo pipefail
+mode=${{1:-}}
+if [[ -n ${{GATE9_LLM_MANIFEST_FD:-}} || -n ${{GATE9_LLM_MANIFEST_SIZE:-}} || -n ${{GATE9_LLM_MANIFEST_SHA256:-}} ]]; then
+  [[ $# -eq 1 && $mode == --stdout ]]
+  [[ -n ${{GATE9_LLM_MANIFEST_FD:-}} && -n ${{GATE9_LLM_MANIFEST_SIZE:-}} && -n ${{GATE9_LLM_MANIFEST_SHA256:-}} ]]
+  python3 - "$GATE9_LLM_MANIFEST_FD" "$GATE9_LLM_MANIFEST_SIZE" "$GATE9_LLM_MANIFEST_SHA256" <<'PY'
+import hashlib, os, sys
+fd, size, expected = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3]
+value = os.read(fd, size)
+assert len(value) == size and hashlib.sha256(value).hexdigest() == expected
+assert os.read(fd, 1) == b""
+PY
+  printf '%b' {json.dumps(output)}
+  printf x >> {json.dumps(os.fspath(self.generator_log))}
+elif [[ $# -eq 1 && $mode == --stdout ]]; then
+  printf '%b' {json.dumps(output)}
+elif [[ $# -eq 1 && $mode == --check ]]; then
+  cmp -s <(printf '%b' {json.dumps(output)}) {tracked_output}
+elif [[ $# -eq 0 ]]; then
+  printf '%b' {json.dumps(output)} > {tracked_output}
+else
+  exit 2
+fi
+"""
+        self.write(relative, script, executable=True)
 
     def write(self, relative: str, value: str, *, executable: bool = False) -> None:
         path = self.root / relative
@@ -179,16 +300,15 @@ class Gate9Fixture:
     def run(
         self,
         *args: str,
-        check: bool = False,
-        env: dict[str, str] | None = None,
+        env: Mapping[str, str] | None = None,
         bind_live: bool = True,
     ) -> subprocess.CompletedProcess[str]:
         command_env = os.environ.copy()
         if env:
             command_env.update(env)
-        command_args = list(args)
-        if bind_live and command_args and command_args[0] in AUTHORITY_MODES:
-            command_args[1:1] = [
+        command = list(args)
+        if bind_live and command and command[0] in AUTHORITY_MODES:
+            command[1:1] = [
                 "--require-live-head",
                 "--live-reviewed-head",
                 self.head,
@@ -196,21 +316,18 @@ class Gate9Fixture:
                 self.reviewed_code_head,
             ]
         return subprocess.run(
-            ["python3", os.fspath(HELPER), *command_args],
+            ["python3", os.fspath(HELPER), *command],
             cwd=self.root,
             env=command_env,
             capture_output=True,
             text=True,
-            check=check,
         )
 
-    def build(self, output: pathlib.Path) -> subprocess.CompletedProcess[str]:
+    def build_process(self, attempt: int = 1) -> subprocess.CompletedProcess[str]:
         return self.run(
             "build-package",
             "--attempt",
-            "1",
-            "--output",
-            os.fspath(output),
+            str(attempt),
             "--spec",
             SPEC,
             "--plan",
@@ -219,21 +336,109 @@ class Gate9Fixture:
             TASK,
         )
 
-    def repository_state(self) -> dict[str, object]:
-        protected_paths = (
-            *(f"{OLD_PACK}/file-{ordinal:02d}.md" for ordinal in range(20)),
-            INDEX,
-            COVERAGE,
+    def build(self, attempt: int = 1) -> dict[str, object]:
+        result = self.build_process(attempt)
+        if result.returncode != 0:
+            raise AssertionError(result.stderr)
+        receipt = json.loads(result.stdout)
+        path = pathlib.Path(receipt["bundle_path"])
+        self.bundle_paths.append(path)
+        return receipt
+
+    def read_bundle(self, bundle: pathlib.Path | Mapping[str, object]) -> dict[str, object]:
+        path = (
+            pathlib.Path(bundle["bundle_path"])
+            if isinstance(bundle, Mapping)
+            else bundle
         )
+        return json.loads(path.read_bytes())
+
+    def attachments(self, bundle: pathlib.Path | Mapping[str, object]) -> dict[str, bytes]:
+        document = self.read_bundle(bundle)
+        return {
+            record["path"]: base64.b64decode(record["base64"], validate=True)
+            for record in document["attachments"]
+        }
+
+    def write_bundle(self, document: Mapping[str, object]) -> pathlib.Path:
+        for _ in range(128):
+            path = pathlib.Path(
+                "/tmp/agentic-research-gate9-attempt-1-"
+                + secrets.token_hex(16)
+                + ".bundle.json"
+            )
+            try:
+                descriptor = os.open(
+                    path,
+                    os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                    0o600,
+                )
+            except FileExistsError:
+                continue
+            break
+        else:
+            raise AssertionError("fixture bundle allocation exhausted")
+        value = canonical_json(document)
+        try:
+            view = memoryview(value)
+            while view:
+                count = os.write(descriptor, view)
+                if count <= 0:
+                    raise AssertionError("fixture bundle short write")
+                view = view[count:]
+            os.fsync(descriptor)
+            os.fchmod(descriptor, 0o444)
+        finally:
+            os.close(descriptor)
+        self.bundle_paths.append(path)
+        return path
+
+    def canonical_bundle(self, attachments: Mapping[str, bytes]) -> tuple[bytes, str]:
+        package_sha256 = sha256_bytes(attachments["SHA256SUMS"])
+        document = {
+            "attachments": [
+                {
+                    "base64": base64.b64encode(attachments[path]).decode("ascii"),
+                    "bytes": len(attachments[path]),
+                    "mode": "0444",
+                    "path": path,
+                    "sha256": sha256_bytes(attachments[path]),
+                }
+                for path in sorted(attachments)
+            ],
+            "kind": "gate9-package-bundle",
+            "package_sha256": package_sha256,
+            "schema": BUNDLE_SCHEMA,
+        }
+        value = canonical_json(document)
+        return value, sha256_bytes(value)
+
+    def rewritten_bundle(
+        self,
+        original: Mapping[str, object],
+        attachments: Mapping[str, bytes],
+    ) -> tuple[pathlib.Path, dict[str, object]]:
+        value, digest = self.canonical_bundle(attachments)
+        document = json.loads(value)
+        path = self.write_bundle(document)
+        return path, {
+            "bundle_path": os.fspath(path),
+            "bundle_sha256": digest,
+            "package_sha256": document["package_sha256"],
+            "schema": BUILD_RECEIPT_SCHEMA,
+            "state": "BUILT",
+        }
+
+    def repository_state(self) -> dict[str, object]:
         return {
             "head": git(self.root, "rev-parse", "HEAD").stdout,
             "index": regular_file_snapshot(self.root / ".git/index"),
             "old_tree": git(
-                self.root, "ls-tree", "-r", "--full-tree", "HEAD", OLD_PACK
+                self.root, "ls-tree", "-r", "-z", "--full-tree", "HEAD", OLD_PACK
             ).stdout,
             "protected": {
                 path: regular_file_snapshot(self.root / path)
-                for path in protected_paths
+                for path in (*self.weird_siblings, INDEX, COVERAGE)
             },
             "refs": git(
                 self.root,
@@ -244,203 +449,17 @@ class Gate9Fixture:
             "worktrees": git(self.root, "worktree", "list", "--porcelain").stdout,
         }
 
-    def advance_reviewed_generator(self, relative: str, value: str) -> None:
-        task_path = self.root / TASK
-        committed_task = subprocess.run(
-            ["git", "show", f"HEAD:{TASK}"],
-            cwd=self.root,
-            capture_output=True,
-            check=True,
-        ).stdout
-        task_path.write_bytes(committed_task)
-        self.write(relative, value, executable=True)
-        git(self.root, "add", relative)
-        git(self.root, "commit", "--quiet", "-m", "fixture reviewed generator")
-        old_reviewed = self.reviewed_code_head
-        self.reviewed_code_head = git(
-            self.root, "rev-parse", "HEAD"
-        ).stdout.strip()
-        task_path.write_text(
-            task_path.read_text(encoding="utf-8").replace(
-                old_reviewed, self.reviewed_code_head
-            ),
-            encoding="utf-8",
-        )
-        git(self.root, "add", TASK)
-        git(self.root, "commit", "--quiet", "-m", "fixture reviewed closure")
-        self.head = git(self.root, "rev-parse", "HEAD").stdout.strip()
-        task_path.write_text(
-            task_path.read_text(encoding="utf-8") + "\nCandidate gate results.\n",
-            encoding="utf-8",
-        )
+    def generator_calls(self) -> int:
+        return len(self.generator_log.read_bytes()) if self.generator_log.exists() else 0
 
-    def authorize_package(
-        self, package: pathlib.Path
-    ) -> tuple[dict[str, pathlib.Path], str]:
-        materials = self.review_materials(package)
-        self.backfill_task(package, materials)
-        self.closure_materials(package, materials)
-        terminal = self.root / "evidence/terminal.md"
-        terminal.write_text("AUTHORIZED\n", encoding="utf-8")
-        published = self.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "AUTHORIZED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--migration-report",
-            os.fspath(materials["migration-specification-report"]),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-report",
-            os.fspath(materials["quality-report"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--migration-closure-report",
-            os.fspath(materials["migration-specification-closure-report"]),
-            "--migration-closure",
-            os.fspath(materials["migration-specification-closure"]),
-            "--quality-closure-report",
-            os.fspath(materials["quality-closure-report"]),
-            "--quality-closure",
-            os.fspath(materials["quality-closure"]),
-            "--evidence-ref",
-            "auto",
-        )
-        if published.returncode != 0:
-            raise AssertionError(published.stderr)
-        return materials, json.loads(published.stdout)["evidence_ref"]
-
-    def build_attempt_two(self, output: pathlib.Path) -> tuple[pathlib.Path, str]:
-        package_one = self.root / "attempt-one-package"
-        built = self.build(package_one)
-        assert built.returncode == 0, built.stderr
-        materials = self.review_materials(package_one)
-        terminal = self.root / "attempt-one-terminal.md"
-        terminal.write_text("INVALIDATED: fixture drift\n")
-        drift = self.write_json(
-            "attempt-one-drift.json",
-            {
-                "kind": "drift-proof",
-                "reason": "fixture drift",
-                "schema": SCHEMA,
-                "state": "INVALIDATED",
-            },
-        )
-        published = self.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package_one),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "INVALIDATED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--drift-proof",
-            os.fspath(drift),
-            "--evidence-ref",
-            "auto",
-        )
-        assert published.returncode == 0, published.stderr
-        evidence_ref = json.loads(published.stdout)["evidence_ref"]
-        evidence_tree = git(
-            self.root, "show", "-s", "--format=%T", evidence_ref
-        ).stdout.strip()
-        package_id = sha256_bytes((package_one / "SHA256SUMS").read_bytes())
-        attempt_two_marker = {
-            "attempt": 2,
-            "attempt_1": {
-                "evidence_ref": evidence_ref,
-                "evidence_tree": evidence_tree,
-                "package_sha256": package_id,
-                "reason": "fixture drift",
-                "terminal_state": "INVALIDATED",
-            },
-            "schema": SCHEMA,
-            "state": "ATTEMPT_2_PENDING",
-        }
-        task_path = self.root / TASK
-        task_path.write_bytes(
-            task_path.read_bytes().replace(
-                marker(self.pending_payload).encode(),
-                marker(attempt_two_marker).encode(),
-                1,
-            )
-        )
-        shutil.rmtree(package_one)
-        shutil.rmtree(self.root / "evidence")
-        terminal.unlink()
-        drift.unlink()
-        built_two = self.run(
-            "build-package",
-            "--attempt",
-            "2",
-            "--output",
-            os.fspath(output),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-        )
-        assert built_two.returncode == 0, built_two.stderr
-        return output, evidence_ref
-
-    def write_json(self, relative: str, value: object) -> pathlib.Path:
-        path = self.root / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(canonical_json(value))
-        return path
-
-    def reseal_package(self, package: pathlib.Path) -> None:
-        (package / "package.json").chmod(0o644)
-        (package / "SHA256SUMS").chmod(0o644)
-        package_document = json.loads((package / "package.json").read_text())
-        package_document["attachments"] = [
-            {
-                "bytes": len((package / name).read_bytes()),
-                "path": name,
-                "sha256": sha256_bytes((package / name).read_bytes()),
-            }
-            for name in sorted(
-                set(path.name for path in package.iterdir())
-                - {"SHA256SUMS", "package.json"}
-            )
-        ]
-        (package / "package.json").write_bytes(canonical_json(package_document))
-        checksum_paths = sorted(
-            set(path.name for path in package.iterdir()) - {"SHA256SUMS"}
-        )
-        (package / "SHA256SUMS").write_bytes(
-            b"".join(
-                f"{sha256_bytes((package / name).read_bytes())}  {name}\n".encode()
-                for name in checksum_paths
-            )
-        )
-        for path in package.iterdir():
-            path.chmod(0o444)
-
-    def git_wrapper(
-        self,
-        name: str,
-        body: str,
-    ) -> dict[str, str]:
-        bin_dir = pathlib.Path(tempfile.mkdtemp(prefix=f"gate9-wrapper-{name}-"))
-        self.wrapper_dirs.append(bin_dir)
-        wrapper = bin_dir / "git"
-        marker_path = bin_dir / "executed"
+    def git_wrapper(self, name: str, body: str) -> dict[str, str]:
+        directory = pathlib.Path(tempfile.mkdtemp(prefix=f"gate9-git-{name}-"))
+        self.wrapper_dirs.append(directory)
+        wrapper = directory / "git"
+        marker_path = directory / "executed"
         real_git = shutil.which("git")
-        assert real_git is not None
+        if real_git is None:
+            raise AssertionError("git is unavailable")
         wrapper.write_text(
             "#!/usr/bin/env bash\nset -eu\nREAL_GIT="
             + json.dumps(real_git)
@@ -451,16 +470,20 @@ class Gate9Fixture:
         wrapper.chmod(0o755)
         return {
             "GATE9_WRAPPER_MARKER": os.fspath(marker_path),
-            "PATH": os.fspath(bin_dir) + os.pathsep + os.environ["PATH"],
+            "PATH": os.fspath(directory) + os.pathsep + os.environ["PATH"],
         }
 
-    def cleanup(self) -> None:
-        for path in self.wrapper_dirs:
-            shutil.rmtree(path, ignore_errors=True)
+    def write_json(self, relative: str, value: object) -> pathlib.Path:
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(canonical_json(value))
+        return path
 
-    def review_materials(self, package: pathlib.Path) -> dict[str, pathlib.Path]:
-        package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
-        assignments = json.loads((package / "assignments.json").read_text())
+    def review_materials(
+        self, receipt: Mapping[str, object]
+    ) -> dict[str, pathlib.Path]:
+        attachments = self.attachments(receipt)
+        assignments = json.loads(attachments["assignments.json"])
         identities = {
             "migration-specification": ("agent-migration", "/root/gate9-migration"),
             "quality": ("agent-quality", "/root/gate9-quality"),
@@ -476,28 +499,36 @@ class Gate9Fixture:
                 for row in assignments["assignments"]
             ],
             "attempt": assignments["attempt"],
+            "bundle_sha256": receipt["bundle_sha256"],
             "controller_task": "/root",
             "kind": "assignment-attestation",
             "package_head": self.head,
-            "package_sha256": package_id,
+            "package_sha256": receipt["package_sha256"],
             "schema": SCHEMA,
             "source": "collaboration.spawn_agent/result",
         }
         materials: dict[str, pathlib.Path] = {}
-        materials["attestation"] = self.write_json("evidence/assignment.json", attestation)
+        materials["attestation"] = self.write_json(
+            "evidence/assignment.json", attestation
+        )
         attestation_hash = sha256_bytes(materials["attestation"].read_bytes())
         for role in ROLES:
             report = self.root / f"evidence/{role}-report.md"
-            report.write_text(f"# {role} review\n\nApproved C0/I0/M0.\n", encoding="utf-8")
-            identity = next(row for row in attestation["assignments"] if row["role"] == role)
-            receipt = {
+            report.write_text(
+                f"# {role} review\n\nApproved C0/I0/M0.\n", encoding="utf-8"
+            )
+            identity = next(
+                row for row in attestation["assignments"] if row["role"] == role
+            )
+            review_receipt = {
                 "agent_id": identity["agent_id"],
                 "assignment_attestation_sha256": attestation_hash,
                 "attempt": assignments["attempt"],
+                "bundle_sha256": receipt["bundle_sha256"],
                 "findings": {"critical": 0, "important": 0, "minor": 0},
                 "kind": "package-review-receipt",
                 "package_head": self.head,
-                "package_sha256": package_id,
+                "package_sha256": receipt["package_sha256"],
                 "report": {
                     "bytes": len(report.read_bytes()),
                     "sha256": sha256_bytes(report.read_bytes()),
@@ -510,77 +541,79 @@ class Gate9Fixture:
             }
             materials[f"{role}-report"] = report
             materials[f"{role}-receipt"] = self.write_json(
-                f"evidence/{role}-receipt.json", receipt
+                f"evidence/{role}-receipt.json", review_receipt
             )
         return materials
 
     def backfill_task(
-        self, package: pathlib.Path, materials: dict[str, pathlib.Path]
+        self,
+        receipt: Mapping[str, object],
+        materials: Mapping[str, pathlib.Path],
     ) -> bytes:
-        candidate = (package / "task-candidate.md").read_bytes()
-        package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
-        candidate_match = re.search(
-            rb"<!-- GATE9-EVIDENCE/v1\n(?P<payload>\{[^\r\n]*\}\n)-->",
-            candidate,
-        )
-        assert candidate_match is not None
-        candidate_marker = json.loads(candidate_match.group("payload"))
+        attachments = self.attachments(receipt)
+        candidate = attachments["task-candidate.md"]
+        candidate_marker = parse_marker(candidate)
         attempt = candidate_marker["attempt"]
-        review_records: dict[str, object] = {}
+        reviews: dict[str, object] = {}
         for role in ROLES:
-            receipt_path = materials[f"{role}-receipt"]
-            receipt = json.loads(receipt_path.read_text())
-            review_records[role] = {
-                "agent_id": receipt["agent_id"],
-                "assignment_attestation_sha256": receipt[
+            path = materials[f"{role}-receipt"]
+            value = json.loads(path.read_bytes())
+            reviews[role] = {
+                "agent_id": value["agent_id"],
+                "assignment_attestation_sha256": value[
                     "assignment_attestation_sha256"
                 ],
-                "findings": receipt["findings"],
-                "receipt_sha256": sha256_bytes(receipt_path.read_bytes()),
+                "findings": value["findings"],
+                "receipt_sha256": sha256_bytes(path.read_bytes()),
                 "role": role,
-                "run_id": receipt["run_id"],
-                "task_path": receipt["task_path"],
-                "verdict": receipt["verdict"],
+                "run_id": value["run_id"],
+                "task_path": value["task_path"],
+                "verdict": value["verdict"],
             }
         payload = {
             "actual_committed_deletion_review": "Not Run",
             "actual_staged_deletion_review": "Not Run",
             "attempt": attempt,
+            "bundle_sha256": receipt["bundle_sha256"],
             "evidence_ref": (
                 "refs/codex/review-evidence/agentic-research/gate9/v1/"
-                f"attempt-{attempt}/{package_id}"
+                f"attempt-{attempt}/{receipt['package_sha256']}"
             ),
-            "new_manifest_sha256": sha256_bytes((package / "new-manifest.tsv").read_bytes()),
-            "old_manifest_sha256": sha256_bytes((package / "old-manifest.tsv").read_bytes()),
-            "package_sha256": package_id,
+            "new_manifest_sha256": sha256_bytes(attachments["new-manifest.tsv"]),
+            "old_manifest_sha256": sha256_bytes(attachments["old-manifest.tsv"]),
+            "package_sha256": receipt["package_sha256"],
             "proposed_deletion_patch_sha256": sha256_bytes(
-                (package / "proposed-deletion.patch").read_bytes()
+                attachments["proposed-deletion.patch"]
             ),
             "recovery_head": self.head,
-            "reviews": review_records,
+            "reviews": reviews,
             "schema": SCHEMA,
             "state": "TASK_BACKFILLED",
         }
-        updated = candidate.replace(
-            marker(candidate_marker).encode(), marker(payload).encode(), 1
-        )
+        updated = candidate.replace(marker(candidate_marker), marker(payload), 1)
         (self.root / TASK).write_bytes(updated)
         return updated
 
     def closure_materials(
-        self, package: pathlib.Path, materials: dict[str, pathlib.Path]
+        self,
+        receipt: Mapping[str, object],
+        materials: dict[str, pathlib.Path],
     ) -> None:
-        candidate = (package / "task-candidate.md").read_bytes()
+        candidate = self.attachments(receipt)["task-candidate.md"]
         task_after = (self.root / TASK).read_bytes()
         task_diff = task_transition_patch(self.root, candidate, task_after)
-        tuple_record = {
+        task_tuple = {
             "after": {
-                "blob_oid": blob_oid(self.root, task_after),
+                "blob_oid": git(
+                    self.root, "hash-object", "--stdin", input_bytes=task_after
+                ).stdout.decode().strip(),
                 "bytes": len(task_after),
                 "sha256": sha256_bytes(task_after),
             },
             "before": {
-                "blob_oid": blob_oid(self.root, candidate),
+                "blob_oid": git(
+                    self.root, "hash-object", "--stdin", input_bytes=candidate
+                ).stdout.decode().strip(),
                 "bytes": len(candidate),
                 "sha256": sha256_bytes(candidate),
             },
@@ -589,34 +622,169 @@ class Gate9Fixture:
         attestation_hash = sha256_bytes(materials["attestation"].read_bytes())
         for role in ROLES:
             report = self.root / f"evidence/{role}-closure-report.md"
-            report.write_text(f"# {role} closure\n\nMarker matches; non-marker unchanged.\n")
-            receipt_path = materials[f"{role}-receipt"]
-            receipt = json.loads(receipt_path.read_text())
+            report.write_text(
+                f"# {role} closure\n\nMarker matches; non-marker unchanged.\n",
+                encoding="utf-8",
+            )
+            review_path = materials[f"{role}-receipt"]
+            review = json.loads(review_path.read_bytes())
             closure = {
-                "agent_id": receipt["agent_id"],
+                "agent_id": review["agent_id"],
                 "assignment_attestation_sha256": attestation_hash,
-                "attempt": receipt["attempt"],
+                "attempt": review["attempt"],
+                "bundle_sha256": receipt["bundle_sha256"],
                 "findings": {"critical": 0, "important": 0, "minor": 0},
                 "kind": "closure",
                 "marker_match": True,
                 "non_marker_unchanged": True,
-                "package_receipt_sha256": sha256_bytes(receipt_path.read_bytes()),
+                "package_receipt_sha256": sha256_bytes(review_path.read_bytes()),
                 "package_sha256": receipt["package_sha256"],
                 "report": {
                     "bytes": len(report.read_bytes()),
                     "sha256": sha256_bytes(report.read_bytes()),
                 },
                 "role": role,
-                "run_id": receipt["run_id"],
+                "run_id": review["run_id"],
                 "schema": SCHEMA,
-                "task": tuple_record,
-                "task_path": receipt["task_path"],
+                "task": task_tuple,
+                "task_path": review["task_path"],
                 "verdict": "Approved",
             }
             materials[f"{role}-closure-report"] = report
             materials[f"{role}-closure"] = self.write_json(
                 f"evidence/{role}-closure.json", closure
             )
+
+    def publish(
+        self,
+        receipt: Mapping[str, object],
+        materials: Mapping[str, pathlib.Path],
+        *,
+        state: str = "AUTHORIZED",
+        drift_proof: pathlib.Path | None = None,
+        env: Mapping[str, str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        terminal = self.root / "evidence/terminal.md"
+        terminal_text = f"{state}\n"
+        if state == "REJECTED":
+            terminal_text = "REJECTED: package-review-rejected\n"
+        elif state == "INVALIDATED":
+            if drift_proof is None:
+                raise AssertionError("INVALIDATED fixture requires drift proof")
+            reason = json.loads(drift_proof.read_bytes())["reason"]
+            terminal_text = f"INVALIDATED: {reason}\n"
+        terminal.write_text(terminal_text, encoding="utf-8")
+        arguments = [
+            "publish-evidence-ref",
+            "--bundle",
+            os.fspath(receipt["bundle_path"]),
+            "--task",
+            TASK,
+            "--terminal-state",
+            state,
+            "--terminal-report",
+            os.fspath(terminal),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--evidence-ref",
+            "auto",
+        ]
+        if state in {"AUTHORIZED", "REJECTED"}:
+            for role, cli_role in (
+                ("migration-specification", "migration"),
+                ("quality", "quality"),
+            ):
+                arguments.extend(
+                    [
+                        f"--{cli_role}-report",
+                        os.fspath(materials[f"{role}-report"]),
+                        f"--{cli_role}-receipt",
+                        os.fspath(materials[f"{role}-receipt"]),
+                    ]
+                )
+                if state == "AUTHORIZED":
+                    arguments.extend(
+                        [
+                            f"--{cli_role}-closure-report",
+                            os.fspath(materials[f"{role}-closure-report"]),
+                            f"--{cli_role}-closure",
+                            os.fspath(materials[f"{role}-closure"]),
+                        ]
+                    )
+        elif state == "INVALIDATED":
+            if drift_proof is None:
+                raise AssertionError("INVALIDATED fixture requires drift proof")
+            arguments.extend(["--drift-proof", os.fspath(drift_proof)])
+        return self.run(*arguments, env=env)
+
+    def authorize(
+        self, receipt: Mapping[str, object]
+    ) -> tuple[dict[str, pathlib.Path], str]:
+        materials = self.review_materials(receipt)
+        self.backfill_task(receipt, materials)
+        self.closure_materials(receipt, materials)
+        published = self.publish(receipt, materials)
+        if published.returncode != 0:
+            raise AssertionError(published.stderr)
+        evidence_ref = json.loads(published.stdout)["evidence_ref"]
+        self.hide_control_files()
+        return materials, evidence_ref
+
+    def build_attempt_two(self) -> tuple[dict[str, object], str]:
+        first = self.build(1)
+        materials = self.review_materials(first)
+        drift = self.write_json(
+            "evidence/attempt-one-drift.json",
+            {
+                "kind": "drift-proof",
+                "reason": "fixture drift",
+                "schema": SCHEMA,
+                "state": "INVALIDATED",
+            },
+        )
+        published = self.publish(first, materials, state="INVALIDATED", drift_proof=drift)
+        if published.returncode != 0:
+            raise AssertionError(published.stderr)
+        evidence = json.loads(published.stdout)
+        evidence_ref = evidence["evidence_ref"]
+        evidence_tree = git(
+            self.root, "show", "-s", "--format=%T", evidence_ref
+        ).stdout.decode().strip()
+        attempt_two = {
+            "attempt": 2,
+            "attempt_1": {
+                "bundle_sha256": first["bundle_sha256"],
+                "evidence_ref": evidence_ref,
+                "evidence_tree": evidence_tree,
+                "package_sha256": first["package_sha256"],
+                "reason": "fixture drift",
+                "terminal_state": "INVALIDATED",
+            },
+            "schema": SCHEMA,
+            "state": "ATTEMPT_2_PENDING",
+        }
+        task_path = self.root / TASK
+        task_path.write_bytes(
+            task_path.read_bytes().replace(
+                marker(self.pending_payload), marker(attempt_two), 1
+            )
+        )
+        self.hide_control_files()
+        return self.build(2), evidence_ref
+
+    def hide_control_files(self) -> None:
+        shutil.rmtree(self.root / "evidence", ignore_errors=True)
+
+    def cleanup(self) -> None:
+        for path in self.bundle_paths:
+            try:
+                path.chmod(0o600)
+                path.unlink(missing_ok=True)
+            except OSError:
+                pass
+        self.generator_log.unlink(missing_ok=True)
+        for path in self.wrapper_dirs:
+            shutil.rmtree(path, ignore_errors=True)
 
 
 class AgenticResearchGate9EvidenceTests(unittest.TestCase):
@@ -631,154 +799,34 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         self.fixture.cleanup()
         self.temporary.cleanup()
 
-    def test_build_and_verify_canonical_package_without_repository_mutation(self) -> None:
-        before_head = git(self.root, "rev-parse", "HEAD").stdout
-        before_index = git(self.root, "diff", "--cached", "--binary").stdout
-        before_index_bytes = (self.root / ".git/index").read_bytes()
-        before_old = git(self.root, "ls-tree", "-r", "--name-only", "HEAD", OLD_PACK).stdout
-        protected_paths = (
-            *(f"{OLD_PACK}/file-{ordinal:02d}.md" for ordinal in range(20)),
-            INDEX,
-            COVERAGE,
+    def verify_bundle(self, receipt: Mapping[str, object]) -> subprocess.CompletedProcess[str]:
+        return self.fixture.run(
+            "verify-package", "--bundle", os.fspath(receipt["bundle_path"])
         )
-        before_protected = {
-            path: regular_file_snapshot(self.root / path) for path in protected_paths
-        }
-        package = self.root / "outside-package"
 
-        built = self.fixture.build(package)
-        self.assertEqual(0, built.returncode, built.stderr)
-        verified = self.fixture.run(
-            "verify-package", "--package", os.fspath(package), "--require-live-head"
-        )
-        self.assertEqual(0, verified.returncode, verified.stderr)
-
-        self.assertEqual(before_head, git(self.root, "rev-parse", "HEAD").stdout)
-        self.assertEqual(before_index, git(self.root, "diff", "--cached", "--binary").stdout)
-        self.assertEqual(before_index_bytes, (self.root / ".git/index").read_bytes())
-        self.assertEqual(
-            before_old,
-            git(self.root, "ls-tree", "-r", "--name-only", "HEAD", OLD_PACK).stdout,
-        )
-        self.assertEqual(
-            before_protected,
-            {
-                path: regular_file_snapshot(self.root / path)
-                for path in protected_paths
-            },
-        )
-        self.assertEqual(
-            {
-                "HEAD.txt",
-                "SHA256SUMS",
-                "assignments.json",
-                "gate-results.json",
-                "llm-wiki-index.md",
-                "llm-wiki-stage-category-coverage.md",
-                "new-manifest.tsv",
-                "old-manifest.tsv",
-                "package.json",
-                "plan.md",
-                "proposed-deletion.patch",
-                "spec.md",
-                "task-before.md",
-                "task-before-to-candidate.patch",
-                "task-candidate.md",
-            },
-            {path.name for path in package.iterdir()},
-        )
-        for attachment in package.iterdir():
-            self.assertEqual(0, attachment.stat().st_mode & 0o222, attachment.name)
-
-    def test_package_verification_rejects_stale_head_and_byte_or_mode_drift(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        self.fixture.write("advance.txt", "advance\n")
-        git(self.root, "add", "advance.txt")
-        git(self.root, "commit", "--quiet", "-m", "advance")
-        stale = self.fixture.run(
-            "verify-package", "--package", os.fspath(package), "--require-live-head"
-        )
-        self.assertNotEqual(0, stale.returncode)
-        self.assertIn("UNTRUSTED_PACKAGE_HEAD", stale.stderr)
-
-        shutil.rmtree(package)
-        self.fixture.head = git(self.root, "rev-parse", "HEAD").stdout.strip()
-        fresh_package = self.root / "fresh-package"
-        fresh = self.fixture.build(fresh_package)
-        self.assertEqual(0, fresh.returncode, fresh.stderr)
-        attachment = fresh_package / "spec.md"
-        attachment.chmod(0o644)
-        attachment.write_text("drift\n", encoding="utf-8")
-        drift = self.fixture.run(
-            "verify-package", "--package", os.fspath(fresh_package)
-        )
-        self.assertNotEqual(0, drift.returncode)
-        self.assertRegex(drift.stderr, "(CHECKSUM_DRIFT|ATTACHMENT_MODE_DRIFT)")
-
-    def test_package_verification_rejects_noncanonical_json_and_unsorted_checksums(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-
-        assignments = package / "assignments.json"
-        assignments.chmod(0o644)
-        parsed = json.loads(assignments.read_text(encoding="utf-8"))
-        assignments.write_text(json.dumps(parsed, indent=2) + "\n", encoding="utf-8")
-        assignments.chmod(0o444)
-        result = self.fixture.run("verify-package", "--package", os.fspath(package))
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("NON_CANONICAL_JSON", result.stderr)
-
-        shutil.rmtree(package)
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        sums = package / "SHA256SUMS"
-        sums.chmod(0o644)
-        lines = sums.read_text(encoding="utf-8").splitlines(keepends=True)
-        sums.write_text("".join(reversed(lines)), encoding="utf-8")
-        sums.chmod(0o444)
-        result = self.fixture.run("verify-package", "--package", os.fspath(package))
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("UNSORTED_ATTACHMENTS", result.stderr)
-
-    def test_build_rejects_dirty_real_index(self) -> None:
-        git(self.root, "add", TASK)
-        result = self.fixture.build(self.root / "package")
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("DIRTY_REAL_INDEX", result.stderr)
-
-    def test_build_rejects_third_attempt(self) -> None:
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "3",
-            "--output",
-            os.fspath(self.root / "package"),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("THIRD_ATTEMPT", result.stderr)
-
-    def test_assignment_and_backfill_validation_reject_identity_or_finding_drift(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        valid_assignment = self.fixture.run(
+    def verify_assignments(
+        self,
+        receipt: Mapping[str, object],
+        materials: Mapping[str, pathlib.Path],
+    ) -> subprocess.CompletedProcess[str]:
+        return self.fixture.run(
             "verify-assignments",
-            "--package",
-            os.fspath(package),
+            "--bundle",
+            os.fspath(receipt["bundle_path"]),
             "--attestation",
             os.fspath(materials["attestation"]),
         )
-        self.assertEqual(0, valid_assignment.returncode, valid_assignment.stderr)
-        valid_review = self.fixture.run(
+
+    def verify_backfill(
+        self,
+        receipt: Mapping[str, object],
+        materials: Mapping[str, pathlib.Path],
+        state: str,
+    ) -> subprocess.CompletedProcess[str]:
+        return self.fixture.run(
             "verify-backfill",
-            "--package",
-            os.fspath(package),
+            "--bundle",
+            os.fspath(receipt["bundle_path"]),
             "--migration-receipt",
             os.fspath(materials["migration-specification-receipt"]),
             "--quality-receipt",
@@ -788,343 +836,793 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             "--task",
             TASK,
             "--expect-state",
-            "PACKAGE_REVIEWED",
+            state,
         )
-        self.assertEqual(0, valid_review.returncode, valid_review.stderr)
 
-        attestation = json.loads(materials["attestation"].read_text())
-        attestation["assignments"][1]["agent_id"] = attestation["assignments"][0]["agent_id"]
-        materials["attestation"].write_bytes(canonical_json(attestation))
-        duplicate = self.fixture.run(
-            "verify-assignments",
-            "--package",
-            os.fspath(package),
-            "--attestation",
-            os.fspath(materials["attestation"]),
+    def verify_authorized(
+        self,
+        evidence_ref: str,
+        *,
+        receipt: Mapping[str, object] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        source = (
+            ["--bundle", os.fspath(receipt["bundle_path"])]
+            if receipt is not None
+            else ["--bundle-from-ref"]
         )
-        self.assertNotEqual(0, duplicate.returncode)
-        self.assertIn("IDENTITY_COLLISION", duplicate.stderr)
-
-        materials = self.fixture.review_materials(package)
-        receipt_path = materials["quality-receipt"]
-        receipt = json.loads(receipt_path.read_text())
-        receipt["findings"]["important"] = 1
-        receipt_path.write_bytes(canonical_json(receipt))
-        finding = self.fixture.run(
-            "verify-backfill",
-            "--package",
-            os.fspath(package),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-receipt",
-            os.fspath(receipt_path),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--task",
-            TASK,
-            "--expect-state",
-            "PACKAGE_REVIEWED",
-        )
-        self.assertNotEqual(0, finding.returncode)
-        self.assertIn("LOAD_BEARING_FINDING", finding.stderr)
-
-    def test_task_backfill_accepts_marker_only_transition_and_rejects_other_edits(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        self.fixture.backfill_task(package, materials)
-        valid = self.fixture.run(
-            "verify-backfill",
-            "--package",
-            os.fspath(package),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--task",
-            TASK,
-            "--expect-state",
-            "TASK_BACKFILLED",
-        )
-        self.assertEqual(0, valid.returncode, valid.stderr)
-        with (self.root / TASK).open("ab") as stream:
-            stream.write(b"outside marker drift\n")
-        invalid = self.fixture.run(
-            "verify-backfill",
-            "--package",
-            os.fspath(package),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--task",
-            TASK,
-            "--expect-state",
-            "TASK_BACKFILLED",
-        )
-        self.assertNotEqual(0, invalid.returncode)
-        self.assertIn("TASK_OUTSIDE_MARKER_DRIFT", invalid.stderr)
-
-    def test_authorized_publication_is_create_only_idempotent_and_ref_replayable(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        self.fixture.backfill_task(package, materials)
-        self.fixture.closure_materials(package, materials)
-        terminal = self.root / "evidence/terminal.md"
-        terminal.write_text("AUTHORIZED\n", encoding="utf-8")
-        publish_args = [
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "AUTHORIZED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--migration-report",
-            os.fspath(materials["migration-specification-report"]),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-report",
-            os.fspath(materials["quality-report"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--migration-closure-report",
-            os.fspath(materials["migration-specification-closure-report"]),
-            "--migration-closure",
-            os.fspath(materials["migration-specification-closure"]),
-            "--quality-closure-report",
-            os.fspath(materials["quality-closure-report"]),
-            "--quality-closure",
-            os.fspath(materials["quality-closure"]),
-            "--evidence-ref",
-            "auto",
-        ]
-        first = self.fixture.run(*publish_args)
-        self.assertEqual(0, first.returncode, first.stderr)
-        first_ref_value = git(
-            self.root,
-            "rev-parse",
-            json.loads(first.stdout)["evidence_ref"],
-        ).stdout.strip()
-        retry = self.fixture.run(*publish_args)
-        self.assertEqual(0, retry.returncode, retry.stderr)
-        self.assertEqual(first_ref_value, json.loads(retry.stdout)["evidence_commit"])
-
-        shutil.rmtree(package)
-        shutil.rmtree(self.root / "evidence")
-        from_ref = self.fixture.run(
+        return self.fixture.run(
             "verify-authorized",
-            "--package-from-ref",
+            *source,
             "--task",
             TASK,
             "--evidence-ref",
-            "auto",
-            "--require-live-head",
+            evidence_ref,
             "--require-clean-real-index",
             "--require-task-only-worktree",
         )
-        self.assertEqual(0, from_ref.returncode, from_ref.stderr)
-        self.assertEqual("AUTHORIZED", json.loads(from_ref.stdout)["state"])
+
+    def assert_fails(
+        self, result: subprocess.CompletedProcess[str], code: str
+    ) -> None:
+        self.assertNotEqual(0, result.returncode, result.stdout)
+        self.assertIn(code, result.stderr)
+
+    def test_helper_has_no_scratch_index_directory_or_forbidden_git_verbs(
+        self,
+    ) -> None:
+        source = HELPER.read_text(encoding="utf-8")
+        syntax = ast.parse(source)
+        guarded_functions = {
+            node.name: ast.get_source_segment(source, node)
+            for node in syntax.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name in {"tree_manifest", "tracked_blob_oid", "read_ref_leaves"}
+        }
+        self.assertEqual(
+            {"tree_manifest", "tracked_blob_oid", "read_ref_leaves"},
+            set(guarded_functions),
+        )
+        for function_source in guarded_functions.values():
+            self.assertIsNotNone(function_source)
+            self.assertIn('"-z"', function_source)
+        ref_source = guarded_functions["read_ref_leaves"]
+        assert ref_source is not None
+        self.assertIn('["cat-file", "blob",', ref_source)
+        self.assertNotIn('"show"', ref_source)
+        self.assertNotIn(".splitlines(", ref_source)
+        self.assertNotIn("open(", ref_source)
+        self.assertLess(
+            ref_source.index("if path in leaves:"),
+            ref_source.index("leaves[path] = blob.stdout"),
+        )
+        forbidden = (
+            "PinnedScratch",
+            "ScratchOwnership",
+            "GIT_INDEX_FILE",
+            '"read-tree"',
+            '"update-index"',
+            '"write-tree"',
+            "TemporaryDirectory",
+            "mkdtemp",
+            "os.mkdir",
+            "os.rmdir",
+            "os.unlink",
+            "shutil.rmtree",
+            '"worktree", "add"',
+            '"worktree", "remove"',
+            '"worktree", "prune"',
+        )
+        self.assertEqual([], [token for token in forbidden if token in source])
+        self.assertNotIn('"0" * 40', source)
+        self.assertIn('"0" * width', source)
+        self.assertIn("width = object_format_width(root)", source)
+        before = self.fixture.repository_state()
+        receipt = self.fixture.build()
+        self.assertEqual(before, self.fixture.repository_state())
+        self.assertRegex(
+            os.fspath(receipt["bundle_path"]),
+            r"^/tmp/agentic-research-gate9-attempt-1-[0-9a-f]{32}\.bundle\.json$",
+        )
+
+    def test_projected_tree_removes_exact_subtree_and_preserves_raw_siblings(
+        self,
+    ) -> None:
+        module = load_helper("gate9_project_root")
+        before = self.fixture.repository_state()
+        with mock.patch.object(module, "run_git", wraps=module.run_git) as observed_git:
+            projection = module.project_root_tree(self.root, self.fixture.head)
+        mktree_calls = [
+            call
+            for call in observed_git.call_args_list
+            if len(call.args) > 1 and call.args[1] == ["mktree", "-z"]
+        ]
+        self.assertEqual(4, len(mktree_calls))
+        patch = projection.proposed_deletion_patch
+        self.assertEqual(20, patch.count(b"deleted file mode 100644"))
+        self.assertEqual(20, len(projection.old_paths))
+        for ordinal in range(18):
+            self.assertIn(f"{OLD_PACK}/file-{ordinal:02d}.md".encode(), patch)
+        self.assertIn(f"{OLD_PACK}/README.md".encode(), patch)
+        self.assertIn(f"{OLD_PACK}/.gitattributes".encode(), patch)
+        for sibling in self.fixture.weird_siblings:
+            self.assertNotIn(os.fsencode(sibling), patch)
+            initial = git(
+                self.root,
+                "ls-tree",
+                "-z",
+                "--full-tree",
+                projection.initial_tree_oid,
+                "--",
+                sibling,
+            ).stdout
+            projected = git(
+                self.root,
+                "ls-tree",
+                "-z",
+                "--full-tree",
+                projection.final_tree_oid,
+                "--",
+                sibling,
+            ).stdout
+            self.assertEqual(initial, projected)
+        self.assertEqual(
+            b"",
+            git(
+                self.root,
+                "ls-tree",
+                "-r",
+                "-z",
+                "--full-tree",
+                projection.final_tree_oid,
+                "--",
+                OLD_PACK,
+            ).stdout,
+        )
+        self.assertEqual(before, self.fixture.repository_state())
+
+    def test_projected_tree_rejects_malformed_nul_paths_types_and_object_width(
+        self,
+    ) -> None:
+        module = load_helper("gate9_raw_tree_parser")
+        parser = getattr(module, "parse_raw_tree_records")
+        width = len(self.fixture.head)
+        oid = b"a" * width
+        valid = b"100644 blob " + oid + b"\tsafe\nname\0"
+        records = parser(valid, width)
+        self.assertEqual(1, len(records))
+        git_ordered = b"".join(
+            (
+                b"100644 blob " + oid + b"\tfoo.bar\0",
+                b"040000 tree " + oid + b"\tfoo\0",
+                b"100644 blob " + oid + b"\tfoo0\0",
+            )
+        )
+        ordered = parser(git_ordered, width)
+        self.assertEqual([b"foo.bar", b"foo", b"foo0"], [row.name for row in ordered])
+        invalid = {
+            "unterminated": valid[:-1],
+            "slash": valid.replace(b"safe\nname", b"unsafe/name"),
+            "dot": valid.replace(b"safe\nname", b".."),
+            "width": valid.replace(oid, b"a" * (width - 1)),
+            "type": valid.replace(b"100644 blob", b"100644 tree"),
+            "duplicate": valid + valid,
+            "plain-name-order": b"".join(
+                (
+                    b"040000 tree " + oid + b"\tfoo\0",
+                    b"100644 blob " + oid + b"\tfoo.bar\0",
+                )
+            ),
+        }
+        for name, raw in invalid.items():
+            with self.subTest(name=name), self.assertRaises(module.Gate9Error) as caught:
+                parser(raw, width)
+            self.assertEqual("PROJECTED_TREE_SCOPE_DRIFT", caught.exception.code)
+        missing = module.RawTreeEntry(
+            b"100644", b"blob", b"f" * width, b"missing-object"
+        )
+        with self.assertRaises(module.Gate9Error) as caught:
+            module._emit_verified_tree(
+                self.root, [missing], code="PROJECTED_TREE_SCOPE_DRIFT"
+            )
+        self.assertEqual("PROJECTED_TREE_SCOPE_DRIFT", caught.exception.code)
+
+    def test_tree_diff_is_exact_under_hostile_config_and_initial_tree_attributes(
+        self,
+    ) -> None:
+        module = load_helper("gate9_hostile_tree_diff")
+        baseline = module.project_root_tree(
+            self.root, self.fixture.head
+        ).proposed_deletion_patch
+        malicious_attributes = self.root / "malicious-attributes"
+        malicious_attributes.write_text("*.md diff=hostile\n", encoding="utf-8")
+        git(self.root, "config", "diff.external", "/bin/false")
+        git(self.root, "config", "diff.hostile.textconv", "/bin/false")
+        git(self.root, "config", "core.attributesFile", os.fspath(malicious_attributes))
+        environment = {
+            "GIT_EXTERNAL_DIFF": "/bin/false",
+            "GIT_DIFF_OPTS": "--ext-diff",
+        }
+        with mock.patch.dict(os.environ, environment):
+            hostile = module.project_root_tree(self.root, self.fixture.head)
+        self.assertEqual(
+            baseline,
+            hostile.proposed_deletion_patch,
+        )
+
+    def test_task_patches_and_evidence_tree_use_one_in_memory_trie(self) -> None:
+        module = load_helper("gate9_mapping_tree")
+        build_tree = getattr(module, "build_tree_from_mapping")
+        mapping = {
+            "alpha/report.md": ("100644", b"alpha\n"),
+            "beta/nested/receipt.json": ("100644", canonical_json({"ok": True})),
+        }
+        tree = build_tree(self.root, mapping)
+        tree_oid = tree.tree_oid if hasattr(tree, "tree_oid") else tree
+        listing = git(
+            self.root, "ls-tree", "-r", "-z", "--full-tree", str(tree_oid)
+        ).stdout
+        self.assertIn(b"100644 blob ", listing)
+        self.assertIn(b"\talpha/report.md\0", listing)
+        self.assertIn(b"\tbeta/nested/receipt.json\0", listing)
+        for invalid in (
+            {"same": ("100644", b"a"), "same/child": ("100644", b"b")},
+            {"../escape": ("100644", b"a")},
+            {"/absolute": ("100644", b"a")},
+        ):
+            with self.assertRaises(module.Gate9Error):
+                build_tree(self.root, invalid)
+        source = HELPER.read_text(encoding="utf-8")
+        self.assertNotIn("def write_task_patch(", source)
+        self.assertNotIn("def write_evidence_tree(", source)
+
+    def test_bundle_build_is_atomic_read_only_canonical_and_collision_safe(
+        self,
+    ) -> None:
+        before = self.fixture.repository_state()
+        process = self.fixture.build_process()
+        self.assertEqual(0, process.returncode, process.stderr)
+        receipt = json.loads(process.stdout)
+        path = pathlib.Path(receipt["bundle_path"])
+        self.fixture.bundle_paths.append(path)
+        self.assertEqual(canonical_json(receipt), process.stdout.encode())
+        self.assertEqual(
+            {
+                "bundle_path",
+                "bundle_sha256",
+                "package_sha256",
+                "schema",
+                "state",
+            },
+            set(receipt),
+        )
+        self.assertEqual(BUILD_RECEIPT_SCHEMA, receipt["schema"])
+        self.assertEqual("BUILT", receipt["state"])
+        metadata = path.lstat()
+        self.assertTrue(stat.S_ISREG(metadata.st_mode))
+        self.assertEqual(1, metadata.st_nlink)
+        self.assertEqual(0o444, stat.S_IMODE(metadata.st_mode))
+        value = path.read_bytes()
+        self.assertEqual(receipt["bundle_sha256"], sha256_bytes(value))
+        self.assertEqual(canonical_json(json.loads(value)), value)
+        document = json.loads(value)
+        self.assertEqual(BUNDLE_SCHEMA, document["schema"])
+        self.assertEqual(sorted(PACKAGE_ATTACHMENTS), [row["path"] for row in document["attachments"]])
+        self.assertEqual(before, self.fixture.repository_state())
+
+    def test_bundle_build_rejects_symlink_collision_traversal_and_partial_write_without_receipt(
+        self,
+    ) -> None:
+        module = load_helper("gate9_atomic_bundle")
+        reader = getattr(module, "read_bundle_once")
+        victim = pathlib.Path(f"/tmp/gate9-victim-{secrets.token_hex(16)}")
+        victim.write_bytes(b"victim\n")
+        symlink = pathlib.Path(
+            "/tmp/agentic-research-gate9-attempt-1-"
+            + secrets.token_hex(16)
+            + ".bundle.json"
+        )
+        symlink.symlink_to(victim)
+        try:
+            for supplied in (symlink, self.root / "outside.bundle.json"):
+                with self.assertRaises(module.Gate9Error) as caught:
+                    reader(supplied)
+                self.assertEqual("BUNDLE_READ_FAILURE", caught.exception.code)
+                self.assertEqual(b"victim\n", victim.read_bytes())
+        finally:
+            symlink.unlink(missing_ok=True)
+            victim.unlink(missing_ok=True)
+
+        writer = getattr(module, "write_atomic_bundle")
+        payloads = logical_package_fixture()
+        collision_token = secrets.token_hex(16)
+        collision = pathlib.Path(
+            "/tmp/agentic-research-gate9-attempt-1-"
+            + collision_token
+            + ".bundle.json"
+        )
+        collision_fd = os.open(
+            collision,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+            0o600,
+        )
+        os.write(collision_fd, b"collision victim\n")
+        os.fchmod(collision_fd, 0o444)
+        os.close(collision_fd)
+        try:
+            with mock.patch.object(module.secrets, "token_hex", return_value=collision_token):
+                with self.assertRaises(module.Gate9Error) as caught:
+                    writer(1, payloads)
+            self.assertEqual("BUNDLE_CREATE_FAILURE", caught.exception.code)
+            self.assertEqual(b"collision victim\n", collision.read_bytes())
+        finally:
+            collision.chmod(0o600)
+            collision.unlink(missing_ok=True)
+
+        with mock.patch.object(module.secrets, "token_hex", return_value="../escape"):
+            with self.assertRaises(module.Gate9Error) as caught:
+                writer(1, payloads)
+        self.assertEqual("BUNDLE_CREATE_FAILURE", caught.exception.code)
+        short_token = secrets.token_hex(16)
+        short_path = pathlib.Path(
+            f"/tmp/agentic-research-gate9-attempt-1-{short_token}.bundle.json"
+        )
+        with mock.patch.object(module.secrets, "token_hex", return_value=short_token), mock.patch.object(
+            module.os, "write", return_value=0
+        ):
+            with self.assertRaises(module.Gate9Error) as caught:
+                writer(1, payloads)
+        self.assertEqual("BUNDLE_CREATE_FAILURE", caught.exception.code)
+        self.assertTrue(short_path.exists())
+        short_path.chmod(0o600)
+        short_path.unlink()
+
+    def test_bundle_verification_reads_once_without_extraction(self) -> None:
+        module = load_helper("gate9_bundle_read_once")
+        payloads = logical_package_fixture()
+        bundle = module.write_atomic_bundle(1, payloads)
+        path = bundle.path
+        self.assertIsNotNone(path)
+        if path is None:
+            return
+        self.fixture.bundle_paths.append(path)
+        hardlink = pathlib.Path(f"/tmp/gate9-hardlink-{secrets.token_hex(16)}.bundle.json")
+        os.link(path, hardlink)
+        self.fixture.bundle_paths.append(hardlink)
+        with self.assertRaises(module.Gate9Error) as caught:
+            module.read_bundle_once(path)
+        self.assertEqual("BUNDLE_READ_FAILURE", caught.exception.code)
+
+        hardlink.chmod(0o600)
+        hardlink.unlink()
+        self.fixture.bundle_paths.remove(hardlink)
+        path.chmod(0o444)
+        before_directories = {
+            entry.relative_to(self.root)
+            for entry in self.root.rglob("*")
+            if entry.is_dir() and ".git" not in entry.relative_to(self.root).parts
+        }
+        real_open = module.os.open
+        child_opens = 0
+
+        def open_once(*args: object, **kwargs: object) -> int:
+            nonlocal child_opens
+            if args and args[0] == path.name:
+                child_opens += 1
+                if child_opens > 1:
+                    raise AssertionError("bundle direct child reopened")
+            return real_open(*args, **kwargs)
+
+        with mock.patch.object(module.os, "open", side_effect=open_once):
+            verified = module.read_bundle_once(path)
+        self.assertEqual(1, child_opens)
+        self.assertEqual(payloads, dict(verified.attachments))
+        self.assertEqual(bundle.bundle_sha256, verified.bundle_sha256)
+        after_directories = {
+            entry.relative_to(self.root)
+            for entry in self.root.rglob("*")
+            if entry.is_dir() and ".git" not in entry.relative_to(self.root).parts
+        }
+        self.assertEqual(before_directories, after_directories)
+        source = HELPER.read_text(encoding="utf-8")
+        self.assertNotIn("materialize_evidence", source)
+
+    def test_every_public_mode_freshly_replays_tree_and_memfd_projection(
+        self,
+    ) -> None:
+        receipt = self.fixture.build()
+        self.assertEqual(2, self.fixture.generator_calls())
+
+        before = self.fixture.generator_calls()
+        verified = self.verify_bundle(receipt)
+        self.assertEqual(0, verified.returncode, verified.stderr)
+        self.assertEqual(before + 2, self.fixture.generator_calls())
+
+        materials = self.fixture.review_materials(receipt)
+        before = self.fixture.generator_calls()
+        assigned = self.verify_assignments(receipt, materials)
+        self.assertEqual(0, assigned.returncode, assigned.stderr)
+        self.assertEqual(before + 2, self.fixture.generator_calls())
+
+        before = self.fixture.generator_calls()
+        reviewed = self.verify_backfill(receipt, materials, "PACKAGE_REVIEWED")
+        self.assertEqual(0, reviewed.returncode, reviewed.stderr)
+        self.assertEqual(before + 2, self.fixture.generator_calls())
+
+        self.fixture.backfill_task(receipt, materials)
+        self.fixture.closure_materials(receipt, materials)
+        before = self.fixture.generator_calls()
+        published = self.fixture.publish(receipt, materials)
+        self.assertEqual(0, published.returncode, published.stderr)
+        self.assertEqual(before + 2, self.fixture.generator_calls())
+        evidence_ref = json.loads(published.stdout)["evidence_ref"]
+        self.fixture.hide_control_files()
+
+        evidence_commit = git(
+            self.root, "show-ref", "--verify", "--hash", evidence_ref
+        ).stdout.decode().strip()
+        evidence_tree = git(
+            self.root, "rev-parse", f"{evidence_commit}^{{tree}}"
+        ).stdout.decode().strip()
+        wrong_parent_commit = git(
+            self.root,
+            "commit-tree",
+            evidence_tree,
+            "-p",
+            evidence_commit,
+            input_bytes=b"wrong-parent evidence fixture\n",
+        ).stdout.decode().strip()
+        git(
+            self.root,
+            "update-ref",
+            evidence_ref,
+            wrong_parent_commit,
+            evidence_commit,
+        )
+        bundle_path = pathlib.Path(receipt["bundle_path"])
+        hidden_bundle = bundle_path.with_name(bundle_path.name + ".hidden")
+        bundle_path.rename(hidden_bundle)
+        try:
+            before = self.fixture.generator_calls()
+            wrong_parent = self.verify_authorized(evidence_ref, receipt=receipt)
+            self.assert_fails(wrong_parent, "EVIDENCE_COMMIT_IDENTITY_DRIFT")
+            self.assertEqual(before, self.fixture.generator_calls())
+        finally:
+            hidden_bundle.rename(bundle_path)
+            git(
+                self.root,
+                "update-ref",
+                evidence_ref,
+                evidence_commit,
+                wrong_parent_commit,
+            )
+
+        mismatched_attachments = self.fixture.attachments(receipt)
+        mismatched_attachments["plan.md"] += b"external mismatch\n"
+        mismatched_attachments["SHA256SUMS"] = b"".join(
+            f"{sha256_bytes(mismatched_attachments[path])}  {path}\n".encode()
+            for path in sorted(mismatched_attachments)
+            if path != "SHA256SUMS"
+        )
+        _, mismatched_receipt = self.fixture.rewritten_bundle(
+            receipt, mismatched_attachments
+        )
+        before = self.fixture.generator_calls()
+        mismatched = self.verify_authorized(
+            evidence_ref, receipt=mismatched_receipt
+        )
+        self.assert_fails(mismatched, "BUNDLE_TRANSPORT_DRIFT")
+        self.assertEqual(before, self.fixture.generator_calls())
+
+        before = self.fixture.generator_calls()
+        authorized = self.verify_authorized(evidence_ref, receipt=receipt)
+        self.assertEqual(0, authorized.returncode, authorized.stderr)
+        self.assertEqual(before + 2, self.fixture.generator_calls())
+
+        before = self.fixture.generator_calls()
+        ref_only = self.verify_authorized(evidence_ref)
+        self.assertEqual(0, ref_only.returncode, ref_only.stderr)
+        self.assertEqual(before + 2, self.fixture.generator_calls())
+
+    def test_full_ref_only_replay_uses_in_memory_package_attachments(self) -> None:
+        receipt = self.fixture.build()
+        materials, evidence_ref = self.fixture.authorize(receipt)
+        del materials
+        bundle_path = pathlib.Path(receipt["bundle_path"])
+        bundle_path.chmod(0o000)
+        try:
+            before = self.fixture.repository_state()
+            replay = self.verify_authorized(evidence_ref)
+            self.assertEqual(0, replay.returncode, replay.stderr)
+            self.assertEqual("AUTHORIZED", json.loads(replay.stdout)["state"])
+            self.assertEqual(before, self.fixture.repository_state())
+        finally:
+            bundle_path.chmod(0o444)
+        source = HELPER.read_text(encoding="utf-8")
+        self.assertNotIn("materialize_evidence", source)
+        self.assertNotIn("TemporaryDirectory", source)
+
+    def test_bundle_binds_twenty_one_file_pack_and_thirty_six_requirements(
+        self,
+    ) -> None:
+        receipt = self.fixture.build()
+        attachments = self.fixture.attachments(receipt)
+        old_rows = attachments["old-manifest.tsv"].splitlines()
+        new_rows = attachments["new-manifest.tsv"].splitlines()
+        self.assertEqual(20, len(old_rows))
+        self.assertEqual(21, len(new_rows))
+        self.assertEqual(20, attachments["proposed-deletion.patch"].count(b"deleted file mode 100644"))
+        spec = attachments["spec.md"].decode("utf-8")
+        task = attachments["task-candidate.md"].decode("utf-8")
+        for ordinal in range(1, 37):
+            requirement = f"REQ-{ordinal:02d}"
+            self.assertIn(requirement, spec)
+            self.assertIn(requirement, task)
+        document = self.fixture.read_bundle(receipt)
+        self.assertEqual(sorted(PACKAGE_ATTACHMENTS), [row["path"] for row in document["attachments"]])
+        self.assertTrue(all(row["mode"] == "0444" for row in document["attachments"]))
+
+    def test_all_public_modes_preserve_repository_and_lifecycle_invariants(
+        self,
+    ) -> None:
+        module = load_helper("gate9_control_file_once")
+        control = self.root / "control-once.json"
+        moved = self.root / "control-original.json"
+        original = canonical_json({"schema": SCHEMA, "value": "original"})
+        forged = canonical_json({"schema": SCHEMA, "value": "forged"})
+        control.write_bytes(original)
+        real_open = module.os.open
+        real_read = module.os.read
+        control_opens = 0
+        substituted = False
+
+        def observed_open(*args: object, **kwargs: object) -> int:
+            nonlocal control_opens
+            if args and pathlib.Path(args[0]) == control:
+                control_opens += 1
+                if control_opens > 1:
+                    raise AssertionError("control path reopened")
+            return real_open(*args, **kwargs)
+
+        def substitute_after_open(descriptor: int, count: int) -> bytes:
+            nonlocal substituted
+            if not substituted:
+                control.rename(moved)
+                control.write_bytes(forged)
+                substituted = True
+            return real_read(descriptor, count)
+
+        with mock.patch.object(module.os, "open", side_effect=observed_open), mock.patch.object(
+            module.os, "read", side_effect=substitute_after_open
+        ):
+            frozen = module.read_control_file_once(control, "test control")
+        self.assertEqual(1, control_opens)
+        self.assertEqual(original, frozen.value)
+        self.assertEqual(forged, control.read_bytes())
+        control.unlink()
+        moved.unlink()
+
+        initial = self.fixture.repository_state()
+        receipt = self.fixture.build()
+        self.assertEqual(initial, self.fixture.repository_state())
+        self.assertEqual(0, self.verify_bundle(receipt).returncode)
+        self.assertEqual(initial, self.fixture.repository_state())
+
+        materials = self.fixture.review_materials(receipt)
+        linked_attestation = self.root / "evidence/assignment-hardlink.json"
+        os.link(materials["attestation"], linked_attestation)
+        rejected_control = self.verify_assignments(receipt, materials)
+        self.assert_fails(rejected_control, "CONTROL_FILE_DRIFT")
+        linked_attestation.unlink()
+        self.assertEqual(0, self.verify_assignments(receipt, materials).returncode)
+        self.assertEqual(initial, self.fixture.repository_state())
+        self.assertEqual(
+            0,
+            self.verify_backfill(receipt, materials, "PACKAGE_REVIEWED").returncode,
+        )
+        self.assertEqual(initial, self.fixture.repository_state())
+
+        self.fixture.backfill_task(receipt, materials)
+        task_only = self.fixture.repository_state()
+        self.assertEqual(initial["head"], task_only["head"])
+        self.assertEqual(initial["index"], task_only["index"])
+        self.assertEqual(initial["old_tree"], task_only["old_tree"])
+        self.assertEqual(initial["protected"], task_only["protected"])
+        self.assertEqual(initial["worktrees"], task_only["worktrees"])
+        self.fixture.closure_materials(receipt, materials)
+        published = self.fixture.publish(receipt, materials)
+        self.assertEqual(0, published.returncode, published.stderr)
+        after_publish = self.fixture.repository_state()
+        for key in ("head", "index", "old_tree", "protected", "worktrees"):
+            self.assertEqual(task_only[key], after_publish[key])
+        self.assertNotEqual(task_only["refs"], after_publish["refs"])
+        evidence_ref = json.loads(published.stdout)["evidence_ref"]
+        self.fixture.hide_control_files()
+        self.assertEqual(0, self.verify_authorized(evidence_ref, receipt=receipt).returncode)
+        self.assertEqual(0, self.verify_authorized(evidence_ref).returncode)
+        self.assertEqual(after_publish, self.fixture.repository_state())
+
+    def test_build_and_verify_canonical_bundle_without_repository_mutation(self) -> None:
+        before = self.fixture.repository_state()
+        receipt = self.fixture.build()
+        self.assertEqual(before, self.fixture.repository_state())
+        result = self.verify_bundle(receipt)
+        self.assertEqual(0, result.returncode, result.stderr)
+        verified = json.loads(result.stdout)
+        self.assertEqual("VERIFIED", verified["state"])
+        self.assertEqual(receipt["package_sha256"], verified["package_sha256"])
+        self.assertEqual(receipt["bundle_sha256"], verified["bundle_sha256"])
+        self.assertEqual(before, self.fixture.repository_state())
+
+    def test_bundle_verification_rejects_byte_schema_and_mode_drift(self) -> None:
+        receipt = self.fixture.build()
+        attachments = self.fixture.attachments(receipt)
+        attachments["plan.md"] += b"forged\n"
+        forged_path, _ = self.fixture.rewritten_bundle(receipt, attachments)
+        result = self.fixture.run("verify-package", "--bundle", os.fspath(forged_path))
+        self.assertNotEqual(0, result.returncode)
+        self.assertRegex(result.stderr, r"BUNDLE_SCHEMA_DRIFT|CHECKSUM_DRIFT|PACKAGE_SEMANTIC_DRIFT")
+
+        path = pathlib.Path(receipt["bundle_path"])
+        path.chmod(0o644)
+        try:
+            result = self.verify_bundle(receipt)
+            self.assert_fails(result, "BUNDLE_READ_FAILURE")
+        finally:
+            path.chmod(0o444)
+
+        document = self.fixture.read_bundle(receipt)
+        document["attachments"][0]["base64"] = document["attachments"][0]["base64"].rstrip("=")
+        noncanonical = self.fixture.write_bundle(document)
+        result = self.fixture.run("verify-package", "--bundle", os.fspath(noncanonical))
+        self.assert_fails(result, "BUNDLE_SCHEMA_DRIFT")
+
+    def test_build_rejects_dirty_real_index_and_third_attempt(self) -> None:
+        git(self.root, "add", TASK)
+        dirty = self.fixture.build_process()
+        self.assertNotEqual(0, dirty.returncode)
+        self.assertRegex(dirty.stderr, r"DIRTY_REAL_INDEX|REAL_INDEX_DRIFT")
+        git(self.root, "reset", "--quiet", "HEAD", "--", TASK)
+        third = self.fixture.build_process(3)
+        self.assert_fails(third, "THIRD_ATTEMPT")
+
+    def test_assignment_and_backfill_reject_identity_bundle_and_finding_drift(
+        self,
+    ) -> None:
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
+        attestation = json.loads(materials["attestation"].read_bytes())
+        attestation["assignments"][1]["agent_id"] = attestation["assignments"][0]["agent_id"]
+        materials["attestation"].write_bytes(canonical_json(attestation))
+        self.assert_fails(self.verify_assignments(receipt, materials), "INVALID_ATTESTATION")
+
+        materials = self.fixture.review_materials(receipt)
+        review_path = materials["quality-receipt"]
+        review = json.loads(review_path.read_bytes())
+        review["bundle_sha256"] = "0" * 64
+        review_path.write_bytes(canonical_json(review))
+        result = self.verify_backfill(receipt, materials, "PACKAGE_REVIEWED")
+        self.assertNotEqual(0, result.returncode)
+        self.assertRegex(
+            result.stderr,
+            r"BUNDLE_TRANSPORT_DRIFT|INVALID_RECEIPT|RECEIPT_BINDING_DRIFT",
+        )
+
+        materials = self.fixture.review_materials(receipt)
+        review_path = materials["quality-receipt"]
+        review = json.loads(review_path.read_bytes())
+        review["findings"]["critical"] = True
+        review_path.write_bytes(canonical_json(review))
+        result = self.verify_backfill(receipt, materials, "PACKAGE_REVIEWED")
+        self.assertNotEqual(0, result.returncode)
+        self.assertRegex(result.stderr, r"INVALID_FINDING_COUNT|INVALID_RECEIPT")
+
+    def test_task_backfill_accepts_marker_only_transition_and_rejects_other_edits(
+        self,
+    ) -> None:
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
+        self.assertEqual(
+            0,
+            self.verify_backfill(receipt, materials, "PACKAGE_REVIEWED").returncode,
+        )
+        self.fixture.backfill_task(receipt, materials)
+        accepted = self.verify_backfill(receipt, materials, "TASK_BACKFILLED")
+        self.assertEqual(0, accepted.returncode, accepted.stderr)
+        task_path = self.root / TASK
+        task_path.write_bytes(task_path.read_bytes() + b"outside-marker drift\n")
+        rejected = self.verify_backfill(receipt, materials, "TASK_BACKFILLED")
+        self.assertNotEqual(0, rejected.returncode)
+        self.assertRegex(
+            rejected.stderr,
+            r"TASK_PATCH_DRIFT|INVALID_TASK_MARKER|TASK_OUTSIDE_MARKER_DRIFT",
+        )
+
+    def test_authorized_publication_is_create_only_idempotent_and_ref_replayable(
+        self,
+    ) -> None:
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
+        self.fixture.backfill_task(receipt, materials)
+        self.fixture.closure_materials(receipt, materials)
+        before = self.fixture.repository_state()
+        first = self.fixture.publish(receipt, materials)
+        self.assertEqual(0, first.returncode, first.stderr)
+        first_record = json.loads(first.stdout)
+        second = self.fixture.publish(receipt, materials)
+        self.assertEqual(0, second.returncode, second.stderr)
+        self.assertEqual(first_record, json.loads(second.stdout))
+        after = self.fixture.repository_state()
+        for key in ("head", "index", "old_tree", "protected", "worktrees"):
+            self.assertEqual(before[key], after[key])
+        self.fixture.hide_control_files()
+        self.assertEqual(
+            0,
+            self.verify_authorized(first_record["evidence_ref"], receipt=receipt).returncode,
+        )
+        self.assertEqual(0, self.verify_authorized(first_record["evidence_ref"]).returncode)
+
+    def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
+        self.fixture.backfill_task(receipt, materials)
+        self.fixture.closure_materials(receipt, materials)
+        environment = self.fixture.git_wrapper(
+            "create-race",
+            'if [[ "$1" == update-ref && "${4:-}" == 0000000000000000000000000000000000000000 ]]; then\n'
+            '  "$REAL_GIT" "$@"\n'
+            '  touch "$GATE9_WRAPPER_MARKER"\n'
+            "  exit 73\n"
+            "fi\n"
+            'exec "$REAL_GIT" "$@"\n',
+        )
+        before = self.fixture.repository_state()
+        result = self.fixture.publish(receipt, materials, env=environment)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
+        after = self.fixture.repository_state()
+        for key in ("head", "index", "old_tree", "protected", "worktrees"):
+            self.assertEqual(before[key], after[key])
+        self.assertNotEqual(before["refs"], after["refs"])
 
     def test_publication_rejects_nonidentical_existing_ref(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
+        self.fixture.backfill_task(receipt, materials)
+        self.fixture.closure_materials(receipt, materials)
+        package_id = receipt["package_sha256"]
         evidence_ref = (
             "refs/codex/review-evidence/agentic-research/gate9/v1/"
             f"attempt-1/{package_id}"
         )
         git(self.root, "update-ref", evidence_ref, self.fixture.head)
-        terminal = self.root / "terminal.md"
-        terminal.write_text("INVALIDATED: fixture drift\n")
-        materials = self.fixture.review_materials(package)
-        attestation = materials["attestation"]
-        drift = self.fixture.write_json(
-            "drift.json",
-            {
-                "kind": "drift-proof",
-                "reason": "fixture drift",
-                "schema": SCHEMA,
-                "state": "INVALIDATED",
-            },
-        )
-        collision = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "INVALIDATED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--assignment-attestation",
-            os.fspath(attestation),
-            "--drift-proof",
-            os.fspath(drift),
-            "--evidence-ref",
-            "auto",
-        )
-        self.assertNotEqual(0, collision.returncode)
-        self.assertIn("FOREIGN_REF", collision.stderr)
+        before = self.fixture.repository_state()
+        result = self.fixture.publish(receipt, materials)
+        self.assert_fails(result, "FOREIGN_REF")
+        self.assertEqual(before, self.fixture.repository_state())
 
     def test_rejected_terminal_requires_a_load_bearing_review_finding(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        terminal = self.root / "terminal.md"
-        terminal.write_text("REJECTED: package-review-rejected\n")
-        result = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "REJECTED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--migration-report",
-            os.fspath(materials["migration-specification-report"]),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-report",
-            os.fspath(materials["quality-report"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--evidence-ref",
-            "auto",
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("REJECTED_WITHOUT_FINDING", result.stderr)
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
+        no_finding = self.fixture.publish(receipt, materials, state="REJECTED")
+        self.assertNotEqual(0, no_finding.returncode)
+        self.assertRegex(no_finding.stderr, r"REJECTED_WITHOUT_FINDING|INVALID_TERMINAL_STATE")
 
-    def test_invalidated_attempt_one_authorizes_exactly_one_bound_attempt_two(self) -> None:
-        package = self.root / "package-one"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
-        terminal = self.root / "terminal.md"
-        terminal.write_text("INVALIDATED: fixture drift\n")
-        drift = self.fixture.write_json(
-            "drift.json",
-            {
-                "kind": "drift-proof",
-                "reason": "fixture drift",
-                "schema": SCHEMA,
-                "state": "INVALIDATED",
-            },
-        )
-        published = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "INVALIDATED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--drift-proof",
-            os.fspath(drift),
-            "--evidence-ref",
-            "auto",
-        )
-        self.assertEqual(0, published.returncode, published.stderr)
-        evidence_ref = json.loads(published.stdout)["evidence_ref"]
-        evidence_tree = git(self.root, "show", "-s", "--format=%T", evidence_ref).stdout.strip()
-        attempt_two_marker = {
-            "attempt": 2,
-            "attempt_1": {
-                "evidence_ref": evidence_ref,
-                "evidence_tree": evidence_tree,
-                "package_sha256": package_id,
-                "reason": "fixture drift",
-                "terminal_state": "INVALIDATED",
-            },
-            "schema": SCHEMA,
-            "state": "ATTEMPT_2_PENDING",
-        }
-        task_path = self.root / TASK
-        task_path.write_bytes(
-            task_path.read_bytes().replace(
-                marker(self.fixture.pending_payload).encode(),
-                marker(attempt_two_marker).encode(),
-                1,
-            )
-        )
-        shutil.rmtree(self.root / "evidence")
-        terminal.unlink()
-        drift.unlink()
-        shutil.rmtree(package)
-
-        package_two = self.root / "package-two"
-        built = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "2",
-            "--output",
-            os.fspath(package_two),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-        )
-        self.assertEqual(0, built.returncode, built.stderr)
-        self.assertEqual(2, json.loads((package_two / "package.json").read_text())["attempt"])
+        quality_path = materials["quality-receipt"]
+        quality = json.loads(quality_path.read_bytes())
+        quality["findings"]["important"] = 1
+        quality["verdict"] = "Needs fixes"
+        quality_path.write_bytes(canonical_json(quality))
+        rejected = self.fixture.publish(receipt, materials, state="REJECTED")
+        self.assertEqual(0, rejected.returncode, rejected.stderr)
+        record = json.loads(rejected.stdout)
+        self.assertEqual("REJECTED", record["state"])
+        self.assertIn("/attempt-1/", record["evidence_ref"])
 
     def test_invalidated_evidence_requires_nonempty_bound_reason(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        terminal = self.root / "terminal.md"
-        terminal.write_text("INVALIDATED: fixture drift\n")
+        receipt = self.fixture.build()
+        materials = self.fixture.review_materials(receipt)
         drift = self.fixture.write_json(
-            "drift-missing.json",
-            {"kind": "drift-proof", "schema": SCHEMA, "state": "INVALIDATED"},
-        )
-        result = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "INVALIDATED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--drift-proof",
-            os.fspath(drift),
-            "--evidence-ref",
-            "auto",
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("INVALIDATED_REASON_INVALID", result.stderr)
-
-    def test_invalidated_evidence_rejects_empty_reason(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        terminal = self.root / "terminal.md"
-        terminal.write_text("INVALIDATED: fixture drift\n")
-        drift = self.fixture.write_json(
-            "drift-empty.json",
+            "evidence/empty-drift.json",
             {
                 "kind": "drift-proof",
                 "reason": "",
@@ -1132,1304 +1630,110 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                 "state": "INVALIDATED",
             },
         )
-        result = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "INVALIDATED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--drift-proof",
-            os.fspath(drift),
-            "--evidence-ref",
-            "auto",
+        result = self.fixture.publish(
+            receipt, materials, state="INVALIDATED", drift_proof=drift
         )
         self.assertNotEqual(0, result.returncode)
-        self.assertIn("INVALIDATED_REASON_INVALID", result.stderr)
-
-    def test_package_requires_exact_regular_0444_attachments(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        same_spec = self.root / "same-spec.md"
-        same_spec.write_bytes((package / "spec.md").read_bytes())
-        same_spec.chmod(0o444)
-
-        for name, mutation, expected in (
-            ("0400", lambda path: path.chmod(0o400), "ATTACHMENT_MODE_DRIFT"),
-            ("0440", lambda path: path.chmod(0o440), "ATTACHMENT_MODE_DRIFT"),
-            ("executable", lambda path: path.chmod(0o555), "ATTACHMENT_MODE_DRIFT"),
-            (
-                "directory",
-                lambda path: (path.unlink(), path.mkdir()),
-                "ATTACHMENT_TYPE_DRIFT",
-            ),
-            (
-                "symlink",
-                lambda path: (path.unlink(), path.symlink_to(same_spec)),
-                "ATTACHMENT_TYPE_DRIFT",
-            ),
-        ):
-            with self.subTest(name=name):
-                candidate = self.root / f"mode-{name}"
-                shutil.copytree(package, candidate)
-                target = candidate / "spec.md"
-                mutation(target)
-                result = self.fixture.run(
-                    "verify-package", "--package", os.fspath(candidate)
-                )
-                self.assertNotEqual(0, result.returncode, name)
-                self.assertIn(expected, result.stderr)
-
-    def test_package_replay_rederives_every_semantic_attachment(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-
-        def trailing_deletion_patch(candidate: pathlib.Path) -> None:
-            path = candidate / "proposed-deletion.patch"
-            path.chmod(0o644)
-            path.write_bytes(path.read_bytes() + b"forged trailing bytes\n")
-
-        def false_gate(candidate: pathlib.Path) -> None:
-            path = candidate / "gate-results.json"
-            path.chmod(0o644)
-            value = json.loads(path.read_text())
-            value["gates"][3]["result"] = "FAIL"
-            path.write_bytes(canonical_json(value))
-
-        def forged_task_before(candidate: pathlib.Path) -> None:
-            path = candidate / "task-before.md"
-            path.chmod(0o644)
-            path.write_bytes(b"# forged Task before\n")
-
-        def forged_task_patch(candidate: pathlib.Path) -> None:
-            path = candidate / "task-before-to-candidate.patch"
-            path.chmod(0o644)
-            path.write_bytes(path.read_bytes() + b"forged trailing bytes\n")
-
-        def extra_package_key(candidate: pathlib.Path) -> None:
-            path = candidate / "package.json"
-            path.chmod(0o644)
-            value = json.loads(path.read_text())
-            value["unexpected"] = True
-            path.write_bytes(canonical_json(value))
-
-        for name, mutation in (
-            ("deletion-patch", trailing_deletion_patch),
-            ("gate-results", false_gate),
-            ("task-before", forged_task_before),
-            ("task-transition", forged_task_patch),
-            ("package-schema", extra_package_key),
-        ):
-            with self.subTest(name=name):
-                candidate = self.root / f"semantic-{name}"
-                shutil.copytree(package, candidate)
-                mutation(candidate)
-                self.fixture.reseal_package(candidate)
-                result = self.fixture.run(
-                    "verify-package", "--package", os.fspath(candidate)
-                )
-                self.assertNotEqual(0, result.returncode, name)
-                self.assertIn("PACKAGE_SEMANTIC_DRIFT", result.stderr)
-
-    def test_boolean_finding_counts_are_rejected(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        receipt_path = materials["quality-receipt"]
-        receipt = json.loads(receipt_path.read_text())
-        receipt["findings"]["minor"] = True
-        receipt_path.write_bytes(canonical_json(receipt))
-        result = self.fixture.run(
-            "verify-backfill",
-            "--package",
-            os.fspath(package),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-receipt",
-            os.fspath(receipt_path),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--task",
-            TASK,
-            "--expect-state",
-            "PACKAGE_REVIEWED",
+        self.assertRegex(
+            result.stderr,
+            r"INVALID_DRIFT_PROOF|INVALIDATED_REASON_INVALID|EMPTY_TERMINAL_REASON",
         )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("INVALID_RECEIPT", result.stderr)
 
-    def test_attempt_two_rejects_forged_terminal_commit_message(self) -> None:
-        package = self.root / "package-one"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        package_id = sha256_bytes((package / "SHA256SUMS").read_bytes())
-        terminal = self.root / "terminal.md"
-        terminal.write_text("INVALIDATED: fixture drift\n")
-        drift = self.fixture.write_json(
-            "drift.json",
-            {
-                "kind": "drift-proof",
-                "reason": "fixture drift",
-                "schema": SCHEMA,
-                "state": "INVALIDATED",
-            },
-        )
-        published = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "INVALIDATED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--drift-proof",
-            os.fspath(drift),
-            "--evidence-ref",
-            "auto",
-        )
-        self.assertEqual(0, published.returncode, published.stderr)
-        evidence_ref = json.loads(published.stdout)["evidence_ref"]
-        evidence_tree = git(self.root, "show", "-s", "--format=%T", evidence_ref).stdout.strip()
-        forged = subprocess.run(
-            ["git", "commit-tree", evidence_tree, "-p", self.fixture.head],
-            cwd=self.root,
-            input="forged terminal message\n",
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-        git(self.root, "update-ref", evidence_ref, forged)
-        attempt_two_marker = {
-            "attempt": 2,
-            "attempt_1": {
-                "evidence_ref": evidence_ref,
-                "evidence_tree": evidence_tree,
-                "package_sha256": package_id,
-                "reason": "fixture drift",
-                "terminal_state": "INVALIDATED",
-            },
-            "schema": SCHEMA,
-            "state": "ATTEMPT_2_PENDING",
-        }
-        task_path = self.root / TASK
-        task_path.write_bytes(
-            task_path.read_bytes().replace(
-                marker(self.fixture.pending_payload).encode(),
-                marker(attempt_two_marker).encode(),
-                1,
-            )
-        )
-        shutil.rmtree(self.root / "evidence")
-        terminal.unlink()
-        drift.unlink()
-        shutil.rmtree(package)
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "2",
-            "--output",
-            os.fspath(self.root / "package-two"),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("EVIDENCE_COMMIT_IDENTITY_DRIFT", result.stderr)
-
-    def test_attempt_two_later_modes_require_durable_attempt_one_prehistory(self) -> None:
-        package, attempt_one_ref = self.fixture.build_attempt_two(
-            self.root / "attempt-two-package"
-        )
-        materials = self.fixture.review_materials(package)
-        terminal = self.root / "attempt-two-terminal.md"
-        terminal.write_text("INVALIDATED: second fixture drift\n")
-        drift = self.fixture.write_json(
-            "attempt-two-drift.json",
-            {
-                "kind": "drift-proof",
-                "reason": "second fixture drift",
-                "schema": SCHEMA,
-                "state": "INVALIDATED",
-            },
-        )
-        attempt_one_tree = git(
-            self.root, "show", "-s", "--format=%T", attempt_one_ref
-        ).stdout.strip()
-        git(self.root, "update-ref", "-d", attempt_one_ref)
-        commands = {
-            "verify-package": (
-                "verify-package",
-                "--package",
-                os.fspath(package),
-            ),
-            "verify-assignments": (
-                "verify-assignments",
-                "--package",
-                os.fspath(package),
-                "--attestation",
-                os.fspath(materials["attestation"]),
-            ),
-            "verify-backfill": (
-                "verify-backfill",
-                "--package",
-                os.fspath(package),
-                "--migration-receipt",
-                os.fspath(materials["migration-specification-receipt"]),
-                "--quality-receipt",
-                os.fspath(materials["quality-receipt"]),
-                "--assignment-attestation",
-                os.fspath(materials["attestation"]),
-                "--task",
-                TASK,
-                "--expect-state",
-                "PACKAGE_REVIEWED",
-            ),
-            "publish-evidence-ref": (
-                "publish-evidence-ref",
-                "--package",
-                os.fspath(package),
-                "--task",
-                TASK,
-                "--terminal-state",
-                "INVALIDATED",
-                "--terminal-report",
-                os.fspath(terminal),
-                "--assignment-attestation",
-                os.fspath(materials["attestation"]),
-                "--drift-proof",
-                os.fspath(drift),
-                "--evidence-ref",
-                "auto",
-            ),
-        }
-        for prehistory in ("missing", "forged"):
-            if prehistory == "forged":
-                forged = subprocess.run(
-                    ["git", "commit-tree", attempt_one_tree, "-p", self.fixture.head],
-                    cwd=self.root,
-                    input="forged attempt-one terminal\n",
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                ).stdout.strip()
-                git(self.root, "update-ref", attempt_one_ref, forged)
-            for name, command in commands.items():
-                with self.subTest(prehistory=prehistory, name=name):
-                    result = self.fixture.run(*command)
-                    self.assertNotEqual(0, result.returncode)
-                    self.assertIn("ATTEMPT_PREHISTORY_INVALID", result.stderr)
-
-    def test_authorized_replay_requires_durable_attempt_one_prehistory(self) -> None:
-        package, attempt_one_ref = self.fixture.build_attempt_two(
-            self.root / "attempt-two-package"
-        )
-        materials = self.fixture.review_materials(package)
-        self.fixture.backfill_task(package, materials)
-        self.fixture.closure_materials(package, materials)
-        terminal = self.root / "attempt-two-terminal.md"
-        terminal.write_text("AUTHORIZED\n")
-        published = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "AUTHORIZED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--migration-report",
-            os.fspath(materials["migration-specification-report"]),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-report",
-            os.fspath(materials["quality-report"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--migration-closure-report",
-            os.fspath(materials["migration-specification-closure-report"]),
-            "--migration-closure",
-            os.fspath(materials["migration-specification-closure"]),
-            "--quality-closure-report",
-            os.fspath(materials["quality-closure-report"]),
-            "--quality-closure",
-            os.fspath(materials["quality-closure"]),
-            "--evidence-ref",
-            "auto",
-        )
-        self.assertEqual(0, published.returncode, published.stderr)
-        attempt_one_tree = git(
-            self.root, "show", "-s", "--format=%T", attempt_one_ref
-        ).stdout.strip()
-        forged = subprocess.run(
-            ["git", "commit-tree", attempt_one_tree, "-p", self.fixture.head],
-            cwd=self.root,
-            input="forged attempt-one terminal\n",
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-        for prehistory in ("forged", "missing"):
-            if prehistory == "forged":
-                git(self.root, "update-ref", attempt_one_ref, forged)
-            else:
-                git(self.root, "update-ref", "-d", attempt_one_ref)
-            with self.subTest(prehistory=prehistory):
-                result = self.fixture.run(
-                    "verify-authorized",
-                    "--package-from-ref",
-                    "--task",
-                    TASK,
-                    "--evidence-ref",
-                    "auto",
-                )
-                self.assertNotEqual(0, result.returncode)
-                self.assertIn("ATTEMPT_PREHISTORY_INVALID", result.stderr)
-
-    def test_projected_index_proves_exact_twenty_deletions_without_worktree_mutation(
+    def test_invalidated_attempt_one_authorizes_exactly_one_bound_attempt_two(
         self,
     ) -> None:
-        before = self.fixture.repository_state()
-        package = self.root / "step0d-package"
-        built = self.fixture.build(package)
-        self.assertEqual(0, built.returncode, built.stderr)
-        patch = (package / "proposed-deletion.patch").read_bytes()
-        self.assertEqual(20, patch.count(b"deleted file mode 100644"))
-        for ordinal in range(20):
-            self.assertIn(
-                f"{OLD_PACK}/file-{ordinal:02d}.md".encode(),
-                patch,
-            )
-        self.assertNotIn(SPEC.encode(), patch)
-        self.assertEqual(before, self.fixture.repository_state())
+        second, first_ref = self.fixture.build_attempt_two()
+        self.assertIn("/attempt-1/", first_ref)
+        self.assertEqual("BUILT", second["state"])
+        self.assertNotEqual(second["package_sha256"], first_ref.rsplit("/", 1)[-1])
+        wrong = self.fixture.build_process(1)
+        self.assertNotEqual(0, wrong.returncode)
+        self.assertRegex(wrong.stderr, r"ATTEMPT_STATE_MISMATCH|ATTEMPT_PREHISTORY_DRIFT")
+        third = self.fixture.build_process(3)
+        self.assert_fails(third, "THIRD_ATTEMPT")
 
-        module_spec = importlib.util.spec_from_file_location("gate9_helper", HELPER)
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        projector = getattr(module, "authoritative_projection", None)
-        self.assertIsNotNone(projector, "Step 0d authoritative projector is missing")
-        if projector is None:
-            return
-        projection = projector(
-            self.root,
-            self.fixture.head,
-            self.fixture.head,
-            self.fixture.reviewed_code_head,
-        )
-        expected_tree = git(
-            self.root, "rev-parse", f"{self.fixture.head}^{{tree}}"
-        ).stdout.strip()
-        self.assertEqual(expected_tree, projection.initial_tree_oid)
-        self.assertNotEqual(projection.initial_tree_oid, projection.final_tree_oid)
-        self.assertEqual(20, len(projection.old_paths))
-        self.assertEqual(
-            tuple(("D", path) for path in projection.old_paths),
-            projection.deletion_statuses,
-        )
-
-    def test_production_generator_grandchild_git_reads_pinned_projected_index(
-        self,
-    ) -> None:
-        task_path = self.root / TASK
-        task_path.write_bytes(
-            subprocess.run(
-                ["git", "show", f"HEAD:{TASK}"],
-                cwd=self.root,
-                capture_output=True,
-                check=True,
-            ).stdout
-        )
-        generator_paths = (
-            "scripts/knowledge/generate-llm-wiki-index.sh",
-            "scripts/knowledge/generate-llm-wiki-coverage.sh",
-        )
-        required_paths = (
-            ".claude/agents/doc-writer.md",
-            "docs/00.agent-governance/agents/agents/doc-writer.md",
-            "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
-            "docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md",
-            "docs/90.references/data/knowledge/README.md",
-            "docs/03.specs/096-llm-wiki-agent-first-completion/spec.md",
-            "docs/03.specs/113-llm-wiki-stage-category-coverage/spec.md",
-            "docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md",
-            "docs/04.execution/plans/2026-07-06-llm-wiki-stage-category-coverage.md",
-            "docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md",
-            "docs/04.execution/tasks/2026-07-06-llm-wiki-stage-category-coverage.md",
-        )
-        for relative in generator_paths:
-            shutil.copy2(ROOT / relative, self.root / relative)
-        for relative in required_paths:
-            if not (self.root / relative).exists():
-                self.fixture.write(relative, "# Fixture required path\n")
-        git(self.root, "add", *generator_paths, *required_paths)
-
-        rendered: dict[str, bytes] = {}
-        for relative, output in zip(generator_paths, (INDEX, COVERAGE), strict=True):
-            result = subprocess.run(
-                ["bash", relative, "--stdout"],
-                cwd=self.root,
-                capture_output=True,
-                check=True,
-            )
-            rendered[output] = result.stdout
-            (self.root / output).write_bytes(result.stdout)
-        git(self.root, "add", INDEX, COVERAGE)
-        git(self.root, "commit", "--quiet", "-m", "fixture production generators")
-
-        prior_reviewed_code_head = self.fixture.reviewed_code_head
-        self.fixture.reviewed_code_head = git(
-            self.root, "rev-parse", "HEAD"
-        ).stdout.strip()
-        task_path.write_text(
-            task_path.read_text(encoding="utf-8").replace(
-                prior_reviewed_code_head,
-                self.fixture.reviewed_code_head,
-            ),
-            encoding="utf-8",
-        )
-        git(self.root, "add", TASK)
-        git(self.root, "commit", "--quiet", "-m", "fixture reviewed closure")
-        self.fixture.head = git(self.root, "rev-parse", "HEAD").stdout.strip()
-        task_path.write_text(
-            task_path.read_text(encoding="utf-8") + "\nCandidate gate results.\n",
-            encoding="utf-8",
-        )
-
-        before = self.fixture.repository_state()
-        with tempfile.TemporaryDirectory(
-            prefix="gate9-production-generator-package-"
-        ) as package_parent:
-            package = pathlib.Path(package_parent) / "package"
-            built = self.fixture.build(package)
-            self.assertEqual(0, built.returncode, built.stderr)
-            self.assertEqual(rendered[INDEX], (package / "llm-wiki-index.md").read_bytes())
-            self.assertEqual(
-                rendered[COVERAGE],
-                (package / "llm-wiki-stage-category-coverage.md").read_bytes(),
-            )
-        self.assertEqual(before, self.fixture.repository_state())
-
-    def test_projected_index_rejects_outside_status_drift(self) -> None:
-        before = self.fixture.repository_state()
-        environment = self.fixture.git_wrapper(
-            "step0d-outside-index",
-            'if [[ "$1" == "update-index" && "$2" == "--force-remove" && "$3" == "-z" ]]; then\n'
-            '  "$REAL_GIT" "$@"\n'
-            '  "$REAL_GIT" update-index --force-remove -- ' + json.dumps(SPEC) + "\n"
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 0\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        result = self.fixture.run(
+    def test_package_authority_requires_live_binding_and_unambiguous_history(self) -> None:
+        missing = self.fixture.run(
             "build-package",
             "--attempt",
             "1",
-            "--output",
-            os.fspath(self.root / "outside-status-package"),
             "--spec",
             SPEC,
             "--plan",
             PLAN,
             "--task",
             TASK,
-            env=environment,
+            bind_live=False,
         )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("PROJECTED_DELETION_DRIFT", result.stderr)
-        self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
-        self.assertEqual(before, self.fixture.repository_state())
-
-    def test_projector_rejects_empty_noisy_crlf_and_non_utf8_stdout_without_writes(
-        self,
-    ) -> None:
-        variants = {
-            "empty": "exit 0\n",
-            "noisy": "printf 'fixed index\\nnoise\\n'\n",
-            "crlf": "printf 'fixed index\\r\\n'\n",
-            "non-utf8": "printf '\\377'\n",
-        }
-        for name, output_program in variants.items():
-            with self.subTest(name=name), tempfile.TemporaryDirectory(
-                prefix=f"gate9-stdout-{name}-"
-            ) as directory:
-                fixture = Gate9Fixture(pathlib.Path(directory))
-                try:
-                    fixture.advance_reviewed_generator(
-                        "scripts/knowledge/generate-llm-wiki-index.sh",
-                        "#!/usr/bin/env bash\nset -eu\n"
-                        "[[ ${1:-} == --stdout && $# == 1 ]] || exit 2\n"
-                        + output_program,
-                    )
-                    before = fixture.repository_state()
-                    result = fixture.build(pathlib.Path(directory) / "package")
-                    self.assertNotEqual(0, result.returncode)
-                    self.assertIn("GENERATOR_STDOUT_DRIFT", result.stderr)
-                    self.assertEqual(before, fixture.repository_state())
-                finally:
-                    fixture.cleanup()
-
-    def test_every_public_mode_reprojects_and_rejects_resealed_noop_generator(
-        self,
-    ) -> None:
-        package = self.root / "resealed-package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        (package / "llm-wiki-index.md").chmod(0o644)
-        (package / "llm-wiki-index.md").write_bytes(b"forged no-op output\n")
-        self.fixture.reseal_package(package)
-        marker_path = self.root / "generator-executed"
-        generator_path = self.root / "scripts/knowledge/generate-llm-wiki-index.sh"
-        generator_path.write_text(
-            "#!/usr/bin/env bash\nset -eu\nprintf executed > "
-            + os.fspath(marker_path)
-            + "\nexit 0\n",
-            encoding="utf-8",
-        )
-        dummy = self.root / "dummy"
-        dummy.write_text("dummy\n", encoding="utf-8")
-        commands = {
-            "build-package": (
-                "build-package", "--attempt", "1", "--output",
-                os.fspath(self.root / "dirty-code-package"), "--spec", SPEC,
-                "--plan", PLAN, "--task", TASK,
-            ),
-            "verify-package": ("verify-package", "--package", os.fspath(package)),
-            "verify-assignments": (
-                "verify-assignments", "--package", os.fspath(package),
-                "--attestation", os.fspath(materials["attestation"]),
-            ),
-            "verify-backfill": (
-                "verify-backfill", "--package", os.fspath(package),
-                "--migration-receipt", os.fspath(materials["migration-specification-receipt"]),
-                "--quality-receipt", os.fspath(materials["quality-receipt"]),
-                "--assignment-attestation", os.fspath(materials["attestation"]),
-                "--task", TASK, "--expect-state", "PACKAGE_REVIEWED",
-            ),
-            "publish-evidence-ref": (
-                "publish-evidence-ref", "--package", os.fspath(package),
-                "--task", TASK, "--terminal-state", "INVALIDATED",
-                "--terminal-report", os.fspath(dummy),
-                "--assignment-attestation", os.fspath(materials["attestation"]),
-                "--drift-proof", os.fspath(dummy), "--evidence-ref", "auto",
-            ),
-            "verify-authorized": (
-                "verify-authorized", "--package", os.fspath(package),
-                "--task", TASK, "--evidence-ref", "auto",
-            ),
-        }
-        for mode, command in commands.items():
-            with self.subTest(mode=mode):
-                result = self.fixture.run(*command)
-                self.assertNotEqual(0, result.returncode)
-                self.assertIn("REVIEWED_CODE_DRIFT", result.stderr)
-                self.assertFalse(marker_path.exists())
-
-    def test_non_live_package_generator_is_rejected_before_shell_across_all_modes(
-        self,
-    ) -> None:
-        package = self.root / "historical-package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        marker_path = self.root / "historical-generator-executed"
-        self.fixture.advance_reviewed_generator(
-            "scripts/knowledge/generate-llm-wiki-index.sh",
-            "#!/usr/bin/env bash\nset -eu\nprintf executed > "
-            + os.fspath(marker_path)
-            + "\nexit 0\n",
-        )
-        historical_head = self.fixture.reviewed_code_head
-        for name in ("HEAD.txt", "package.json", "assignments.json", "gate-results.json"):
-            (package / name).chmod(0o644)
-        (package / "HEAD.txt").write_text(f"{historical_head}\n", encoding="ascii")
-        for name in ("package.json", "assignments.json", "gate-results.json"):
-            value = json.loads((package / name).read_text(encoding="utf-8"))
-            value["package_head"] = historical_head
-            (package / name).write_bytes(canonical_json(value))
-        self.fixture.reseal_package(package)
-        materials = self.fixture.review_materials(package)
-        dummy = self.root / "non-live-dummy"
-        dummy.write_text("dummy\n", encoding="utf-8")
-        commands = {
-            "verify-package": ("verify-package", "--package", os.fspath(package)),
-            "verify-assignments": (
-                "verify-assignments", "--package", os.fspath(package),
-                "--attestation", os.fspath(materials["attestation"]),
-            ),
-            "verify-backfill": (
-                "verify-backfill", "--package", os.fspath(package),
-                "--migration-receipt", os.fspath(materials["migration-specification-receipt"]),
-                "--quality-receipt", os.fspath(materials["quality-receipt"]),
-                "--assignment-attestation", os.fspath(materials["attestation"]),
-                "--task", TASK, "--expect-state", "PACKAGE_REVIEWED",
-            ),
-            "publish-evidence-ref": (
-                "publish-evidence-ref", "--package", os.fspath(package),
-                "--task", TASK, "--terminal-state", "INVALIDATED",
-                "--terminal-report", os.fspath(dummy),
-                "--assignment-attestation", os.fspath(materials["attestation"]),
-                "--drift-proof", os.fspath(dummy), "--evidence-ref", "auto",
-            ),
-            "verify-authorized": (
-                "verify-authorized", "--package", os.fspath(package),
-                "--task", TASK, "--evidence-ref", "auto",
-            ),
-        }
-        for mode, command in commands.items():
-            with self.subTest(mode=mode):
-                result = self.fixture.run(*command)
-                self.assertNotEqual(0, result.returncode)
-                self.assertIn("UNTRUSTED_PACKAGE_HEAD", result.stderr)
-                self.assertFalse(marker_path.exists())
-
-    def test_package_authority_requires_live_binding_and_unambiguous_history(
-        self,
-    ) -> None:
-        missing = self.fixture.run(
-            "build-package", "--attempt", "1", "--output",
-            os.fspath(self.root / "missing-binding"), "--spec", SPEC,
-            "--plan", PLAN, "--task", TASK, bind_live=False,
-        )
-        self.assertEqual(2, missing.returncode)
-        self.assertIn("LIVE_HEAD_REQUIRED", missing.stderr)
+        self.assert_fails(missing, "LIVE_HEAD_REQUIRED")
         abbreviated = self.fixture.run(
-            "build-package", "--require-live-head", "--live-reviewed-head",
-            self.fixture.head[:12], "--reviewed-code-head",
-            self.fixture.reviewed_code_head, "--attempt", "1", "--output",
-            os.fspath(self.root / "abbreviated-binding"), "--spec", SPEC,
-            "--plan", PLAN, "--task", TASK, bind_live=False,
+            "build-package",
+            "--require-live-head",
+            "--live-reviewed-head",
+            self.fixture.head[:12],
+            "--reviewed-code-head",
+            self.fixture.reviewed_code_head,
+            "--attempt",
+            "1",
+            "--spec",
+            SPEC,
+            "--plan",
+            PLAN,
+            "--task",
+            TASK,
+            bind_live=False,
         )
-        self.assertEqual(2, abbreviated.returncode)
-        self.assertIn("LIVE_HEAD_REQUIRED", abbreviated.stderr)
+        self.assert_fails(abbreviated, "LIVE_HEAD_REQUIRED")
 
         common_dir = pathlib.Path(
-            git(self.root, "rev-parse", "--path-format=absolute", "--git-common-dir")
-            .stdout.strip()
+            git(
+                self.root, "rev-parse", "--path-format=absolute", "--git-common-dir"
+            ).stdout.decode().strip()
         )
-        ambiguous_cases = {
-            "replace": common_dir / f"refs/replace/{self.fixture.head}",
-            "grafts": common_dir / "info/grafts",
-            "shallow": common_dir / "shallow",
-        }
-        for name, path in ambiguous_cases.items():
-            with self.subTest(name=name):
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text(
-                    f"{self.fixture.head}\n" if name != "grafts" else f"{self.fixture.head} {self.fixture.reviewed_code_head}\n",
-                    encoding="ascii",
-                )
-                try:
-                    result = self.fixture.build(self.root / f"ambiguous-{name}")
-                    self.assertNotEqual(0, result.returncode)
-                    self.assertIn("AMBIGUOUS_GIT_HISTORY", result.stderr)
-                finally:
-                    path.unlink(missing_ok=True)
-
-    def test_pinned_scratch_cleanup_preserves_victim_after_ancestor_substitution(
-        self,
-    ) -> None:
-        module_spec = importlib.util.spec_from_file_location("gate9_scratch", HELPER)
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        owner_class = getattr(module, "PinnedScratch", None)
-        self.assertIsNotNone(owner_class, "Step 0d pinned scratch owner is missing")
-        if owner_class is None:
-            return
-        victim_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-victim-"))
-        victim = victim_parent / "victim.txt"
-        victim.write_bytes(b"outside victim\n")
-        owner = owner_class("gate9-test-")
-        holding = owner.holding_path
-        retained_identity = owner._holding_identity
-        relocated = holding.with_name(holding.name + "-relocated")
+        replace = common_dir / f"refs/replace/{self.fixture.head}"
+        replace.parent.mkdir(parents=True, exist_ok=True)
+        replace.write_text(f"{self.fixture.reviewed_code_head}\n", encoding="ascii")
         try:
-            owner.create_file("index", b"scratch\n")
-            holding.rename(relocated)
-            holding.symlink_to(victim_parent, target_is_directory=True)
-            with self.assertRaises(module.Gate9Error) as caught:
-                owner.close()
-            self.assertIn(
-                caught.exception.code,
-                {"SCRATCH_SCOPE_DRIFT", "SCRATCH_CLEANUP_FAILURE"},
-            )
-            self.assertEqual(b"outside victim\n", victim.read_bytes())
-            self.assertTrue(relocated.exists())
-            self.assertNotIn(os.fspath(holding), caught.exception.detail)
-            device, inode, mode = retained_identity
-            self.assertIn(
-                f"retained holding identity dev={device} ino={inode} mode={mode:#o}",
-                caught.exception.detail,
-            )
+            result = self.fixture.build_process()
+            self.assert_fails(result, "AMBIGUOUS_GIT_HISTORY")
         finally:
-            if holding.is_symlink():
-                holding.unlink()
-            shutil.rmtree(relocated, ignore_errors=True)
-            shutil.rmtree(victim_parent, ignore_errors=True)
+            replace.unlink(missing_ok=True)
 
-    def test_projection_never_invokes_worktree_or_drifts_registry(self) -> None:
-        before_registry = git(self.root, "worktree", "list", "--porcelain").stdout
-        environment = self.fixture.git_wrapper(
-            "forbid-worktree",
-            'if [[ "$1" == "worktree" ]]; then touch "$GATE9_WRAPPER_MARKER"; exit 97; fi\n'
-            'exec "$REAL_GIT" "$@"\n',
+    def test_create_only_ref_uses_repository_object_width(self) -> None:
+        module = load_helper("gate9_sha256_ref")
+        sha256_root = self.root / "sha256-repository"
+        sha256_root.mkdir()
+        initialized = git(
+            sha256_root,
+            "init",
+            "--quiet",
+            "--object-format=sha256",
+            check=False,
         )
-        result = self.fixture.run(
-            "build-package", "--attempt", "1", "--output",
-            os.fspath(self.root / "no-worktree-package"), "--spec", SPEC,
-            "--plan", PLAN, "--task", TASK, env=environment,
+        if initialized.returncode != 0:
+            self.skipTest("installed Git does not support SHA-256 repositories")
+        git(sha256_root, "config", "user.name", "Gate Nine SHA256")
+        git(sha256_root, "config", "user.email", "gate9-sha256@example.invalid")
+        (sha256_root / "root.txt").write_text("root\n", encoding="utf-8")
+        git(sha256_root, "add", "root.txt")
+        git(sha256_root, "commit", "--quiet", "-m", "sha256 root")
+        parent = git(sha256_root, "rev-parse", "HEAD").stdout.decode().strip()
+        tree = module.build_tree_from_mapping(
+            sha256_root, {"evidence.txt": ("100644", b"evidence\n")}
         )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertFalse(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).exists())
+        evidence_ref = "refs/codex/review-evidence/test-sha256"
+        message = b"test-sha256-evidence\n"
+        commit = module.create_or_reuse_ref(
+            sha256_root, evidence_ref, parent, tree, message
+        )
+        self.assertEqual(64, len(commit))
         self.assertEqual(
-            before_registry,
-            git(self.root, "worktree", "list", "--porcelain").stdout,
+            commit,
+            git(sha256_root, "rev-parse", evidence_ref).stdout.decode().strip(),
         )
-        source = HELPER.read_text(encoding="utf-8")
-        for forbidden in (
-            '"worktree", "add"',
-            '"worktree", "remove"',
-            '"worktree", "prune"',
-            "shutil.rmtree",
-            "TemporaryDirectory",
-            "mkdtemp",
-        ):
-            self.assertNotIn(forbidden, source)
-
-    def test_valid_package_and_ref_replay_preserve_repository_state(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="gate9-authorized-package-") as outside:
-            package = pathlib.Path(outside) / "authorized-package"
-            self.assertEqual(0, self.fixture.build(package).returncode)
-            _, evidence_ref = self.fixture.authorize_package(package)
-            shutil.rmtree(self.root / "evidence")
-            before = self.fixture.repository_state()
-            for source_args in (
-                ("--package", os.fspath(package)),
-                ("--package-from-ref",),
-            ):
-                with self.subTest(source=source_args[0]):
-                    result = self.fixture.run(
-                        "verify-authorized", *source_args, "--task", TASK,
-                        "--evidence-ref", evidence_ref,
-                        "--require-clean-real-index", "--require-task-only-worktree",
-                    )
-                    self.assertEqual(0, result.returncode, result.stderr)
-                    self.assertEqual("AUTHORIZED", json.loads(result.stdout)["state"])
-                    self.assertEqual(before, self.fixture.repository_state())
-
-    def test_projection_rejects_live_head_advance_after_preflight(self) -> None:
-        module_spec = importlib.util.spec_from_file_location("gate9_head_race", HELPER)
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        original_capture = module.capture_repository_snapshot
-        advanced = False
-
-        def advance_before_capture(root: pathlib.Path, expected_head: str) -> object:
-            nonlocal advanced
-            if not advanced:
-                git(root, "commit", "--quiet", "--allow-empty", "-m", "advance after preflight")
-                advanced = True
-            return original_capture(root, expected_head)
-
-        module.capture_repository_snapshot = advance_before_capture
-        with self.assertRaises(module.Gate9Error) as caught:
-            module.authoritative_projection(
-                self.root,
-                self.fixture.head,
-                self.fixture.head,
-                self.fixture.reviewed_code_head,
-            )
-        self.assertIn(
-            caught.exception.code,
-            {"PROJECTED_INDEX_SCOPE_DRIFT", "UNTRUSTED_PACKAGE_HEAD"},
+        self.assertEqual(
+            commit,
+            module.create_or_reuse_ref(
+                sha256_root, evidence_ref, parent, tree, message
+            ),
         )
-        self.assertTrue(advanced)
-
-    def test_authorized_ref_wrong_parent_rejects_before_generator_execution(
-        self,
-    ) -> None:
-        marker_path = self.root / "wrong-parent-generator-executed"
-        self.fixture.advance_reviewed_generator(
-            "scripts/knowledge/generate-llm-wiki-index.sh",
-            "#!/usr/bin/env bash\nset -eu\n"
-            "if [[ ${1:-} == --stdout && $# == 1 ]]; then "
-            "printf executed > "
-            + json.dumps(os.fspath(marker_path))
-            + "; printf 'fixed index\\n'; "
-            "elif [[ $# == 0 ]]; then printf 'fixed index\\n' > "
-            + INDEX
-            + "; else exit 2; fi\n",
-        )
-        package = self.root / "wrong-parent-package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        _, evidence_ref = self.fixture.authorize_package(package)
-        marker_path.unlink(missing_ok=True)
-
-        evidence_commit = git(self.root, "rev-parse", evidence_ref).stdout.strip()
-        tree = git(self.root, "show", "-s", "--format=%T", evidence_commit).stdout.strip()
-        raw_commit = git(self.root, "cat-file", "commit", evidence_commit).stdout
-        _, separator, message = raw_commit.partition("\n\n")
-        self.assertEqual("\n\n", separator)
-        forged = subprocess.run(
-            [
-                "git",
-                "commit-tree",
-                tree,
-                "-p",
-                self.fixture.reviewed_code_head,
-            ],
-            cwd=self.root,
-            input=message,
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-        git(self.root, "update-ref", evidence_ref, forged, evidence_commit)
-
-        result = self.fixture.run(
-            "verify-authorized",
-            "--package-from-ref",
-            "--task",
-            TASK,
-            "--evidence-ref",
-            evidence_ref,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("EVIDENCE_COMMIT_IDENTITY_DRIFT", result.stderr)
-        self.assertFalse(marker_path.exists())
-
-    def test_pinned_scratch_unregistered_index_lock_fails_closed(self) -> None:
-        module_spec = importlib.util.spec_from_file_location("gate9_index_lock", HELPER)
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        owner = module.PinnedScratch("gate9-index-lock-")
-        holding = owner.holding_path
-        retained_identity = owner._holding_identity
-        try:
-            owner.create_file("index", b"scratch index\n")
-            (owner.path / "index.lock").write_bytes(b"unregistered\n")
-            with self.assertRaises(Exception) as caught:
-                owner.close()
-            self.assertIsInstance(caught.exception, module.Gate9Error)
-            self.assertEqual("SCRATCH_CLEANUP_FAILURE", caught.exception.code)
-            self.assertNotIn(os.fspath(holding), caught.exception.detail)
-            device, inode, mode = retained_identity
-            self.assertIn(
-                f"retained holding identity dev={device} ino={inode} mode={mode:#o}",
-                caught.exception.detail,
-            )
-            self.assertEqual(
-                b"unregistered\n",
-                (holding / "scratch/index.lock").read_bytes(),
-            )
-        finally:
-            shutil.rmtree(holding, ignore_errors=True)
-
-    def test_pinned_scratch_initial_procfs_proof_failure_rolls_back_children_and_fds(
-        self,
-    ) -> None:
-        module_spec = importlib.util.spec_from_file_location(
-            "gate9_initial_procfs_failure", HELPER
-        )
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        owner_class = module.PinnedScratch
-        prefix = f"gate9-initial-proof-{self.root.name}-"
-        temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
-
-        def child_names() -> set[str]:
-            return {path.name for path in temporary_root.glob(f"{prefix}*")}
-
-        def open_descriptors() -> set[int]:
-            return {
-                int(path.name)
-                for path in pathlib.Path("/proc/self/fd").iterdir()
-                if path.name.isdigit()
-            }
-
-        before_children = child_names()
-        before_descriptors = open_descriptors()
-        after_children: set[str] = set()
-        after_descriptors: set[int] = set()
-
-        def reject_initial_proof(_owner: object) -> None:
-            raise module.Gate9Error(
-                "SCRATCH_SCOPE_DRIFT", "injected initial procfs proof failure"
-            )
-
-        try:
-            with mock.patch.object(
-                owner_class,
-                "_prove_process_fd_path",
-                reject_initial_proof,
-            ):
-                with self.assertRaises(module.Gate9Error) as caught:
-                    owner_class(prefix)
-            self.assertEqual("SCRATCH_SCOPE_DRIFT", caught.exception.code)
-            after_children = child_names()
-            after_descriptors = open_descriptors()
-            self.assertEqual(before_children, after_children)
-            self.assertEqual(before_descriptors, after_descriptors)
-        finally:
-            for descriptor in open_descriptors() - before_descriptors:
-                try:
-                    os.close(descriptor)
-                except OSError:
-                    pass
-            for name in child_names() - before_children:
-                shutil.rmtree(temporary_root / name, ignore_errors=True)
-
-    def test_pinned_scratch_partial_constructor_failures_roll_back_children_and_fds(
-        self,
-    ) -> None:
-        module_spec = importlib.util.spec_from_file_location(
-            "gate9_partial_constructor_failures", HELPER
-        )
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        owner_class = module.PinnedScratch
-        temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
-        original_open = module.os.open
-        original_mkdir = module.os.mkdir
-        original_rmdir = module.os.rmdir
-
-        def open_descriptors() -> set[int]:
-            return {
-                int(path.name)
-                for path in pathlib.Path("/proc/self/fd").iterdir()
-                if path.name.isdigit()
-            }
-
-        for stage in ("holding-open", "scratch-mkdir", "scratch-open"):
-            with self.subTest(stage=stage):
-                prefix = f"gate9-partial-{stage}-{self.root.name}-"
-
-                def child_names() -> set[str]:
-                    return {
-                        path.name for path in temporary_root.glob(f"{prefix}*")
-                    }
-
-                def injected_open(
-                    path: object,
-                    flags: int,
-                    mode: int = 0o777,
-                    *,
-                    dir_fd: int | None = None,
-                ) -> int:
-                    if (
-                        stage == "holding-open"
-                        and isinstance(path, str)
-                        and path.startswith(prefix)
-                        and dir_fd is not None
-                    ) or (stage == "scratch-open" and path == "scratch"):
-                        raise OSError(f"injected {stage} failure")
-                    keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
-                    return original_open(path, flags, mode, **keyword)
-
-                def injected_mkdir(
-                    path: object,
-                    mode: int = 0o777,
-                    *,
-                    dir_fd: int | None = None,
-                ) -> None:
-                    if stage == "scratch-mkdir" and path == "scratch":
-                        raise OSError(f"injected {stage} failure")
-                    keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
-                    original_mkdir(path, mode, **keyword)
-
-                before_children = child_names()
-                before_descriptors = open_descriptors()
-                rmdir_calls: list[tuple[object, int | None]] = []
-
-                def recorded_rmdir(
-                    path: object,
-                    *,
-                    dir_fd: int | None = None,
-                ) -> None:
-                    rmdir_calls.append((path, dir_fd))
-                    keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
-                    original_rmdir(path, **keyword)
-
-                try:
-                    with (
-                        mock.patch.object(module.os, "open", injected_open),
-                        mock.patch.object(module.os, "mkdir", injected_mkdir),
-                        mock.patch.object(module.os, "rmdir", recorded_rmdir),
-                    ):
-                        with self.assertRaises(module.Gate9Error) as caught:
-                            owner_class(prefix)
-                    self.assertIn(
-                        caught.exception.code,
-                        {"SCRATCH_SCOPE_DRIFT", "SCRATCH_CLEANUP_FAILURE"},
-                    )
-                    if stage in {"holding-open", "scratch-open"}:
-                        self.assertEqual([], rmdir_calls)
-                    self.assertTrue(before_children.issubset(child_names()))
-                    self.assertEqual(before_descriptors, open_descriptors())
-                finally:
-                    for descriptor in open_descriptors() - before_descriptors:
-                        try:
-                            os.close(descriptor)
-                        except OSError:
-                            pass
-                    for name in child_names() - before_children:
-                        shutil.rmtree(temporary_root / name, ignore_errors=True)
-
-    def test_pinned_scratch_prebind_substitution_never_removes_unproved_child(
-        self,
-    ) -> None:
-        module_spec = importlib.util.spec_from_file_location(
-            "gate9_prebind_substitution", HELPER
-        )
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        owner_class = module.PinnedScratch
-        temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
-        prefix = f"gate9-prebind-{self.root.name}-"
-        attacker_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-prebind-victim-"))
-        attacker_replacement = attacker_parent / "replacement"
-        attacker_replacement.mkdir()
-        replacement_metadata = attacker_replacement.stat()
-        victim = attacker_parent / "victim.txt"
-        victim.write_bytes(b"outside victim\n")
-        original_stat = module.os.stat
-        original_mkdir = module.os.mkdir
-        visible_holding: pathlib.Path | None = None
-        relocated_holding: pathlib.Path | None = None
-        substituted = False
-
-        def injected_stat(
-            path: object,
-            *,
-            dir_fd: int | None = None,
-            follow_symlinks: bool = True,
-        ) -> os.stat_result:
-            nonlocal visible_holding, relocated_holding, substituted
-            if (
-                not substituted
-                and isinstance(path, str)
-                and path.startswith(prefix)
-                and dir_fd is not None
-            ):
-                visible_holding = temporary_root / path
-                relocated_holding = visible_holding.with_name(
-                    visible_holding.name + "-helper-created"
-                )
-                module.os.rename(visible_holding, relocated_holding)
-                module.os.rename(attacker_replacement, visible_holding)
-                substituted = True
-            keyword: dict[str, object] = {"follow_symlinks": follow_symlinks}
-            if dir_fd is not None:
-                keyword["dir_fd"] = dir_fd
-            return original_stat(path, **keyword)
-
-        def injected_mkdir(
-            path: object,
-            mode: int = 0o777,
-            *,
-            dir_fd: int | None = None,
-        ) -> None:
-            if substituted and path == "scratch":
-                raise OSError("injected failure after pre-bind substitution")
-            keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
-            original_mkdir(path, mode, **keyword)
-
-        try:
-            with (
-                mock.patch.object(module.os, "stat", injected_stat),
-                mock.patch.object(module.os, "mkdir", injected_mkdir),
-            ):
-                with self.assertRaises(module.Gate9Error) as caught:
-                    owner_class(prefix)
-            self.assertTrue(substituted)
-            self.assertIsNotNone(visible_holding)
-            self.assertIsNotNone(relocated_holding)
-            if visible_holding is not None:
-                self.assertTrue(visible_holding.exists())
-                if visible_holding.exists():
-                    observed = visible_holding.lstat()
-                    self.assertEqual(
-                        (replacement_metadata.st_dev, replacement_metadata.st_ino),
-                        (observed.st_dev, observed.st_ino),
-                    )
-                    self.assertNotIn(
-                        os.fspath(visible_holding), caught.exception.detail
-                    )
-            self.assertEqual(b"outside victim\n", victim.read_bytes())
-            if relocated_holding is not None:
-                retained = relocated_holding.lstat()
-                self.assertIn(
-                    "retained holding identity "
-                    f"dev={retained.st_dev} ino={retained.st_ino} "
-                    f"mode={stat.S_IMODE(retained.st_mode):#o}",
-                    caught.exception.detail,
-                )
-        finally:
-            if visible_holding is not None and visible_holding.exists():
-                shutil.rmtree(visible_holding, ignore_errors=True)
-            if relocated_holding is not None:
-                shutil.rmtree(relocated_holding, ignore_errors=True)
-            shutil.rmtree(attacker_parent, ignore_errors=True)
-
-    def test_pinned_scratch_initial_rollback_preserves_victim_on_ownership_drift(
-        self,
-    ) -> None:
-        module_spec = importlib.util.spec_from_file_location(
-            "gate9_initial_rollback_drift", HELPER
-        )
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        sys.modules[module_spec.name] = module
-        module_spec.loader.exec_module(module)
-        owner_class = module.PinnedScratch
-        victim_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-init-victim-"))
-        victim = victim_parent / "victim.txt"
-        victim.write_bytes(b"outside victim\n")
-        visible_holding: pathlib.Path | None = None
-        relocated_holding: pathlib.Path | None = None
-        retained_identity: tuple[int, int, int] | None = None
-
-        def substitute_holding(owner: object) -> None:
-            nonlocal visible_holding, relocated_holding, retained_identity
-            visible_holding = owner.holding_path
-            retained_identity = owner._holding_identity
-            relocated_holding = visible_holding.with_name(
-                visible_holding.name + "-relocated"
-            )
-            visible_holding.rename(relocated_holding)
-            visible_holding.symlink_to(victim_parent, target_is_directory=True)
-            raise module.Gate9Error(
-                "SCRATCH_SCOPE_DRIFT", "injected initial holding substitution"
-            )
-
-        try:
-            with mock.patch.object(
-                owner_class,
-                "_prove_process_fd_path",
-                substitute_holding,
-            ):
-                with self.assertRaises(module.Gate9Error) as caught:
-                    owner_class("gate9-initial-drift-")
-            self.assertEqual("SCRATCH_CLEANUP_FAILURE", caught.exception.code)
-            self.assertEqual(b"outside victim\n", victim.read_bytes())
-            self.assertIsNotNone(visible_holding)
-            self.assertIsNotNone(relocated_holding)
-            self.assertIsNotNone(retained_identity)
-            if visible_holding is not None:
-                self.assertNotIn(os.fspath(visible_holding), caught.exception.detail)
-            if retained_identity is not None:
-                device, inode, mode = retained_identity
-                self.assertIn(
-                    f"retained holding identity dev={device} ino={inode} mode={mode:#o}",
-                    caught.exception.detail,
-                )
-            if visible_holding is not None:
-                self.assertTrue(visible_holding.is_symlink())
-            if relocated_holding is not None:
-                self.assertTrue(relocated_holding.is_dir())
-        finally:
-            if visible_holding is not None and visible_holding.is_symlink():
-                visible_holding.unlink()
-            if relocated_holding is not None:
-                shutil.rmtree(relocated_holding, ignore_errors=True)
-            shutil.rmtree(victim_parent, ignore_errors=True)
-
-    def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
-        package = self.root / "package"
-        self.assertEqual(0, self.fixture.build(package).returncode)
-        materials = self.fixture.review_materials(package)
-        self.fixture.backfill_task(package, materials)
-        self.fixture.closure_materials(package, materials)
-        terminal = self.root / "evidence/terminal.md"
-        terminal.write_text("AUTHORIZED\n")
-        before_head = git(self.root, "rev-parse", "HEAD").stdout
-        before_index = git(self.root, "diff", "--cached", "--binary").stdout
-        before_task = (self.root / TASK).read_bytes()
-        race_flag = pathlib.Path(tempfile.gettempdir()) / f"gate9-race-{self.root.name}"
-        race_flag.unlink(missing_ok=True)
-        environment = self.fixture.git_wrapper(
-            "update-ref-race",
-            f'FLAG="{race_flag}"\n'
-            'if [[ "$1" == "update-ref" && "${4:-}" == "0000000000000000000000000000000000000000" && ! -e "$FLAG" ]]; then\n'
-            '  "$REAL_GIT" "$@"\n'
-            '  touch "$FLAG"\n'
-            "  exit 91\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        before_status = git(self.root, "status", "--porcelain").stdout
-        result = self.fixture.run(
-            "publish-evidence-ref",
-            "--package",
-            os.fspath(package),
-            "--task",
-            TASK,
-            "--terminal-state",
-            "AUTHORIZED",
-            "--terminal-report",
-            os.fspath(terminal),
-            "--migration-report",
-            os.fspath(materials["migration-specification-report"]),
-            "--migration-receipt",
-            os.fspath(materials["migration-specification-receipt"]),
-            "--quality-report",
-            os.fspath(materials["quality-report"]),
-            "--quality-receipt",
-            os.fspath(materials["quality-receipt"]),
-            "--assignment-attestation",
-            os.fspath(materials["attestation"]),
-            "--migration-closure-report",
-            os.fspath(materials["migration-specification-closure-report"]),
-            "--migration-closure",
-            os.fspath(materials["migration-specification-closure"]),
-            "--quality-closure-report",
-            os.fspath(materials["quality-closure-report"]),
-            "--quality-closure",
-            os.fspath(materials["quality-closure"]),
-            "--evidence-ref",
-            "auto",
-            env=environment,
-        )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertEqual(before_head, git(self.root, "rev-parse", "HEAD").stdout)
-        self.assertEqual(before_index, git(self.root, "diff", "--cached", "--binary").stdout)
-        self.assertEqual(before_task, (self.root / TASK).read_bytes())
-        self.assertEqual(before_status, git(self.root, "status", "--porcelain").stdout)
-        race_flag.unlink(missing_ok=True)
-
-
-if __name__ == "__main__":
-    unittest.main()
