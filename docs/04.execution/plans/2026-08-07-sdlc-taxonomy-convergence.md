@@ -1,2551 +1,1429 @@
 ---
-status: draft
+status: active
 artifact_id: plan:2026-08-07-sdlc-taxonomy-convergence
 artifact_type: plan
 parent_ids:
   - spec:136-sdlc-taxonomy-convergence
 ---
 
-# SDLC Taxonomy Convergence Implementation Plan
+# SDLC Taxonomy and Agent Governance Convergence Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development`
-> (recommended) or `superpowers:executing-plans` to implement this plan
-> task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking.
 
 ## Overview
 
-This plan executes waves W1 through W5 of
-[specification 136](../../03.specs/136-sdlc-taxonomy-convergence/spec.md): the
-structural convergence chain. It repairs the enforcement layer, realigns the
-template contract onto the measured corpus, establishes the content archive and
-migrates 267 terminal documents, collapses Stage 04 into Stage 03 by
-co-location, and renumbers Stage 05 to Stage 04.
+**Goal:** Converge the documentation, agent-governance, archive, template,
+validator, CI, and script corpus onto the approved stable-ID SDLC taxonomy
+without leaving legacy, deprecated, dated-path, duplicate, or compatibility
+surfaces.
 
-**Goal:** Produce a contiguous `00`–`04` active stage sequence in which every
-specification directory holds its own durable contract and execution record, and
-in which the heading contract actually fires.
+**Architecture:** Typed Stage 00 and Stage 99 contracts define authority and
+document shape; a focused document-governance library enforces those contracts;
+a migration ledger accounts for every path change; and the typed workflow graph
+runs identical leaf gates locally and in CI. Corpus movement follows contract
+installation, and transition allowances are removed in the final task.
 
-**Architecture:** Five sequential waves, each gated on the previous one. W1
-changes no document content and only repairs contracts, so that every later wave
-has a sound checker to attribute violations against. W2 corrects the contract to
-describe the corpus that exists. W3 empties the active stages of terminal work.
-W4 collapses the near-empty Stage 04 into Stage 03. W5 renumbers last, so no
-path is rewritten twice.
+**Tech Stack:** Python 3.12+, Bash, PyYAML, html5lib, Git, pytest/unittest,
+GitHub Actions, Markdown, and repository-local typed YAML contracts.
 
-**Tech Stack:** Bash, Python 3, `git mv`, the repository validators under
-`scripts/validation/`, and the Stage 99 registry at
-`docs/99.templates/support/document-metadata-profiles.yaml`.
+### Global Constraints
 
-Waves W6 through W9 (ARD/ADR vocabulary, date policy, rule consolidation, script
-consolidation) are deliberately excluded. They operate on paths that W4 and W5
-change, so their steps are authored after W5 lands.
+- Operations remains docs/05.operations; it is never renumbered.
+- docs/02.architecture/requirements is replaced by descriptions and
+  Architecture Description.
+- docs/04.execution is removed after Plan and Task migration.
+- Every documentation identity uses a stable type ID and slug; no date prefix
+  or year partition remains.
+- Dates live in typed frontmatter. Event timelines may retain timestamps in
+  body content.
+- docs/98.archive is the only documentation archive.
+- Active documents never link directly to Stage 98.
+- No redirect, legacy, deprecated, dormant, or compatibility file remains at
+  completion.
+- One-time migration utilities remain under /tmp and are never committed.
+- Every generator defaults to check mode; repository mutation requires
+  explicit --write.
+- Runtime-changing scripts require an Operations Runbook and are never executed
+  as part of document migration.
+- Use git mv for tracked path moves.
+- Preserve unrelated user changes and do not rewrite Git history.
+- Commit each Task as its own logical unit after its scoped verification passes.
+- Do not push, merge, modify remote resources, change secrets, or change
+  Compose runtime topology.
+
+---
 
 ## Context and Inputs
 
-### Global constraints
+The approved specification is
+docs/03.specs/136-sdlc-taxonomy-convergence/spec.md. The starting commit for the
+implementation plan is e3e7615d.
 
-Every task inherits these. They are copied verbatim from the specification and
-from Stage 00 governance.
+Measured starting debt:
 
-- `docs/00.agent-governance/` is English-only. Governance-meta Stage 03 and
-  Stage 04 documents are English; all sibling documents in this lane carry zero
-  Korean characters.
-- Commit per logical unit. A wave is never one commit unless it contains one
-  logical unit.
-- Never write plaintext credentials. Never run `pre-commit run --all-files`
-  directly; use `scripts/validation/run-agent-precommit-all-files.sh` only at an
-  approved final gate.
-- Architecture decision records are never relocated. Supersession is a status
-  change plus a `superseded-by` link, applied in place.
-- No push to any remote. No change to Compose service topology, images, or
-  secrets.
-- Every wave re-runs `bash scripts/validation/check-repo-contracts.sh` and
-  compares against the baseline captured in Task 1.
+| Surface | Starting condition |
+| :-- | :-- |
+| Stage 01 | 25 legacy-numbered PRDs |
+| Stage 02 | 25 ARDs and 25 ADRs |
+| Stage 03 | 27 active Spec directories and 22 child READMEs |
+| Stage 04 | 102 dated Plans and 130 dated Tasks |
+| Stage 05 | 66 Guides, 64 Policies, 62 Runbooks, and 71 READMEs |
+| Stage 90 | 92 Markdown files plus 5 other artifacts, including dated paths |
+| Stage 98 | 52 tombstones; 32 contain full Spec bodies |
+| Metadata | 1,276 active findings across 303 documents |
+| Alignment | 184 findings, including 182 active-to-archive links |
+| Lifecycle | 25 promoted findings and 20 provenance-incomplete tombstones |
+| Scripts | 63 tracked files, 59 executable Python or Shell files |
 
-### Measured starting state
+The existing Graphify report was built from f8a72211 and is advisory. Tracked
+source, typed contracts, stage documents, and validators are authoritative.
 
-| Subject                                      | Value                                                      |
-| :------------------------------------------- | :--------------------------------------------------------- |
-| Stage 03 specification directories           | 59: 41 `completed`, 16 `active`, 1 `superseded`, 1 `draft` |
-| Stage 04 leaf documents                      | 231: 225 `completed`, 6 `active`                           |
-| Documents to archive                         | 267                                                        |
-| Active execution documents to co-locate      | 6, resolving to 4 subjects                                 |
-| Stage 05 leaf documents                      | 192 across 77 subjects; 71 additional `README.md` files    |
-| Heading violations under the current checker | 0 — the checker is inoperative                             |
-| Heading violations under the fixed checker   | 2                                                          |
-| `05.operations` literal occurrences          | 3,274 across 597 files                                     |
+### File Responsibility Map
 
-### The two heading violations W1 exposes
+| Unit | Files and responsibility |
+| :-- | :-- |
+| Authority | docs/00.agent-governance/contracts/*.yaml and rules/*.md |
+| Document profiles | docs/99.templates/support/document-metadata-profiles.yaml |
+| Lifecycle and archive | lifecycle-status.md, archive-retention-contract.md, corpus migration contracts |
+| Templates | docs/99.templates/templates/sdlc and templates/operations |
+| Path engine | scripts/lib/document_governance/ |
+| Metadata CLI | scripts/validation/check-document-metadata.py |
+| Lifecycle CLI | scripts/validation/check-document-corpus-lifecycle.py |
+| Link CLI | scripts/validation/check-document-links.py |
+| Script inventory | scripts/manifest.yaml |
+| Gate graph | .github/workflow-contract.yml |
+| CI entrypoint | scripts/validation/run-ci-gate.py |
+| Human history | docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md |
 
-Both are documents that followed the registry vocabulary while the corpus
-follows the protocol vocabulary. Under specification D2 the corpus wins, so both
-documents are migrated toward the majority rather than the contract being bent
-toward them.
+### Script Disposition Baseline
 
-| Document                                                                    | Carries                        | Corpus majority                |
-| :-------------------------------------------------------------------------- | :----------------------------- | :----------------------------- |
-| `docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md` | `## Routine Usage`             | `## Usage`, 65 documents       |
-| `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`          | `## Trigger and Preconditions` | `## When to Use`, 61 documents |
+Task 3 records every tracked script file individually. These decisions are
+mandatory unless Task 3 proves an active consumer or test that changes the
+decision and records the evidence:
 
-### Archive model refinement
-
-Specification D4 rule 1 requires a forward pointer at every archived document's
-original location. W4 removes `docs/04.execution/` entirely, so leaving 231
-tombstones inside a directory that is then deleted is self-contradictory. The
-rule's purpose is preventing link breakage. This plan therefore splits it by
-whether the source stage survives.
-
-| Source stage         | Survives W4? | Mechanism                                        |
-| :------------------- | :----------- | :----------------------------------------------- |
-| `docs/03.specs/`     | Yes          | Forward-pointer tombstone at the original path   |
-| `docs/04.execution/` | No           | Inbound link rewrite plus archive ledger mapping |
-
-Both templates already exist and need no authoring:
-`docs/99.templates/templates/common/archive.template.md` for tombstones and
-`docs/99.templates/templates/common/content-archive.template.md` for preserved
-content.
+| Paths | Initial disposition |
+| :-- | :-- |
+| scripts/hooks/patch-graphify-post-commit.sh | merge into canonical hook generation, then delete |
+| scripts/hooks/post-tool-validate.sh | rewrite as non-mutating typed dispatcher |
+| scripts/knowledge/generate-llm-wiki-index.sh and generate-llm-wiki-coverage.sh | merge, then delete both old files |
+| scripts/validation/check-doc-traceability.sh and check-doc-implementation-alignment.sh | merge into check-document-links.py, then delete |
+| scripts/validation/check-repo-contracts.sh | decompose, replace residual invariants, then delete |
+| scripts/validation/recommend-qa-gates.sh | merge into run-ci-gate.py --recommend, then delete |
+| scripts/validation/report-provider-hook-parity.sh | merge into provider_surface_renderer.py, then delete |
+| scripts/validation/recommend-gap-routing.sh | move routing to typed governance and delete |
+| metadata and lifecycle CLIs | retain thin CLIs, extract shared library |
+| CI gate runner, contract, adapters, and public runner | retain |
+| provider renderer and sync wrapper | retain |
+| target-surface CLI/core pairs | retain while Spec 135 and tests consume them |
+| recurring PostgreSQL and sample-delivery rehearsals | retain only with current Runbook links and tests; replace dated Task paths |
+| security, Compose, hardening, and secret operations | retain when current Runbooks and tests consume them |
+| consumerless report, recommendation, fixture, or rehearsal | merge evidence into its owner and delete |
 
 ## Goals and Non-goals
 
 ### Goals
 
-- The operations heading contract fires on real violations and passes a corpus
-  that satisfies it.
-- Template conformance rises from the measured 88 of 631.
-- Active stages hold only non-terminal work.
-- Each surviving specification directory holds `spec.md` plus its `plan.md` and
-  `task.md`.
-- The active stage sequence is contiguous `00` through `04`.
-- Zero broken relative links at the end of every wave.
+- Make the target taxonomy executable through typed contracts and tests.
+- Preserve complete Git provenance for every move and deletion.
+- Keep each migration Task independently reviewable.
+- End with zero legacy transition allowances.
+- End with one validator implementation for each policy topic.
+- End with every tracked script justified by an owner, consumer, mutation
+  profile, and test.
 
 ### Non-goals
 
-- Backfilling `artifact_id` and `parent_ids` into documents that lack them.
-- Retro-creating specifications for terminal orphan execution documents.
-- Adding Diátaxis tutorial or explanation document types.
-- Changing what any Prometheus alert rule controls. Only documentation paths
-  inside annotations change.
-- Renaming `docs/00.agent-governance/agents/agents/`. Specification D10 retains
-  it; 41 files and 5 test modules reference the path.
+- Deploying or restarting services.
+- Regenerating external credentials.
+- Running destructive incident or recovery commands.
+- Rewriting archived Git history.
+- Creating empty SRS, Interface Requirement, Incident, Postmortem, or Release
+  instances merely to exercise a template.
+
+### Spec Coverage Map
+
+| Spec acceptance criterion | Implementing Task |
+| :-- | :-- |
+| Target top-level taxonomy and Stage 04 absence | Task 5 |
+| Architecture Description replaces ARD | Tasks 2 and 4 |
+| Spec, Plan, and Task co-location | Task 5 |
+| No parallel Operations role roots | Tasks 6A through 6D |
+| Operations grouped by domain and subject | Tasks 6A through 6D |
+| No date or year path identity | Tasks 4 through 7 and Task 14 |
+| Typed frontmatter dates | Tasks 2, 4 through 7 |
+| Stage 98 is the sole archive | Task 7 |
+| No active-to-archive links | Tasks 5, 7, 10, and 13 |
+| Stage 99 matches the taxonomy | Task 2 |
+| Stage 00 has one authority model | Tasks 2 and 8 |
+| Every script has owner, consumer, mutation, and test | Tasks 3 and 9 |
+| Duplicate and one-time scripts are absent | Tasks 9 and 11 |
+| Validator ownership and local/CI parity | Tasks 10 through 12 |
+| Complete migration ledger | Tasks 3 through 14 |
+| All final gates pass without grandfathered debt | Task 14 |
 
 ## Work Breakdown
 
-### Wave W1 — Contract and enforcement repair
-
-No document is moved in this wave. Corpus content changes only for the two
-documents Task 2 migrates.
-
----
-
-#### Task 1: Capture the baseline
+### Task 1: Add the Stable Document Taxonomy Engine
 
 **Files:**
 
-- Create: `/tmp/claude-1000/sdlc-convergence/baseline.txt` (scratch, not committed)
+- Create: docs/03.specs/136-sdlc-taxonomy-convergence/task.md
+- Create: scripts/lib/document_governance/__init__.py
+- Create: scripts/lib/document_governance/taxonomy.py
+- Create: tests/validation/test_document_taxonomy.py
+- Modify: scripts/requirements.txt
 
 **Interfaces:**
 
-- Produces: the failure count every later task compares against.
-
-- [ ] **Step 1: Record the repository contract baseline**
-
-```bash
-cd /home/hy/projects/hy-home.docker
-mkdir -p /tmp/claude-1000/sdlc-convergence
-bash scripts/validation/check-repo-contracts.sh > /tmp/claude-1000/sdlc-convergence/baseline.txt 2>&1
-echo "exit=$?"
-grep -c '^FAIL' /tmp/claude-1000/sdlc-convergence/baseline.txt || true
-tail -5 /tmp/claude-1000/sdlc-convergence/baseline.txt
-```
-
-Expected: a non-zero failure count. Record the exact number. The specification's
-first revision recorded `failures=4`; the current tree may differ. **The number
-you record here, not the number in the specification, is the baseline.**
-
-- [ ] **Step 2: Record the full-corpus metadata baseline**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-active \
-  > /tmp/claude-1000/sdlc-convergence/metadata-baseline.txt 2>&1
-tail -3 /tmp/claude-1000/sdlc-convergence/metadata-baseline.txt
-```
-
-Expected: a `selected=... violations=N` summary line. Record `N`.
-
-- [ ] **Step 3: Record the link baseline**
-
-```bash
-python3 - <<'PY' > /tmp/claude-1000/sdlc-convergence/links-baseline.txt
-import pathlib, re
-broken = []
-for p in pathlib.Path("docs").rglob("*.md"):
-    in_fence = False
-    for line in p.read_text(errors="ignore").splitlines():
-        # Toggle only on a line that STARTS a fence. Counting backtick runs
-        # inside the whole text breaks on any code that contains backticks --
-        # including this check itself.
-        if line.lstrip().startswith("`" * 3):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        for m in re.finditer(r"\]\(([^)]+)\)", line):
-            target = m.group(1).split("#")[0]
-            if not target or target.startswith(("http", "mailto:")):
-                continue
-            if not (p.parent / target).exists():
-                broken.append(f"{p}: {target}")
-print(len(broken))
-print("\n".join(broken))
-PY
-head -1 /tmp/claude-1000/sdlc-convergence/links-baseline.txt
-```
-
-Expected: `1`. The single real defect is `../guides/...` in
-`docs/00.agent-governance/memory/progress.md`, an ellipsis in prose rather than
-a link. Record the number. No commit in this task.
-
-The fence guard is not optional. Without it this check reports 8, of which 7 are
-markdown links inside illustrative code blocks — including the tombstone
-template in Task 13 and the rule snippets in Task 16. A baseline inflated by
-your own plan's example content makes every later link comparison meaningless.
-This is the same defect class as the substring matching Task 2 repairs.
-
----
-
-#### Task 2: Repair the heading checker and migrate the two exposed documents
-
-This is the single most important task in the plan. The two edits must land
-together: line-anchoring alone makes all 62 runbooks fail, because the runbook
-required list is the only one missing its `##` prefix.
-
-**Files:**
-
-- Modify: `scripts/validation/check-repo-contracts.sh:602-604` and `:673-677`
-- Modify: `docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md`
-- Modify: `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`
-
-**Interfaces:**
-
-- Consumes: the baseline from Task 1.
-- Produces: a heading checker that matches whole stripped lines. Every later
-  wave relies on this to attribute violations.
-
-- [ ] **Step 1: Prove the defect before fixing it**
-
-```bash
-cd /home/hy/projects/hy-home.docker
-python3 - <<'PY'
-t = open("docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md").read()
-print("substring '## Usage' present:", "## Usage" in t)
-print("line '## Usage' present:", "## Usage" in {l.strip() for l in t.splitlines()})
-print("the culprit line:", [l for l in t.splitlines() if l.strip() == "### Usage Type"][:1])
-PY
-```
-
-Expected output:
-
-```text
-substring '## Usage' present: True
-line '## Usage' present: False
-the culprit line: ['### Usage Type']
-```
-
-This is the defect: `### Usage Type` contains the substring `## Usage` starting
-at index 1.
+- Consumes: a profile mapping loaded by the caller.
+- Produces: classify_path(path, profiles), validate_stable_identity(path,
+  metadata, profiles), and find_dated_identity_parts(path).
+
+- [ ] **Step 1: Create the stable execution Task evidence**
+
+Create task.md from the Task template with artifact_id task-0136-01, parent
+spec:136-sdlc-taxonomy-convergence, every Task heading in this Plan as its work
+breakdown, and empty evidence tables rather than invented results. It moves
+with the Spec directory in Task 5 and receives actual command and Commit
+evidence after each Task.
+
+- [ ] **Step 2: Write failing taxonomy tests**
+
+~~~python
+from pathlib import PurePosixPath
+from scripts.lib.document_governance.taxonomy import (
+    find_dated_identity_parts,
+    validate_stable_identity,
+)
+
+def test_rejects_date_prefix_and_year_partition():
+    assert find_dated_identity_parts(PurePosixPath(
+        "docs/90.references/research/2026/2026-08-09-audit.md"
+    )) == ("2026", "2026-08-09-audit.md")
+
+def test_accepts_architecture_description_identity():
+    findings = validate_stable_identity(
+        PurePosixPath("docs/02.architecture/descriptions/ad-0001-gateway.md"),
+        {"artifact_id": "ad-0001", "artifact_type": "architecture-description"},
+        {"architecture-description": {"id_pattern": r"ad-[0-9]{4}"}},
+    )
+    assert findings == []
+~~~
+
+- [ ] **Step 3: Run the focused tests and verify failure**
+
+Run:
+
+~~~bash
+python3 -m pytest tests/validation/test_document_taxonomy.py -q
+~~~
+
+Expected: collection fails because scripts.lib.document_governance does not
+exist.
+
+- [ ] **Step 4: Implement the dependency-free taxonomy functions**
+
+taxonomy.py must use PurePosixPath and compiled regular expressions, return
+stable finding objects, and perform no file writes. It must not hardcode the
+complete repository profile table.
+
+~~~python
+@dataclass(frozen=True)
+class TaxonomyFinding:
+    code: str
+    path: str
+    message: str
+
+def find_dated_identity_parts(path: PurePosixPath) -> tuple[str, ...]:
+    return tuple(
+        part for part in path.parts
+        if re.fullmatch(r"[0-9]{4}", part)
+        or re.match(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}-", part)
+    )
+
+def validate_stable_identity(
+    path: PurePosixPath,
+    metadata: Mapping[str, object],
+    profiles: Mapping[str, Mapping[str, object]],
+) -> list[TaxonomyFinding]:
+    findings: list[TaxonomyFinding] = []
+    artifact_type = str(metadata.get("artifact_type", ""))
+    artifact_id = str(metadata.get("artifact_id", ""))
+    profile = profiles.get(artifact_type)
+    if profile is None:
+        return [TaxonomyFinding("profile-missing", str(path), artifact_type)]
+    id_pattern = str(profile["id_pattern"])
+    if re.fullmatch(id_pattern, artifact_id) is None:
+        findings.append(TaxonomyFinding(
+            "artifact-id-invalid", str(path), artifact_id
+        ))
+    if not any(
+        part == artifact_id or part.startswith(artifact_id + "-")
+        for part in path.parts
+    ):
+        findings.append(TaxonomyFinding(
+            "path-id-mismatch", str(path), artifact_id
+        ))
+    for part in find_dated_identity_parts(path):
+        findings.append(TaxonomyFinding(
+            "dated-path-identity", str(path), part
+        ))
+    return findings
+~~~
+
+- [ ] **Step 5: Run focused and existing metadata tests**
+
+~~~bash
+python3 -m pytest tests/validation/test_document_taxonomy.py tests/validation/test_document_metadata.py -q
+~~~
 
-- [ ] **Step 2: Fix the runbook required list to carry `##` prefixes**
-
-In `scripts/validation/check-repo-contracts.sh`, replace this line:
-
-```python
-    "runbooks": ["When to Use", "Procedure", "Evidence", "Escalation"],
-```
-
-with:
-
-```python
-    "runbooks": ["## When to Use", "## Procedure", "## Evidence", "## Escalation"],
-```
-
-- [ ] **Step 3: Replace substring matching with stripped-line matching**
-
-In the same heredoc, replace this block:
-
-```python
-        for literal in required[bucket]:
-            if literal not in text:
-                failures.append(f"{path}: missing {bucket} profile heading: {literal}")
-        for literal in forbidden[bucket]:
-            if literal in text:
-                failures.append(f"{path}: {bucket} document contains cross-profile heading: {literal}")
-```
-
-with:
-
-```python
-        heading_lines = {line.strip() for line in text.splitlines()}
-        for literal in required[bucket]:
-            if literal not in heading_lines:
-                failures.append(f"{path}: missing {bucket} profile heading: {literal}")
-        for literal in forbidden[bucket]:
-            if literal in heading_lines:
-                failures.append(f"{path}: {bucket} document contains cross-profile heading: {literal}")
-```
-
-- [ ] **Step 4: Run the checker and confirm exactly two failures appear**
-
-```bash
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep 'profile heading'
-```
-
-Expected exactly two lines:
-
-```text
-FAIL: docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md: missing guides profile heading: ## Usage
-FAIL: docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md: missing runbooks profile heading: ## When to Use
-```
-
-If you see 63 failures, Step 2 was not applied. If you see 0, Step 3 was not
-applied. Do not continue until you see exactly these two.
-
-- [ ] **Step 5: Migrate the guide to the corpus majority heading**
-
-In `docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md`,
-change the heading `## Routine Usage` to `## Usage`. Leave `### Usage Type` and
-every other heading untouched.
-
-- [ ] **Step 6: Migrate the runbook to the corpus majority heading**
-
-In `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`, change
-the heading `## Trigger and Preconditions` to `## When to Use`. Leave
-`## Verification Record`, `## Rollback or Recovery`, and every other heading
-untouched — they are not in the required or forbidden lists for runbooks.
-
-- [ ] **Step 6b: Retarget the two registry headings these migrations depend on**
-
-Two checkers enforce headings from different sources. `check-repo-contracts.sh`
-reads the protocol vocabulary; `check-document-metadata.py` reads the registry
-at `docs/99.templates/support/document-metadata-profiles.yaml`. Steps 5 and 6
-moved two documents to the protocol vocabulary, so until the registry agrees the
-metadata checker reports them as deficits and this task leaves the tree red.
-
-The end state is already decided by specification D2 and is not in question:
-`## Usage` carries 65 documents against 1, and `## When to Use` carries 61
-against 2. Task 9 retargets the full operations registry. The two headings these
-migrations depend on move here so that this task closes green.
-
-Under `guide:` replace:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Audience and Prerequisites',
-    '## Routine Usage',
-    '## Common Checks',
-    '## Runbook Handoff',
-    '## Related Documents',
-  ]
-```
-
-with:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Audience and Prerequisites',
-    '## Usage',
-    '## Common Checks',
-    '## Runbook Handoff',
-    '## Related Documents',
-  ]
-```
-
-Under `runbook:` replace:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Trigger and Preconditions',
-    '## Procedure',
-    '## Verification Record',
-    '## Evidence',
-    '## Rollback or Recovery',
-    '## Escalation',
-    '## Related Documents',
-  ]
-```
-
-with:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## When to Use',
-    '## Procedure',
-    '## Verification Record',
-    '## Evidence',
-    '## Rollback or Recovery',
-    '## Escalation',
-    '## Related Documents',
-  ]
-```
-
-Change nothing under `policy:` — Task 9 owns that one, along with the template
-bodies and the conditional-scope removal.
-
-- [ ] **Step 6c: Confirm both checkers now agree**
-
-```bash
-python3 -c "import yaml; yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print('yaml ok')"
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-```
-
-Expected: `violations=0`. If it still reports the two documents, the registry
-edit did not take.
-
-- [ ] **Step 7: Confirm the heading contract now passes cleanly**
-
-```bash
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c 'profile heading' || echo 0
-```
-
-Expected: `0`.
-
-- [ ] **Step 8: Confirm no baseline regression**
-
-```bash
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-```
-
-Expected: less than or equal to the Task 1 baseline. The heading repair removes
-no pre-existing failure, so the count should be unchanged.
-
-- [ ] **Step 9: Commit**
-
-```bash
-git add scripts/validation/check-repo-contracts.sh \
-        docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md \
-        docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md
-git commit -m "fix(validation): anchor operations heading checks to whole lines
-
-The heading contract tested \`literal not in text\`, a substring match against
-the whole document. \`### Usage Type\` therefore satisfied the \`## Usage\`
-requirement and the check passed a corpus containing two real violations.
-
-Anchor both the required and forbidden checks to stripped lines, and add the
-missing \`##\` prefixes to the runbooks required list. Without the second edit
-line anchoring fails all 62 runbooks.
-
-Migrate the two exposed documents to the corpus majority vocabulary per
-specification D2: \`## Routine Usage\` to \`## Usage\` (65 documents) and
-\`## Trigger and Preconditions\` to \`## When to Use\` (61 documents)."
-```
-
----
-
-#### Task 3: Withdraw the `archived` retired-alias contradiction
-
-**Files:**
-
-- Modify: `docs/00.agent-governance/rules/documentation-protocol.md:94-95`
-
-**Interfaces:**
-
-- Consumes: nothing.
-- Produces: an unambiguous status vocabulary that W3 relies on when it writes
-  `status: archived` into 267 documents.
-
-- [ ] **Step 1: Confirm the contradiction**
-
-```bash
-sed -n '87,88p;94,95p' docs/00.agent-governance/rules/documentation-protocol.md
-```
-
-Expected: line 88 mandates `status: archived`; line 95 lists `archived` as a
-retired alias that must be normalized when found.
-
-- [ ] **Step 2: Remove `archived` from the retired-alias list**
-
-Replace:
-
-```markdown
-A document without this frontmatter is **INCOMPLETE**. Retired aliases such
-as `approved`, `done`, and `archived` must be normalized when found.
-```
-
-with:
-
-```markdown
-A document without this frontmatter is **INCOMPLETE**. Retired aliases such
-as `approved` and `done` must be normalized when found. `archived` is a
-current status value, required by the archive profile, and is never
-normalized away.
-```
-
-- [ ] **Step 3: Confirm the archive profile still permits the value**
-
-```bash
-grep -n 'allowed_statuses' docs/99.templates/support/document-metadata-profiles.yaml | grep -i archive
-```
-
-Expected: at least one line permitting `archived`.
-
-- [ ] **Step 4: Verify and commit**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/00.agent-governance/rules/documentation-protocol.md
-git commit -m "docs(governance): withdraw the archived retired-alias contradiction
-
-Line 88 mandates \`status: archived\` for archive tombstones while line 95
-listed \`archived\` among retired aliases requiring normalization. The two
-statements are seven lines apart and mutually exclusive.
-
-\`archived\` is a current status value required by the archive profile."
-```
-
----
-
-#### Task 4: Retarget the `audit` role onto its corpus
-
-The plan's first revision of this task prescribed `forbidden_headings: []`. That
-is structurally impossible: `check-document-metadata.py:4288` rejects an empty
-list, and `role.get(heading_key)` returning `None` fails the same check, so
-deleting the key is rejected too. Both exits are closed.
-
-Measurement then showed the real problem is larger than a vacuous forbidden
-rule. All 34 audit documents carry an identical heading set, and it is the
-`reference` set — not the `audit` set:
-
-| Heading                                                                                                                   | Audit documents carrying it |
-| :------------------------------------------------------------------------------------------------------------------------ | :-------------------------- |
-| `## Overview`, `## Purpose`, `## Scope`, `## Definitions / Facts`, `## Sources`, `## Maintenance`, `## Related Documents` | 34 of 34                    |
-| `## Repository Role`                                                                                                      | 34 of 34                    |
-| `## Scope and Criteria`, `## Gap Analysis`, `## Disposition` (audit-role required)                                        | 0 of 34                     |
-
-Retiring the role was considered and rejected: 17 documents declare
-`artifact_type: audit`, and two dedicated validators
-(`scripts/validation/audit_criterion_contract.py`,
-`scripts/validation/check-agentic-audit-semantic-freshness.py`) plus several
-Stage 99 support contracts depend on the type.
-
-This task therefore retargets the role onto its corpus per specification D2 and
-absorbs what was previously Task 10.
-
-**Files:**
-
-- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`, `audit:` role
-- Modify: `docs/99.templates/templates/common/audit.template.md`
-
-**Interfaces:**
-
-- Consumes: nothing.
-- Produces: an `audit` role whose conforming count rises from 0 toward 34.
-
-- [ ] **Step 1: Confirm the measurement before changing anything**
-
-```bash
-cd /home/hy/projects/hy-home.docker
-python3 - <<'PY'
-import pathlib, collections
-docs = [p for p in pathlib.Path('docs/90.references/audits').rglob('*.md')
-        if p.name != 'README.md']
-c = collections.Counter()
-for p in docs:
-    for line in p.read_text(errors='ignore').splitlines():
-        if line.startswith('## '):
-            c[line.strip()] += 1
-print("audit documents:", len(docs))
-for h, k in c.most_common(10):
-    print(f"  {k:3}/{len(docs)}  {h}")
-PY
-```
-
-Expected: 34 documents, with eight headings at 34/34. If the universal set is
-not eight headings at 34/34, stop and report — the retarget below assumes it.
-
-- [ ] **Step 2: Confirm the forbidden candidates are absent**
-
-```bash
-python3 - <<'PY'
-import pathlib
-docs = [p for p in pathlib.Path('docs/90.references/audits').rglob('*.md')
-        if p.name != 'README.md']
-for h in ("## Procedure", "## Controls", "## Usage"):
-    n = sum(1 for p in docs
-            if any(l.strip() == h for l in p.read_text(errors='ignore').splitlines()))
-    print(f"  {n:3}/{len(docs)}  {h}")
-PY
-```
-
-Expected: `0/34` for all three. These mark a document as an operations artifact
-rather than an audit, so forbidding them catches a genuine misfile instead of
-never firing.
-
-- [ ] **Step 3: Retarget the `audit` role**
-
-In `docs/99.templates/support/document-metadata-profiles.yaml`, under `audit:`,
-replace the three heading lists with:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Purpose',
-    '## Repository Role',
-    '## Scope',
-    '## Definitions / Facts',
-    '## Sources',
-    '## Maintenance',
-    '## Related Documents',
-  ]
-conditional_headings:
-  ['## Findings', '## Method', '## Source Rules', '## Evidence Snapshot Boundary', '## Comparison']
-forbidden_headings: ['## Procedure', '## Controls', '## Usage']
-```
-
-All three lists are non-empty, every entry starts with `## `, and no list
-contains a duplicate — the three conditions `check-document-metadata.py:4288`
-and `:4297` enforce.
-
-- [ ] **Step 4: Update the template body to match**
-
-Rewrite the heading list in
-`docs/99.templates/templates/common/audit.template.md` to the eight required
-headings from Step 3, in that order, keeping exactly one `## Related Documents`
-as the final heading.
-
-- [ ] **Step 5: Verify the role loads and the conforming count rose**
-
-```bash
-python3 -c "import yaml; d=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); r=d['template_roles']['audit']; print({k: r[k] for k in ('required_headings','conditional_headings','forbidden_headings')})"
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
-```
-
-Expected: the three lists print as set in Step 3; `violations=0`; `2` contract
-failures. A `configuration-error: template role audit ... must be a non-empty
-H2 heading list` means one of the three lists came out empty — fix it before
-continuing.
+Expected: PASS.
 
 - [ ] **Step 6: Commit**
 
-```bash
-git add docs/99.templates/support/document-metadata-profiles.yaml \
-        docs/99.templates/templates/common/audit.template.md
-git commit -m "docs(templates): retarget the audit role onto its corpus
+~~~bash
+git add docs/03.specs/136-sdlc-taxonomy-convergence/task.md scripts/lib/document_governance scripts/requirements.txt tests/validation/test_document_taxonomy.py
+git commit -m "feat(validation): add stable document taxonomy engine"
+~~~
 
-34 audit documents exist and none satisfied the audit heading contract. The
-required headings were never the ones audit authors write: all 34 carry the
-reference heading set plus ## Repository Role, and zero carry ## Scope and
-Criteria, ## Gap Analysis, or ## Disposition.
-
-The role is retained rather than retired. 17 documents declare
-artifact_type: audit, and audit_criterion_contract.py,
-check-agentic-audit-semantic-freshness.py, and several Stage 99 support
-contracts depend on the type.
-
-forbidden_headings could not be emptied: check-document-metadata.py:4288
-rejects an empty list and a missing key alike. It is retargeted to three
-operations headings, each carried by 0 of 34 documents, so the rule catches a
-misfiled operations document instead of never firing."
-```
-
-#### Task 5: Document the enforced `reviewed_at` and `review_cycle` fields
+### Task 2: Establish Canonical Stage 00 and Stage 99 Contracts
 
 **Files:**
 
-- Modify: `docs/99.templates/support/frontmatter-contract.md`
+- Modify: docs/00.agent-governance/contracts/agent-governance-artifacts.yaml
+- Modify: docs/00.agent-governance/rules/documentation-protocol.md
+- Modify: docs/00.agent-governance/rules/stage-authoring-matrix.md
+- Modify: docs/00.agent-governance/scopes/docs.md
+- Modify: docs/99.templates/support/document-metadata-profiles.yaml
+- Modify: docs/99.templates/support/frontmatter-contract.md
+- Modify: docs/99.templates/support/lifecycle-status.md
+- Modify: docs/99.templates/support/sdlc-document-contract.md
+- Modify: docs/99.templates/support/template-selection.md
+- Modify: docs/99.templates/support/archive-retention-contract.md
+- Modify: docs/99.templates/support/document-corpus-migration-contract.yaml
+- Rename: docs/99.templates/templates/sdlc/ard.template.md to
+  docs/99.templates/templates/sdlc/architecture-description.template.md
+- Create: docs/99.templates/templates/sdlc/srs.template.md
+- Create: docs/99.templates/templates/sdlc/interface-requirement.template.md
+- Modify: docs/99.templates/templates/sdlc/prd.template.md
+- Modify: docs/99.templates/templates/sdlc/adr.template.md
+- Modify: docs/99.templates/templates/sdlc/spec.template.md
+- Modify: docs/99.templates/templates/sdlc/plan.template.md
+- Modify: docs/99.templates/templates/sdlc/task.template.md
+- Modify: docs/99.templates/templates/operations/guide.template.md
+- Modify: docs/99.templates/templates/operations/policy.template.md
+- Modify: docs/99.templates/templates/operations/runbook.template.md
+- Modify: docs/99.templates/templates/operations/incident.template.md
+- Modify: docs/99.templates/templates/operations/postmortem.template.md
+- Modify: docs/99.templates/templates/operations/release.template.md
+- Modify: tests/validation/test_document_metadata.py
+- Modify: tests/validation/test_agent_governance_contract.py
 
 **Interfaces:**
 
-- Consumes: nothing.
-- Produces: documentation for two fields the policy, runbook, and postmortem
-  profiles already require.
+- Consumes: taxonomy functions from Task 1.
+- Produces: target profiles for PRD, SRS, Interface Requirement, Architecture
+  Description, ADR, Spec, Plan, Task, Operations roles, Archive roles, and a
+  bounded migration phase named sdlc-taxonomy-convergence.
 
-- [ ] **Step 1: Confirm the fields are enforced but undocumented**
+- [ ] **Step 1: Add failing contract fixtures**
 
-```bash
-grep -n 'reviewed_at\|review_cycle' docs/99.templates/support/document-metadata-profiles.yaml | head
-grep -c 'reviewed_at\|review_cycle' docs/99.templates/support/frontmatter-contract.md || echo 0
-```
+Add fixtures that accept ad-0001-*.md and reject ARD, accept stable operation
+subjects, reject date prefixes, require created and updated after promotion,
+and identify Rules Engineer as the Stage 00 policy owner.
 
-Expected: the registry lists both fields as required for the policy and runbook
-profiles and `reviewed_at` for postmortem; the contract document mentions them
-zero times.
+- [ ] **Step 2: Run the focused contract tests**
 
-- [ ] **Step 2: Add a section documenting both fields**
+~~~bash
+python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_agent_governance_contract.py -q
+~~~
 
-Insert the following before the `## Related Documents` heading of
-`docs/99.templates/support/frontmatter-contract.md`:
+Expected: FAIL on missing profiles and old authority.
 
-```markdown
-## Review Fields
+- [ ] **Step 3: Apply template and contract changes**
 
-Two fields are required by the `policy`, `runbook`, and `postmortem` profiles
-and are enforced by
-[`document-metadata-profiles.yaml`](./document-metadata-profiles.yaml).
+Use git mv for the Architecture Description template. The migration contract
+must enumerate the old source roots as bounded inputs and must not define a
+permanent legacy profile. Operations conditional sections are represented as
+conditional_headings, not required boilerplate.
 
-| Field          | Type         | Required by                 | Meaning                                                  |
-| :------------- | :----------- | :-------------------------- | :------------------------------------------------------- |
-| `reviewed_at`  | `YYYY-MM-DD` | policy, runbook, postmortem | Date the document's content was last confirmed accurate. |
-| `review_cycle` | string       | policy, runbook             | Cadence or trigger governing the next review.            |
+- [ ] **Step 4: Check contract validity**
 
-`review_cycle` accepts either a fixed cadence such as `quarterly` or an
-event trigger such as `on-source-change`. A document whose `reviewed_at`
-predates its cadence is stale, but staleness is not currently a blocking check.
-```
+~~~bash
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+python3 scripts/validation/check-agent-governance-contract.py --mode contract
+python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_agent_governance_contract.py -q
+~~~
 
-- [ ] **Step 3: Verify and commit**
+Expected: all commands PASS. Corpus-wide promotion is not expected yet.
 
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/99.templates/support/frontmatter-contract.md
-git commit -m "docs(templates): document the enforced review fields
+- [ ] **Step 5: Commit**
 
-\`reviewed_at\` and \`review_cycle\` are required by the policy, runbook, and
-postmortem profiles and drive real findings, yet the document designated as the
-frontmatter interpreter never mentioned them.
+~~~bash
+git add docs/00.agent-governance docs/99.templates tests/validation
+git commit -m "governance: establish canonical SDLC document contracts"
+~~~
 
-Undocumented enforcement is now documented."
-```
-
----
-
-#### Task 6: Resolve the duplicate lifecycle declaration
+### Task 3: Freeze the Migration Ledger and Script Manifest
 
 **Files:**
 
-- Modify: `docs/00.agent-governance/rules/agentic.md:74-76`
+- Create: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Create: scripts/manifest.yaml
+- Modify: scripts/README.md
+- Create: tests/validation/test_script_manifest.py
 
 **Interfaces:**
 
-- Consumes: nothing.
-- Produces: one lifecycle statement. `task-checklists.md:75-77` already binds
-  provider adapters to the `workflows.md` formulation.
+- Consumes: the target identities from Task 2 and git ls-files.
+- Produces: an exhaustive old-to-new document path ledger and a 63-file script
+  disposition inventory used by every later Task.
 
-- [ ] **Step 1: Confirm both files declare a singular lifecycle**
+- [ ] **Step 1: Write a failing manifest completeness test**
 
-```bash
-sed -n '74,76p' docs/00.agent-governance/rules/agentic.md
-sed -n '92,93p' docs/00.agent-governance/rules/workflows.md
-sed -n '75,77p' docs/00.agent-governance/rules/task-checklists.md
-```
+~~~python
+def test_every_tracked_script_has_one_manifest_record(repo, manifest):
+    tracked = set(repo.git("ls-files", "scripts").splitlines())
+    declared = [row["path"] for row in manifest["files"]]
+    assert len(declared) == len(set(declared))
+    assert set(declared) == tracked
+~~~
 
-Expected: `agentic.md` says "The sole lifecycle is" and lists 8 phases;
-`workflows.md` says "The exact provider-neutral lifecycle is" and lists 5;
-`task-checklists.md` binds adapters to the `workflows.md` formulation.
+- [ ] **Step 2: Generate read-only inventories under /tmp**
 
-- [ ] **Step 2: Demote the `agentic.md` statement to a reference**
+~~~bash
+git ls-files docs scripts > /tmp/sdlc-taxonomy-tracked-paths.txt
+rg -n --glob '*.md' '\]\([^)]*docs/(01|02|03|04|05|90|98)\.' . > /tmp/sdlc-taxonomy-inbound-links.txt
+git ls-files scripts | sort > /tmp/sdlc-taxonomy-script-paths.txt
+~~~
 
-Replace:
+Expected: 63 tracked script paths and a complete inbound-link evidence file.
 
-```markdown
-- The sole lifecycle is
-  `discover -> design/plan -> approval -> implement -> validate ->
-independent-review -> evidence -> handoff`.
-```
+- [ ] **Step 3: Author the exhaustive ledgers**
 
-with:
+Every document row records legacy_path, stable_path, artifact_id, action,
+replacement, source_commit, and reason. Every script row records path, kind,
+authority, lifecycle, mutation, consumers, disposition, successor, and tests.
+Use the mandatory dispositions in Context and Inputs. No row may use unknown,
+later, undecided, legacy, deprecated, or dormant.
 
-```markdown
-- The lifecycle is owned by
-  [`workflows.md`](./workflows.md). This rule adds no second sequence; the
-  agent-first phases `discover -> design/plan -> approval -> implement ->
-validate -> independent-review -> evidence -> handoff` describe agent
-  behavior within that lifecycle, not a competing one.
-```
+- [ ] **Step 4: Run completeness tests**
 
-- [ ] **Step 3: Verify no other file claims a third lifecycle**
-
-```bash
-grep -rn 'sole lifecycle\|exact provider-neutral lifecycle\|the lifecycle is' \
-  docs/00.agent-governance/rules/
-```
-
-Expected: exactly one authoritative declaration, in `workflows.md`.
-
-- [ ] **Step 4: Verify and commit**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/00.agent-governance/rules/agentic.md
-git commit -m "docs(governance): resolve the duplicate lifecycle declaration
-
-agentic.md declared an 8-phase lifecycle as 'the sole lifecycle' while
-workflows.md declared a 5-phase one as 'the exact provider-neutral lifecycle'.
-Both claimed singularity and the two sequences differ.
-
-task-checklists.md already binds provider adapters to the workflows.md
-formulation, so the agentic.md sequence had no downstream consumer. It is
-demoted to a description of agent behavior within the owned lifecycle."
-```
-
----
-
-#### Task 7: Correct the stale fixture and regression counts
-
-**Files:**
-
-- Modify: `docs/00.agent-governance/rules/quality-standards.md:61-63`
-
-**Interfaces:**
-
-- Consumes: nothing.
-- Produces: a completion gate whose numbers match the fixture catalog.
-
-- [ ] **Step 1: Derive the ground truth**
-
-```bash
+~~~bash
+python3 -m pytest tests/validation/test_script_manifest.py -q
 python3 - <<'PY'
-import re
-s = open('docs/90.references/data/governance/agent-output-eval-fixtures.md').read()
-fixtures = sorted({i for i in re.findall(r'AOE-[A-Z]+-\d+', s) if '-REG-' not in i})
-regressions = sorted(set(re.findall(r'AOE-REG-\d+', s)))
-print("fixtures:", len(fixtures))
-print("regressions:", len(regressions))
+from pathlib import Path
+text = Path("docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md").read_text()
+for key in ("legacy_path", "stable_path", "artifact_id", "action",
+            "replacement", "source_commit", "reason"):
+    assert key in text, key
 PY
-```
+~~~
 
-Expected: `fixtures: 11`, `regressions: 16`.
+Expected: PASS.
 
-- [ ] **Step 2: Confirm the two rule files disagree**
+- [ ] **Step 5: Commit**
 
-```bash
-sed -n '61,63p' docs/00.agent-governance/rules/quality-standards.md
-sed -n '51,53p' docs/00.agent-governance/rules/postflight-checklist.md
-```
+~~~bash
+git add docs/98.archive/migrations scripts/manifest.yaml scripts/README.md tests/validation/test_script_manifest.py
+git commit -m "docs: freeze SDLC and script migration dispositions"
+~~~
 
-Expected: `quality-standards.md` says eight and ten; `postflight-checklist.md`
-says 11 and 16. The latter matches ground truth.
-
-- [ ] **Step 3: Correct the stale counts**
-
-In `docs/00.agent-governance/rules/quality-standards.md`, replace:
-
-```markdown
-6. For agent-harness changes, require all eight fixture catalog entries, all ten
-   deterministic regressions, `fixtures_check=pass`, and
-   `regressions_check=pass` without a network model call.
-```
-
-with:
-
-```markdown
-6. For agent-harness changes, require all 11 fixture catalog entries, all 16
-   deterministic regressions, `fixtures_check=pass`, and
-   `regressions_check=pass` without a network model call.
-```
-
-- [ ] **Step 4: Verify no other file carries the stale numbers**
-
-```bash
-grep -rn 'eight fixture\|ten deterministic' docs/00.agent-governance/
-```
-
-Expected: no output.
-
-- [ ] **Step 5: Verify and commit**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/00.agent-governance/rules/quality-standards.md
-git commit -m "fix(governance): correct stale fixture and regression counts
-
-quality-standards.md required eight fixtures and ten regressions;
-postflight-checklist.md required 11 and 16. The fixture catalog holds 11
-distinct AOE fixtures and 16 AOE-REG regressions, so postflight-checklist.md
-was correct and quality-standards.md was stale by three and six."
-```
-
----
-
-#### Task 8: Close W1 and confirm the wave gate
-
-**Files:** none modified.
-
-- [ ] **Step 1: Run the full gate**
-
-```bash
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-bash scripts/validation/check-doc-traceability.sh
-```
-
-Expected: failure count at or below the Task 1 baseline; `violations=0` on
-changed documents; traceability zero failures.
-
-- [ ] **Step 2: Confirm no document was moved**
-
-```bash
-git diff --name-status 19ee4727..HEAD -- docs/ | grep -c '^R' || echo 0
-```
-
-Expected: `0` renames in W1. If non-zero, a task exceeded its boundary.
-
----
-
-### Wave W2 — Template retargeting onto the corpus
-
-Precondition: W1 complete. The checker must be sound before the contract is
-rewritten, or the effect of the rewrite cannot be measured.
-
----
-
-#### Task 9: Retarget the operations heading registry to the corpus vocabulary
+### Task 4: Migrate Requirements and Architecture
 
 **Files:**
 
-- Modify: `docs/99.templates/support/document-metadata-profiles.yaml:361-381`
-- Modify: `docs/99.templates/templates/operations/guide.template.md`
-- Modify: `docs/99.templates/templates/operations/policy.template.md`
-- Modify: `docs/99.templates/templates/operations/runbook.template.md`
+- Rename: docs/01.requirements/[0-9][0-9][0-9]-*.md to
+  docs/01.requirements/prd-[0-9][0-9][0-9]-*.md
+- Rename: docs/02.architecture/requirements/*.md to
+  docs/02.architecture/descriptions/ad-*.md
+- Rename: docs/02.architecture/decisions/*.md to
+  docs/02.architecture/decisions/adr-*.md
+- Modify: all inbound paths enumerated for these rows in mig-0001
+- Modify: docs/01.requirements/README.md
+- Modify: docs/02.architecture/README.md
+- Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
 
 **Interfaces:**
 
-- Consumes: the sound checker from Task 2.
-- Produces: a registry whose `required_headings` match the 61-to-65 document
-  majority. Task 13's archive migration relies on this to avoid mass violations.
+- Consumes: exact path rows from Task 3.
+- Produces: stable PRD, Architecture Description, and ADR paths and IDs.
 
-- [ ] **Step 1: Measure the split before changing anything**
+- [ ] **Step 1: Add failing migration assertions**
 
-```bash
-cd docs/05.operations
-for pair in "guides:## Usage:## Routine Usage" \
-            "policies:## Policy Scope:## Scope" \
-            "runbooks:## When to Use:## Trigger and Preconditions"; do
-  b=${pair%%:*}; rest=${pair#*:}; legacy=${rest%%:*}; registry=${rest#*:}
-  nl=$(grep -rl "^${legacy}$" $b --include='*.md' | grep -v README | wc -l)
-  nr=$(grep -rl "^${registry}$" $b --include='*.md' | grep -v README | wc -l)
-  echo "$b  legacy '$legacy'=$nl   registry '$registry'=$nr"
-done
-cd /home/hy/projects/hy-home.docker
-```
+Add tests to test_document_taxonomy.py that assert no tracked Stage 01 document
+matches three-digits-without-prd and no Stage 02 requirements path exists.
 
-Expected: `guides 65 vs 1`, `policies 63 vs 1`, `runbooks 61 vs 2`. Each ratio
-must exceed the 61:1 threshold specification D2 sets before the corpus is
-promoted. If any ratio is below it, stop and escalate.
+- [ ] **Step 2: Verify the assertions fail**
 
-> **Already applied in Task 2 Step 6b:** the `guide` and `runbook`
-> `required_headings` were retargeted there, because Task 2's document
-> migrations would otherwise leave the metadata checker red. Steps 2 and 4 below
-> are therefore verification steps in this task, not edits. Confirm each value
-> matches and move on. Step 3 (`policy`) is a real edit and has not been applied.
+~~~bash
+python3 -m pytest tests/validation/test_document_taxonomy.py -q
+~~~
 
-- [ ] **Step 2: Verify the `guide` role was retargeted**
+Expected: FAIL against current paths.
 
-In `docs/99.templates/support/document-metadata-profiles.yaml`, under `guide:`,
-replace:
+- [ ] **Step 3: Apply exact git mv rows and frontmatter updates**
 
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Audience and Prerequisites',
-    '## Routine Usage',
-    '## Common Checks',
-    '## Runbook Handoff',
-    '## Related Documents',
-  ]
-```
+Use only mappings already committed in mig-0001. Change parent_ids and links in
+the same edit. Architecture content is normalized to stakeholders, boundaries,
+views, flows, quality scenarios, requirement disposition, and related ADRs
+without inventing unimplemented architecture.
 
-with:
+- [ ] **Step 4: Verify Stage 01 and 02**
 
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Audience and Prerequisites',
-    '## Usage',
-    '## Common Checks',
-    '## Runbook Handoff',
-    '## Related Documents',
-  ]
-```
+~~~bash
+test ! -d docs/02.architecture/requirements
+test -d docs/02.architecture/descriptions
+python3 -m pytest tests/validation/test_document_taxonomy.py tests/validation/test_document_metadata.py -q
+bash scripts/validation/check-doc-implementation-alignment.sh
+~~~
 
-- [ ] **Step 3: Retarget the `policy` role**
+Expected: tests PASS and alignment findings do not increase.
 
-Under `policy:`, replace:
+- [ ] **Step 5: Commit**
 
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Scope',
-    '## Controls',
-    '## Exceptions',
-    '## Verification',
-    '## Review Cadence',
-    '## Related Documents',
-  ]
-```
+~~~bash
+git add docs/01.requirements docs/02.architecture docs/98.archive/migrations tests/validation
+git commit -m "docs: migrate requirements and architecture identities"
+~~~
 
-with:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Policy Scope',
-    '## Controls',
-    '## Exceptions',
-    '## Verification',
-    '## Review Cadence',
-    '## Related Documents',
-  ]
-```
-
-- [ ] **Step 4: Verify the `runbook` role was retargeted**
-
-Under `runbook:`, replace:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## Trigger and Preconditions',
-    '## Procedure',
-    '## Verification Record',
-    '## Evidence',
-    '## Rollback or Recovery',
-    '## Escalation',
-    '## Related Documents',
-  ]
-```
-
-with:
-
-```yaml
-required_headings:
-  [
-    '## Overview',
-    '## When to Use',
-    '## Procedure',
-    '## Verification Record',
-    '## Evidence',
-    '## Rollback or Recovery',
-    '## Escalation',
-    '## Related Documents',
-  ]
-```
-
-- [ ] **Step 5: Update the three template bodies to match**
-
-In `docs/99.templates/templates/operations/guide.template.md` change the
-`## Routine Usage` heading to `## Usage`. In `policy.template.md` change
-`## Scope` to `## Policy Scope`. In `runbook.template.md` change
-`## Trigger and Preconditions` to `## When to Use`. Change nothing else; all
-three already end with exactly one `## Related Documents`.
-
-- [ ] **Step 6: Remove the frontmatter-conditional scope workaround**
-
-The checker papers over the `## Scope` versus `## Policy Scope` split with a
-frontmatter-conditional. With the registry retargeted, one heading is canonical
-and the conditional is dead. In `scripts/validation/check-repo-contracts.sh`
-replace the `if bucket == "policies":` block with:
-
-```python
-        if bucket == "policies":
-            scope_count = sum(
-                1 for line in text.splitlines() if line.strip() == "## Policy Scope"
-            )
-            if scope_count != 1:
-                failures.append(
-                    f"{path}: policy document must contain exactly one ## Policy Scope heading; found {scope_count}"
-                )
-```
-
-- [ ] **Step 6b: Migrate the one policy outlier the repair exposes**
-
-Removing the conditional in Step 6 exposes a document that was passing only
-because the old conditional had the two heading generations backwards. It is the
-single `## Scope` document from the 63:1 measurement in Step 1:
-
-```bash
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep 'Policy Scope'
-```
-
-Expected: one failure naming
-`docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`.
-
-Change that document's `## Scope` heading to `## Policy Scope`. Change nothing
-else in the file.
-
-This is the same situation Task 2 resolved for `guide` and `runbook`: repairing
-a checker exposes a real violation, and specification D2 sends the outlier to the
-corpus majority rather than bending the contract to the outlier. Task 2 migrated
-two documents on that basis; this migrates the third and last.
-
-- [ ] **Step 6c: Confirm the exposure is closed**
-
-```bash
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
-```
-
-Expected: `2`. A `3` means the migration did not take. Do not adjust the
-expected baseline to accommodate the failure — the baseline of 2 is the two
-known out-of-scope subjects, and nothing in this wave may add a third.
-
-- [ ] **Step 6d: Complete the required-set retarget for guide and runbook**
-
-Steps 2 through 6c retargeted only the one contested heading per role. The
-remaining required headings are still registry inventions, which is why `policy`
-reached 64 of 64 while `guide` stayed at 1 of 66 and `runbook` at 2 of 62.
-
-Measured against the corpus:
-
-| Role    | Heading                                                                                                             | Documents carrying it | Verdict                          |
-| :------ | :------------------------------------------------------------------------------------------------------------------ | --------------------: | :------------------------------- |
-| guide   | `## Usage`, `## Common Checks`, `## Runbook Handoff`, `## Related Documents`                                        |              66 of 66 | Keep required                    |
-| guide   | `## Overview`                                                                                                       |               1 of 66 | Demote — 65:1 clears D2          |
-| guide   | `## Audience and Prerequisites`                                                                                     |               1 of 66 | Demote — 65:1 clears D2          |
-| runbook | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation`, `## Related Documents` |              62 of 62 | Keep required                    |
-| runbook | `## Verification Record`                                                                                            |               2 of 62 | Demote — 60:2 clears D2          |
-| runbook | `## Overview`                                                                                                       |              25 of 62 | Demote — 37:25 does NOT clear D2 |
-
-The last row is the only judgement call. At 37 against 25 neither side is
-decisive, so D2 forbids promoting the corpus. Demoting to
-`conditional_headings` is the one state that neither asserts a majority that
-does not exist nor requires a heading 60 percent of the corpus lacks. Adding
-`## Overview` to the 37 documents that lack it was considered and rejected: it
-is authoring work in the opposite direction to D2.
-
-Write the demotions as ADDITIONS to each role's existing `conditional_headings`,
-never as a replacement list. `runbook` already carries `## Automation Handoff`
-there, and `runbook.template.md` emits that heading. Dropping it leaves the
-template source carrying a heading registered in neither list, which
-`check-document-metadata.py:2224` reports as `body-heading-forbidden` for
-template sources.
-
-Demote all four to `conditional_headings` — never to `forbidden_headings`,
-which would break the documents that do carry them.
-
-In `docs/99.templates/support/document-metadata-profiles.yaml`, under `guide:`:
-
-```yaml
-required_headings: ['## Usage', '## Common Checks', '## Runbook Handoff', '## Related Documents']
-conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Troubleshooting']
-```
-
-Under `runbook:`:
-
-```yaml
-required_headings:
-  [
-    '## When to Use',
-    '## Procedure',
-    '## Evidence',
-    '## Rollback or Recovery',
-    '## Escalation',
-    '## Related Documents',
-  ]
-conditional_headings: ['## Overview', '## Verification Record', '## Automation Handoff']
-```
-
-Then remove the demoted headings from the two template bodies
-(`guide.template.md`, `runbook.template.md`) so a newly authored document is not
-told to write a heading its role no longer requires. Keep exactly one
-`## Related Documents` as the final heading in each.
-
-- [ ] **Step 6e: Confirm both roles now conform**
-
-```bash
-python3 -c "
-import yaml,re,pathlib
-reg=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml'))['template_roles']
-for role,d in (('guide','guides'),('runbook','runbooks')):
-    req=reg[role]['required_headings']
-    docs=[p for p in pathlib.Path('docs/05.operations/'+d).rglob('*.md') if p.name!='README.md']
-    n=sum(1 for p in docs if all(any(l.strip()==h for l in p.read_text(errors='ignore').splitlines()) for h in req))
-    print(role, n, '/', len(docs))"
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-```
-
-Expected: `guide 66 / 66`, `runbook 62 / 62`, `2` contract failures,
-`violations=0`.
-
-- [ ] **Step 7: Measure the conformance improvement**
-
-```bash
-python3 - <<'PY'
-import yaml, re, glob, os
-
-reg = yaml.safe_load(open("docs/99.templates/support/document-metadata-profiles.yaml"))
-roles = reg.get("template_roles", {})
-STAGES = ("docs/01", "docs/02", "docs/03", "docs/04", "docs/05", "docs/90")
-
-total = conforming = 0
-for name, spec in sorted(roles.items()):
-    files = {f for g in spec.get("target_globs", []) or []
-             for f in glob.glob(g, recursive=True)
-             if f.endswith(".md") and os.path.isfile(f)
-             and f.startswith(STAGES) and not f.endswith("README.md")}
-    required = spec.get("required_headings", []) or []
-    n = sum(1 for f in files
-            if all(re.search("^" + re.escape(h) + r"\s*$",
-                             open(f, errors="replace").read(), re.M)
-                   for h in required))
-    if files:
-        print(f"  {name:14} {n:4} / {len(files):4}")
-    total += len(files)
-    conforming += n
-print(f"TOTAL conforming: {conforming} / {total}")
-PY
-```
-
-Expected: `guide` near 60 of 66, `policy` near 60 of 64, `runbook` near 55 of
-62, and a total well above the 88 of 631 baseline. Exact figures depend on
-other required headings each document may still lack; the direction is what
-matters.
-
-- [ ] **Step 8: Verify and commit**
-
-```bash
-python3 -c "import yaml; yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print('yaml ok')"
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/99.templates/support/document-metadata-profiles.yaml \
-        docs/99.templates/templates/operations/ \
-        scripts/validation/check-repo-contracts.sh
-git commit -m "docs(templates): retarget operations headings onto the corpus
-
-The registry named different headings from the ones the corpus uses. On every
-one of the three contested headings the corpus is consistent at 61:1 or better
-and the registry is the outlier:
-
-  guides    ## Usage 65        vs ## Routine Usage 1
-  policies  ## Policy Scope 63 vs ## Scope 1
-  runbooks  ## When to Use 61  vs ## Trigger and Preconditions 2
-
-Per specification D2 the corpus is promoted to canonical. This resolves guide,
-policy, and runbook conformance without editing 190 documents.
-
-The frontmatter-conditional scope workaround is removed; it existed only to
-straddle the split."
-```
-
----
-
-#### Task 10: Absorbed into Task 4
-
-This task retargeted the `audit` role. It was pulled forward into Task 4,
-because Task 4's original disposition (`forbidden_headings: []`) proved
-structurally impossible and the investigation that followed produced the
-measurement this task depended on. Splitting the same role across two waves
-would have edited one registry entry twice.
-
-- [ ] **Step 1: Confirm Task 4 already applied the retarget**
-
-```bash
-python3 -c "import yaml; r=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml'))['template_roles']['audit']; print('required:', r['required_headings']); print('forbidden:', r['forbidden_headings'])"
-```
-
-Expected: eight required headings beginning `## Overview`, `## Purpose`,
-`## Repository Role`; and `['## Procedure', '## Controls', '## Usage']`
-forbidden. If either differs, Task 4 did not complete — return to it.
-
-No commit. This task has no remaining work.
-
-#### Task 11: Mark the not-yet-exercised templates
+### Task 5: Co-locate Spec, Plan, and Task and Remove Stage 04
 
 **Files:**
 
-- Modify: `docs/00.agent-governance/rules/stage-authoring-matrix.md`
-- Modify: `docs/99.templates/templates/README.md`
+- Rename: docs/03.specs/[0-9][0-9][0-9]-*/ to
+  docs/03.specs/spec-0[0-9][0-9][0-9]-*/
+- Rename: docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md
+  to docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md
+- Reclassify: docs/98.archive/03.specs/* according to mig-0001
+- Rename active execution documents to owning Stage 03 plan.md and task.md
+- Move completed execution pairs to docs/98.archive/changes/chg-*/
+- Delete: capability child README.md files
+- Delete after empty: docs/04.execution/
+- Modify: docs/03.specs/README.md
+- Modify: docs/98.archive/README.md
+- Modify: all inbound links and mig-0001 rows
+- Modify: tests/validation/test_document_corpus_lifecycle.py
 
 **Interfaces:**
 
-- Consumes: the zero-instantiation measurement.
-- Produces: an explicit record distinguishing "unused because unneeded" from
-  "unused because broken". Task 9 and Task 10 fixed the broken ones; these are
-  genuinely unexercised.
+- Consumes: Requirement and Architecture IDs from Task 4 and the disposition
+  rows from Task 3.
+- Produces: one active capability directory per current Spec and complete
+  change packets for completed Plan and Task evidence.
 
-- [ ] **Step 1: Confirm the zero-instantiation set**
+- [ ] **Step 1: Add failing co-location tests**
 
-```bash
-for t in incident postmortem release api-spec data-model service tests agent-design; do
-  case $t in
-    incident)   g='docs/05.operations/incidents/*.md' ;;
-    postmortem) g='docs/05.operations/incidents/**/*postmortem*.md' ;;
-    release)    g='docs/05.operations/releases/*.md' ;;
-    *)          g="docs/03.specs/*/$t.md" ;;
-  esac
-  n=$(ls $g 2>/dev/null | grep -v README | wc -l)
-  echo "$t: $n"
-done
-```
+~~~python
+def test_active_capability_has_no_child_readme(snapshot):
+    assert snapshot.child_readmes == []
 
-Expected: every count is `0` except `agent-design`, which is `1` and
-non-conforming.
+def test_stage_04_is_absent(snapshot):
+    assert not snapshot.path("docs/04.execution").exists()
 
-- [ ] **Step 2: Add a not-yet-exercised table to the stage authoring matrix**
+def test_active_change_is_at_most_one_pair(snapshot):
+    assert all(row.plans <= 1 and row.tasks <= 1 for row in snapshot.capabilities)
+~~~
 
-Insert before the `## Related Documents` heading of
-`docs/00.agent-governance/rules/stage-authoring-matrix.md`:
+- [ ] **Step 2: Run lifecycle tests and verify failure**
 
-```markdown
-## Not-Yet-Exercised Templates
+~~~bash
+python3 -m pytest tests/validation/test_document_corpus_lifecycle.py -q
+~~~
 
-These templates are registered, valid, and retained. No document has been
-authored from them. They are retained because the lifecycle event they serve has
-not yet occurred, not because they are defective.
+Expected: FAIL on Stage 04 and current directory shapes.
 
-| Template       | Target path                                | Trigger that would create the first instance  |
-| :------------- | :----------------------------------------- | :-------------------------------------------- |
-| `incident`     | `docs/05.operations/incidents/YYYY/`       | A recorded production incident                |
-| `postmortem`   | `docs/05.operations/incidents/YYYY/`       | A reviewed incident                           |
-| `release`      | `docs/05.operations/releases/`             | A tagged release                              |
-| `api-spec`     | `docs/03.specs/NNN-<slug>/api-spec.md`     | A specification defining an HTTP or RPC API   |
-| `data-model`   | `docs/03.specs/NNN-<slug>/data-model.md`   | A specification defining persisted entities   |
-| `service`      | `docs/03.specs/NNN-<slug>/service.md`      | A specification introducing a Compose service |
-| `tests`        | `docs/03.specs/NNN-<slug>/tests.md`        | A specification with a formal test matrix     |
-| `agent-design` | `docs/03.specs/NNN-<slug>/agent-design.md` | A specification defining a new agent role     |
+- [ ] **Step 3: Restore or tombstone the 32 archived Specs**
 
-Authoring against one of these is expected to require template revision, since
-none has been validated against a real document.
-```
+For each mig-0001 row, restore a current capability to Stage 03 or replace a
+retired capability body with a concise provenance tombstone. Rewrite active
+consumers to current Specs before touching the archive copy.
 
-- [ ] **Step 3: Verify and commit**
+- [ ] **Step 4: Move execution evidence**
 
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/00.agent-governance/rules/stage-authoring-matrix.md docs/99.templates/templates/README.md
-git commit -m "docs(governance): record the not-yet-exercised templates
+Active Plan and Task move to plan.md and task.md under their owning capability.
+Completed pairs move together to one chg-ID directory. Orphans receive the
+explicit owner or retirement disposition already recorded in mig-0001.
 
-Eight templates have zero instances. Unlike the guide, policy, runbook, and
-audit roles repaired in this wave, these are unused because their lifecycle
-event has not occurred, not because their contract was wrong.
+- [ ] **Step 5: Verify co-location and archive safety**
 
-Recording the distinction prevents a future audit from reading all twelve
-zero-instance roles as the same defect."
-```
+~~~bash
+test ! -e docs/04.execution
+python3 -m pytest tests/validation/test_document_corpus_lifecycle.py tests/validation/test_document_metadata.py -q
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+bash scripts/validation/check-doc-implementation-alignment.sh
+~~~
 
----
-
-### Wave W3 — Archive model and the 267-document migration
-
-Precondition: W2 complete. Moving documents before the contract describes them
-produces violations that cannot be attributed to the move.
-
----
-
-#### Task 12: Wire the content-archive role into the retention contract
-
-**Files:**
-
-- Modify: `docs/99.templates/support/archive-retention-contract.md`
-- Modify: `docs/98.archive/README.md`
-
-**Interfaces:**
-
-- Consumes: `docs/99.templates/templates/common/content-archive.template.md`,
-  which already exists.
-- Produces: the two-role archive model Task 13 and Task 14 write into.
-
-- [ ] **Step 1: Confirm both templates exist and note their heading sets**
-
-```bash
-for f in docs/99.templates/templates/common/archive.template.md \
-         docs/99.templates/templates/common/content-archive.template.md; do
-  echo "=== $f"; grep '^#' "$f"
-done
-```
-
-Expected: `archive.template.md` carries Overview, Archive Metadata, Archive
-Ledger, Related Documents; `content-archive.template.md` additionally carries
-Current-use Warning.
-
-- [ ] **Step 2: Add the two-role table to the retention contract**
-
-Insert before the `## Related Documents` heading of
-`docs/99.templates/support/archive-retention-contract.md`:
-
-```markdown
-## Archive Roles
-
-`docs/98.archive/` serves two distinct roles. Both use `status: archived`.
-
-| Role            | Purpose                                                                  | Template                      | Retains body |
-| :-------------- | :----------------------------------------------------------------------- | :---------------------------- | :----------- |
-| Tombstone       | Path redirect only                                                       | `archive.template.md`         | No           |
-| Content archive | Full preservation of terminal work, mirroring the source stage structure | `content-archive.template.md` | Yes          |
-
-Three rules govern the model.
-
-1. An archived document leaves a forward pointer at its original location when
-   the source stage survives. When the source stage is itself removed, inbound
-   links are rewritten to the archive path and the mapping is recorded in the
-   archive ledger instead. A dangling pointer inside a deleted directory serves
-   no reader.
-2. Architecture decision records are never moved. Supersession is a status
-   change plus a `superseded-by` link, applied in place.
-3. Content archive entries retain their date prefix. The archive is the one
-   place where a filename date is an accurate event record.
-```
-
-- [ ] **Step 3: Verify and commit**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add docs/99.templates/support/archive-retention-contract.md docs/98.archive/README.md
-git commit -m "docs(templates): wire the content-archive role into the retention contract
-
-The archive stage held 21 tombstones and had no role that preserves content,
-while 267 terminal documents stayed in the active stages because no destination
-existed for them.
-
-Both templates already existed; only the contract was missing. Rule 1 is stated
-with its survives-the-stage branch, because Stage 04 is removed in W4 and a
-forward pointer inside a deleted directory is not reachable."
-```
-
----
-
-#### Task 13: Migrate the 32 archivable Stage 03 specifications
-
-The first revision of this task used forward-pointer tombstones. A trial run
-proved that impossible and the approach is withdrawn. Two facts, both verified
-against the tracked validator:
-
-- `check-document-metadata.py` selects a document's profile from its path alone,
-  through `infer_artifact_type()`. Frontmatter never influences the choice.
-- Line 2549 raises `archived-outside-stage-98` whenever `status: archived`
-  appears on a document whose path-derived type is not `archive`.
-
-A tombstone at `docs/03.specs/<slug>/spec.md` therefore cannot carry the status
-that makes it a tombstone. No frontmatter shape avoids this.
-
-Relocation now preserves reachability rather than the path: inbound links are
-rewritten and the mapping is recorded in the archive ledger — the same mechanism
-Task 14 uses for Stage 04.
-
-Scope is 32 specifications, not 42. The 2026-07-04 document restructure audit
-ruled eleven Stage 03 specifications `evidence-preserve`, "Kept in place; no
-archive tombstone", with a reason recorded for each. Ten are terminal and are
-excluded here; the eleventh is already non-terminal.
-
-**Files:**
-
-- Move: 32 directories from `docs/03.specs/` to `docs/98.archive/03.specs/`
-- Modify: every document containing an inbound link to a moved specification
-- Modify: `docs/98.archive/README.md` (ledger mapping)
-
-**Interfaces:**
-
-- Consumes: the archive roles from Task 12.
-- Produces: a Stage 03 holding 28 directories — 17 live plus the 11 preserved.
-
-- [ ] **Step 1: Build the exclusion list from the prior audit**
-
-The audit records dispositions in three places, and only one of them is binding.
-`## Completed Candidate List` and `## Prior Follow-Up List` hold _candidates_
-worded as "historical-archive or evidence-preserve candidate". The binding
-rulings are in `## PLN-DRA-004 Disposition Results`, and they are identified by
-the phrase "Kept in place", not by any single disposition value — two of them
-are `active-canonical`, not `evidence-preserve`.
-
-Matching on `evidence-preserve` alone produces the wrong list: it picks up
-specifications 100 and 101, which were only ever candidates, and misses 098 and
-103, which carry real keep-in-place rulings.
-
-```bash
-cd /home/hy/projects/hy-home.docker
-python3 - <<'PY'
-import pathlib, re
-audit = pathlib.Path("docs/90.references/audits/2026-07-04-document-restructure-audit-contract-archive/sdlc-spec-archive-candidates.md").read_text()
-keep = set()
-for line in audit.splitlines():
-    if "Kept in place" in line or "No archive in current wave" in line:
-        keep.update(re.findall(r"docs/03\.specs/(\d{3}-[a-z0-9-]+)/", line))
-pathlib.Path("/tmp/claude-1000/sdlc-convergence/keep-in-place.txt").write_text(
-    "\n".join(sorted(keep)) + "\n")
-print("keep-in-place:", len(keep))
-for s in sorted(keep):
-    print("  ", s)
-PY
-```
-
-Expected: 11 specifications — 090 through 098, 103, and 105. Ten of them are
-terminal; 103 is already `active` and would not have been in scope anyway.
-
-- [ ] **Step 2: Enumerate the archivable specifications**
-
-```bash
-python3 - <<'PY'
-import pathlib, re
-keep = set(pathlib.Path("/tmp/claude-1000/sdlc-convergence/keep-in-place.txt").read_text().split())
-rows = []
-for d in sorted(pathlib.Path("docs/03.specs").iterdir()):
-    f = d / "spec.md"
-    if not f.exists() or d.name in keep:
-        continue
-    m = re.search(r"(?m)^status:\s*(\S+)", f.read_text())
-    if m and m.group(1) in ("completed", "superseded"):
-        rows.append(d.name)
-pathlib.Path("/tmp/claude-1000/sdlc-convergence/archivable-specs.txt").write_text(
-    "\n".join(rows) + "\n")
-print("archivable:", len(rows))
-PY
-```
-
-Expected: `32`. If the count differs, stop — the exclusion list or the status
-scan is wrong, and moving the wrong directory is the expensive mistake here.
-
-- [ ] **Step 3: Record inbound links before moving anything**
-
-```bash
-python3 - <<'PY'
-import pathlib, subprocess
-slugs = pathlib.Path("/tmp/claude-1000/sdlc-convergence/archivable-specs.txt").read_text().split()
-total = 0
-for s in slugs:
-    out = subprocess.run(["grep", "-rl", f"03.specs/{s}", "docs/"],
-                         capture_output=True, text=True).stdout.split()
-    out = [f for f in out if "llm-wiki" not in f and not f.startswith(f"docs/03.specs/{s}/")]
-    total += len(out)
-    if out:
-        print(f"{len(out):3}  {s}")
-print("total inbound documents to rewrite:", total)
-PY
-```
-
-Record the total. Step 6 must drive it to zero.
-
-- [ ] **Step 3b: Widen the archive README profile before moving anything**
-
-16 of the 32 archivable specifications carry a `README.md` beside `spec.md`.
-Moving one produces `docs/98.archive/03.specs/<slug>/README.md`, three levels
-deep. The archive README profile registers only two globs:
-
-```yaml
-path_globs: ['docs/98.archive/README.md', 'docs/98.archive/*/README.md']
-```
-
-One level. Every migrated README therefore classifies as
-`readme-profile: README path is unclassified`, unconditionally and regardless of
-frontmatter. The glob was written when the archive was one level deep; the
-archive already holds `docs/98.archive/04.execution/plans/`, so the assumption
-was stale before this migration reached it.
-
-In `docs/99.templates/support/document-metadata-profiles.yaml`, under the
-`archive` entry of `readme_profiles`, replace those two globs with:
-
-```yaml
-path_globs: ['docs/98.archive/README.md', 'docs/98.archive/**/README.md']
-```
-
-`**` subsumes the single-level form, so no existing archive README changes
-classification. Verify that before continuing:
-
-```bash
-python3 -c "import yaml; p=yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml')); print(p['readme_profiles']['archive']['path_globs'])"
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
-```
-
-Expected: the widened globs, `violations=0`, and `2`. Commit this on its own —
-it is a contract prerequisite, not part of any document move.
-
-- [ ] **Step 4: Move one directory and write full archive provenance**
-
-Do one first. The remaining 31 copy this shape.
-
-The archive frontmatter is far heavier than a status change.
-`docs/99.templates/support/archive-retention-contract.md:37-52` defines the
-`sdlc-archive` profile that `docs/98.archive/**` selects, and it requires
-eleven keys:
-
-`status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`,
-`archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`,
-`archived_blob`, `preservation_class`.
-
-Two of those are Git provenance, not free text. The contract at lines 54-57
-requires that `archived_commit` resolve to a commit, `archived_blob` resolve to
-a blob, and `archived_commit:archived_from` resolve to that exact blob. They
-must be computed, not invented.
-
-`archive_disposition` is one of `superseded`, `duplicate`, `conflict`,
-`withdrawn`, `evidence-preserve`. For this migration it is `evidence-preserve`:
-the work completed and its record is retained. `preservation_class` is
-`git-history` — an `immutable-snapshot` is admitted only for an explicit audit
-or legal need and pulls in three further required keys plus a confidentiality
-scan.
-
-```bash
-slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
-mkdir -p docs/98.archive/03.specs
-
-# Compute provenance from the pre-move path, before git mv rewrites it.
-for f in spec.md README.md; do
-  src="docs/03.specs/$slug/$f"
-  [ -f "$src" ] || continue
-  commit=$(git log -1 --format=%H -- "$src")
-  blob=$(git rev-parse "$commit:$src")
-  echo "$f|$src|$commit|$blob"
-done | tee "/tmp/claude-1000/sdlc-convergence/provenance-$slug.txt"
-
-git mv "docs/03.specs/$slug" "docs/98.archive/03.specs/$slug"
-```
-
-Verify each pair resolves before writing it into frontmatter:
-
-```bash
-slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
-while IFS='|' read -r f src commit blob; do
-  actual=$(git rev-parse "$commit:$src")
-  [ "$actual" = "$blob" ] && echo "OK   $f" || echo "MISMATCH $f: $actual != $blob"
-done < "/tmp/claude-1000/sdlc-convergence/provenance-$slug.txt"
-```
-
-Every line must print `OK`. A `MISMATCH` means the commit does not contain that
-path — usually because the file was renamed earlier in its history — and that
-document needs its own `git log --follow` before it can be archived.
-
-Then write all eleven keys into both moved files. `archived_from` is the
-pre-move path. `archived_on` is today's date.
-
-- [ ] **Step 5: Verify the single case before batching**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-```
-
-Expected: `violations=0`. If the archive profile rejects the frontmatter, fix it
-here — before the shape is replicated 31 times. This is the step whose omission
-caused the first attempt to fail.
-
-- [ ] **Step 6: Rewrite inbound links for that specification**
-
-```bash
-slug=$(head -1 /tmp/claude-1000/sdlc-convergence/archivable-specs.txt)
-python3 - "$slug" <<'PY'
-import pathlib, sys
-slug = sys.argv[1]
-old, new = f"03.specs/{slug}", f"98.archive/03.specs/{slug}"
-n = 0
-for p in pathlib.Path("docs").rglob("*.md"):
-    if "llm-wiki" in str(p) or str(p).startswith(f"docs/98.archive/03.specs/{slug}"):
-        continue
-    txt = p.read_text(errors="ignore")
-    if old in txt:
-        p.write_text(txt.replace(old, new))
-        n += 1
-print("rewrote", n, "documents")
-PY
-```
-
-Relative-link depth changes when a document moves one level deeper. After
-rewriting, run the fence-aware link check from Task 1 Step 3 and repair any
-target that no longer resolves.
-
-- [ ] **Step 7: Commit the single case as the reviewable pattern**
-
-```bash
-git add -A docs/
-git commit -m "docs(archive): migrate the first terminal specification
-
-Establishes the move, frontmatter, and link-rewrite pattern the remaining 31
-follow. Committed separately so the pattern is reviewable before replication.
-
-Forward-pointer tombstones were attempted first and withdrawn: the metadata
-validator derives a document's profile from its path, and rejects
-status: archived on any path that is not an archive path, so a tombstone cannot
-carry the status that defines it."
-```
-
-- [ ] **Step 8: Apply the pattern to the remaining 31**
-
-Repeat Steps 4 through 6 for every remaining line in
-`/tmp/claude-1000/sdlc-convergence/archivable-specs.txt`. Commit in batches of at
-most ten directories, each batch named by what it archives. Run the Step 5
-verification after every batch, not only at the end.
-
-Three things the first migration established that the batch will hit repeatedly:
-
-1. **21 of the 32 specifications carry neither `artifact_id` nor `parent_ids`.**
-   That is pre-existing legacy debt, grandfathered under the live `spec` profile
-   but not permitted once `artifact_type: archive` applies. Derive
-   `artifact_id` as `spec:<directory-name>` — the convention the 11 specifications
-   that do carry one already use — and set `parent_ids: []`, which the profile
-   explicitly permits. Never invent a parent.
-
-2. **Outbound links inside the moved document also break.** The document descends
-   two levels, so its own relative links to anything outside its directory need
-   the same depth correction as the inbound links pointing at it. A link to a
-   sibling specification that has not moved yet needs a different correction from
-   one to a sibling that has — recompute rather than applying a fixed prefix.
-
-3. **The substring rewrite misses some link forms.** The first migration found
-   three additional documents only through the fence-aware link check, including
-   `docs/03.specs/README.md`. Run that check after every batch and treat anything
-   above the baseline of 1 as work remaining, not as noise.
-
-The generated LLM Wiki index also carries moved paths. Regenerate it with its
-own script; never hand-edit a generated file.
-
-- [ ] **Step 9: Record the mapping in the archive ledger**
-
-Append a mapping table to `docs/98.archive/README.md` listing each source path
-and its destination. This replaces the forward pointers the validator makes
-impossible, and is the only remaining record of where a document used to live.
-
-- [ ] **Step 10: Verify the wave's end state**
-
-```bash
-ls -d docs/03.specs/*/ | wc -l
-find docs/98.archive/03.specs -maxdepth 1 -type d | tail -n +2 | wc -l
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
-```
-
-Expected: `27` live specification directories, `32` archived, `violations=0`,
-and `2` contract failures. Then re-run the fence-aware link check from Task 1
-Step 3 and confirm the count is at or below its baseline of 1.
-
-#### Task 13b: Restore the parent edges the migration deleted
-
-Task 13 archived 32 specifications. Every document that named one of them in
-`parent_ids` then tripped `invalid-parent-type`, because no profile listed
-`archive` among its permitted parent types. The migration resolved this by
-emptying `parent_ids` and adding ten `root_exceptions`. That passed every gate
-and is the wrong trade: it deleted 42 traceability edges across 34 documents,
-including this specification's own link to its predecessor.
-
-Specification 136 records traceability coverage of 11 percent as "the largest
-outstanding structural finding". Lowering it further to complete a migration
-inverts the point of the migration. An archive preserves content; it must
-preserve lineage too.
-
-The fix is a registry change, not a script change. `allowed_parent_types` is
-read per profile at `check-document-metadata.py:2628` via
-`raw_profile.get("allowed_parent_types", [])`. The `archive` profile already
-accepts fourteen parent types; only the reverse direction is closed.
-
-**Files:**
-
-- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
-- Modify: the 34 documents whose `parent_ids` were emptied
-
-**Interfaces:**
-
-- Consumes: the migration completed by Task 13.
-- Produces: a corpus where archiving a parent does not sever its children.
-
-- [ ] **Step 1: Recover the deleted edges from Git**
-
-```bash
-cd /home/hy/projects/hy-home.docker
-python3 - <<'PY'
-import subprocess, collections, pathlib
-diff = subprocess.run(
-    ["git", "diff", "af4a6cb4~1..HEAD", "--unified=0", "--", "docs/"],
-    capture_output=True, text=True).stdout
-cur, removed = None, collections.defaultdict(list)
-for line in diff.splitlines():
-    if line.startswith("+++ b/"):
-        cur = line[6:]
-    elif line.startswith("-  - spec:") and cur:
-        removed[cur].append(line[5:].strip())
-pathlib.Path("/tmp/claude-1000/sdlc-convergence/removed-parents.txt").write_text(
-    "\n".join(f"{f}|{','.join(v)}" for f, v in sorted(removed.items())) + "\n")
-print("documents:", len(removed), " edges:", sum(len(v) for v in removed.values()))
-PY
-```
-
-Expected: `documents: 34  edges: 42`.
-
-- [ ] **Step 2: Permit `archive` as a parent type**
-
-In `docs/99.templates/support/document-metadata-profiles.yaml`, append
-`"archive"` to `allowed_parent_types` for the profiles the recovered set
-touches: `spec`, `plan`, `task`, `archive`, and whichever operations profile
-appears in the file list from Step 1. Append; do not rewrite the lists.
-
-Do not add `archive` to profiles no recovered document needs. A permission that
-nothing exercises is the kind of dead rule wave W1 spent four tasks removing.
-
-- [ ] **Step 3: Restore the edges**
-
-Rewrite each document's `parent_ids` to the recovered values. The referenced
-specifications are now at `docs/98.archive/03.specs/<slug>/spec.md`, but
-`artifact_id` values did not change during the migration, so the recorded IDs
-still resolve. Verify that before restoring:
-
-```bash
-python3 - <<'PY'
-import pathlib, re
-ids = set()
-for p in pathlib.Path("docs").rglob("*.md"):
-    m = re.search(r"(?m)^artifact_id:\s*(\S+)", p.read_text(errors="ignore"))
-    if m:
-        ids.add(m.group(1))
-missing = []
-for line in pathlib.Path("/tmp/claude-1000/sdlc-convergence/removed-parents.txt").read_text().splitlines():
-    _, parents = line.split("|", 1)
-    for pid in parents.split(","):
-        if pid and pid not in ids:
-            missing.append(pid)
-print("unresolvable parent ids:", sorted(set(missing)) or "none")
-PY
-```
-
-Every recovered ID must resolve. An unresolvable one means that specification's
-`artifact_id` was derived during migration rather than carried over, and the
-recovered edge needs the derived value instead.
-
-- [ ] **Step 4: Withdraw the root exceptions the migration added**
-
-Ten entries were added to `root_exceptions` to tolerate the emptied
-`parent_ids`. With the edges restored they are unused. Remove exactly those ten;
-leave the pre-existing entry for specification 123 alone.
-
-```bash
-python3 -c "import yaml; print(len(yaml.safe_load(open('docs/99.templates/support/document-metadata-profiles.yaml'))['common']['root_exceptions']))"
-```
-
-Expected after removal: `1`.
-
-- [ ] **Step 5: Verify**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed 2>&1 | tail -1
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL'
-bash scripts/validation/check-doc-traceability.sh 2>&1 | tail -1
-grep -rc '^parent_ids: \[\]$' docs/03.specs docs/04.execution 2>/dev/null | grep -v ':0' | wc -l
-```
-
-Expected: `violations=0`, `2`, traceability PASS, and no document left with an
-empty `parent_ids` that had one before.
+Expected: no Stage 04, no active-to-archive link, and all commands PASS for
+promoted paths.
 
 - [ ] **Step 6: Commit**
 
-```bash
-git add -A
-git commit -m "fix(templates): permit archive as a parent type and restore lineage
+~~~bash
+git add -A docs/03.specs docs/04.execution docs/98.archive tests/validation
+git commit -m "docs: co-locate specifications and execution evidence"
+~~~
 
-Task 13 archived 32 specifications, and every document naming one in parent_ids
-then tripped invalid-parent-type because no profile listed archive among its
-permitted parents. That was resolved by emptying parent_ids and adding ten root
-exceptions, which passed every gate while deleting 42 traceability edges across
-34 documents.
-
-Specification 136 records traceability coverage of 11 percent as the largest
-outstanding structural finding. Lowering it to complete a migration inverts the
-migration's purpose. An archive preserves content; lineage is part of that.
-
-allowed_parent_types is registry data read per profile, not script logic, so
-this is a data change. The archive profile already accepted fourteen parent
-types; only the reverse direction was closed."
-```
-
-#### Task 14: Migrate the 225 completed Stage 04 documents
+### Task 6A: Reorganize Operations Domains 00 through 03
 
 **Files:**
 
-- Move: 225 files from `docs/04.execution/` to `docs/98.archive/04.execution/`
-- Modify: every document containing an inbound link to a moved file
-- Modify: `docs/98.archive/README.md` (ledger mapping)
+- Rename subjects from guides, policies, and runbooks under 00-workspace,
+  01-gateway, 02-auth, and 03-security to their exact ops-ID paths in mig-0001
+- Move the four domain README files to docs/05.operations/<domain>/README.md
+- Create: tests/validation/test_operations_taxonomy.py
+- Modify: all inbound links and mig-0001 rows for these four domains
 
 **Interfaces:**
 
-- Consumes: the archive roles from Task 12.
-- Produces: a Stage 04 holding 6 documents, which Task 16 empties.
+- Consumes: subject-to-ops-ID mappings from Task 3.
+- Produces: domain-first subjects for domains 00 through 03.
 
-- [ ] **Step 1: Enumerate the completed documents**
+- [ ] **Step 1: Write the failing bounded-domain test**
 
-```bash
-cd /home/hy/projects/hy-home.docker
-for f in docs/04.execution/plans/*.md docs/04.execution/tasks/*.md; do
-  [ "$(basename "$f")" = "README.md" ] && continue
-  s=$(awk '/^---$/{n++;next} n==1 && /^status:/{print $2; exit}' "$f")
-  [ "$s" = "completed" ] && echo "$f"
-done | tee /tmp/claude-1000/sdlc-convergence/completed-exec.txt | wc -l
-```
+~~~python
+MIGRATED_DOMAINS = (
+    "00-workspace", "01-gateway", "02-auth", "03-security",
+)
 
-Expected: `225`.
+def test_migrated_domains_leave_no_role_root_copy(repo):
+    for role in ("guides", "policies", "runbooks"):
+        for domain in MIGRATED_DOMAINS:
+            assert not repo.path("docs/05.operations", role, domain).exists()
+~~~
 
-- [ ] **Step 2: Build the source-to-destination mapping**
+- [ ] **Step 2: Run the test and verify failure**
 
-```bash
-while read -r f; do
-  echo "$f -> docs/98.archive/${f#docs/}"
-done < /tmp/claude-1000/sdlc-convergence/completed-exec.txt \
-  > /tmp/claude-1000/sdlc-convergence/exec-mapping.txt
-head -3 /tmp/claude-1000/sdlc-convergence/exec-mapping.txt
-wc -l /tmp/claude-1000/sdlc-convergence/exec-mapping.txt
-```
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+~~~
 
-Expected: 225 mapping lines of the form
-`docs/04.execution/tasks/X.md -> docs/98.archive/04.execution/tasks/X.md`.
+Expected: FAIL on 00-workspace under the parallel roots.
 
-- [ ] **Step 3: Count the inbound links that must be rewritten**
+- [ ] **Step 3: Move each mapped subject as one role set**
 
-```bash
-n=0
-while read -r f; do
-  rel=${f#docs/}
-  c=$(grep -rl "$rel" docs/ --include='*.md' | grep -v llm-wiki | grep -v "^$f\$" | wc -l)
-  n=$((n + c))
-done < /tmp/claude-1000/sdlc-convergence/completed-exec.txt
-echo "inbound references to rewrite: $n"
-```
+For each mig-0001 subject, move all existing roles, normalize role artifact IDs
+to the shared numeric ops ID, update inbound links, and then start the next
+subject. Do not create a missing role.
 
-Record the number. Step 6 must reduce it to zero.
+- [ ] **Step 4: Verify migrated domains**
 
-- [ ] **Step 4: Move the files preserving directory structure**
-
-```bash
-mkdir -p docs/98.archive/04.execution/plans docs/98.archive/04.execution/tasks
-while read -r f; do
-  git mv "$f" "docs/98.archive/${f#docs/}"
-done < /tmp/claude-1000/sdlc-convergence/completed-exec.txt
-find docs/04.execution -name '*.md' ! -name 'README.md' | wc -l
-```
-
-Expected: `6` files remain in Stage 04.
-
-- [ ] **Step 5: Set the archived status on every moved file**
-
-```bash
-while read -r f; do
-  d="docs/98.archive/${f#docs/}"
-  python3 - "$d" <<'PY'
-import sys, re, pathlib
-p = pathlib.Path(sys.argv[1])
-t = p.read_text()
-t = re.sub(r'(?m)^status: completed$', 'status: archived', t, count=1)
-if 'archived_from:' not in t:
-    src = str(p).replace('docs/98.archive/', 'docs/')
-    t = t.replace('status: archived',
-                  f'status: archived\narchived_from: {src}\narchived_on: 2026-08-07', 1)
-p.write_text(t)
-PY
-done < /tmp/claude-1000/sdlc-convergence/completed-exec.txt
-grep -c 'status: archived' docs/98.archive/04.execution/tasks/*.md | grep -c ':1' || true
-```
-
-- [ ] **Step 6: Rewrite every inbound link**
-
-```bash
-while read -r line; do
-  src=${line%% -> *}; dst=${line##* -> }
-  s=${src#docs/}; d=${dst#docs/}
-  grep -rl "$s" docs/ --include='*.md' | grep -v llm-wiki | while read -r target; do
-    python3 - "$target" "$s" "$d" <<'PY'
-import sys, pathlib
-p = pathlib.Path(sys.argv[1])
-p.write_text(p.read_text().replace(sys.argv[2], sys.argv[3]))
-PY
-  done
-done < /tmp/claude-1000/sdlc-convergence/exec-mapping.txt
-```
-
-- [ ] **Step 7: Confirm zero remaining references to the old paths**
-
-```bash
-n=0
-while read -r f; do
-  rel=${f#docs/}
-  c=$(grep -rl "$rel" docs/ --include='*.md' | grep -v llm-wiki | grep -v '98.archive' | wc -l)
-  n=$((n + c))
-done < /tmp/claude-1000/sdlc-convergence/completed-exec.txt
-echo "remaining stale references: $n"
-```
-
-Expected: `0`. If non-zero, Step 6 missed a path form; inspect and repeat.
-
-- [ ] **Step 8: Record the mapping in the archive ledger**
-
-Append a `## Archive Ledger` mapping table to `docs/98.archive/README.md`
-listing each source path and its destination, generated from
-`/tmp/claude-1000/sdlc-convergence/exec-mapping.txt`. This replaces the forward
-pointers that Stage 04 cannot carry, per Task 12 rule 1.
-
-- [ ] **Step 9: Verify and commit in batches**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
 bash scripts/validation/check-doc-traceability.sh
-```
+bash scripts/validation/check-doc-implementation-alignment.sh
+~~~
 
-Commit in batches of at most 25 files, each batch named by what it archives.
+Expected: PASS for migrated domains.
 
----
+- [ ] **Step 5: Commit**
 
-#### Task 15: Remove the superseded redirect stubs
+~~~bash
+git add docs/05.operations docs/98.archive/migrations tests/validation
+git commit -m "docs: migrate operations domains 00 through 03"
+~~~
 
-**Files:**
-
-- Delete: `docs/90.references/audits/2026-07-07-*-audit-pack-update/` (6 files)
-- Move: the 21 `2026-06-05-language-policy-*` documents to the content archive
-
-**Interfaces:**
-
-- Consumes: the mapping mechanics from Task 14.
-- Produces: removal of the two surfaces specification 136 marks for disposal.
-
-- [ ] **Step 1: Confirm the stubs carry no analysis and no inbound links**
-
-```bash
-d=$(ls -d docs/90.references/audits/2026-07-07-*-audit-pack-update 2>/dev/null | head -1)
-echo "dir: $d"
-find "$d" -name '*.md' | wc -l
-wc -l "$d"/*.md | tail -1
-grep -rl "$(basename "$d")" docs/ --include='*.md' | grep -v llm-wiki | grep -v "^$d"
-```
-
-Expected: 6 files, roughly 395 lines total, and no inbound references outside
-the directory itself. If any real inbound link exists, stop and escalate.
-
-- [ ] **Step 2: Delete the stub directory**
-
-```bash
-git rm -r "$d"
-```
-
-- [ ] **Step 3: Confirm the language-policy tasks have no real consumers**
-
-```bash
-ls docs/98.archive/04.execution/tasks/2026-06-05-language-policy-* 2>/dev/null | wc -l
-```
-
-Expected: these were already moved by Task 14 if they carried
-`status: completed`. If any remain in `docs/04.execution/`, move them now using
-the Task 14 mechanics.
-
-- [ ] **Step 4: Verify and commit**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
-git add -A docs/
-git commit -m "docs(archive): delete the superseded audit-pack redirect stubs
-
-The 2026-07-07 audit pack update held six redirect stubs, roughly 395 lines,
-all superseded and with zero real inbound consumers. Its twin research pack was
-removed for the same reason under specification 122."
-```
-
----
-
-### Wave W4 — Stage 04 collapse into Stage 03
-
-Precondition: W3 complete. Stage 04 holds 6 documents.
-
----
-
-#### Task 16: Co-locate the six active execution documents
+### Task 6B: Reorganize Operations Domains 04 through 06
 
 **Files:**
 
-- Move: 6 files from `docs/04.execution/` into their parent specification
-  directories
-- Modify: `docs/99.templates/support/template-selection.md`
-- Modify: `docs/00.agent-governance/rules/stage-authoring-matrix.md`
-- Delete: `docs/04.execution/`
+- Rename subjects under 04-data, 05-messaging, and 06-observability to exact
+  ops-ID paths in mig-0001
+- Move the three domain README files
+- Modify: tests/validation/test_operations_taxonomy.py
+- Modify: all inbound links and mig-0001 rows for these domains
 
 **Interfaces:**
 
-- Consumes: the reduced Stage 04 from Task 14.
-- Produces: the target specification directory shape that W5 renumbers around.
+- Consumes: Task 6A Operations catalog.
+- Produces: domain-first subjects for domains 04 through 06.
 
-- [ ] **Step 1: Confirm exactly six active documents remain**
+- [ ] **Step 1: Expand the bounded-domain test**
 
-```bash
-find docs/04.execution -name '*.md' ! -name 'README.md' | sort
-```
+~~~python
+MIGRATED_DOMAINS = (
+    "00-workspace", "01-gateway", "02-auth", "03-security",
+    "04-data", "05-messaging", "06-observability",
+)
+~~~
 
-Expected exactly:
+- [ ] **Step 2: Run and verify failure**
 
-```text
-docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md
-docs/04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md
-docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md
-docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md
-docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md
-docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
-docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md
-```
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+~~~
 
-Seven files: the six active documents plus this plan, which carries
-`status: draft` and was therefore not archived by Task 14. It moves with them.
+Expected: FAIL on 04-data, 05-messaging, or 06-observability source paths.
 
-- [ ] **Step 2: Resolve each document to its parent specification**
+- [ ] **Step 3: Move mapped role sets and verify**
 
-```bash
-for f in $(find docs/04.execution -name '*.md' ! -name 'README.md'); do
-  p=$(awk '/^---$/{n++;next} n==1 && /^ *- *spec:/{print $NF; exit}' "$f")
-  echo "$f  ->  $p"
-done
-```
+For each 04 through 06 subject row, move every existing role to the declared
+ops-ID directory, update role frontmatter and inbound links, and mark the
+ledger row complete before verification.
 
-Expected pairings: the two convergence documents map to specs 134 and 135, the
-research pack extension to spec 104, and this plan to spec 136. The
-`2026-03-27-infra-service-optimization-priority-plan.md` has no `spec:` parent —
-it is the single active orphan.
-
-- [ ] **Step 3: Move the four paired subjects into their specification directories**
-
-```bash
-git mv docs/04.execution/plans/2026-07-26-agent-governance-canonical-convergence.md \
-       docs/03.specs/134-agent-governance-canonical-convergence/plan.md
-git mv docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md \
-       docs/03.specs/134-agent-governance-canonical-convergence/task.md
-git mv docs/04.execution/plans/2026-07-28-target-surface-delta-convergence.md \
-       docs/03.specs/135-target-surface-delta-convergence/plan.md
-git mv docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md \
-       docs/03.specs/135-target-surface-delta-convergence/task.md
-git mv docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md \
-       docs/03.specs/136-sdlc-taxonomy-convergence/plan.md
-```
-
-The research pack extension task moves to whichever specification Step 2
-resolved for it.
-
-- [ ] **Step 4: Handle the single active orphan**
-
-`2026-03-27-infra-service-optimization-priority-plan.md` has no parent
-specification. Per specification D5, active orphans get a specification authored
-for them rather than being archived. Author
-`docs/03.specs/137-infra-service-optimization-priority/spec.md` from
-`docs/99.templates/templates/sdlc/spec.template.md`, capturing the scope the
-plan already describes, then:
-
-```bash
-git mv docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md \
-       docs/03.specs/137-infra-service-optimization-priority/plan.md
-```
-
-- [ ] **Step 5: Update the frontmatter `artifact_id` of every moved file**
-
-Each moved file's `artifact_id` still carries its dated form. Rewrite it to the
-directory-derived form, for example
-`plan:2026-07-26-agent-governance-canonical-convergence` becomes
-`plan:134-agent-governance-canonical-convergence`, and add a `created` field
-carrying the date the filename used to hold. Do not remove the date; move it.
-
-- [ ] **Step 6: Rewrite inbound links to the six moved documents**
-
-Use the Task 14 Step 6 mechanics with a mapping file built from Step 3 and
-Step 4. Confirm zero stale references afterward with the Task 14 Step 7 check.
-
-- [ ] **Step 7: Remove the empty stage**
-
-```bash
-find docs/04.execution -type f
-git rm -r docs/04.execution
-```
-
-Expected: only `README.md` files remain before removal. Preserve any content
-from `docs/04.execution/plans/README.md` and `tasks/README.md` that is still
-true by folding it into `docs/03.specs/README.md`.
-
-- [ ] **Step 8: Update the routing contracts**
-
-In `docs/99.templates/support/template-selection.md`, replace the plan and task
-target-path rows:
-
-```markdown
-| Plan | `docs/04.execution/plans/YYYY-MM-DD-<feature>.md` | plan.template.md |
-| Task | `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md` | task.template.md |
-```
-
-with:
-
-```markdown
-| Plan | `docs/03.specs/NNN-<slug>/plan.md` | plan.template.md |
-| Task | `docs/03.specs/NNN-<slug>/task.md` | task.template.md |
-```
-
-Update the corresponding `target_globs` in
-`docs/99.templates/support/document-metadata-profiles.yaml` for the `plan` and
-`task` roles, and the Stage 04 rows in
-`docs/00.agent-governance/rules/stage-authoring-matrix.md`.
-
-- [ ] **Step 9: Codify the write-back rule**
-
-Co-location without write-back is exactly the configuration specification D5
-identifies as degrading to spec deletion. The rule must be enforced text, not
-plan prose, or the orphan-execution ratio returns.
-
-Insert the following into
-`docs/00.agent-governance/rules/task-checklists.md`, in its completion section:
-
-```markdown
-- **Write-back before archive.** A task is not complete until its result is
-  written back into the parent `spec.md` in the same directory. Record what the
-  specification now states differently because the work happened. A directory
-  whose `task.md` is terminal but whose `spec.md` still describes the
-  pre-implementation state is not archivable.
-```
-
-Add the corresponding lifecycle statement to
-`docs/00.agent-governance/rules/documentation-protocol.md` immediately after the
-frontmatter status rule:
-
-```markdown
-- **Specification write-back (R6):** When a co-located `task.md` reaches a
-  terminal status, its parent `spec.md` MUST be updated to describe the
-  delivered state before the directory is archived. Separation of durable
-  contract from execution record survives co-location only through this rule.
-```
-
-- [ ] **Step 10: Verify the rule has no competing statement**
-
-```bash
-grep -rn 'write-back\|write back' docs/00.agent-governance/rules/
-```
-
-Expected: the two statements added above and no third, contradicting one.
-
-- [ ] **Step 11: Verify and commit**
-
-```bash
-ls -d docs/04.execution 2>/dev/null && echo "STILL PRESENT" || echo "removed"
-python3 scripts/validation/check-document-metadata.py --mode check-changed
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
 bash scripts/validation/check-doc-traceability.sh
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-git add -A
-git commit -m "refactor(docs): collapse Stage 04 into Stage 03 by co-location
+bash scripts/validation/check-doc-implementation-alignment.sh
+~~~
 
-Each specification directory now holds its durable contract and its execution
-record together: spec.md, plan.md, task.md.
+Expected: PASS for migrated domains.
 
-Co-location is bound to archive-on-completion by specification D3. A directory
-is archived whole, never emptied in place and never deleted, so this does not
-reproduce the spec-deletion outcome documented for co-located tooling.
+- [ ] **Step 4: Commit**
 
-225 of 231 Stage 04 documents were already archived in W3, so this moves six
-active documents and authors one specification for the single active orphan."
-```
+~~~bash
+git add docs/05.operations docs/98.archive/migrations tests/validation
+git commit -m "docs: migrate operations domains 04 through 06"
+~~~
 
----
-
-### Wave W5 — Stage 05 renumbering
-
-Precondition: W4 complete. No path is rewritten twice.
-
----
-
-#### Task 17: Rename the directory and rewrite every reference
+### Task 6C: Reorganize Operations Domains 07 through 09
 
 **Files:**
 
-- Move: `docs/05.operations/` to `docs/04.operations/`
-- Modify: 597 files containing the literal `05.operations`
+- Rename subjects under 07-workflow, 08-ai, and 09-tooling to exact ops-ID
+  paths in mig-0001
+- Move the three domain README files
+- Modify: tests/validation/test_operations_taxonomy.py
+- Modify: all inbound links and mig-0001 rows for these domains
 
 **Interfaces:**
 
-- Consumes: the completed structural movement from W4.
-- Produces: a contiguous `00`–`04` active stage sequence.
+- Consumes: Task 6B Operations catalog.
+- Produces: domain-first subjects for domains 07 through 09.
 
-- [ ] **Step 1: Re-measure the blast radius immediately before acting**
+- [ ] **Step 1: Expand the bounded-domain test**
 
-```bash
-cd /home/hy/projects/hy-home.docker
-grep -rl "05\.operations" . --exclude-dir=.git --exclude-dir=graphify-out \
-  --exclude-dir=node_modules | wc -l
-grep -ro "05\.operations" . --exclude-dir=.git --exclude-dir=graphify-out \
-  --exclude-dir=node_modules | wc -l
-```
+~~~python
+MIGRATED_DOMAINS = (
+    "00-workspace", "01-gateway", "02-auth", "03-security",
+    "04-data", "05-messaging", "06-observability",
+    "07-workflow", "08-ai", "09-tooling",
+)
+~~~
 
-Record both numbers. W3 and W4 changed some of these files, so the counts will
-differ from the 597 and 3,274 measured at planning time. Use what you measure.
+- [ ] **Step 2: Run and verify failure**
 
-- [ ] **Step 2: Move the directory**
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+~~~
 
-```bash
-git mv docs/05.operations docs/04.operations
-ls -d docs/0*/
-```
+Expected: FAIL on at least one 07 through 09 source path.
 
-Expected: `00.agent-governance 01.requirements 02.architecture 03.specs 04.operations`.
+- [ ] **Step 3: Move mapped role sets and verify**
 
-- [ ] **Step 3: Rename the archive subtree and pin its historical values**
+For each 07 through 09 subject row, move every existing role to the declared
+ops-ID directory, update role frontmatter and inbound links, and mark the
+ledger row complete before verification.
 
-`docs/98.archive/05.operations/` is a real directory holding 9 documents. A
-content-only replacement would rewrite every reference to it while leaving the
-directory in place, breaking all 9. Rename it too:
-
-```bash
-git mv docs/98.archive/05.operations docs/98.archive/04.operations
-find docs/98.archive/04.operations -name '*.md' | wc -l
-```
-
-Expected: `9`.
-
-`archived_from` records where a document lived when it was archived, which was
-`docs/05.operations/...`. That value is historical and must survive the rename.
-Capture the current values now so Step 4 can restore them:
-
-```bash
-grep -rn '^archived_from:' docs/98.archive/ \
-  > /tmp/claude-1000/sdlc-convergence/archived-from-historical.txt
-wc -l /tmp/claude-1000/sdlc-convergence/archived-from-historical.txt
-```
-
-- [ ] **Step 4: Rewrite every textual reference**
-
-```bash
-grep -rl "05\.operations" . --exclude-dir=.git --exclude-dir=graphify-out \
-  --exclude-dir=node_modules | while read -r f; do
-  python3 - "$f" <<'PY'
-import sys, pathlib
-p = pathlib.Path(sys.argv[1])
-p.write_text(p.read_text(errors="ignore").replace("05.operations", "04.operations"))
-PY
-done
-grep -rl "05\.operations" . --exclude-dir=.git --exclude-dir=graphify-out \
-  --exclude-dir=node_modules | wc -l
-```
-
-Expected: `0`.
-
-- [ ] **Step 5: Restore the historical `archived_from` values**
-
-Step 4 rewrote `archived_from` along with everything else, but that field records
-where a document lived when it was archived. Restore the captured values:
-
-```bash
-while IFS= read -r line; do
-  file=${line%%:*}
-  rest=${line#*:}
-  value=${rest#*:}
-  python3 - "$file" "$(echo "$value" | sed 's/^ *//')" <<'PY'
-import sys, re, pathlib
-p = pathlib.Path(sys.argv[1])
-t = p.read_text()
-t = re.sub(r'(?m)^archived_from:.*$', f'archived_from: {sys.argv[2]}', t, count=1)
-p.write_text(t)
-PY
-done < /tmp/claude-1000/sdlc-convergence/archived-from-historical.txt
-grep -rc '^archived_from: docs/05\.operations' docs/98.archive/ 2>/dev/null | grep -v ':0' | wc -l
-```
-
-Expected: the archived operations documents again carry their historical
-`docs/05.operations/...` provenance while living at `docs/98.archive/04.operations/`.
-Current location and historical origin are different facts and are recorded
-separately.
-
-- [ ] **Step 6: Confirm the hardcoded validator path was rewritten**
-
-```bash
-grep -n 'operations' scripts/validation/check-repo-contracts.sh | grep 'pathlib.Path'
-```
-
-Expected: `root = pathlib.Path("docs/04.operations") / bucket`. This line is the
-one that silently disables the entire operations heading contract if missed.
-
-- [ ] **Step 7: Confirm the infrastructure references changed but their targets did not**
-
-```bash
-git diff --stat -- infra/ | tail -3
-git diff -- infra/06-observability/prometheus/config/alert_rules/ | grep '^[+-]' | grep -v '^[+-][+-]' | head -20
-```
-
-Expected: only documentation path strings differ. No `expr`, `for`, `severity`,
-`alert`, or threshold value appears in the diff. If any does, revert that file
-and rewrite only the path.
-
-- [ ] **Step 8: Run the full verification set including infrastructure**
-
-```bash
-bash scripts/validation/validate-docker-compose.sh
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-python3 scripts/validation/check-document-metadata.py --mode check-changed
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
 bash scripts/validation/check-doc-traceability.sh
-```
+bash scripts/validation/check-doc-implementation-alignment.sh
+~~~
 
-Expected: Compose validation passes; contract failures at or below the Task 1
-baseline; zero metadata violations on changed documents; traceability clean.
+Expected: PASS for migrated domains.
 
-- [ ] **Step 9: Confirm zero broken links across the whole corpus**
+- [ ] **Step 4: Commit**
 
-```bash
-python3 - <<'PY'
-import pathlib, re
-broken = []
-for p in pathlib.Path("docs").rglob("*.md"):
-    in_fence = False
-    for line in p.read_text(errors="ignore").splitlines():
-        # Toggle only on a line that STARTS a fence. Counting backtick runs
-        # inside the whole text breaks on any code that contains backticks --
-        # including this check itself.
-        if line.lstrip().startswith("`" * 3):
-            in_fence = not in_fence
-            continue
-        if in_fence:
-            continue
-        for m in re.finditer(r"\]\(([^)]+)\)", line):
-            target = m.group(1).split("#")[0]
-            if not target or target.startswith(("http", "mailto:")):
-                continue
-            if not (p.parent / target).exists():
-                broken.append(f"{p}: {target}")
-print("broken:", len(broken))
-print("\n".join(broken))
-PY
-```
+~~~bash
+git add docs/05.operations docs/98.archive/migrations tests/validation
+git commit -m "docs: migrate operations domains 07 through 09"
+~~~
 
-Expected: at or below the Task 1 baseline.
-
-- [ ] **Step 10: Commit**
-
-```bash
-git add -A
-git commit -m "refactor(docs): renumber Stage 05 operations to Stage 04
-
-Collapsing Stage 04 into Stage 03 in W4 left a gap in the stage sequence.
-Renumbering restores a contiguous 00-04 active sequence.
-
-The rename crosses out of docs/: infra service READMEs, four Prometheus alert
-rule files, CODEOWNERS, and the validators carry documentation paths. Only
-those path strings change; nothing any alert rule controls is modified.
-
-Executed after all structural movement so no path is rewritten twice."
-```
-
----
-
-#### Task 18: Regenerate derived artifacts and close the plan
+### Task 6D: Complete Operations Domains 10 through 12
 
 **Files:**
 
-- Modify: generated indexes under `docs/90.references/llm-wiki/`
-- Modify: `docs/00.agent-governance/memory/current.md`
-- Create: `docs/03.specs/136-sdlc-taxonomy-convergence/task.md`
+- Rename subjects under 10-communication, 11-laboratory, and 12-infra-net to
+  exact ops-ID paths in mig-0001
+- Move the three domain README files
+- Delete after empty: docs/05.operations/guides
+- Delete after empty: docs/05.operations/policies
+- Delete after empty: docs/05.operations/runbooks
+- Modify: docs/05.operations/README.md
+- Modify: Operations templates and metadata fixtures
+- Modify: tests/validation/test_operations_taxonomy.py
+- Modify: all inbound links and mig-0001 rows for these domains
 
 **Interfaces:**
 
-- Consumes: the completed W1 through W5.
-- Produces: the evidence record W6 through W9 are planned against.
+- Consumes: Task 6C Operations catalog.
+- Produces: the complete single domain-first Operations root.
 
-- [ ] **Step 1: Regenerate every derived index**
+- [ ] **Step 1: Add the final root and role-boundary tests**
 
-```bash
-bash scripts/knowledge/generate-llm-wiki-coverage.sh
-git diff --stat -- docs/90.references/
-```
+~~~python
+def test_operations_has_no_parallel_role_roots(repo):
+    for name in ("guides", "policies", "runbooks"):
+        assert not repo.path("docs/05.operations", name).exists()
 
-Expected: path rows update to the new stage numbers. If the generator is not
-the right entry point, locate it with
-`grep -rl 'llm-wiki-index' scripts/`.
+def test_prometheus_roles_share_one_subject(catalog):
+    assert set(catalog.subject("prometheus").roles) == {
+        "guide", "policy", "runbook",
+    }
+~~~
 
-- [ ] **Step 2: Record the final measurements**
+- [ ] **Step 2: Run and verify failure**
 
-```bash
-ls -d docs/03.specs/*/ | wc -l
-find docs/98.archive -name '*.md' | wc -l
-ls -d docs/0*/
-bash scripts/validation/check-repo-contracts.sh 2>&1 | grep -c '^FAIL' || echo 0
-python3 scripts/validation/check-document-metadata.py --mode check-active 2>&1 | tail -1
-```
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+~~~
 
-Compare every number against the Task 1 baseline and against the specification's
-measured starting state.
+Expected: FAIL while the remaining source domains and role roots exist.
 
-- [ ] **Step 3: Author the Stage 04 task record**
+- [ ] **Step 3: Move final role sets and remove empty roots**
 
-Create `docs/03.specs/136-sdlc-taxonomy-convergence/task.md` from
-`docs/99.templates/templates/sdlc/task.template.md`, recording per wave: the
-commands run, their output, the commit range, and any deviation from this plan.
+Normalize Guide, Policy, and Runbook content to their sole responsibilities.
+Guide Runbook Handoff and Runbook Automation Handoff remain conditional.
 
-- [ ] **Step 4: Refresh the current-state memory record**
+- [ ] **Step 4: Verify the complete Operations corpus**
 
-Replace the body of `docs/00.agent-governance/memory/current.md` in place with
-the bounded seven-section envelope: current task, approved decisions, active
-boundary, verified state, blockers, evidence links, and next handoff. Do not
-append a second current-state section.
-
-- [ ] **Step 5: Verify and commit**
-
-```bash
-python3 scripts/validation/check-document-metadata.py --mode check-changed
+~~~bash
+python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
 bash scripts/validation/check-doc-traceability.sh
-git add -A
-git commit -m "docs(task): record SDLC taxonomy convergence W1-W5 evidence"
-```
+bash scripts/validation/check-doc-implementation-alignment.sh
+~~~
+
+Expected: PASS with no parallel role root and no required missing role.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add -A docs/05.operations docs/99.templates docs/98.archive/migrations tests/validation
+git commit -m "docs: complete domain-first operations taxonomy"
+~~~
+
+### Task 7: Consolidate References and Archive on Stable IDs
+
+**Files:**
+
+- Rename: dated docs/90.references paths to ref-<id>-<slug>
+- Rename: dated or mirrored docs/98.archive paths to chg-, mig-, or tombstone
+  stable paths
+- Move: root archive/Windows-Network-IP.md to its mig-0001 disposition
+- Delete after empty: root archive/
+- Modify: docs/90.references/README.md
+- Modify: docs/98.archive/README.md
+- Modify: docs/99.templates/support/archive-retention-contract.md
+- Modify: all inbound links and mig-0001
+- Modify: tests/validation/test_document_corpus_lifecycle.py
+
+**Interfaces:**
+
+- Consumes: stable IDs and archive roles from Tasks 2 and 3.
+- Produces: the sole Stage 98 archive and a date-free Stage 90 and Stage 98.
+
+- [ ] **Step 1: Add failing corpus-wide date-path and archive-root tests**
+
+The test scans git ls-files docs and rejects a path component matching four
+digits or a basename starting YYYY-MM-DD. README.md and role filenames inherit
+their parent identity and remain valid.
+
+- [ ] **Step 2: Run and verify failure**
+
+~~~bash
+python3 -m pytest tests/validation/test_document_corpus_lifecycle.py -q
+~~~
+
+Expected: FAIL on current Stage 90, Stage 98, and root archive paths.
+
+- [ ] **Step 3: Apply ledger moves and typed dates**
+
+Move path dates into created, updated, observed_at, completed_at, released_at,
+occurred_at, or archived_at according to artifact type. Preserve body timeline
+timestamps. Complete archived_commit and archived_blob for every tombstone.
+
+- [ ] **Step 4: Verify archive and dates**
+
+~~~bash
+test ! -e archive
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-archive
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+python3 -m pytest tests/validation/test_document_corpus_lifecycle.py -q
+~~~
+
+Expected: PASS and no dated documentation identity.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add -A docs/90.references docs/98.archive docs/99.templates archive tests/validation
+git commit -m "docs: consolidate references and archive identities"
+~~~
+
+### Task 8: Reconcile Stage 00 Rules and Provider Projections
+
+**Files:**
+
+- Modify: docs/00.agent-governance/rules/bootstrap.md
+- Modify: documentation-protocol.md, output-style.md, standards.md,
+  agentic.md, workflows.md, task-checklists.md, postflight-checklist.md,
+  persona.md, and stage-authoring-matrix.md
+- Modify or delete: docs/00.agent-governance/scopes/backend.md, entry.md,
+  frontend.md, meta.md, mobile.md, and product.md
+- Modify: docs/00.agent-governance/providers/agents-md.md
+- Modify: docs/00.agent-governance/providers/claude.md
+- Modify: docs/00.agent-governance/providers/codex.md
+- Modify: docs/00.agent-governance/providers/gemini.md
+- Modify: docs/00.agent-governance/contracts/provider-models.yaml
+- Modify: docs/00.agent-governance/memory/current.md
+- Modify generated provider surfaces owned by provider_surface_renderer.py
+- Modify: tests/validation/test_agent_governance_contract.py
+- Modify: tests/validation/test_provider_surface_renderer.py
+- Modify: tests/validation/test_provider_native_surfaces.py
+
+**Interfaces:**
+
+- Consumes: final taxonomy and typed authority.
+- Produces: one provider-neutral SDLC and generated provider adapters.
+
+- [ ] **Step 1: Add failing ownership, language, scope, and provider tests**
+
+Tests assert Rules Engineer policy ownership, role-specific language routing,
+24 generated functions, no copied provider model version prose, and no
+unconditional mobile or frontend workspace mandate.
+
+- [ ] **Step 2: Run focused tests and verify failure**
+
+~~~bash
+python3 -m pytest tests/validation/test_agent_governance_contract.py tests/validation/test_provider_surface_renderer.py tests/validation/test_provider_native_surfaces.py -q
+~~~
+
+Expected: FAIL on current conflicts.
+
+- [ ] **Step 3: Consolidate canonical rules and regenerate adapters**
+
+Keep one load order in bootstrap, one workflow in workflows.md, one completion
+contract in task-checklists.md, and pointers elsewhere. Generate provider
+surfaces from typed contracts; do not hand-copy model versions.
+
+- [ ] **Step 4: Verify governance**
+
+~~~bash
+python3 scripts/validation/check-agent-governance-contract.py --mode contract
+bash scripts/operations/sync-provider-surfaces.sh --check
+python3 -m pytest tests/validation/test_agent_governance_contract.py tests/validation/test_provider_surface_renderer.py tests/validation/test_provider_native_surfaces.py -q
+~~~
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add docs/00.agent-governance .claude .codex .gemini tests/validation
+git commit -m "governance: reconcile SDLC authority and provider projections"
+~~~
+
+### Task 9: Enforce the Script Manifest and Consolidate Generators
+
+**Files:**
+
+- Create: scripts/validation/check-script-manifest.py
+- Create: scripts/knowledge/generate-llm-wiki.py
+- Delete: scripts/knowledge/generate-llm-wiki-index.sh
+- Delete: scripts/knowledge/generate-llm-wiki-coverage.sh
+- Modify: scripts/manifest.yaml
+- Modify: scripts/README.md
+- Modify: .github/workflow-contract.yml
+- Modify: tests/validation/test_script_manifest.py
+- Create: tests/validation/test_generate_llm_wiki.py
+
+**Interfaces:**
+
+- Consumes: manifest records from Task 3.
+- Produces: check_manifest(repo_root, manifest_path),
+  check_generated(repo_root, manifest_path), the CLI mode --check-generated,
+  and one LLM Wiki generator with --check and --write modes.
+
+- [ ] **Step 1: Add failing consumer and mutation tests**
+
+~~~python
+def test_generator_defaults_to_check(run_cli):
+    result = run_cli("scripts/knowledge/generate-llm-wiki.py")
+    assert result.returncode == 0
+    assert result.changed_paths == set()
+
+def test_manifest_rejects_unreferenced_executable(manifest_fixture):
+    result = manifest_fixture.add_unconsumed("scripts/example.sh").check()
+    assert "consumer-missing" in result.codes
+~~~
+
+- [ ] **Step 2: Run focused tests and verify failure**
+
+~~~bash
+python3 -m pytest tests/validation/test_script_manifest.py tests/validation/test_generate_llm_wiki.py -q
+~~~
+
+Expected: FAIL on missing CLIs.
+
+- [ ] **Step 3: Implement the manifest gate and merged generator**
+
+The merged generator owns both existing outputs and shares one tracked-file
+selection and classification pass. The manifest CLI --check-generated invokes
+each maintained generator's registered check command without writing. No
+compatibility wrappers remain after all workflow and documentation consumers
+move.
+
+~~~python
+def build_outputs(repo_root: Path) -> dict[Path, str]:
+    candidates = collect_candidates(repo_root)
+    return {
+        INDEX_OUTPUT: render_index(candidates),
+        COVERAGE_OUTPUT: render_coverage(candidates),
+    }
+
+def apply_mode(outputs: Mapping[Path, str], mode: str) -> int:
+    if mode == "check":
+        return check_outputs(outputs)
+    if mode == "write":
+        write_outputs(outputs)
+        return 0
+    raise ValueError(mode)
+~~~
+
+- [ ] **Step 4: Verify manifest and freshness**
+
+~~~bash
+python3 scripts/validation/check-script-manifest.py
+python3 scripts/knowledge/generate-llm-wiki.py --check
+python3 -m pytest tests/validation/test_script_manifest.py tests/validation/test_generate_llm_wiki.py -q
+~~~
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add scripts .github/workflow-contract.yml tests/validation
+git commit -m "scripts: enforce manifest and unify LLM Wiki generation"
+~~~
+
+### Task 10: Consolidate Document Validators
+
+**Files:**
+
+- Create: scripts/lib/document_governance/frontmatter.py
+- Create: scripts/lib/document_governance/git_provenance.py
+- Create: scripts/lib/document_governance/links.py
+- Create: scripts/validation/check-document-links.py
+- Modify: scripts/validation/check-document-metadata.py
+- Modify: scripts/validation/check-document-corpus-lifecycle.py
+- Delete: scripts/validation/check-doc-traceability.sh
+- Delete: scripts/validation/check-doc-implementation-alignment.sh
+- Modify: scripts/manifest.yaml
+- Modify: .github/workflow-contract.yml
+- Modify: .pre-commit-config.yaml
+- Modify: tests/validation/test_document_metadata.py
+- Modify: tests/validation/test_document_corpus_lifecycle.py
+- Create: tests/validation/test_document_links.py
+
+**Interfaces:**
+
+- Consumes: taxonomy engine and Stage 99 profiles.
+- Produces: read_frontmatter(path), resolve_git_provenance(path, commit),
+  build_document_graph(paths), and the CLI modes traceability and alignment.
+
+- [ ] **Step 1: Write equivalence and failure tests**
+
+Fixtures cover anchors, fenced examples, relative links, current-to-archive
+links, parent_ids, missing replacements, and immutable created dates.
+
+- [ ] **Step 2: Verify tests fail before extraction**
+
+~~~bash
+python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_document_corpus_lifecycle.py tests/validation/test_document_links.py -q
+~~~
+
+Expected: FAIL because shared modules and new CLI do not exist.
+
+- [ ] **Step 3: Extract libraries and replace Shell validators**
+
+CLI behavior remains deterministic and non-mutating. Separate gate IDs call
+the same CLI with explicit modes. Lifecycle must import the shared module, not
+dynamically import the metadata CLI file.
+
+~~~python
+MODE_HANDLERS = {
+    "traceability": check_traceability,
+    "alignment": check_alignment,
+}
+
+def run_mode(mode: str, paths: Iterable[Path]) -> list[LinkFinding]:
+    graph = build_document_graph(paths)
+    try:
+        handler = MODE_HANDLERS[mode]
+    except KeyError as error:
+        raise ValueError(f"unsupported link-check mode: {mode}") from error
+    return handler(graph)
+~~~
+
+FrontmatterRecord, Provenance, DocumentGraph, and LinkFinding are frozen
+dataclasses defined in their owning modules and compared directly in the
+fixtures from Step 1.
+
+- [ ] **Step 4: Verify all document gates**
+
+~~~bash
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode alignment
+python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_document_corpus_lifecycle.py tests/validation/test_document_links.py -q
+~~~
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add scripts .github/workflow-contract.yml .pre-commit-config.yaml tests/validation
+git commit -m "scripts: consolidate document governance validators"
+~~~
+
+### Task 11: Decompose the Repository Policy Monolith and Remove One-Time Tools
+
+**Files:**
+
+- Create: scripts/validation/check-repository-invariants.py
+- Modify: scripts/validation/ci_gate_adapters.py
+- Modify: scripts/validation/run-ci-gate.py
+- Modify: scripts/operations/provider_surface_renderer.py
+- Modify: canonical Graphify hook generation owner identified in manifest
+- Delete: scripts/validation/check-repo-contracts.sh
+- Delete: scripts/validation/recommend-qa-gates.sh
+- Delete: scripts/validation/recommend-gap-routing.sh
+- Delete: scripts/validation/report-provider-hook-parity.sh
+- Delete: scripts/hooks/patch-graphify-post-commit.sh
+- Rewrite: scripts/hooks/post-tool-validate.sh
+- Modify or delete: every other merge/delete row in scripts/manifest.yaml
+- Modify: scripts/manifest.yaml, scripts/README.md, .pre-commit-config.yaml,
+  .github/workflow-contract.yml, and active documentation consumers
+- Create: tests/validation/test_repository_invariants.py
+- Modify: tests/validation/test_ci_gate_adapters.py
+- Modify: tests/validation/test_provider_surface_renderer.py
+
+**Interfaces:**
+
+- Consumes: specialized validators and exact dispositions in scripts/manifest.
+- Produces: a residual invariant CLI with --mode repository and
+  --mode stale-paths, run-ci-gate.py --recommend, provider parity report mode,
+  and canonical Graphify hook generation.
+
+- [ ] **Step 1: Add tests for every successor behavior**
+
+Tests prove typed template and metadata rules are absent from the residual CLI,
+recommendation uses workflow-contract gate IDs, provider parity uses typed
+provider contracts, and post-tool validation cannot write.
+
+- [ ] **Step 2: Run tests and verify failure**
+
+~~~bash
+python3 -m pytest tests/validation/test_repository_invariants.py tests/validation/test_ci_gate_adapters.py tests/validation/test_provider_surface_renderer.py -q
+~~~
+
+Expected: FAIL on missing successor functions.
+
+- [ ] **Step 3: Move residual behavior and delete predecessors**
+
+For each manifest merge/delete row, first migrate code, tests, workflow nodes,
+hooks, Runbooks, and documentation consumers. Then delete the old file and
+remove its live manifest record. Record the deletion in mig-0001.
+
+~~~python
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--mode",
+        choices=("repository", "stale-paths"),
+        default="repository",
+    )
+    return parser
+
+def recommend(paths: Sequence[str], contract: GateContract) -> list[str]:
+    return sorted(contract.required_gates_for_paths(paths))
+~~~
+
+- [ ] **Step 4: Prove no active reference remains**
+
+~~~bash
+python3 scripts/validation/check-script-manifest.py
+rg -n 'check-repo-contracts|recommend-qa-gates|recommend-gap-routing|report-provider-hook-parity|patch-graphify-post-commit' .github .pre-commit-config.yaml scripts docs/00.agent-governance docs/05.operations
+~~~
+
+Expected: rg returns no active reference; migration history references under
+Stage 98 are excluded.
+
+- [ ] **Step 5: Run focused tests and commit**
+
+~~~bash
+python3 -m pytest tests/validation/test_repository_invariants.py tests/validation/test_ci_gate_adapters.py tests/validation/test_provider_surface_renderer.py -q
+git add scripts .github .pre-commit-config.yaml docs tests/validation
+git commit -m "scripts: remove duplicate and one-time policy tooling"
+~~~
+
+### Task 12: Align CI, Local, and Hook Gates
+
+**Files:**
+
+- Modify: .github/workflow-contract.yml
+- Modify: .github/workflows/ci-quality.yml
+- Delete or reduce to schedule-only reporting:
+  .github/workflows/document-corpus-lifecycle.yml
+- Modify: scripts/validation/ci_gate_contract.py
+- Modify: scripts/validation/ci_gate_runner.py
+- Modify: scripts/validation/ci_gate_adapters.py
+- Modify: scripts/validation/run-local-qa-gates.sh
+- Modify: scripts/validation/run-ci-precommit.sh
+- Modify: .pre-commit-config.yaml
+- Modify: tests/validation/test_ci_gate_contract.py
+- Modify: tests/validation/test_ci_gate_runner.py
+- Modify: tests/validation/test_agent_governance_ci_routing.py
+- Modify: tests/validation/test_github_workflow_contract.py
+
+**Interfaces:**
+
+- Consumes: all canonical leaf validators.
+- Produces: ci.document-governance and local.document-governance aggregates
+  with identical leaves and explicit base SHA inputs.
+
+- [ ] **Step 1: Add failing gate parity and base-range tests**
+
+~~~python
+def test_local_and_ci_document_governance_share_leaves(contract):
+    assert contract.leaves("ci.document-governance") == contract.leaves("local.document-governance")
+
+def test_impacted_gate_requires_explicit_base(contract):
+    gate = contract.gate("leaf.document-lifecycle-impacted")
+    assert "--base-ref" in gate.command
+    assert "HEAD~1" not in gate.command
+~~~
+
+- [ ] **Step 2: Run gate contract tests and verify failure**
+
+~~~bash
+python3 -m pytest tests/validation/test_ci_gate_contract.py tests/validation/test_ci_gate_runner.py tests/validation/test_agent_governance_ci_routing.py tests/validation/test_github_workflow_contract.py -q
+~~~
+
+Expected: FAIL on current parity and lifecycle workflow routing.
+
+- [ ] **Step 3: Register required aggregates**
+
+The PR aggregate includes document contract, metadata, stable paths, lifecycle,
+archive, links, traceability, templates, governance, provider freshness,
+generated freshness, and script manifest. Pull Request uses base SHA; push
+uses before SHA. Scheduled reporting reuses the same leaves.
+
+- [ ] **Step 4: Verify typed execution**
+
+~~~bash
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile local-script-backed --list
+python3 -m pytest tests/validation/test_ci_gate_contract.py tests/validation/test_ci_gate_runner.py tests/validation/test_agent_governance_ci_routing.py tests/validation/test_github_workflow_contract.py -q
+~~~
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add .github .pre-commit-config.yaml scripts/validation tests/validation
+git commit -m "ci: align local and remote document governance gates"
+~~~
+
+### Task 13: Repair Cross-Links, Indexes, Memory, and Generated Evidence
+
+**Files:**
+
+- Modify: docs/README.md and stage README files
+- Modify: docs/00.agent-governance/memory/current.md
+- Modify: active Markdown links reported by check-document-links.py
+- Modify: scripts/README.md
+- Modify: .github/INDEX.md and CODEOWNERS when paths changed
+- Regenerate: every output registered in scripts/manifest.yaml
+- Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Modify: tests that assert old canonical paths
+
+**Interfaces:**
+
+- Consumes: final path graph and generator ownership.
+- Produces: complete navigation, current memory, generated evidence, and no
+  stale canonical reference.
+
+- [ ] **Step 1: Capture failing link and freshness output**
+
+~~~bash
+python3 scripts/validation/check-document-links.py --mode alignment
+python3 scripts/validation/check-script-manifest.py --check-generated
+~~~
+
+Expected: any remaining stale link or output is listed by exact owner.
+
+- [ ] **Step 2: Repair only reported owners**
+
+Update canonical links and indexes. Run registered generators with explicit
+--write once, then immediately rerun --check. Do not hand-edit generated files.
+
+- [ ] **Step 3: Prove old path literals are gone**
+
+~~~bash
+python3 scripts/validation/check-repository-invariants.py --mode stale-paths
+~~~
+
+Expected: no active canonical use. Historical prose is allowed only in
+mig-0001 and tombstone provenance.
+
+- [ ] **Step 4: Verify links and freshness**
+
+~~~bash
+python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode alignment
+python3 scripts/validation/check-script-manifest.py --check-generated
+git diff --check
+~~~
+
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add docs scripts .github tests
+git commit -m "docs: repair navigation memory and generated evidence"
+~~~
+
+### Task 14: Remove Transition Contracts and Complete Regression Verification
+
+**Files:**
+
+- Modify: docs/99.templates/support/document-corpus-migration-contract.yaml
+- Modify: docs/99.templates/support/corpus-migration-contract.md
+- Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Modify: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
+- Modify: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md
+- Modify: scripts/manifest.yaml
+- Modify: tests/validation affected by transition removal
+
+**Interfaces:**
+
+- Consumes: completed corpus and all required gates.
+- Produces: zero transition allowances, completed migration evidence, and a
+  durable Spec with Plan and Task archived as chg-0001.
+
+- [ ] **Step 1: Add a failing no-transition assertion**
+
+~~~python
+def test_taxonomy_migration_has_no_live_transition(contract):
+    assert "sdlc-taxonomy-convergence" not in contract.live_transitions
+~~~
+
+- [ ] **Step 2: Remove bounded migration allowances**
+
+Mark every mig-0001 row complete, remove old-root allowances, and make the
+target profiles the only accepted paths. Do not remove the historical ledger.
+
+- [ ] **Step 3: Run the full required validation set**
+
+~~~bash
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+python3 scripts/validation/check-document-metadata.py --mode check-active
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-archive
+python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode alignment
+python3 scripts/validation/check-script-manifest.py
+bash scripts/operations/sync-provider-surfaces.sh --check
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile local-script-backed
+python3 -m pytest tests/validation -q
+git diff --check
+git status --short
+~~~
+
+Expected: every validator and test PASS. git status shows only the intended
+Task 14 evidence changes before commit.
+
+- [ ] **Step 4: Write back and archive execution evidence**
+
+Update spec.md to current implemented behavior. Complete task.md with command
+outputs and Commit IDs. Move plan.md and task.md together to
+docs/98.archive/changes/chg-0001-sdlc-taxonomy-convergence/. No active document
+links directly to the archived packet.
+
+- [ ] **Step 5: Commit**
+
+~~~bash
+git add docs scripts tests
+git commit -m "test: complete SDLC governance convergence"
+~~~
 
 ## Verification Plan
 
-Run after every task, not only at wave boundaries.
+Each Task runs its focused tests before commit. The final required sequence is
+the Task 14 Step 3 command block.
 
-| Check                     | Command                                                                          | Acceptance                                    |
-| :------------------------ | :------------------------------------------------------------------------------- | :-------------------------------------------- |
-| Repository contracts      | `bash scripts/validation/check-repo-contracts.sh`                                | Failure count at or below the Task 1 baseline |
-| Changed-document metadata | `python3 scripts/validation/check-document-metadata.py --mode check-changed`     | `violations=0`                                |
-| Full-corpus metadata      | `python3 scripts/validation/check-document-metadata.py --mode check-active`      | Monotonically decreasing per wave             |
-| Traceability              | `bash scripts/validation/check-doc-traceability.sh`                              | Zero failures                                 |
-| Link integrity            | The Python snippet in Task 1 Step 3                                              | At or below the Task 1 baseline               |
-| Heading contract          | `bash scripts/validation/check-repo-contracts.sh 2>&1 \| grep 'profile heading'` | Zero after Task 2 Step 7                      |
-| Whitespace                | `git diff --check`                                                               | No output                                     |
-| Infrastructure            | `bash scripts/validation/validate-docker-compose.sh`                             | Passes; required for Task 17 only             |
-| Rename completeness       | `grep -rl "05\.operations" . --exclude-dir=.git \| wc -l`                        | `0` after Task 17; required for Task 17 only  |
+Expected final structural assertions:
+
+~~~bash
+test ! -e docs/04.execution
+test ! -e docs/02.architecture/requirements
+test ! -e docs/05.operations/guides
+test ! -e docs/05.operations/policies
+test ! -e docs/05.operations/runbooks
+test ! -e archive
+~~~
+
+All six commands must return zero.
+
+The final path scan must return no tracked documentation identity containing a
+YYYY-MM-DD prefix or a four-digit year directory. The final script manifest
+must exactly equal git ls-files scripts. Graphify regeneration is last and is
+advisory when its health report identifies ignored-volume or unrelated-root
+contamination.
 
 ## Risks and Rollback
 
-| Risk                                                                      | Detection                                    | Rollback                                                          |
-| :------------------------------------------------------------------------ | :------------------------------------------- | :---------------------------------------------------------------- |
-| Line anchoring applied without the `##` prefix fix fails all 62 runbooks  | Task 2 Step 4 shows 63 failures instead of 2 | Revert the single commit; reapply both edits together             |
-| Removing the substring match exposes violations beyond the predicted two  | Task 2 Step 4 shows more than 2              | Stop. Re-measure and escalate; do not widen the corpus edit       |
-| Retargeting templates entrenches a corpus error                           | Task 9 Step 1 shows a ratio below 61:1       | Stop. The threshold is the guard; do not promote a close call     |
-| A moved specification breaks an inbound link                              | Task 13 Step 8 link count rises              | The tombstone is the fix; author the missing one                  |
-| Link rewriting in Task 14 corrupts an unrelated substring                 | `git diff` review before each batch commit   | Revert the batch; narrow the match to a full path form            |
-| Removing `docs/04.execution/` loses README content still true             | Task 16 Step 7 inspection                    | Recover from git; fold into `docs/03.specs/README.md`             |
-| The rename misses the hardcoded validator path, silently disabling checks | Task 17 Step 4                               | Apply the path edit; re-run the heading check                     |
-| The rename alters Prometheus alert behavior                               | Task 17 Step 5 diff review                   | Revert the alert rule file; rewrite only the documentation path   |
-| A wave regresses the contract baseline                                    | The per-task contract check                  | Revert the wave's commits; the waves are independently revertable |
+| Risk | Guardrail | Recovery |
+| :-- | :-- | :-- |
+| Link explosion from bulk moves | Commit mapping first; move one bounded unit; run link gate | Correct links or revert the logical commit |
+| Target profiles hide old paths | Explicit bounded migration manifest and final no-transition test | Restore prior profile commit |
+| Full Specs remain in tombstone role | Per-Spec mig-0001 disposition and active-consumer check | Restore current Spec before re-running archive task |
+| Operations roles lose unique content | Move roles before deduplication; diff each subject | Restore content from previous commit |
+| Script deletion breaks a hidden consumer | Manifest consumers, rg scan, tests, and gate graph | Restore file and consumer record in corrective commit |
+| Generator changes working tree in check mode | Mutation test around every generator | Revert generator commit |
+| CI differs from local | Exact leaf-set parity test | Revert workflow routing commit |
+| Runtime-changing rehearsal executes accidentally | Plan invokes only tests and check modes | Stop; do not retry Runtime command without separate approval |
 
-Every task is a separate commit or a small batch of them, so `git revert` at
-task granularity is always available. No task depends on an uncommitted state
-from another task.
+No recovery step uses git reset --hard, checkout discard, force push, or
+history rewriting.
 
 ## Approval Gates
 
-| Gate                                          | Required before                     |
-| :-------------------------------------------- | :---------------------------------- |
-| Human review of the Task 2 exposure count     | Task 2 Step 5, the corpus edit      |
-| Human approval of the Task 9 promotion ratios | Task 9 Step 2, the registry rewrite |
-| Human approval of the 267-document migration  | Task 13 Step 7, the batch phase     |
-| Human approval of authoring specification 137 | Task 16 Step 4                      |
-| Human approval of the infrastructure diff     | Task 17 Step 6                      |
-| Independent review by a non-author            | Closing Task 18                     |
-
-No push to any remote at any gate. The controlled all-files pre-commit wrapper
-runs only at the final gate, and only via
-`scripts/validation/run-agent-precommit-all-files.sh`.
+- The user approved the four-section design and the written Spec.
+- Protected Stage 00 and Stage 99 edits require their typed owners and
+  mandatory reviewers during subagent-driven implementation.
+- Runtime, remote, credential, and deployment actions remain outside approval.
+- Any proposed change to the target taxonomy returns to the user before
+  implementation continues.
 
 ## Completion Criteria
 
-- The heading contract fires: Task 2 Step 4 showed exactly two failures, and
-  Task 2 Step 7 shows zero after migration.
-- Template conformance exceeds the measured 88 of 631.
-- `docs/03.specs/` holds 17 live directories plus 42 tombstones; every live
-  directory with active execution holds `plan.md` and `task.md`.
-- `docs/04.execution/` does not exist.
-- `docs/04.operations/` exists and `docs/05.operations/` does not.
-- `grep -rl "05\.operations"` returns zero files.
-- `docs/98.archive/` holds the 267 migrated documents plus the pre-existing 21.
-- Broken relative links are at or below the Task 1 baseline of 1, counted with
-  the fence-aware check.
-- The repository contract failure count is at or below the Task 1 baseline of 2.
-  The specification records 4; the tree measured 2, and the measured value
-  governs.
-- `docs/03.specs/136-sdlc-taxonomy-convergence/task.md` records every wave's
-  commands, output, and commit range.
-- `docs/00.agent-governance/memory/current.md` reflects the post-W5 state.
+- All 16 acceptance criteria in Spec 136 are satisfied.
+- Every Task has an independently reviewable logical Commit.
+- Stage 04, Architecture requirements, parallel Operations role roots, root
+  archive, and dated documentation identities are absent.
+- The live script manifest contains only maintained files.
+- The migration ledger accounts for every move, merge, replacement, and
+  deletion.
+- Local and CI document-governance aggregates contain identical leaves.
+- Required metadata, lifecycle, archive, link, traceability, template,
+  governance, provider, generated-output, script, workflow, and test gates pass.
+- Spec current truth is written back before Plan and Task evidence is archived.
 
 ## Related Documents
 
-- [SDLC taxonomy convergence specification](../../03.specs/136-sdlc-taxonomy-convergence/spec.md)
-- [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+- [Approved specification](../../03.specs/136-sdlc-taxonomy-convergence/spec.md)
+- [Stage 00 bootstrap](../../00.agent-governance/rules/bootstrap.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
-- [Template selection](../../99.templates/support/template-selection.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
-- [Current project memory](../../00.agent-governance/memory/current.md)
+- [Workflow contract](../../../.github/workflow-contract.yml)

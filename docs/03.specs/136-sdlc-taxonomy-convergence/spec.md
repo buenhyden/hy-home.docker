@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: spec:136-sdlc-taxonomy-convergence
 artifact_type: spec
 parent_ids:
@@ -28,9 +28,9 @@ It replaces the earlier draft decisions in this file. In particular:
 - Legacy, deprecated, dormant, duplicate, and one-time script surfaces do not
   remain in the completed repository.
 
-The status remains draft until the user reviews this written specification.
-The design decisions themselves were approved in four staged reviews on
-2026-08-09.
+The user approved the written specification after four staged design reviews
+on 2026-08-09. The specification is active and its implementation is governed
+by the related Plan.
 
 ## Boundaries and Inputs
 
