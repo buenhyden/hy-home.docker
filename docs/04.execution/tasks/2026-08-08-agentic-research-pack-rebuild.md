@@ -53,10 +53,14 @@ Approved C0/I0/M0. Step 7 commit
 `1300fb0575bd92189aa66c4e445a01aaff9f4a1c`, exact range
 `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c`,
 then corrected exactly the parent research README plus this Task and received
-both scoped reviews Approved C0/I0/M0. Step 8 starts from that clean reviewed
-HEAD, modifies exactly this Task, and records immutable closure evidence. Its
-own identity and both closure-integrity reviews remain `Not Run`; every
-downstream boundary remains closed.
+both scoped reviews Approved C0/I0/M0. Step 8 commit
+`4c749de1debc03046a4eb5402f602e63b8b196fd`, exact external-review range
+`1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd`,
+modifies exactly this Task and records immutable closure evidence. External
+reviewers `vv_step8_closure_spec_review` and
+`/root/vv_step8_closure_quality_review` both returned Approved C0/I0/M0.
+Task 9a is therefore reviewed complete without making this Task's body
+self-referential; every Step 0e and Gate 9 downstream action remains closed.
 
 ## Inputs
 
@@ -74,7 +78,9 @@ downstream boundary remains closed.
 | Initial Task 9a V&V implementation | Commit `139ced00f7008f7161891aef6debfd67cefcfe7a`; range `ac51a53211887a12bb18e2209aa3af1af6eb4b7f..139ced00f7008f7161891aef6debfd67cefcfe7a`; exact 17 paths | Specification Approved C0/I0/M0; documentation quality Needs fixes C0/I1/M0 because the parent router retained both pre-amendment 19-leaf labels; immutable evidence, not the final 18-path implementation contract |
 | Reviewed parent-router Plan correction | Commit `c4ebff545a8dcb319beeb4fc16c053371126cc56`; range `139ced00f7008f7161891aef6debfd67cefcfe7a..c4ebff545a8dcb319beeb4fc16c053371126cc56`; fix commit `011b9db39f8ffde7cc8e5927f68aa70c36e0c824`; fix range `c4ebff545a8dcb319beeb4fc16c053371126cc56..011b9db39f8ffde7cc8e5927f68aa70c36e0c824` | Initial specification Needs fixes C0/I1/M0 for missing explicit Task-only immutable-evidence closure after Step 7; initial quality Approved C0/I0/M0; both Plan-fix re-reviews Approved C0/I0/M0 |
 | Reviewed Task 9a Step 7 router fix | Commit `1300fb0575bd92189aa66c4e445a01aaff9f4a1c`; range `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c`; exact two paths | Parent README exact two-line correction plus this Task; scoped specification and documentation-quality reviews both Approved C0/I0/M0; generated outputs unchanged |
-| Task 9a Step 8 closure base | This Task at clean `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Exact one-Task evidence closure; pending subject `docs(task): close verification validation implementation reviews`; self identity and both closure-integrity reviews `Not Run`; downstream gates closed |
+| Reviewed Task 9a Step 8 closure | Commit `4c749de1debc03046a4eb5402f602e63b8b196fd`; range `1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd`; exact one-Task scope | External reviewers `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review` both Approved C0/I0/M0; immutable receipt recorded after the reviewed commit rather than self-claimed inside it |
+| Step 0d final breaker | Commit `b77abacb610c853db3e9fef2bdef8cc7855c62a2`; range `db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2` | Independent specification and Python/security reviews both Needs fixes C0/I1/M0 on the exact `mkdir` to first `os.open` substitution defect; Step 0d `BLOCKED`, no round 6 |
+| Step 0e approval boundary | User conversation approval on 2026-08-09 (Asia/Seoul) | Git tree-object, sealed `memfd`, and atomic canonical-bundle recovery, including append-only content-addressed Git-object writes during package construction; implementation, reviews, and every downstream Gate 9 action remain `Not Run` |
 | Ignored V&V external-source report | `.superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/vv-external-research-report.md`; SHA-256 `e6df4c9242e0e5bec7779ddb5f025f2bda1a1ed0e5fa198d75fbac22d275d9a5` | Advisory research input only; public-source access and license limitations must be rechecked during authoring |
 | Ignored V&V workspace audit | `.superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/vv-workspace-audit-report.md`; SHA-256 `5693b4a8dffb57b74e7c9747efba33315912a6d461f5972c62cb98470f628670` | Advisory tracked-workspace observation only; counts are baseline-specific and runtime/remote state was not observed |
 | Ignored V&V implementation blueprint | `.superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/vv-leaf-blueprint.md`; SHA-256 `4309a1b80c1c91a57d044b2d728f8289c187ab4394db3ad7c54fd66f9f5d5502` | Advisory implementation input only; not durable authority and not evidence that authoring or generation ran |
@@ -185,9 +191,13 @@ Plan failure and not a replacement for the author's isolated-environment PASS.
 Task 9a Step 1 commit `ac51a53211887a12bb18e2209aa3af1af6eb4b7f`
 received independent specification and documentation-quality approval at
 C0/I0/M0 from `/root/vv_task_prereq_spec_review` and
-`/root/vv_task_prereq_quality_review`. That closes only the Task-only
-prerequisite and opens the exact seventeen-path V&V implementation unit.
-Implementation review, Step 0e, Gate 9, deletion, lifecycle reconciliation,
+`/root/vv_task_prereq_quality_review`. Task 9a Step 8 later closed the complete
+review chain at commit `4c749de1debc03046a4eb5402f602e63b8b196fd`,
+exact range
+`1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd`.
+External reviewers `vv_step8_closure_spec_review` and
+`/root/vv_step8_closure_quality_review` both returned Approved C0/I0/M0.
+This closes Task 9a only; Step 0e, Gate 9, deletion, lifecycle reconciliation,
 runtime/remote action, and push remain `Not Run` and closed.
 
 Task 11 Step 0 is authorized by the reviewed Plan correction
@@ -257,54 +267,30 @@ replaying the deletion projection, and linked-worktree cleanup still permits
 recursive/path-based cleanup after ancestor substitution. Neither blocker is
 waived.
 
-On 2026-08-09 (Asia/Seoul), the user explicitly approved the Plan Step 0d
-correction and its separately bounded recovery design: an index-only projection
-using `--stdout` execution of the two canonical LLM Wiki generators. That
-approval does not authorize round-5 helper execution, a package-selected or
-historical generator blob, Gate 9 package construction or consumption,
-evidence-ref publication, real-index staging, deletion, lifecycle mutation, or
-another closed action. Step 0d recovery implementation is reviewed complete at
-fix commit `71eb4feb7d4a085fd2910038a374987773de1e1d`: the initial implementation
-received formal specification approval and the formal Python/security findings
-were addressed by recovery fix round 1, whose scoped specification and
-Python/security re-reviews both returned Approved C0/I0/M0. The final
-Task-only closure-integrity reviews are external and `Not Run`. Gate 9, Phase A,
-the first durable package and reviews, evidence-ref publication, real-index
-staging, deletion, lifecycle reconciliation, Task 12, remote actions, and push
+On 2026-08-09 (Asia/Seoul), the user explicitly approved the historical Plan
+Step 0d index-only recovery. Intermediate rounds through `db39e644` remain
+immutable diagnostic evidence, but the final-breaker commit is
+`b77abacb610c853db3e9fef2bdef8cc7855c62a2`, exact range
+`db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2`.
+Its independent specification and Python/security reviews both returned Needs
+fixes C0/I1/M0 on the same load-bearing defect: substitution in the exact
+interval from the holding `mkdir` to the first `os.open` can bind the opened
+descriptor, `fstat`, and same-parent `stat` to an attacker replacement and later
+remove that replacement while retaining the helper-created directory. The
+committed regression substitutes only after that interval. Step 0d is therefore
+`BLOCKED`; no round 6 exists. Its earlier reviewed-code binding remains the
+historical value below and cannot authorize Gate 9.
+
+After that breaker, the user approved this English Step 0e boundary: implement
+the Git tree-object, sealed anonymous-memory `memfd`, and atomic canonical-bundle
+recovery, including append-only content-addressed Git-object writes during
+package construction. The approval permits only the exact six-file recovery
+and five-round review contract in the Plan. It does not authorize reuse of an
+old package, receipt, closure, hash, or diagnostic, nor does it authorize a real
+Gate 9 bundle, evidence-ref publication, real-index staging, old-pack deletion,
+lifecycle mutation, remote action, or push. Step 0e implementation and both
+independent reviews are `Not Run`; Phase A and every downstream Gate 9 action
 remain `Not Run` and closed.
-
-A later fail-closed package-build diagnostic exposed a descriptor-transport
-gap: the helper-owned Bash could resolve `/proc/self/fd/<fd>/index`, but the
-production generator's Python-spawned grandchild Git closed the inherited file
-descriptor and observed an empty projected index. Recovery fix round 2 keeps
-the descriptor-pinned scratch owner while exporting the live helper process's
-proved `/proc/<pid>/fd/<fd>` route. Its implementation reviews are `Not Run`;
-the reviewed-code binding below remains unchanged, both failed empty build
-directories are non-authoritative diagnostics preserved only in the ignored
-Task 11 report, and every Gate 9 downstream action remains closed.
-
-Fix round 2 commit `a642d9d0f09574c9417f671e2125ea8661462ff6`
-received independent specification approval at C0/I0/M0 and Python/security
-Needs fixes C0/I0/M1 because an injected initial procfs-proof failure could
-raise after scratch allocation but before context-manager ownership, retaining
-the helper-created holding directory. Recovery fix round 3 adds
-descriptor-relative constructor rollback for that finding. Its independent
-specification review returned Approved C0/I0/M0, but Python/security returned
-Needs fixes C0/I0/M2: failures earlier than the final procfs proof could still
-retain partial constructor state, and holding substitution caused the error to
-name an attacker-controlled symlink as the retained inspection location.
-Recovery fix round 4 generalizes identity-gated rollback across every proved
-constructor stage and reports only the retained holding device/inode/mode when
-its visible name cannot be trusted. Its specification review returned Approved
-C0/I0/M0, but Python/security returned Needs fixes C0/I1/M1: substitution
-between mkdir and the name-based first identity capture could make rollback
-delete an attacker replacement, and ordinary `close()` still reported the
-attacker-visible alias as a proved retained location. Recovery fix round 5
-introduces explicit absent/unbound/bound ownership states, permits deletion only
-after trusted-FD identity capture plus same-parent reproof, retains all unbound
-objects, and uses identity-only retained reporting throughout constructor and
-ordinary cleanup. Its independent reviews are `Not Run`; the reviewed-code
-binding and closed Gate 9 boundary do not change.
 
 GATE9_REVIEWED_CODE_HEAD: `71eb4feb7d4a085fd2910038a374987773de1e1d`
 
@@ -325,9 +311,9 @@ GATE9_REVIEWED_CODE_HEAD: `71eb4feb7d4a085fd2910038a374987773de1e1d`
 | Task 7 | Author automation, CI/CD, GitHub Actions, and QA | Assigned requirement and claim rows plus leaf gates | Complete after fix `910ce5f3`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Complete after fix `8d447997`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Complete after fix `44fdb494`; scoped specification and quality re-reviews Approved C0/I0/M0 |
-| Task 9a | Integrate the verification-and-validation amendment before Gate 9 | Task-only authority prerequisite, REQ-36 leaf, 21/20/36 cardinality, 14 scopes, routes, generators, and reviews | Initial `139ced00` and its split review verdict remain immutable; Plan correction/fix through `011b9db` and two-path Step 7 fix `1300fb` are both reviewed. Step 8 Task-only closure is the current unit; its identity and reviews remain `Not Run` |
+| Task 9a | Integrate the verification-and-validation amendment before Gate 9 | Task-only authority prerequisite, REQ-36 leaf, 21/20/36 cardinality, 14 scopes, routes, generators, and reviews | Reviewed complete at Step 8 commit `4c749de1`, range `1300fb05..4c749de1`; external closure reviewers `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review` both Approved C0/I0/M0 |
 | Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, metadata exceptions, route checks | Complete through fix `6d6e93b6`; route switch, generated navigation, mutable metadata reconciliation, four visible-label repairs, and all-twenty-file projection coverage are implemented; scoped specification and quality re-reviews Approved C0/I0/M0; old-pack deletion and pinned lifecycle-row reconciliation remain Task 11 and the deletion gate stays closed |
-| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 is preserved as a reviewed failed attempt; Step 0b is reviewed complete at `8a35fe07`; Step 0c fix 5 `4796b462` remains superseded by the separately bounded Step 0d recovery; Step 0d recovery through fix round 1 is reviewed at `71eb4feb`; fix round 2 `a642d9d0` received specification Approved C0/I0/M0 and Python/security Needs fixes C0/I0/M1; fix round 3 `459c4a03` received specification Approved C0/I0/M0 and Python/security Needs fixes C0/I0/M2; fix round 4 `db39e644` received specification Approved C0/I0/M0 and Python/security Needs fixes C0/I1/M1; final-breaker fix round 5 closes pre-bind substitution/unproved deletion and ordinary-close reporting with RED/GREEN/full evidence but independent reviews Not Run; all failed constructions and temporary packages are non-authoritative diagnostics only; reviewed-code rebinding, real Gate 9 package/reviews/ref, real-index staging, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
+| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0d final breaker `b77abacb`, range `db39e644..b77abacb`, received specification and Python/security Needs fixes C0/I1/M0 on the same `mkdir` to first-`os.open` substitution defect; Step 0d is `BLOCKED` with no round 6. User-approved Step 0e tree-object/sealed-`memfd`/atomic-bundle recovery is the sole current path, but its implementation and reviews plus all Gate 9/deletion/lifecycle actions are `Not Run` and closed |
 | Task 12 | Final verification and handoff | Whole-branch checks, reviews, closure, and handoff | Not Run |
 
 ### Task 9a amendment-state ledger
@@ -336,15 +322,15 @@ GATE9_REVIEWED_CODE_HEAD: `71eb4feb7d4a085fd2910038a374987773de1e1d`
 | --- | --- | --- |
 | Step 1 Task-only prerequisite | Commit `ac51a532`; exact range `7e526040..ac51a532`; focused validation PASS; both prerequisite reviews Approved C0/I0/M0 | Closed; immutable authority preserved |
 | REQ-36 authoring and owner-leaf integration | Immutable initial commit `139ced00`, exact 17 paths, implements the leaf and internal routes but omits the parent README | Preserve initial history; combine it only with the separately reviewed Step 7 correction |
-| New-pack and final-scope target | Pack is exactly 21 files: one README plus 20 leaves; reviewed implementation union is exactly 18 unique paths, the initial 17 plus the parent research README | Close the separately bounded Step 8 evidence unit and its two integrity reviews |
-| Requirement target | Reviewed implementation is 36/36 requirements and 14/14 scopes; historical REQ-01 through REQ-35 evidence remains unchanged | Complete Step 8 closure-integrity reviews |
+| New-pack and final-scope target | Pack is exactly 21 files: one README plus 20 leaves; reviewed implementation union is exactly 18 unique paths, the initial 17 plus the parent research README | Closed by the externally reviewed Step 8 receipt |
+| Requirement target | Reviewed implementation is 36/36 requirements and 14/14 scopes; historical REQ-01 through REQ-35 evidence remains unchanged | Closed by the externally reviewed Step 8 receipt |
 | Retiring pack | Exactly 20 files now and after Task 9a; unchanged | No Task 9a edit to any retiring-pack path |
 | LLM Wiki regression, generator writes, and freshness checks | Initial RED/GREEN and canonical writes/checks PASS; Step 7 content-only correction replays both freshness checks and proves generated bytes unchanged at 1,339/1,338 | Preserve the exact results through the committed two-path review range |
 | Initial implementation reviews | `139ced00`: specification Approved C0/I0/M0; documentation quality Needs fixes C0/I1/M0 for the two stale parent-router cardinality lines | Address through the bounded Step 7 fix; do not rewrite the initial commit |
 | Parent-router Plan correction and fix | `c4ebff` initial specification Needs fixes C0/I1/M0 and quality Approved C0/I0/M0; `011b9db` specification and quality re-reviews Approved C0/I0/M0 | Closed Plan authority for Step 7 only |
 | Step 7 two-path fix | Commit `1300fb`, range `011b9db..1300fb`, exact parent README plus Task; specification and quality reviews both Approved C0/I0/M0 | Closed; immutable correction and receipts preserved |
-| Step 8 Task-only evidence closure | Current one-Task candidate from base `1300fb`; `Pending self-identity closure`; both closure-integrity reviews `Not Run` | Commit exact Task and obtain both C0/I0/M0 reviews |
-| Step 0e and reviewed-code rebinding | `Not Run` and closed | Reviewed Task-only Step 8 closure required first |
+| Step 8 Task-only evidence closure | Commit `4c749de1`; range `1300fb05..4c749de1`; exact one-Task scope; `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review` both Approved C0/I0/M0 | Closed through immutable external receipts; no self-SHA was claimed by the reviewed candidate |
+| Step 0e prerequisite and reviewed-code rebinding | Current exact one-Task approval/blocker record; Step 0e implementation/reviews `Not Run`; `GATE9_REVIEWED_CODE_HEAD` remains `71eb4feb` | Commit this Task-only prerequisite and obtain fresh specification and Python/security reviews C0/I0/M0 before implementation |
 | Gate 9 durable package, assignments, reviews, evidence ref, and real-index staging | `Not Run` and closed under the amended prerequisite | Step 0e closure plus all current pre-deletion gates |
 | Old-pack deletion, lifecycle reconciliation, post-deletion verification, Task 12, and handoff | `Not Run` and closed | Reviewed Gate 9 authority and every deletion/lifecycle gate; no historical diagnostic substitutes |
 
@@ -423,7 +409,7 @@ states are intentional and may change only with named evidence and review.
 | REQ-33 | New authorship plus claim-level validation and integration before old-pack deletion | `README.md` | Task old-claim migration ledger | All authoring source rows carry reviewed retrieval and verification dispositions | WS-OLD-PACK and Task 2-8 evidence owners | 14/14 routes in pack index and dispositions in scope matrix | Implemented in Task 9: exact 20-file pack, 19 direct leaf links, claim-level migration closure, parent human route, and corrected canonical-owner paths | Task 9 implementer self-review PASS C0/I0; initial specification and quality Needs fixes C0/I1/M0 on the same pseudo-route finding; fix round 1 scoped specification and quality re-reviews Approved C0/I0/M0 | [canonical pack index](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md) |
 | REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task `Generated-artifact inventory` | Pack migration state and parent human router | Source retrieval is complete; predecessor failures remain named beside current results | WS-VALIDATORS, WS-TASK10A-SECURITY, WS-TASK10A-FIX1, WS-TASK10A-FIX2, WS-TASK10A-FIX3, WS-TASK10A-FIX4, WS-TASK10A-FIX5 | Task 10 preserves all 14 dispositions | Implemented and reviewed for the non-destructive Task 10 scope: security readiness is fresh at 11/1/1; commit `186aceee` switches every owned Markdown/LLM route; fix `6d6e93b6` removes exactly sixteen mutable metadata exceptions, preserves the seven pinned lifecycle selectors, corrects four visible labels, and proves all twenty new-pack paths survive both projections; old-pack deletion remains pending in Task 11 | Task 10b fix round 1 scoped specification and quality re-reviews Approved C0/I0/M0; every initial I3/M1 and I1 finding is resolved; Task 10a parked Minor remains non-blocking; deletion review is Not Run | [generated-artifact inventory](#generated-artifact-inventory) |
 | REQ-35 | Logical-unit commits, independent reviews, final verification, and branch handoff | Task `Commit Ledger` | Implementation Plan and Review Evidence | No new external source required for final execution closure | WS-PLAN and WS-VALIDATORS | Task 12 must retain all 14 dispositions | Not Run: Task 12 owns final verification, independent whole-branch reviews, and handoff | Not Run: Task 12 independent reviews pending | [commit ledger](#commit-ledger) |
-| REQ-36 | Primary-source research and current-workspace implementation-and-gap analysis for verification and validation systems and rules that distinguishes conformance verification from intended-use and stakeholder-need validation and covers V&V planning, entry and readiness criteria, success and exit or completion criteria, static and dynamic methods, evidence and traceability, independence and risk-based depth, environments, data, oracles, defect disposition, acceptance and decision authority, residual-risk acceptance, release acceptance, monitoring, and revalidation across all fourteen scopes | `verification-validation.md` | `workspace-baseline.md`, `scope-application-matrix.md`, `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `llm-wiki-system.md`, `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `docker-compose-infrastructure.md`, `security-governance.md` | Eleven required current official routes plus the NASA fixed handbook artifact reopened on 2026-08-09; public/license, NASA-specific, NIST-bounded, GitHub-product, and runtime/remote limits explicit | WS-SPEC-137-AMENDMENT, WS-PLAN-VV-AMENDMENT, WS-TASK9A-VV, WS-TASK9A-ROUTER-FIX, WS-TASK9A-CLOSURE, WS-VALIDATORS-TASK9A | 14/14 explicit in leaf and ledger | Initial `139ced00` plus reviewed correction `1300fb` form the exact 18-path implementation: twentieth leaf, owner and parent routes, Stage 03 labels, regression, 21/20 pack cardinality, and byte-unchanged 1,339/1,338 navigation | Initial specification Approved C0/I0/M0 and quality Needs fixes C0/I1/M0; Step 7 scoped specification and quality reviews both Approved C0/I0/M0; Step 8 closure-integrity reviews `Not Run` | [verification and validation](../../90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md) |
+| REQ-36 | Primary-source research and current-workspace implementation-and-gap analysis for verification and validation systems and rules that distinguishes conformance verification from intended-use and stakeholder-need validation and covers V&V planning, entry and readiness criteria, success and exit or completion criteria, static and dynamic methods, evidence and traceability, independence and risk-based depth, environments, data, oracles, defect disposition, acceptance and decision authority, residual-risk acceptance, release acceptance, monitoring, and revalidation across all fourteen scopes | `verification-validation.md` | `workspace-baseline.md`, `scope-application-matrix.md`, `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `llm-wiki-system.md`, `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `docker-compose-infrastructure.md`, `security-governance.md` | Eleven required current official routes plus the NASA fixed handbook artifact reopened on 2026-08-09; public/license, NASA-specific, NIST-bounded, GitHub-product, and runtime/remote limits explicit | WS-SPEC-137-AMENDMENT, WS-PLAN-VV-AMENDMENT, WS-TASK9A-VV, WS-TASK9A-ROUTER-FIX, WS-TASK9A-CLOSURE, WS-VALIDATORS-TASK9A | 14/14 explicit in leaf and ledger | Initial `139ced00` plus reviewed correction `1300fb` form the exact 18-path implementation: twentieth leaf, owner and parent routes, Stage 03 labels, regression, 21/20 pack cardinality, and byte-unchanged 1,339/1,338 navigation | Initial specification Approved C0/I0/M0 and quality Needs fixes C0/I1/M0; Step 7 scoped specification and quality reviews both Approved C0/I0/M0; Step 8 range `1300fb05..4c749de1` received external specification and quality approval C0/I0/M0 | [verification and validation](../../90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md) |
 
 ### Normative scope ledger
 
@@ -446,26 +432,26 @@ states are intentional and may change only with named evidence and review.
 
 #### Task 9a REQ-36 scope-disposition amendment
 
-These rows add the approved V&V applicability target without rewriting the
-historical Task 9 scope verdicts. Every REQ-36 leaf result and its review remain
-`Not Run` until the leaf exists and the exact implementation range is reviewed.
+These rows preserve the approved V&V applicability target without rewriting
+the historical Task 9 scope verdicts. The REQ-36 leaf and all fourteen
+dispositions are reviewed through the external Step 8 closure receipts.
 
 | Scope | V&V disposition | Required emphasis and limit | Task 9a result |
 | --- | --- | --- | --- |
-| `agentic` | Direct | Verify catalogs, prompts, tools, permissions, stop criteria, and evidence schemas; validate intended human handoff and task outcome; provider runtime stays `UNVERIFIED` | Implemented in draft leaf; implementation review `Not Run` |
-| `architecture` | Direct | Verify requirement, ADR, ARD, Spec, interface, and quality-attribute traceability; validate against stakeholder constraints and operational concept | Implemented in draft leaf; implementation review `Not Run` |
-| `backend` | Not applicable now | No current backend product surface; API, authorization, data, migration, error, load, and runtime acceptance require a later approved surface | Explicit not-applicable disposition implemented; review `Not Run` |
-| `common` | Direct | Verify shared scripts, contracts, and conventions; validate that common rules reduce drift without erasing legitimate scope variation | Implemented in draft leaf; implementation review `Not Run` |
-| `docs` | Direct | Verify metadata, headings, links, templates, generated freshness, and traceability; validate intended reader tasks and maintenance decisions | Implemented in draft leaf; implementation review `Not Run` |
-| `entry` | Partial | Verify gateway, TLS, authentication, and routing configuration; edge reachability, certificates, log forwarding, and user ingress stay `UNVERIFIED` | Implemented with runtime limit; implementation review `Not Run` |
-| `frontend` | Partial | Verify Storybook lint, type, build, component, and coverage evidence; product journey, accessibility, and usability validation are not established | Implemented with product-validation gap; review `Not Run` |
-| `infra` | Direct, mostly verification | Verify Compose, configuration, network, volume, secret metadata, provenance, and hardening; live health, recovery, latency, backup, and rollback stay `UNVERIFIED` | Implemented with runtime limit; implementation review `Not Run` |
-| `meta` | Direct | Verify profiles, transitions, taxonomy, lifecycle, and generated inventories; validate usefulness for discovery and governance decisions | Implemented in draft leaf; implementation review `Not Run` |
-| `mobile` | Not applicable now | No mobile source; platform build, signing, device, accessibility, and user-context evidence require a later approved surface | Explicit not-applicable disposition implemented; review `Not Run` |
-| `ops` | Partial | Verify Runbook, Incident, Release, monitoring, and rollback definitions; drills, service outcomes, MTTR, backup/restore, and release runtime stay `UNVERIFIED` | Implemented with runtime limit; implementation review `Not Run` |
-| `product` | Partial | Verify PRD acceptance criteria and traceability; stakeholder validation and acceptance remain with the human product authority | Implemented with authority limit; implementation review `Not Run` |
-| `qa` | Direct | Verify plan, environment, data, oracle, coverage, flakes, and results; validate suite sufficiency against approved risk and release decision | Implemented in draft leaf; implementation review `Not Run` |
-| `security` | Direct | Verify threat models, secure checks, approvals, supply-chain evidence, and redaction; residual-risk and operational-security acceptance require named authority and observation | Implemented with authority limit; implementation review `Not Run` |
+| `agentic` | Direct | Verify catalogs, prompts, tools, permissions, stop criteria, and evidence schemas; validate intended human handoff and task outcome; provider runtime stays `UNVERIFIED` | Reviewed implementation; Task 9a closure Approved C0/I0/M0 |
+| `architecture` | Direct | Verify requirement, ADR, ARD, Spec, interface, and quality-attribute traceability; validate against stakeholder constraints and operational concept | Reviewed implementation; Task 9a closure Approved C0/I0/M0 |
+| `backend` | Not applicable now | No current backend product surface; API, authorization, data, migration, error, load, and runtime acceptance require a later approved surface | Reviewed not-applicable disposition; Task 9a closure Approved C0/I0/M0 |
+| `common` | Direct | Verify shared scripts, contracts, and conventions; validate that common rules reduce drift without erasing legitimate scope variation | Reviewed implementation; Task 9a closure Approved C0/I0/M0 |
+| `docs` | Direct | Verify metadata, headings, links, templates, generated freshness, and traceability; validate intended reader tasks and maintenance decisions | Reviewed implementation; Task 9a closure Approved C0/I0/M0 |
+| `entry` | Partial | Verify gateway, TLS, authentication, and routing configuration; edge reachability, certificates, log forwarding, and user ingress stay `UNVERIFIED` | Reviewed implementation with runtime limit; Task 9a closure Approved C0/I0/M0 |
+| `frontend` | Partial | Verify Storybook lint, type, build, component, and coverage evidence; product journey, accessibility, and usability validation are not established | Reviewed implementation with product-validation gap; Task 9a closure Approved C0/I0/M0 |
+| `infra` | Direct, mostly verification | Verify Compose, configuration, network, volume, secret metadata, provenance, and hardening; live health, recovery, latency, backup, and rollback stay `UNVERIFIED` | Reviewed implementation with runtime limit; Task 9a closure Approved C0/I0/M0 |
+| `meta` | Direct | Verify profiles, transitions, taxonomy, lifecycle, and generated inventories; validate usefulness for discovery and governance decisions | Reviewed implementation; Task 9a closure Approved C0/I0/M0 |
+| `mobile` | Not applicable now | No mobile source; platform build, signing, device, accessibility, and user-context evidence require a later approved surface | Reviewed not-applicable disposition; Task 9a closure Approved C0/I0/M0 |
+| `ops` | Partial | Verify Runbook, Incident, Release, monitoring, and rollback definitions; drills, service outcomes, MTTR, backup/restore, and release runtime stay `UNVERIFIED` | Reviewed implementation with runtime limit; Task 9a closure Approved C0/I0/M0 |
+| `product` | Partial | Verify PRD acceptance criteria and traceability; stakeholder validation and acceptance remain with the human product authority | Reviewed implementation with authority limit; Task 9a closure Approved C0/I0/M0 |
+| `qa` | Direct | Verify plan, environment, data, oracle, coverage, flakes, and results; validate suite sufficiency against approved risk and release decision | Reviewed implementation; Task 9a closure Approved C0/I0/M0 |
+| `security` | Direct | Verify threat models, secure checks, approvals, supply-chain evidence, and redaction; residual-risk and operational-security acceptance require named authority and observation | Reviewed implementation with authority limit; Task 9a closure Approved C0/I0/M0 |
 
 ### External source ledger
 
@@ -545,7 +531,7 @@ remain bounded to their recorded retrieval time.
 | WS-TASK9A-VV | This Task, `verification-validation.md`, pack README, ten supporting owners, Stage 03 router, focused test, and two generated outputs | Commit `139ced00f7008f7161891aef6debfd67cefcfe7a`; range `ac51a53211887a12bb18e2209aa3af1af6eb4b7f..139ced00f7008f7161891aef6debfd67cefcfe7a`; exact 17 paths; official-source access `2026-08-09T12:37:24Z` plus NASA PDF `2026-08-09T12:47:17Z` | `139ced00f7008f7161891aef6debfd67cefcfe7a` | Remeasured base 1,669/new 20/old 20 and implementation 1,670/new 21/old 20; 14 scopes; 8/14/24 catalog; 64/42 scripts; 26 validation tests; workflow 7/23/8 plus 80/16/3; initial specification Approved C0/I0/M0 and quality Needs fixes C0/I1/M0 because the parent router was omitted | Immutable initial evidence only; no runtime, remote, secret, provider, release, residual-risk acceptance, Gate 9, deletion, or lifecycle proof | REQ-36 |
 | WS-PLAN-VV-PARENT-ROUTE | Task 9a Step 7/8 correction in the active Plan | Correction `c4ebff545a8dcb319beeb4fc16c053371126cc56`, range `139ced00f7008f7161891aef6debfd67cefcfe7a..c4ebff545a8dcb319beeb4fc16c053371126cc56`; fix `011b9db39f8ffde7cc8e5927f68aa70c36e0c824`, range `c4ebff545a8dcb319beeb4fc16c053371126cc56..011b9db39f8ffde7cc8e5927f68aa70c36e0c824` | `011b9db39f8ffde7cc8e5927f68aa70c36e0c824` | Initial Plan specification Needs fixes C0/I1/M0 for missing Task-only immutable-evidence closure; quality Approved C0/I0/M0; both Plan-fix re-reviews Approved C0/I0/M0 | Prospective authority for Step 7 and later Step 8 only; does not itself correct the router or open a downstream gate | REQ-35, REQ-36 |
 | WS-TASK9A-ROUTER-FIX | `docs/90.references/research/README.md` and this Task | Commit `1300fb0575bd92189aa66c4e445a01aaff9f4a1c`; range `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c`; exact two paths | `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Exact two-line parent-router correction; final union 18 unique paths; generated outputs unchanged at 1,339/1,338; scoped specification and quality reviews both Approved C0/I0/M0 | No direct leaf route, runtime/remote observation, policy authority, Step 0e, Gate 9, deletion, or lifecycle transition | REQ-35, REQ-36 |
-| WS-TASK9A-CLOSURE | This Task | `Pending self-identity closure`; BASE `1300fb0575bd92189aa66c4e445a01aaff9f4a1c`; subject `docs(task): close verification validation implementation reviews`; exact one-Task scope | `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Current Step 8 evidence unit records the full immutable review chain and final 18/21/20/36/14/1,339/1,338 state; closure-integrity reviews `Not Run` | Evidence closure only; no self-SHA claim and no Task 10 finalization, Step 0e, Gate 9, deletion, lifecycle, runtime/remote action, or push | REQ-35, REQ-36 |
+| WS-TASK9A-CLOSURE | This Task | Commit `4c749de1debc03046a4eb5402f602e63b8b196fd`; range `1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd`; subject `docs(task): close verification validation implementation reviews`; exact one-Task scope | `4c749de1debc03046a4eb5402f602e63b8b196fd` | Full immutable review chain and final 18/21/20/36/14/1,339/1,338 state; external `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review` both Approved C0/I0/M0 | Evidence closure only; immutable identity/reviews are recorded by this later prerequisite rather than self-claimed by the reviewed commit; no Step 0e, Gate 9, deletion, lifecycle, runtime/remote action, or push | REQ-35, REQ-36 |
 | WS-VALIDATORS-TASK9A | Metadata, traceability, alignment, repository contracts, workflow/security/Compose/provenance owners, hardening/template gates, both LLM generators, focused unittest, and cardinality assertions | Exact commands and candidate results in Verification Evidence | `ac51a53211887a12bb18e2209aa3af1af6eb4b7f`; Step 7 base `011b9db39f8ffde7cc8e5927f68aa70c36e0c824`; Step 8 base `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Initial and Step 7 checks pass; Step 8 metadata, traceability, repository contracts, generator freshness, focused test, generated-byte, whitespace, and exact one-path gates are recorded below; alignment preserves the 184 predecessor with zero attributable increase | Each local result proves only its exact command, inputs, environment, and candidate; no aggregate or generated result replaces runtime/remote observation or acceptance authority | REQ-35, REQ-36 |
 | WS-OLD-PACK | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` | `find` plus `git ls-tree -r HEAD` | `9917fcdadf700e7f68541e73188620e133485470` | 20 files / 20 blobs verified | Historical input only | REQ-33, REQ-34 |
 | WS-SCOPES | `docs/00.agent-governance/scopes/` | Fourteen normative filenames plus complete content analysis | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | 14/14 verified and dispositioned | Tracked governance only | REQ-32 |
@@ -716,7 +702,7 @@ manifest/summary rows unchanged.
 | `scripts/knowledge/generate-llm-wiki-index.sh` | `RETIRING_PACK_PREFIX` | Lifecycle filter constant | Exact trailing-slash exclusion keeps canonical output deletion-invariant during two-pack review | Focused GREEN and freshness PASS; Task 10b scoped specification and quality re-reviews Approved C0/I0/M0 |
 | `scripts/validation/check-document-metadata.py` | `TARGET_SURFACE_DIRECT_SOURCE_PATHS` | Commit-pinned baseline selector | Same exact seven inputs as the YAML wave; unchanged by fix round 1 and not reader routes; `APPROVED_MIGRATION_PATHS` now has no old/new pack prefix | Focused RED/GREEN and immutable-row digests reviewed; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | `tests/validation/test_document_metadata.py` | `RETIRING_RESEARCH_PACK_PREFIX` and exact boundary sets | Lifecycle regression constants | Proves the sixteen-row mutable-exception difference, absence of both pack prefixes from current exceptions, preserved audit/Spec 123/Stage 04 sentinels, and exact seven pinned Python/YAML/manifest/summary rows | Focused RED/GREEN reviewed; scoped specification and quality re-reviews Approved C0/I0/M0 |
-| `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` | `RETIRING_PREFIX`, `RETIRING_PACK_FILES`, `NEW_PACK_FILES`, `SIBLING_PATH`, `PLAN_PATH`, and `TASK_PATH` | Lifecycle regression constants | Proves exact old-20 exclusion, all 21 new-pack index/coverage contributions, production leaf/README route, same-slug Stage 04 history, and prefix sibling | Initial focused RED was solely the absent production leaf and GREEN/full module passed; `139ced00` specification review Approved and quality Needs fixes on the separate parent-router omission; Step 7 focused replay and both scoped reviews passed; Step 8 closure reviews remain `Not Run` |
+| `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` | `RETIRING_PREFIX`, `RETIRING_PACK_FILES`, `NEW_PACK_FILES`, `SIBLING_PATH`, `PLAN_PATH`, and `TASK_PATH` | Lifecycle regression constants | Proves exact old-20 exclusion, all 21 new-pack index/coverage contributions, production leaf/README route, same-slug Stage 04 history, and prefix sibling | Initial focused RED was solely the absent production leaf and GREEN/full module passed; `139ced00` specification review Approved and quality Needs fixes on the separate parent-router omission; Step 7 focused replay and both scoped reviews passed; Step 8 closure range `1300fb05..4c749de1` then received both external C0/I0/M0 approvals |
 
 ## Work Log
 
@@ -848,7 +834,7 @@ manifest/summary rows unchanged.
 | 2026-08-09 | Task 11 Step 0d implementation formal reviews | Reviewed commit `c9682ab2fdf39d5fc4910c808939e771fde63f78` and exact range `383faece6ebdb4e78bd8d576b36bb9d53f9b54ec..c9682ab2fdf39d5fc4910c808939e771fde63f78` | Formal specification Approved C0/I0/M0; formal Python/security Needs fixes C0/I2/M1: live `HEAD` could advance after preflight, a forged AUTHORIZED ref with the wrong parent could execute the reviewed generator before identity rejection, and an unregistered `index.lock` surfaced raw `OSError` during cleanup; Gate 9 remained closed |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 1 TDD RED/GREEN | Added one isolated regression for each formal Python/security finding before production edits, then bound snapshots/results to the preflight OID, preflighted evidence parent/package HEAD before projector execution, and normalized final scratch cleanup failure | Exact focused RED ran 3 methods in 40.512 seconds with three intended failures only; the same methods pass 3/3 in 37.225 seconds; the expanded original-eleven-plus-fix set passes 14/14 in 217.281 seconds; wrong-parent replay reports `EVIDENCE_COMMIT_IDENTITY_DRIFT` with zero marker execution and unregistered content remains retained |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 1 full verification | Replayed both affected classes and every static, generator, and repository invariant | Full suite passes 35/35 in 499.537 seconds; Python compile, Ruff, Bash syntax, ShellCheck, both stdout `cmp`, both canonical `--check`, and whitespace pass; generated diffs and staged diff are empty; old pack remains 20/20 at `HEAD` and in the real index; worktree registry and empty Gate 9 namespace are unchanged; fix implementation reviews remain Not Run and Gate 9 remains closed |
-| 2026-08-09 | Task 11 Step 0d recovery fix round 1 review closure | Reviewed commit `71eb4feb7d4a085fd2910038a374987773de1e1d` and exact range `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d` | Scoped specification and Python/security re-reviews both Approved C0/I0/M0; I1 live-HEAD race, I2 wrong-parent pre-execution, and M1 unregistered-lock cleanup are ADDRESSED; the Step 0d recovery implementation is reviewed complete and bound as the reviewed code HEAD while final Task-only closure-integrity reviews remain external and Not Run and every downstream Gate 9 action remains closed |
+| 2026-08-09 | Task 11 Step 0d recovery fix round 1 review closure | Reviewed commit `71eb4feb7d4a085fd2910038a374987773de1e1d` and exact range `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d` | At this intermediate checkpoint, scoped specification and Python/security re-reviews both Approved C0/I0/M0 and I1/I2/M1 were ADDRESSED; later Step 0d rounds and the `b77abacb` final breaker supersede the completion interpretation, while `71eb4feb` remains only the historical reviewed-code binding |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 2 diagnosis and TDD RED | Preserved the Task-only Phase A candidate plus both failed empty package paths in the ignored Task 11 report, restored the tracked Task exactly to `HEAD`, then installed the real production generators in an isolated fixture before any production edit | Exact focused RED ran 1 method in 17.338 seconds and failed only with `GENERATOR_STDOUT_DRIFT` because the production index generator's Python-spawned grandchild Git could not resolve the inherited `/proc/self/fd` projected index; Task, real index, refs, old pack, generated outputs, and lifecycle artifacts were unchanged |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 2 GREEN | Replaced only the exported descriptor spelling with `/proc/<helper-pid>/fd/<scratch-fd>` while retaining descriptor ownership, then proved owner PID, exact PID/fd route, proc symlink, original descriptor identity, reopened directory identity, and cleanup lifecycle | The focused production-generator regression passes 1/1 in 16.733 seconds; canonical package, exact-twenty projection, and production-generator transport pass 3/3 in 44.934 seconds; the real generator's grandchild Git reads the projected index without an ordinary scratch path or outside write |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 2 full verification | Replayed the complete helper class, the retiring-pack generator class, static/parity checks, and repository invariants | Helper suite passes 33/33 in 553.120 seconds and generator suite passes 3/3 in 1.201 seconds; Python compile, Ruff, Bash syntax, ShellCheck, both stdout `cmp`, both canonical `--check`, and whitespace pass; Task remained exactly `HEAD` until this evidence update; old pack remains 20/20 at `HEAD` and in the real index; generated/lifecycle diffs, real staged diff, and Gate 9 ref namespace are empty; exact three-file scope after this Task update; independent fix reviews Not Run and Gate 9 remains closed |
@@ -873,7 +859,9 @@ manifest/summary rows unchanged.
 | 2026-08-09 | Task 9a parent-router Plan correction and fix | Recorded correction `c4ebff`, range `139ced00..c4ebff`, and fix `011b9db`, range `c4ebff..011b9db` | Initial specification Needs fixes C0/I1/M0 for missing explicit Task-only immutable-evidence closure and quality Approved C0/I0/M0; both Plan-fix re-reviews Approved C0/I0/M0 |
 | 2026-08-09 | Task 9a Step 7 bounded parent-router correction | From clean reviewed `011b9db`, changed only the structure suffix and localized cardinality sentence in the parent README plus immutable/current evidence in this Task | Commit `1300fb`, range `011b9db..1300fb`, exact two paths; parent remains a single pack-README route with no direct V&V leaf link; final union 18 unique paths; 1,339/1,338 generated bytes preserved |
 | 2026-08-09 | Task 9a Step 7 reviews | Reviewed exact commit `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` and range `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Scoped specification and documentation-quality reviews both Approved C0/I0/M0; Step 8 may record immutable closure evidence while every downstream gate remains closed |
-| 2026-08-09 | Task 9a Step 8 Task-only evidence closure | From clean reviewed `1300fb`, recorded the complete initial implementation, Plan correction/fix, Step 7 review chain, exact 18-path union, 21/20/36/14 cardinalities, and unchanged 1,339/1,338 generated state | `Pending self-identity closure`; subject `docs(task): close verification validation implementation reviews`; exact one-Task scope; closure-integrity reviews `Not Run`; no downstream action |
+| 2026-08-09 | Task 9a Step 8 Task-only evidence closure | From clean reviewed `1300fb`, recorded the complete initial implementation, Plan correction/fix, Step 7 review chain, exact 18-path union, 21/20/36/14 cardinalities, and unchanged 1,339/1,338 generated state | Commit `4c749de1`, exact range `1300fb05..4c749de1`, exact one-Task scope; external `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review` both Approved C0/I0/M0; Task 9a reviewed complete without self-referential receipt claims |
+| 2026-08-09 | Task 11 Step 0d final-breaker reviews | Reviewed commit `b77abacb610c853db3e9fef2bdef8cc7855c62a2` and exact range `db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2` | Independent specification and Python/security reviews both Needs fixes C0/I1/M0: exact `mkdir` to first-`os.open` substitution can bind and later delete an attacker replacement; Step 0d `BLOCKED`, no round 6, reviewed-code binding remains `71eb4feb` |
+| 2026-08-09 | Step 0e tree-object recovery approval prerequisite | Recorded the user's Git tree-object, sealed `memfd`, atomic canonical-bundle, and append-only content-addressed object-write approval in this Task only | Step 0e implementation/reviews and all Gate 9 package/ref/index/deletion/lifecycle actions remain `Not Run`; pending marker unchanged; exact one-Task prerequisite validation recorded below |
 
 ## Verification Evidence
 
@@ -922,6 +910,10 @@ private-state material.
 | Both canonical LLM Wiki `--check` modes | Step 8 candidate | 0 each | PASS | Index and coverage remain fresh at 1,339/1,338; no generator write ran |
 | Focused V&V retiring-pack regression | Step 8 candidate | 0 | PASS | Ran 1 test in 0.000s; `OK` |
 | Generated-output diff, exact one-path assertion, and `git diff --check` | Step 8 candidate from `1300fb` | 0 each | PASS | Both generated outputs byte-unchanged; exactly this Task differs; no whitespace error |
+| Step 0e Task-only approval prerequisite metadata and traceability | Candidate from clean reviewed `4c749de1debc03046a4eb5402f602e63b8b196fd` | 0 / 0 | PASS | Explicit changed-path metadata `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0`; traceability `catalog_pairs_total=46 failures=0` |
+| Step 0e Task-only approval prerequisite repository contracts | Same candidate with isolated validation interpreter | 0 | PASS | `failures=0`; repository Docker/docs contracts synchronized |
+| Step 0e Task-only approval prerequisite generator freshness | Same candidate; no generator write | 0 / 0 | PASS | Canonical LLM Wiki index and coverage `--check` modes both pass; generated bytes remain untouched |
+| Step 0e Task-only approval prerequisite cardinality and diff scope | Same candidate | 0 each | PASS | Exact `pack_files=21 leaves=20 requirements=36 scopes=14`; `git diff --check` passes and only this Task differs from `4c749de1` |
 | `find docs/90.references/research/2026-07-05-agentic-research-pack-refresh -maxdepth 1 -type f -printf '%f\n' \| sort` | Task BASE | 0 | PASS | 20 filenames |
 | `git ls-tree -r HEAD docs/90.references/research/2026-07-05-agentic-research-pack-refresh` | Task BASE | 0 | PASS | 20 blob records |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Task BASE | 1 | FAIL, predecessor | Stale index; differs from design-time PASS and is preserved as observed |
@@ -1129,8 +1121,8 @@ backfilled.
 | Task 9a Step 7 fix specification review | `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Independent specification reviewer | Approved; C0/I0/M0 | Exact two-path correction satisfies the reviewed parent-router and immutable-history contract |
 | Task 9a Step 7 fix quality review | `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Independent documentation-quality reviewer | Approved; C0/I0/M0 | Parent route states 20 leaves/21 files, retains one pack README link and no direct V&V leaf link, and preserves historical evidence cleanly |
 | Task 9a Step 8 closure implementer self-review | Exact one-Task candidate from `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Step 8 implementer | PASS; C0/I0/M0 | Immutable initial, Plan, and Step 7 receipts; exact 17 plus final 18 unique paths; 21/20/36/14; unchanged 1,339/1,338; self-identity boundary; and all downstream closed states verified |
-| Task 9a Step 8 closure specification review | `Not Run`; closure identity pending | Independent specification reviewer | Not Run | Must review the exact committed Task-only closure range; no downstream gate opens first |
-| Task 9a Step 8 closure quality review | `Not Run`; closure identity pending | Independent documentation-quality reviewer | Not Run | Must review the exact committed Task-only closure range; no downstream gate opens first |
+| Task 9a Step 8 closure specification review | `1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd` | `vv_step8_closure_spec_review` | Approved; C0/I0/M0 | Exact committed Task-only closure is consistent with Spec 137 and the Plan; immutable external receipt closes Task 9a without a self-SHA claim |
+| Task 9a Step 8 closure quality review | `1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd` | `/root/vv_step8_closure_quality_review` | Approved; C0/I0/M0 | Exact committed Task-only evidence chain and final 18/21/20/36/14/1,339/1,338 state are clear and internally consistent |
 | Implementer self-review | Working tree before Task 1 commit | Task 1 implementer | PASS | Exact row counts are 35 requirements, 14 scopes, and 20 pinned old-file claim containers; two owned tracked files only; no Critical or Important finding |
 | Specification compliance | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Approved; C0/I0/M0 | First committed-unit specification review returned no findings |
 | Documentation quality | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Needs fixes; C0/I1/M0 | Important finding: backfill the known Task 1 commit and review identities; fix re-review Not Run |
@@ -1242,8 +1234,10 @@ backfilled.
 | Task 11 Step 0d recovery fix round 3 Python/security review | `a642d9d0f09574c9417f671e2125ea8661462ff6..459c4a03061dfbc8bd2d28882a80cf898d686d3b` | Independent Python/security reviewer | Needs fixes; C0/I0/M2 | M1: rollback began only around final procfs proof, so earlier partial constructor failures could retain helper-created directories; M2: holding substitution reported the attacker symlink as a retained inspection path instead of the proved object's actual identity/location |
 | Task 11 Step 0d recovery fix round 4 specification review | `459c4a03061dfbc8bd2d28882a80cf898d686d3b..db39e644974c0f2540f3ccb42409e8bd6c36b929` | Independent specification reviewer | Approved; C0/I0/M0 | Exact three-file fix satisfies the scoped Plan correction, TDD evidence, repository invariants, and closed Gate 9 authority |
 | Task 11 Step 0d recovery fix round 4 Python/security review | `459c4a03061dfbc8bd2d28882a80cf898d686d3b..db39e644974c0f2540f3ccb42409e8bd6c36b929` | Independent Python/security reviewer | Needs fixes; C0/I1/M1 | I1: substitution before name-based first identity binding could make rollback remove the attacker replacement and retain the helper-created directory; M1: ordinary close still claimed an attacker-controlled visible alias as a proved retained location |
-| Task 11 Step 0d recovery fix round 5 specification review | Not Run | Independent specification reviewer | Not Run | Review the exact ownership-state/trusted-FD correction, no-unproved-delete regressions, truthful reporting, and closed Gate 9 boundary |
-| Task 11 Step 0d recovery fix round 5 Python/security review | Not Run | Independent Python/security reviewer | Not Run | Review pre-bind substitution, unbound retain-only behavior, descriptor closure, immediate same-parent reproof for every removable object, identity-only retained reporting, and all prior transport/authority guarantees |
+| Task 11 Step 0d recovery fix round 5 specification review | `db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2` | Independent specification reviewer | Needs fixes; C0/I1/M0 | I1: the committed regression does not cover substitution in the exact holding-`mkdir` to first-`os.open` interval, so the implementation does not prove its no-unowned-delete contract |
+| Task 11 Step 0d recovery fix round 5 Python/security review | `db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2` | Independent Python/security reviewer | Needs fixes; C0/I1/M0 | I1: pre-open substitution can bind the descriptor and both identity checks to an attacker replacement and later remove it while retaining the helper-created directory; Step 0d is `BLOCKED` and has no round 6 |
+| Step 0e Task-only approval prerequisite specification review | Not Run; commit identity pending | Fresh independent specification reviewer | Not Run | Review only the eventual one-Task commit range; no Step 0e implementation or Gate 9 authority exists first |
+| Step 0e Task-only approval prerequisite Python/security review | Not Run; commit identity pending | Fresh independent Python/security reviewer | Not Run | Review the exact blocker, approval, append-only object-write, no-cleanup, and closed downstream boundaries after this Task-only commit |
 
 ## Commit Ledger
 
@@ -1258,7 +1252,7 @@ backfilled.
 | Task 9a parent-router Plan correction | `c4ebff545a8dcb319beeb4fc16c053371126cc56`; `docs(plan): include parent research router in vv unit`; range `139ced00f7008f7161891aef6debfd67cefcfe7a..c4ebff545a8dcb319beeb4fc16c053371126cc56` | Add the parent router to the final 18-path unit and define the bounded two-path recovery | Plan-focused validation recorded in the Plan unit | Initial specification Needs fixes C0/I1/M0 for missing Task-only immutable-evidence closure; quality Approved C0/I0/M0 |
 | Task 9a parent-router Plan fix | `011b9db39f8ffde7cc8e5927f68aa70c36e0c824`; `docs(plan): close verification validation review evidence`; range `c4ebff545a8dcb319beeb4fc16c053371126cc56..011b9db39f8ffde7cc8e5927f68aa70c36e0c824` | Add explicit Step 8 Task-only evidence closure after the reviewed Step 7 fix | Plan-focused validation recorded in the Plan unit | Scoped specification and documentation-quality re-reviews Approved C0/I0/M0 |
 | Task 9a Step 7 parent-router fix | `1300fb0575bd92189aa66c4e445a01aaff9f4a1c`; `docs(research): correct verification validation parent route`; range `011b9db39f8ffde7cc8e5927f68aa70c36e0c824..1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Exactly two paths: parent research README two-line cardinality correction plus this Task; final implementation union exactly 18 unique paths | Focused metadata, traceability, alignment delta, isolated repository contract, both generator freshness checks, focused test, parent assertions, exact README numstat, whitespace, and exact two-path gates | Implementer self-review PASS C0/I0/M0; scoped specification and quality reviews both Approved C0/I0/M0; generated outputs unchanged and downstream gates closed |
-| Task 9a Step 8 implementation-review closure | Pending self-identity closure; `docs(task): close verification validation implementation reviews`; BASE `1300fb0575bd92189aa66c4e445a01aaff9f4a1c` | Exactly this Task: record immutable initial implementation, Plan correction/fix, Step 7 receipts, final 18-path unique scope, and 21/20/36/14/1,339/1,338 state | Focused Task metadata, traceability, isolated repository contract, both generator freshness checks, focused test, generated-byte identity, whitespace, and exact one-path gates | Implementer self-review PASS C0/I0/M0; closure-integrity specification and quality reviews `Not Run`; Task 10 finalization, Step 0e, Gate 9, deletion, lifecycle, runtime/remote action, and push remain closed |
+| Task 9a Step 8 implementation-review closure | `4c749de1debc03046a4eb5402f602e63b8b196fd`; `docs(task): close verification validation implementation reviews`; range `1300fb0575bd92189aa66c4e445a01aaff9f4a1c..4c749de1debc03046a4eb5402f602e63b8b196fd` | Exactly this Task: record immutable initial implementation, Plan correction/fix, Step 7 receipts, final 18-path unique scope, and 21/20/36/14/1,339/1,338 state | Focused Task metadata, traceability, isolated repository contract, both generator freshness checks, focused test, generated-byte identity, whitespace, and exact one-path gates | Implementer self-review PASS C0/I0/M0; external `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review` both Approved C0/I0/M0; Task 9a reviewed complete |
 | Task 1 | `c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4`; `docs(task): initialize agentic research rebuild ledger` | Execution ledger and immutable baselines | Task 1 scoped checks | Specification Approved C0/I0/M0; quality Needs fixes C0/I1/M0 |
 | Task 1 fix 1 | `528c225d35d6c986b50f9b997fd08921a8df9a9b`; `docs(task): backfill task 1 review identity` | Review-identity/evidence correction | Focused metadata and diff PASS | Scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 2 | `9a6e09ca06d99ae8234199443974c978640f3ae6`; `docs(research): establish workspace and scope baseline` | Workspace baseline, scope matrix, and execution evidence | Focused metadata/scope/diff PASS; repository contract has separate predecessor | Implementer PASS C0/I0; specification and quality Approved C0/I0/M0 |
@@ -1302,98 +1296,36 @@ backfilled.
 | Task 11 Step 0d recovery fix round 2 | `a642d9d0f09574c9417f671e2125ea8661462ff6`; `fix(validation): preserve projected index for generators`; range `f429a3f1b2bc3d128fd33631458c8311e4b1758f..a642d9d0f09574c9417f671e2125ea8661462ff6` | Exact three files: this Task, helper, and helper test; preserve descriptor-pinned scratch ownership while making the projected index resolvable to production-generator grandchildren through a strictly proved helper-PID descriptor route | Focused RED 1 / GREEN 1/1; targeted 3/3; affected 36/36; static, parity, metadata, whitespace, exact scope, old-pack, real-index, ref, generated-output, and lifecycle invariants PASS | Independent specification Approved C0/I0/M0; Python/security Needs fixes C0/I0/M1 for missing constructor rollback; reviewed-code binding stays `71eb4feb` and Gate 9 remains closed |
 | Task 11 Step 0d recovery fix round 3 | `459c4a03061dfbc8bd2d28882a80cf898d686d3b`; `fix(validation): roll back unproved gate 9 scratch`; range `a642d9d0f09574c9417f671e2125ea8661462ff6..459c4a03061dfbc8bd2d28882a80cf898d686d3b` | Exact three files: this Task, helper, and helper test; add descriptor-pinned constructor rollback after initial procfs proof failure, remove only identity-proved direct children, close all owned FDs, and retain safely on ownership drift | Focused RED 1 / GREEN 1/1; cleanup/adversarial 5/5; affected 38/38; static, parity, metadata, whitespace, exact scope, old-pack, real-index, ref, generated-output, and lifecycle invariants PASS | Independent specification Approved C0/I0/M0; Python/security Needs fixes C0/I0/M2 for partial-constructor retention and attacker-path reporting; reviewed-code binding stays `71eb4feb` and Gate 9 remains closed |
 | Task 11 Step 0d recovery fix round 4 | `db39e644974c0f2540f3ccb42409e8bd6c36b929`; `fix(validation): complete gate 9 scratch rollback`; range `459c4a03061dfbc8bd2d28882a80cf898d686d3b..db39e644974c0f2540f3ccb42409e8bd6c36b929` | Exact three files: this Task, helper, and helper test; generalize descriptor-relative rollback through every identity-proved constructor stage, remove only re-proved direct children, close every allocated FD, and report honest retained identity without trusting a substituted path | Focused RED 2 methods / 4 failures; GREEN 2/2; cleanup/adversarial 8/8; affected 39/39; static, parity, metadata, whitespace, exact scope, old-pack, real-index, ref, generated-output, and lifecycle invariants PASS | Independent specification Approved C0/I0/M0; Python/security Needs fixes C0/I1/M1 for pre-bind unowned removal and ordinary-close attacker-path reporting; reviewed-code binding stays `71eb4feb` and Gate 9 remains closed |
-| Task 11 Step 0d recovery fix round 5 | Pending self-identity closure; `fix(validation): bind gate 9 scratch ownership`; BASE `db39e644974c0f2540f3ccb42409e8bd6c36b929` | Exact three files: this Task, helper, and helper test; encode absent/unbound/bound scratch ownership, permit removal only from trusted-FD identity plus immediate same-parent reproof, retain all uncertain objects, and report only proved retained identity | Focused RED 3 methods / 4 failures; GREEN 3/3; cleanup/adversarial 9/9; affected 40/40; static, parity, metadata, whitespace, exact scope, old-pack, real-index, ref, generated-output, and lifecycle invariants PASS | Implementer self-review PASS C0/I0/M0; independent specification and Python/security reviews Not Run; any Critical/Important review finding blocks further fix/commit work; reviewed-code binding stays `71eb4feb` and Gate 9 remains closed |
+| Task 11 Step 0d recovery fix round 5 | `b77abacb610c853db3e9fef2bdef8cc7855c62a2`; `fix(validation): bind gate 9 scratch ownership`; range `db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2` | Exact three files: this Task, helper, and helper test; encode absent/unbound/bound scratch ownership, permit removal only from trusted-FD identity plus immediate same-parent reproof, retain all uncertain objects, and report only proved retained identity | Focused RED 3 methods / 4 failures; GREEN 3/3; cleanup/adversarial 9/9; affected 40/40; static, parity, metadata, whitespace, exact scope, old-pack, real-index, ref, generated-output, and lifecycle invariants PASS | Independent specification and Python/security reviews both Needs fixes C0/I1/M0 on the same uncovered `mkdir` to first-`os.open` substitution defect; Step 0d `BLOCKED`, no round 6, reviewed-code binding stays `71eb4feb` |
+| Step 0e Task-only approval prerequisite | Pending self-identity closure; `docs(task): record gate 9 tree object recovery approval`; BASE `4c749de1debc03046a4eb5402f602e63b8b196fd` | Exactly this Task: record Task 9a external closure receipts, Step 0d final breaker, and the user-approved Git tree-object/sealed-`memfd`/atomic-bundle/append-only-object-write boundary | Focused Task metadata, traceability, isolated repository contract, both generator freshness checks, 21/20/36/14 cardinality, whitespace, and exact one-path gates | Implementer self-review PASS C0/I0/M0; prerequisite specification and Python/security reviews external and `Not Run`; Step 0e implementation/reviews and all downstream Gate 9 actions `Not Run` |
 | Task 11 deletion and lifecycle / Task 12 | Not Run | Old-pack deletion, lifecycle reconciliation, final verification, and handoff | Not Run | Not Run |
 
 ## Deferred and Blocked Items
 
-- Task 9a Step 1 is committed and independently Approved C0/I0/M0 at
-  `ac51a532`. Initial implementation `139ced00` is immutable with exactly 17
-  paths, 21 files/20 leaves/36 requirements, 14/14 scopes, an unchanged
-  retiring 20, and canonical 1,339/1,338 generation. Its specification review
-  is Approved C0/I0/M0 and its quality review is Needs fixes C0/I1/M0 because
-  the parent research router retained two 19-leaf labels. Reviewed Plan chain
-  `c4ebff..011b9db` authorizes only the bounded correction. Reviewed Step 7
-  commit `1300fb`, range `011b9db..1300fb`, adds the parent README as the
-  eighteenth unique path while revisiting this Task; both scoped reviews are
-  Approved C0/I0/M0 and generated bytes remain unchanged. The current Step 8
-  Task-only closure is `Pending self-identity closure` from base `1300fb`; its
-  two closure-integrity reviews remain `Not Run`. Task 10 finalization, Step
-  0e, reviewed-code rebinding, Gate 9 package/assignment/reviews/evidence-ref,
-  real-index staging, deletion, lifecycle reconciliation, post-deletion
-  verification, Task 12, runtime or remote actions, and push remain `Not Run`
-  and closed. Historical Task 9/10/11 evidence remains factual but cannot
-  satisfy this amended prerequisite.
-- Task 11 Step 0 cleared metadata but failed the first fresh Phase A lifecycle
-  checkpoint at `10/27/10`, so it remains historical failed-attempt evidence
-  despite its C0/I0 committed-unit reviews. Reviewed Plan fix `62591cfe`
-  authorizes Step 0b. Commit `8a35fe07758926f38d937a5e80bf8dd02dca5292`
-  and exact range
-  `62591cfef86ce6a10e1e005d72f81dace239ef74..8a35fe07758926f38d937a5e80bf8dd02dca5292`
-  restore metadata GREEN and exact lifecycle `9/26/9`; independent
-  committed-unit specification and quality reviews are both Approved C0/I0/M0.
-  Step 0b is reviewed complete. Step 0c fix round 4 commit
-  `0e9a4869a3a509c7125fc83dbe9f011a1ead6f01` has independent specification
-  and Python/security approval at C0/I0/M0. Fix round 5 commit
-  `4796b46225a019343888557343ca7ca9938fb36a`, exact range
-  `71cff032aed5f469d59b4f8406b5d9b78a9a4e8d..4796b46225a019343888557343ca7ca9938fb36a`,
-  received formal specification C0/I1/M1 and formal Python/security C0/I1/M0.
-  Step 0c is `BLOCKED`: later authority modes can accept a canonically resealed
-  package without freshly replaying deletion projection, and linked-worktree
-  cleanup still permits recursive/path-based cleanup after ancestor
-  substitution. The Minor is not parked. On 2026-08-09 (Asia/Seoul), the user
-  approved the separately bounded Plan Step 0d recovery, but that approval did
-  not waive either blocker or authorize unsafe package-controlled execution.
-  Step 0d recovery round 1 implementation commit
-  `c9682ab2fdf39d5fc4910c808939e771fde63f78` received formal specification
-  Approved C0/I0/M0 and formal Python/security Needs fixes C0/I2/M1. Recovery
-  fix round 1 commit `71eb4feb7d4a085fd2910038a374987773de1e1d`,
-  exact range
-  `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d`,
-  received scoped specification and Python/security approval at C0/I0/M0.
-  The I1 live-HEAD race, I2 wrong-parent ref pre-execution, and M1
-  unregistered-lock cleanup findings are ADDRESSED; Step 0d recovery
-  implementation is reviewed complete and the reviewed-code binding is
-  recorded. The final Task-only closure-integrity specification and
-  Python/security reviews are external and Not Run. A later fail-closed
-  package-build diagnostic exposed the production generator grandchild's loss
-  of `/proc/self/fd` access. Recovery fix round 2 replaces only that exported
-  route with a strictly proved live helper-PID descriptor path. Fix round 2
-  received specification Approved C0/I0/M0 and Python/security Needs fixes
-  C0/I0/M1 because initial procfs proof failure could retain allocated scratch
-  before context ownership. Fix round 3 adds identity-gated descriptor-relative
-  rollback, closes owned FDs, and preserves outside victims on ownership drift.
-  Its specification review returned Approved C0/I0/M0; Python/security returned
-  Needs fixes C0/I0/M2 because earlier partial constructor failures could still
-  retain directories and a substituted visible name was misreported as the
-  retained inspection path. Fix round 4 records identity immediately after
-  each successful mkdir, routes every constructor-stage failure through one
-  descriptor-relative rollback, deletes only re-proved direct children, closes
-  every allocated FD, and reports the retained device/inode/mode without the
-  untrusted name. Focused, adversarial, full, static, parity, and invariant
-  checks passed. Its specification review returned Approved C0/I0/M0;
-  Python/security returned Needs fixes C0/I1/M1 because substitution before
-  the name-based first identity capture could bless and remove an attacker
-  replacement, while ordinary close still claimed the attacker-visible alias
-  as a proved retained location. Final-breaker fix round 5 uses explicit
-  absent/unbound/bound states; captures every removable directory/file identity
-  from a trusted FD and immediately re-proves it through the same pinned parent;
-  retains uncertain objects without guessing; closes allocated FDs; and reports
-  only canonical retained device/inode/mode. Focused, adversarial, full, static,
-  parity, and invariant checks pass, but both independent fix-round-5 reviews
-  and reviewed-code rebinding are Not Run. Any Critical/Important final review
-  finding blocks further fix/commit work. All failed
-  constructions stopped before `BUILT` and `ASSIGNED`; Gate 9, the first durable
-  package, package reviews, evidence ref, real-index staging, deletion, and
-  lifecycle reconciliation remain Not Run and closed. The `6025478e`
-  gate run and both `/tmp/agentic-research-deletion-review-*` packages are
-  stale historical diagnostics only and cannot authorize deletion. Their
-  historical migration/specification review is Needs fixes C0/I1/M0 and
-  quality review is Approved-with-Minor C0/I0/M1; the first durable package,
-  both durable reviews, and evidence ref remain Not Run, so gate 9 remains
-  closed. The real index, old pack, lifecycle
-  artifacts, canonical generated bytes, and remote state remain unchanged;
-  no real Gate 9 attempt, deletion commit, or push has started.
+- Task 9a is reviewed complete. Immutable initial implementation `139ced00`,
+  reviewed Step 7 correction `1300fb`, and Step 8 closure commit `4c749de1`
+  preserve exactly 18 unique implementation paths, 21 files/20 leaves, 36/36
+  requirements, 14/14 scopes, an unchanged retiring 20, and canonical
+  1,339/1,338 generation. External Step 8 reviewers
+  `vv_step8_closure_spec_review` and `/root/vv_step8_closure_quality_review`
+  both returned Approved C0/I0/M0 over exact range `1300fb05..4c749de1`.
+- Historical Step 0 through Step 0c results and all intermediate Step 0d rounds
+  remain immutable evidence in the Work Log, Review Evidence, and Commit
+  Ledger. The current Step 0d terminal state is commit `b77abacb`, exact range
+  `db39e644..b77abacb`: both independent reviews returned Needs fixes C0/I1/M0
+  on the same uncovered holding-`mkdir` to first-`os.open` substitution defect.
+  Step 0d is `BLOCKED`, has no round 6, and its reviewed-code binding remains
+  `71eb4feb` only as historical state.
+- The user approved the separately bounded Step 0e Git tree-object, sealed
+  `memfd`, atomic canonical-bundle, and append-only content-addressed object
+  write design. This approval does not revive or waive Step 0d and does not
+  authorize reuse of historical packages or receipts. Step 0e implementation
+  and reviews, a real Gate 9 bundle, package reviews, evidence-ref publication,
+  real-index staging, deletion, lifecycle reconciliation, Task 12, remote
+  actions, and push remain `Not Run` and closed. The pending Gate 9 marker is
+  unchanged. Unreachable objects from a future approved Step 0e construction
+  are left to ordinary Git garbage collection; this workflow never cleans,
+  prunes, or extracts them.
 - The Task BASE index/coverage failures remain historical predecessors. Task
   10b now passes both canonical LLM Wiki checks at 1,338/1,337; Task 8's
   security readiness FAIL/7-3-3 remains history and the approved Task 10a
