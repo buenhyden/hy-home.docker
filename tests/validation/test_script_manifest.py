@@ -104,6 +104,12 @@ KNOWN_TOMBSTONE_REPLACEMENTS = {
     "docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md": (
         "docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md",
     ),
+    "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": (
+        "docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md",
+    ),
+    "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
+        "docs/03.specs/spec-0008-workflow/spec.md",
+    ),
     "docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md": (
         "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
     ),
@@ -113,6 +119,26 @@ KNOWN_TOMBSTONE_REPLACEMENTS = {
     "docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md": (
         "docs/05.operations/09-tooling/ops-0069-terrakube/guide.md",
         "docs/05.operations/09-tooling/ops-0068-terraform/guide.md",
+    ),
+    "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
+        "docs/03.specs/spec-0008-workflow/spec.md",
+    ),
+    "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
+        "docs/03.specs/spec-0008-workflow/spec.md",
+    ),
+}
+LINK_FORM_BASELINE_DECLARATIONS = {
+    "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": (
+        "docs/05.operations/guides/07-workflow/airflow-dag-basics.md",
+    ),
+    "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
+        "docs/03.specs/008-workflow/spec.md",
+    ),
+    "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
+        "docs/03.specs/008-workflow/spec.md",
+    ),
+    "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
+        "docs/03.specs/008-workflow/spec.md",
     ),
 }
 
@@ -154,12 +180,49 @@ def markdown_code_paths(text: str) -> list[str]:
     return re.findall(r"`(docs/[^`]+)`", text)
 
 
-def declared_tombstone_replacements(text: str) -> list[str]:
+def repository_docs_targets(text: str, source_path: str) -> list[str]:
+    targets: list[str] = []
+    declaration_pattern = re.compile(
+        r"`(?P<code>docs/[^`]+)`|"
+        r"\[[^]]*\]\((?P<link>[^)\s]+)(?:\s+[^)]*)?\)"
+    )
+    for match in declaration_pattern.finditer(text):
+        raw_target = match.group("code") or match.group("link")
+        candidate = raw_target.strip("<>").split("#", 1)[0]
+        if not candidate or "://" in candidate:
+            continue
+        if candidate.startswith("/docs/"):
+            candidate = candidate.lstrip("/")
+        if not candidate.startswith("docs/"):
+            candidate = posixpath.join(posixpath.dirname(source_path), candidate)
+        candidate = posixpath.normpath(candidate).lstrip("/")
+        if candidate.startswith("docs/") and candidate not in targets:
+            targets.append(candidate)
+    return targets
+
+
+def declared_tombstone_replacements(text: str, tombstone_path: str) -> list[str]:
     for line in text.splitlines():
         if re.match(r"\|\s*Current replacement\s*\|", line, re.IGNORECASE):
             cells = line.strip().strip("|").split("|", 1)
-            return markdown_code_paths(cells[1])
+            return repository_docs_targets(cells[1], tombstone_path)
     return []
+
+
+def replacement_preservation_errors(
+    row: dict[str, object], translated: list[str]
+) -> list[str]:
+    if not translated:
+        return ["declared-replacement-empty"]
+    errors: list[str] = []
+    if row["replacement"] is None:
+        errors.append("replacement-null")
+    elif row["replacement"] != translated[0]:
+        errors.append("primary-replacement-mismatch")
+    evidence = f"{row['replacement']} {row['reason']}"
+    if any(target not in evidence for target in translated):
+        errors.append("translated-replacement-evidence-missing")
+    return errors
 
 
 def _python_imports_target(reference: str, target: str) -> bool:
@@ -586,27 +649,55 @@ class ScriptManifestTests(unittest.TestCase):
                 if replacement is not None:
                     self.assertFalse(str(replacement).startswith("docs/98.archive/"))
 
+    def test_link_form_tombstone_replacements_are_parsed(self) -> None:
+        for legacy_path, expected in LINK_FORM_BASELINE_DECLARATIONS.items():
+            with self.subTest(path=legacy_path):
+                self.assertEqual(
+                    expected,
+                    tuple(
+                        declared_tombstone_replacements(
+                            git_text(legacy_path), legacy_path
+                        )
+                    ),
+                )
+        self.assertEqual(
+            ["docs/05.operations/example.md"],
+            repository_docs_targets(
+                "[local](../05.operations/example.md#procedure) "
+                "[external](https://example.com/docs/ignored.md)",
+                "docs/98.archive/tombstone.md",
+            ),
+        )
+
     def test_baseline_tombstone_replacements_are_preserved_as_stable_targets(self) -> None:
         index_replacements: dict[str, list[str]] = {}
-        for line in git_text("docs/98.archive/README.md").splitlines():
+        index_path = "docs/98.archive/README.md"
+        for line in git_text(index_path).splitlines():
             cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
             if len(cells) != 4:
                 continue
-            archived_paths = markdown_code_paths(cells[1])
-            if len(archived_paths) == 1:
-                index_replacements[archived_paths[0]] = markdown_code_paths(cells[3])
+            archived_paths = repository_docs_targets(cells[1], index_path)
+            replacements = repository_docs_targets(cells[3], index_path)
+            if (
+                len(archived_paths) == 1
+                and archived_paths[0].startswith("docs/98.archive/05.operations/")
+                and replacements
+            ):
+                index_replacements[archived_paths[0]] = replacements
 
         checked: set[str] = set()
-        for legacy_path, row in self.ledger_by_path.items():
-            if row["action"] != "archive" or not legacy_path.startswith(
-                "docs/98.archive/05.operations/"
-            ):
-                continue
-            declarations = declared_tombstone_replacements(git_text(legacy_path))
-            if not declarations:
-                continue
+        self.assertEqual(9, len(index_replacements))
+        for legacy_path in sorted(index_replacements):
+            self.assertIn(legacy_path, self.ledger_by_path)
+            row = self.ledger_by_path[legacy_path]
+            declarations = declared_tombstone_replacements(
+                git_text(legacy_path), legacy_path
+            )
             checked.add(legacy_path)
             with self.subTest(path=legacy_path):
+                self.assertEqual("archive", row["action"])
+                self.assertTrue(declarations)
+                self.assertEqual(len(declarations), len(set(declarations)))
                 self.assertEqual(declarations, index_replacements.get(legacy_path))
                 translated: list[str] = []
                 for declaration in declarations:
@@ -617,11 +708,7 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertIsNotNone(stable_target_type(str(target)), target)
                     translated.append(str(target))
 
-                self.assertIsNotNone(row["replacement"])
-                self.assertEqual(translated[0], row["replacement"])
-                preserved_evidence = f"{row['replacement']} {row['reason']}"
-                for target in translated:
-                    self.assertIn(target, preserved_evidence)
+                self.assertEqual([], replacement_preservation_errors(row, translated))
                 if legacy_path in KNOWN_TOMBSTONE_REPLACEMENTS:
                     self.assertEqual(
                         KNOWN_TOMBSTONE_REPLACEMENTS[legacy_path],
@@ -629,7 +716,25 @@ class ScriptManifestTests(unittest.TestCase):
                     )
 
         known_paths = set(KNOWN_TOMBSTONE_REPLACEMENTS)
-        self.assertEqual(known_paths, checked & known_paths)
+        self.assertEqual(known_paths, checked)
+
+    def test_null_link_form_replacement_mutation_is_rejected(self) -> None:
+        legacy_path = (
+            "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md"
+        )
+        declarations = declared_tombstone_replacements(
+            git_text(legacy_path), legacy_path
+        )
+        translated = [
+            str(self.ledger_by_path[declaration]["stable_path"])
+            for declaration in declarations
+        ]
+        mutated = dict(self.ledger_by_path[legacy_path])
+        mutated["replacement"] = None
+        self.assertIn(
+            "replacement-null",
+            replacement_preservation_errors(mutated, translated),
+        )
 
     def test_active_stage04_sources_follow_owning_spec_and_never_archive(self) -> None:
         for path, row in self.ledger_by_path.items():
