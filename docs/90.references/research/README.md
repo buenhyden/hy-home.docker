@@ -48,13 +48,13 @@ status: active
 ```text
 research/
 ├── README.md # This file
-├── 2026-08-08-agentic-engineering-research-pack/ # Canonical human route for the rebuilt 19-leaf pack
+├── 2026-08-08-agentic-engineering-research-pack/ # Canonical human route for the rebuilt 20-leaf / 21-file pack
 └── 2026-07-05-agentic-research-pack-refresh/ # Superseded historical pack; deletion remains gated
 ```
 
 ## Current References
 
-- [2026-08-08-agentic-engineering-research-pack/README.md](./2026-08-08-agentic-engineering-research-pack/README.md) - agentic engineering의 canonical human research route입니다. 19개 leaf, evidence class, reading route, 14-scope route, canonical-owner boundary, migration state를 이 index에서 읽습니다.
+- [2026-08-08-agentic-engineering-research-pack/README.md](./2026-08-08-agentic-engineering-research-pack/README.md) - agentic engineering의 canonical human research route입니다. 20개 leaf, 21개 file, evidence class, reading route, 14-scope route, canonical-owner boundary, migration state를 이 index에서 읽습니다.
 
 ## Superseded Paths
 
