@@ -23,7 +23,7 @@ a migration ledger accounts for every path change; and the typed workflow graph
 runs identical leaf gates locally and in CI. Corpus movement follows contract
 installation, and transition allowances are removed in the final task.
 
-**Tech Stack:** Python 3.12+, Bash, PyYAML, html5lib, Git, pytest/unittest,
+**Tech Stack:** Python 3.12+, Bash, PyYAML, html5lib, Git, unittest,
 GitHub Actions, Markdown, and repository-local typed YAML contracts.
 
 ### Global Constraints
@@ -74,6 +74,16 @@ Measured starting debt:
 | Alignment | 184 findings, including 182 active-to-archive links |
 | Lifecycle | 25 promoted findings and 20 provenance-incomplete tombstones |
 | Scripts | 63 tracked files, 59 executable Python or Shell files |
+
+Pre-flight baseline on the isolated worktree:
+
+- tests/validation/test_document_metadata.py runs 225 unittest cases.
+- 209 pass and 16 fail on the starting tree.
+- The 16 failures are existing Template, Registry, README-count, and
+  repository-contract delegation drift covered by Tasks 2, 6D, and 11.
+- No Task may increase the 16-failure baseline. Task 2 must either resolve a
+  failure or leave it explicitly attributable to Task 6D or Task 11; Task 11
+  must reduce the focused suite to zero failures.
 
 The existing Graphify report was built from f8a72211 and is advisory. Tracked
 source, typed contracts, stage documents, and validators are authoritative.
@@ -190,24 +200,38 @@ evidence after each Task.
 - [ ] **Step 2: Write failing taxonomy tests**
 
 ~~~python
+import unittest
 from pathlib import PurePosixPath
 from scripts.lib.document_governance.taxonomy import (
     find_dated_identity_parts,
     validate_stable_identity,
 )
 
-def test_rejects_date_prefix_and_year_partition():
-    assert find_dated_identity_parts(PurePosixPath(
-        "docs/90.references/research/2026/2026-08-09-audit.md"
-    )) == ("2026", "2026-08-09-audit.md")
+class StableDocumentTaxonomyTests(unittest.TestCase):
+    def test_rejects_date_prefix_and_year_partition(self):
+        self.assertEqual(
+            ("2026", "2026-08-09-audit.md"),
+            find_dated_identity_parts(PurePosixPath(
+                "docs/90.references/research/2026/2026-08-09-audit.md"
+            )),
+        )
 
-def test_accepts_architecture_description_identity():
-    findings = validate_stable_identity(
-        PurePosixPath("docs/02.architecture/descriptions/ad-0001-gateway.md"),
-        {"artifact_id": "ad-0001", "artifact_type": "architecture-description"},
-        {"architecture-description": {"id_pattern": r"ad-[0-9]{4}"}},
-    )
-    assert findings == []
+    def test_accepts_architecture_description_identity(self):
+        findings = validate_stable_identity(
+            PurePosixPath(
+                "docs/02.architecture/descriptions/ad-0001-gateway.md"
+            ),
+            {
+                "artifact_id": "ad-0001",
+                "artifact_type": "architecture-description",
+            },
+            {
+                "architecture-description": {
+                    "id_pattern": r"ad-[0-9]{4}",
+                }
+            },
+        )
+        self.assertEqual([], findings)
 ~~~
 
 - [ ] **Step 3: Run the focused tests and verify failure**
@@ -215,7 +239,7 @@ def test_accepts_architecture_description_identity():
 Run:
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_taxonomy.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_taxonomy.py
 ~~~
 
 Expected: collection fails because scripts.lib.document_governance does not
@@ -274,7 +298,7 @@ def validate_stable_identity(
 - [ ] **Step 5: Run focused and existing metadata tests**
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_taxonomy.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_taxonomy.py
 ~~~
 
 Expected: PASS.
@@ -335,7 +359,8 @@ and identify Rules Engineer as the Stage 00 policy owner.
 - [ ] **Step 2: Run the focused contract tests**
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_agent_governance_contract.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_contract.py
 ~~~
 
 Expected: FAIL on missing profiles and old authority.
@@ -352,7 +377,8 @@ conditional_headings, not required boilerplate.
 ~~~bash
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-agent-governance-contract.py --mode contract
-python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_agent_governance_contract.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_contract.py
 ~~~
 
 Expected: all commands PASS. Corpus-wide promotion is not expected yet.
@@ -382,11 +408,28 @@ git commit -m "governance: establish canonical SDLC document contracts"
 - [ ] **Step 1: Write a failing manifest completeness test**
 
 ~~~python
-def test_every_tracked_script_has_one_manifest_record(repo, manifest):
-    tracked = set(repo.git("ls-files", "scripts").splitlines())
-    declared = [row["path"] for row in manifest["files"]]
-    assert len(declared) == len(set(declared))
-    assert set(declared) == tracked
+import subprocess
+import unittest
+from pathlib import Path
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+
+class ScriptManifestTests(unittest.TestCase):
+    def test_every_tracked_script_has_one_manifest_record(self):
+        tracked = set(subprocess.run(
+            ["git", "ls-files", "scripts"],
+            cwd=ROOT,
+            text=True,
+            check=True,
+            capture_output=True,
+        ).stdout.splitlines())
+        manifest = yaml.safe_load(
+            (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
+        )
+        declared = [row["path"] for row in manifest["files"]]
+        self.assertEqual(len(declared), len(set(declared)))
+        self.assertEqual(tracked, set(declared))
 ~~~
 
 - [ ] **Step 2: Generate read-only inventories under /tmp**
@@ -410,7 +453,7 @@ later, undecided, legacy, deprecated, or dormant.
 - [ ] **Step 4: Run completeness tests**
 
 ~~~bash
-python3 -m pytest tests/validation/test_script_manifest.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 python3 - <<'PY'
 from pathlib import Path
 text = Path("docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md").read_text()
@@ -457,7 +500,7 @@ matches three-digits-without-prd and no Stage 02 requirements path exists.
 - [ ] **Step 2: Verify the assertions fail**
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_taxonomy.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_taxonomy.py
 ~~~
 
 Expected: FAIL against current paths.
@@ -474,7 +517,8 @@ without inventing unimplemented architecture.
 ~~~bash
 test ! -d docs/02.architecture/requirements
 test -d docs/02.architecture/descriptions
-python3 -m pytest tests/validation/test_document_taxonomy.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_taxonomy.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
 bash scripts/validation/check-doc-implementation-alignment.sh
 ~~~
 
@@ -515,20 +559,29 @@ git commit -m "docs: migrate requirements and architecture identities"
 - [ ] **Step 1: Add failing co-location tests**
 
 ~~~python
-def test_active_capability_has_no_child_readme(snapshot):
-    assert snapshot.child_readmes == []
+import unittest
+from pathlib import Path
 
-def test_stage_04_is_absent(snapshot):
-    assert not snapshot.path("docs/04.execution").exists()
+ROOT = Path(__file__).resolve().parents[2]
 
-def test_active_change_is_at_most_one_pair(snapshot):
-    assert all(row.plans <= 1 and row.tasks <= 1 for row in snapshot.capabilities)
+class CoLocatedExecutionTests(unittest.TestCase):
+    def test_active_capability_has_no_child_readme(self):
+        readmes = list((ROOT / "docs/03.specs").glob("spec-*/README.md"))
+        self.assertEqual([], readmes)
+
+    def test_stage_04_is_absent(self):
+        self.assertFalse((ROOT / "docs/04.execution").exists())
+
+    def test_active_change_is_at_most_one_pair(self):
+        for capability in (ROOT / "docs/03.specs").glob("spec-*"):
+            self.assertLessEqual(len(list(capability.glob("plan.md"))), 1)
+            self.assertLessEqual(len(list(capability.glob("task.md"))), 1)
 ~~~
 
 - [ ] **Step 2: Run lifecycle tests and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_corpus_lifecycle.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_corpus_lifecycle.py
 ~~~
 
 Expected: FAIL on Stage 04 and current directory shapes.
@@ -549,7 +602,8 @@ explicit owner or retirement disposition already recorded in mig-0001.
 
 ~~~bash
 test ! -e docs/04.execution
-python3 -m pytest tests/validation/test_document_corpus_lifecycle.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_corpus_lifecycle.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
 python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
 bash scripts/validation/check-doc-implementation-alignment.sh
 ~~~
@@ -582,20 +636,27 @@ git commit -m "docs: co-locate specifications and execution evidence"
 - [ ] **Step 1: Write the failing bounded-domain test**
 
 ~~~python
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
 MIGRATED_DOMAINS = (
     "00-workspace", "01-gateway", "02-auth", "03-security",
 )
 
-def test_migrated_domains_leave_no_role_root_copy(repo):
-    for role in ("guides", "policies", "runbooks"):
-        for domain in MIGRATED_DOMAINS:
-            assert not repo.path("docs/05.operations", role, domain).exists()
+class OperationsTaxonomyTests(unittest.TestCase):
+    def test_migrated_domains_leave_no_role_root_copy(self):
+        for role in ("guides", "policies", "runbooks"):
+            for domain in MIGRATED_DOMAINS:
+                self.assertFalse(
+                    (ROOT / "docs/05.operations" / role / domain).exists()
+                )
 ~~~
 
 - [ ] **Step 2: Run the test and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
 ~~~
 
 Expected: FAIL on 00-workspace under the parallel roots.
@@ -609,7 +670,8 @@ subject. Do not create a missing role.
 - [ ] **Step 4: Verify migrated domains**
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
 ~~~
@@ -650,7 +712,7 @@ MIGRATED_DOMAINS = (
 - [ ] **Step 2: Run and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
 ~~~
 
 Expected: FAIL on 04-data, 05-messaging, or 06-observability source paths.
@@ -662,7 +724,8 @@ ops-ID directory, update role frontmatter and inbound links, and mark the
 ledger row complete before verification.
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
 ~~~
@@ -704,7 +767,7 @@ MIGRATED_DOMAINS = (
 - [ ] **Step 2: Run and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
 ~~~
 
 Expected: FAIL on at least one 07 through 09 source path.
@@ -716,7 +779,8 @@ ops-ID directory, update role frontmatter and inbound links, and mark the
 ledger row complete before verification.
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
 ~~~
@@ -753,20 +817,26 @@ git commit -m "docs: migrate operations domains 07 through 09"
 - [ ] **Step 1: Add the final root and role-boundary tests**
 
 ~~~python
-def test_operations_has_no_parallel_role_roots(repo):
-    for name in ("guides", "policies", "runbooks"):
-        assert not repo.path("docs/05.operations", name).exists()
+class FinalOperationsTaxonomyTests(unittest.TestCase):
+    def test_operations_has_no_parallel_role_roots(self):
+        for name in ("guides", "policies", "runbooks"):
+            self.assertFalse((ROOT / "docs/05.operations" / name).exists())
 
-def test_prometheus_roles_share_one_subject(catalog):
-    assert set(catalog.subject("prometheus").roles) == {
-        "guide", "policy", "runbook",
-    }
+    def test_prometheus_roles_share_one_subject(self):
+        matches = list(
+            (ROOT / "docs/05.operations/06-observability").glob(
+                "ops-*-prometheus"
+            )
+        )
+        self.assertEqual(1, len(matches))
+        roles = {path.stem for path in matches[0].glob("*.md")}
+        self.assertEqual({"guide", "policy", "runbook"}, roles)
 ~~~
 
 - [ ] **Step 2: Run and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
 ~~~
 
 Expected: FAIL while the remaining source domains and role roots exist.
@@ -779,7 +849,8 @@ Guide Runbook Handoff and Runbook Automation Handoff remain conditional.
 - [ ] **Step 4: Verify the complete Operations corpus**
 
 ~~~bash
-python3 -m pytest tests/validation/test_operations_taxonomy.py tests/validation/test_document_metadata.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
 ~~~
@@ -822,7 +893,7 @@ their parent identity and remain valid.
 - [ ] **Step 2: Run and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_corpus_lifecycle.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_corpus_lifecycle.py
 ~~~
 
 Expected: FAIL on current Stage 90, Stage 98, and root archive paths.
@@ -839,7 +910,7 @@ timestamps. Complete archived_commit and archived_blob for every tombstone.
 test ! -e archive
 python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-archive
 python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
-python3 -m pytest tests/validation/test_document_corpus_lifecycle.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_corpus_lifecycle.py
 ~~~
 
 Expected: PASS and no dated documentation identity.
@@ -886,7 +957,9 @@ unconditional mobile or frontend workspace mandate.
 - [ ] **Step 2: Run focused tests and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_agent_governance_contract.py tests/validation/test_provider_surface_renderer.py tests/validation/test_provider_native_surfaces.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_contract.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_surface_renderer.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_native_surfaces.py
 ~~~
 
 Expected: FAIL on current conflicts.
@@ -902,7 +975,9 @@ surfaces from typed contracts; do not hand-copy model versions.
 ~~~bash
 python3 scripts/validation/check-agent-governance-contract.py --mode contract
 bash scripts/operations/sync-provider-surfaces.sh --check
-python3 -m pytest tests/validation/test_agent_governance_contract.py tests/validation/test_provider_surface_renderer.py tests/validation/test_provider_native_surfaces.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_contract.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_surface_renderer.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_native_surfaces.py
 ~~~
 
 Expected: PASS.
@@ -931,27 +1006,69 @@ git commit -m "governance: reconcile SDLC authority and provider projections"
 **Interfaces:**
 
 - Consumes: manifest records from Task 3.
-- Produces: check_manifest(repo_root, manifest_path),
-  check_generated(repo_root, manifest_path), the CLI mode --check-generated,
-  and one LLM Wiki generator with --check and --write modes.
+- Produces: validate_manifest_document(document, tracked_paths),
+  check_manifest(repo_root, manifest_path), check_generated(repo_root,
+  manifest_path), the CLI mode --check-generated, and one LLM Wiki generator
+  with --check and --write modes.
 
 - [ ] **Step 1: Add failing consumer and mutation tests**
 
 ~~~python
-def test_generator_defaults_to_check(run_cli):
-    result = run_cli("scripts/knowledge/generate-llm-wiki.py")
-    assert result.returncode == 0
-    assert result.changed_paths == set()
+import subprocess
+import unittest
+from pathlib import Path
 
-def test_manifest_rejects_unreferenced_executable(manifest_fixture):
-    result = manifest_fixture.add_unconsumed("scripts/example.sh").check()
-    assert "consumer-missing" in result.codes
+ROOT = Path(__file__).resolve().parents[2]
+
+class LlmWikiGeneratorTests(unittest.TestCase):
+    def test_generator_defaults_to_check(self):
+        before = subprocess.run(
+            ["git", "diff", "--name-only"],
+            cwd=ROOT,
+            text=True,
+            check=True,
+            capture_output=True,
+        ).stdout
+        result = subprocess.run(
+            ["python3", "scripts/knowledge/generate-llm-wiki.py"],
+            cwd=ROOT,
+            text=True,
+            check=False,
+            capture_output=True,
+        )
+        after = subprocess.run(
+            ["git", "diff", "--name-only"],
+            cwd=ROOT,
+            text=True,
+            check=True,
+            capture_output=True,
+        ).stdout
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(before, after)
+
+class ScriptManifestValidationTests(unittest.TestCase):
+    def test_manifest_rejects_unreferenced_executable(self):
+        findings = validate_manifest_document({
+            "files": [{
+                "path": "scripts/example.sh",
+                "kind": "validator",
+                "authority": "script-manifest",
+                "lifecycle": "maintained",
+                "mutation": "none",
+                "consumers": [],
+                "disposition": "retain",
+                "successor": None,
+                "tests": [],
+            }]
+        }, {"scripts/example.sh"})
+        self.assertIn("consumer-missing", {row.code for row in findings})
 ~~~
 
 - [ ] **Step 2: Run focused tests and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_script_manifest.py tests/validation/test_generate_llm_wiki.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_generate_llm_wiki.py
 ~~~
 
 Expected: FAIL on missing CLIs.
@@ -986,7 +1103,8 @@ def apply_mode(outputs: Mapping[Path, str], mode: str) -> int:
 ~~~bash
 python3 scripts/validation/check-script-manifest.py
 python3 scripts/knowledge/generate-llm-wiki.py --check
-python3 -m pytest tests/validation/test_script_manifest.py tests/validation/test_generate_llm_wiki.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_generate_llm_wiki.py
 ~~~
 
 Expected: PASS.
@@ -1031,7 +1149,9 @@ links, parent_ids, missing replacements, and immutable created dates.
 - [ ] **Step 2: Verify tests fail before extraction**
 
 ~~~bash
-python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_document_corpus_lifecycle.py tests/validation/test_document_links.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_corpus_lifecycle.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_links.py
 ~~~
 
 Expected: FAIL because shared modules and new CLI do not exist.
@@ -1068,7 +1188,9 @@ python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
 python3 scripts/validation/check-document-links.py --mode traceability
 python3 scripts/validation/check-document-links.py --mode alignment
-python3 -m pytest tests/validation/test_document_metadata.py tests/validation/test_document_corpus_lifecycle.py tests/validation/test_document_links.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_corpus_lifecycle.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_links.py
 ~~~
 
 Expected: PASS.
@@ -1118,7 +1240,9 @@ provider contracts, and post-tool validation cannot write.
 - [ ] **Step 2: Run tests and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_repository_invariants.py tests/validation/test_ci_gate_adapters.py tests/validation/test_provider_surface_renderer.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_repository_invariants.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_adapters.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_surface_renderer.py
 ~~~
 
 Expected: FAIL on missing successor functions.
@@ -1156,7 +1280,9 @@ Stage 98 are excluded.
 - [ ] **Step 5: Run focused tests and commit**
 
 ~~~bash
-python3 -m pytest tests/validation/test_repository_invariants.py tests/validation/test_ci_gate_adapters.py tests/validation/test_provider_surface_renderer.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_repository_invariants.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_adapters.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_surface_renderer.py
 git add scripts .github .pre-commit-config.yaml docs tests/validation
 git commit -m "scripts: remove duplicate and one-time policy tooling"
 ~~~
@@ -1189,19 +1315,42 @@ git commit -m "scripts: remove duplicate and one-time policy tooling"
 - [ ] **Step 1: Add failing gate parity and base-range tests**
 
 ~~~python
-def test_local_and_ci_document_governance_share_leaves(contract):
-    assert contract.leaves("ci.document-governance") == contract.leaves("local.document-governance")
+import json
+import unittest
+from pathlib import Path
 
-def test_impacted_gate_requires_explicit_base(contract):
-    gate = contract.gate("leaf.document-lifecycle-impacted")
-    assert "--base-ref" in gate.command
-    assert "HEAD~1" not in gate.command
+ROOT = Path(__file__).resolve().parents[2]
+
+class DocumentGovernanceGateTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        document = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text()
+        )
+        cls.nodes = {
+            row["gate_id"]: row for row in document["gate_nodes"]
+        }
+
+    def test_local_and_ci_document_governance_share_leaves(self):
+        self.assertEqual(
+            self.nodes["ci.document-governance"]["children"],
+            self.nodes["local.document-governance"]["children"],
+        )
+
+    def test_impacted_gate_requires_explicit_base(self):
+        gate = self.nodes["leaf.document-lifecycle-impacted"]
+        command = " ".join([gate["entrypoint"], *gate["argv"]])
+        self.assertIn("--base-ref", command)
+        self.assertNotIn("HEAD~1", command)
 ~~~
 
 - [ ] **Step 2: Run gate contract tests and verify failure**
 
 ~~~bash
-python3 -m pytest tests/validation/test_ci_gate_contract.py tests/validation/test_ci_gate_runner.py tests/validation/test_agent_governance_ci_routing.py tests/validation/test_github_workflow_contract.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_contract.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_runner.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_ci_routing.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_github_workflow_contract.py
 ~~~
 
 Expected: FAIL on current parity and lifecycle workflow routing.
@@ -1218,7 +1367,10 @@ uses before SHA. Scheduled reporting reuses the same leaves.
 ~~~bash
 python3 scripts/validation/check-github-workflow-contract.py
 python3 scripts/validation/run-ci-gate.py --profile local-script-backed --list
-python3 -m pytest tests/validation/test_ci_gate_contract.py tests/validation/test_ci_gate_runner.py tests/validation/test_agent_governance_ci_routing.py tests/validation/test_github_workflow_contract.py -q
+PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_contract.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_runner.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_ci_routing.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_github_workflow_contract.py
 ~~~
 
 Expected: PASS.
@@ -1311,8 +1463,23 @@ git commit -m "docs: repair navigation memory and generated evidence"
 - [ ] **Step 1: Add a failing no-transition assertion**
 
 ~~~python
-def test_taxonomy_migration_has_no_live_transition(contract):
-    assert "sdlc-taxonomy-convergence" not in contract.live_transitions
+import unittest
+from pathlib import Path
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+
+class CompletedMigrationContractTests(unittest.TestCase):
+    def test_taxonomy_migration_has_no_live_transition(self):
+        contract = yaml.safe_load(
+            (ROOT / "docs/99.templates/support/"
+             "document-corpus-migration-contract.yaml").read_text()
+        )
+        names = {
+            row["migration_id"]
+            for row in contract.get("live_transitions", [])
+        }
+        self.assertNotIn("sdlc-taxonomy-convergence", names)
 ~~~
 
 - [ ] **Step 2: Remove bounded migration allowances**
@@ -1334,7 +1501,7 @@ python3 scripts/validation/check-script-manifest.py
 bash scripts/operations/sync-provider-surfaces.sh --check
 python3 scripts/validation/check-github-workflow-contract.py
 python3 scripts/validation/run-ci-gate.py --profile local-script-backed
-python3 -m pytest tests/validation -q
+PYTHONPATH=. .venv/bin/python -m unittest discover -s tests/validation -p 'test_*.py'
 git diff --check
 git status --short
 ~~~
