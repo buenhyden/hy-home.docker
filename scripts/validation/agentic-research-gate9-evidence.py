@@ -155,7 +155,10 @@ class PinnedScratch:
             str, tuple[int, tuple[int, int] | None]
         ] = {}
         self._closed = False
-        self._prove_process_fd_path()
+        try:
+            self._prove_process_fd_path()
+        except BaseException as error:
+            self._rollback_initialization(error)
 
     @staticmethod
     def _directory_identity(descriptor: int) -> tuple[int, int, int]:
@@ -191,6 +194,60 @@ class PinnedScratch:
             )
         if observed != self._scratch_identity:
             fail("SCRATCH_SCOPE_DRIFT", "scratch process descriptor identity changed")
+
+    def _rollback_initialization(self, primary_error: BaseException) -> None:
+        cleanup_error: BaseException | None = None
+        try:
+            if self._directory_identity(self._base_fd) != self._base_identity:
+                raise OSError("pinned scratch base identity changed")
+            holding_metadata = os.stat(
+                self._holding_name,
+                dir_fd=self._base_fd,
+                follow_symlinks=False,
+            )
+            if (
+                not stat.S_ISDIR(holding_metadata.st_mode)
+                or (
+                    holding_metadata.st_dev,
+                    holding_metadata.st_ino,
+                    stat.S_IMODE(holding_metadata.st_mode),
+                )
+                != self._holding_identity
+            ):
+                raise OSError("pinned scratch holding identity changed")
+            scratch_metadata = os.stat(
+                "scratch",
+                dir_fd=self._holding_fd,
+                follow_symlinks=False,
+            )
+            if (
+                not stat.S_ISDIR(scratch_metadata.st_mode)
+                or (
+                    scratch_metadata.st_dev,
+                    scratch_metadata.st_ino,
+                    stat.S_IMODE(scratch_metadata.st_mode),
+                )
+                != self._scratch_identity
+            ):
+                raise OSError("pinned scratch directory identity changed")
+            os.rmdir("scratch", dir_fd=self._holding_fd)
+            os.rmdir(self._holding_name, dir_fd=self._base_fd)
+        except BaseException as error:
+            cleanup_error = error
+        finally:
+            self._closed = True
+            for descriptor in (self._scratch_fd, self._holding_fd, self._base_fd):
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
+        if cleanup_error is not None:
+            raise Gate9Error(
+                "SCRATCH_CLEANUP_FAILURE",
+                f"initial scratch rollback failed: {cleanup_error}; "
+                f"retained holding requires inspection at {self.holding_path}",
+            ) from primary_error
+        raise primary_error
 
     @property
     def path(self) -> pathlib.Path:

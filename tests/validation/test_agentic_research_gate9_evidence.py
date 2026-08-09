@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -2033,6 +2034,117 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             )
         finally:
             shutil.rmtree(holding, ignore_errors=True)
+
+    def test_pinned_scratch_initial_procfs_proof_failure_rolls_back_children_and_fds(
+        self,
+    ) -> None:
+        module_spec = importlib.util.spec_from_file_location(
+            "gate9_initial_procfs_failure", HELPER
+        )
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        owner_class = module.PinnedScratch
+        prefix = f"gate9-initial-proof-{self.root.name}-"
+        temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
+
+        def child_names() -> set[str]:
+            return {path.name for path in temporary_root.glob(f"{prefix}*")}
+
+        def open_descriptors() -> set[int]:
+            return {
+                int(path.name)
+                for path in pathlib.Path("/proc/self/fd").iterdir()
+                if path.name.isdigit()
+            }
+
+        before_children = child_names()
+        before_descriptors = open_descriptors()
+        after_children: set[str] = set()
+        after_descriptors: set[int] = set()
+
+        def reject_initial_proof(_owner: object) -> None:
+            raise module.Gate9Error(
+                "SCRATCH_SCOPE_DRIFT", "injected initial procfs proof failure"
+            )
+
+        try:
+            with mock.patch.object(
+                owner_class,
+                "_prove_process_fd_path",
+                reject_initial_proof,
+            ):
+                with self.assertRaises(module.Gate9Error) as caught:
+                    owner_class(prefix)
+            self.assertEqual("SCRATCH_SCOPE_DRIFT", caught.exception.code)
+            after_children = child_names()
+            after_descriptors = open_descriptors()
+            self.assertEqual(before_children, after_children)
+            self.assertEqual(before_descriptors, after_descriptors)
+        finally:
+            for descriptor in open_descriptors() - before_descriptors:
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
+            for name in child_names() - before_children:
+                shutil.rmtree(temporary_root / name, ignore_errors=True)
+
+    def test_pinned_scratch_initial_rollback_preserves_victim_on_ownership_drift(
+        self,
+    ) -> None:
+        module_spec = importlib.util.spec_from_file_location(
+            "gate9_initial_rollback_drift", HELPER
+        )
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        owner_class = module.PinnedScratch
+        victim_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-init-victim-"))
+        victim = victim_parent / "victim.txt"
+        victim.write_bytes(b"outside victim\n")
+        visible_holding: pathlib.Path | None = None
+        relocated_holding: pathlib.Path | None = None
+
+        def substitute_holding(owner: object) -> None:
+            nonlocal visible_holding, relocated_holding
+            visible_holding = owner.holding_path
+            relocated_holding = visible_holding.with_name(
+                visible_holding.name + "-relocated"
+            )
+            visible_holding.rename(relocated_holding)
+            visible_holding.symlink_to(victim_parent, target_is_directory=True)
+            raise module.Gate9Error(
+                "SCRATCH_SCOPE_DRIFT", "injected initial holding substitution"
+            )
+
+        try:
+            with mock.patch.object(
+                owner_class,
+                "_prove_process_fd_path",
+                substitute_holding,
+            ):
+                with self.assertRaises(module.Gate9Error) as caught:
+                    owner_class("gate9-initial-drift-")
+            self.assertEqual("SCRATCH_CLEANUP_FAILURE", caught.exception.code)
+            self.assertIn("retained holding requires inspection", caught.exception.detail)
+            self.assertEqual(b"outside victim\n", victim.read_bytes())
+            self.assertIsNotNone(visible_holding)
+            self.assertIsNotNone(relocated_holding)
+            if visible_holding is not None:
+                self.assertTrue(visible_holding.is_symlink())
+            if relocated_holding is not None:
+                self.assertTrue(relocated_holding.is_dir())
+        finally:
+            if visible_holding is not None and visible_holding.is_symlink():
+                visible_holding.unlink()
+            if relocated_holding is not None:
+                shutil.rmtree(relocated_holding, ignore_errors=True)
+            shutil.rmtree(victim_parent, ignore_errors=True)
 
     def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
         package = self.root / "package"
