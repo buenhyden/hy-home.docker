@@ -19,11 +19,10 @@ artifact then passed independent specification and documentation reviews with
 zero Critical or Important findings and became active for Stage 04 planning.
 Those verdicts cover the original artifact only. The 2026-08-09 amendment that
 adds REQ-36, the twenty-one-file cardinality, and the Gate 9 architecture
-boundary is user-approved, while its exact fixed commit range and independent
-amendment-review verdicts remain pending. The Stage 04 Task must record the
-actual range and verdicts after the fixed commit is reviewed; the Spec must not
-self-assert them. Old-pack deletion authority remains conditional on every
-pre-deletion gate below.
+boundary is user-approved, but the original verdicts do not cover it. Exact
+amendment commit ranges and independent review verdicts are recorded only in
+the Stage 04 Task and are never asserted by this Spec. Old-pack deletion
+authority remains conditional on every pre-deletion gate below.
 
 ## Overview
 
