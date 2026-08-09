@@ -27,7 +27,9 @@ the registry.
 | Role | Question owned | Create or update when | Durable handoff |
 | --- | --- | --- | --- |
 | PRD | What user problem, value, scope, requirements, and success criteria are approved? | Product intent or acceptance criteria materially change. | Architecture and specification work consumes the approved intent. |
-| ARD | Which architecture boundaries, concerns, and quality attributes constrain the solution? | Stable requirements need an enduring architecture description. | ADRs and Specs consume the constraints. |
+| SRS | Which system behavior, quality requirements, dependencies, and constraints need detail beyond the PRD? | A PRD needs an implementable software or system requirements contract. | Architecture Description and Spec consume the requirements. |
+| Interface Requirement | Which participants, direction, information semantics, constraints, compatibility expectations, and failures govern an interface? | A boundary needs requirements before implemented schemas are designed. | Architecture Description and Spec contracts consume the requirement. |
+| Architecture Description | Which stakeholders, boundaries, concerns, views, quality scenarios, and allocations constrain the solution? | Stable requirements need an enduring architecture description. | ADRs and Specs consume the constraints. |
 | ADR | Which significant architecture option was chosen, why, and with what consequences? | A material trade-off is decided or superseded. | Specs and plans follow the decision; later ADRs supersede rather than rewrite history. |
 | Spec | What technical design, interfaces, contracts, and verification criteria will be implemented? | Requirements and architecture are sufficient to define implementable behavior. | Plans, tasks, implementation, and QA consume the contract. |
 | Spec children | Which API, agent, data, service, test, or machine-readable sub-contract needs focused detail? | The parent Spec needs a separately reviewable concern. | The parent Spec owns the relationship and cross-links; children remain part of the Spec role. |
@@ -70,7 +72,7 @@ and known issues into one event record.
   parent merely to populate frontmatter.
 - Use the target profile's lifecycle state honestly. A template source's draft
   state is not automatic evidence that a copied target is draft.
-- Forward, terminal, and exceptional transitions are interpreted only by the
+- `created` is immutable and `updated` records semantic changes; both are required by every promoted SDLC role. Forward, terminal, and exceptional transitions are interpreted only by the
   registry and validator. Reverse transitions require scoped Stage 04 approval
   evidence; prose in a document cannot authorize one.
 - `parent_ids` names direct upstream artifacts. It is not a complete Related
@@ -98,7 +100,7 @@ execution remain in a separately approved technical and operational chain.
 4. Replace every template placeholder with artifact-specific content.
 5. Link upstream and downstream owners without copying their contracts.
 6. Record validation, deviations, protected-surface evidence, and review in the
-   active Stage 04 task.
+   active capability Task.
 
 For a corpus wave, the Plan approves scope, boundaries, review gates, generator
 ownership, and rollback before classification begins. The Task records the

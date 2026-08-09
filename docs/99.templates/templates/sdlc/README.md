@@ -17,17 +17,18 @@ SDLC 문서를 위한 복사 가능한 원본을 안내한다.
 
 ## Scope
 
-- Stage 01 PRD 원본
-- Stage 02 ARD 및 ADR 원본
-- Stage 03 parent Spec 원본
-- Stage 04 Plan 및 Task 원본
+- Stage 01 PRD, SRS, Interface Requirement 원본
+- Stage 02 Architecture Description 및 ADR 원본
+- Stage 03 capability Spec, Plan, Task 원본
 
 ## Structure
 
 | Role | Template |
 | --- | --- |
 | PRD | [prd.template.md](./prd.template.md) |
-| ARD | [ard.template.md](./ard.template.md) |
+| SRS | [srs.template.md](./srs.template.md) |
+| Interface Requirement | [interface-requirement.template.md](./interface-requirement.template.md) |
+| Architecture Description | [architecture-description.template.md](./architecture-description.template.md) |
 | ADR | [adr.template.md](./adr.template.md) |
 | Spec | [spec.template.md](./spec.template.md) |
 | Plan | [plan.template.md](./plan.template.md) |

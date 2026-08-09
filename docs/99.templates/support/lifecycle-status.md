@@ -23,6 +23,9 @@ remain solely in the registry and checker.
 | `superseded` | Replaced active docs retained for transition or reference | The document has a current replacement and must point to it while it remains in the active chain. |
 | `archived` | `docs/98.archive/**` tombstones | The original active document was removed from the active chain. |
 
+Every promoted SDLC document also records immutable `created` and semantic-change
+`updated` ISO 8601 values. They are typed metadata, never date-based path identity.
+
 ## Status Interpretation Boundary
 
 - `completed` does not automatically mean archived. Completed specs, plans,
@@ -47,8 +50,8 @@ target stage.
 ## Status Selection Rules
 
 - Template sources use `status: draft`.
-- Stage 04 plans are `active` until completed, then `completed`.
-- Stage 04 tasks are `active` while work is in progress, then `completed`.
+- Capability `plan.md` is `active` until completed, then `completed`.
+- Capability `task.md` is `active` while work is in progress, then `completed`.
 - Replaced documents that remain in the active chain may use `superseded` only
   when the body points to a current replacement.
 - Archive tombstones use `status: archived`.
@@ -68,7 +71,7 @@ Before changing a status, the author and reviewer should confirm that the
 document's real lifecycle evidence supports the proposed state, that historical
 execution or decision evidence is preserved, and that any replacement is clear
 to readers. If the checker rejects a transition, retain the current status and
-route the evidence gap or requested exception through the active Stage 04 task.
+route the evidence gap or requested exception through the active capability Task.
 Human prose, age, formatting cleanup, or a copied template never authorizes an
 exception. Escalate ambiguity before mutation when the registry profile,
 current evidence, and intended lifecycle outcome do not agree.

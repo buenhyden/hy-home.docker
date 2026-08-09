@@ -3,6 +3,8 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: incident
 parent_ids: []
+created: <created-at>
+updated: <updated-at>
 ---
 
 # {{title}}
@@ -36,10 +38,6 @@ parent_ids: []
 | Mitigation | Resolution | Handoff |
 | --- | --- | --- |
 | {{mitigation}} | {{resolution}} | {{handoff}} |
-
-## Runbook Links
-
-{{runbook_links}}
 
 ## Related Documents
 

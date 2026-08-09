@@ -1,12 +1,10 @@
 ---
 status: draft
 artifact_id: <artifact-id>
-artifact_type: policy
+artifact_type: srs
 parent_ids: [<parent-artifact-id>]
 created: <created-at>
 updated: <updated-at>
-reviewed_at: <reviewed-at>
-review_cycle: <review-cycle>
 ---
 
 # {{title}}
@@ -15,25 +13,21 @@ review_cycle: <review-cycle>
 
 {{overview}}
 
-## Policy Scope
+## System Behavior
 
-{{scope}}
+{{system_behavior}}
 
-## Controls
+## Quality Requirements
 
-{{controls}}
+{{quality_requirements}}
 
-## Exceptions
+## External Dependencies and Constraints
 
-{{exceptions}}
+{{dependencies_and_constraints}}
 
 ## Verification
 
 {{verification}}
-
-## Review Cadence
-
-{{review_cadence}}
 
 ## Related Documents
 

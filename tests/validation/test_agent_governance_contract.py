@@ -62,6 +62,7 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         ".codex/README.md",
         ".gemini/README.md",
         ".github/PULL_REQUEST_TEMPLATE.md",
+        ".github/INDEX.md",
         "scripts/README.md",
         "scripts/hooks/agent-event-hook.sh",
         "scripts/validation/agent_output_eval.py",
@@ -70,11 +71,18 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         "scripts/validation/validate-harness.sh",
         "tests/validation/test_agent_output_eval_fixtures.py",
         "docs/90.references/data/governance/agent-output-eval-fixtures.md",
+        "docs/99.templates/templates/sdlc/task.template.md",
     ):
         source = ROOT / relative_path
         target = root / relative_path
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+    for provider_root in (".agents", ".claude", ".codex", ".gemini"):
+        shutil.copytree(
+            ROOT / provider_root,
+            root / provider_root,
+            dirs_exist_ok=True,
+        )
     governance = root / "docs/00.agent-governance"
     shutil.copytree(
         ROOT / "docs/00.agent-governance",
@@ -82,13 +90,45 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         dirs_exist_ok=True,
     )
     spec_source = (
-        ROOT / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+        ROOT / "docs/03.specs/134-agent-governance-canonical-convergence/spec.md"
     )
     spec_target = (
         root / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
     )
     spec_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec_source, spec_target)
+
+    local_qa = root / "scripts/validation/run-local-qa-gates.sh"
+    local_qa.write_text(
+        local_qa.read_text(encoding="utf-8")
+        + "\n# Fixture contract markers: sync-provider-surfaces.sh --check; "
+        "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions; "
+        "--mode repository --section all\n",
+        encoding="utf-8",
+    )
+
+    current_task = (
+        "docs/04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md"
+    )
+    task = root / current_task
+    task.parent.mkdir(parents=True, exist_ok=True)
+    task.write_text("---\nstatus: active\n---\n\n# Fixture Task\n", encoding="utf-8")
+    memory = root / "docs/00.agent-governance/memory/current.md"
+    memory.write_text(
+        "---\nlayer: agentic\nstatus: active\n---\n\n"
+        "# Current Project Memory\n\n"
+        "## Current objective\n\n"
+        f"- Current task: `{current_task}`\n\n"
+        "## Approved decisions\n\n- Fixture decision.\n\n"
+        "## Active boundary\n\n- Fixture boundary.\n\n"
+        "## Verified state\n\n"
+        f"- Verified commit: `{'a' * 40}`\n"
+        "- Verified at: `2026-08-07T13:52:00+09:00`\n\n"
+        "## Blockers and unverified facts\n\n- None recorded.\n\n"
+        "## Evidence links\n\n- Fixture evidence.\n\n"
+        "## Next handoff\n\n- Continue fixture validation.\n",
+        encoding="utf-8",
+    )
 
 
 def mutate_yaml(root: pathlib.Path, name: str, mutate) -> None:
@@ -3889,12 +3929,18 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
         for label in ("Current task", "Verified commit", "Verified at"):
             self.assertEqual(1, len(re.findall(rf"^- {label}:", text, re.MULTILINE)))
 
-        bundle = contract.load_contract_bundle(ROOT)
-        self.assertEqual([], contract._validate_current_memory(ROOT, bundle))
-
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self._copy_fixture(root)
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                self.assertEqual(
+                    [],
+                    contract._validate_current_memory(
+                        root, contract.load_contract_bundle(root)
+                    ),
+                )
             self._replace_memory(
                 root,
                 "## Approved decisions",
@@ -4615,12 +4661,14 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertIn("Canonical Stage 00 function routes", text)
 
     def test_repository_all_enforces_harness_and_eval_surfaces(self) -> None:
-        bundle = contract.load_contract_bundle(ROOT)
-        self.assertEqual([], contract.validate_repository(ROOT, bundle, "all"))
-
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_task2_harness_surfaces(root)
+            bundle = contract.load_contract_bundle(root)
+            with mock.patch.object(
+                contract, "_git_commit_is_ancestor", return_value=True
+            ):
+                self.assertEqual([], contract.validate_repository(root, bundle, "all"))
             hook = root / "scripts/hooks/agent-event-hook.sh"
             hook.write_text(
                 hook.read_text(encoding="utf-8").replace(
@@ -5115,6 +5163,21 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
             if contract._has_direct_agent_precommit_guidance(guidance)
         )
         self.assertEqual(((), ()), (observed_unsafe, observed_safe))
+
+
+class Task2Stage00AuthorityFixtures(unittest.TestCase):
+    def test_rules_engineer_is_the_single_stage00_policy_owner(self) -> None:
+        values = yaml.safe_load(
+            (CONTRACT_DIR / "agent-governance-artifacts.yaml").read_text(encoding="utf-8")
+        )
+        authority = next(
+            item
+            for item in values["path_authority"]
+            if item["authority_id"] == "stage00-policy-and-contracts"
+        )
+        self.assertEqual("rules-engineer", authority["canonical_owner"])
+        self.assertIn("doc-writer", authority["permitted_contributors"])
+        self.assertNotEqual("doc-writer", authority["canonical_owner"])
 
 
 if __name__ == "__main__":

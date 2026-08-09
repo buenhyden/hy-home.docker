@@ -138,7 +138,7 @@ field set, order, value shapes, and conditional presence.
 ## Duplicate-Purpose Key Rules
 
 - Do not use both `type` and path-derived document role for the same purpose.
-- Do not use generic `owner`, `updated`, or `links` metadata unless a target
+- Do not use generic `owner` or `links` metadata unless a target
   profile explicitly consumes those keys.
 - Do not copy README template metadata examples into final README files.
 - Do not add YAML frontmatter to README files just to make them resemble
@@ -149,8 +149,9 @@ field set, order, value shapes, and conditional presence.
 
 ## Legacy Cleanup Rules
 
-- Remove generic metadata snippets that list `title`, `type`, `owner`,
-  `updated`, or `links` when they are only illustrative.
+- Remove generic metadata snippets that list `title`, `type`, `owner`, or
+  `links` when they are only illustrative.
+- Every promoted SDLC target has immutable `created` and semantic-change `updated` ISO 8601 metadata. Dates never form path identity.
 - Replace flat template path references with canonical nested template paths.
 - If a target document contains copied template instructions instead of
   topic-specific content, record a follow-up gap unless the document is already

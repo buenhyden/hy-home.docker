@@ -552,7 +552,7 @@ EXPECTED_EXCEPTION_SCHEMA = {
 EXPECTED_PROFILE_TYPES = {
     "adr",
     "archive",
-    "ard",
+    "architecture-description",
     "audit",
     "generated",
     "governance",
@@ -567,8 +567,10 @@ EXPECTED_PROFILE_TYPES = {
     "release",
     "repo-support",
     "runbook",
+    "srs",
     "spec",
     "task",
+    "interface-requirement",
     "template-source",
     "unsupported",
 }
@@ -577,6 +579,8 @@ EXPECTED_FRONTMATTER_ORDER = (
     "artifact_id",
     "artifact_type",
     "parent_ids",
+    "created",
+    "updated",
     "supersedes",
     "reviewed_at",
     "review_cycle",
@@ -630,7 +634,9 @@ EXPECTED_ARCHIVE_CONDITIONS = {
 EXPECTED_DOCUMENT_FAMILIES = {
     "sdlc": (
         "prd",
-        "ard",
+        "srs",
+        "interface-requirement",
+        "architecture-description",
         "adr",
         "spec",
         "plan",
@@ -707,7 +713,7 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
         "api-spec",
         "archive",
         "content-archive",
-        "ard",
+        "architecture-description",
         "audit",
         "data-model",
         "guide",
@@ -722,9 +728,11 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
         "reference",
         "release",
         "runbook",
+        "srs",
         "service",
         "spec",
         "task",
+        "interface-requirement",
         "tests",
     }
 )
@@ -802,6 +810,8 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
     {
         "artifact_id",
         "parent_id",
+        "created",
+        "updated",
         "reviewed_at",
         "review_cycle",
         "archived_from",
@@ -1117,23 +1127,28 @@ def infer_artifact_type(
     if normalized.startswith("docs/98.archive/"):
         return "archive"
     if normalized.startswith("docs/01.requirements/"):
+        if pathlib.PurePosixPath(normalized).name.startswith("srs-"):
+            return "srs"
+        if pathlib.PurePosixPath(normalized).name.startswith("interface-"):
+            return "interface-requirement"
         return "prd"
-    if normalized.startswith("docs/02.architecture/requirements/"):
-        return "ard"
+    if normalized.startswith("docs/02.architecture/descriptions/"):
+        return "architecture-description"
     if normalized.startswith("docs/02.architecture/decisions/"):
         return "adr"
     if normalized.startswith("docs/03.specs/"):
+        if name == "plan.md":
+            return "plan"
+        if name == "task.md":
+            return "task"
         return "spec"
-    if normalized.startswith("docs/04.execution/plans/"):
-        return "plan"
-    if normalized.startswith("docs/04.execution/tasks/"):
-        return "task"
-    if normalized.startswith("docs/05.operations/guides/"):
-        return "guide"
-    if normalized.startswith("docs/05.operations/policies/"):
-        return "policy"
-    if normalized.startswith("docs/05.operations/runbooks/"):
-        return "runbook"
+    if normalized.startswith("docs/05.operations/"):
+        if name == "guide.md":
+            return "guide"
+        if name == "policy.md":
+            return "policy"
+        if name == "runbook.md":
+            return "runbook"
     if normalized.startswith("docs/05.operations/incidents/"):
         return "postmortem" if name == "postmortem.md" else "incident"
     if normalized.startswith("docs/05.operations/releases/"):
@@ -3207,49 +3222,49 @@ def load_migration_contract(
         "declared_outputs",
     }
     if not isinstance(target_wave, dict) or set(target_wave) != target_wave_keys:
-        raise ProfileError("target-surface-convergence must define the exact v2 wave fields")
+        raise ProfileError("sdlc-taxonomy-convergence must define the exact v2 wave fields")
     if target_wave.get("baseline_commit") != TARGET_SURFACE_BASELINE:
-        raise ProfileError("target-surface-convergence must pin the approved baseline commit")
+        raise ProfileError("sdlc-taxonomy-convergence must pin the approved baseline commit")
     if target_wave.get("scope_state") != "approved":
-        raise ProfileError("target-surface-convergence scope must remain approved")
+        raise ProfileError("sdlc-taxonomy-convergence scope must remain approved")
     target_enforcement = target_wave.get("enforcement")
     promotion_evidence = target_wave.get("promotion_evidence")
     if target_enforcement == "advisory":
         if promotion_evidence is not None:
             raise ProfileError(
-                "advisory target-surface-convergence must not claim promotion evidence"
+                "advisory sdlc-taxonomy-convergence must not claim promotion evidence"
             )
     elif target_enforcement == "blocking":
         if promotion_evidence != TARGET_SURFACE_PROMOTION_EVIDENCE:
             raise ProfileError(
-                "blocking target-surface-convergence requires exact approved promotion evidence"
+                "blocking sdlc-taxonomy-convergence requires exact approved promotion evidence"
             )
     else:
         raise ProfileError(
-            "target-surface-convergence enforcement must be advisory or blocking"
+            "sdlc-taxonomy-convergence enforcement must be advisory or blocking"
         )
     if target_wave.get("manifest_path") != (
         "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
     ):
-        raise ProfileError("target-surface-convergence manifest_path must be exact")
+        raise ProfileError("sdlc-taxonomy-convergence manifest_path must be exact")
     if target_wave.get("summary_path") != (
         "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md"
     ):
-        raise ProfileError("target-surface-convergence summary_path must be exact")
+        raise ProfileError("sdlc-taxonomy-convergence summary_path must be exact")
     _exact_string_list(
         target_wave.get("source_roots"),
         TARGET_SURFACE_SOURCE_ROOTS,
-        "waves.target-surface-convergence.source_roots",
+        "waves.sdlc-taxonomy-convergence.source_roots",
     )
     _exact_string_list(
         target_wave.get("direct_source_paths"),
         TARGET_SURFACE_DIRECT_SOURCE_PATHS,
-        "waves.target-surface-convergence.direct_source_paths",
+        "waves.sdlc-taxonomy-convergence.direct_source_paths",
     )
     _exact_string_list(
         target_wave.get("declared_outputs"),
         TARGET_SURFACE_DECLARED_OUTPUTS,
-        "waves.target-surface-convergence.declared_outputs",
+        "waves.sdlc-taxonomy-convergence.declared_outputs",
     )
     for path_value in (
         *TARGET_SURFACE_SOURCE_ROOTS,
@@ -3259,7 +3274,7 @@ def load_migration_contract(
         target_wave["summary_path"],
     ):
         if not _safe_contract_path(path_value):
-            raise ProfileError("target-surface-convergence paths must be canonical repository paths")
+            raise ProfileError("sdlc-taxonomy-convergence paths must be canonical repository paths")
     for wave_name in expected_wave_names[2:]:
         wave = waves[wave_name]
         if not isinstance(wave, dict) or set(wave) != wave_keys:
@@ -3274,10 +3289,10 @@ def load_migration_contract(
             raise ProfileError(f"{wave_name} must remain an unapproved advisory wave")
 
     if loaded.get("planned_partitions") != {
-        "docs/04.execution/plans": "docs/04.execution/plans/YYYY",
-        "docs/04.execution/tasks": "docs/04.execution/tasks/YYYY",
+        "docs/04.execution/plans": "docs/03.specs/spec-<id>-<capability>/plan.md",
+        "docs/04.execution/tasks": "docs/03.specs/spec-<id>-<capability>/task.md",
     }:
-        raise ProfileError("planned_partitions must define the exact Stage 04 year routes")
+        raise ProfileError("planned_partitions must define the canonical stable target routes")
     return loaded
 
 
@@ -3415,8 +3430,13 @@ def _validate_static_migration_manifest_v2(
             raise ProfileError(f"{label} surface_class must be registered")
         before = entry.get("artifact_type_before")
         after = entry.get("artifact_type_after")
+        bounded_legacy_source_type = (
+            before == "ard"
+            and source_path.startswith("docs/02.architecture/requirements/")
+            and source_path in TARGET_SURFACE_DIRECT_SOURCE_PATHS
+        )
         for field, value in (("artifact_type_before", before), ("artifact_type_after", after)):
-            if value is not None and value not in artifact_types:
+            if value is not None and value not in artifact_types and not bounded_legacy_source_type:
                 raise ProfileError(f"{label} {field} must be null or registered")
         if surface_class == "content-archive" and after != "archive":
             raise ProfileError(f"{label} content-archive must converge to semantic archive")
@@ -4601,11 +4621,10 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     else:
         release_source = release_sources[0]
         release_name = pathlib.PurePosixPath(release_source).name
-        release_route = "docs/05.operations/releases/YYYY-MM-DD-release-name.md"
+        release_route = "docs/05.operations/releases/rel-<id>-<slug>/release.md"
         route_contracts = {
             "docs/99.templates/support/template-selection.md": (release_route, release_name),
             "docs/00.agent-governance/rules/stage-authoring-matrix.md": (release_route, release_source),
-            "docs/05.operations/releases/README.md": ("YYYY-MM-DD-release-name.md", release_name),
         }
         for path_text, required_literals in route_contracts.items():
             path = root / path_text
@@ -4957,10 +4976,13 @@ def load_transition_overrides(
             raise ProfileError(f"transition override row {index} target path is not an existing canonical document")
         if (
             evidence is None
-            or not evidence.as_posix().startswith("docs/04.execution/tasks/")
+            or not evidence.as_posix().startswith("docs/03.specs/spec-")
+            or evidence.name != "task.md"
             or not (root / evidence).is_file()
         ):
-            raise ProfileError(f"transition override row {index} evidence_task must be an existing Stage 04 task")
+            raise ProfileError(
+                f"transition override row {index} evidence_task must be an existing co-located Task"
+            )
         previous_status = row["previous_status"].strip()
         new_status = row["new_status"].strip()
         if previous_status not in allowed_statuses or new_status not in allowed_statuses:

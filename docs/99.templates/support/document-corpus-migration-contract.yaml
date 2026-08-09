@@ -1,3 +1,7 @@
+# Bounded transitional phase: sdlc-taxonomy-convergence. Its inputs are only
+# legacy source roots; it creates no permanent legacy profile or compatibility
+# surface. The lifecycle validator retains the established wave key until the
+# migration ledger is installed in Task 3.
 schema_version: 1
 
 manifest:
@@ -499,5 +503,5 @@ waves:
     declared_outputs: []
 
 planned_partitions:
-  docs/04.execution/plans: docs/04.execution/plans/YYYY
-  docs/04.execution/tasks: docs/04.execution/tasks/YYYY
+  docs/04.execution/plans: docs/03.specs/spec-<id>-<capability>/plan.md
+  docs/04.execution/tasks: docs/03.specs/spec-<id>-<capability>/task.md

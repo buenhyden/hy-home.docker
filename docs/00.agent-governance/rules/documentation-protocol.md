@@ -17,7 +17,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Select the target profile and mapped copyable template through the canonical
   Stage 99 registry and support contracts for every new or modified
   target-stage document under `docs/01.requirements/`,
-  `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`,
+  `docs/02.architecture/`, `docs/03.specs/`,
   `docs/05.operations/`, `docs/90.references/`, `docs/98.archive/`, and root
   `archive/` content tombstones.
 - Use only relative links; never use absolute `file://` links.
@@ -31,8 +31,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Keep `docs/02.architecture/**` mixed-audience: use Korean for explanatory
   rationale and human review context, while preserving English decision IDs,
   quality-attribute names, system terms, and required H1 title formats.
-- Keep `docs/03.specs/**`, `docs/04.execution/plans/**`, and
-  `docs/04.execution/tasks/**` English-only. These documents are technical
+- Keep `docs/03.specs/**` English-only. Capability `spec.md`, `plan.md`, and
+  `task.md` are technical
   contracts, implementation plans, and execution evidence for agents,
   reviewers, and CI checks.
 - Keep `docs/05.operations/{guides,policies,runbooks,incidents,releases}/**`
@@ -181,7 +181,7 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 | Stage/Folder                                                           | Document Type                        | Template                                                              |
 | ---------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
 | `docs/01.requirements/`                                                | PRD                                  | `docs/99.templates/templates/sdlc/prd.template.md`                    |
-| `docs/02.architecture/requirements/`                                   | ARD                                  | `docs/99.templates/templates/sdlc/ard.template.md`                    |
+| `docs/02.architecture/descriptions/ad-<id>-<slug>.md`                  | Architecture Description             | `docs/99.templates/templates/sdlc/architecture-description.template.md` |
 | `docs/02.architecture/decisions/`                                      | ADR                                  | `docs/99.templates/templates/sdlc/adr.template.md`                    |
 | `docs/03.specs/`                                                       | Spec                                 | `docs/99.templates/templates/sdlc/spec.template.md`                   |
 | `docs/03.specs/NNN-feature-id/api-spec.md`                             | API Spec                             | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
@@ -192,14 +192,16 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 | `docs/03.specs/NNN-feature-id/contracts/openapi.yaml`                  | OpenAPI Contract                     | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
 | `docs/03.specs/NNN-feature-id/contracts/schema.graphql`                | GraphQL Contract                     | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
 | `docs/03.specs/NNN-feature-id/contracts/service.proto`                 | Protobuf Contract                    | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
-| `docs/04.execution/plans/`                                             | Plan                                 | `docs/99.templates/templates/sdlc/plan.template.md`                   |
-| `docs/04.execution/tasks/`                                             | Task                                 | `docs/99.templates/templates/sdlc/task.template.md`                   |
-| `docs/05.operations/guides/`                                           | Operations Guide                     | `docs/99.templates/templates/operations/guide.template.md`            |
-| `docs/05.operations/policies/`                                         | Operations Policy                    | `docs/99.templates/templates/operations/policy.template.md`           |
-| `docs/05.operations/runbooks/`                                         | Operations Runbook                   | `docs/99.templates/templates/operations/runbook.template.md`          |
-| `docs/05.operations/incidents/YYYY/INC-###-<title>/INC-###-<title>.md` | Incident                             | `docs/99.templates/templates/operations/incident.template.md`         |
-| `docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md`      | Postmortem                           | `docs/99.templates/templates/operations/postmortem.template.md`       |
-| `docs/05.operations/releases/YYYY-MM-DD-release-name.md`               | Release                              | `docs/99.templates/templates/operations/release.template.md`          |
+| `docs/01.requirements/srs-<id>-<slug>.md`                              | SRS                                  | `docs/99.templates/templates/sdlc/srs.template.md`                    |
+| `docs/01.requirements/interface-<id>-<slug>.md`                        | Interface Requirement                | `docs/99.templates/templates/sdlc/interface-requirement.template.md`  |
+| `docs/03.specs/spec-<id>-<slug>/plan.md`                               | Plan                                 | `docs/99.templates/templates/sdlc/plan.template.md`                   |
+| `docs/03.specs/spec-<id>-<slug>/task.md`                               | Task                                 | `docs/99.templates/templates/sdlc/task.template.md`                   |
+| `docs/05.operations/<domain>/ops-<id>-<subject>/guide.md`              | Operations Guide                     | `docs/99.templates/templates/operations/guide.template.md`            |
+| `docs/05.operations/<domain>/ops-<id>-<subject>/policy.md`             | Operations Policy                    | `docs/99.templates/templates/operations/policy.template.md`           |
+| `docs/05.operations/<domain>/ops-<id>-<subject>/runbook.md`            | Operations Runbook                   | `docs/99.templates/templates/operations/runbook.template.md`          |
+| `docs/05.operations/incidents/inc-<id>-<slug>/incident.md`            | Incident                             | `docs/99.templates/templates/operations/incident.template.md`         |
+| `docs/05.operations/incidents/inc-<id>-<slug>/postmortem.md`           | Postmortem                           | `docs/99.templates/templates/operations/postmortem.template.md`       |
+| `docs/05.operations/releases/rel-<id>-<slug>/release.md`               | Release                              | `docs/99.templates/templates/operations/release.template.md`          |
 | `docs/00.agent-governance/memory/<note>.md`                            | Governance Memory Note               | `docs/99.templates/templates/governance/memory.template.md`           |
 | `docs/00.agent-governance/memory/progress.md`                          | Historical Agent Progress Navigation | `docs/99.templates/templates/governance/progress.template.md`         |
 | `docs/90.references/`                                                  | Reference                            | `docs/99.templates/templates/common/reference.template.md`            |

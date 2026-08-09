@@ -1,8 +1,10 @@
 ---
 status: draft
 artifact_id: <artifact-id>
-artifact_type: ard
+artifact_type: architecture-description
 parent_ids: [<parent-artifact-id>]
+created: <created-at>
+updated: <updated-at>
 ---
 
 # {{title}}

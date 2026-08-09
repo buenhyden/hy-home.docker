@@ -3,6 +3,8 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: prd
 parent_ids: []
+created: <created-at>
+updated: <updated-at>
 ---
 
 # {{title}}

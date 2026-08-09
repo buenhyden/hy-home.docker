@@ -9,14 +9,16 @@ common:
     completed: [superseded]
     superseded: []
     archived: []
-  globally_forbidden: [type, document_type, template_type, owner, updated, links]
+  globally_forbidden: [type, document_type, template_type, owner, links]
   typed_keys:
-    [status, artifact_id, artifact_type, parent_ids, supersedes, reviewed_at, review_cycle]
+    [status, artifact_id, artifact_type, parent_ids, created, updated, supersedes, reviewed_at, review_cycle]
   frontmatter_order:
     - status
     - artifact_id
     - artifact_type
     - parent_ids
+    - created
+    - updated
     - supersedes
     - reviewed_at
     - review_cycle
@@ -41,6 +43,8 @@ common:
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
+    created: <created-at>
+    updated: <updated-at>
     reviewed_at: <reviewed-at>
     review_cycle: <review-cycle>
     archived_from: docs/<original-path>.md
@@ -56,10 +60,10 @@ common:
     content_sha256: <content-sha256>
     snapshot_reason: <snapshot-reason>
   root_exceptions:
-    docs/03.specs/123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, ARD, or ADR parent.
+    docs/03.specs/spec-0123-agentic-engineering-audit-remediation/spec.md: Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent.
 
 document_families:
-  sdlc: [prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release]
+  sdlc: [prd, srs, interface-requirement, architecture-description, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release]
   common:
     [
       reference,
@@ -107,7 +111,6 @@ archive_profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
       ]
@@ -154,7 +157,6 @@ archive_profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
       ]
@@ -162,7 +164,9 @@ archive_profiles:
     allowed_parent_types:
       [
         prd,
-        ard,
+        srs,
+        interface-requirement,
+        architecture-description,
         adr,
         spec,
         plan,
@@ -420,7 +424,7 @@ template_roles:
   prd:
     source: docs/99.templates/templates/sdlc/prd.template.md
     artifact_profile: prd
-    target_globs: [docs/01.requirements/*.md]
+    target_globs: [docs/01.requirements/prd-*.md]
     required_headings:
       [
         '## Overview',
@@ -433,10 +437,26 @@ template_roles:
       ]
     conditional_headings: ['## AI Agent Requirements']
     forbidden_headings: ['## Implementation Details']
-  ard:
-    source: docs/99.templates/templates/sdlc/ard.template.md
-    artifact_profile: ard
-    target_globs: [docs/02.architecture/requirements/*.md]
+  srs:
+    source: docs/99.templates/templates/sdlc/srs.template.md
+    artifact_profile: srs
+    target_globs: [docs/01.requirements/srs-*.md]
+    required_headings:
+      ['## Overview', '## System Behavior', '## Quality Requirements', '## External Dependencies and Constraints', '## Verification', '## Related Documents']
+    conditional_headings: ['## Assumptions']
+    forbidden_headings: ['## Implementation Plan']
+  interface-requirement:
+    source: docs/99.templates/templates/sdlc/interface-requirement.template.md
+    artifact_profile: interface-requirement
+    target_globs: [docs/01.requirements/interface-*.md]
+    required_headings:
+      ['## Overview', '## Participants and Direction', '## Information Semantics', '## Constraints and Compatibility', '## Failure Expectations', '## Verification', '## Related Documents']
+    conditional_headings: ['## Interface Examples']
+    forbidden_headings: ['## Implementation Plan']
+  architecture-description:
+    source: docs/99.templates/templates/sdlc/architecture-description.template.md
+    artifact_profile: architecture-description
+    target_globs: [docs/02.architecture/descriptions/ad-*.md]
     required_headings:
       [
         '## Overview and Context',
@@ -453,7 +473,7 @@ template_roles:
   adr:
     source: docs/99.templates/templates/sdlc/adr.template.md
     artifact_profile: adr
-    target_globs: [docs/02.architecture/decisions/*.md]
+    target_globs: [docs/02.architecture/decisions/adr-*.md]
     required_headings:
       [
         '## Context and Decision Drivers',
@@ -468,7 +488,7 @@ template_roles:
   spec:
     source: docs/99.templates/templates/sdlc/spec.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/spec.md]
+    target_globs: [docs/03.specs/spec-*/spec.md]
     required_headings:
       [
         '## Overview',
@@ -485,7 +505,7 @@ template_roles:
   plan:
     source: docs/99.templates/templates/sdlc/plan.template.md
     artifact_profile: plan
-    target_globs: [docs/04.execution/plans/*.md]
+    target_globs: [docs/03.specs/spec-*/plan.md]
     required_headings:
       [
         '## Overview',
@@ -502,7 +522,7 @@ template_roles:
   task:
     source: docs/99.templates/templates/sdlc/task.template.md
     artifact_profile: task
-    target_globs: [docs/04.execution/tasks/*.md]
+    target_globs: [docs/03.specs/spec-*/task.md]
     required_headings:
       [
         '## Overview',
@@ -522,7 +542,7 @@ template_roles:
   guide:
     source: docs/99.templates/templates/operations/guide.template.md
     artifact_profile: guide
-    target_globs: [docs/05.operations/guides/**/*.md]
+    target_globs: [docs/05.operations/*/ops-*/guide.md]
     required_headings:
       ['## Usage', '## Common Checks', '## Runbook Handoff', '## Related Documents']
     conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Troubleshooting']
@@ -530,7 +550,7 @@ template_roles:
   policy:
     source: docs/99.templates/templates/operations/policy.template.md
     artifact_profile: policy
-    target_globs: [docs/05.operations/policies/**/*.md]
+    target_globs: [docs/05.operations/*/ops-*/policy.md]
     required_headings:
       [
         '## Overview',
@@ -546,7 +566,7 @@ template_roles:
   runbook:
     source: docs/99.templates/templates/operations/runbook.template.md
     artifact_profile: runbook
-    target_globs: [docs/05.operations/runbooks/**/*.md]
+    target_globs: [docs/05.operations/*/ops-*/runbook.md]
     required_headings:
       [
         '## When to Use',
@@ -561,7 +581,7 @@ template_roles:
   incident:
     source: docs/99.templates/templates/operations/incident.template.md
     artifact_profile: incident
-    target_globs: [docs/05.operations/incidents/*/INC-*/*.md]
+    target_globs: [docs/05.operations/incidents/inc-*/incident.md]
     required_headings:
       [
         '## Overview',
@@ -577,7 +597,7 @@ template_roles:
   postmortem:
     source: docs/99.templates/templates/operations/postmortem.template.md
     artifact_profile: postmortem
-    target_globs: [docs/05.operations/incidents/*/INC-*/postmortem.md]
+    target_globs: [docs/05.operations/incidents/inc-*/postmortem.md]
     required_headings:
       [
         '## Overview',
@@ -595,7 +615,7 @@ template_roles:
   release:
     source: docs/99.templates/templates/operations/release.template.md
     artifact_profile: release
-    target_globs: [docs/05.operations/releases/*.md]
+    target_globs: [docs/05.operations/releases/rel-*/release.md]
     required_headings:
       [
         '## Overview',
@@ -725,7 +745,7 @@ template_roles:
   agent-design:
     source: docs/99.templates/templates/spec-contracts/agent-design.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/agent-design.md]
+    target_globs: [docs/03.specs/spec-*/agent-design.md]
     required_headings:
       [
         '## Overview',
@@ -746,7 +766,7 @@ template_roles:
   api-spec:
     source: docs/99.templates/templates/spec-contracts/api-spec.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/api-spec.md]
+    target_globs: [docs/03.specs/spec-*/api-spec.md]
     required_headings:
       [
         '## Overview',
@@ -767,7 +787,7 @@ template_roles:
   data-model:
     source: docs/99.templates/templates/spec-contracts/data-model.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/data-model.md]
+    target_globs: [docs/03.specs/spec-*/data-model.md]
     required_headings:
       [
         '## Overview',
@@ -786,7 +806,7 @@ template_roles:
   service:
     source: docs/99.templates/templates/spec-contracts/service.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/service.md, examples/sample-web-service/service.md]
+    target_globs: [docs/03.specs/spec-*/service.md, examples/sample-web-service/service.md]
     required_headings:
       [
         '## Overview',
@@ -804,7 +824,7 @@ template_roles:
   tests:
     source: docs/99.templates/templates/spec-contracts/tests.template.md
     artifact_profile: spec
-    target_globs: [docs/03.specs/*/tests.md]
+    target_globs: [docs/03.specs/spec-*/tests.md]
     required_headings:
       [
         '## Overview',
@@ -824,7 +844,10 @@ template_roles:
 
 profiles:
   prd:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/01.requirements/prd-*.md]
+    id_pattern: 'prd-[0-9]{3}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -832,7 +855,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
         review_cycle,
@@ -848,8 +870,11 @@ profiles:
     allow_empty_parents: true
     disposition: migration candidate
 
-  ard:
-    required: [status, artifact_id, artifact_type, parent_ids]
+  srs:
+    path_globs: [docs/01.requirements/srs-*.md]
+    id_pattern: 'srs-[0-9]{3}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -857,7 +882,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
         review_cycle,
@@ -873,8 +897,37 @@ profiles:
     allow_empty_parents: false
     disposition: migration candidate
 
+  interface-requirement:
+    path_globs: [docs/01.requirements/interface-*.md]
+    id_pattern: 'interface-[0-9]{3}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes]
+    forbidden:
+      [type, document_type, template_type, owner, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, srs]
+    allow_empty_parents: false
+    disposition: migration candidate
+
+  architecture-description:
+    path_globs: [docs/02.architecture/descriptions/ad-*.md]
+    id_pattern: 'ad-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    optional: [supersedes]
+    forbidden:
+      [type, document_type, template_type, owner, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+    allowed_statuses: [draft, active, completed, superseded]
+    allowed_parent_types: [prd, srs, interface-requirement]
+    allow_empty_parents: false
+    disposition: migration candidate
+
   adr:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/02.architecture/decisions/adr-*.md]
+    id_pattern: 'adr-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -882,7 +935,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
         review_cycle,
@@ -894,12 +946,15 @@ profiles:
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard]
+    allowed_parent_types: [architecture-description]
     allow_empty_parents: false
     disposition: migration candidate
 
   spec:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/03.specs/spec-*/spec.md]
+    id_pattern: 'spec-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes, reviewed_at, review_cycle]
     forbidden:
       [
@@ -907,7 +962,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -917,12 +971,18 @@ profiles:
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, archive]
+    allowed_parent_types: [architecture-description, adr, spec, archive]
     allow_empty_parents: false
     disposition: migration candidate
 
   plan:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/03.specs/spec-*/plan.md]
+    id_pattern: 'plan-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'spec-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'plan-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -930,7 +990,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
         review_cycle,
@@ -942,12 +1001,18 @@ profiles:
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, archive]
+    allowed_parent_types: [spec, archive]
     allow_empty_parents: false
     disposition: migration candidate
 
   task:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/03.specs/spec-*/task.md]
+    id_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    path_identity: inherited
+    parent_id_pattern: 'spec-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -955,7 +1020,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
         review_cycle,
@@ -972,7 +1036,13 @@ profiles:
     disposition: migration candidate
 
   guide:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/05.operations/*/ops-*/guide.md]
+    id_pattern: 'guide-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'guide-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes, reviewed_at, review_cycle]
     forbidden:
       [
@@ -980,7 +1050,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -995,7 +1064,13 @@ profiles:
     disposition: migration candidate
 
   policy:
-    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at, review_cycle]
+    path_globs: [docs/05.operations/*/ops-*/policy.md]
+    id_pattern: 'policy-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'policy-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at, review_cycle]
     optional: [supersedes]
     forbidden:
       [
@@ -1003,7 +1078,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -1013,12 +1087,18 @@ profiles:
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, plan, task]
+    allowed_parent_types: [spec, architecture-description, adr]
     allow_empty_parents: false
     disposition: migration candidate
 
   runbook:
-    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at, review_cycle]
+    path_globs: [docs/05.operations/*/ops-*/runbook.md]
+    id_pattern: 'runbook-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'runbook-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at, review_cycle]
     optional: [supersedes]
     forbidden:
       [
@@ -1026,7 +1106,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -1041,7 +1120,10 @@ profiles:
     disposition: migration candidate
 
   incident:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/05.operations/incidents/inc-*/incident.md]
+    id_pattern: 'inc-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
       [
@@ -1049,7 +1131,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         reviewed_at,
         review_cycle,
@@ -1066,7 +1147,13 @@ profiles:
     disposition: migration candidate
 
   postmortem:
-    required: [status, artifact_id, artifact_type, parent_ids, reviewed_at]
+    path_globs: [docs/05.operations/incidents/inc-*/postmortem.md]
+    id_pattern: 'postmortem-(?P<identity>[0-9]{4})'
+    path_identity: inherited
+    parent_id_pattern: 'inc-(?P<identity>[0-9]{4})-[a-z0-9-]+'
+    artifact_id_identity_pattern: 'postmortem-(?P<identity>[0-9]{4})'
+    identity_capture: identity
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at]
     optional: [supersedes]
     forbidden:
       [
@@ -1074,7 +1161,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         review_cycle,
         generated_by,
@@ -1090,7 +1176,10 @@ profiles:
     disposition: migration candidate
 
   release:
-    required: [status, artifact_id, artifact_type, parent_ids]
+    path_globs: [docs/05.operations/releases/rel-*/release.md]
+    id_pattern: 'rel-[0-9]{4}'
+    path_identity: direct
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes, reviewed_at]
     forbidden:
       [
@@ -1098,7 +1187,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         review_cycle,
         generated_by,
@@ -1122,7 +1210,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -1132,7 +1219,7 @@ profiles:
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [prd, ard, adr, spec, plan, task, guide, policy, runbook, reference]
+    allowed_parent_types: [prd, srs, interface-requirement, architecture-description, adr, spec, plan, task, guide, policy, runbook, reference]
     allow_empty_parents: true
     disposition: migration candidate
 
@@ -1145,7 +1232,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -1174,7 +1260,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         archived_from,
         archived_on,
@@ -1204,7 +1289,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         archived_from,
         archived_on,
@@ -1231,7 +1315,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         layer,
         archived_from,
@@ -1259,7 +1342,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         layer,
@@ -1289,7 +1371,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
         archived_from,
@@ -1328,7 +1409,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
         generated_by,
       ]
@@ -1336,7 +1416,7 @@ profiles:
     allowed_parent_types:
       [
         prd,
-        ard,
+        architecture-description,
         adr,
         spec,
         plan,
@@ -1378,7 +1458,6 @@ profiles:
         document_type,
         template_type,
         owner,
-        updated,
         links,
       ]
     allowed_statuses: []

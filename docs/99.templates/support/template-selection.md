@@ -13,18 +13,20 @@ template source.
 
 | Role | Target Location | Template |
 | --- | --- | --- |
-| PRD | `docs/01.requirements/NNN-<feature-or-system>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
-| ARD | `docs/02.architecture/requirements/####-<system-or-domain>.md` | [ard.template.md](../templates/sdlc/ard.template.md) |
-| ADR | `docs/02.architecture/decisions/####-<short-title>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
-| Spec | `docs/03.specs/NNN-<feature-id>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
-| Plan | `docs/04.execution/plans/YYYY-MM-DD-<feature>.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
-| Task | `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md` | [task.template.md](../templates/sdlc/task.template.md) |
-| Guide | `docs/05.operations/guides/**.md` | [guide.template.md](../templates/operations/guide.template.md) |
-| Policy | `docs/05.operations/policies/**.md` | [policy.template.md](../templates/operations/policy.template.md) |
-| Runbook | `docs/05.operations/runbooks/**.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
-| Incident packet incident file | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md` | [incident.template.md](../templates/operations/incident.template.md) |
-| Incident packet postmortem.md | `docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
-| Release | `docs/05.operations/releases/YYYY-MM-DD-release-name.md` | [release.template.md](../templates/operations/release.template.md) |
+| PRD | `docs/01.requirements/prd-<id>-<slug>.md` | [prd.template.md](../templates/sdlc/prd.template.md) |
+| SRS | `docs/01.requirements/srs-<id>-<slug>.md` | [srs.template.md](../templates/sdlc/srs.template.md) |
+| Interface Requirement | `docs/01.requirements/interface-<id>-<slug>.md` | [interface-requirement.template.md](../templates/sdlc/interface-requirement.template.md) |
+| Architecture Description | `docs/02.architecture/descriptions/ad-<id>-<slug>.md` | [architecture-description.template.md](../templates/sdlc/architecture-description.template.md) |
+| ADR | `docs/02.architecture/decisions/adr-<id>-<slug>.md` | [adr.template.md](../templates/sdlc/adr.template.md) |
+| Spec | `docs/03.specs/spec-<id>-<capability>/spec.md` | [spec.template.md](../templates/sdlc/spec.template.md) |
+| Plan | `docs/03.specs/spec-<id>-<capability>/plan.md` | [plan.template.md](../templates/sdlc/plan.template.md) |
+| Task | `docs/03.specs/spec-<id>-<capability>/task.md` | [task.template.md](../templates/sdlc/task.template.md) |
+| Guide | `docs/05.operations/<domain>/ops-<id>-<subject>/guide.md` | [guide.template.md](../templates/operations/guide.template.md) |
+| Policy | `docs/05.operations/<domain>/ops-<id>-<subject>/policy.md` | [policy.template.md](../templates/operations/policy.template.md) |
+| Runbook | `docs/05.operations/<domain>/ops-<id>-<subject>/runbook.md` | [runbook.template.md](../templates/operations/runbook.template.md) |
+| Incident | `docs/05.operations/incidents/inc-<id>-<slug>/incident.md` | [incident.template.md](../templates/operations/incident.template.md) |
+| Postmortem | `docs/05.operations/incidents/inc-<id>-<slug>/postmortem.md` | [postmortem.template.md](../templates/operations/postmortem.template.md) |
+| Release | `docs/05.operations/releases/rel-<id>-<slug>/release.md` | [release.template.md](../templates/operations/release.template.md) |
 | Reference | `docs/90.references/{data,learning,llm-wiki,research}/**/*.md` | [reference.template.md](../templates/common/reference.template.md) |
 | Audit | `docs/90.references/audits/**/*.md` except the generated metadata inventory | [audit.template.md](../templates/common/audit.template.md) |
 | Archive | `docs/98.archive/<original-stage>/<original-path>.md` | [archive.template.md](../templates/common/archive.template.md) |

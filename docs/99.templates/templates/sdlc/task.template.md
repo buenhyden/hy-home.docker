@@ -3,6 +3,8 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: task
 parent_ids: [<parent-artifact-id>]
+created: <created-at>
+updated: <updated-at>
 ---
 
 # Task: {{title}}

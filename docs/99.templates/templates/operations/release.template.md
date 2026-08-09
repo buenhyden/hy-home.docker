@@ -3,6 +3,8 @@ status: draft
 artifact_id: <artifact-id>
 artifact_type: release
 parent_ids: [<parent-artifact-id>]
+created: <created-at>
+updated: <updated-at>
 ---
 
 # {{title}}
@@ -50,10 +52,6 @@ parent_ids: [<parent-artifact-id>]
 | Outcome | Known issues |
 | --- | --- |
 | {{release_outcome}} | {{known_issues}} |
-
-## Compatibility Notes
-
-{{compatibility_assessment}}
 
 ## Related Documents
 

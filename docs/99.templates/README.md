@@ -45,7 +45,7 @@ support 문서를 기준으로 확인합니다.
 
 | Category | Path | Role |
 | --- | --- | --- |
-| SDLC templates | [templates/sdlc/](./templates/sdlc/) | PRD, ARD, ADR, Spec, Plan, Task |
+| SDLC templates | [templates/sdlc/](./templates/sdlc/) | PRD, SRS, Interface Requirement, Architecture Description, ADR, Spec, Plan, Task |
 | Spec contract templates | [templates/spec-contracts/](./templates/spec-contracts/) | API spec, agent design, data model, service, tests, OpenAPI, GraphQL, Proto |
 | Operations templates | [templates/operations/](./templates/operations/) | Guide, policy, runbook, incident, postmortem, Release |
 | Governance templates | [templates/governance/](./templates/governance/) | Memory note, progress log |

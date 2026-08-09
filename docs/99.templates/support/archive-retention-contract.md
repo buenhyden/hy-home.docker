@@ -19,12 +19,10 @@ The metadata and lifecycle validators are their executable interpreters.
 
 ## Tombstone Profile and Provenance
 
-Archive path selection has two exact profiles under one semantic type. A
-`content-archive` tombstone owns root `archive/**`, while `sdlc-archive` owns
-`docs/98.archive/**`; both declare `artifact_type: archive`. Content tombstones
-forbid SDLC parents, supersession, replacement, and snapshot fields. SDLC
-tombstones retain the existing conditional replacement and snapshot contract.
-Each path must match exactly one selector and use its registered template.
+`docs/98.archive` is the sole documentation archive. Archive records preserve
+provenance under that root and never create an active compatibility, redirect,
+or legacy profile. Each path matches one registered archive selector and uses
+its registered template.
 
 ### `content-archive`
 
@@ -32,7 +30,7 @@ Required: `status`, `artifact_id`, `artifact_type`, `archived_from`, `archived_o
 
 Optional: none.
 
-Forbidden: `parent_ids`, `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`, `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `updated`, `links`, `generated_by`.
+Forbidden: `parent_ids`, `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`, `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
 
 ### `sdlc-archive`
 
@@ -40,7 +38,7 @@ Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from
 
 Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
 
-Forbidden: `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `updated`, `links`, `generated_by`.
+Forbidden: `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
 
 Within the SDLC optional field set, `current_replacement` is required for
 `superseded`, `duplicate`, and `conflict`; forbidden for `withdrawn`; and
@@ -97,8 +95,11 @@ The warning is advisory. Adding a new eligible leaf at the blocking boundary
 requires a tracked, canonical, reviewed Plan that authorizes the partition;
 editing an existing leaf does not count as a new addition.
 
-Stage 01 through Stage 03 use stable domains or bounded contexts. Stage 04's
-future approved shape is `docs/04.execution/plans` -> `docs/04.execution/plans/YYYY` and `docs/04.execution/tasks` -> `docs/04.execution/tasks/YYYY`.
+Stage 01 through Stage 03 use stable domains or bounded contexts. Legacy
+Stage 04 roots migrate to stable capability-owned paths:
+`docs/04.execution/plans` -> `docs/03.specs/spec-<id>-<capability>/plan.md` and
+`docs/04.execution/tasks` -> `docs/03.specs/spec-<id>-<capability>/task.md`.
+No dated Stage 04 path is an archive partition target.
 Moves preserve artifact identity and historical evidence. Wave C owns the
 actual Stage 04 partition; this Foundation contract does not move leaves.
 
