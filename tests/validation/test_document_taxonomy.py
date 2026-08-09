@@ -35,6 +35,47 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         )
         self.assertEqual([], findings)
 
+    def test_accepts_inherited_task_role_identity(self):
+        findings = validate_stable_identity(
+            PurePosixPath(
+                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+            ),
+            {
+                "artifact_id": "task-0136-01",
+                "artifact_type": "task",
+            },
+            {
+                "task": {
+                    "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
+                    "path_identity": "inherited",
+                    "parent_id_pattern": r"spec-[0-9]{4}-[a-z0-9-]+",
+                }
+            },
+        )
+        self.assertEqual([], findings)
+
+    def test_rejects_inherited_task_role_without_stable_parent(self):
+        findings = validate_stable_identity(
+            PurePosixPath("docs/03.specs/temporary-task/task.md"),
+            {
+                "artifact_id": "task-0136-01",
+                "artifact_type": "task",
+            },
+            {
+                "task": {
+                    "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
+                    "path_identity": "inherited",
+                    "parent_id_pattern": r"spec-[0-9]{4}-[a-z0-9-]+",
+                }
+            },
+        )
+        self.assertEqual(
+            [
+                "path-id-mismatch",
+            ],
+            [finding.code for finding in findings],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

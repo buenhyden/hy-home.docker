@@ -54,6 +54,27 @@ def find_dated_identity_parts(path: PurePosixPath) -> tuple[str, ...]:
     )
 
 
+def _matches_path_identity(
+    path: PurePosixPath,
+    artifact_id: str,
+    profile: Mapping[str, object],
+) -> bool:
+    """Return whether ``path`` carries direct or inherited profile identity."""
+
+    path_identity = str(profile.get("path_identity", "direct"))
+    if path_identity == "direct":
+        return any(
+            part == artifact_id or part.startswith(artifact_id + "-")
+            for part in path.parts
+        )
+    if path_identity == "inherited":
+        parent_id_pattern = str(profile.get("parent_id_pattern", ""))
+        return bool(parent_id_pattern) and (
+            re.compile(parent_id_pattern).fullmatch(path.parent.name) is not None
+        )
+    return False
+
+
 def validate_stable_identity(
     path: PurePosixPath,
     metadata: Mapping[str, object],
@@ -73,10 +94,7 @@ def validate_stable_identity(
         findings.append(
             TaxonomyFinding("artifact-id-invalid", str(path), artifact_id)
         )
-    if not any(
-        part == artifact_id or part.startswith(artifact_id + "-")
-        for part in path.parts
-    ):
+    if not _matches_path_identity(path, artifact_id, profile):
         findings.append(
             TaxonomyFinding("path-id-mismatch", str(path), artifact_id)
         )
