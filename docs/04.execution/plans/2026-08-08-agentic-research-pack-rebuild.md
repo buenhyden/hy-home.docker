@@ -1431,14 +1431,117 @@ The staged listing is exactly two paths. Dispatch fresh independent
 specification and documentation-quality reviewers over
 `VV_ROUTER_FIX_BASE..HEAD`; both must return C0/I0/M0. Any correction receives
 its own commit and both scoped re-reviews within the five-round breaker. After
-the reviews, use the existing Task-only immutable-evidence closure and final
-closure-integrity reviews; no downstream gate opens before those receipts are
+the reviews, complete Step 8; no downstream gate opens before its receipts are
 durable. If rollback is required, first set
 `VV_ROUTER_FIX_OID=$(git rev-parse --verify HEAD)` at the exact two-path fix,
 then use targeted `git revert --no-commit "$VV_ROUTER_FIX_OID"`; never rewrite
 or remove `139ced00`. Only the reviewed 18-path final implementation and its
 Task evidence may feed Task 10, Step 0e, or Gate 9. Ignored research reports
 remain advisory inputs, not durable authority.
+
+- [ ] **Step 8: Close the implementation reviews in one Task-only evidence unit**
+
+Start only after this Plan-fix range and the complete Step 7 fix range each
+have both required C0/I0/M0 re-review receipts. From a clean `HEAD`, capture
+`VV_TASK9A_CLOSURE_BASE=$(git rev-parse --verify HEAD)` and modify exactly
+`docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`. Record
+all of the following as immutable evidence without changing their history:
+
+1. Initial implementation commit
+   `139ced00f7008f7161891aef6debfd67cefcfe7a`, exact range
+   `ac51a53211887a12bb18e2209aa3af1af6eb4b7f..139ced00f7008f7161891aef6debfd67cefcfe7a`,
+   exact 17-path scope, and both initial controller receipts: specification
+   Approved C0/I0/M0; documentation quality Needs fixes C0/I1/M0 because the
+   parent research router's structure line still contained `19-leaf pack` and
+   its localized canonical-route line still contained `19\uac1c leaf`.
+2. Plan correction commit
+   `c4ebff545a8dcb319beeb4fc16c053371126cc56`, exact range
+   `139ced00f7008f7161891aef6debfd67cefcfe7a..c4ebff545a8dcb319beeb4fc16c053371126cc56`,
+   and both initial Plan-review receipts: specification Needs fixes C0/I1/M0
+   because Task 9a lacked an explicit Task-only immutable-evidence closure
+   after the Step 7 reviews; documentation quality Approved C0/I0/M0. Also
+   record the subsequent Plan-fix commit/range and both C0/I0/M0 re-review
+   receipts exactly as supplied by the controller after they exist.
+3. The reviewed Step 7 two-path fix commit/range, its exact scope of the parent
+   research README plus this Task, and both scoped C0/I0/M0 re-review receipts.
+4. The final union of the immutable initial implementation and correction:
+   exactly 18 unique paths, one README plus 20 leaves in the 21-file pack,
+   36/36 requirements, 14/14 scopes, and byte-unchanged generated outputs at
+   1,339 index rows and 1,338 coverage paths.
+5. Task 10 finalization, Step 0e, Gate 9, deletion, lifecycle reconciliation,
+   runtime/remote action, and push remain `Not Run` and closed.
+
+For the Step 8 row itself, write `Pending self-identity closure`, the literal
+captured closure-base OID, the exact subject below, exact one-Task scope, and
+closure-integrity reviews `Not Run`. Do not guess the commit's own OID or
+claim its reviews before they run.
+
+Validate the exact Task-only edit:
+
+```bash
+VV_TASK9A_CLOSURE_BASE=$(git rev-parse --verify HEAD)
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed --base-ref "$VV_TASK9A_CLOSURE_BASE" \
+  --changed-path \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+bash scripts/validation/check-doc-traceability.sh
+env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
+  bash scripts/validation/check-repo-contracts.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 -m unittest \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
+  -v
+git diff --quiet "$VV_TASK9A_CLOSURE_BASE" -- \
+  docs/90.references/llm-wiki/llm-wiki-index.md \
+  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+test "$(git diff --name-only "$VV_TASK9A_CLOSURE_BASE" -- | wc -l)" -eq 1
+test "$(git diff --name-only "$VV_TASK9A_CLOSURE_BASE" --)" = \
+  "docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md"
+git diff --check
+```
+
+Expected: metadata `selected=1 violations=0`; traceability and repository
+contracts PASS; both generator checks and the focused test PASS; generated
+bytes remain unchanged at 1,339/1,338; diff hygiene PASS; and the changed set
+is exactly the Task.
+
+Stage and commit exactly that one path:
+
+```bash
+git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "docs(task): close verification validation implementation reviews"
+VV_TASK9A_CLOSURE_OID=$(git rev-parse --verify HEAD)
+git diff --check "$VV_TASK9A_CLOSURE_BASE" "$VV_TASK9A_CLOSURE_OID" --
+git diff --name-only \
+  "$VV_TASK9A_CLOSURE_BASE" "$VV_TASK9A_CLOSURE_OID" --
+```
+
+The staged and committed listing must contain exactly the Task. Dispatch one
+fresh specification reviewer and one fresh documentation-quality reviewer
+over the exact
+`VV_TASK9A_CLOSURE_BASE..VV_TASK9A_CLOSURE_OID` closure range. Each external
+controller receipt must record both literal OIDs, the exact range, reviewer
+identity, verdict, and finding disposition; these two receipts are the
+immutable identity of the closure commit, so the Task intentionally does not
+attempt to embed its own SHA. No extra Task backfill exists solely to repeat
+that SHA.
+
+Both closure-integrity reviewers must return C0/I0/M0. The initial closure is
+review round 1; any nonzero Critical, Important, or Minor finding receives one
+Task-only fix commit and both re-reviews in rounds 2 through 5. If either
+review remains nonzero after round 5, mark the unit blocked and stop; there is
+no round 6 and no downstream execution. Before a successor consumes the
+closure, rollback only with the targeted command below; if reviewed fix
+commits exist, revert them newest to oldest before the initial closure. Never
+amend, rebase, reset, or rewrite the initial implementation, Plan corrections,
+or Step 7 fix.
+
+```bash
+git revert --no-commit "$VV_TASK9A_CLOSURE_OID"
+```
 
 ### Task 10: Switch cross-links and machine-generated routes
 
@@ -3522,7 +3625,7 @@ pack are forbidden.
 | Ledger ready | Task tables, old blobs, baseline results reviewed | Leaf authoring |
 | Unit review | Specification and quality reviews C0/I0 over committed `BASE..HEAD` | Next task |
 | Pack complete | 20 leaves/21 files, 36/36 requirements, 14/14 scopes, source/claim completeness | Human route switch and Gate 9 |
-| Verification and validation unit reviewed | Task-only amendment evidence; immutable 17-path initial commit `139ced00`; separately reviewed two-path parent-router/Task fix; exact final 18-path unique scope; parent router states 20 leaves/21 files and still links only the pack README; exact nine-H2 REQ-36 leaf; current primary-source/status/paywall boundaries; remeasured owner table; all 14 scopes; README/cross-links/Stage 03 status; unchanged 1,339/1,338 generated cardinalities; and both correction and closure-integrity reviews at C0/I0/M0 | Task 10 finalization, Phase A, and Gate 9 |
+| Verification and validation unit reviewed | Task-only amendment evidence; immutable 17-path initial commit `139ced00` and both initial receipts; reviewed Plan correction/fix chain; separately reviewed two-path parent-router/Task fix; exact final 18-path unique scope; parent router states 20 leaves/21 files and still links only the pack README; exact nine-H2 REQ-36 leaf; current primary-source/status/paywall boundaries; remeasured owner table; all 14 scopes; README/cross-links/Stage 03 status; unchanged 1,339/1,338 generated cardinalities; explicit Step 8 Task-only evidence closure; and both external closure-integrity receipts binding its exact commit/range at C0/I0/M0 | Task 10 finalization, Phase A, and Gate 9 |
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
