@@ -185,9 +185,17 @@ using `--stdout` execution of the two canonical LLM Wiki generators. That
 approval does not authorize round-5 helper execution, a package-selected or
 historical generator blob, Gate 9 package construction or consumption,
 evidence-ref publication, real-index staging, deletion, lifecycle mutation, or
-another closed action. Step 0d implementation and its two independent reviews
-are `Not Run`. Gate 9, Phase A, deletion, lifecycle reconciliation, Task 12,
-remote actions, and push remain closed.
+another closed action. Step 0d recovery implementation is reviewed complete at
+fix commit `71eb4feb7d4a085fd2910038a374987773de1e1d`: the initial implementation
+received formal specification approval and the formal Python/security findings
+were addressed by recovery fix round 1, whose scoped specification and
+Python/security re-reviews both returned Approved C0/I0/M0. The final
+Task-only closure-integrity reviews are external and `Not Run`. Gate 9, Phase A,
+the first durable package and reviews, evidence-ref publication, real-index
+staging, deletion, lifecycle reconciliation, Task 12, remote actions, and push
+remain `Not Run` and closed.
+
+GATE9_REVIEWED_CODE_HEAD: `71eb4feb7d4a085fd2910038a374987773de1e1d`
 
 <!-- GATE9-EVIDENCE/v1
 {"attempt":1,"schema":"agentic-research-gate9/v1","state":"PACKAGE_REVIEW_PENDING"}
@@ -207,7 +215,7 @@ remote actions, and push remain closed.
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Complete after fix `8d447997`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Complete after fix `44fdb494`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, metadata exceptions, route checks | Complete through fix `6d6e93b6`; route switch, generated navigation, mutable metadata reconciliation, four visible-label repairs, and all-twenty-file projection coverage are implemented; scoped specification and quality re-reviews Approved C0/I0/M0; old-pack deletion and pinned lifecycle-row reconciliation remain Task 11 and the deletion gate stays closed |
-| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 is preserved as a reviewed failed attempt; Step 0b is reviewed complete at `8a35fe07`; Step 0c fix 5 `4796b462` is `BLOCKED` by formal specification C0/I1/M1 and Python/security C0/I1/M0 reviews; the 2026-08-09 Plan Step 0d approval does not waive either blocker, and Step 0d implementation/reviews are Not Run; all failed constructions and `6025478e` temporary packages are non-authoritative diagnostics only; Gate 9, Phase A, real-index staging, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
+| Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 is preserved as a reviewed failed attempt; Step 0b is reviewed complete at `8a35fe07`; Step 0c fix 5 `4796b462` remains superseded by the separately bounded Step 0d recovery; Step 0d recovery implementation is reviewed complete at `71eb4feb`, with scoped specification and Python/security re-reviews Approved C0/I0/M0 and all I1/I2/M1 findings addressed; final Task-only closure-integrity reviews are external and Not Run; all failed constructions and `6025478e` temporary packages are non-authoritative diagnostics only; Gate 9, Phase A, the first durable package/reviews/ref, real-index staging, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
 | Task 12 | Final verification and handoff | Whole-branch checks, reviews, closure, and handoff | Not Run |
 
 ### Requirement matrix
@@ -628,6 +636,7 @@ manifest/summary rows unchanged.
 | 2026-08-09 | Task 11 Step 0d implementation formal reviews | Reviewed commit `c9682ab2fdf39d5fc4910c808939e771fde63f78` and exact range `383faece6ebdb4e78bd8d576b36bb9d53f9b54ec..c9682ab2fdf39d5fc4910c808939e771fde63f78` | Formal specification Approved C0/I0/M0; formal Python/security Needs fixes C0/I2/M1: live `HEAD` could advance after preflight, a forged AUTHORIZED ref with the wrong parent could execute the reviewed generator before identity rejection, and an unregistered `index.lock` surfaced raw `OSError` during cleanup; Gate 9 remained closed |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 1 TDD RED/GREEN | Added one isolated regression for each formal Python/security finding before production edits, then bound snapshots/results to the preflight OID, preflighted evidence parent/package HEAD before projector execution, and normalized final scratch cleanup failure | Exact focused RED ran 3 methods in 40.512 seconds with three intended failures only; the same methods pass 3/3 in 37.225 seconds; the expanded original-eleven-plus-fix set passes 14/14 in 217.281 seconds; wrong-parent replay reports `EVIDENCE_COMMIT_IDENTITY_DRIFT` with zero marker execution and unregistered content remains retained |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 1 full verification | Replayed both affected classes and every static, generator, and repository invariant | Full suite passes 35/35 in 499.537 seconds; Python compile, Ruff, Bash syntax, ShellCheck, both stdout `cmp`, both canonical `--check`, and whitespace pass; generated diffs and staged diff are empty; old pack remains 20/20 at `HEAD` and in the real index; worktree registry and empty Gate 9 namespace are unchanged; fix implementation reviews remain Not Run and Gate 9 remains closed |
+| 2026-08-09 | Task 11 Step 0d recovery fix round 1 review closure | Reviewed commit `71eb4feb7d4a085fd2910038a374987773de1e1d` and exact range `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d` | Scoped specification and Python/security re-reviews both Approved C0/I0/M0; I1 live-HEAD race, I2 wrong-parent pre-execution, and M1 unregistered-lock cleanup are ADDRESSED; the Step 0d recovery implementation is reviewed complete and bound as the reviewed code HEAD while final Task-only closure-integrity reviews remain external and Not Run and every downstream Gate 9 action remains closed |
 
 ## Verification Evidence
 
@@ -798,6 +807,7 @@ private-state material.
 | Task 11 Step 0d recovery fix round 1 focused RED/GREEN | Reviewed implementation `c9682ab2fdf39d5fc4910c808939e771fde63f78` | 1 / 0 | EXPECTED RED / GREEN | Three tests first failed in 40.512 seconds: post-preflight live-HEAD advance was accepted, wrong-parent AUTHORIZED replay executed a marker-writing reviewed generator before rejection, and unregistered `index.lock` raised raw `OSError`; after correction the same three pass in 37.225 seconds with stable fail-closed classes and zero forbidden execution/deletion |
 | Task 11 Step 0d recovery fix round 1 expanded/full suites | Isolated temporary Git repositories only | 0 / 0 | PASS | Original eleven Step 0d methods plus the three fix methods pass 14/14 in 217.281 seconds; both affected classes pass 35/35 in 499.537 seconds, including attempt-2/ref replay and all six public modes |
 | Task 11 Step 0d recovery fix round 1 static/generator/invariants | Working tree from implementation commit `c9682ab2fdf39d5fc4910c808939e771fde63f78` | 0 each | PASS | `py_compile`, Ruff, `bash -n`, ShellCheck, both stdout `cmp`, both canonical `--check`, and `git diff --check` pass; generated-output and staged diffs are empty; old pack is 20/20 at `HEAD` and in the real index; worktree registry and empty Gate 9 namespace are unchanged; only helper, helper test, and this Task differ within the original six-file ownership ceiling |
+| Task 11 Step 0d Task-only reviewed-code closure | Reviewed code `71eb4feb7d4a085fd2910038a374987773de1e1d` | 0 / 0 / one path | PASS | Focused Task metadata selects one file with zero violations; `git diff --check` passes; the tracked diff contains exactly this Task ledger; the closure records both scoped Approved C0/I0/M0 re-reviews and the reviewed-code binding without running Gate 9 or mutating package, ref, index, old-pack, generated-output, deletion, or lifecycle state |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -913,8 +923,10 @@ backfilled.
 | Task 11 Step 0d Task-only closure quality review | `9c4e71d98f5e37e2c2907dfdc6ea46d0bb96dc6c..33209453a47ff777bf3cb8527995e4dfd28cc226` | Independent quality reviewer | Needs fixes; C0/I0/M1 | The stale `6025478e` temporary package was mislabeled as current/immutable and described current unstaged Task evidence; this fix corrects that historical/non-authoritative status |
 | Task 11 Step 0d implementation specification review | `383faece6ebdb4e78bd8d576b36bb9d53f9b54ec..c9682ab2fdf39d5fc4910c808939e771fde63f78` | Formal specification reviewer | Approved; C0/I0/M0 | The exact six-file implementation satisfies the approved Step 0d specification and preserves the closed Gate 9 boundary |
 | Task 11 Step 0d implementation Python/security review | `383faece6ebdb4e78bd8d576b36bb9d53f9b54ec..c9682ab2fdf39d5fc4910c808939e771fde63f78` | Formal Python/security reviewer | Needs fixes; C0/I2/M1 | I1: live `HEAD` race after preflight; I2: wrong-parent AUTHORIZED ref executes reviewed generator before commit-identity rejection; M1: unregistered `index.lock` leaks raw `OSError` from final scratch `rmdir` |
-| Task 11 Step 0d recovery fix round 1 specification review | Not Run | Independent specification reviewer | Not Run | Fix commit/range review pending; Gate 9 remains closed |
-| Task 11 Step 0d recovery fix round 1 Python/security review | Not Run | Independent Python/security reviewer | Not Run | Fix commit/range review pending; prior I2/I1/M1 are implemented and tested but not independently closed; Gate 9 remains closed |
+| Task 11 Step 0d recovery fix round 1 specification re-review | `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d` | Scoped specification reviewer | Approved; C0/I0/M0 | The fix preserves the Plan Step 0d authority model while binding projection and results to the preflight OID; prior I1/I2/M1 are ADDRESSED and Gate 9 remains closed |
+| Task 11 Step 0d recovery fix round 1 Python/security re-review | `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d` | Scoped Python/security reviewer | Approved; C0/I0/M0 | I1 is closed by before/after live-HEAD checks, I2 by evidence parent and exact package-HEAD preflight before generator reads or Bash, and M1 by fail-closed retained scratch cleanup; all prior findings are ADDRESSED |
+| Task 11 Step 0d Task-only closure-integrity specification review | Not Run | External independent specification reviewer | Not Run | Review the closure commit and exact Task-only range; no Gate 9 authority is granted until this external closure-integrity review completes |
+| Task 11 Step 0d Task-only closure-integrity Python/security review | Not Run | External independent Python/security reviewer | Not Run | Review the closure commit and exact Task-only range; package/ref/index/deletion/lifecycle authority remains closed |
 
 ## Commit Ledger
 
@@ -958,7 +970,8 @@ backfilled.
 | Task 11 Step 0c evidence contract fix 4 | `0e9a4869a3a509c7125fc83dbe9f011a1ead6f01`; `fix(validation): prove detached gate 9 deletion scope`; range `d931e29a877905e4eaa73b2d6f7f666432e5e08e..0e9a4869a3a509c7125fc83dbe9f011a1ead6f01` | Exact three files: this Task ledger, Gate 9 helper, and isolated-repository test; prove the owned detached deletion scope before forcing removal of checkout-modified retiring files | Checkout-drift RED/GREEN; full suite 22/22 PASS; Python compile, Ruff, focused Task metadata, whitespace, exact three-file scope, old-pack 20/20, and empty Gate 9 ref namespace PASS | Implementer PASS C0/I0/M0; independent specification and Python/security re-reviews Approved C0/I0/M0; real-environment finding ADDRESSED; durable Gate 9 attempt, valid package, evidence ref, staging, deletion, lifecycle reconciliation, and final handoff remain Not Run |
 | Task 11 Step 0c evidence contract fix 5 | `4796b46225a019343888557343ca7ca9938fb36a`; `fix(validation): isolate gate 9 index projection`; range `71cff032aed5f469d59b4f8406b5d9b78a9a4e8d..4796b46225a019343888557343ca7ca9938fb36a` | Exact three files: this Task ledger, Gate 9 helper, and isolated-repository test; replace environment-unstable working-tree removal proof with exact owned cached-only index projection, protected generator execution, and byte-level freshness proof | Four staged RED/GREEN cycles; expanded projection/canonical set 13/13 PASS; full suite 33/33 PASS in 413.426 seconds; Python compile, Ruff, focused Task metadata, whitespace, exact three-file scope, old-pack 20/20, and empty Gate 9 ref namespace PASS | Formal specification Needs fixes C0/I1/M1 and formal Python/security Needs fixes C0/I1/M0; Step 0c is BLOCKED, the Minor is not parked, and the 2026-08-09 Step 0d approval does not waive either blocker; Gate 9, Phase A, deletion, lifecycle reconciliation, and final handoff remain Not Run and closed |
 | Task 11 Step 0d recovery round 1 implementation | `c9682ab2fdf39d5fc4910c808939e771fde63f78`; `fix(validation): recover gate 9 stdout projection`; range `383faece6ebdb4e78bd8d576b36bb9d53f9b54ec..c9682ab2fdf39d5fc4910c808939e771fde63f78` | Exact six files: this Task, helper, helper tests, both generators, and retiring-pack generator tests; strict stdout transport, live/reviewed-code authority, descriptor-pinned temporary-index projection, direct-child cleanup, and fresh replay through all public modes | Exact RED 11 methods / 16 intended failures; GREEN B 2/2; GREEN C 11/11; final full suite 32/32; static, generator, metadata, whitespace, scope, old-pack, real-index, registry, ref, and generated-output invariants PASS | Formal specification Approved C0/I0/M0; formal Python/security Needs fixes C0/I2/M1; Gate 9 remains closed pending fix and review closure |
-| Task 11 Step 0d recovery fix round 1 | Pending self-identity closure; planned validation fix commit; BASE `c9682ab2fdf39d5fc4910c808939e771fde63f78` | Three files within the original six-file ceiling: this Task, helper, and helper tests; close live-HEAD TOCTOU, wrong-parent ref pre-execution, and unregistered-lock cleanup findings | Focused RED 3 failures / GREEN 3/3; expanded 14/14; full 35/35; static, generator, metadata, whitespace, scope, old-pack, real-index, registry, ref, and generated-output invariants PASS | Implementer self-review PASS C0/I0/M0; independent fix specification and Python/security reviews Not Run; Gate 9 remains closed |
+| Task 11 Step 0d recovery fix round 1 | `71eb4feb7d4a085fd2910038a374987773de1e1d`; `fix(validation): harden gate 9 authority replay`; range `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d` | Three files within the original six-file ceiling: this Task, helper, and helper tests; close live-HEAD TOCTOU, wrong-parent ref pre-execution, and unregistered-lock cleanup findings | Focused RED 3 failures / GREEN 3/3; expanded 14/14; full 35/35; static, generator, metadata, whitespace, scope, old-pack, real-index, registry, ref, and generated-output invariants PASS | Scoped specification and Python/security re-reviews both Approved C0/I0/M0; I1/I2/M1 ADDRESSED; Step 0d recovery implementation reviewed complete; Gate 9 remains closed |
+| Task 11 Step 0d Task-only reviewed-code closure | Pending self-identity closure; `docs(task): close gate 9 projection recovery`; BASE `71eb4feb7d4a085fd2910038a374987773de1e1d` | Exactly this Task ledger: record formal initial and scoped fix review verdicts, close all Step 0d implementation findings, and bind the reviewed code HEAD without creating operational authority | Focused Task metadata 1/0, whitespace, and exact one-file scope PASS | Final closure-integrity specification and Python/security reviews are external and Not Run; Gate 9, Phase A, package/reviews/ref, real-index staging, deletion, lifecycle reconciliation, Task 12, remote actions, and push remain Not Run and closed |
 | Task 11 deletion and lifecycle / Task 12 | Not Run | Old-pack deletion, lifecycle reconciliation, final verification, and handoff | Not Run | Not Run |
 
 ## Deferred and Blocked Items
@@ -986,11 +999,16 @@ backfilled.
   Step 0d recovery round 1 implementation commit
   `c9682ab2fdf39d5fc4910c808939e771fde63f78` received formal specification
   Approved C0/I0/M0 and formal Python/security Needs fixes C0/I2/M1. Recovery
-  fix round 1 implements the live-HEAD race, wrong-parent ref pre-execution,
-  and unregistered-lock cleanup corrections, but both independent fix reviews,
-  `GATE9_REVIEWED_CODE_HEAD` binding, and the Task-only review closure are Not
-  Run. All failed constructions stopped before `BUILT` and `ASSIGNED`; Gate 9,
-  Phase A, the first durable
+  fix round 1 commit `71eb4feb7d4a085fd2910038a374987773de1e1d`,
+  exact range
+  `c9682ab2fdf39d5fc4910c808939e771fde63f78..71eb4feb7d4a085fd2910038a374987773de1e1d`,
+  received scoped specification and Python/security approval at C0/I0/M0.
+  The I1 live-HEAD race, I2 wrong-parent ref pre-execution, and M1
+  unregistered-lock cleanup findings are ADDRESSED; Step 0d recovery
+  implementation is reviewed complete and the reviewed-code binding is
+  recorded. The final Task-only closure-integrity specification and
+  Python/security reviews are external and Not Run. All failed constructions
+  stopped before `BUILT` and `ASSIGNED`; Gate 9, Phase A, the first durable
   package, package reviews, evidence ref, real-index staging, deletion, and
   lifecycle reconciliation remain Not Run and closed. The `6025478e`
   gate run and both `/tmp/agentic-research-deletion-review-*` packages are
