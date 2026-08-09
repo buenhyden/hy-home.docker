@@ -2388,6 +2388,156 @@ Python/security. Step 0e requires C0/I0/M0 from both reviewers; no Minor is
 parked. Any finding left after round 5 trips the new breaker and requires
 another reviewed Plan decision.
 
+**Reviewed correction gate — publication linearization and raw evidence-ref
+discovery:**
+
+The first Step 0e implementation is recovery round 1, its first fix is round
+2, and the `96d0622110dbe5fd6a2f0c7b14d2a75686697357` fix is round 3. The
+remaining findings do not authorize another same-implementer edit. Before any
+production or test change, amend and independently review this Plan-only
+contract. Commit only this Plan with exact subject
+`docs(plan): define gate 9 bundle publication linearization`; both a
+specification reviewer and a Python/security reviewer must return C0/I0/M0
+over that one-file range. The Task owns the actual review receipts. Package
+construction, package or ref consumption, Phase A, evidence-ref publication,
+deletion, lifecycle mutation, Task 12, remote actions, and push remain closed.
+
+After the Plan-only gate passes, recovery round 4 uses a fresh more-capable
+implementer and modifies exactly these three files within the existing
+six-file ceiling:
+
+1. `scripts/validation/agentic-research-gate9-evidence.py` for the publication
+   linearization, transport-first consumption, and raw evidence-ref namespace
+   discovery.
+2. `tests/validation/test_agentic_research_gate9_evidence.py` for the focused
+   concurrency, transport-ordering, dangling-loose-symref, canonical-ref, and
+   stable-identity regressions.
+3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
+   for round-3 review findings and round-4 RED/GREEN/full evidence with the
+   new reviews left `Not Run` until dispatch.
+
+No generator, generated output, Spec, Plan, old-pack path, lifecycle artifact,
+real index, branch, worktree registration, package, or ref is in the round-4
+implementation scope. Use exact commit subject
+`fix(validation): linearize gate 9 bundle publication`. Round 4 and, only if
+its reviewers find an issue, round 5 both keep the fresh more-capable
+implementer rule. A finding after round 5 trips the existing breaker; it does
+not create round 6.
+
+The round-4 implementation must apply this publication contract:
+
+- POSIX does not provide a finite `stat`/`open` sequence that can promise a
+  pathname will continue to name the same inode until a later Python return
+  when a concurrent same-UID actor may unlink or rename entries. Do not add an
+  unbounded recheck loop, lock-file convention, retained-directory rename,
+  inode claim, or another filesystem authority channel to simulate that
+  impossible guarantee.
+- After the final successful parent-directory `fsync`, immediately perform one
+  final paired validation of the already read-back bundle FD and its literal
+  direct-child entry with `follow_symlinks=False`. Both observations must
+  match the expected regular-file type, device, inode, `0444` mode, link count
+  one, exact byte size, modification time, and already proved bundle bytes and
+  digest. The successful completion of the second member of that pair is the
+  writer operation's linearization point. Any substitution detected before or
+  during that pair is `BUNDLE_CREATE_FAILURE` and emits no receipt.
+- A namespace mutation after that linearization point, including one before
+  the caller observes Python return or stdout, is external post-publication
+  drift rather than a file the writer accepted. It may therefore leave a
+  `BUILT` receipt. No further finite pathname probe extends the publication
+  interval. The writer closes its descriptors and constructs its return only
+  from the already validated in-memory bytes and the receipt identity tuple
+  `(bundle_sha256, package_sha256, literal_bundle_path)`.
+- The receipt is content identity, not an inode lease. A byte-for-byte
+  canonical replacement with the same three tuple values is indistinguishable
+  after the writer's descriptors close and carries no additional authority;
+  it is the same receipt identity. Any non-identical path, metadata, byte,
+  package, or bundle-hash replacement is transport drift and must fail closed
+  when consumed. This unavoidable POSIX boundary does not weaken the existing
+  digest-bound package, control-file, evidence-tree, or create-only-ref
+  authority.
+- Every external-bundle consumer—`verify-package`, `verify-assignments`,
+  `verify-backfill`, `publish-evidence-ref`, and `verify-authorized --bundle`
+  —must make the single `read_bundle_once` result its first untrusted-input
+  operation after argument parsing. It opens and reads the literal `/tmp`
+  direct child once, validates stable descriptor metadata and EOF, reconstructs
+  canonical outer bytes, and binds the three-value receipt identity before
+  any authority preflight, Task/control semantic replay, root-tree projection,
+  generator execution, object write, or ref discovery/publication. Metadata or
+  bounded-read instability fails `BUNDLE_READ_FAILURE`; canonical bytes or a
+  later bound receipt/package/ref tuple mismatch fails
+  `BUNDLE_TRANSPORT_DRIFT`. Neither failure may invoke a generator, grant an
+  attempt, write an object, or mutate a ref. `verify-authorized
+  --bundle-from-ref` has no external pathname; it retains the separately
+  required in-memory reconstruction and digest comparison from a strictly
+  discovered direct ref.
+
+The same round must replace `for-each-ref`-only namespace discovery with this
+raw discovery contract:
+
+- `for-each-ref` remains a packed/direct-ref view but is not the sole source:
+  Git omits a dangling loose symbolic ref from that output. Open the repository
+  common directory and every literal component below
+  `refs/codex/review-evidence/agentic-research/gate9/v1` read-only with
+  descriptor-relative, `O_NOFOLLOW|O_CLOEXEC` traversal. Absence of the
+  namespace is an empty loose snapshot; a symlink, non-directory ancestor, or
+  unreadable/ambiguous entry is `FOREIGN_REF`.
+- Enumerate every loose descendant as raw names and bytes without following a
+  symbolic target. The only admitted leaf paths match the exact canonical
+  `attempt-[12]/[0-9a-f]{64}` pattern. Reject extra depth, malformed or
+  non-ASCII names, file/directory-prefix collisions, symlink/non-regular
+  leaves, duplicate names, symbolic-ref bytes including dangling `ref:`
+  targets, non-full object-format OIDs, non-commit targets, and any name not
+  admitted by `EVIDENCE_REF_PATTERN`.
+- Merge the byte-sorted raw loose names with the `for-each-ref` names, then
+  prove every union member is one direct commit ref with the exact same OID in
+  two complete namespace snapshots surrounding validation. Bind raw loose
+  file identity/bytes where present and reject any name, kind, OID, target, or
+  object-type change as `FOREIGN_REF`. Reuse this strict snapshot for attempt
+  derivation and the before/after repository-invariant capture so dangling
+  symbolic refs cannot be treated as an empty namespace or disappear from
+  drift evidence. Exact ref resolution, leaf replay, create-only no-deref CAS,
+  and post-read OID revalidation retain their existing checks.
+
+Write RED first with these exact focused methods:
+
+1. Rename
+   `test_atomic_bundle_writer_rejects_late_directory_entry_substitution` to
+   `test_atomic_bundle_publication_linearizes_at_final_post_fsync_pair` and
+   move its existing finite late-substitution cases to their correct boundary:
+   every substitution before or during the final pair fails without a receipt,
+   while one non-identical substitution injected immediately after the pair
+   may leave the original `BUILT` receipt.
+2. `test_all_external_bundle_consumers_reject_post_publication_transport_drift_before_authority`
+   feeds that retained path to all five external-bundle consumers and requires
+   `BUNDLE_READ_FAILURE` or `BUNDLE_TRANSPORT_DRIFT`, zero generator/authority
+   replay, zero object/ref mutation, and unchanged branch/index/worktree,
+   generated-output, old-pack, and lifecycle snapshots.
+3. `test_evidence_ref_discovery_finds_dangling_loose_symbolic_refs_and_stays_stable`
+   first proves the fixture's dangling canonical loose symref is absent from
+   `for-each-ref`, then requires `FOREIGN_REF`; it also covers malformed raw
+   names, a filesystem symlink, a noncanonical/direct-object leaf, and
+   substitution between the two namespace snapshots without changing the
+   victim or creating an outside ref.
+
+Run the three methods as tests-only RED, implement the minimum correction, and
+run them as GREEN before the remaining twenty existing exact Step 0e methods
+plus these three methods (twenty-three total), the complete two-class suite,
+public generator parity/freshness, static checks, metadata, whitespace, exact
+three-file scope, and repository/lifecycle invariants. The focused command is:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_atomic_bundle_publication_linearizes_at_final_post_fsync_pair \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_all_external_bundle_consumers_reject_post_publication_transport_drift_before_authority \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_evidence_ref_discovery_finds_dangling_loose_symbolic_refs_and_stays_stable \
+  -v
+```
+
+Package the exact round-4 predecessor-to-commit range for two new independent
+reviews. Both must return C0/I0/M0 before the Task-only Step 0e closure or any
+Gate 9 action. The closure-integrity reviews remain separately required after
+that Task-only closure.
+
 **Pre-implementation prerequisite — close the Step 0d breaker and bind the new approval:**
 
 1. Require the Plan-amendment execution barrier and Task 9a to be complete,
@@ -2599,20 +2749,24 @@ Task-only closure is not part of this six-file implementation commit.
   `fsync` the file, `fchmod` it to `0444`, rewind, and read back the exact bytes
   from the same descriptor. Require a stable regular file with `st_nlink == 1`,
   exact mode/size/digest and maximum size 32 MiB, then `fsync` the `/tmp`
-  descriptor before emitting a receipt. A collision, symlink, traversal,
-  short/zero write, partial write, chmod/fsync/readback mismatch, or ancestor
-  error emits no receipt, grants no attempt authority, and never unlinks or
-  overwrites an object.
+  descriptor and immediately complete the final paired FD/direct-child entry
+  validation defined by the reviewed correction gate. Completion of that pair
+  is the publication linearization point; it is not a promise that the
+  pathname remains unchanged until Python return or receipt observation. A
+  collision, symlink, traversal, short/zero write, partial write,
+  chmod/fsync/readback mismatch, or ancestor error emits no receipt, grants no
+  attempt authority, and never unlinks or overwrites an object.
 - Successful stdout is one canonical receipt with schema
   `agentic-research-gate9-build-receipt/v1` and exact keys `bundle_path`,
   `bundle_sha256`, `package_sha256`, `schema`, and `state`, where the path is
   the literal canonical `/tmp/<direct-child>` and state is `BUILT`.
   `verify-package` and every later consuming mode accept only `--bundle` and
-  read that file once: open `/tmp` and the validated direct
-  child with `O_RDONLY|O_NOFOLLOW|O_CLOEXEC`, require regular/nlink-one/`0444`,
-  offset zero, stable identity and size `1..32 MiB`, read through the same FD,
-  require EOF, then close it. Decode to `Mapping[path, bytes]` in memory; never
-  extract an attachment or create a package directory.
+  read that file once before authority, semantic, generator, object, or ref
+  work: open `/tmp` and the validated direct child with
+  `O_RDONLY|O_NOFOLLOW|O_CLOEXEC`, require regular/nlink-one/`0444`, offset
+  zero, stable identity and size `1..32 MiB`, read through the same FD, require
+  EOF, then close it. Decode to `Mapping[path, bytes]` in memory; never extract
+  an attachment or create a package directory.
 - Assignment attestations, receipts, closures, `evidence.json`, and terminal
   verification bind both `package_sha256` and the reconstructed
   `bundle_sha256`. Evidence refs store the fifteen package attachments as
@@ -2654,11 +2808,11 @@ existing state-machine and evidence-schema codes:
 | `GENERATOR_MANIFEST_INVALID` | memfd schema, digest, seals, type/nlink, object format/OIDs, count, NUL termination, or path tuple is malformed |
 | `GENERATOR_MANIFEST_OVERSIZE` | memfd bytes exceed 8 MiB or declared and observed size differ |
 | `GENERATOR_MANIFEST_OFFSET` | the inherited memfd is not positioned at offset zero before its single read |
-| `BUNDLE_CREATE_FAILURE` | literal `/tmp` open, random direct-child validation/collision budget, complete write, fsync/chmod, same-FD readback, or parent fsync fails |
-| `BUNDLE_READ_FAILURE` | a supplied bundle is outside literal `/tmp`, not an exclusive `0444` regular file, changes during the one bounded read, or cannot reach exact EOF |
+| `BUNDLE_CREATE_FAILURE` | literal `/tmp` open, random direct-child validation/collision budget, complete write, fsync/chmod, same-FD readback, parent fsync, or the final post-fsync paired FD/direct-child validation fails before its linearization point |
+| `BUNDLE_READ_FAILURE` | a supplied bundle is outside literal `/tmp`, not an exclusive `0444` regular file, changes during the one bounded transport-first read, or cannot reach exact EOF |
 | `BUNDLE_SIZE_DRIFT` | a bundle is empty, exceeds 32 MiB, or its declared and observed byte count differs |
 | `BUNDLE_SCHEMA_DRIFT` | outer keys, path set/order, logical mode, base64, inner schema, checksums, byte counts, or package ID differ |
-| `BUNDLE_TRANSPORT_DRIFT` | reconstructed canonical outer bytes or `bundle_sha256` differ across attestation, receipt, closure, evidence, bundle, or ref replay |
+| `BUNDLE_TRANSPORT_DRIFT` | reconstructed canonical outer bytes or the `(bundle_sha256, package_sha256, literal_bundle_path)` receipt identity differs across attestation, receipt, closure, evidence, bundle, or ref replay |
 | `CONTROL_FILE_DRIFT` | an attestation/report/receipt/closure/terminal/drift input is not a stable regular nlink-one file, exceeds 4 MiB, changes during its one read, or is reopened |
 
 Implement in these TDD slices; every RED must fail for the missing Step 0e
@@ -3607,9 +3761,9 @@ progress and is clean after each commit.
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
 | Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes | Step 0e reviewed Task prerequisite; replace/graft/shallow rejection; exact bundle/live-reviewed-HEAD and reviewed-code binding before shell; fresh pathless raw-tree projection plus a new sealed manifest per generator in every public authority mode; exact twenty-`D` proof; and proved-live-HEAD byte comparison | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0e five-round recovery loop |
-| Gate 9 tree, anonymous-memory manifest, or bundle transport is substituted or malformed | Raw NUL-safe tree validation with sibling preservation and exactly four rebuilt ancestors; required descriptor seals/type/nlink/size/digest/offset checks; exclusive same-descriptor atomic `/tmp` bundle publication and bounded once-read verification | Fail closed without a receipt or authorization; retain the bundle if published, leave unreachable objects to ordinary Git GC, and never invoke helper cleanup, prune, or extraction |
+| Gate 9 tree, anonymous-memory manifest, or bundle transport is substituted or malformed | Raw NUL-safe tree validation with sibling preservation and exactly four rebuilt ancestors; required descriptor seals/type/nlink/size/digest/offset checks; explicit final-post-fsync FD/direct-child publication linearization; content-addressed receipt identity; and transport-first bounded once-read verification in every external-bundle consumer | Reject any pre/during-linearization substitution without a receipt; treat a later namespace mutation as external post-publication drift and reject any non-identical transport before authority; retain a published bundle, leave unreachable objects to ordinary Git GC, and never invoke helper cleanup, prune, or extraction |
 | Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical JSON/base64 bundle builder, one marker-only backfill, same-reviewer closures, both package and bundle hashes, create-only content-addressed evidence ref, in-memory ref-only replay, and Step 0e implementation/closure C0/I0/M0 reviews | Invalidate the attempt without staging; preserve the old pack and retained bundle; use the one fresh correction attempt or return to user-approved Plan work |
-| Gate 9 evidence ref collides or becomes unreachable | Create-only CAS, exact ref/tree/checksum verification, in-memory reconstruction of bundle bytes, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED`; never overwrite the ref and never infer authorization from a retained `/tmp` bundle |
+| Gate 9 evidence ref collides, becomes unreachable, or hides as a dangling loose symbolic ref | Raw descriptor-relative loose-namespace discovery merged with `for-each-ref`, exact canonical direct-commit patterns, stable two-snapshot OID identity, create-only no-deref CAS, exact ref/tree/checksum verification, in-memory reconstruction of bundle bytes, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED`; never overwrite or follow the ref and never infer an empty namespace or authorization from `for-each-ref` alone or a retained `/tmp` bundle |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
 | Secret/runtime/remote boundary crossed | Read-only tracked evidence and explicit exclusions | Stop immediately; exclude value/output; seek new authority if required |
 
@@ -3629,7 +3783,7 @@ pack are forbidden.
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
-| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite, exact six-file scope, raw pathless tree objects, fresh sealed manifests, atomic once-read canonical bundle, in-memory Task/evidence/ref replay, append-only named object writes, no cleanup/extraction, fresh projection in every authority mode, new five-round breaker, and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
+| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite; exact six-file ceiling; raw pathless tree objects; fresh sealed manifests; final-post-fsync bundle-publication linearization; content-addressed receipt identity; transport-first once-read external consumption; raw dangling-loose-symref discovery with stable direct-ref snapshots; in-memory Task/evidence/ref replay; append-only named object writes; no cleanup/extraction; fresh projection in every authority mode; the preserved five-round breaker with round 4 assigned to a fresh more-capable implementer; and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
 | Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live bundle plus full in-memory evidence-ref replay | `git rm` |
@@ -3654,6 +3808,11 @@ pack are forbidden.
 - LLM Wiki index and coverage freshness checks pass at 1,339 index rows and
   1,338 coverage paths after the V&V route switch and remain byte-identical
   after deletion.
+- Step 0e closes within its five-round breaker with the explicit POSIX bundle
+  publication linearization, transport-first rejection of non-identical
+  post-publication drift, raw discovery of dangling loose symbolic evidence
+  refs, stable canonical direct-ref identity, and both implementation and
+  closure-integrity review pairs at C0/I0/M0 before Phase A or Gate 9 runs.
 - The old twenty files are deleted in their own reviewed, recoverable commit.
 - The advisory target-surface delta and both canonical summaries are fresh;
   the target-surface convergence manifest/summary pass, and promoted lifecycle
