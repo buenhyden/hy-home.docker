@@ -2408,11 +2408,18 @@ deletion, lifecycle mutation, Task 12, remote actions, and push remain closed.
 The first Plan-only review identified that `--bundle` alone cannot bind a
 later consumer to the controller-captured build receipt. Correct only this
 Plan from clean `1cd723fa1458e464e6e7d257f799f5803e1dee28`, commit it with
-exact subject `docs(plan): bind gate 9 bundle receipt identity`, and obtain
-fresh independent specification and Python/security re-reviews at C0/I0/M0
-over that one-file fix range. This Plan fix does not consume a Step 0e
-implementation round. Do not begin round 4 or edit the Task/helper/tests until
-both re-reviews pass.
+exact subject `docs(plan): bind gate 9 bundle receipt identity`, and review its
+one-file fix range. That fix-1 specification review is Approved C0/I0/M0; its
+Python/security review is Needs fixes C0/I1/M0 because a FIFO substituted
+after raw snapshot can block the subsequent Git ref enumeration.
+
+Correct only this Plan again from clean
+`bb1794cde08ecc846b460a37f7201c29f237982e`. Commit exact subject
+`docs(plan): bound gate 9 ref discovery latency`. Both fix-2 independent
+re-reviews are `Not Run` until that one-file commit is dispatched; do not
+predict their verdicts. Neither Plan fix consumes a Step 0e implementation
+round. Do not begin round 4 or edit the Task/helper/tests until both fix-2
+re-reviews return C0/I0/M0.
 
 After the Plan-only gate passes, recovery round 4 uses a fresh more-capable
 implementer and modifies exactly these three files within the existing
@@ -2425,8 +2432,8 @@ six-file ceiling:
    concurrency, transport-ordering, dangling-loose-symref, canonical-ref, and
    stable-identity regressions.
 3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
-   for the actual immutable Plan correction/fix commit ranges and both pairs
-   of independent review/re-review receipts, the round-3 implementation
+   for the actual immutable Plan correction/fix-1/fix-2 commit ranges and all
+   three independent review/re-review pairs, the round-3 implementation
    findings, and round-4 RED/GREEN/full evidence with the new implementation
    reviews left `Not Run` until dispatch. No separate Task-only prerequisite
    is needed; the round-4 implementation commit records only reviews that
@@ -2530,6 +2537,23 @@ raw discovery contract:
   its sole terminal LF. A FIFO, socket, device,
   directory, symlink, oversized file, unstable identity/size, partial read, or
   extra byte is `FOREIGN_REF`; discovery must never block waiting for a writer.
+- Route every `git for-each-ref` subprocess whose selector is the Gate 9
+  evidence namespace or one exact Gate 9 evidence ref through one dedicated
+  bounded query helper. This includes the packed/direct view in both complete
+  union snapshots and every exact direct-ref query used by attempt derivation,
+  create/reuse race handling, marker resolution, leaf replay stability, and
+  repository invariant capture/proof. No such call may use the generic
+  unbounded Git runner.
+- Start that trusted Git command with stdin closed, captured stdout/stderr, and
+  a separate process session; allow exactly 2.0 seconds for completion. On
+  timeout, send termination to the child process group, allow 0.5 seconds,
+  then send kill if still live and synchronously reap it. Do not retry. A
+  timeout, termination/kill/reap fault, nonzero exit, any stderr byte, output
+  over 4 KiB, malformed or incomplete four-field
+  `refname/objectname/objecttype/symref` NUL record, or unexpected extra row is
+  `FOREIGN_REF`. Use one explicit trailing-NUL format for both prefix and exact
+  selectors rather than line-splitting ref names. Timeout cleanup may not
+  mutate a ref, object, victim path, branch, index, or worktree.
 - Merge the byte-sorted raw loose names with the `for-each-ref` names, then
   prove every union member is one direct commit ref with the exact same OID in
   two complete namespace snapshots surrounding validation. Bind raw loose
@@ -2569,10 +2593,19 @@ Write RED first with these exact focused methods:
    snapshots without changing the victim or creating an outside ref. The FIFO
    case runs with a bounded join/timeout and proves discovery returns
    `FOREIGN_REF` without blocking or opening the FIFO again.
+4. `test_evidence_ref_git_query_timeout_is_bounded_reaped_and_fail_closed`
+   first proves a regular raw/direct snapshot succeeds. It then substitutes a
+   FIFO after that raw snapshot and before `for-each-ref`, requires
+   `FOREIGN_REF` within the 2.0-second query bound plus termination grace,
+   proves the child process is gone and no second indefinite FIFO open or
+   query retry occurred, and compares the victim, outside-ref namespace, and
+   Git object inventory byte-for-byte with their before snapshots. Separate
+   injected nonzero-exit and stderr-with-zero-exit cases must also fail
+   `FOREIGN_REF` without retry or state change.
 
-Run the three methods as tests-only RED, implement the minimum correction, and
+Run the four methods as tests-only RED, implement the minimum correction, and
 run them as GREEN before the remaining twenty existing exact Step 0e methods
-plus these three methods (twenty-three total), the complete two-class suite,
+plus these four methods (twenty-four total), the complete two-class suite,
 public generator parity/freshness, static checks, metadata, whitespace, exact
 three-file scope, and repository/lifecycle invariants. The focused command is:
 
@@ -2581,6 +2614,7 @@ python3 -m unittest \
   tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_atomic_bundle_publication_linearizes_at_final_post_fsync_pair \
   tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_all_external_bundle_consumers_reject_post_publication_transport_drift_before_authority \
   tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_evidence_ref_discovery_finds_dangling_loose_symbolic_refs_and_stays_stable \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_evidence_ref_git_query_timeout_is_bounded_reaped_and_fail_closed \
   -v
 ```
 
@@ -3832,7 +3866,7 @@ progress and is clean after each commit.
 | Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes | Step 0e reviewed Task prerequisite; replace/graft/shallow rejection; exact bundle/live-reviewed-HEAD and reviewed-code binding before shell; fresh pathless raw-tree projection plus a new sealed manifest per generator in every public authority mode; exact twenty-`D` proof; and proved-live-HEAD byte comparison | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0e five-round recovery loop |
 | Gate 9 tree, anonymous-memory manifest, or bundle transport is substituted or malformed | Raw NUL-safe tree validation with sibling preservation and exactly four rebuilt ancestors; required descriptor seals/type/nlink/size/digest/offset checks; explicit final-post-fsync FD/direct-child publication linearization; controller-captured expected bundle/package hashes plus literal path; and transport-first bounded once-read verification in every external-bundle consumer | Reject any pre/during-linearization substitution without a receipt; treat a later namespace mutation as external post-publication drift and reject any canonical but non-identical tuple as `BUNDLE_TRANSPORT_DRIFT` before authority; retain a published bundle, leave unreachable objects to ordinary Git GC, and never invoke helper cleanup, prune, or extraction |
 | Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical JSON/base64 bundle builder, one marker-only backfill, same-reviewer closures, both package and bundle hashes, create-only content-addressed evidence ref, in-memory ref-only replay, and Step 0e implementation/closure C0/I0/M0 reviews | Invalidate the attempt without staging; preserve the old pack and retained bundle; use the one fresh correction attempt or return to user-approved Plan work |
-| Gate 9 evidence ref collides, becomes unreachable, hides as a dangling loose symbolic ref, or is replaced by a blocking special file | Raw descriptor-relative loose-namespace discovery with nonblocking no-follow leaf opens merged with `for-each-ref`, exact canonical direct-commit patterns, stable two-snapshot OID identity, create-only no-deref CAS, exact ref/tree/checksum verification, in-memory reconstruction of bundle bytes, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED` without blocking, overwriting, or following the entry; never infer an empty namespace or authorization from `for-each-ref` alone or a retained `/tmp` bundle |
+| Gate 9 evidence ref collides, becomes unreachable, hides as a dangling loose symbolic ref, or is replaced by a blocking special file | Raw descriptor-relative loose-namespace discovery with nonblocking no-follow leaf opens; each evidence-ref Git query bounded at 2.0 seconds with terminate/kill/reap and no retry; exact canonical direct-commit patterns; stable two-snapshot OID identity; create-only no-deref CAS; exact ref/tree/checksum verification; in-memory reconstruction of bundle bytes; and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED` without blocking, leaking a child, overwriting, or following the entry; never infer an empty namespace or authorization from `for-each-ref` alone or a retained `/tmp` bundle |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
 | Secret/runtime/remote boundary crossed | Read-only tracked evidence and explicit exclusions | Stop immediately; exclude value/output; seek new authority if required |
 
@@ -3852,7 +3886,7 @@ pack are forbidden.
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
-| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite; exact six-file ceiling; raw pathless tree objects; fresh sealed manifests; final-post-fsync bundle-publication linearization; controller-captured literal path plus expected bundle/package hashes required for every external source; transport-first once-read comparison; nonblocking raw dangling-loose-symref/special-file discovery with stable direct-ref snapshots; in-memory Task/evidence/ref replay; append-only named object writes; no cleanup/extraction; fresh projection in every authority mode; the preserved five-round breaker with round 4 assigned to a fresh more-capable implementer; and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
+| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite; exact six-file ceiling; raw pathless tree objects; fresh sealed manifests; final-post-fsync bundle-publication linearization; controller-captured literal path plus expected bundle/package hashes required for every external source; transport-first once-read comparison; nonblocking raw dangling-loose-symref/special-file discovery; bounded terminate/kill/reap for every related `for-each-ref`; stable direct-ref snapshots; in-memory Task/evidence/ref replay; append-only named object writes; no cleanup/extraction; fresh projection in every authority mode; the preserved five-round breaker with round 4 assigned to a fresh more-capable implementer; and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
 | Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
 | Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live bundle plus full in-memory evidence-ref replay | `git rm` |
@@ -3881,9 +3915,9 @@ pack are forbidden.
   publication linearization, controller-trusted expected receipt hashes,
   transport-first rejection of a fully canonical but non-identical
   post-publication tuple, nonblocking raw discovery of dangling loose symbolic
-  or special-file evidence refs, stable canonical direct-ref identity, and
-  both implementation and closure-integrity review pairs at C0/I0/M0 before
-  Phase A or Gate 9 runs.
+  or special-file evidence refs, bounded and fully reaped related Git queries,
+  stable canonical direct-ref identity, and both implementation and
+  closure-integrity review pairs at C0/I0/M0 before Phase A or Gate 9 runs.
 - The old twenty files are deleted in their own reviewed, recoverable commit.
 - The advisory target-surface delta and both canonical summaries are fresh;
   the target-surface convergence manifest/summary pass, and promoted lifecycle
