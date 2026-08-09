@@ -1858,6 +1858,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         victim.write_bytes(b"outside victim\n")
         owner = owner_class("gate9-test-")
         holding = owner.holding_path
+        retained_identity = owner._holding_identity
         relocated = holding.with_name(holding.name + "-relocated")
         try:
             owner.create_file("index", b"scratch\n")
@@ -1871,6 +1872,12 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             )
             self.assertEqual(b"outside victim\n", victim.read_bytes())
             self.assertTrue(relocated.exists())
+            self.assertNotIn(os.fspath(holding), caught.exception.detail)
+            device, inode, mode = retained_identity
+            self.assertIn(
+                f"retained holding identity dev={device} ino={inode} mode={mode:#o}",
+                caught.exception.detail,
+            )
         finally:
             if holding.is_symlink():
                 holding.unlink()
@@ -2020,6 +2027,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         module_spec.loader.exec_module(module)
         owner = module.PinnedScratch("gate9-index-lock-")
         holding = owner.holding_path
+        retained_identity = owner._holding_identity
         try:
             owner.create_file("index", b"scratch index\n")
             (owner.path / "index.lock").write_bytes(b"unregistered\n")
@@ -2027,7 +2035,12 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                 owner.close()
             self.assertIsInstance(caught.exception, module.Gate9Error)
             self.assertEqual("SCRATCH_CLEANUP_FAILURE", caught.exception.code)
-            self.assertIn(os.fspath(holding), caught.exception.detail)
+            self.assertNotIn(os.fspath(holding), caught.exception.detail)
+            device, inode, mode = retained_identity
+            self.assertIn(
+                f"retained holding identity dev={device} ino={inode} mode={mode:#o}",
+                caught.exception.detail,
+            )
             self.assertEqual(
                 b"unregistered\n",
                 (holding / "scratch/index.lock").read_bytes(),
@@ -2107,6 +2120,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
         original_open = module.os.open
         original_mkdir = module.os.mkdir
+        original_rmdir = module.os.rmdir
 
         def open_descriptors() -> set[int]:
             return {
@@ -2154,15 +2168,32 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
 
                 before_children = child_names()
                 before_descriptors = open_descriptors()
+                rmdir_calls: list[tuple[object, int | None]] = []
+
+                def recorded_rmdir(
+                    path: object,
+                    *,
+                    dir_fd: int | None = None,
+                ) -> None:
+                    rmdir_calls.append((path, dir_fd))
+                    keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
+                    original_rmdir(path, **keyword)
+
                 try:
                     with (
                         mock.patch.object(module.os, "open", injected_open),
                         mock.patch.object(module.os, "mkdir", injected_mkdir),
+                        mock.patch.object(module.os, "rmdir", recorded_rmdir),
                     ):
                         with self.assertRaises(module.Gate9Error) as caught:
                             owner_class(prefix)
-                    self.assertEqual("SCRATCH_SCOPE_DRIFT", caught.exception.code)
-                    self.assertEqual(before_children, child_names())
+                    self.assertIn(
+                        caught.exception.code,
+                        {"SCRATCH_SCOPE_DRIFT", "SCRATCH_CLEANUP_FAILURE"},
+                    )
+                    if stage in {"holding-open", "scratch-open"}:
+                        self.assertEqual([], rmdir_calls)
+                    self.assertTrue(before_children.issubset(child_names()))
                     self.assertEqual(before_descriptors, open_descriptors())
                 finally:
                     for descriptor in open_descriptors() - before_descriptors:
@@ -2172,6 +2203,105 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                             pass
                     for name in child_names() - before_children:
                         shutil.rmtree(temporary_root / name, ignore_errors=True)
+
+    def test_pinned_scratch_prebind_substitution_never_removes_unproved_child(
+        self,
+    ) -> None:
+        module_spec = importlib.util.spec_from_file_location(
+            "gate9_prebind_substitution", HELPER
+        )
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        owner_class = module.PinnedScratch
+        temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
+        prefix = f"gate9-prebind-{self.root.name}-"
+        attacker_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-prebind-victim-"))
+        attacker_replacement = attacker_parent / "replacement"
+        attacker_replacement.mkdir()
+        replacement_metadata = attacker_replacement.stat()
+        victim = attacker_parent / "victim.txt"
+        victim.write_bytes(b"outside victim\n")
+        original_stat = module.os.stat
+        original_mkdir = module.os.mkdir
+        visible_holding: pathlib.Path | None = None
+        relocated_holding: pathlib.Path | None = None
+        substituted = False
+
+        def injected_stat(
+            path: object,
+            *,
+            dir_fd: int | None = None,
+            follow_symlinks: bool = True,
+        ) -> os.stat_result:
+            nonlocal visible_holding, relocated_holding, substituted
+            if (
+                not substituted
+                and isinstance(path, str)
+                and path.startswith(prefix)
+                and dir_fd is not None
+            ):
+                visible_holding = temporary_root / path
+                relocated_holding = visible_holding.with_name(
+                    visible_holding.name + "-helper-created"
+                )
+                module.os.rename(visible_holding, relocated_holding)
+                module.os.rename(attacker_replacement, visible_holding)
+                substituted = True
+            keyword: dict[str, object] = {"follow_symlinks": follow_symlinks}
+            if dir_fd is not None:
+                keyword["dir_fd"] = dir_fd
+            return original_stat(path, **keyword)
+
+        def injected_mkdir(
+            path: object,
+            mode: int = 0o777,
+            *,
+            dir_fd: int | None = None,
+        ) -> None:
+            if substituted and path == "scratch":
+                raise OSError("injected failure after pre-bind substitution")
+            keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
+            original_mkdir(path, mode, **keyword)
+
+        try:
+            with (
+                mock.patch.object(module.os, "stat", injected_stat),
+                mock.patch.object(module.os, "mkdir", injected_mkdir),
+            ):
+                with self.assertRaises(module.Gate9Error) as caught:
+                    owner_class(prefix)
+            self.assertTrue(substituted)
+            self.assertIsNotNone(visible_holding)
+            self.assertIsNotNone(relocated_holding)
+            if visible_holding is not None:
+                self.assertTrue(visible_holding.exists())
+                if visible_holding.exists():
+                    observed = visible_holding.lstat()
+                    self.assertEqual(
+                        (replacement_metadata.st_dev, replacement_metadata.st_ino),
+                        (observed.st_dev, observed.st_ino),
+                    )
+                    self.assertNotIn(
+                        os.fspath(visible_holding), caught.exception.detail
+                    )
+            self.assertEqual(b"outside victim\n", victim.read_bytes())
+            if relocated_holding is not None:
+                retained = relocated_holding.lstat()
+                self.assertIn(
+                    "retained holding identity "
+                    f"dev={retained.st_dev} ino={retained.st_ino} "
+                    f"mode={stat.S_IMODE(retained.st_mode):#o}",
+                    caught.exception.detail,
+                )
+        finally:
+            if visible_holding is not None and visible_holding.exists():
+                shutil.rmtree(visible_holding, ignore_errors=True)
+            if relocated_holding is not None:
+                shutil.rmtree(relocated_holding, ignore_errors=True)
+            shutil.rmtree(attacker_parent, ignore_errors=True)
 
     def test_pinned_scratch_initial_rollback_preserves_victim_on_ownership_drift(
         self,

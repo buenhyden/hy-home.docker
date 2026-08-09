@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import enum
 import hashlib
 import json
 import os
@@ -113,6 +114,12 @@ class RegisteredScratchEntry:
     is_directory: bool
 
 
+class ScratchOwnership(enum.Enum):
+    ABSENT = "absent"
+    CREATED_UNBOUND = "created-unbound"
+    BOUND = "bound"
+
+
 class PinnedScratch:
     """Own scratch objects only through pinned directory descriptors."""
 
@@ -127,8 +134,8 @@ class PinnedScratch:
         self._base_identity: tuple[int, int, int] | None = None
         self._holding_identity: tuple[int, int, int] | None = None
         self._scratch_identity: tuple[int, int, int] | None = None
-        self._holding_created = False
-        self._scratch_created = False
+        self._holding_state = ScratchOwnership.ABSENT
+        self._scratch_state = ScratchOwnership.ABSENT
         try:
             self._base_fd = os.open(base_path, flags)
             self._base_path = base_path
@@ -144,7 +151,9 @@ class PinnedScratch:
                 fail("SCRATCH_SCOPE_DRIFT", "cannot allocate unique scratch holding")
             self._holding_name = holding_name
             self.holding_path = self._base_path / holding_name
-            self._holding_created = True
+            self._holding_state = ScratchOwnership.CREATED_UNBOUND
+            self._holding_fd = os.open(holding_name, flags, dir_fd=self._base_fd)
+            self._holding_identity = self._directory_identity(self._holding_fd)
             holding_metadata = os.stat(
                 holding_name,
                 dir_fd=self._base_fd,
@@ -152,16 +161,18 @@ class PinnedScratch:
             )
             if not stat.S_ISDIR(holding_metadata.st_mode):
                 fail("SCRATCH_SCOPE_DRIFT", "scratch holding is not a directory")
-            self._holding_identity = (
+            observed_holding_identity = (
                 holding_metadata.st_dev,
                 holding_metadata.st_ino,
                 stat.S_IMODE(holding_metadata.st_mode),
             )
-            self._holding_fd = os.open(holding_name, flags, dir_fd=self._base_fd)
-            if self._directory_identity(self._holding_fd) != self._holding_identity:
+            if observed_holding_identity != self._holding_identity:
                 fail("SCRATCH_SCOPE_DRIFT", "scratch holding identity changed")
+            self._holding_state = ScratchOwnership.BOUND
             os.mkdir("scratch", mode=0o700, dir_fd=self._holding_fd)
-            self._scratch_created = True
+            self._scratch_state = ScratchOwnership.CREATED_UNBOUND
+            self._scratch_fd = os.open("scratch", flags, dir_fd=self._holding_fd)
+            self._scratch_identity = self._directory_identity(self._scratch_fd)
             scratch_metadata = os.stat(
                 "scratch",
                 dir_fd=self._holding_fd,
@@ -169,14 +180,14 @@ class PinnedScratch:
             )
             if not stat.S_ISDIR(scratch_metadata.st_mode):
                 fail("SCRATCH_SCOPE_DRIFT", "scratch directory is not a directory")
-            self._scratch_identity = (
+            observed_scratch_identity = (
                 scratch_metadata.st_dev,
                 scratch_metadata.st_ino,
                 stat.S_IMODE(scratch_metadata.st_mode),
             )
-            self._scratch_fd = os.open("scratch", flags, dir_fd=self._holding_fd)
-            if self._directory_identity(self._scratch_fd) != self._scratch_identity:
+            if observed_scratch_identity != self._scratch_identity:
                 fail("SCRATCH_SCOPE_DRIFT", "scratch directory identity changed")
+            self._scratch_state = ScratchOwnership.BOUND
             self._path = pathlib.Path(
                 f"/proc/{self._owner_pid}/fd/{self._scratch_fd}"
             )
@@ -239,13 +250,20 @@ class PinnedScratch:
                     raise OSError("pinned scratch base identity is unavailable")
                 if self._directory_identity(self._base_fd) != self._base_identity:
                     raise OSError("pinned scratch base identity changed")
-            if self._holding_created:
+            if self._holding_state is ScratchOwnership.CREATED_UNBOUND:
+                raise OSError(
+                    "pinned scratch holding identity is unbound; retained without removal"
+                )
+            if self._holding_state is ScratchOwnership.BOUND:
                 if (
                     self._base_fd is None
+                    or self._holding_fd is None
                     or self._holding_name is None
                     or self._holding_identity is None
                 ):
                     raise OSError("pinned scratch holding identity is unavailable")
+                if self._directory_identity(self._holding_fd) != self._holding_identity:
+                    raise OSError("pinned scratch holding descriptor identity changed")
                 holding_metadata = os.stat(
                     self._holding_name,
                     dir_fd=self._base_fd,
@@ -261,9 +279,19 @@ class PinnedScratch:
                     != self._holding_identity
                 ):
                     raise OSError("pinned scratch holding identity changed")
-            if self._scratch_created:
-                if self._holding_fd is None or self._scratch_identity is None:
+            if self._scratch_state is ScratchOwnership.CREATED_UNBOUND:
+                raise OSError(
+                    "pinned scratch directory identity is unbound; retained without removal"
+                )
+            if self._scratch_state is ScratchOwnership.BOUND:
+                if (
+                    self._holding_fd is None
+                    or self._scratch_fd is None
+                    or self._scratch_identity is None
+                ):
                     raise OSError("pinned scratch directory identity is unavailable")
+                if self._directory_identity(self._scratch_fd) != self._scratch_identity:
+                    raise OSError("pinned scratch descriptor identity changed")
                 scratch_metadata = os.stat(
                     "scratch",
                     dir_fd=self._holding_fd,
@@ -279,9 +307,9 @@ class PinnedScratch:
                     != self._scratch_identity
                 ):
                     raise OSError("pinned scratch directory identity changed")
-            if self._scratch_created:
+            if self._scratch_state is ScratchOwnership.BOUND:
                 os.rmdir("scratch", dir_fd=self._holding_fd)
-            if self._holding_created:
+            if self._holding_state is ScratchOwnership.BOUND:
                 os.rmdir(self._holding_name, dir_fd=self._base_fd)
         except BaseException as error:
             cleanup_error = error
@@ -295,19 +323,18 @@ class PinnedScratch:
                 except OSError:
                     pass
         if cleanup_error is not None:
-            if self._holding_identity is None:
-                retained_identity = "retained holding identity unavailable"
-            else:
-                device, inode, mode = self._holding_identity
-                retained_identity = (
-                    f"retained holding identity dev={device} ino={inode} mode={mode:#o}"
-                )
             raise Gate9Error(
                 "SCRATCH_CLEANUP_FAILURE",
                 f"initial scratch rollback failed: {cleanup_error}; "
-                f"{retained_identity}",
+                f"{self._retained_holding_identity()}",
             ) from primary_error
         raise primary_error
+
+    def _retained_holding_identity(self) -> str:
+        if self._holding_identity is None:
+            return "retained holding identity unavailable"
+        device, inode, mode = self._holding_identity
+        return f"retained holding identity dev={device} ino={inode} mode={mode:#o}"
 
     @property
     def path(self) -> pathlib.Path:
@@ -334,17 +361,36 @@ class PinnedScratch:
             accumulated.append(part)
             key = "/".join(accumulated)
             if key not in self._directories:
+                descriptor: int | None = None
                 try:
                     os.mkdir(part, mode=0o700, dir_fd=parent_fd)
                     descriptor = os.open(part, flags, dir_fd=parent_fd)
+                    identity = self._directory_identity(descriptor)
                     metadata = os.stat(part, dir_fd=parent_fd, follow_symlinks=False)
-                except OSError as error:
-                    fail("SCRATCH_SCOPE_DRIFT", f"cannot create scratch directory: {error}")
+                    observed = (
+                        metadata.st_dev,
+                        metadata.st_ino,
+                        stat.S_IMODE(metadata.st_mode),
+                    )
+                    if not stat.S_ISDIR(metadata.st_mode) or observed != identity:
+                        fail(
+                            "SCRATCH_SCOPE_DRIFT",
+                            "scratch directory changed before identity binding",
+                        )
+                except BaseException as error:
+                    if descriptor is not None:
+                        os.close(descriptor)
+                    if isinstance(error, OSError):
+                        fail(
+                            "SCRATCH_SCOPE_DRIFT",
+                            f"cannot create scratch directory: {error}",
+                        )
+                    raise
                 entry = RegisteredScratchEntry(
                     parent_fd,
                     part,
-                    (metadata.st_dev, metadata.st_ino),
-                    stat.S_IMODE(metadata.st_mode),
+                    (identity[0], identity[1]),
+                    identity[2],
                     True,
                 )
                 self._directories[key] = descriptor, entry
@@ -368,15 +414,31 @@ class PinnedScratch:
                 while offset < len(value):
                     offset += os.write(descriptor, value[offset:])
                 metadata = os.fstat(descriptor)
+                observed = os.stat(
+                    name,
+                    dir_fd=parent_fd,
+                    follow_symlinks=False,
+                )
             finally:
                 os.close(descriptor)
         except OSError as error:
             fail("SCRATCH_SCOPE_DRIFT", f"cannot create scratch file {relative}: {error}")
+        identity = (metadata.st_dev, metadata.st_ino)
+        file_mode = stat.S_IMODE(metadata.st_mode)
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_nlink != 1
+            or not stat.S_ISREG(observed.st_mode)
+            or observed.st_nlink != 1
+            or (observed.st_dev, observed.st_ino) != identity
+            or stat.S_IMODE(observed.st_mode) != file_mode
+        ):
+            fail("SCRATCH_SCOPE_DRIFT", f"scratch file changed before binding: {relative}")
         self._files[pure.as_posix()] = RegisteredScratchEntry(
             parent_fd,
             name,
-            (metadata.st_dev, metadata.st_ino),
-            stat.S_IMODE(metadata.st_mode),
+            identity,
+            file_mode,
             False,
         )
         return self.path / pathlib.Path(*pure.parts)
@@ -389,8 +451,18 @@ class PinnedScratch:
     ) -> pathlib.Path:
         pure = pathlib.PurePosixPath(relative)
         parent_fd, name = self._parent_for(pure)
+        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC
         try:
-            metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+            descriptor = os.open(name, flags, dir_fd=parent_fd)
+            try:
+                metadata = os.fstat(descriptor)
+                observed = os.stat(
+                    name,
+                    dir_fd=parent_fd,
+                    follow_symlinks=False,
+                )
+            finally:
+                os.close(descriptor)
         except OSError as error:
             fail("PROJECTED_INDEX_SCOPE_DRIFT", f"scratch file is missing: {error}")
         identity = (metadata.st_dev, metadata.st_ino)
@@ -403,6 +475,10 @@ class PinnedScratch:
         if (
             not stat.S_ISREG(metadata.st_mode)
             or metadata.st_nlink != 1
+            or not stat.S_ISREG(observed.st_mode)
+            or observed.st_nlink != 1
+            or (observed.st_dev, observed.st_ino) != identity
+            or stat.S_IMODE(observed.st_mode) != mode
             or mode != expected_mode
             or (forbidden is not None and identity == forbidden)
         ):
@@ -443,7 +519,8 @@ class PinnedScratch:
             ):
                 fail(
                     "SCRATCH_SCOPE_DRIFT",
-                    f"visible scratch ancestor changed; proved object retained at {self.holding_path}",
+                    "visible scratch ancestor changed; "
+                    f"{self._retained_holding_identity()}",
                 )
             scratch_metadata = os.stat(
                 "scratch", dir_fd=self._holding_fd, follow_symlinks=False
@@ -499,7 +576,7 @@ class PinnedScratch:
                 fail(
                     "SCRATCH_CLEANUP_FAILURE",
                     "; ".join(cleanup_errors)
-                    + f"; retained proved holding at {self.holding_path}",
+                    + f"; {self._retained_holding_identity()}",
                 )
             try:
                 os.rmdir("scratch", dir_fd=self._holding_fd)
@@ -507,7 +584,7 @@ class PinnedScratch:
                 fail(
                     "SCRATCH_CLEANUP_FAILURE",
                     f"scratch directory is not proved empty: {error}; "
-                    f"retained proved holding at {self.holding_path}",
+                    f"{self._retained_holding_identity()}",
                 )
             try:
                 os.rmdir(self._holding_name, dir_fd=self._base_fd)
@@ -515,7 +592,7 @@ class PinnedScratch:
                 fail(
                     "SCRATCH_CLEANUP_FAILURE",
                     f"holding directory cannot be removed: {error}; "
-                    f"retained proved holding at {self.holding_path}",
+                    f"{self._retained_holding_identity()}",
                 )
         finally:
             for descriptor in (self._scratch_fd, self._holding_fd, self._base_fd):
