@@ -16,7 +16,7 @@ parent_ids:
 
 ## Overview
 
-This plan executes the active Spec 137 design as twelve sequential,
+This plan executes the active Spec 137 design as thirteen sequential,
 independently reviewed units. It establishes execution evidence before
 authoring, builds and validates the new pack while the old pack remains
 recoverable, switches human and machine routes, deletes the old pack behind a
@@ -29,7 +29,7 @@ delete the old twenty files only after fail-closed migration gates pass.
 
 **Architecture:** A Stage 04 Task owns four typed ledgers: requirements,
 sources/evidence, old-claim migration, and verification/generated artifacts.
-Eight independently reviewed authoring units build the nineteen leaves while
+Nine independently reviewed authoring units build the twenty leaves while
 the old pack remains intact. Routing and generated artifacts switch only after
 pack review; deletion is a separate commit behind a second independent gate.
 
@@ -84,7 +84,8 @@ subagent-driven specification/quality review.
 | --- | --- |
 | Branch base | `78b60974164ff5427ba8c64aaf3ecde4a7faf41a` |
 | Written design commit | `3182daa8` |
-| Active Spec 137 commit | `35318255` |
+| Original active Spec 137 commit | `35318255` |
+| V&V/Gate 9 Spec amendment | `90eca714`, `76808636`, and `af37969b`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`; final independent specification and documentation reviews Approved C0/I0/M0 |
 | Old pack | 20 regular files: README plus 19 leaves |
 | LLM Wiki index | Fresh at design time |
 | LLM Wiki coverage | Stale at design time |
@@ -108,9 +109,9 @@ keep the deletion gate closed; never substitute a partial contract check.
 
 ### Closed requirement set
 
-The Task instantiates all `REQ-01` through `REQ-35` from Spec 137. A task may
-add discoveries but may not merge or remove the thirty-five required rows.
-Completion requires thirty-five reviewed canonical destinations and fourteen
+The Task instantiates all `REQ-01` through `REQ-36` from Spec 137. A task may
+add discoveries but may not merge or remove the thirty-six required rows.
+Completion requires thirty-six reviewed canonical destinations and fourteen
 reviewed scope dispositions.
 
 ### Committed-unit SDD protocol
@@ -178,6 +179,19 @@ adds non-destructive proposed-deletion and actual staged-diff reviews before
 commit to satisfy Spec 137's no-unreviewed-deletion gate; those reviews do not
 replace its normal committed-unit SDD review.
 
+### Plan-amendment execution barrier
+
+No V&V authoring, Task backfill, Gate 9 recovery, bundle construction, Phase A
+rerun, staging, deletion, or lifecycle mutation may start from this amendment
+until this Plan is committed with exact subject
+`docs(plan): integrate verification validation and tree object recovery` and
+two fresh independent reviewers approve its exact predecessor-to-commit range
+at C0/I0/M0: one specification reviewer and one documentation/security-quality
+reviewer. A fix changes the reviewed range and repeats both reviews; the normal
+five-round breaker applies. Review receipts remain controller evidence until
+the later Task-only backfill, so this Plan does not self-assert its own review
+result.
+
 ### File map
 
 | Responsibility | Files |
@@ -189,6 +203,7 @@ replace its normal committed-unit SDD review.
 | SDLC contracts | Create `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md` |
 | Documentation systems | Create `documentation-architecture.md`, `llm-wiki-system.md` |
 | Delivery quality | Create `automation-pipeline-workflow.md`, `quality-ci-formatting.md` |
+| Verification and validation | Create `verification-validation.md`; update the pack README and supporting owner-leaf cross-links; update Spec/Task routing evidence and generated LLM Wiki navigation |
 | Infrastructure/security | Create `docker-compose-infrastructure.md`, `security-governance.md` |
 | Human routing | Create new pack `README.md`; modify `docs/90.references/research/README.md` and other active clickable consumers discovered by the stale-path inventory |
 | Machine routing | Regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` and `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` |
@@ -199,7 +214,7 @@ replace its normal committed-unit SDD review.
 
 ### Goals
 
-- Author nineteen focused, current leaves rather than moving or lightly editing
+- Author twenty focused, current leaves rather than moving or lightly editing
   old prose.
 - Reconcile every old unique claim as retain, correct, omit, or supersede with
   immutable old commit/blob provenance.
@@ -233,7 +248,9 @@ replace its normal committed-unit SDD review.
 
 **Interfaces:**
 
-- Consumes: active Spec 137 at `35318255`, this Plan, and the old pack.
+- Consumes: original Spec activation `35318255`, amended active Spec 137 at
+  `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`, this Plan, and the old pack;
+  Task 9a owns the immutable amendment-evidence backfill.
 - Produces: the requirement, source/evidence, claim-migration,
   closed generated-artifact, old-path allowlist, verification, review, and commit
   ledgers consumed by every later task.
@@ -251,7 +268,7 @@ parent_ids:
 ```
 
 Populate every required heading with current evidence rather than prospective
-PASS claims. Add tables for all 35 requirement IDs, all 14 scopes, external
+PASS claims. Add tables for all 36 requirement IDs, all 14 scopes, external
 and workspace sources, old claims, the closed generated-artifact inventory, old-path
 allowlist, verification results, reviews, and commits.
 
@@ -308,7 +325,7 @@ the deletion gate closed.
 
 - [ ] **Step 5: Instantiate requirements and scopes**
 
-Copy `REQ-01` through `REQ-35` verbatim from Spec 137 into the Task and create
+Copy `REQ-01` through `REQ-36` verbatim from amended Spec 137 into the Task and create
 one row for each of the fourteen normative scopes. Set unperformed evidence to
 `Not Run`, not PASS.
 
@@ -971,19 +988,23 @@ loop before Task 9.
 
 **Interfaces:**
 
-- Consumes: REQ-33, nineteen reviewed leaves, 35 requirements, 14 scopes,
+- Consumes: REQ-33, twenty reviewed leaves, 36 requirements, 14 scopes,
   source and claim ledgers.
 - Produces: the human canonical route and pre-switch completeness verdict.
 
+Task 9's final verdict is held open until Task 9a adds and reviews REQ-36 and
+the twentieth leaf. A historical 19-leaf router commit is only an intermediate
+checkpoint and is not current pack-completeness evidence.
+
 - [ ] **Step 1: Author the pack README**
 
-Include Stage 90 boundary, grouped nineteen-leaf tree, current-state summary,
+Include Stage 90 boundary, grouped twenty-leaf tree, current-state summary,
 reading order, evidence classes, scope routing, maintenance rules, old/new
 migration statement, and direct links to every leaf.
 
 - [ ] **Step 2: Audit requirement, scope, source, and claim coverage**
 
-Prove exactly 19 leaf files, 35/35 requirement destinations, 14/14 scope
+Prove exactly 20 leaf files, 36/36 requirement destinations, 14/14 scope
 dispositions, source entries for every load-bearing external claim, and a
 disposition for every unique old claim. Any missing row stops this task.
 
@@ -992,12 +1013,12 @@ find docs/90.references/research/2026-08-08-agentic-engineering-research-pack \
   -maxdepth 1 -type f -printf '%f\n' | sort
 find docs/90.references/research/2026-08-08-agentic-engineering-research-pack \
   -maxdepth 1 -type f | wc -l
-rg -n 'REQ-(0[1-9]|[12][0-9]|3[0-5])' \
+rg -n 'REQ-(0[1-9]|[12][0-9]|3[0-6])' \
   docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
 ```
 
-Expected: 20 regular files total (README plus 19 named leaves), exactly one
-canonical destination for each of 35 requirements, and reviewed dispositions
+Expected: 21 regular files total (README plus 20 named leaves), exactly one
+canonical destination for each of 36 requirements, and reviewed dispositions
 for all fourteen scopes and all old-claim rows.
 
 - [ ] **Step 3: Switch only the parent human router**
@@ -1035,6 +1056,262 @@ git commit -m "docs(research): route canonical agentic research pack"
 Run the committed-unit SDD protocol for Task 9, using reviewers capable of
 whole-pack requirement and documentation-quality review. Complete the fix/
 re-review loop before Task 10.
+
+### Task 9a: Integrate the verification-and-validation amendment before Gate 9
+
+This separately reviewable unit is mandatory even when Tasks 1 through 9 have
+already been committed. It starts only after the Plan-amendment execution
+barrier above is satisfied. It adds REQ-36 and the twentieth leaf without
+rewriting the retiring pack, then makes the 21-file/36-requirement cardinality
+the only current contract consumed by Task 10, Gate 9, and Task 12.
+
+**Files:**
+
+- Create:
+  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md`
+- Modify:
+  `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md`
+- Modify these supporting owner leaves only to add precise supporting
+  cross-links; `workspace-baseline.md` and `scope-application-matrix.md` also
+  receive the required body cardinality/applicability updates, while the other
+  eight change only their `Related Documents` links and keep their topical
+  matrices authoritative:
+  `workspace-baseline.md`, `scope-application-matrix.md`, `spec-driven-sdlc.md`, `sdlc-document-roles.md`,
+  `document-metadata-lifecycle.md`, `llm-wiki-system.md`,
+  `automation-pipeline-workflow.md`, `quality-ci-formatting.md`,
+  `docker-compose-infrastructure.md`, and `security-governance.md`
+- Modify `docs/03.specs/README.md` to change both stale Spec 137 `Draft`
+  labels to `Active` without changing another Spec's status.
+- Modify the execution Task for amendment provenance, REQ-36, source,
+  workspace-owner, fourteen-scope, generated-artifact, verification, review,
+  and commit evidence.
+- Regenerate only through the canonical owners:
+  `docs/90.references/llm-wiki/llm-wiki-index.md` and
+  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`.
+- Modify `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` to pin
+  separate old-pack exactly-20 and new-pack exactly-21 inventories, the one
+  new tracked safe path, and the exact generated cardinality deltas.
+
+**Interfaces:**
+
+- Consumes: amended active Spec 137 at
+  `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`, the ignored V&V external-source
+  report, the ignored workspace audit, the current tracked owner files, the
+  14-scope matrix, and the independently reviewed Plan-amendment range.
+- Produces: REQ-36 owner `verification-validation.md`, exactly 20 reviewed
+  leaves/21 pack files, 36/36 Task coverage, current Stage 03 routing, explicit
+  topical cross-links, and fresh generated navigation.
+
+- [ ] **Step 1: Backfill immutable amendment authority in one Task-only unit**
+
+From the clean, independently reviewed Plan-amendment `HEAD`, modify only the
+Task. Record the Spec amendment commits `90eca714`, `76808636`, and
+`af37969b`, aggregate range
+`b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`,
+the exact external review report identities supplied by the controller, and
+both final independent amended-Spec verdicts Approved C0/I0/M0. Also record
+the exact Plan-amendment commit/range and its two external C0/I0/M0 receipts;
+do not make the Task claim a review whose immutable controller evidence is
+missing. Add REQ-36, its owner, all source/evidence rows, all 14 scope
+dispositions, the target cardinalities, and set authoring/generator/review
+results to `Not Run`.
+
+```bash
+VV_TASK_BASE=$(git rev-parse --verify HEAD)
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed --base-ref "$VV_TASK_BASE" \
+  --changed-path \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git diff --check
+git diff --name-only "$VV_TASK_BASE" --
+git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git commit -m "docs(task): record verification validation amendment"
+```
+
+Expected: metadata `selected=1 violations=0`; the changed and staged set is
+exactly the Task. Dispatch one fresh specification reviewer and one fresh
+documentation-quality reviewer over the exact Task-only range. Both must
+return C0/I0/M0 before authoring begins. A fix receives its own commit and
+both scoped re-reviews through the five-round breaker.
+
+- [ ] **Step 2: Author the exact REQ-36 leaf contract from current primary sources**
+
+Use the Stage 90 reference profile and exactly these nine H2 headings in this
+order: `Overview`, `Purpose`, `Repository Role`, `Scope`,
+`Definitions / Facts`, `Scope Implications`, `Sources`, `Maintenance`, and
+`Related Documents`. Put the V&V system model and workspace-adoption rules
+under `Definitions / Facts` as H3 sections; do not introduce a tenth H2.
+
+The leaf must distinguish conformance verification from intended-use and
+stakeholder-need validation; cover planning, entry/readiness, success and
+exit/completion criteria, static/dynamic methods, traceability, independence
+and risk-based depth, environments/data/oracles, defect disposition,
+acceptance/decision authority, residual risk, release acceptance, monitoring,
+and revalidation. Include all fourteen scopes with explicit `Direct`,
+`Partial`, `Not applicable`, `Gap`, or `UNVERIFIED` limits: `agentic`,
+`architecture`, `backend`, `common`, `docs`, `entry`, `frontend`, `infra`,
+`meta`, `mobile`, `ops`, `product`, `qa`, and `security`.
+
+Reopen these current official primary routes during implementation and record
+access time, evidence class, supported claim, and limitation:
+
+```text
+https://standards.ieee.org/ieee/1012/7324/
+https://www.iso.org/standard/90219.html
+https://standards.ieee.org/ieee/12207/11416/
+https://www.nasa.gov/reference/systems-engineering-handbook/
+https://www.nasa.gov/reference/5-0-product-realization/
+https://csrc.nist.gov/pubs/sp/800/218/final
+https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final
+https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software
+https://docs.github.com/en/pull-requests/reference/status-checks
+https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches
+https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions
+```
+
+IEEE 1012-2024 and ISO/IEC/IEEE 12207:2026 are the current routes; mark IEEE
+1012-2016 and 12207:2017 superseded/historical if mentioned. Public IEEE/ISO
+pages support route, status, and abstract-level claims only; clause-level
+normative claims require licensed access. NASA is official systems-engineering
+guidance, NIST sources are bounded security/trustworthy-systems evidence, and
+GitHub Docs prove available product semantics rather than this repository's
+hosted enforcement. No source may be stretched into remote, runtime, release,
+branch-protection, provider, Docker, secret, backup/restore, rollback, or
+incident-exercise evidence.
+
+- [ ] **Step 3: Re-measure and route workspace evidence without overclaiming**
+
+Add one owner table with exact tracked path, exact command or gate,
+baseline-specific count where meaningful, classification (`verification`,
+`validation`, `both`, or `gap`), explicit implementation gap, and runtime
+limit. At minimum cover Stage
+contracts, changed metadata, traceability, implementation alignment, workflow
+contract and typed gate runner, pre-commit, LLM Wiki freshness, security
+readiness, lifecycle contracts, Compose structure, generated Compose and
+tech-stack reports, hardening, template security, supply-chain fixtures,
+Storybook/frontend gates, Python tests, and independent Task reviews.
+
+Remeasure mutable counts at the implementation commit; do not copy the
+ignored audit's `1669`, `26`, `64/42`, `7/23/80/16/3/8`, or other values
+without rerunning its declared owner command. Preserve the status vocabulary
+`configured`, `reachable`, `selected`, `executed`, `passed`, `reviewed`,
+`hosted`, `enforced`, `runtime-observed`, and `UNVERIFIED`. The leaf must
+include an explicit do-not-infer boundary for provider behavior, hosted
+GitHub enforcement, Compose runtime, security posture, release acceptance,
+and generated freshness.
+
+Update the pack README to route 20 leaves in the Spec-defined groups and link
+REQ-36. Add reciprocal supporting links from the ten owner leaves listed in
+the file scope; update the baseline/scope bodies for 21-file/REQ-36 evidence,
+but change only `Related Documents` in the other eight and do not move or
+duplicate their detailed matrices. Update the Task requirement/source/scope/
+workspace/generated ledgers and correct exactly the two stale `Draft` labels
+for Spec 137 in `docs/03.specs/README.md` to `Active`.
+
+- [ ] **Step 4: Regenerate and prove the 21-file machine route**
+
+First add a RED method
+`test_verification_validation_leaf_changes_only_new_pack_cardinality` to the
+focused LLM Wiki test. It must distinguish the retiring 20-file inventory from
+the canonical 21-file inventory and fail while the leaf/output contract is
+missing. Because both generators enumerate `git ls-files`, stage the new leaf
+before invoking either generator; an untracked leaf is invisible and a
+canonical write without this step is invalid. Stage no other path yet:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
+  -v
+git add \
+  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md
+git diff --cached --name-only
+```
+
+The RED must be attributable to the absent leaf/cardinality/output contract,
+and the staged listing must contain exactly the new leaf. Then run the
+canonical generators only after the new leaf and all routes are complete:
+
+```bash
+bash scripts/knowledge/generate-llm-wiki-index.sh
+bash scripts/knowledge/generate-llm-wiki-coverage.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 -m unittest \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
+  -v
+```
+
+Expected from current `af37969b`: tracked files change from 1,669 to 1,670 and
+the currently reviewed 20-file-pack snapshots gain exactly one safe path and
+no folder-index delta. The index changes from 1,338 to 1,339
+path rows; coverage safe paths from 1,337 to 1,338;
+`docs/90.references` from 95 to 96; `Reference and template docs` from 142 to
+143; `Markdown reference` from 840 to 841; and `folder index` remains 221.
+Any other cardinality delta must be explained by an exact independently
+reviewed path-set change before Gate 9. Subsequent proposed/actual deletion
+runs are no-ops for these outputs because the exact retiring prefix is already
+excluded; for the final 21-file pack they must remain byte-identical at
+1,339 index rows and 1,338 coverage paths.
+
+- [ ] **Step 5: Validate the exact implementation unit**
+
+```bash
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed --base-ref "$VV_TASK_BASE"
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/check-doc-implementation-alignment.sh
+env PATH=/tmp/agentic-research-validation-venv/bin:$PATH \
+  bash scripts/validation/check-repo-contracts.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 -m unittest \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_verification_validation_leaf_changes_only_new_pack_cardinality \
+  -v
+python3 - <<'PY'
+from pathlib import Path
+
+root = Path("docs/90.references/research/2026-08-08-agentic-engineering-research-pack")
+files = sorted(path.name for path in root.iterdir() if path.is_file())
+assert len(files) == 21, files
+assert "README.md" in files
+assert "verification-validation.md" in files
+assert len([path for path in files if path != "README.md"]) == 20
+PY
+git diff --check
+```
+
+Expected: metadata, traceability, repository contracts, both generator checks,
+and diff hygiene PASS; implementation alignment has zero attributable delta
+and no increase over the pinned 184-finding predecessor; the Task proves
+36/36 requirements and 14/14 scopes. The embedded assertion is read-only and
+contains no placeholder values.
+
+- [ ] **Step 6: Stage, commit, and independently review the V&V unit**
+
+Stage exactly the new leaf, pack README, ten supporting leaves, Stage 03
+README, Task, the focused generator test, and two generated outputs:
+
+```bash
+git add \
+  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md \
+  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/README.md \
+  docs/90.references/research/2026-08-08-agentic-engineering-research-pack/{workspace-baseline,scope-application-matrix,spec-driven-sdlc,sdlc-document-roles,document-metadata-lifecycle,llm-wiki-system,automation-pipeline-workflow,quality-ci-formatting,docker-compose-infrastructure,security-governance}.md \
+  docs/03.specs/README.md \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  tests/validation/test_llm_wiki_retiring_pack_exclusion.py \
+  docs/90.references/llm-wiki/llm-wiki-index.md \
+  docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "docs(research): add verification and validation system"
+```
+
+The staged listing must contain exactly these seventeen paths. Dispatch fresh
+independent specification and documentation-quality reviewers over the exact
+implementation range; both must return C0/I0/M0. Fix/re-review through the
+five-round breaker. Only the reviewed final implementation and its Task
+evidence may feed Task 10 or Gate 9; ignored research reports are advisory
+inputs, not durable authority.
 
 ### Task 10: Switch cross-links and machine-generated routes
 
@@ -1085,7 +1362,7 @@ route. Assign the generator-owned security snapshot occurrence to Step 2; do
 not edit it directly. Record each permitted non-link literal by path, stable
 anchor, reason, and reviewer. Write the exact reviewed non-generated
 changed-consumer paths, one per line, to
-`/tmp/agentic-research-route-paths.txt`; this scratch file is never committed.
+`/tmp/agentic-research-route-paths.txt`; this staging list is never committed.
 
 - [ ] **Step 1a: Retire mutable metadata exceptions and preserve pinned baseline evidence**
 
@@ -1205,19 +1482,22 @@ docs/90.references/research/2026-07-05-agentic-research-pack-refresh/
 ```
 
 The focused test must run both canonical generators in a temporary Git fixture
-containing the twenty-file retiring pack, the new pack, similarly named Stage
+containing the twenty-file retiring pack, the twenty-one-file new pack,
+similarly named Stage
 04 Plan/Task history, and an exact-prefix sibling such as
 `2026-07-05-agentic-research-pack-refresh-notes/README.md`. Its RED comparison
-uses the coexisting-pack projection versus a temporary-index deletion of only
-the retiring directory. Before the filter, it must observe exactly these
+uses the coexisting tracked-path tuple versus the same canonical NUL-safe tuple
+with exactly the twenty retiring paths removed in memory; no Git index or
+filesystem projection is an oracle. Before the filter, it must observe exactly these
 coverage deltas: safe paths `-20`, `docs/90.references` `-20`, `Reference and
 template docs` `-20`, `folder index` `-1`, and `Markdown reference` `-19`.
 
-The GREEN assertions must prove that the coexisting-pack and temporary-index
-post-deletion outputs are byte-identical for both generators, all twenty
-retiring-pack paths are absent, and the new pack, Stage 04 history, and
-exact-prefix sibling remain present. Do not use a substring or date-wide
-exclusion. Run:
+The GREEN assertions must prove that the coexisting-pack outputs match the
+in-memory projected path tuple for both generators, all twenty retiring-pack
+paths are absent, and all twenty-one new-pack paths, Stage 04 history, and
+the exact-prefix sibling remain present. Step 0e later replaces this path-tuple
+oracle with the stronger raw-tree/sealed-manifest authority replay. Do not use
+a substring or date-wide exclusion. Run:
 
 ```bash
 python3 -m unittest \
@@ -1259,7 +1539,7 @@ git diff --check
 
 - [ ] **Step 6: Self-review and commit the route-switch unit**
 
-Confirm every line in the scratch path list is a classified route consumer,
+Confirm every line in the staging path list is a classified route consumer,
 self-review the route, generator/test, and generated diffs, then stage only
 that list, the two generators, their focused test, the metadata validator,
 its focused test, the two generated outputs, and the Task:
@@ -1392,7 +1672,7 @@ failure to restore `9/26/9` is a blocker.
 
 - [ ] **Step 0c: Install and review the finite Gate 9 evidence contract**
 
-The previously reviewed temporary packages were built at
+The previously reviewed filesystem package artifacts were built at
 `6025478eddc1e0a15e2633b195b1781e9ce1d031`. They became stale when later
 Plan commits advanced `HEAD` and are historical diagnostics only. They cannot
 authorize deletion and must not be copied into a new attempt.
@@ -1402,11 +1682,11 @@ Add `scripts/validation/agentic-research-gate9-evidence.py` and
 only this deletion gate's evidence state; it must never remove a worktree file,
 write a generated output in the current worktree, write the real Git index,
 advance the current branch, or update a remote ref. Step 0d supersedes the
-round-5 linked-worktree projection, generator-write, and cleanup mechanics;
-after Step 0d, projection generators are stdout-only and no production helper
-path may create, remove, or prune a linked worktree. The finite evidence state
-machine, package/evidence schemas, attempt bounds, and reviewer identity
-contract below remain unchanged.
+round-5 projection only as historical evidence and then failed its own breaker.
+Step 0e is the sole current recovery: it removes every filesystem/index
+projection, generator-write, materialization, and cleanup path. The finite
+evidence state machine, logical package/evidence schemas, attempt bounds, and
+reviewer identity contract below remain unchanged.
 Its public modes are:
 
 ```text
@@ -1462,7 +1742,12 @@ approved recovery unit must close before Phase A. The first package must
 therefore be rebuilt at the resulting clean, live reviewed `HEAD`; neither
 existing `/tmp` package is reusable.
 
-- [ ] **Step 0d: Recover Gate 9 with an index-only stdout projection before Phase A**
+- [x] **Historical Step 0d: failed Gate 9 projection recovery (`BLOCKED`, superseded by Step 0e)**
+
+Everything from this heading through the final Step 0d breaker paragraph is
+immutable execution history, not an executable alternative or fallback. Step
+0e removes its filesystem-backed projection and transport from every current
+Gate 9 path. No command or interface in this historical block may be reused.
 
 On 2026-08-09 (Asia/Seoul), after the Step 0c round-5 breaker, the user
 explicitly approved this Plan correction and the recommended separately
@@ -1590,7 +1875,8 @@ remain exit 2 and diagnostics remain on stderr.
   `--live-reviewed-head FULL_OID`, and `--reviewed-code-head FULL_OID`;
   omission of any binding fails with `LIVE_HEAD_REQUIRED` and exit 2 before
   projection or shell execution. In particular,
-  `verify-package --package ...` without the live binding is verification
+  the retired path-selected package verification without the live binding is a
+  verification
   usage failure, cannot execute a generator, and cannot authorize projection.
 - Before reading or executing either generator blob, set
   `GIT_NO_REPLACE_OBJECTS=1` for every Git lookup and fail closed if the
@@ -1707,8 +1993,8 @@ Implement in small TDD slices:
    must return `UNTRUSTED_PACKAGE_HEAD` before the marker, generator mutation,
    or shell execution can occur. Also cover missing live-binding flags,
    replace/graft/shallow ambiguity, ancestor-substitution victim preservation,
-   no linked-worktree command/registry drift, and valid
-   `verify-authorized --package` plus `--package-from-ref` replay with
+   no linked-worktree command/registry drift, and valid replay from both
+   retired directory-transport authorization sources with
    branch/index/output/old-pack invariants.
    Run:
 
@@ -1832,11 +2118,470 @@ self-referential Task edit. Do not start Phase A until the recovery closure is
 committed and reviewed, the worktree and real index are clean, and both the
 implementation and closure-integrity review pairs are C0/I0/M0.
 
+Step 0d reached its final breaker at commit
+`b77abacb610c853db3e9fef2bdef8cc7855c62a2`, exact range
+`db39e644974c0f2540f3ccb42409e8bd6c36b929..b77abacb610c853db3e9fef2bdef8cc7855c62a2`.
+The independent specification and Python/security reviews both returned Needs
+fixes C0/I1/M0 on the same load-bearing defect: substitution between the
+holding `mkdir` and first `os.open` can cause the opened descriptor, `fstat`,
+and same-parent `stat` to bind the attacker replacement and later remove it,
+while the helper-created directory remains. The committed regression begins
+substitution later and does not cover that interval. Step 0d is therefore
+`BLOCKED`; there is no recovery round 6, its reviewed-code binding remains
+`71eb4feb7d4a085fd2910038a374987773de1e1d`, and its incomplete Task-only
+closure cannot open Phase A or Gate 9.
+
+**End historical Step 0d record.** None of its commands, flags, error classes,
+projection mechanics, cleanup mechanics, or test names is current. Step 0e
+below is the sole executable recovery contract and overrides the entire
+historical block.
+
+- [ ] **Step 0e: Replace the failed filesystem projection with tree objects, sealed memfd manifests, and one atomic bundle**
+
+On 2026-08-09 (Asia/Seoul), after the Step 0d breaker, the user explicitly
+approved the Git tree-object, sealed anonymous-memory descriptor, and atomic
+canonical-bundle design, including append-only content-addressed Git-object
+writes during package construction. This approval creates a new, separately
+bounded recovery task. It permits only the exact implementation below. It does
+not authorize reuse of any old package, receipt, closure, hash, or diagnostic;
+a real Gate 9 bundle, evidence ref, real-index staging, deletion, lifecycle
+mutation, remote action, and push remain closed until this recovery and its
+closure-integrity reviews are C0/I0/M0 and Phase A is rerun from the resulting
+fresh reviewed `HEAD`.
+
+This is not Step 0d round 6. It has at most five implementation/fix review
+rounds total: round 1 is the initial implementation, rounds 2 and 3 resume the
+same implementer for reviewer-driven fixes, and rounds 4 and 5 use a fresh
+more-capable implementer. Every initial or fix commit receives two fresh
+independent reviews over the exact delta, one specification and one
+Python/security. Step 0e requires C0/I0/M0 from both reviewers; no Minor is
+parked. Any finding left after round 5 trips the new breaker and requires
+another reviewed Plan decision.
+
+**Pre-implementation prerequisite — close the Step 0d breaker and bind the new approval:**
+
+1. Require the Plan-amendment execution barrier and Task 9a to be complete,
+   including the amended-Spec aggregate range
+   `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`,
+   both final amended-Spec reviews Approved C0/I0/M0, exactly 21 new-pack
+   files/20 leaves, 36/36 requirements, and both generator freshness checks.
+   From that clean reviewed `HEAD`, modify only
+   `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`.
+   Record the exact Step 0d final range and both Needs fixes C0/I1/M0 verdicts,
+   mark Step 0d `BLOCKED`, record the English approval boundary above, keep
+   `GATE9_REVIEWED_CODE_HEAD` at `71eb4feb7d4a085fd2910038a374987773de1e1d`,
+   and set Step 0e implementation/reviews plus every Gate 9 downstream action
+   to `Not Run`. Do not change the pending Gate 9 marker.
+2. Run focused Task metadata, `git diff --check`, and exact one-file scope
+   checks. Commit with exact subject
+   `docs(task): record gate 9 tree object recovery approval`, then obtain fresh
+   independent specification and Python/security reviews at C0/I0/M0 over
+   that Task-only range. Any finding returns to a Plan correction; it does not
+   authorize implementation.
+3. Record both immutable prerequisite receipts outside the self-referential
+   Task. Start implementation from that unchanged, clean reviewed `HEAD`.
+
+The prerequisite stages exactly the Task and nothing else:
+
+```bash
+git add docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "docs(task): record gate 9 tree object recovery approval"
+```
+
+**Exact implementation scope after the prerequisite (six files):**
+
+1. Modify
+   `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
+   for Step 0e RED/GREEN/full evidence, invariants, and `Not Run` review state.
+2. Modify `scripts/validation/agentic-research-gate9-evidence.py` to replace
+   every scratch/index/directory-package path with the approved tree-object,
+   sealed-memfd, in-memory replay, and atomic-bundle design.
+3. Modify `tests/validation/test_agentic_research_gate9_evidence.py` for the
+   complete helper, security, transport, authority, and invariant matrix.
+4. Modify `scripts/knowledge/generate-llm-wiki-index.sh` only to admit the
+   helper-only sealed-manifest input while preserving its public interface.
+5. Modify `scripts/knowledge/generate-llm-wiki-coverage.sh` under the same
+   boundary.
+6. Modify `tests/validation/test_llm_wiki_retiring_pack_exclusion.py` for both
+   public byte-compatibility and internal sealed-manifest coverage.
+
+No generated output, Spec, Plan, lifecycle artifact, old-pack path, index,
+worktree registration, or ref is in the implementation scope. The later
+Task-only closure is not part of this six-file implementation commit.
+
+**Mutation and object-write envelope:**
+
+- Delete `PinnedScratch`, `ScratchOwnership`, every helper use of
+  `GIT_INDEX_FILE`, and every helper invocation of `read-tree`, `update-index`,
+  or `write-tree`. Delete all helper paths that call or wrap linked worktrees,
+  `TemporaryDirectory`, `mkdtemp`, `mkdir`, `rmdir`, `unlink`, or `rmtree`,
+  including deletion projection, Task patches/transitions, evidence-tree
+  writing, terminal replay, and authorized ref replay. Do not retain a
+  compatibility branch or fallback.
+- Git object writes are append-only and limited to
+  `git hash-object -w --stdin`, `git mktree -z`, and `git commit-tree`.
+  `git update-ref` remains allowed only inside `publish-evidence-ref` for the
+  reviewed create-only Gate 9 ref. No mode may delete or roll back an object,
+  invoke Git GC/prune, write an index, change a branch/worktree/generated
+  output/lifecycle artifact/old-pack file, or mutate a remote.
+- Failed or superseded object writes are intentionally unreachable and are
+  left to normal Git object-store GC. The helper never cleans the object DB or
+  a produced bundle. Every bundle is retained for explicit controller
+  disposition; only an `AUTHORIZED` create-only evidence ref is durable Gate 9
+  authority.
+
+**Pathless projected root-tree contract:**
+
+- Read the live commit's root tree and each component of
+  `docs/90.references/research/2026-07-05-agentic-research-pack-refresh`
+  with raw `git ls-tree -z`. Parse each record as
+  `mode SP type SP full-object-format-OID TAB raw-name NUL`; reject a missing
+  terminator, duplicate/raw-unsorted name, slash-bearing component, `.`/`..`,
+  wrong mode/type pair, non-full OID, missing object, or non-tree ancestor.
+  Require the exact retiring entry to be one `040000 tree`, and require its
+  recursive raw manifest to contain exactly twenty `100644 blob` leaves.
+- Remove only that exact raw entry from the `research` tree. Rebuild exactly
+  four container trees bottom-up with `git mktree -z`: `research`,
+  `90.references`, `docs`, then the root. For every level, preserve every
+  sibling's raw mode, type, OID, and name byte-for-byte, replace only the one
+  descendant tree OID, reread the new tree with raw `ls-tree -z`, and compare
+  it to the expected entry tuple before advancing upward.
+- Enumerate the final projected root recursively with raw
+  `git ls-tree -r -z --full-tree`, validate every entry and object, and derive
+  the exact byte-sorted unique path tuple. The tuple must omit the old subtree,
+  retain all siblings, and use strict UTF-8 only at the generator boundary;
+  invalid UTF-8 or an unsafe absolute, empty, dot, dot-dot, NUL, or duplicate
+  path fails closed.
+- Derive and retain all three tree-to-tree deletion artifacts from the same
+  initial and projected root OIDs: raw `--raw -z`, `--name-status -z`, and the
+  binary/full-index patch. Run `git diff-tree -r --no-commit-id --no-renames`
+  with `--no-ext-diff --no-textconv`, `LC_ALL=C`,
+  `GIT_NO_REPLACE_OBJECTS=1`, `GIT_CONFIG_NOSYSTEM=1`,
+  `GIT_CONFIG_GLOBAL=/dev/null`, no inherited `GIT_*` configuration, and
+  `GIT_ATTR_SOURCE=<initial-root-tree>`. Also pass
+  `-c core.attributesFile=/dev/null`. Require exactly the same byte-sorted
+  twenty `D` paths in raw and name-status output and exactly twenty deleted
+  `100644` files in the patch, with zero outside path. Hostile user/system Git
+  config, diff drivers, textconv, environment, or projected-tree attributes
+  may not change the bytes; attributes are read only from the initial tree.
+
+**Generic in-memory Git-tree contract:**
+
+- Replace both Task patch builders and evidence-tree writing with one generic
+  in-memory trie that consumes `Mapping[path, (logical_mode, bytes)]`. Validate
+  every complete POSIX path, reject duplicate and file/directory-prefix
+  collisions, hash each leaf with `hash-object -w --stdin`, and write each
+  directory bottom-up with `mktree -z`. Re-read and verify every emitted tree.
+  Task candidate and marker-transition patches are deterministic tree-to-tree
+  diffs between two one-leaf mappings; evidence attachments are normal
+  `100644` leaves in the resulting evidence tree.
+- Ref reads return `Mapping[path, bytes]`. `build_evidence_leaves`, terminal
+  replay, attempt-2 prehistory replay, and both authorized sources consume
+  mappings directly. Delete evidence materialization and every filesystem
+  extraction path. Canonical JSON, reports, receipts, closures, Task bytes,
+  and package attachments are parsed and hashed from the one in-memory byte
+  value supplied to each validator.
+- Open each external attestation, report, receipt, closure, terminal report,
+  and drift proof once with `O_RDONLY|O_NOFOLLOW|O_CLOEXEC`; require a regular
+  file, `st_nlink == 1`, stable identity/size, offset zero, and a maximum size
+  of 4 MiB. Read it completely from that descriptor once, require EOF, recheck
+  `fstat`, and pass only bytes downstream. No validator may reopen a control
+  path to recompute a digest.
+
+**Sealed generator-manifest contract:**
+
+- Keep both public CLIs byte-compatible:
+
+  ```text
+  bash scripts/knowledge/generate-llm-wiki-index.sh [--check|--stdout]
+  bash scripts/knowledge/generate-llm-wiki-coverage.sh [--check|--stdout]
+  ```
+
+  No argument, `--check`, `--stdout`, help, exit statuses, stdout/stderr, and
+  generated bytes retain their reviewed behavior when no internal variables
+  are set.
+- The helper creates a fresh memfd for each generator with
+  `MFD_CLOEXEC|MFD_ALLOW_SEALING`. Its canonical NUL record sequence is
+  `schema=agentic-research-llm-wiki-manifest/v1`,
+  `object-format=<sha1|sha256>`, `live-commit=<full OID>`,
+  `projected-tree=<full OID>`, `count=<canonical decimal>`, followed by the
+  exact byte-sorted unique projected paths, with a NUL after every field and
+  final path. The manifest is at most 8 MiB.
+- Write the complete bytes, rewind to offset zero, then require
+  `F_SEAL_SEAL|F_SEAL_SHRINK|F_SEAL_GROW|F_SEAL_WRITE`. Pass the descriptor
+  only to trusted Bash executing the proved-live-reviewed generator blob as
+  `bash -s -- --stdout`, with exactly these all-or-none environment variables:
+  `GATE9_LLM_MANIFEST_FD`, `GATE9_LLM_MANIFEST_SIZE`, and
+  `GATE9_LLM_MANIFEST_SHA256`. The helper passes no index variable, path,
+  pipe, or checkout script.
+- Internal mode is legal only with the sole public argument `--stdout`.
+  Each generator requires all three variables or none; parses canonical
+  decimal values; requires current FD offset zero; requires a regular memfd
+  with `st_nlink == 0`, the exact byte size and SHA-256, the four required
+  seals, EOF after the declared size, exact schema/object-format/OID/count,
+  and safe byte-sorted unique paths. It then renders from that manifest only.
+  It must not invoke `git ls-files`, `pathlib.Path.exists`, or another
+  filesystem-presence fallback in internal mode. Malformed, unsealed,
+  wrong-type, oversized, offset, digest, schema, OID, count, path, or partial
+  environment input fails before rendering with empty stdout.
+- Compare each output byte-for-byte with the tracked output blob at the live
+  reviewed commit and, during bundle verification, with the matching logical
+  attachment. Require strict UTF-8, LF only, one terminal LF, no stderr, and
+  nonempty output. Every one of the six public authority modes and both
+  `verify-authorized` sources must freshly rerun the root-tree projection and
+  a new sealed memfd per generator before accepting executable bytes or
+  authorization. Memoization may exist only inside one CLI invocation and its
+  key includes repository identity, package/live/reviewed-code OIDs, projected
+  tree OID, generator blob OIDs, and manifest digest.
+
+**Atomic canonical bundle contract:**
+
+- The logical package retains exactly these fifteen attachment paths:
+  `HEAD.txt`, `SHA256SUMS`, `assignments.json`, `gate-results.json`,
+  `llm-wiki-index.md`, `llm-wiki-stage-category-coverage.md`,
+  `new-manifest.tsv`, `old-manifest.tsv`, `package.json`, `plan.md`,
+  `proposed-deletion.patch`, `spec.md`, `task-before.md`,
+  `task-before-to-candidate.patch`, and `task-candidate.md`.
+  Inner package JSON remains canonical `agentic-research-gate9/v1`.
+  `package_sha256` remains exactly the SHA-256 of the logical
+  `SHA256SUMS` attachment bytes.
+- Transport is one canonical UTF-8/LF JSON file, schema
+  `agentic-research-gate9-bundle/v1`, with exact top-level keys
+  `attachments`, `kind`, `package_sha256`, and `schema`, where `kind` is
+  `gate9-package-bundle`. `attachments` is byte-sorted by path and has exactly
+  fifteen records with exact keys `base64`, `bytes`, `mode`, `path`, and
+  `sha256`; every logical mode is the string `0444`. Base64 is canonical RFC
+  4648 with padding and no whitespace. Decode/re-encode equality, byte count,
+  digest, path set, checksum manifest, package ID, and inner schemas are all
+  mandatory. The SHA-256 of the exact outer canonical bytes is
+  `bundle_sha256`; because the random filename is not encoded, ref-only replay
+  can reconstruct and verify the same bundle bytes from the fifteen leaves.
+- `build-package` accepts no output directory or caller-selected output path.
+  It opens literal `/tmp` once with
+  `O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC`, chooses a direct-child name
+  `agentic-research-gate9-attempt-<N>-<32 lowercase hex>.bundle.json`, and
+  retries at most 128 random-name collisions. Open the child relative to that
+  descriptor with
+  `O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC` at `0600`; reject a token that
+  is not exact lowercase hex before `openat`. Write with a complete-write loop,
+  `fsync` the file, `fchmod` it to `0444`, rewind, and read back the exact bytes
+  from the same descriptor. Require a stable regular file with `st_nlink == 1`,
+  exact mode/size/digest and maximum size 32 MiB, then `fsync` the `/tmp`
+  descriptor before emitting a receipt. A collision, symlink, traversal,
+  short/zero write, partial write, chmod/fsync/readback mismatch, or ancestor
+  error emits no receipt, grants no attempt authority, and never unlinks or
+  overwrites an object.
+- Successful stdout is one canonical receipt with schema
+  `agentic-research-gate9-build-receipt/v1` and exact keys `bundle_path`,
+  `bundle_sha256`, `package_sha256`, `schema`, and `state`, where the path is
+  the literal canonical `/tmp/<direct-child>` and state is `BUILT`.
+  `verify-package` and every later consuming mode accept only `--bundle` and
+  read that file once: open `/tmp` and the validated direct
+  child with `O_RDONLY|O_NOFOLLOW|O_CLOEXEC`, require regular/nlink-one/`0444`,
+  offset zero, stable identity and size `1..32 MiB`, read through the same FD,
+  require EOF, then close it. Decode to `Mapping[path, bytes]` in memory; never
+  extract an attachment or create a package directory.
+- Assignment attestations, receipts, closures, `evidence.json`, and terminal
+  verification bind both `package_sha256` and the reconstructed
+  `bundle_sha256`. Evidence refs store the fifteen package attachments as
+  normal `100644` leaves below `package/`, not the external bundle file.
+  `verify-authorized --bundle-from-ref` reconstructs the canonical outer
+  bundle in memory, verifies its SHA, and completes full authority replay with
+  no external transport.
+
+**Preserved evidence and authorization contract:**
+
+- Preserve the live/reviewed-code/unambiguous-history authority checks, exact
+  two-attempt state machine, controller attestation, distinct reviewer IDs and
+  task paths, marker-only Task transition, C/I/M integer validation,
+  same-reviewer closures, canonical sentinel slots, create-only ref identity,
+  and ref-only replay. The evidence ref remains the only permitted
+  `update-ref`; a foreign or non-identical collision is immediately blocked.
+- All six public modes remain `build-package`, `verify-package`,
+  `verify-assignments`, `verify-backfill`, `publish-evidence-ref`, and
+  `verify-authorized`. Their package transport argument is `--bundle`.
+  `verify-authorized` has the mutually exclusive sources `--bundle PATH` and
+  `--bundle-from-ref`. The optional read-only `inspect-package` mode is not
+  added because reviewers can consume the canonical JSON/base64 bundle
+  directly and no extraction is allowed.
+- No old bundle, directory package, package ID, bundle SHA, report, receipt,
+  closure, Task candidate, or failed diagnostic may be reused. Attempt 1 and,
+  if authorized by the existing terminal prehistory, attempt 2 each receive a
+  newly built bundle, controller attestation, two reports/receipts, and two
+  closures. Bundle files and unreachable objects remain for controller/normal
+  GC disposition; they are not deleted by the helper.
+
+Use these additional stable fail-closed codes while preserving all unaffected
+existing state-machine and evidence-schema codes:
+
+| Error | Required trigger |
+| --- | --- |
+| `PROJECTED_TREE_SCOPE_DRIFT` | raw tree record, object format/type, ancestor count, sibling identity, `mktree` reread, or initial/projected root binding is invalid |
+| `PROJECTED_DELETION_DRIFT` | retiring subtree cardinality/set or raw/name-status/binary diff is not exact twenty `D` and zero outside path |
+| `GENERATOR_MANIFEST_REQUIRED` | the three internal environment variables are partial or internal mode is requested outside sole `--stdout` |
+| `GENERATOR_MANIFEST_INVALID` | memfd schema, digest, seals, type/nlink, object format/OIDs, count, NUL termination, or path tuple is malformed |
+| `GENERATOR_MANIFEST_OVERSIZE` | memfd bytes exceed 8 MiB or declared and observed size differ |
+| `GENERATOR_MANIFEST_OFFSET` | the inherited memfd is not positioned at offset zero before its single read |
+| `BUNDLE_CREATE_FAILURE` | literal `/tmp` open, random direct-child validation/collision budget, complete write, fsync/chmod, same-FD readback, or parent fsync fails |
+| `BUNDLE_READ_FAILURE` | a supplied bundle is outside literal `/tmp`, not an exclusive `0444` regular file, changes during the one bounded read, or cannot reach exact EOF |
+| `BUNDLE_SIZE_DRIFT` | a bundle is empty, exceeds 32 MiB, or its declared and observed byte count differs |
+| `BUNDLE_SCHEMA_DRIFT` | outer keys, path set/order, logical mode, base64, inner schema, checksums, byte counts, or package ID differ |
+| `BUNDLE_TRANSPORT_DRIFT` | reconstructed canonical outer bytes or `bundle_sha256` differ across attestation, receipt, closure, evidence, bundle, or ref replay |
+| `CONTROL_FILE_DRIFT` | an attestation/report/receipt/closure/terminal/drift input is not a stable regular nlink-one file, exceeds 4 MiB, changes during its one read, or is reopened |
+
+Implement in these TDD slices; every RED must fail for the missing Step 0e
+contract, not fixture setup or a repository mutation:
+
+1. **RED A — forbid every scratch/index/directory path and pin raw tree behavior.**
+   Add `test_helper_has_no_scratch_index_directory_or_forbidden_git_verbs`,
+   `test_projected_tree_removes_exact_subtree_and_preserves_raw_siblings`,
+   `test_projected_tree_rejects_malformed_nul_paths_types_and_object_width`,
+   and
+   `test_tree_diff_is_exact_under_hostile_config_and_initial_tree_attributes`.
+   The static regression scans every helper call site, not just the former
+   projector. The tree fixtures include tabs/newlines in safe sibling names,
+   malformed/nonterminated records, prefix collisions, wrong tree/blob modes,
+   sibling substitution, SHA-width drift, hostile diff/textconv config, and
+   initial versus projected `.gitattributes` disagreement.
+2. **GREEN A — land raw tree projection and the generic trie.** Replace
+   projection, manifests, Task patches/transitions, and evidence-tree writing.
+   Add `test_task_patches_and_evidence_tree_use_one_in_memory_trie` and require
+   both Task patch byte identities plus evidence leaf modes/tree OIDs to match
+   their reviewed semantics without an index or directory.
+3. **RED/GREEN B — seal one manifest per generator.** Add
+   `test_internal_manifest_mode_is_byte_exact_for_both_generators` and
+   `test_internal_manifest_rejects_partial_malformed_unsealed_wrong_type_oversize_and_offset`.
+   Cover missing/extra variables, pipe/directory FD, writable or partially
+   sealed memfd, size/digest/schema/OID/count/path drift, duplicate/unsorted/
+   unsafe/non-UTF-8 paths, nonzero offset, and reuse of one FD for both
+   generators. Public no-argument/`--check`/`--stdout` bytes and inode/mode
+   no-write assertions must remain unchanged.
+4. **RED/GREEN C — create and consume one atomic bundle.** Add
+   `test_bundle_build_is_atomic_read_only_canonical_and_collision_safe`,
+   `test_bundle_build_rejects_symlink_collision_traversal_and_partial_write_without_receipt`,
+   and `test_bundle_verification_reads_once_without_extraction`. Inject exact
+   random-name collisions, a symlink collision, a traversal token, short and
+   midstream writes, fsync/chmod/readback drift, oversize input, base64/path/
+   mode/order/checksum drift, and an attempted second read. Require no success
+   receipt and no overwritten or removed victim on every failure.
+5. **RED/GREEN D — replay all authority from mappings.** Add
+   `test_every_public_mode_freshly_replays_tree_and_memfd_projection`,
+   `test_full_ref_only_replay_uses_in_memory_package_attachments`, and
+   `test_all_public_modes_preserve_repository_and_lifecycle_invariants`.
+   Add `test_bundle_binds_twenty_one_file_pack_and_thirty_six_requirements` so
+   the current new-pack authority is exactly 21 regular files/20 leaves and
+   REQ-01 through REQ-36, while the retiring projection remains exactly 20
+   deletions.
+   Exercise all six modes, both authorization sources, both attempt-authority
+   sources, malicious historical generators, canonically resealed bundles,
+   package/ref parent drift, and external control-file substitution. Except
+   for the one expected create-only evidence ref in publication fixtures,
+   require no branch/index/worktree/ref/generated/old-pack/lifecycle drift.
+
+Run the exact new named methods first, then the complete two classes:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_helper_has_no_scratch_index_directory_or_forbidden_git_verbs \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projected_tree_removes_exact_subtree_and_preserves_raw_siblings \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_projected_tree_rejects_malformed_nul_paths_types_and_object_width \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_tree_diff_is_exact_under_hostile_config_and_initial_tree_attributes \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_task_patches_and_evidence_tree_use_one_in_memory_trie \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_internal_manifest_mode_is_byte_exact_for_both_generators \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest.test_internal_manifest_rejects_partial_malformed_unsealed_wrong_type_oversize_and_offset \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_bundle_build_is_atomic_read_only_canonical_and_collision_safe \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_bundle_build_rejects_symlink_collision_traversal_and_partial_write_without_receipt \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_bundle_verification_reads_once_without_extraction \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_every_public_mode_freshly_replays_tree_and_memfd_projection \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_full_ref_only_replay_uses_in_memory_package_attachments \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_bundle_binds_twenty_one_file_pack_and_thirty_six_requirements \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_all_public_modes_preserve_repository_and_lifecycle_invariants \
+  -v
+python3 -m unittest \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests \
+  tests.validation.test_llm_wiki_retiring_pack_exclusion.LlmWikiRetiringPackExclusionTest \
+  -v
+```
+
+Then require public generator parity, static checks, metadata, and exact scope:
+
+```bash
+bash scripts/knowledge/generate-llm-wiki-index.sh --stdout | \
+  cmp - docs/90.references/llm-wiki/llm-wiki-index.md
+bash scripts/knowledge/generate-llm-wiki-coverage.sh --stdout | \
+  cmp - docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 -m py_compile \
+  scripts/validation/agentic-research-gate9-evidence.py \
+  tests/validation/test_agentic_research_gate9_evidence.py \
+  tests/validation/test_llm_wiki_retiring_pack_exclusion.py
+ruff check \
+  scripts/validation/agentic-research-gate9-evidence.py \
+  tests/validation/test_agentic_research_gate9_evidence.py \
+  tests/validation/test_llm_wiki_retiring_pack_exclusion.py
+bash -n scripts/knowledge/generate-llm-wiki-index.sh \
+  scripts/knowledge/generate-llm-wiki-coverage.sh
+shellcheck scripts/knowledge/generate-llm-wiki-index.sh \
+  scripts/knowledge/generate-llm-wiki-coverage.sh
+if rg -n \
+  'PinnedScratch|ScratchOwnership|GIT_INDEX_FILE|read-tree|update-index|write-tree|TemporaryDirectory|mkdtemp|mkdir|rmdir|unlink|rmtree|worktree (add|remove|prune)' \
+  scripts/validation/agentic-research-gate9-evidence.py; then exit 1; fi
+python3 scripts/validation/check-document-metadata.py \
+  --mode check-changed \
+  --base-ref 35318255 \
+  --changed-path \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md
+git diff --check
+```
+
+The Task metadata result must be `selected=1 violations=0`. Recheck that both
+generated-output diffs and all four lifecycle-artifact diffs are empty; the
+old pack is exactly 20/20 and the new pack exactly 21/21 at live `HEAD` and in
+the real index; the Task is 36/36; the real index has no staged change; branch
+`HEAD`, registered worktree state, and the Gate 9 ref namespace are unchanged;
+and the implementation range contains exactly the six files above.
+
+Stage exactly the six implementation files and commit with the exact subject:
+
+```bash
+git add \
+  docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
+  scripts/validation/agentic-research-gate9-evidence.py \
+  tests/validation/test_agentic_research_gate9_evidence.py \
+  scripts/knowledge/generate-llm-wiki-index.sh \
+  scripts/knowledge/generate-llm-wiki-coverage.sh \
+  tests/validation/test_llm_wiki_retiring_pack_exclusion.py
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "fix(validation): replace gate 9 scratch with tree objects"
+```
+
+Package the exact
+prerequisite-closure `BASE..HEAD` implementation range and dispatch fresh
+independent specification and Python/security reviews. Fix findings only
+through the new five-round loop, rerunning the covering RED/GREEN slice, full
+two-class suite, static/parity checks, and invariants before each re-review.
+
+After both implementation reviews are C0/I0/M0, make one Task-only closure
+commit with subject `docs(task): close gate 9 tree object recovery`. It records
+the exact final implementation commit/range, commands, results, append-only
+object boundary, retained-bundle disposition, unchanged repository/lifecycle
+invariants, both verdicts, and the new `GATE9_REVIEWED_CODE_HEAD`; it does not
+create or consume a Gate 9 bundle. Obtain two final fresh closure-integrity
+reviews, specification and Python/security, over the exact Step 0e
+prerequisite base through that Task-only closure `HEAD`. Both must be C0/I0/M0.
+That reviewed closure OID becomes `GATE9_LIVE_REVIEWED_HEAD`. Only then rerun a
+fresh Phase A gates 1 through 8; no Step 0d gate result, package, receipt, hash,
+or bundle may be carried forward.
+
 - [ ] **Step 1: Execute Phase A pre-deletion gates 1 through 8**
 
 Confirm in the Task: 20/20 old files pinned; every unique claim mapped; every
-retain/correct destination reviewed; every omission reasoned; 35/35
-requirements; 14/14 scopes; C0/I0; zero clickable old references; reviewed
+retain/correct destination reviewed; every omission reasoned; 21/21 new-pack
+files, 20/20 new leaves, 36/36 requirements; 14/14 scopes; C0/I0/M0; zero clickable old references; reviewed
 non-link allowlist; metadata/traceability PASS; LLM index/coverage PASS;
 alignment delta 0; repository contracts PASS. A missing dependency stops here.
 
@@ -1864,45 +2609,54 @@ required when no terminal ref exists. Attempt 2 is allowed only when one valid
 attempt 1 ref records pre-backfill `REJECTED` or `INVALIDATED` and the Task is
 `ATTEMPT_2_PENDING` with the same identity. No third ordinal exists. The
 `--attempt` argument asserts that derived value; it does not authorize attempt
-selection or reuse. The helper must use the descriptor-pinned temporary Git
-index and proved-live-reviewed-HEAD `--stdout` generator projection reviewed
-in Step 0d, clean only proved direct scratch children in a `finally` path, and
-leave the current worktree, real index, linked-worktree registry, old pack, and
-generated outputs unchanged. Build and verify with the exact interface:
+selection or reuse. The helper must use the Step 0e reviewed pathless root-tree
+projection, a fresh sealed manifest for each generator, and in-memory
+attachment replay. It may append only the named content-addressed Git objects;
+it performs no object cleanup or GC/prune. It leaves the current worktree,
+real index, registered worktree state, old pack, and generated outputs
+unchanged. Build and verify with the exact interface:
 
 ```bash
 GATE9_HELPER=scripts/validation/agentic-research-gate9-evidence.py
-GATE9_PACKAGE=$(mktemp -d /tmp/agentic-research-gate9-attempt-1.XXXXXX)
 GATE9_LIVE_REVIEWED_HEAD=$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify HEAD)
-GATE9_REVIEWED_CODE_HEAD=$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify HEAD^)
-python3 "$GATE9_HELPER" build-package \
+: "${GATE9_REVIEWED_CODE_HEAD:?set this to the full Step 0e code OID recorded in the Task}"
+GATE9_BUILD_RECEIPT=$(python3 "$GATE9_HELPER" build-package \
   --attempt 1 \
-  --output "$GATE9_PACKAGE" \
   --spec docs/03.specs/137-agentic-research-pack-rebuild/spec.md \
   --plan docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --require-live-head \
   --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
-  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
+  --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD")
+GATE9_BUNDLE=$(printf '%s\n' "$GATE9_BUILD_RECEIPT" | \
+  python3 -c 'import json,sys; print(json.load(sys.stdin)["bundle_path"])')
+GATE9_BUNDLE_SHA256=$(printf '%s\n' "$GATE9_BUILD_RECEIPT" | \
+  python3 -c 'import json,sys; print(json.load(sys.stdin)["bundle_sha256"])')
+GATE9_PACKAGE_SHA256=$(printf '%s\n' "$GATE9_BUILD_RECEIPT" | \
+  python3 -c 'import json,sys; print(json.load(sys.stdin)["package_sha256"])')
 python3 "$GATE9_HELPER" verify-package \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --require-live-head \
   --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
   --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
-The Task must record `GATE9_REVIEWED_CODE_HEAD` as the final Step 0d
+The controller sets `GATE9_REVIEWED_CODE_HEAD` from the exact full OID already
+recorded and independently reviewed in the Task; the shell guard rejects an
+unset value. The Task must record it as the final Step 0e
 implementation commit and its two C0/I0/M0 implementation reviews. The two
 external closure-integrity receipts bind `GATE9_LIVE_REVIEWED_HEAD` to the
 subsequent Task-only closure commit without inserting that commit's identity
-back into itself. The helper rejects an inferred `HEAD^` that does not equal
-the Task-recorded code OID, and the controller must supply the closure OID from
-both matching receipts; the shell derivations are convenience, not authority.
+back into itself. The helper rejects any code OID that does not equal the
+Task-recorded value, and the controller must supply the closure OID from both
+matching receipts; the live-HEAD shell derivation is convenience, not
+authority.
 
 `build-package` must fail unless the real index is clean, `HEAD` is the
 committed reviewed evidence-contract checkpoint, the old and new packs are
-exactly 20 files each, the Task has exactly one pending marker, and the only
-worktree change is that Task. It must write this exact sorted attachment set:
+exactly 20 and 21 files respectively, the Task is 36/36, the Task has exactly
+one pending marker, and the only worktree change is that Task. It must encode
+this exact sorted logical attachment set in one atomic bundle:
 
 ```text
 HEAD.txt
@@ -1922,26 +2676,35 @@ task-before-to-candidate.patch
 task-candidate.md
 ```
 
-`old-manifest.tsv` and `new-manifest.tsv` are byte-sorted
+`old-manifest.tsv` has exactly 20 rows and `new-manifest.tsv` exactly 21;
+both are byte-sorted
 `mode<TAB>type<TAB>object<TAB>path` rows from the package `HEAD`.
 `proposed-deletion.patch` is binary-safe and contains exactly twenty `D`
 paths and twenty deleted-file modes under the retiring prefix, with no other
-status. The two generated attachments come from the temporary projected index
-and must be byte-identical to the tracked Task 10b outputs. `gate-results.json`
+status. The two generated attachments come from the pathless projected tree
+through separate sealed manifests and must be byte-identical to the tracked
+Task 9a/Task 10 outputs at the 1,339-index-row/1,338-coverage-path baseline.
+`gate-results.json`
 records gates 1 through 8 and their pinned predecessor classifications.
 `assignments.json` contains exactly the `migration-specification` and `quality`
 roles. Each has a deterministic attempt-local run ID derived from the package
 `HEAD`, attempt number, and role; the later receipt must add the immutable
 agent ID and canonical task path returned by the subagent runtime.
 
-All JSON uses schema `agentic-research-gate9/v1`, UTF-8, LF, recursively
+All inner JSON uses schema `agentic-research-gate9/v1`, UTF-8, LF, recursively
 sorted keys, compact separators, and one final newline. `package.json` lists
 the other payload attachments in byte-sorted path order with their SHA-256 and
 byte count. `SHA256SUMS` is a byte-sorted GNU-format checksum list over every
 attachment except itself. The SHA-256 of the exact `SHA256SUMS` bytes is the
-package ID. After verification, make every attachment mode `0444`; any later
-byte, mode, path-set, `HEAD`, Task, generated-output, manifest, or lifecycle
-drift sets the attempt to `INVALIDATED`.
+package ID. The outer canonical `agentic-research-gate9-bundle/v1` JSON/base64
+transport binds that logical package ID, all fifteen attachment bytes/modes,
+and `bundle_sha256`. `build-package` returns only the canonical
+`agentic-research-gate9-build-receipt/v1` receipt with the `/tmp` direct-child
+path plus both hashes after same-descriptor fsync/chmod/readback succeeds. The
+bundle stays `0444`, is never extracted, and is retained for controller
+disposition. Any later bundle/package byte, mode, path-set, `HEAD`, Task,
+generated-output, manifest, or lifecycle drift sets the attempt to
+`INVALIDATED`.
 
 - [ ] **Step 4: Satisfy pre-deletion gate 9**
 
@@ -1956,19 +2719,21 @@ CHECKPOINT -> BUILT -> ASSIGNED -> PACKAGE_REVIEWED -> TASK_BACKFILLED
 states. A package becomes a consumed attempt only at `ASSIGNED`, after the
 trusted controller attestation is frozen. A build that fails or drifts before
 `ASSIGNED` is discarded as an unassigned construction failure and cannot
-produce review authority. Except for an untrusted `FOREIGN_REF` collision,
+produce review authority; its bundle remains retained but has no authority.
+Except for an untrusted `FOREIGN_REF` collision,
 every consumed attempt, accepted or not, must end in a create-only evidence
 ref. A
-pre-backfill rejection stores the complete package and all
+pre-backfill rejection stores the complete logical package attachments and all
 available reports/receipts plus a canonical terminal reason; a drift
-invalidation stores the package, drift evidence, and canonical terminal
-reason. Temporary files are not attempt history, and the helper must derive
-the next ordinal only from validated durable refs.
+invalidation stores those attachments, drift evidence, and canonical terminal
+reason. The external bundle is retained transport, not durable attempt
+authority; the helper derives the next ordinal only from validated durable
+refs.
 
 Dispatch one fresh migration/specification reviewer and one fresh quality
 reviewer. Capture each spawn result before accepting a review. The trusted
 controller writes one canonical `assignment-attestation.json` containing the
-package ID/`HEAD`, attempt, source literal
+package ID, bundle SHA-256, package `HEAD`, attempt, source literal
 `collaboration.spawn_agent/result`, controller task `/root`, and exactly two
 role records with the immutable agent ID and canonical task path returned by
 the runtime plus the assigned attempt-local run ID. The two agent IDs and task
@@ -1980,7 +2745,7 @@ the role to the runtime identity.
 
 ```bash
 python3 "$GATE9_HELPER" verify-assignments \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
   --require-live-head \
   --live-reviewed-head "$GATE9_LIVE_REVIEWED_HEAD" \
@@ -1988,7 +2753,8 @@ python3 "$GATE9_HELPER" verify-assignments \
 ```
 
 Each reviewer returns one exact UTF-8/LF
-report plus one canonical JSON package receipt with the package ID and `HEAD`,
+report plus one canonical JSON package receipt with the package ID, bundle
+SHA-256, and `HEAD`,
 role, all three identity fields, verdict, C/I/M counts, and SHA-256/byte count
 of that exact report and the assignment-attestation hash. Both receipts must
 bind the same package and controller attestation, and neither may contain a
@@ -2000,7 +2766,7 @@ Verify the receipts before changing the Task:
 
 ```bash
 python3 "$GATE9_HELPER" verify-backfill \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
   --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
@@ -2013,16 +2779,17 @@ python3 "$GATE9_HELPER" verify-backfill \
 
 Then transition the Task marker exactly once from `PACKAGE_REVIEW_PENDING` to
 `TASK_BACKFILLED`. Its before bytes are `task-candidate.md`; its after bytes
-must differ only inside that marker. The marker records the before/after
-20-file manifest identity, proposed patch hash, recovery `HEAD`, package ID,
-fixed evidence ref, both receipt identities/hashes/verdicts, and actual staged
+must differ only inside that marker. The marker records the 20-file retiring
+and 21-file canonical manifest identities, proposed patch hash, recovery
+`HEAD`, package ID, bundle SHA-256, fixed evidence ref, both receipt
+identities/hashes/verdicts, and actual staged
 and committed deletion reviews as `Not Run`. The helper computes the binary
 Task diff, before/after Git blob OIDs, SHA-256 values, and byte counts. Any
 other Task edit rejects the attempt.
 
 ```bash
 python3 "$GATE9_HELPER" verify-backfill \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --migration-receipt "$GATE9_MIGRATION_RECEIPT" \
   --quality-receipt "$GATE9_QUALITY_RECEIPT" \
   --assignment-attestation "$GATE9_ASSIGNMENT_ATTESTATION" \
@@ -2033,8 +2800,8 @@ python3 "$GATE9_HELPER" verify-backfill \
   --reviewed-code-head "$GATE9_REVIEWED_CODE_HEAD"
 ```
 
-The same two reviewers then receive the immutable package, both reports and
-receipts, and the exact Task before/after/diff tuple. Each returns one exact
+The same two reviewers then receive the immutable bundle exactly once, both
+reports and receipts, and the exact Task before/after/diff tuple. Each returns one exact
 UTF-8/LF closure report plus one canonical closure JSON binding their own
 package receipt and identity to that tuple and to the closure report's
 SHA-256/byte count and the same assignment-attestation hash. Both closures
@@ -2084,14 +2851,15 @@ review pair; `AUTHORIZED` requires both review pairs, both closure pairs, and
 the exact closure-reviewed Task-after and binary diff bytes.
 
 `evidence.json` has exactly these top-level keys: `schema`, `state`, `attempt`,
-`package_head`, `package_sha256`, `evidence_ref`, `assignment`, `task`,
+`package_head`, `package_sha256`, `bundle_sha256`, `evidence_ref`, `assignment`, `task`,
 `reviews`, `closures`, `drift`, and `terminal_report`. Every referenced file
 record includes literal path, SHA-256, and byte count; identity-bearing review
 records also include role, agent ID, task path, run ID, attestation hash,
 verdict, and C/I/M counts. Root `SHA256SUMS` excludes itself and contains one
 GNU-format `<64 lowercase hex><two spaces><path><LF>` row for every other leaf
-file, byte-sorted by path. `sha256sum -c SHA256SUMS` from the extracted ref root
-must validate the whole evidence tree.
+file, byte-sorted by path. Ref replay reads every leaf once into a
+`Mapping[path, bytes]`, validates those checksum bytes in memory, and never
+extracts an evidence root.
 
 Evidence publication identity is the tuple `(package HEAD, canonical evidence
 tree OID, canonical commit message)`, not the commit OID. The exact commit
@@ -2102,7 +2870,8 @@ foreign. On a create-only race or any nonzero `update-ref`, reread the existing
 ref: identical parent, tree, and message is idempotent success; any difference
 is `FOREIGN_REF`. Tests must cover first publication, identical retry,
 non-identical collision, and concurrent create-race recovery without changing
-the branch, real index, or worktree.
+the branch, real index, or worktree and without materializing an evidence
+directory.
 
 Publish only with
 `git update-ref <ref> <evidence-commit> 0000000000000000000000000000000000000000`.
@@ -2114,7 +2883,7 @@ not be pushed without a separate user decision.
 
 ```bash
 python3 "$GATE9_HELPER" publish-evidence-ref \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --terminal-state AUTHORIZED \
   --terminal-report "$GATE9_TERMINAL_REPORT" \
@@ -2138,7 +2907,7 @@ before `git rm`:
 
 ```bash
 python3 "$GATE9_HELPER" verify-authorized \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --evidence-ref auto \
   --require-live-head \
@@ -2147,7 +2916,7 @@ python3 "$GATE9_HELPER" verify-authorized \
   --require-clean-real-index \
   --require-task-only-worktree
 python3 "$GATE9_HELPER" verify-authorized \
-  --package-from-ref \
+  --bundle-from-ref \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --evidence-ref auto \
   --require-live-head \
@@ -2158,31 +2927,34 @@ python3 "$GATE9_HELPER" verify-authorized \
 ```
 
 `verify-authorized` must first prove current live `HEAD ==` supplied live
-reviewed `HEAD == package HEAD == evidence-ref parent`, plus the exact reviewed
-helper/generator code binding, then prove package/evidence attachment sets and
-checksums, canonical schemas, distinct role/identity bindings,
+reviewed `HEAD == bundle package HEAD == evidence-ref parent`, plus the exact
+reviewed helper/generator code binding, then prove bundle/package/evidence
+attachment sets, both hashes, checksums, canonical schemas, distinct role/identity bindings,
 receipt-to-closure identity, exact
 Task before/after/diff and marker transition, C/I=0, exact twenty-file
 projection, byte-identical generated attachments, and no current-worktree or
 real-index drift outside the exact closure-bound Task-only change. Only then is
 Gate 9 `AUTHORIZED`.
 
-The focused suite must remove every external package/report/receipt/closure
-temporary file after publishing a fixture ref, then reproduce the same
-authorization result from only the live `HEAD`, live Task, and evidence ref.
-The real run repeats this ref-only form immediately before `git rm`; `/tmp`
-bytes are convenience inputs and never durable authority.
+The focused suite closes every external fixture descriptor after publication,
+hides those inputs from replay, and reproduces the same authorization result
+from only the live `HEAD`, live Task, and evidence ref by reconstructing the
+canonical bundle bytes from in-memory attachment mappings. The real run
+repeats this ref-only form immediately before `git rm`. The retained `/tmp`
+bundle is transport evidence under controller disposition and never durable
+authority.
 
 Before backfill, any package-review C/I finding or byte drift consumes the
 attempt and requires `publish-evidence-ref --terminal-state REJECTED` or
-`INVALIDATED` before temporary cleanup. Attempt 1 may then transition the Task
+`INVALIDATED`; there is no object or bundle cleanup. Attempt 1 may then transition the Task
 marker to `ATTEMPT_2_PENDING`; the helper requires the matching durable ref and
-derives ordinal 2. Attempt 2 uses a new package, new controller attestation,
+derives ordinal 2. Attempt 2 uses a newly built atomic bundle and new logical
+package ID, new controller attestation,
 and fresh reviewer report/receipt bytes and may not overwrite attempt 1.
 
 ```bash
 python3 "$GATE9_HELPER" publish-evidence-ref \
-  --package "$GATE9_PACKAGE" \
+  --bundle "$GATE9_BUNDLE" \
   --task docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md \
   --terminal-state "$GATE9_TERMINAL_STATE" \
   --terminal-report "$GATE9_TERMINAL_REPORT" \
@@ -2207,9 +2979,10 @@ attempt 2 failure is also `BLOCKED`. A `FOREIGN_REF` is always immediately
 requires explicit user approval and a newly reviewed Plan boundary, not a
 third attempt. Keep the old pack and real index intact, preserve the terminal
 ref or foreign-ref observation in the controller report, do not mutate a
-backfilled Task, and remove only descriptor-proved scratch children. Leave
-package directories intact for explicit controller evidence disposition; do
-not use recursive cleanup.
+backfilled Task, and retain every produced bundle for explicit controller
+disposition. Leave appended unreachable objects to ordinary Git garbage
+collection; the helper must not unlink a bundle or invoke object cleanup, GC,
+or prune.
 
 - [ ] **Step 5: Delete the old files in the real index**
 
@@ -2246,24 +3019,26 @@ stops the task.
 - [ ] **Step 7: Review the actual staged deletion**
 
 Keep the Task evidence unstaged, confirm the two generated outputs have no
-diff, create a new proved-owned staged-review directory, and write the actual
-cached diff to its `actual-deletion.patch`; do not reuse or mutate the
-authorized Gate 9 package. Then
+diff, create one exclusive staged-review patch file directly under `/tmp`, and
+write the actual cached diff to it; do not reuse or mutate the authorized Gate
+9 bundle. Then
 dispatch two fresh, independent staged-diff reviewers over that same immutable
 patch: one owns migration/specification compliance and one owns quality.
 Require both separate verdicts at C0/I0. If evidence changes, rebuild the patch
-and rerun both. Attach the current unstaged Task evidence to the package, but
+and rerun both. Supply the current unstaged Task evidence as a separate
+immutable review input, but
 require the immutable patch itself to contain exactly the twenty deletions.
 This verifies the real index before a commit exists.
 
 ```bash
-STAGED_DELETION_REVIEW_DIR=$(mktemp -d \
-  /tmp/agentic-research-staged-deletion-review.XXXXXX)
+STAGED_DELETION_REVIEW_PATCH=$(mktemp \
+  /tmp/agentic-research-staged-deletion-review.XXXXXX.patch)
 git diff --quiet -- \
   docs/90.references/llm-wiki/llm-wiki-index.md \
   docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
 git diff --cached --binary \
-  > "$STAGED_DELETION_REVIEW_DIR/actual-deletion.patch"
+  > "$STAGED_DELETION_REVIEW_PATCH"
+chmod 0444 "$STAGED_DELETION_REVIEW_PATCH"
 ```
 
 - [ ] **Step 8: Self-review and commit the deletion unit**
@@ -2546,7 +3321,7 @@ git diff --check \
 git status --short
 ```
 
-The Task additionally records its deterministic 35-requirement, 14-scope, and
+The Task additionally records its deterministic 36-requirement, 14-scope, and
 old-claim ledger queries. Reviewers receive the exact binary diff for
 `78b60974164ff5427ba8c64aaf3ecde4a7faf41a..HEAD`; any later commit invalidates
 both verdicts and requires the entire closure ladder and both reviews again.
@@ -2562,9 +3337,11 @@ bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 ```
 
-Expected before deletion: 20 new files, zero unreviewed old-slug occurrences,
-and two generator PASS results. Expected after deletion: the same new pack,
-zero clickable old routes, and only reviewed historical non-link literals.
+Expected before deletion: 21 new files (README plus 20 leaves), zero unreviewed
+old-slug occurrences, 1,339 index rows, 1,338 coverage paths, and two generator
+PASS results. Expected after deletion: the same byte-identical 21-file new
+pack and generated cardinalities, zero clickable old routes, and only reviewed
+historical non-link literals.
 
 ### Repository checks
 
@@ -2589,7 +3366,8 @@ progress and is clean after each commit.
 | Old prose copied with stale facts | Claim ledger and current-source remeasurement | Revert the affected leaf commit and re-author from the source/evidence rows |
 | Mutable provider source changes mid-task | Access timestamps and per-unit review | Reopen source, correct only affected claims, rerun review |
 | Unavailable/paywalled source | `UNVERIFIED` boundary | Remove unsupported conclusion; retain historical pointer only |
-| Scope or requirement omission | Closed 35-row and 14-row matrices | Stop pack routing until missing row has a reviewed destination |
+| Scope or requirement omission | Closed 36-row and 14-row matrices | Stop pack routing until missing row has a reviewed destination |
+| V&V source status or workspace count is copied past its evidence | Reopen current official IEEE 1012-2024, ISO/IEC/IEEE 12207:2026, NASA, NIST, and GitHub primary routes; remeasure owner commands; preserve paywall and runtime/remote limits | Mark the affected claim `UNVERIFIED`, revert the V&V unit if needed, and repeat both independent reviews before Gate 9 |
 | Broken historical link after deletion | Whole tracked-text scan and zero clickable exceptions | Restore old pack from deletion parent and repair routes |
 | Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
 | Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
@@ -2597,10 +3375,10 @@ progress and is clean after each commit.
 | Deletion makes promoted baseline result targets disappear | Commit only the independently reviewed twenty-file deletion first; then use its real SHA to encode seven retiring rows and the historical Spec 133 row as reviewed delete results, close the six-row advisory-delta predecessor, and regenerate both summaries canonically | Revert the deletion commit if the post-delete lifecycle unit cannot reach target-manifest/summary PASS; otherwise revert only the lifecycle-evidence commit and re-review its bounded package |
 | Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
 | Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
-| Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes | Step 0d pre-implementation Task evidence closure; replace/graft/shallow rejection; exact package/live-reviewed-HEAD and reviewed-code blob binding before shell; temporary-index replay in every live-bound public authority mode; exact twenty-`D` proof; and proved-live-HEAD `--stdout` byte comparison | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0d recovery loop |
-| Gate 9 scratch cleanup follows a substituted ancestor or mutates linked-worktree state | Descriptor-pinned scratch access, proved direct-child unlink/rmdir only, no recursive cleanup, and zero production worktree add/remove/prune calls | Fail closed with the victim untouched; report any unremoved proved scratch object and do not use a destructive fallback |
-| Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical package builder, one marker-only backfill, same-reviewer closures, create-only content-addressed evidence ref, fresh index-only live-HEAD revalidation, and Step 0d C0/I0/M0 closure | Invalidate the attempt without staging; preserve the old pack; use the one fresh correction attempt or return to user-approved Plan work |
-| Gate 9 evidence ref collides or becomes unreachable | Create-only CAS, exact ref/tree/checksum verification, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED`; never overwrite the ref and never infer authorization from `/tmp` artifacts |
+| Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes | Step 0e reviewed Task prerequisite; replace/graft/shallow rejection; exact bundle/live-reviewed-HEAD and reviewed-code binding before shell; fresh pathless raw-tree projection plus a new sealed manifest per generator in every public authority mode; exact twenty-`D` proof; and proved-live-HEAD byte comparison | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0e five-round recovery loop |
+| Gate 9 tree, anonymous-memory manifest, or bundle transport is substituted or malformed | Raw NUL-safe tree validation with sibling preservation and exactly four rebuilt ancestors; required descriptor seals/type/nlink/size/digest/offset checks; exclusive same-descriptor atomic `/tmp` bundle publication and bounded once-read verification | Fail closed without a receipt or authorization; retain the bundle if published, leave unreachable objects to ordinary Git GC, and never invoke helper cleanup, prune, or extraction |
+| Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical JSON/base64 bundle builder, one marker-only backfill, same-reviewer closures, both package and bundle hashes, create-only content-addressed evidence ref, in-memory ref-only replay, and Step 0e implementation/closure C0/I0/M0 reviews | Invalidate the attempt without staging; preserve the old pack and retained bundle; use the one fresh correction attempt or return to user-approved Plan work |
+| Gate 9 evidence ref collides or becomes unreachable | Create-only CAS, exact ref/tree/checksum verification, in-memory reconstruction of bundle bytes, and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED`; never overwrite the ref and never infer authorization from a retained `/tmp` bundle |
 | Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
 | Secret/runtime/remote boundary crossed | Read-only tracked evidence and explicit exclusions | Stop immediately; exclude value/output; seek new authority if required |
 
@@ -2612,24 +3390,25 @@ pack are forbidden.
 
 | Gate | Required evidence | Blocks |
 | --- | --- | --- |
-| Spec active | Spec 137 active and C0/I0 review | Plan execution |
+| Spec and Plan amendment active | Spec 137 amendments `90eca714`, `76808636`, `af37969b` plus two final amended-Spec reviews C0/I0/M0; this exact Plan-amendment commit plus two independent reviews C0/I0/M0 | Any Task backfill, V&V authoring, Gate 9 recovery, or deletion execution |
 | Ledger ready | Task tables, old blobs, baseline results reviewed | Leaf authoring |
 | Unit review | Specification and quality reviews C0/I0 over committed `BASE..HEAD` | Next task |
-| Pack complete | 19 leaves, 35/35 requirements, 14/14 scopes, source/claim completeness | Human route switch |
+| Pack complete | 20 leaves/21 files, 36/36 requirements, 14/14 scopes, source/claim completeness | Human route switch and Gate 9 |
+| Verification and validation unit reviewed | Task-only amendment evidence, exact nine-H2 REQ-36 leaf, current primary-source/status/paywall boundaries, remeasured owner table, all 14 scopes, README/cross-links/Stage 03 status, 1,339/1,338 generated cardinalities, and two independent C0/I0/M0 reviews | Task 10 finalization, Phase A, and Gate 9 |
 | Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
 | LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
 | Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
-| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0d recovery: reviewed Task-only blocker/approval prerequisite, exact six-file scope, strict stdout/parser/no-write behavior, live-reviewed-HEAD and reviewed-code binding before shell, fresh projection in every authority mode, descriptor-pinned cleanup, new five-round breaker, and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
+| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite, exact six-file scope, raw pathless tree objects, fresh sealed manifests, atomic once-read canonical bundle, in-memory Task/evidence/ref replay, append-only named object writes, no cleanup/extraction, fresh projection in every authority mode, new five-round breaker, and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
 | Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
 | Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
-| Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live package/evidence ref | `git rm` |
+| Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live bundle plus full in-memory evidence-ref replay | `git rm` |
 | Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
 
 ## Completion Criteria
 
-- The 2026-08-08 directory contains exactly one README and nineteen reviewed
+- The 2026-08-08 directory contains exactly one README and twenty reviewed
   leaves and is the sole active canonical research pack.
-- Every REQ-01 through REQ-35 row has a reviewed canonical destination.
+- Every REQ-01 through REQ-36 row has a reviewed canonical destination.
 - Every one of the fourteen normative scopes has a reviewed disposition.
 - Every load-bearing external claim has direct source, access date, mutability,
   and verification state; every workspace claim has tracked evidence and a
@@ -2638,7 +3417,8 @@ pack are forbidden.
   retain/correct/omit/supersede disposition.
 - All clickable old-pack references are removed; allowed historical non-link
   literals are enumerated and reviewed.
-- LLM Wiki index and coverage freshness checks pass after the route switch and
+- LLM Wiki index and coverage freshness checks pass at 1,339 index rows and
+  1,338 coverage paths after the V&V route switch and remain byte-identical
   after deletion.
 - The old twenty files are deleted in their own reviewed, recoverable commit.
 - The advisory target-surface delta and both canonical summaries are fresh;
