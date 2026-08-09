@@ -68,10 +68,28 @@ def _matches_path_identity(
             for part in path.parts
         )
     if path_identity == "inherited":
-        parent_id_pattern = str(profile.get("parent_id_pattern", ""))
-        return bool(parent_id_pattern) and (
-            re.compile(parent_id_pattern).fullmatch(path.parent.name) is not None
+        parent_id_pattern = profile.get("parent_id_pattern")
+        artifact_id_identity_pattern = profile.get("artifact_id_identity_pattern")
+        identity_capture = profile.get("identity_capture")
+        if (
+            not isinstance(parent_id_pattern, str)
+            or not isinstance(artifact_id_identity_pattern, str)
+            or not isinstance(identity_capture, str)
+        ):
+            return False
+        parent_match = re.compile(parent_id_pattern).fullmatch(path.parent.name)
+        artifact_match = re.compile(artifact_id_identity_pattern).fullmatch(
+            artifact_id
         )
+        if parent_match is None or artifact_match is None:
+            return False
+        try:
+            return (
+                parent_match.group(identity_capture)
+                == artifact_match.group(identity_capture)
+            )
+        except IndexError:
+            return False
     return False
 
 

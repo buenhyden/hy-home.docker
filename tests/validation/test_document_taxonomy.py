@@ -48,11 +48,45 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 "task": {
                     "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
                     "path_identity": "inherited",
-                    "parent_id_pattern": r"spec-[0-9]{4}-[a-z0-9-]+",
+                    "parent_id_pattern": (
+                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
+                    ),
+                    "artifact_id_identity_pattern": (
+                        r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
+                    ),
+                    "identity_capture": "identity",
                 }
             },
         )
         self.assertEqual([], findings)
+
+    def test_rejects_inherited_task_role_with_mismatched_identity(self):
+        findings = validate_stable_identity(
+            PurePosixPath(
+                "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md"
+            ),
+            {
+                "artifact_id": "task-9999-01",
+                "artifact_type": "task",
+            },
+            {
+                "task": {
+                    "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
+                    "path_identity": "inherited",
+                    "parent_id_pattern": (
+                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
+                    ),
+                    "artifact_id_identity_pattern": (
+                        r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
+                    ),
+                    "identity_capture": "identity",
+                }
+            },
+        )
+        self.assertEqual(
+            ["path-id-mismatch"],
+            [finding.code for finding in findings],
+        )
 
     def test_rejects_inherited_task_role_without_stable_parent(self):
         findings = validate_stable_identity(
@@ -65,7 +99,13 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                 "task": {
                     "id_pattern": r"task-[0-9]{4}-[0-9]{2}",
                     "path_identity": "inherited",
-                    "parent_id_pattern": r"spec-[0-9]{4}-[a-z0-9-]+",
+                    "parent_id_pattern": (
+                        r"spec-(?P<identity>[0-9]{4})-[a-z0-9-]+"
+                    ),
+                    "artifact_id_identity_pattern": (
+                        r"task-(?P<identity>[0-9]{4})-[0-9]{2}"
+                    ),
+                    "identity_capture": "identity",
                 }
             },
         )
