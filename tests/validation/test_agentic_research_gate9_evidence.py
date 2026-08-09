@@ -1403,6 +1403,128 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                     path.chmod(0o600)
                     path.unlink()
 
+    def test_atomic_bundle_writer_rejects_late_directory_entry_substitution(
+        self,
+    ) -> None:
+        module = load_helper("gate9_late_bundle_substitution")
+        payloads = logical_package_fixture()
+        outer, _ = module._bundle_bytes(payloads)
+        for window in (
+            "after-final-first-fstat",
+            "during-final-read",
+            "before-last-parent-fsync",
+            "after-last-parent-fsync",
+            "before-final-validation",
+            "after-final-validation",
+        ):
+            with self.subTest(window=window):
+                token = secrets.token_hex(16)
+                path = pathlib.Path(
+                    f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+                )
+                displaced = pathlib.Path(f"{path}.displaced")
+                victim = pathlib.Path(f"{path}.victim")
+                victim.write_bytes(outer)
+                victim.chmod(0o444)
+                real_open = module.os.open
+                real_fstat = module.os.fstat
+                real_read = module.os.read
+                real_fsync = module.os.fsync
+                parent_descriptor: int | None = None
+                final_descriptor: int | None = None
+                final_fstats = 0
+                final_reads = 0
+                attacked = False
+
+                def substitute() -> None:
+                    nonlocal attacked
+                    if attacked:
+                        return
+                    attacked = True
+                    path.rename(displaced)
+                    victim.rename(path)
+
+                def observed_open(
+                    name: object, flags: int, *args: object, **kwargs: object
+                ) -> int:
+                    nonlocal parent_descriptor, final_descriptor
+                    descriptor = real_open(name, flags, *args, **kwargs)
+                    if name == "/tmp" and kwargs.get("dir_fd") is None:
+                        parent_descriptor = descriptor
+                    elif (
+                        kwargs.get("dir_fd") == parent_descriptor
+                        and not flags & os.O_CREAT
+                    ):
+                        final_descriptor = descriptor
+                    return descriptor
+
+                def observed_fstat(descriptor: int) -> os.stat_result:
+                    nonlocal final_fstats
+                    if descriptor == final_descriptor:
+                        final_fstats += 1
+                        if window == "before-final-validation" and final_fstats == 2:
+                            substitute()
+                    observed = real_fstat(descriptor)
+                    if descriptor == final_descriptor:
+                        if window == "after-final-first-fstat" and final_fstats == 1:
+                            substitute()
+                        elif window == "after-final-validation" and final_fstats == 2:
+                            substitute()
+                    return observed
+
+                def observed_read(descriptor: int, size: int) -> bytes:
+                    nonlocal final_reads
+                    value = real_read(descriptor, size)
+                    if descriptor == final_descriptor:
+                        final_reads += 1
+                        if window == "during-final-read" and final_reads == 1:
+                            substitute()
+                    return value
+
+                def observed_fsync(descriptor: int) -> None:
+                    if (
+                        descriptor == parent_descriptor
+                        and window == "before-last-parent-fsync"
+                    ):
+                        substitute()
+                    real_fsync(descriptor)
+                    if (
+                        descriptor == parent_descriptor
+                        and window == "after-last-parent-fsync"
+                    ):
+                        substitute()
+
+                output = io.StringIO()
+                caught: object | None = None
+                result: object | None = None
+                try:
+                    with mock.patch.object(
+                        module.secrets, "token_hex", return_value=token
+                    ), mock.patch.object(
+                        module.os, "open", side_effect=observed_open
+                    ), mock.patch.object(
+                        module.os, "fstat", side_effect=observed_fstat
+                    ), mock.patch.object(
+                        module.os, "read", side_effect=observed_read
+                    ), mock.patch.object(
+                        module.os, "fsync", side_effect=observed_fsync
+                    ), contextlib.redirect_stdout(output):
+                        try:
+                            result = module.write_atomic_bundle(1, payloads)
+                        except module.Gate9Error as error:
+                            caught = error
+                    self.assertTrue(attacked, f"attack hook was not reached: {window}")
+                    self.assertEqual(outer, path.read_bytes())
+                    self.assertEqual("", output.getvalue())
+                    self.assertIsNotNone(caught, f"late substitution was accepted: {window}")
+                    self.assertEqual("BUNDLE_CREATE_FAILURE", caught.code)
+                    self.assertIsNone(result, "late substitution produced a false receipt")
+                finally:
+                    for artifact in (path, displaced, victim):
+                        if artifact.exists():
+                            artifact.chmod(0o600)
+                            artifact.unlink()
+
         with self.subTest(contract="entry-check-before-directory-fsync"):
             token = secrets.token_hex(16)
             path = pathlib.Path(
@@ -2257,6 +2379,198 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             self.assert_fails(result, "AMBIGUOUS_GIT_HISTORY")
         finally:
             replace.unlink(missing_ok=True)
+
+    def test_evidence_ref_replay_and_discovery_reject_symbolic_and_substituted_refs(
+        self,
+    ) -> None:
+        module = load_helper("gate9_replay_ref_identity")
+        for malformed in (
+            f"{module.REF_PREFIX}/attempt-1/{'a' * 63}",
+            f"{module.REF_PREFIX}/attempt-1/{'a' * 64}/suffix",
+            f"{module.REF_PREFIX}/attempt-3/{'a' * 64}",
+            f"{module.REF_PREFIX}/attempt-1/{'A' * 64}",
+        ):
+            with self.subTest(case="resolve-pattern", evidence_ref=malformed):
+                caught: object | None = None
+                try:
+                    module.resolve_evidence_ref(
+                        {"evidence_ref": malformed}, "auto"
+                    )
+                except module.Gate9Error as error:
+                    caught = error
+                self.assertIsNotNone(caught, "noncanonical marker ref was accepted")
+                self.assertEqual("INVALID_TASK_MARKER", caught.code)
+
+        with tempfile.TemporaryDirectory(
+            prefix="gate9-ref-replay-identity-"
+        ) as temporary:
+            fixture = Gate9Fixture(pathlib.Path(temporary))
+            try:
+                receipt = fixture.build()
+                _, evidence_ref = fixture.authorize(receipt)
+                evidence_commit = (
+                    git(
+                        fixture.root,
+                        "show-ref",
+                        "--verify",
+                        "--hash",
+                        evidence_ref,
+                    )
+                    .stdout.decode()
+                    .strip()
+                )
+
+                with self.subTest(case="read-ref-leaves-symbolic-outside"):
+                    outside = "refs/heads/gate9-outside-replay"
+                    git(fixture.root, "update-ref", outside, evidence_commit)
+                    git(fixture.root, "update-ref", "-d", evidence_ref)
+                    git(fixture.root, "symbolic-ref", evidence_ref, outside)
+                    resolve_caught: object | None = None
+                    caught = None
+                    try:
+                        with mock.patch.object(
+                            module, "repository_root", return_value=fixture.root
+                        ):
+                            try:
+                                module.resolve_evidence_ref(
+                                    {"evidence_ref": evidence_ref}, "auto"
+                                )
+                            except module.Gate9Error as error:
+                                resolve_caught = error
+                        self.assertIsNotNone(
+                            resolve_caught,
+                            "marker resolution accepted an outside symbolic target",
+                        )
+                        self.assertEqual("FOREIGN_REF", resolve_caught.code)
+                        try:
+                            module.read_ref_leaves(fixture.root, evidence_ref)
+                        except module.Gate9Error as error:
+                            caught = error
+                        self.assertIsNotNone(
+                            caught, "ref leaf load accepted an outside symbolic target"
+                        )
+                        self.assertEqual("FOREIGN_REF", caught.code)
+                        self.assertEqual(
+                            evidence_commit,
+                            git(fixture.root, "rev-parse", outside)
+                            .stdout.decode()
+                            .strip(),
+                        )
+                    finally:
+                        git(
+                            fixture.root,
+                            "symbolic-ref",
+                            "--delete",
+                            evidence_ref,
+                            check=False,
+                        )
+                        git(fixture.root, "update-ref", evidence_ref, evidence_commit)
+                        git(fixture.root, "update-ref", "-d", outside, check=False)
+
+                with self.subTest(case="read-ref-leaves-substitution"):
+                    parent, tree, message = module.commit_identity(
+                        fixture.root, evidence_commit
+                    )
+                    del parent
+                    replacement = (
+                        git(
+                            fixture.root,
+                            "commit-tree",
+                            tree,
+                            "-p",
+                            evidence_commit,
+                            input_bytes=message,
+                        )
+                        .stdout.decode()
+                        .strip()
+                    )
+                    real_run_git = module.run_git
+                    substituted = False
+
+                    def substitute_during_leaf_load(
+                        root: pathlib.Path,
+                        arguments: list[str],
+                        **kwargs: object,
+                    ) -> subprocess.CompletedProcess[bytes]:
+                        nonlocal substituted
+                        if (
+                            not substituted
+                            and arguments
+                            and arguments[0] == "ls-tree"
+                            and evidence_commit in arguments
+                        ):
+                            substituted = True
+                            real_run_git(
+                                root,
+                                [
+                                    "update-ref",
+                                    "--no-deref",
+                                    evidence_ref,
+                                    replacement,
+                                    evidence_commit,
+                                ],
+                            )
+                        return real_run_git(root, arguments, **kwargs)
+
+                    caught = None
+                    try:
+                        with mock.patch.object(
+                            module,
+                            "run_git",
+                            side_effect=substitute_during_leaf_load,
+                        ):
+                            try:
+                                module.read_ref_leaves(fixture.root, evidence_ref)
+                            except module.Gate9Error as error:
+                                caught = error
+                        self.assertTrue(substituted)
+                        self.assertIsNotNone(
+                            caught, "ref identity changed during leaf load"
+                        )
+                        self.assertEqual("FOREIGN_REF", caught.code)
+                    finally:
+                        git(
+                            fixture.root,
+                            "update-ref",
+                            "--no-deref",
+                            evidence_ref,
+                            evidence_commit,
+                            replacement,
+                            check=False,
+                        )
+
+                with self.subTest(case="existing-ref-discovery-symbolic-outside"):
+                    outside = "refs/heads/gate9-outside-discovery"
+                    symbolic = f"{module.REF_PREFIX}/attempt-1/{'c' * 64}"
+                    git(fixture.root, "update-ref", outside, evidence_commit)
+                    git(fixture.root, "symbolic-ref", symbolic, outside)
+                    caught = None
+                    try:
+                        try:
+                            module.existing_evidence_refs(fixture.root)
+                        except module.Gate9Error as error:
+                            caught = error
+                        self.assertIsNotNone(
+                            caught, "evidence discovery accepted a symbolic ref"
+                        )
+                        self.assertEqual("FOREIGN_REF", caught.code)
+                        self.assertEqual(
+                            outside,
+                            git(fixture.root, "symbolic-ref", "-q", symbolic)
+                            .stdout.decode()
+                            .strip(),
+                        )
+                    finally:
+                        git(
+                            fixture.root,
+                            "symbolic-ref",
+                            "--delete",
+                            symbolic,
+                            check=False,
+                        )
+                        git(fixture.root, "update-ref", "-d", outside, check=False)
+            finally:
+                fixture.cleanup()
 
     def test_evidence_ref_creation_rejects_symbolic_and_outside_namespace_refs(
         self,

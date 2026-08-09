@@ -1455,7 +1455,17 @@ def existing_evidence_refs(root: pathlib.Path) -> list[str]:
         root,
         ["for-each-ref", "--format=%(refname)", f"{REF_PREFIX}/"],
     )
-    return sorted(filter(None, result.stdout.decode().splitlines()))
+    try:
+        refs = sorted(filter(None, result.stdout.decode("ascii", "strict").splitlines()))
+    except UnicodeDecodeError as error:
+        fail("FOREIGN_REF", f"evidence ref name is not ASCII: {error}")
+    for evidence_ref in refs:
+        if (
+            EVIDENCE_REF_PATTERN.fullmatch(evidence_ref) is None
+            or direct_evidence_ref_oid(root, evidence_ref) is None
+        ):
+            fail("FOREIGN_REF", "evidence ref discovery is not one direct commit ref")
+    return refs
 
 
 def derive_attempt(
@@ -1842,6 +1852,61 @@ def write_atomic_bundle(attempt: int, payloads: Mapping[str, bytes]) -> BundleDa
             or sha256_bytes(final_readback) != sha256_bytes(outer)
         ):
             fail("BUNDLE_CREATE_FAILURE", "bundle final entry readback drift")
+        final_descriptor_before_sync = os.fstat(final_descriptor)
+        final_entry_before_sync = os.stat(
+            name,
+            dir_fd=parent_fd,
+            follow_symlinks=False,
+        )
+        if (
+            (
+                final_descriptor_before_sync.st_dev,
+                final_descriptor_before_sync.st_ino,
+                final_descriptor_before_sync.st_mode,
+                final_descriptor_before_sync.st_nlink,
+                final_descriptor_before_sync.st_size,
+                final_descriptor_before_sync.st_mtime_ns,
+            )
+            != expected_metadata
+            or (
+                final_entry_before_sync.st_dev,
+                final_entry_before_sync.st_ino,
+                final_entry_before_sync.st_mode,
+                final_entry_before_sync.st_nlink,
+                final_entry_before_sync.st_size,
+                final_entry_before_sync.st_mtime_ns,
+            )
+            != expected_metadata
+        ):
+            fail("BUNDLE_CREATE_FAILURE", "bundle final directory entry drift")
+        os.fsync(parent_fd)
+        final_descriptor_after_sync = os.fstat(final_descriptor)
+        final_entry_after_sync = os.stat(
+            name,
+            dir_fd=parent_fd,
+            follow_symlinks=False,
+        )
+        if (
+            (
+                final_descriptor_after_sync.st_dev,
+                final_descriptor_after_sync.st_ino,
+                final_descriptor_after_sync.st_mode,
+                final_descriptor_after_sync.st_nlink,
+                final_descriptor_after_sync.st_size,
+                final_descriptor_after_sync.st_mtime_ns,
+            )
+            != expected_metadata
+            or (
+                final_entry_after_sync.st_dev,
+                final_entry_after_sync.st_ino,
+                final_entry_after_sync.st_mode,
+                final_entry_after_sync.st_nlink,
+                final_entry_after_sync.st_size,
+                final_entry_after_sync.st_mtime_ns,
+            )
+            != expected_metadata
+        ):
+            fail("BUNDLE_CREATE_FAILURE", "bundle post-fsync directory entry drift")
     except Gate9Error:
         raise
     except OSError as error:
@@ -2612,24 +2677,28 @@ def commit_identity(root: pathlib.Path, commit: str) -> tuple[str, str, bytes]:
 def direct_evidence_ref_oid(root: pathlib.Path, evidence_ref: str) -> str | None:
     if EVIDENCE_REF_PATTERN.fullmatch(evidence_ref) is None:
         fail("FOREIGN_REF", "evidence ref is outside the fixed Gate 9 namespace")
-    symbolic = run_git(
-        root,
-        ["symbolic-ref", "--quiet", evidence_ref],
-        check=False,
-    )
-    if symbolic.returncode == 0:
-        fail("FOREIGN_REF", "symbolic evidence refs are forbidden")
-    if symbolic.returncode != 1:
-        fail("FOREIGN_REF", "evidence ref direct identity cannot be inspected")
-    raw = run_git(
+    result = run_git(
         root,
         [
             "for-each-ref",
             "--format=%(refname)%00%(objectname)%00%(objecttype)%00%(symref)",
             evidence_ref,
         ],
-    ).stdout
+        check=False,
+    )
+    if result.returncode != 0 or result.stderr:
+        fail("FOREIGN_REF", "evidence ref direct identity cannot be inspected")
+    raw = result.stdout
     if not raw:
+        symbolic = run_git(
+            root,
+            ["symbolic-ref", "--quiet", evidence_ref],
+            check=False,
+        )
+        if symbolic.returncode == 0:
+            fail("FOREIGN_REF", "dangling symbolic evidence refs are forbidden")
+        if symbolic.returncode != 1:
+            fail("FOREIGN_REF", "evidence ref absence cannot be inspected")
         return None
     if not raw.endswith(b"\n") or raw.count(b"\n") != 1:
         fail("FOREIGN_REF", "evidence ref identity is ambiguous")
@@ -2964,26 +3033,24 @@ def resolve_evidence_ref(
     task_marker: dict[str, Any], requested: str
 ) -> str:
     marker_ref = task_marker.get("evidence_ref")
-    if not isinstance(marker_ref, str) or not marker_ref.startswith(f"{REF_PREFIX}/attempt-"):
+    if (
+        not isinstance(marker_ref, str)
+        or EVIDENCE_REF_PATTERN.fullmatch(marker_ref) is None
+    ):
         fail("INVALID_TASK_MARKER", "missing fixed evidence ref")
     if requested != "auto" and requested != marker_ref:
         fail("EVIDENCE_REF_MISMATCH", requested)
+    if direct_evidence_ref_oid(repository_root(), marker_ref) is None:
+        fail("MISSING_EVIDENCE_REF", marker_ref)
     return marker_ref
 
 
 def read_ref_leaves(
     root: pathlib.Path, evidence_ref: str
 ) -> tuple[str, dict[str, bytes]]:
-    ref_result = run_git(
-        root, ["show-ref", "--verify", "--hash", evidence_ref], check=False
-    )
-    if ref_result.returncode:
+    commit = direct_evidence_ref_oid(root, evidence_ref)
+    if commit is None:
         fail("MISSING_EVIDENCE_REF", evidence_ref)
-    try:
-        raw_commit = ref_result.stdout.decode("ascii", "strict").strip()
-    except UnicodeDecodeError as error:
-        fail("INVALID_EVIDENCE_TREE", f"ref OID is not ASCII: {error}")
-    commit = require_full_commit_oid(root, raw_commit, code="INVALID_EVIDENCE_TREE")
     width = object_format_width(root)
     listing = run_git(
         root, ["ls-tree", "-r", "-z", "--full-tree", commit]
@@ -3026,6 +3093,8 @@ def read_ref_leaves(
     )
     if leaves["SHA256SUMS"] != expected_sums:
         fail("EVIDENCE_CHECKSUM_DRIFT", evidence_ref)
+    if direct_evidence_ref_oid(root, evidence_ref) != commit:
+        fail("FOREIGN_REF", "evidence ref changed during leaf replay")
     return commit, leaves
 
 
