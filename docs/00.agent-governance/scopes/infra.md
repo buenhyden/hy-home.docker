@@ -44,7 +44,7 @@ validation as N/A instead of running runtime-affecting commands.
 ### 3.1 Approved Runtime Mutation Protocol
 
 When the user approves live runtime or Docker mutation, the agent still needs a
-concrete target before changing service state. The Stage 04 task evidence must
+concrete target before changing service state. The co-located Task evidence must
 record:
 
 - target service or Compose file,

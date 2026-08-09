@@ -19,7 +19,7 @@ Before finishing:
 
 - Use `docs/99.templates/templates/governance/memory.template.md` for durable notes.
 - Do not store transcripts, raw logs, shell history, credentials, tokens, private keys, or secret values.
-- Record the memory-note change and verification in the applicable Stage 04 Task.
+- Record the memory-note change and verification in the applicable co-located Task.
   Refresh `docs/00.agent-governance/memory/current.md` only when the bounded
   current handoff changed; `memory/progress.md` remains historical navigation.
 

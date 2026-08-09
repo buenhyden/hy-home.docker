@@ -92,7 +92,7 @@ validator owns profile precedence and ordering behavior. Human-readable
   document may retain only proven pre-existing deficits within the checker's
   approved boundary; partial migration and newly introduced violations block.
 - Reverse or otherwise exceptional lifecycle movement requires explicit scoped
-  Stage 04 approval evidence consumed by the checker; prose cannot override it.
+  co-located Task approval evidence consumed by the checker; prose cannot override it.
 - Active-record inspection remains advisory unless a later approved gate says
   otherwise.
 - Diagnostics expose bounded paths, identities, counts, and finding codes, not
@@ -109,11 +109,9 @@ non-angle markers such as `YYYY-MM-DD` remain field-specific.
 Spec 123 is the sole approved cross-cutting root exception in this rollout; its
 empty `parent_ids` is explicit and does not authorize arbitrary root Specs.
 
-Archive tombstones keep semantic `artifact_type: archive`, then select
-`content-archive` for root `archive/**` or `sdlc-archive` for
-`docs/98.archive/**`. Content tombstones omit SDLC relation, replacement, and
-snapshot keys; Stage 98 tombstones retain their existing conditional fields.
-Both use the archive lifecycle profile and the provenance fields
+Archive tombstones keep semantic `artifact_type: archive` and select only
+`sdlc-archive` beneath `docs/98.archive/**`. They use the archive lifecycle
+profile and the provenance fields
 required by the registry. Conditional replacement and snapshot fields are
 present only when the archive profile admits them; their human interpretation
 is owned by the
@@ -178,11 +176,10 @@ and are enforced by
 | Field          | Type         | Required by                 | Meaning                                                  |
 | :------------- | :----------- | :-------------------------- | :------------------------------------------------------- |
 | `reviewed_at`  | `YYYY-MM-DD` | policy, runbook, postmortem | Date the document's content was last confirmed accurate. |
-| `review_cycle` | string       | policy, runbook             | Cadence or trigger governing the next review.            |
+| `next_review_at` | ISO 8601 date | guide, policy, runbook     | Date by which the next review is due.                     |
 
-`review_cycle` accepts either a fixed cadence such as `quarterly` or an
-event trigger such as `on-source-change`. A document whose `reviewed_at`
-predates its cadence is stale, but staleness is not currently a blocking check.
+`next_review_at` is an ISO 8601 date. A document whose due date has passed is
+stale, but staleness is not currently a blocking check.
 
 ## Related Documents
 

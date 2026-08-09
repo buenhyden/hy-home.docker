@@ -24,21 +24,13 @@ provenance under that root and never create an active compatibility, redirect,
 or legacy profile. Each path matches one registered archive selector and uses
 its registered template.
 
-### `content-archive`
-
-Required: `status`, `artifact_id`, `artifact_type`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
-
-Optional: none.
-
-Forbidden: `parent_ids`, `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`, `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
-
 ### `sdlc-archive`
 
-Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_on`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
+Required: `status`, `artifact_id`, `artifact_type`, `parent_ids`, `archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `preservation_class`.
 
 Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `content_sha256`, `snapshot_reason`.
 
-Forbidden: `reviewed_at`, `review_cycle`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
+Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
 
 Within the SDLC optional field set, `current_replacement` is required for
 `superseded`, `duplicate`, and `conflict`; forbidden for `withdrawn`; and
@@ -65,8 +57,7 @@ owner.
 For `sdlc-archive`, Git history is the default preservation route. An immutable
 snapshot is admitted only for an evidence-preserve disposition with explicit
 audit, legal, or approved evidence need. It requires all three snapshot fields
-and the `## Preserved Evidence` section. `content-archive` never admits snapshot
-fields under either preservation class.
+and the `## Preserved Evidence` section.
 
 The snapshot path is content-addressed beneath
 `docs/98.archive/evidence/` with suffix `.md.snapshot`. The content hash must

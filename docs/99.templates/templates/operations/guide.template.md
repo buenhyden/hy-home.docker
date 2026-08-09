@@ -5,6 +5,8 @@ artifact_type: guide
 parent_ids: [<parent-artifact-id>]
 created: <created-at>
 updated: <updated-at>
+reviewed_at: <reviewed-at>
+next_review_at: <next-review-at>
 ---
 
 # {{title}}
@@ -16,10 +18,6 @@ updated: <updated-at>
 ## Common Checks
 
 {{common_checks}}
-
-## Runbook Handoff
-
-{{runbook_handoff}}
 
 ## Troubleshooting
 

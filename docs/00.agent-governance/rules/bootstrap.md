@@ -19,11 +19,11 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 | :--- | :--- | :--- |
 | Agent governance | `docs/00.agent-governance/` | Agent governance and routing rules |
 | Requirements | `docs/01.requirements/` | Product requirements |
-| Architecture requirements | `docs/02.architecture/requirements/` | Architecture reference |
+| Architecture descriptions | `docs/02.architecture/descriptions/` | Architecture Description |
 | Architecture decisions | `docs/02.architecture/decisions/` | Architecture decisions |
 | Specifications | `docs/03.specs/` | Technical specifications |
-| Execution plans | `docs/04.execution/plans/` | Implementation plans |
-| Execution tasks | `docs/04.execution/tasks/` | Task execution evidence |
+| Capability plans | `docs/03.specs/spec-*/plan.md` | Co-located implementation plans |
+| Capability tasks | `docs/03.specs/spec-*/task.md` | Co-located task evidence |
 | Operations | `docs/05.operations/` | Guides, policies, runbooks, incidents |
 | References | `docs/90.references/` | Stable references |
 | Templates | `docs/99.templates/` | Document templates |
@@ -66,7 +66,7 @@ For structural or cross-cutting changes:
 1. Run applicable repository checks (for infra, include `bash scripts/validation/validate-docker-compose.sh`).
 2. Validate link integrity for changed governance/root files.
 3. Confirm policy text matches current workspace reality.
-4. Record progress, verification evidence, and final status in the applicable Stage 04 Task,
+4. Record progress, verification evidence, and final status in the applicable co-located Task,
    then refresh `docs/00.agent-governance/memory/current.md` only with the
    bounded current handoff.
 5. Record out-of-scope breakages in `docs/00.agent-governance/memory/` from `docs/99.templates/templates/governance/memory.template.md`.

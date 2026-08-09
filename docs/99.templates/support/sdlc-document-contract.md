@@ -73,7 +73,7 @@ and known issues into one event record.
 - Use the target profile's lifecycle state honestly. A template source's draft
   state is not automatic evidence that a copied target is draft.
 - `created` is immutable and `updated` records semantic changes; both are required by every promoted SDLC role. Forward, terminal, and exceptional transitions are interpreted only by the
-  registry and validator. Reverse transitions require scoped Stage 04 approval
+  registry and validator. Reverse transitions require scoped co-located Task approval
   evidence; prose in a document cannot authorize one.
 - `parent_ids` names direct upstream artifacts. It is not a complete Related
   Documents list and does not replace human-readable traceability links.

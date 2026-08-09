@@ -3875,7 +3875,7 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
             with self.subTest(active_rule_consumer=relative_path):
                 text = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertIn("memory/current.md", text)
-                self.assertIn("Stage 04 Task", text)
+                self.assertIn("co-located Task", text)
                 collapsed = " ".join(text.split()).lower()
                 for pattern in forbidden_progress_directions:
                     self.assertNotRegex(collapsed, pattern)

@@ -6,7 +6,7 @@ parent_ids: [<parent-artifact-id>]
 created: <created-at>
 updated: <updated-at>
 reviewed_at: <reviewed-at>
-review_cycle: <review-cycle>
+next_review_at: <next-review-at>
 ---
 
 # {{title}}

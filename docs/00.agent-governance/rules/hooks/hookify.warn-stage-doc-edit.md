@@ -21,7 +21,7 @@ action: warn
 **Before editing, confirm:**
 
 - [ ] The user explicitly authorized the stage document edit.
-- [ ] The target is inside an active stage artifact directory (`docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, `docs/99.templates`).
+- [ ] The target is inside an active stage artifact directory (`docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, `docs/99.templates`).
 - [ ] The edit is in-place; no parallel replacement file is being created.
 - [ ] This rule applies whether the path arrives as `docs/...` or `/.../docs/...`.
 

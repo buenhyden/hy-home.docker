@@ -49,6 +49,9 @@ ROOT = _repository_root()
 _VALIDATION_DIRECTORY = str(ROOT / "scripts/validation")
 if _VALIDATION_DIRECTORY not in sys.path:
     sys.path.insert(0, _VALIDATION_DIRECTORY)
+_REPOSITORY_DIRECTORY = str(ROOT)
+if _REPOSITORY_DIRECTORY not in sys.path:
+    sys.path.insert(0, _REPOSITORY_DIRECTORY)
 
 from agent_governance_contract import (  # noqa: E402
     ContractLoadError,
@@ -56,6 +59,7 @@ from agent_governance_contract import (  # noqa: E402
     normalize_repo_relative_path,
     path_matches_artifact_pattern,
 )
+from scripts.lib.document_governance.taxonomy import validate_stable_identity  # noqa: E402
 
 
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
@@ -386,6 +390,32 @@ TARGET_SURFACE_PROMOTION_EVIDENCE = {
     "quality_review": "approved-c0-i0-m0",
     "controlled_wrapper": "pass",
 }
+SDLC_TAXONOMY_BASELINE = "e3e7615da41b4a40aa6ef9a7a7d57dd081b4e192"
+SDLC_TAXONOMY_MANIFEST_PATH = (
+    "docs/99.templates/support/document-corpus-migration-contract.yaml"
+)
+SDLC_TAXONOMY_SOURCE_ROOTS = (
+    "archive",
+    "docs/01.requirements",
+    "docs/02.architecture",
+    "docs/03.specs",
+    "docs/04.execution",
+    "docs/05.operations",
+    "docs/90.references",
+    "docs/98.archive",
+)
+SDLC_TAXONOMY_EVIDENCE_PATHS = (
+    "docs/03.specs/136-sdlc-taxonomy-convergence/spec.md",
+    "docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md",
+    "docs/03.specs/136-sdlc-taxonomy-convergence/task.md",
+)
+SDLC_TAXONOMY_BOUNDED_README_INPUTS = frozenset(
+    {
+        "docs/04.execution/README.md",
+        "docs/04.execution/plans/README.md",
+        "docs/04.execution/tasks/README.md",
+    }
+)
 TARGET_SURFACE_SOURCE_ROOTS = (
     ".github",
     "archive",
@@ -582,11 +612,15 @@ EXPECTED_FRONTMATTER_ORDER = (
     "created",
     "updated",
     "supersedes",
+    "completed_at",
     "reviewed_at",
-    "review_cycle",
+    "next_review_at",
+    "occurred_at",
+    "resolved_at",
+    "released_at",
     "generated_by",
     "archived_from",
-    "archived_on",
+    "archived_at",
     "archive_reason",
     "archive_disposition",
     "archived_commit",
@@ -603,7 +637,7 @@ EXPECTED_ARCHIVE_REQUIRED = (
     "artifact_type",
     "parent_ids",
     "archived_from",
-    "archived_on",
+    "archived_at",
     "archive_reason",
     "archive_disposition",
     "archived_commit",
@@ -705,14 +739,13 @@ ARCHIVE_PROFILE_KEYS = frozenset(
         "conditions",
     }
 )
-EXPECTED_ARCHIVE_PROFILE_NAMES = ("content-archive", "sdlc-archive")
+EXPECTED_ARCHIVE_PROFILE_NAMES = ("sdlc-archive",)
 EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
     {
         "adr",
         "agent-design",
         "api-spec",
         "archive",
-        "content-archive",
         "architecture-description",
         "audit",
         "data-model",
@@ -738,7 +771,6 @@ EXPECTED_TEMPLATE_ROLE_NAMES = frozenset(
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
 TARGET_MARKDOWN_PREFIXES = (
-    "archive/",
     "docs/00.agent-governance/",
     "docs/01.requirements/",
     "docs/02.architecture/",
@@ -750,7 +782,7 @@ TARGET_MARKDOWN_PREFIXES = (
     "docs/99.templates/",
 )
 MIGRATION_TYPED_KEYS = frozenset(
-    {"artifact_id", "artifact_type", "parent_ids", "supersedes", "reviewed_at", "review_cycle"}
+    {"artifact_id", "artifact_type", "parent_ids", "supersedes", "reviewed_at", "next_review_at"}
 )
 APPROVED_MIGRATION_PATHS = frozenset(
     {
@@ -812,11 +844,14 @@ EXPECTED_TEMPLATE_PLACEHOLDER_KEYS = frozenset(
         "parent_id",
         "created",
         "updated",
+        "completed_at",
         "reviewed_at",
-        "review_cycle",
+        "next_review_at",
+        "occurred_at",
+        "resolved_at",
+        "released_at",
         "archived_from",
-        "content_archived_from",
-        "archived_on",
+        "archived_at",
         "archive_reason",
         "archive_disposition",
         "archived_commit",
@@ -1116,8 +1151,6 @@ def infer_artifact_type(
         return "readme"
     if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
         return "generated"
-    if normalized.startswith("archive/"):
-        return "archive"
     if normalized.startswith("docs/99.templates/templates/") and name.endswith(".template.md"):
         return "template-source"
     if normalized.startswith("docs/00.agent-governance/"):
@@ -1722,12 +1755,7 @@ def _validate_template_source(
     for key in record.metadata:
         if key == "parent_ids":
             continue
-        placeholder_key = (
-            "content_archived_from"
-            if role_name == "content-archive" and key == "archived_from"
-            else key
-        )
-        placeholder = placeholders.get(placeholder_key)
+        placeholder = placeholders.get(key)
         if placeholder is None:
             continue
         if record.metadata.get(key) != placeholder:
@@ -2627,6 +2655,25 @@ def validate_record(
                 )
             )
 
+    if (
+        isinstance(declared_type, str)
+        and declared_type == record.artifact_type
+        and isinstance(raw_profile.get("id_pattern"), str)
+        and isinstance(raw_profile.get("path_identity"), str)
+    ):
+        for taxonomy_finding in validate_stable_identity(
+            pathlib.PurePosixPath(record.path.as_posix()),
+            record.metadata,
+            profile_map,
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    taxonomy_finding.code,
+                    taxonomy_finding.message,
+                )
+            )
+
     parent_value = record.metadata.get("parent_ids")
     parent_ids = _string_list(parent_value) if parent_value is not None else None
     if parent_value is not None and parent_ids is None:
@@ -2732,13 +2779,27 @@ def validate_record(
         findings.append(
             _finding(record, "stale-active", "active freshness-managed artifact lacks reviewed_at evidence")
         )
-    if reviewed_at is not None and not _valid_iso_temporal(reviewed_at):
-        findings.append(
-            _finding(record, "invalid-reviewed-at", "reviewed_at must be a strict ISO date or timezone-aware date-time")
-        )
-    review_cycle = record.metadata.get("review_cycle")
-    if review_cycle is not None and (not isinstance(review_cycle, str) or not review_cycle.strip()):
-        findings.append(_finding(record, "invalid-review-cycle", "review_cycle must be a non-empty string"))
+    temporal_fields = (
+        "created",
+        "updated",
+        "completed_at",
+        "reviewed_at",
+        "next_review_at",
+        "occurred_at",
+        "resolved_at",
+        "released_at",
+        "archived_at",
+    )
+    for temporal_field in temporal_fields:
+        temporal_value = record.metadata.get(temporal_field)
+        if temporal_value is not None and not _valid_iso_temporal(temporal_value):
+            findings.append(
+                _finding(
+                    record,
+                    f"invalid-{temporal_field.replace('_', '-')}",
+                    f"{temporal_field} must be a strict ISO date or timezone-aware date-time",
+                )
+            )
     generated_by = record.metadata.get("generated_by")
     if generated_by is not None and not _safe_repo_path(generated_by, "scripts/"):
         findings.append(
@@ -2755,16 +2816,13 @@ def validate_record(
 
     if record.artifact_type == "archive":
         archive_path_fields = (
-            ("archived_from", "invalid-archived-from", "archive/" if profile_label == "content-archive" else "docs/"),
+            ("archived_from", "invalid-archived-from", "docs/"),
             ("current_replacement", "invalid-current-replacement", "docs/"),
         )
         for key, code, prefix in archive_path_fields:
             value = record.metadata.get(key)
             if value is not None and not _safe_repo_path(value, prefix):
                 findings.append(_finding(record, code, f"{key} must be a safe canonical {prefix} repository path"))
-        archived_on = record.metadata.get("archived_on")
-        if archived_on is not None and not _valid_iso_date(archived_on):
-            findings.append(_finding(record, "invalid-archived-on", "archived_on must be a strict ISO date"))
         archive_reason = record.metadata.get("archive_reason")
         if archive_reason is not None and (not isinstance(archive_reason, str) or not archive_reason.strip()):
             findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
@@ -3126,6 +3184,7 @@ def load_migration_contract(
     expected_wave_names = (
         "foundation",
         "target-surface-convergence",
+        "sdlc-taxonomy-convergence",
         "wave-a-active-sdlc",
         "wave-b-operations",
         "wave-c-historical-evidence",
@@ -3222,49 +3281,49 @@ def load_migration_contract(
         "declared_outputs",
     }
     if not isinstance(target_wave, dict) or set(target_wave) != target_wave_keys:
-        raise ProfileError("sdlc-taxonomy-convergence must define the exact v2 wave fields")
+        raise ProfileError("target-surface-convergence must define the exact v2 wave fields")
     if target_wave.get("baseline_commit") != TARGET_SURFACE_BASELINE:
-        raise ProfileError("sdlc-taxonomy-convergence must pin the approved baseline commit")
+        raise ProfileError("target-surface-convergence must pin the approved baseline commit")
     if target_wave.get("scope_state") != "approved":
-        raise ProfileError("sdlc-taxonomy-convergence scope must remain approved")
+        raise ProfileError("target-surface-convergence scope must remain approved")
     target_enforcement = target_wave.get("enforcement")
     promotion_evidence = target_wave.get("promotion_evidence")
     if target_enforcement == "advisory":
         if promotion_evidence is not None:
             raise ProfileError(
-                "advisory sdlc-taxonomy-convergence must not claim promotion evidence"
+                "advisory target-surface-convergence must not claim promotion evidence"
             )
     elif target_enforcement == "blocking":
         if promotion_evidence != TARGET_SURFACE_PROMOTION_EVIDENCE:
             raise ProfileError(
-                "blocking sdlc-taxonomy-convergence requires exact approved promotion evidence"
+                "blocking target-surface-convergence requires exact approved promotion evidence"
             )
     else:
         raise ProfileError(
-            "sdlc-taxonomy-convergence enforcement must be advisory or blocking"
+            "target-surface-convergence enforcement must be advisory or blocking"
         )
     if target_wave.get("manifest_path") != (
         "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
     ):
-        raise ProfileError("sdlc-taxonomy-convergence manifest_path must be exact")
+        raise ProfileError("target-surface-convergence manifest_path must be exact")
     if target_wave.get("summary_path") != (
         "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md"
     ):
-        raise ProfileError("sdlc-taxonomy-convergence summary_path must be exact")
+        raise ProfileError("target-surface-convergence summary_path must be exact")
     _exact_string_list(
         target_wave.get("source_roots"),
         TARGET_SURFACE_SOURCE_ROOTS,
-        "waves.sdlc-taxonomy-convergence.source_roots",
+        "waves.target-surface-convergence.source_roots",
     )
     _exact_string_list(
         target_wave.get("direct_source_paths"),
         TARGET_SURFACE_DIRECT_SOURCE_PATHS,
-        "waves.sdlc-taxonomy-convergence.direct_source_paths",
+        "waves.target-surface-convergence.direct_source_paths",
     )
     _exact_string_list(
         target_wave.get("declared_outputs"),
         TARGET_SURFACE_DECLARED_OUTPUTS,
-        "waves.sdlc-taxonomy-convergence.declared_outputs",
+        "waves.target-surface-convergence.declared_outputs",
     )
     for path_value in (
         *TARGET_SURFACE_SOURCE_ROOTS,
@@ -3274,8 +3333,52 @@ def load_migration_contract(
         target_wave["summary_path"],
     ):
         if not _safe_contract_path(path_value):
+            raise ProfileError("target-surface-convergence paths must be canonical repository paths")
+
+    taxonomy_wave = waves["sdlc-taxonomy-convergence"]
+    taxonomy_wave_keys = {
+        "baseline_commit",
+        "enforcement",
+        "manifest_path",
+        "scope_state",
+        "source_roots",
+        "evidence_paths",
+        "declared_outputs",
+    }
+    if not isinstance(taxonomy_wave, dict) or set(taxonomy_wave) != taxonomy_wave_keys:
+        raise ProfileError("sdlc-taxonomy-convergence must define the exact bounded phase fields")
+    if taxonomy_wave.get("baseline_commit") != SDLC_TAXONOMY_BASELINE:
+        raise ProfileError("sdlc-taxonomy-convergence must pin the approved starting commit")
+    if taxonomy_wave.get("enforcement") != "advisory":
+        raise ProfileError("sdlc-taxonomy-convergence remains advisory until corpus migration")
+    if taxonomy_wave.get("manifest_path") != SDLC_TAXONOMY_MANIFEST_PATH:
+        raise ProfileError("sdlc-taxonomy-convergence manifest_path must name the machine registry")
+    if taxonomy_wave.get("scope_state") != "approved":
+        raise ProfileError("sdlc-taxonomy-convergence scope must remain approved")
+    _exact_string_list(
+        taxonomy_wave.get("source_roots"),
+        SDLC_TAXONOMY_SOURCE_ROOTS,
+        "waves.sdlc-taxonomy-convergence.source_roots",
+    )
+    _exact_string_list(
+        taxonomy_wave.get("evidence_paths"),
+        SDLC_TAXONOMY_EVIDENCE_PATHS,
+        "waves.sdlc-taxonomy-convergence.evidence_paths",
+    )
+    _exact_string_list(
+        taxonomy_wave.get("declared_outputs"),
+        (),
+        "waves.sdlc-taxonomy-convergence.declared_outputs",
+    )
+    for path_value in (
+        *SDLC_TAXONOMY_SOURCE_ROOTS,
+        *SDLC_TAXONOMY_EVIDENCE_PATHS,
+        SDLC_TAXONOMY_MANIFEST_PATH,
+    ):
+        if not _safe_contract_path(path_value):
             raise ProfileError("sdlc-taxonomy-convergence paths must be canonical repository paths")
-    for wave_name in expected_wave_names[2:]:
+
+    for wave_name in expected_wave_names[3:]:
         wave = waves[wave_name]
         if not isinstance(wave, dict) or set(wave) != wave_keys:
             raise ProfileError(f"{wave_name} must define the exact wave fields")
@@ -4467,6 +4570,8 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     for path in tracked_markdown:
         if path.name != "README.md":
             continue
+        if path.as_posix() in SDLC_TAXONOMY_BOUNDED_README_INPUTS:
+            continue
         try:
             text = (root / path).read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
@@ -4529,6 +4634,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
         for path in tracked_markdown
         if path.as_posix().startswith("docs/99.templates/templates/")
         and path.name != "README.md"
+        and (root / path).is_file()
     ]
     for path in tracked_templates:
         try:
@@ -5192,8 +5298,8 @@ def _freshness_state(record: Record, profile: dict[str, object], codes: set[str]
         return "unavailable-parser-error"
     required, optional, forbidden = _profile_sets(profile)
     states: list[str] = []
-    invalid_codes = {"reviewed_at": "invalid-reviewed-at", "review_cycle": "invalid-review-cycle"}
-    for key in ("reviewed_at", "review_cycle"):
+    invalid_codes = {"reviewed_at": "invalid-reviewed-at", "next_review_at": "invalid-review-cycle"}
+    for key in ("reviewed_at", "next_review_at"):
         disposition = "required" if key in required else "optional" if key in optional else "forbidden"
         if key in forbidden and key not in record.metadata:
             evidence = "not-applicable"

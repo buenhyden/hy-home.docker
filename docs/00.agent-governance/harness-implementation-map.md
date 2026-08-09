@@ -13,8 +13,8 @@ linked sources. It does not define new policy.
 | Surface             | Source                                                     | Role                                  | Required Validation               | Evidence               |
 | ------------------- | ---------------------------------------------------------- | ------------------------------------- | --------------------------------- | ---------------------- |
 | Root shims          | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`                      | Direct bootstrap/provider/memory routing | `check-agent-governance-contract.py --mode contract` | PR Validation Evidence |
-| Governance hub      | `docs/00.agent-governance/README.md`, `rules/bootstrap.md` | Policy SSOT and bootstrap sequence    | `validate-harness.sh`             | Stage 04 Task          |
-| Typed contracts     | `docs/00.agent-governance/contracts/*.yaml`                | Artifact, catalog, provider/model, and authority SSOT | `check-agent-governance-contract.py --mode contract` | Stage 04 Task |
+| Governance hub      | `docs/00.agent-governance/README.md`, `rules/bootstrap.md` | Policy SSOT and bootstrap sequence    | `validate-harness.sh`             | co-located Task        |
+| Typed contracts     | `docs/00.agent-governance/contracts/*.yaml`                | Artifact, catalog, provider/model, and authority SSOT | `check-agent-governance-contract.py --mode contract` | co-located Task |
 | Approval boundaries | `rules/approval-boundaries.md`                             | Protected-surface and approval routing | Contract authority matrix + link integrity | PR Validation Evidence |
 
 ## Docker Compose Runtime
@@ -47,9 +47,9 @@ linked sources. It does not define new policy.
 | Harness gate   | `scripts/validation/validate-harness.sh`     | Thin wrapper for harness-surface validation    | self                              | PR Validation Evidence |
 | Local QA gate  | `scripts/validation/run-local-qa-gates.sh`   | Script-backed, all-profile, and harness modes  | `--harness` and `--script-backed` | PR Validation Evidence |
 | Repo contracts | `scripts/validation/check-repo-contracts.sh` | Structure, template, and parity contracts     | self                              | PR Validation Evidence |
-| Metadata contract | `scripts/validation/check-document-metadata.py` | Generic lifecycle metadata plus registered Stage 00 specialization routing | focused unit suite | Stage 04 Task |
+| Metadata contract | `scripts/validation/check-document-metadata.py` | Generic lifecycle metadata plus registered Stage 00 specialization routing | focused unit suite | co-located Task |
 | CI quality     | `.github/workflows/ci-quality.yml`           | Remote enforcement of the same gates          | GitHub Actions                    | PR required checks     |
-| Semantic loops | `contracts/provider-models.yaml` `harness_loops` | Bounded bootstrap, implementation, review, and approved all-files gates | `check-agent-governance-contract.py --mode repository --section all` | Stage 04 Task |
+| Semantic loops | `contracts/provider-models.yaml` `harness_loops` | Bounded bootstrap, implementation, review, and approved all-files gates | `check-agent-governance-contract.py --mode repository --section all` | co-located Task |
 | Agent-output eval | `contracts/agent-catalog.yaml` `evaluation` | Model-free fixture catalog, deterministic scorer, synthetic-only inputs, and independent review ownership | `run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` | PR Validation Evidence |
 
 ## Hardening
@@ -70,7 +70,7 @@ linked sources. It does not define new policy.
 
 | Surface               | Source                                        | Role                                      | Required Validation       | Evidence      |
 | --------------------- | --------------------------------------------- | ----------------------------------------- | ------------------------- | ------------- |
-| Current handoff       | `docs/00.agent-governance/memory/current.md`  | Bounded active task and verified state    | Current-memory contract   | Stage 04 Task |
+| Current handoff       | `docs/00.agent-governance/memory/current.md`  | Bounded active task and verified state    | Current-memory contract   | co-located Task |
 | Execution evidence    | `docs/04.execution/tasks/**`                  | Progress, verification, and final evidence | Traceability validation   | self          |
 | Historical navigation | `docs/00.agent-governance/memory/progress.md` | Append-preserved earlier work navigation  | Repository contract       | Git history   |
 
@@ -86,7 +86,7 @@ linked sources. It does not define new policy.
 | Surface          | Source                                                   | Role                                      | Required Validation                     | Evidence               |
 | ---------------- | -------------------------------------------------------- | ----------------------------------------- | --------------------------------------- | ---------------------- |
 | Operations index | `docs/05.operations/README.md`                           | Guides, policies, runbooks, incidents     | `check-doc-traceability.sh`             | PR Validation Evidence |
-| Task form        | `docs/99.templates/templates/sdlc/task.template.md`      | Ordinary and harness execution evidence   | `check-repo-contracts.sh` template loop | Stage 04 Task           |
+| Task form        | `docs/99.templates/templates/sdlc/task.template.md`      | Ordinary and harness execution evidence   | `check-repo-contracts.sh` template loop | co-located Task         |
 
 ## Related Documents
 

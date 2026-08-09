@@ -5,6 +5,7 @@ artifact_type: release
 parent_ids: [<parent-artifact-id>]
 created: <created-at>
 updated: <updated-at>
+released_at: <released-at>
 ---
 
 # {{title}}

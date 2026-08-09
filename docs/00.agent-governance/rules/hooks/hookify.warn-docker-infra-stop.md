@@ -27,7 +27,7 @@ action: warn
 **Governance evidence and current handoff:**
 
 - [ ] Record changed files, verification evidence, unresolved risk, and final
-      status in the applicable Stage 04 Task.
+      status in the applicable co-located Task.
 - [ ] Refresh `docs/00.agent-governance/memory/current.md` with only the bounded
       next handoff; `memory/progress.md` remains historical navigation.
 

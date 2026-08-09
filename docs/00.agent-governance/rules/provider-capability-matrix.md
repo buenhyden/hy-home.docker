@@ -39,7 +39,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
    Canonical Adapter Model for enforcement details.
 4. Memory is shared: every runtime reviews `memory/README.md` and
    `memory/current.md` before mutating the repository. Progress, verification,
-   and final evidence belong in the applicable Stage 04 Task; the bounded
+   and final evidence belong in the applicable co-located Task; the bounded
    current handoff is refreshed after verified changes, while
    `memory/progress.md` remains append-preserved historical navigation.
 5. Capability, tracked adoption, and runtime depth are independent facts.
@@ -86,7 +86,7 @@ Provider-specific hook or reminder mechanics do not change these gates:
 - Direct agent execution of all-files pre-commit remains prohibited. At an
   approved final QA gate, use only
   `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
-  Git-visible, non-ignored repository paths in Stage 04 evidence.
+  Git-visible, non-ignored repository paths in co-located Task evidence.
 - A provider reminder, pointer, or hook reports the obligation; it does not
   create policy or prove that a provider-native interception occurred.
 - All providers use the same four bounded bootstrap, implementation, review,

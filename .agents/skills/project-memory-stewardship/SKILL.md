@@ -9,13 +9,13 @@ description: Canonical docs function for project-memory-stewardship; owned by do
 
 ## Preconditions
 
-The active Stage 04 Task, verified Git state, durable evidence links, and
+The active co-located Task, verified Git state, durable evidence links, and
 current-memory bounds must be known before the shared handoff is updated.
 
 ## Inputs
 
 - The fixed `memory/current.md` section and label contract.
-- Current repository state corroborated against the active Stage 04 Task.
+- Current repository state corroborated against the active co-located Task.
 - Durable, value-free evidence links and the next bounded handoff.
 
 ## Procedure

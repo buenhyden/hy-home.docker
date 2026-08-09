@@ -18,9 +18,9 @@ layer: meta
   `status:` frontmatter. Archive tombstones use `status: archived`. README
   metadata follows the active README profile rather than a blanket `layer:`
   rule.
-- **File Naming**: PRDs use `docs/01.requirements/NNN-feature-or-system.md`.
-  Specs use `docs/03.specs/NNN-feature-id/spec.md`. Plans and tasks remain
-  date-prefixed execution evidence under `docs/04.execution/`.
+- **File Naming**: PRDs use `docs/01.requirements/prd-<id>-<slug>.md`.
+  Specs use `docs/03.specs/spec-<id>-<capability>/spec.md`; Plans and Tasks are
+  stable, co-located `plan.md` and `task.md` siblings.
 - **Hierarchy**: No orphans; all active files must be linked from a directory
   README or canonical stage index.
 

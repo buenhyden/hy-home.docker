@@ -89,7 +89,7 @@ policy remains in the linked Stage 00 documents.
 | Sub-agent         | `subagent-protocol.md`                                                                     | Delegation imports exactly one primary scope and follows the shared communication and model policy.                     |
 | Output Style      | `rules/output-style.md`                                                                    | Provider output bindings remain behavioral adapters, not separate writing policy.                                       |
 | Workflow          | `rules/workflows.md`, stage docs                                                           | Planning, execution, verification, and evidence land in canonical stage paths.                                          |
-| Memory            | `memory/README.md`, `memory/current.md`, `memory/progress.md`                              | Current handoff stays bounded, Stage 04 Task evidence stays durable, and progress remains historical navigation.         |
+| Memory            | `memory/README.md`, `memory/current.md`, `memory/progress.md`                              | Current handoff stays bounded, co-located Task evidence stays durable, and progress remains historical navigation.       |
 | QA & CI/CD        | `scopes/qa.md`, `rules/github-governance.md`                                               | Each change type has local checks, CI-only gates, hook/script evidence, and skipped-check rationale.                    |
 | Model Policy      | `subagent-protocol.md`, provider notes                                                     | Model and reasoning-effort values change only when policy, sync script, and validators agree.                           |
 | Template Contract | `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `docs/99.templates/` | Template deviations are audited with file, expected template, reason, approval/evidence owner, and validation evidence. |
@@ -135,7 +135,7 @@ policy remains in the linked Stage 00 documents.
     `scripts/operations/sync-provider-surfaces.sh --write`, inspect the bounded
     projection diff, and confirm `--check` reports zero drift.
 11. Run the completion checklist, record progress and verification in the
-    applicable Stage 04 Task, and refresh `memory/current.md` with only the
+    applicable co-located Task, and refresh `memory/current.md` with only the
     bounded next handoff.
 
 ## Related Documents

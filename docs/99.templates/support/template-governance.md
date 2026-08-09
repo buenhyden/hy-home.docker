@@ -29,7 +29,7 @@ contracts, and validation rules.
   when the active Plan requires them. Do not self-assign an
   independent PASS or APPROVED verdict.
 - Resolve Critical and Important findings before the logical task closes.
-  Record Minor findings and their disposition in Stage 04 evidence.
+  Record Minor findings and their disposition in co-located Task evidence.
 - Preserve remote, runtime, secret, deployment, and provider boundaries unless
   the task explicitly approves them.
 

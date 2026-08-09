@@ -39,7 +39,7 @@ layer: agentic
 1. [template selection](../../support/template-selection.md)에서 문서 목적과
    대상 경로를 확인한다.
 2. 해당 양식을 복사하고 모든 토큰을 주제별 근거로 교체한다.
-3. [template contract](../../support/template-contract.md)와 활성 Stage 04
+3. [template contract](../../support/template-contract.md)와 활성 co-located Task
    Task에 검증 및 검토 증거를 기록한다.
 
 ## Related Documents

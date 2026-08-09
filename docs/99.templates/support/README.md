@@ -90,7 +90,7 @@ support/
    change together for the same contract.
 3. Keep `docs/99.templates/README.md` as a routing document and place detailed
    rules here.
-4. Record validation evidence in the relevant Stage 04 task when support rules
+4. Record validation evidence in the relevant co-located Task when support rules
    change.
 5. Keep the exhaustive metadata inventory advisory; enforce only the safely
    selected changed/new set and the explicitly approved migrated active chain.

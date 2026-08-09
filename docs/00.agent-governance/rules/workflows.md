@@ -17,10 +17,10 @@ contract — do not duplicate it here).
 
 | Step | Stage                             | Orchestration skill                                            | Worker agent                       | Output                       |
 | ---- | --------------------------------- | -------------------------------------------------------------- | ---------------------------------- | ---------------------------- |
-| 1    | 01 requirements → 02 architecture | `requirements-to-design-agent`                                 | `doc-writer`                       | PRD → ARD/ADR                |
+| 1    | 01 requirements → 02 architecture | `requirements-to-design-agent`                                 | `doc-writer`                       | PRD → Architecture Description / ADR |
 | 2    | 03 specs                          | `compose-stack-agent` (infra) / `requirements-to-design-agent` | `doc-writer`, `infra-implementer`  | Spec + contracts             |
-| 3    | 04 execution plans                | `execution-plan-agent`                                         | `workflow-supervisor`              | Plan                         |
-| 4    | 04 execution tasks                | `task-breakdown-agent`                                         | worker per scope                   | Task evidence                |
+| 3    | 03 co-located plans               | `execution-plan-agent`                                         | `workflow-supervisor`              | Plan                         |
+| 4    | 03 co-located tasks               | `task-breakdown-agent`                                         | worker per scope                   | Task evidence                |
 | 5    | 05 operations                     | `ops-runbook-agent`                                            | `incident-responder`, `doc-writer` | Guides / policies / runbooks |
 | Gate | all stages                        | `policy-gate-agent`                                            | `workflow-supervisor`              | Pass/fail before completion  |
 
@@ -55,9 +55,9 @@ and `docs/99`.
 | Strategy discipline                | Canonical repository adaptation                                                                                                                                                                                                        |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Skill applicability before action  | Check relevant Stage 00 functions, provider adapters, and requested external skills before mutating state.                                                                                                                             |
-| Brainstorming / design exploration | Capture approved outcomes in PRD, ARD/ADR, Spec, or Plan artifacts; do not create active `docs/superpowers/**` specs.                                                                                                                  |
-| Writing implementation plans       | Use `docs/04.execution/plans/**` and `docs/99.templates/templates/sdlc/plan.template.md`.                                                                                                                                                             |
-| Executing plans                    | Use `docs/04.execution/tasks/**` and record task-by-task evidence.                                                                                                                                                                     |
+| Brainstorming / design exploration | Capture approved outcomes in PRD, Architecture Description/ADR, Spec, or Plan artifacts; do not create active `docs/superpowers/**` specs.                                                                                             |
+| Writing implementation plans       | Use `docs/03.specs/spec-<id>-<capability>/plan.md` and `docs/99.templates/templates/sdlc/plan.template.md`.                                                                                                                              |
+| Executing plans                    | Use the sibling `task.md` and record task-by-task evidence.                                                                                                                                                                              |
 | Test-driven development            | Follow `scopes/qa.md`; mark docs-only or policy-only coverage N/A with rationale.                                                                                                                                                      |
 | Systematic debugging               | Establish root cause before fixes; incidents and recurring failures use Stage 05 incident/postmortem paths where applicable.                                                                                                           |
 | Verification before completion     | Completion claims require command output, manual evidence, or explicit skipped-check rationale.                                                                                                                                        |
@@ -84,7 +84,7 @@ runtime:
 | Applicability       | Decide whether each skill changes the work method, output artifact, or validation scope.                                                    | Inapplicable skills are recorded as N/A only when they were requested or materially relevant.            |
 | Provider loading    | Load the provider adapter file (`.claude/skills/*/SKILL.md`, `.agents/skills/*/SKILL.md`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail.                             |
 | Canonical artifact  | Write the resulting plan, task, policy, runbook, code, or review output to the repository's canonical stage path.                           | Active artifacts live under `docs/01` to `docs/05`, `docs/90`, `docs/99`, or the scoped runtime surface. |
-| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks.                                                             | The applicable Stage 04 Task captures the command, outcome, and rationale.                               |
+| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks.                                                             | The applicable co-located Task captures the command, outcome, and rationale.                             |
 
 Provider-local skill files may describe runtime mechanics, but they do not own
 the lifecycle policy above.
@@ -124,7 +124,7 @@ that a live native event executed.
    the Communication Protocol.
 3. The `policy-gate-agent` step must pass before any stage document is marked complete.
 4. Review `memory/README.md` and `memory/current.md` before starting. Record
-   progress, verification, and final evidence in the applicable Stage 04 Task,
+   progress, verification, and final evidence in the applicable co-located Task,
    then refresh only the bounded current handoff. `memory/progress.md` remains
    append-preserved historical navigation.
 

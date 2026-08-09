@@ -53,9 +53,9 @@ README files do not inherit leaf-document identity, parent, freshness, or
 lifecycle fields. Template-source metadata is removed when the README template
 is copied unless the selected profile independently permits a consumed field.
 Repo-support README files remain frontmatter-free under their explicit profile.
-An archive-root `README.md` remains a README routing surface selected by the
-README registry; non-README Markdown beneath root `archive/**` is classified
-through the separate `content-archive` selector.
+An archive `README.md` remains a README routing surface selected by the README
+registry; non-README archive Markdown is classified only beneath
+`docs/98.archive/**` through the `sdlc-archive` selector.
 
 ## Local Content and Shared Rules
 
@@ -94,7 +94,7 @@ against root-level `scripts/*.sh` duplicates, remain owned by
 - Secret-related catalogs expose identifiers, paths, and redacted workflow only.
 - Changes to title, role, status summary, or inventory are reflected in the
   parent catalog when required.
-- Validation evidence and any approved deviation are recorded in Stage 04.
+- Validation evidence and any approved deviation are recorded in the co-located Task.
 
 ## Related Documents
 

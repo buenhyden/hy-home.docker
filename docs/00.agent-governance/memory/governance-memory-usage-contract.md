@@ -16,13 +16,13 @@ layer: agentic
 
 This historical finding recorded the first repository memory workflow. Its
 active-work-log assumptions are superseded by the bounded current-memory
-contract and durable Stage 04 Task evidence.
+contract and durable co-located Task evidence.
 
 ## Context
 
 `docs/00.agent-governance/memory/` remains advisory. The current replacement is
 defined by [`README.md`](./README.md), [`current.md`](./current.md), and the
-applicable Stage 04 Task; memory cannot override rules, scopes, provider
+applicable co-located Task; memory cannot override rules, scopes, provider
 overlays, direct user instructions, or live repository evidence.
 
 ## Resolution
@@ -34,7 +34,7 @@ This finding is retained only for provenance. The replacement contract is:
 - Retrieve only relevant durable notes with targeted search and corroborate
   them against live evidence.
 - Record progress, verification, final evidence, and durable links in the
-  applicable Stage 04 Task.
+  applicable co-located Task.
 - Refresh `current.md` in place after verified-state changes.
 - Treat `progress.md` only as append-preserved historical navigation.
 - Create durable out-of-scope or repeated-failure notes from

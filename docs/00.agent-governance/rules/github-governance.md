@@ -64,7 +64,7 @@ Repo-local stricter rules always override this document; never weaken them on th
   script-backed QA/CI gates). Agents must not invoke `pre-commit run` directly.
   An approved final QA all-files run uses only
   `scripts/validation/run-agent-precommit-all-files.sh` in an initially clean
-  linked worktree with Stage 04 evidence and minimal allowed prefixes.
+  linked worktree with co-located Task evidence and minimal allowed prefixes.
   Its evidence covers only Git-visible, non-ignored repository paths; it does
   not observe ignored/outside writes or provide process/filesystem sandboxing.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
@@ -241,7 +241,7 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `.github/INDEX.md`
 - `.github/rulesets/main-protection.md`
 - `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`
-- `docs/05.operations/runbooks/00-workspace/release-management.md`
+- `docs/05.operations/00-workspace/ops-<id>-release-management/runbook.md`
 
 ## References
 

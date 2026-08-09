@@ -11,7 +11,7 @@ common:
     archived: []
   globally_forbidden: [type, document_type, template_type, owner, links]
   typed_keys:
-    [status, artifact_id, artifact_type, parent_ids, created, updated, supersedes, reviewed_at, review_cycle]
+    [status, artifact_id, artifact_type, parent_ids, created, updated, supersedes, completed_at, reviewed_at, next_review_at, occurred_at, resolved_at, released_at, archived_at]
   frontmatter_order:
     - status
     - artifact_id
@@ -20,11 +20,15 @@ common:
     - created
     - updated
     - supersedes
+    - completed_at
     - reviewed_at
-    - review_cycle
+    - next_review_at
+    - occurred_at
+    - resolved_at
+    - released_at
     - generated_by
     - archived_from
-    - archived_on
+    - archived_at
     - archive_reason
     - archive_disposition
     - archived_commit
@@ -46,10 +50,13 @@ common:
     created: <created-at>
     updated: <updated-at>
     reviewed_at: <reviewed-at>
-    review_cycle: <review-cycle>
+    next_review_at: <next-review-at>
+    completed_at: <completed-at>
+    occurred_at: <occurred-at>
+    resolved_at: <resolved-at>
+    released_at: <released-at>
     archived_from: docs/<original-path>.md
-    content_archived_from: archive/<original-path>.md
-    archived_on: YYYY-MM-DD
+    archived_at: <archived-at>
     archive_reason: <archive-reason>
     archive_disposition: <archive-disposition>
     archived_commit: <archived-commit>
@@ -78,57 +85,6 @@ document_families:
     ]
 
 archive_profiles:
-  content-archive:
-    path_globs: [archive/**/*.md]
-    template: docs/99.templates/templates/common/content-archive.template.md
-    artifact_type: archive
-    required:
-      [
-        status,
-        artifact_id,
-        artifact_type,
-        archived_from,
-        archived_on,
-        archive_reason,
-        archive_disposition,
-        archived_commit,
-        archived_blob,
-        preservation_class,
-      ]
-    optional: []
-    forbidden:
-      [
-        parent_ids,
-        layer,
-        supersedes,
-        current_replacement,
-        snapshot_path,
-        content_sha256,
-        snapshot_reason,
-        reviewed_at,
-        review_cycle,
-        type,
-        document_type,
-        template_type,
-        owner,
-        links,
-        generated_by,
-      ]
-    allowed_statuses: [archived]
-    allowed_parent_types: []
-    allow_empty_parents: true
-    disposition: archive exception
-    conditions:
-      replacement:
-        field: current_replacement
-        required_for: []
-        forbidden_for: [superseded, duplicate, conflict, withdrawn, evidence-preserve]
-        optional_for: []
-      snapshot:
-        fields: [snapshot_path, content_sha256, snapshot_reason]
-        required_for: []
-        forbidden_for: [git-history, immutable-snapshot]
-
   sdlc-archive:
     path_globs: [docs/98.archive/**/*.md]
     template: docs/99.templates/templates/common/archive.template.md
@@ -140,7 +96,7 @@ archive_profiles:
         artifact_type,
         parent_ids,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         archive_disposition,
         archived_commit,
@@ -152,7 +108,7 @@ archive_profiles:
     forbidden:
       [
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
@@ -215,8 +171,6 @@ readme_profiles:
       - docs/02.architecture/*/README.md
       - docs/03.specs/README.md
       - docs/03.specs/*/README.md
-      - docs/04.execution/README.md
-      - docs/04.execution/*/README.md
       - docs/05.operations/README.md
       - docs/05.operations/*/README.md
       - docs/05.operations/*/*/README.md
@@ -543,9 +497,8 @@ template_roles:
     source: docs/99.templates/templates/operations/guide.template.md
     artifact_profile: guide
     target_globs: [docs/05.operations/*/ops-*/guide.md]
-    required_headings:
-      ['## Usage', '## Common Checks', '## Runbook Handoff', '## Related Documents']
-    conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Troubleshooting']
+    required_headings: ['## Usage', '## Common Checks', '## Related Documents']
+    conditional_headings: ['## Overview', '## Audience and Prerequisites', '## Runbook Handoff', '## Troubleshooting']
     forbidden_headings: ['## Rollback or Recovery', '## Escalation']
   policy:
     source: docs/99.templates/templates/operations/policy.template.md
@@ -683,20 +636,6 @@ template_roles:
     required_headings:
       ['## Overview', '## Archive Metadata', '## Archive Ledger', '## Related Documents']
     conditional_headings: ['## Current Replacement', '## Preserved Evidence']
-    forbidden_headings: ['## Current Implementation']
-  content-archive:
-    source: docs/99.templates/templates/common/content-archive.template.md
-    artifact_profile: archive
-    target_globs: [archive/**/*.md]
-    required_headings:
-      [
-        '## Overview',
-        '## Current-use Warning',
-        '## Archive Metadata',
-        '## Archive Ledger',
-        '## Related Documents',
-      ]
-    conditional_headings: ['## Historical Retrieval']
     forbidden_headings: ['## Current Implementation']
   readme:
     source: docs/99.templates/templates/common/readme.template.md
@@ -857,11 +796,11 @@ profiles:
         owner,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -884,11 +823,11 @@ profiles:
         owner,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -904,7 +843,7 @@ profiles:
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
-      [type, document_type, template_type, owner, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+      [type, document_type, template_type, owner, links, reviewed_at, next_review_at, generated_by, layer, archived_from, archived_at, archive_reason, current_replacement]
     allowed_statuses: [draft, active, completed, superseded]
     allowed_parent_types: [prd, srs]
     allow_empty_parents: false
@@ -917,7 +856,7 @@ profiles:
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
     forbidden:
-      [type, document_type, template_type, owner, links, reviewed_at, review_cycle, generated_by, layer, archived_from, archived_on, archive_reason, current_replacement]
+      [type, document_type, template_type, owner, links, reviewed_at, next_review_at, generated_by, layer, archived_from, archived_at, archive_reason, current_replacement]
     allowed_statuses: [draft, active, completed, superseded]
     allowed_parent_types: [prd, srs, interface-requirement]
     allow_empty_parents: false
@@ -937,11 +876,11 @@ profiles:
         owner,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -955,7 +894,7 @@ profiles:
     id_pattern: 'spec-[0-9]{4}'
     path_identity: direct
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
-    optional: [supersedes, reviewed_at, review_cycle]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
@@ -966,12 +905,12 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [architecture-description, adr, spec, archive]
+    allowed_parent_types: [architecture-description, adr, spec]
     allow_empty_parents: false
     disposition: migration candidate
 
@@ -983,7 +922,7 @@ profiles:
     artifact_id_identity_pattern: 'plan-(?P<identity>[0-9]{4})'
     identity_capture: identity
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
-    optional: [supersedes]
+    optional: [supersedes, completed_at]
     forbidden:
       [
         type,
@@ -992,16 +931,16 @@ profiles:
         owner,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, archive]
+    allowed_parent_types: [spec]
     allow_empty_parents: false
     disposition: migration candidate
 
@@ -1013,7 +952,7 @@ profiles:
     artifact_id_identity_pattern: 'task-(?P<identity>[0-9]{4})-[0-9]{2}'
     identity_capture: identity
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
-    optional: [supersedes]
+    optional: [supersedes, completed_at]
     forbidden:
       [
         type,
@@ -1022,16 +961,16 @@ profiles:
         owner,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, plan, task, archive]
+    allowed_parent_types: [spec, plan, task]
     allow_empty_parents: false
     disposition: migration candidate
 
@@ -1043,7 +982,7 @@ profiles:
     artifact_id_identity_pattern: 'guide-(?P<identity>[0-9]{4})'
     identity_capture: identity
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
-    optional: [supersedes, reviewed_at, review_cycle]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
@@ -1054,7 +993,7 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1070,7 +1009,7 @@ profiles:
     parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
     artifact_id_identity_pattern: 'policy-(?P<identity>[0-9]{4})'
     identity_capture: identity
-    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at, review_cycle]
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at, next_review_at]
     optional: [supersedes]
     forbidden:
       [
@@ -1082,7 +1021,7 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1098,7 +1037,7 @@ profiles:
     parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
     artifact_id_identity_pattern: 'runbook-(?P<identity>[0-9]{4})'
     identity_capture: identity
-    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at, review_cycle]
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, reviewed_at, next_review_at]
     optional: [supersedes]
     forbidden:
       [
@@ -1110,12 +1049,12 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
     allowed_statuses: [draft, active, completed, superseded]
-    allowed_parent_types: [spec, plan, task, guide, policy, archive]
+    allowed_parent_types: [spec, plan, task, guide, policy]
     allow_empty_parents: false
     disposition: migration candidate
 
@@ -1123,8 +1062,8 @@ profiles:
     path_globs: [docs/05.operations/incidents/inc-*/incident.md]
     id_pattern: 'inc-[0-9]{4}'
     path_identity: direct
-    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
-    optional: [supersedes]
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, occurred_at]
+    optional: [supersedes, resolved_at]
     forbidden:
       [
         type,
@@ -1133,11 +1072,11 @@ profiles:
         owner,
         links,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1162,11 +1101,11 @@ profiles:
         template_type,
         owner,
         links,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1179,7 +1118,7 @@ profiles:
     path_globs: [docs/05.operations/releases/rel-*/release.md]
     id_pattern: 'rel-[0-9]{4}'
     path_identity: direct
-    required: [status, artifact_id, artifact_type, parent_ids, created, updated]
+    required: [status, artifact_id, artifact_type, parent_ids, created, updated, released_at]
     optional: [supersedes, reviewed_at]
     forbidden:
       [
@@ -1188,11 +1127,11 @@ profiles:
         template_type,
         owner,
         links,
-        review_cycle,
+        next_review_at,
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1203,7 +1142,7 @@ profiles:
 
   reference:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, review_cycle]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
@@ -1214,7 +1153,7 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1225,7 +1164,7 @@ profiles:
 
   audit:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, review_cycle]
+    optional: [supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
@@ -1236,7 +1175,7 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1255,14 +1194,14 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
         links,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1284,14 +1223,14 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
         owner,
         links,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1310,7 +1249,7 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
@@ -1318,7 +1257,7 @@ profiles:
         links,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1337,7 +1276,7 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
@@ -1346,7 +1285,7 @@ profiles:
         generated_by,
         layer,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1366,7 +1305,7 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
@@ -1374,7 +1313,7 @@ profiles:
         links,
         generated_by,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         current_replacement,
       ]
@@ -1392,7 +1331,7 @@ profiles:
         artifact_type,
         parent_ids,
         archived_from,
-        archived_on,
+        archived_at,
         archive_reason,
         archive_disposition,
         archived_commit,
@@ -1404,7 +1343,7 @@ profiles:
     forbidden:
       [
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,
@@ -1453,7 +1392,7 @@ profiles:
         parent_ids,
         supersedes,
         reviewed_at,
-        review_cycle,
+        next_review_at,
         type,
         document_type,
         template_type,

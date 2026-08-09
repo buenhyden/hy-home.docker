@@ -61,7 +61,7 @@ Standard behavior contract for repo-local, auditable agent execution.
 10. Execute the change in place.
 11. Verify with the smallest checks that prove the contract.
 12. Record progress, verification evidence, and durable memory links in the
-    applicable Stage 04 Task, then refresh `memory/current.md` with only the
+    applicable co-located Task, then refresh `memory/current.md` with only the
     bounded next handoff.
 13. Report changed files, checks run, and any residual risk or out-of-scope gap.
 
@@ -107,7 +107,7 @@ validate -> independent-review -> evidence -> handoff` describe agent
 - Keep provider-specific behavior in provider files, not in generic scope/rule files.
 - Keep runtime behavior synchronized across the active provider's runtime surface and the corresponding
   `docs/00.agent-governance/agents/` catalog entries.
-- Record work progress and final evidence in the applicable Stage 04 Task and
+- Record work progress and final evidence in the applicable co-located Task and
   keep `docs/00.agent-governance/memory/current.md` bounded to the next handoff.
 - Record historical notes under `docs/00.agent-governance/memory/` from
   `docs/99.templates/templates/governance/memory.template.md`; do not use memory notes as active policy.

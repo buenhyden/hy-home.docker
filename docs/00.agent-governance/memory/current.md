@@ -27,7 +27,7 @@ status: active
   instruction satisfies.
 - Revalidation covers two axes: repository-local counted facts and current
   official external sources.
-- Governance lifecycle for this work is one Stage 04 Task, without a new Spec
+- Governance lifecycle for this work is one co-located Task, without a new Spec
   or Plan.
 - Fixed historical boundaries stay unchanged by this revalidation: the
   2026-07-10 model cutoff, the 2026-07-26 typed contract timestamps, and every
@@ -114,7 +114,7 @@ status: active
 - A typed domain-memory taxonomy with validator-enforced promotion, retention,
   archival, and deletion stays outside current scope. The new memory-hierarchy
   leaf records the research basis for it. That leaf also corrects the record
-  that the deferral wording originates in the Stage 04 Task ledger rather than
+  that the deferral wording originates in the co-located Task ledger rather than
   in Spec 134.
 
 ## Evidence links

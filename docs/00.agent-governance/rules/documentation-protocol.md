@@ -17,9 +17,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Select the target profile and mapped copyable template through the canonical
   Stage 99 registry and support contracts for every new or modified
   target-stage document under `docs/01.requirements/`,
-  `docs/02.architecture/`, `docs/03.specs/`,
-  `docs/05.operations/`, `docs/90.references/`, `docs/98.archive/`, and root
-  `archive/` content tombstones.
+  `docs/02.architecture/`, `docs/03.specs/`, `docs/05.operations/`,
+  `docs/90.references/`, and `docs/98.archive/`.
 - Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep root `README.md` and human-facing folder READMEs Korean by default,
@@ -35,7 +34,7 @@ Protocol for maintaining documentation consistency and governance traceability.
   `task.md` are technical
   contracts, implementation plans, and execution evidence for agents,
   reviewers, and CI checks.
-- Keep `docs/05.operations/{guides,policies,runbooks,incidents,releases}/**`
+- Keep stable Operations subjects plus Incident and Release records
   human-facing and Korean by default. Preserve code identifiers, service names,
   command names, environment variables, Docker profiles, secret IDs, evidence
   labels, and quoted upstream terms in their original form.
@@ -53,11 +52,12 @@ Protocol for maintaining documentation consistency and governance traceability.
   Template READMEs are human-facing and Korean by default; template source for
   English-only targets must not introduce Korean placeholders.
 - PRD files under `docs/01.requirements/` use the canonical
-  `NNN-feature-or-system.md` filename form.
-- Spec folders under `docs/03.specs/` use the canonical `NNN-feature-id/`
-  directory form; parent specs live at `docs/03.specs/NNN-feature-id/spec.md`.
+  `prd-<id>-<slug>.md` filename form.
+- Spec folders under `docs/03.specs/` use the canonical
+  `spec-<id>-<capability>/` directory form; Spec, Plan, and Task live together
+  as `spec.md`, `plan.md`, and `task.md`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
-- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). SDLC archive tombstones live under `docs/98.archive`; content tombstones may live under root `archive/**`. Neither is an active artifact.
+- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). Tombstones live only under `docs/98.archive` and are not active artifacts.
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 - `README.md` files and root instruction shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are documentation surfaces for DOCS 3 unless a higher-priority runtime constraint explicitly exempts them.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
@@ -76,7 +76,7 @@ Protocol for maintaining documentation consistency and governance traceability.
   artifact manifest, and copied targets must replace every placeholder.
 - **Current memory evidence**: `docs/00.agent-governance/memory/current.md` is
   the bounded active handoff governed by its registered profile. Progress,
-  verification, and final evidence belong in the applicable Stage 04 Task;
+  verification, and final evidence belong in the applicable co-located Task;
   `memory/progress.md` keeps its existing template mapping only as
   append-preserved historical navigation.
   `docs/99.templates/README.md` is an active folder README and may use
@@ -84,8 +84,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
-  Archive tombstones under `docs/98.archive` and root `archive/**` MUST use
-  `status: archived` and the exact path-selected archive profile.
+  Archive tombstones under `docs/98.archive` MUST use `status: archived` and
+  the exact path-selected archive profile.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
   frontmatter. Markdown template source metadata follows the Stage 99 registry:
   Governance Memory and Progress sources use exactly `layer: agentic` and
@@ -128,7 +128,7 @@ registry schema.
 
 1. Resolve the intended target path and role, then require exactly one registry
    profile match. Zero matches, overlapping matches, an unsupported path, or an
-   unclear role is blocking ambiguity; record the gap in Stage 04 and escalate
+   unclear role is blocking ambiguity; record the gap in the owning co-located Task and escalate
    instead of choosing the nearest profile.
 2. Use the
    [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
@@ -184,14 +184,14 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 | `docs/02.architecture/descriptions/ad-<id>-<slug>.md`                  | Architecture Description             | `docs/99.templates/templates/sdlc/architecture-description.template.md` |
 | `docs/02.architecture/decisions/`                                      | ADR                                  | `docs/99.templates/templates/sdlc/adr.template.md`                    |
 | `docs/03.specs/`                                                       | Spec                                 | `docs/99.templates/templates/sdlc/spec.template.md`                   |
-| `docs/03.specs/NNN-feature-id/api-spec.md`                             | API Spec                             | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
-| `docs/03.specs/NNN-feature-id/agent-design.md`                         | Agent Design                         | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
-| `docs/03.specs/NNN-feature-id/data-model.md`                           | Data Model                           | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
-| `docs/03.specs/NNN-feature-id/service.md`                              | Service Scaffold                     | `docs/99.templates/templates/spec-contracts/service.template.md`      |
-| `docs/03.specs/NNN-feature-id/tests.md`                                | Test Contract                        | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
-| `docs/03.specs/NNN-feature-id/contracts/openapi.yaml`                  | OpenAPI Contract                     | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
-| `docs/03.specs/NNN-feature-id/contracts/schema.graphql`                | GraphQL Contract                     | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
-| `docs/03.specs/NNN-feature-id/contracts/service.proto`                 | Protobuf Contract                    | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
+| `docs/03.specs/spec-<id>-<capability>/api-spec.md`                             | API Spec                             | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
+| `docs/03.specs/spec-<id>-<capability>/agent-design.md`                         | Agent Design                         | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
+| `docs/03.specs/spec-<id>-<capability>/data-model.md`                           | Data Model                           | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
+| `docs/03.specs/spec-<id>-<capability>/service.md`                              | Service Scaffold                     | `docs/99.templates/templates/spec-contracts/service.template.md`      |
+| `docs/03.specs/spec-<id>-<capability>/tests.md`                                | Test Contract                        | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
+| `docs/03.specs/spec-<id>-<capability>/contracts/openapi.yaml`                  | OpenAPI Contract                     | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
+| `docs/03.specs/spec-<id>-<capability>/contracts/schema.graphql`                | GraphQL Contract                     | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
+| `docs/03.specs/spec-<id>-<capability>/contracts/service.proto`                 | Protobuf Contract                    | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
 | `docs/01.requirements/srs-<id>-<slug>.md`                              | SRS                                  | `docs/99.templates/templates/sdlc/srs.template.md`                    |
 | `docs/01.requirements/interface-<id>-<slug>.md`                        | Interface Requirement                | `docs/99.templates/templates/sdlc/interface-requirement.template.md`  |
 | `docs/03.specs/spec-<id>-<slug>/plan.md`                               | Plan                                 | `docs/99.templates/templates/sdlc/plan.template.md`                   |
@@ -208,12 +208,12 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 | `docs/98.archive/`                                                     | Archive Tombstone                    | `docs/99.templates/templates/common/archive.template.md`              |
 | `README.md` (per folder)                                               | README                               | `docs/99.templates/templates/common/readme.template.md`               |
 
-For optional supporting contracts under `docs/03.specs/NNN-feature-id/`, keep
+For optional supporting contracts under `docs/03.specs/spec-<id>-<capability>/`, keep
 Markdown support files in the feature directory and machine-readable contracts
 under `contracts/`. Parent Markdown Spec or API Spec documents own the
 cross-links for YAML, GraphQL, and Proto files.
 
-Plan and Task are separate Stage 04 roles. Plan is prospective and records
+Plan and Task are co-located capability roles. Plan is prospective and records
 sequence, intended verification, risk, rollback, and completion criteria. Task
 is evidentiary and records attempted work, allowed and forbidden paths,
 applicable protected-surface approval, impact, exact commands and results,
@@ -231,11 +231,11 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 | `docs/01.requirements/**`                         | Korean human-facing intent; technical identifiers unchanged                                         | Requirements capture user value, scope, and acceptance criteria for human review.                  |
 | `docs/02.architecture/**`                         | Mixed: Korean rationale with English IDs, titles, and technical terms preserved                     | Architecture documents are reviewed by humans and agents and must preserve decision/contracts.     |
 | `docs/03.specs/**`                                | English-only                                                                                        | Specs define technical contracts, interfaces, and verification criteria.                           |
-| `docs/04.execution/plans/**`                      | English-only                                                                                        | Plans define implementation sequencing, risk controls, and validation gates.                       |
-| `docs/04.execution/tasks/**`                      | English-only                                                                                        | Tasks are audit evidence and must stay machine-reviewable.                                         |
-| `docs/05.operations/guides/**`                    | Korean human-facing body; technical identifiers unchanged                                           | Guides help operators and developers understand and use services.                                  |
-| `docs/05.operations/policies/**`                  | Korean human-facing body; control names and evidence identifiers unchanged                          | Policies define allowed/disallowed operational states for human review.                            |
-| `docs/05.operations/runbooks/**`                  | Korean human-facing procedure; commands and expected evidence unchanged                             | Runbooks support incidents, recovery, rollback, and escalation.                                    |
+| `docs/03.specs/spec-*/plan.md`                    | English-only                                                                                        | Plans define implementation sequencing, risk controls, and validation gates.                       |
+| `docs/03.specs/spec-*/task.md`                    | English-only                                                                                        | Tasks are audit evidence and must stay machine-reviewable.                                         |
+| `docs/05.operations/*/ops-*/guide.md`             | Korean human-facing body; technical identifiers unchanged                                           | Guides help operators and developers understand and use services.                                  |
+| `docs/05.operations/*/ops-*/policy.md`            | Korean human-facing body; control names and evidence identifiers unchanged                          | Policies define allowed/disallowed operational states for human review.                            |
+| `docs/05.operations/*/ops-*/runbook.md`           | Korean human-facing procedure; commands and expected evidence unchanged                             | Runbooks support incidents, recovery, rollback, and escalation.                                    |
 | `docs/05.operations/incidents/**`                 | Korean incident narrative; technical evidence unchanged                                             | Incident records and postmortems preserve operator-readable timelines and actions.                 |
 | `docs/05.operations/releases/**`                  | Korean release narrative; artifact identifiers, timestamps, commands, and evidence labels unchanged | Release records preserve evidence for an actual event and remain distinct from deployment runtime. |
 | `docs/90.references/**`                           | Audience-specific: LLM/generated indexes may be English; human references Korean by default         | References support active docs without replacing policy or runtime truth.                          |
@@ -335,22 +335,22 @@ or evidence across stages.
 | Gap Type                                                                                                 | Canonical Owner               | Routing Rule                                                                                                                                                                                     |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Governance, provider behavior, agent execution rule, approval boundary, or memory contract               | `docs/00.agent-governance/`   | Update the rule/provider/memory surface only when the policy change is approved; otherwise record a memory note or task gap.                                                                     |
-| User value, scope, acceptance criteria, or product intent                                                | `docs/01.requirements/`       | Create or update the numbered PRD. Link downstream architecture/spec work instead of embedding design details.                                                                                   |
-| Architecture shape, major technical decision, quality attribute, or tradeoff                             | `docs/02.architecture/`       | Use ARD for enduring architecture and ADR for a decision record. Link PRD/spec evidence.                                                                                                         |
-| Interface, data model, service contract, agent contract, or verification contract                        | `docs/03.specs/`              | Update the numbered spec folder and optional support contract files. Do not record execution evidence here.                                                                                      |
-| Work sequencing, approval gates, rollback strategy, or implementation backlog                            | `docs/04.execution/plans/`    | Create or update a plan. Keep actual execution results in the sibling task document.                                                                                                             |
-| Completed work evidence, validation output, deviation, or implementation disposition                     | `docs/04.execution/tasks/`    | Record the task result, checks, protected-surface boundary, and remaining gaps.                                                                                                                  |
-| Operator usage, operational control, recovery procedure, incident, or postmortem                         | `docs/05.operations/`         | Route usage to `guides/`, policy to `policies/`, recovery to `runbooks/`, and incident evidence to `incidents/`.                                                                                 |
+| User value, scope, acceptance criteria, or product intent                                                | `docs/01.requirements/`       | Create or update the stable `prd-<id>-<slug>.md` PRD. Link downstream architecture/spec work instead of embedding design details.                                                               |
+| Architecture shape, major technical decision, quality attribute, or tradeoff                             | `docs/02.architecture/`       | Use an Architecture Description for enduring architecture and an ADR for a decision record. Link requirement/spec evidence.                                                                      |
+| Interface, data model, service contract, agent contract, or verification contract                        | `docs/03.specs/`              | Update the stable `spec-<id>-<capability>/` folder and optional support contract files.                                                                                                           |
+| Work sequencing, approval gates, rollback strategy, or implementation backlog                            | owning Spec folder            | Create or update `docs/03.specs/spec-<id>-<capability>/plan.md`; keep actual results in its sibling Task.                                                                                          |
+| Completed work evidence, validation output, deviation, or implementation disposition                     | owning Spec folder            | Record evidence in `docs/03.specs/spec-<id>-<capability>/task.md`.                                                                                                                                |
+| Operator usage, operational control, recovery procedure, incident, or postmortem                         | `docs/05.operations/`         | Route Guide, Policy, and Runbook roles together under `docs/05.operations/<domain>/ops-<id>-<subject>/`; use stable Incident paths for event evidence.                                             |
 | Source-backed research, audit snapshot, data reference, learning note, or LLM navigation                 | `docs/90.references/`         | Keep it evidence-only. Do not make it active policy, plan, task evidence, or runtime truth.                                                                                                      |
 | Obsolete or implementation-conflicting document that must leave the active chain                         | `docs/98.archive/`            | Classify through the Stage 99 migration owner, create a validated provenance tombstone, update only the applicable transitional or generated ledger, and remove active current-truth references. |
 | Template, frontmatter, lifecycle, migration, archive, retention, or authoring contract                   | `docs/99.templates/`          | Put reusable human rules in their named `support/` owner, machine semantics in the registries, and copyable document shapes in `templates/`.                                                     |
-| Runtime, secret value, credential, remote GitHub mutation, deployment, or uncertain implementation drift | Stage 04 task/audit gap first | Record as out-of-scope or approval-gated unless the current task explicitly approves that surface and names validation/rollback evidence.                                                        |
+| Runtime, secret value, credential, remote GitHub mutation, deployment, or uncertain implementation drift | co-located Task/audit gap first | Record as out-of-scope or approval-gated unless the current task explicitly approves that surface and names validation/rollback evidence.                                                      |
 
 If one gap spans multiple stages, update the earliest canonical owner that
 changes the decision or rule, then link downstream artifacts. For example, a
 new operational requirement starts in `docs/01.requirements/`, design belongs
 in `docs/02.architecture/` or `docs/03.specs/`, rollout belongs in
-`docs/04.execution/`, and operator procedure belongs in `docs/05.operations/`.
+the owning Spec's Plan and Task, and operator procedure belongs in `docs/05.operations/`.
 
 ## 6. Maintenance and Safety
 
@@ -361,32 +361,28 @@ in `docs/02.architecture/` or `docs/03.specs/`, rollout belongs in
 
 ## 7. File Naming Conventions
 
-- **Dated artifacts** (plans, tasks, memory notes, ADRs, specs with a date component): prefix with `YYYY-MM-DD-<topic>`. Example: `2026-05-15-network-standardization.md`.
-- **All filenames**: use kebab-case; no spaces, no underscores, no uppercase letters in the filename itself.
+- **Stable artifacts**: use the role ID and slug; dates belong only in typed metadata.
+- **All filenames**: use kebab-case; no date prefixes, spaces, underscores, or uppercase letters.
 - **Templates**: use the pattern `<type>.template.<ext>`. Example: `memory.template.md`.
 - **Stage documents without a date**: use a stable descriptive kebab-case name. Example: `spec.md`, `agent-design.md`.
 - **READMEs**: always named exactly `README.md` (uppercase, no date prefix).
 - Agents enforcing naming must not flag `README.md`, template files, or files that predate this rule unless they are being actively edited.
-- **ADRs and ARDs**: use a four-digit zero-padded monotonically increasing sequence
-  number: `NNNN-<short-title>.md`. This sequence is independent of tier prefixes.
+- **Architecture Descriptions and ADRs**: use `ad-NNNN-<slug>.md` and
+  `adr-NNNN-<slug>.md`.
 - **ADR document H1 title format**: `# ADR-NNNN: English Short Title` — four-digit
   zero-padded number, colon, English-only title. Example:
   `# ADR-0003: HashiCorp Vault as Centralized Secrets Manager`.
-- **ARD document H1 title format**: `# [Domain] Architecture Reference Document (ARD)` —
-  must end with the `(ARD)` suffix. Example:
-  `# Security Tier Architecture Reference Document (ARD)`.
+- **Architecture Description H1 title format**: `# [Domain] Architecture Description`.
 - **Task document H1 title format**: `# Task: [Task Name]` — all task files under
-  `docs/04.execution/tasks/` must use this prefix.
+  co-located `task.md` files must use this prefix.
 - **Operations policy required heading**: Use `## Policy Scope` (not `## Applies To`)
-  as the audience and scope heading in all `docs/05.operations/policies/` documents.
+  as the audience and scope heading in all Operations Policy documents.
 - **Tier prefixes** (`01-gateway`, `02-auth`, …, `04-data`, `04-data-analytics`, `11-laboratory`):
   are two-digit service-tier identifiers used in `docs/03.specs/`, `docs/05.operations/`
   folder names, and PRD filename segments. `04-data` and `04-data-analytics` share the
   `04` prefix intentionally; analytics is a sub-tier of data. Do not rename a tier-prefix
   folder that already has active cross-links.
-- Hardening/optimization PRDs reuse the original tier prefix with a new date:
-  `YYYY-MM-DD-NN-<tier>-optimization-hardening.md`. The same tier number `NN` is
-  intentional; the date and the `-optimization-hardening` suffix disambiguate.
+- Hardening/optimization PRDs use a new stable PRD ID and slug.
 
 ## 8. DOCS 3 RULES — HALT CONDITIONS
 
@@ -396,7 +392,7 @@ These rules are blocking. Completion is **PROHIBITED** until all four pass.
 Read the mapped template under `docs/99.templates/templates/` before writing or editing
 any target-stage document → keep required headings → fill every applicable
 section → remove placeholders before completion.
-Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `05.operations` first.
+Infrastructure triggers: new service → Architecture Description first; network change → ADR first; production procedure → Operations first.
 
 **R2 — README Sync:**
 Any folder-level change (file added, moved, removed, or **content-modified**) → the parent `README.md` MUST be updated to reflect the current state of the folder.
@@ -434,16 +430,10 @@ bucket's purpose-profile contract. Profile compliance is machine-verified by
 A document violating R4 is **INCOMPLETE** regardless of content quality.
 Completion is **PROHIBITED** until all profile checks pass.
 
-## 8.5. Cross-Cutting Plans — Spec Link Exception
+## 8.5. Plan and Task Co-location
 
-Plans under `docs/04.execution/plans/` that address cross-cutting concerns
-(workspace audits, governance remediation, tooling lifecycle, agent harness work)
-are **not required** to link a single parent Spec. They must instead reference the
-governance document or operations artifact that scopes their work in
-`## Related Documents`.
-
-Tier-specific implementation plans (one plan ↔ one tier) **must** link the
-corresponding Spec in `## Related Documents`:
+Every Plan and Task is co-located beneath its owning stable Spec directory and
+uses that Spec as its direct lineage anchor.
 `../../03.specs/<tier-id>/spec.md`.
 
 ## 9. Known Architecture Sequence Gaps

@@ -26,7 +26,7 @@ layer: qa
     contract scripts). Agents must not invoke `pre-commit run` directly.
     Approved final QA all-files execution uses only
     `scripts/validation/run-agent-precommit-all-files.sh` from an initially
-    clean linked worktree with a tracked Stage 04 task and reviewed prefixes.
+    clean linked worktree with a tracked co-located Task and reviewed prefixes.
   - **Remote (GitHub CI)**: The ultimate SSoT quality gate. Heavy analysis (e.g., E2E, Zizmor SARIF upload, SonarQube) belongs here.
   - **CI-only pre-commit**:
     `scripts/validation/run-ci-precommit.sh` accepts no arguments or
@@ -63,7 +63,7 @@ not applicable, record the skipped-check rationale in the task evidence.
 | CI workflow or GitHub protection             | Static workflow validation, repo contracts, ruleset documentation review                                                                                                                                | GitHub Actions jobs, branch protection/ruleset verification      | `gh` or workflow evidence where approved                               | Local execution of GitHub-only jobs such as `zizmor` SARIF upload    |
 | Model policy or reasoning-effort config      | Stage 00 policy review, provider sync, validator support check                                                                                                                                          | Required repo contracts after generated surfaces update          | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
 | Agent loop or semantic evaluation            | Typed repository `all` section, provider sync `--check`, eight-fixture/ten-regression model-free eval, and selector tests                                                                                | Existing repository-contract and agent-output eval jobs           | Both deterministic pass markers and sanitized loop evidence            | Live model/provider execution remains unclaimed unless separately observed |
-| Approved high-risk surface                   | Surface-specific local checks plus Stage 04 approval/evidence review; secrets use metadata-only evidence unless a concrete redacted target exists                                                       | Remote GitHub, CI, runtime, or provider gates named in task      | Approval source, before/after evidence, rollback path, redaction notes | Approved but unexecuted surfaces are recorded as verified-only       |
+| Approved high-risk surface                   | Surface-specific local checks plus co-located Task approval/evidence review; secrets use metadata-only evidence unless a concrete redacted target exists                                                | Remote GitHub, CI, runtime, or provider gates named in task      | Approval source, before/after evidence, rollback path, redaction notes | Approved but unexecuted surfaces are recorded as verified-only       |
 
 ## 3.2 Generated-Artifact Freshness
 
@@ -115,7 +115,8 @@ with the fake-binary regression.
 
 - **Regression**: Add regression tests for every bug fix.
 - **Refactor evidence**: For behavior-preserving refactors, run checks that cover the touched behavior and state that no behavior change is intended.
-- **Reporting**: Publish test results to the session summary or `docs/04.execution/tasks/`.
+- **Reporting**: Publish test results to the session summary or the owning
+  Spec's co-located `task.md`.
 - **Controlled all-files hooks**: Run the wrapper only at the approved final QA
   gate. Preserve its hook exit unless it reports distinct unexpected-path exit
   `20`; review all hook-managed edits and record evidence manually. Never reset,

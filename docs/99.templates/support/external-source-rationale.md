@@ -21,7 +21,7 @@ and repository contracts remain canonical for this workspace.
 | [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/) and [GitHub Flavored Markdown](https://github.github.com/gfm/) | Support validating Markdown body structure independently from YAML frontmatter and using the repository's selected GFM-compatible presentation rules. |
 | [Diataxis](https://diataxis.fr/) | Supports keeping learning, explanation, reference, and procedural purposes distinct; the repository maps those concerns to its local document roles. |
 | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) | Informs traceable requirements, constraints, acceptance intent, and verification in the local PRD role. |
-| [ISO/IEC/IEEE 42010:2022](https://www.iso.org/standard/74393.html) | Informs stakeholder, concern, boundary, viewpoint, and architecture-description content in the local ARD role. |
+| [ISO/IEC/IEEE 42010:2022](https://www.iso.org/standard/74393.html) | Informs stakeholder, concern, boundary, viewpoint, and Architecture Description content in the local role. |
 | [MADR](https://adr.github.io/madr/) | Informs the local separation of decision context, options, outcome, consequences, and confirmation. |
 | [GitHub Spec Kit](https://github.com/github/spec-kit) | Informs separation among specification, planning, tasks, implementation, and cross-artifact analysis. |
 | [ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html) | Supports treating lifecycle processes as tailorable and iterative rather than forcing a fixed waterfall. |

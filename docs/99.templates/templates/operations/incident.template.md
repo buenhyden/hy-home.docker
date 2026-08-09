@@ -5,6 +5,8 @@ artifact_type: incident
 parent_ids: []
 created: <created-at>
 updated: <updated-at>
+occurred_at: <occurred-at>
+resolved_at: <resolved-at>
 ---
 
 # {{title}}
