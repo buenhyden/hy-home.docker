@@ -4,16 +4,17 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import hashlib
 import json
 import os
 import pathlib
 import re
+import secrets
 import shutil
 import stat
 import subprocess
 import sys
-import tempfile
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
@@ -103,6 +104,259 @@ def fail(code: str, detail: str) -> None:
     raise Gate9Error(code, detail)
 
 
+@dataclasses.dataclass(frozen=True)
+class RegisteredScratchEntry:
+    parent_fd: int
+    name: str
+    identity: tuple[int, int]
+    mode: int
+    is_directory: bool
+
+
+class PinnedScratch:
+    """Own scratch objects only through pinned directory descriptors."""
+
+    def __init__(self, prefix: str = "gate9-") -> None:
+        base_path = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
+        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+        try:
+            self._base_fd = os.open(base_path, flags)
+            self._base_path = base_path
+            self._base_identity = self._directory_identity(self._base_fd)
+            for _ in range(128):
+                holding_name = f"{prefix}{secrets.token_hex(12)}"
+                try:
+                    os.mkdir(holding_name, mode=0o700, dir_fd=self._base_fd)
+                    break
+                except FileExistsError:
+                    continue
+            else:
+                fail("SCRATCH_SCOPE_DRIFT", "cannot allocate unique scratch holding")
+            self._holding_name = holding_name
+            self.holding_path = self._base_path / holding_name
+            self._holding_fd = os.open(holding_name, flags, dir_fd=self._base_fd)
+            self._holding_identity = self._directory_identity(self._holding_fd)
+            os.mkdir("scratch", mode=0o700, dir_fd=self._holding_fd)
+            self._scratch_fd = os.open("scratch", flags, dir_fd=self._holding_fd)
+            self._scratch_identity = self._directory_identity(self._scratch_fd)
+        except OSError as error:
+            for descriptor_name in ("_scratch_fd", "_holding_fd", "_base_fd"):
+                descriptor = getattr(self, descriptor_name, None)
+                if descriptor is not None:
+                    os.close(descriptor)
+            fail("SCRATCH_SCOPE_DRIFT", f"cannot pin scratch directories: {error}")
+        self.path = pathlib.Path(f"/proc/self/fd/{self._scratch_fd}")
+        self._directories: dict[str, tuple[int, RegisteredScratchEntry]] = {}
+        self._files: dict[str, RegisteredScratchEntry] = {}
+        self._file_contracts: dict[
+            str, tuple[int, tuple[int, int] | None]
+        ] = {}
+        self._closed = False
+
+    @staticmethod
+    def _directory_identity(descriptor: int) -> tuple[int, int, int]:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISDIR(metadata.st_mode):
+            fail("SCRATCH_SCOPE_DRIFT", "pinned descriptor is not a directory")
+        return metadata.st_dev, metadata.st_ino, stat.S_IMODE(metadata.st_mode)
+
+    @property
+    def pass_fds(self) -> tuple[int, ...]:
+        return (
+            self._base_fd,
+            self._holding_fd,
+            self._scratch_fd,
+            *(descriptor for descriptor, _ in self._directories.values()),
+        )
+
+    def _parent_for(self, relative: pathlib.PurePosixPath) -> tuple[int, str]:
+        if relative.is_absolute() or ".." in relative.parts or not relative.parts:
+            fail("SCRATCH_SCOPE_DRIFT", f"unsafe scratch path: {relative}")
+        parent_fd = self._scratch_fd
+        accumulated: list[str] = []
+        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+        for part in relative.parts[:-1]:
+            accumulated.append(part)
+            key = "/".join(accumulated)
+            if key not in self._directories:
+                try:
+                    os.mkdir(part, mode=0o700, dir_fd=parent_fd)
+                    descriptor = os.open(part, flags, dir_fd=parent_fd)
+                    metadata = os.stat(part, dir_fd=parent_fd, follow_symlinks=False)
+                except OSError as error:
+                    fail("SCRATCH_SCOPE_DRIFT", f"cannot create scratch directory: {error}")
+                entry = RegisteredScratchEntry(
+                    parent_fd,
+                    part,
+                    (metadata.st_dev, metadata.st_ino),
+                    stat.S_IMODE(metadata.st_mode),
+                    True,
+                )
+                self._directories[key] = descriptor, entry
+            parent_fd = self._directories[key][0]
+        return parent_fd, relative.name
+
+    def create_file(
+        self,
+        relative: str,
+        value: bytes = b"",
+        *,
+        mode: int = 0o600,
+    ) -> pathlib.Path:
+        pure = pathlib.PurePosixPath(relative)
+        parent_fd, name = self._parent_for(pure)
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
+        try:
+            descriptor = os.open(name, flags, mode, dir_fd=parent_fd)
+            try:
+                offset = 0
+                while offset < len(value):
+                    offset += os.write(descriptor, value[offset:])
+                metadata = os.fstat(descriptor)
+            finally:
+                os.close(descriptor)
+        except OSError as error:
+            fail("SCRATCH_SCOPE_DRIFT", f"cannot create scratch file {relative}: {error}")
+        self._files[pure.as_posix()] = RegisteredScratchEntry(
+            parent_fd,
+            name,
+            (metadata.st_dev, metadata.st_ino),
+            stat.S_IMODE(metadata.st_mode),
+            False,
+        )
+        return self.path / pathlib.Path(*pure.parts)
+
+    def register_file(
+        self,
+        relative: str,
+        *,
+        forbidden_identity: tuple[int, int] | None = None,
+    ) -> pathlib.Path:
+        pure = pathlib.PurePosixPath(relative)
+        parent_fd, name = self._parent_for(pure)
+        try:
+            metadata = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        except OSError as error:
+            fail("PROJECTED_INDEX_SCOPE_DRIFT", f"scratch file is missing: {error}")
+        identity = (metadata.st_dev, metadata.st_ino)
+        mode = stat.S_IMODE(metadata.st_mode)
+        contract = self._file_contracts.get(pure.as_posix())
+        if contract is None:
+            contract = (mode, forbidden_identity)
+            self._file_contracts[pure.as_posix()] = contract
+        expected_mode, forbidden = contract
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_nlink != 1
+            or mode != expected_mode
+            or (forbidden is not None and identity == forbidden)
+        ):
+            fail("PROJECTED_INDEX_SCOPE_DRIFT", f"scratch file is not exclusive: {relative}")
+        self._files[pure.as_posix()] = RegisteredScratchEntry(
+            parent_fd,
+            name,
+            identity,
+            mode,
+            False,
+        )
+        return self.path / pathlib.Path(*pure.parts)
+
+    def close(self) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        cleanup_errors: list[str] = []
+        try:
+            base_metadata = self._base_path.lstat()
+            holding_metadata = self.holding_path.lstat()
+            if (
+                (
+                    base_metadata.st_dev,
+                    base_metadata.st_ino,
+                    stat.S_IMODE(base_metadata.st_mode),
+                )
+                != self._base_identity
+                or not stat.S_ISDIR(base_metadata.st_mode)
+                or (
+                    holding_metadata.st_dev,
+                    holding_metadata.st_ino,
+                    stat.S_IMODE(holding_metadata.st_mode),
+                )
+                != self._holding_identity
+                or not stat.S_ISDIR(holding_metadata.st_mode)
+            ):
+                fail(
+                    "SCRATCH_SCOPE_DRIFT",
+                    f"visible scratch ancestor changed; proved object retained at {self.holding_path}",
+                )
+            scratch_metadata = os.stat(
+                "scratch", dir_fd=self._holding_fd, follow_symlinks=False
+            )
+            if (
+                scratch_metadata.st_dev,
+                scratch_metadata.st_ino,
+                stat.S_IMODE(scratch_metadata.st_mode),
+            ) != self._scratch_identity:
+                fail("SCRATCH_SCOPE_DRIFT", "pinned scratch directory changed")
+            for key in sorted(self._files, key=lambda value: value.count("/"), reverse=True):
+                entry = self._files[key]
+                try:
+                    metadata = os.stat(
+                        entry.name,
+                        dir_fd=entry.parent_fd,
+                        follow_symlinks=False,
+                    )
+                    if (
+                        not stat.S_ISREG(metadata.st_mode)
+                        or metadata.st_nlink != 1
+                        or (metadata.st_dev, metadata.st_ino) != entry.identity
+                        or stat.S_IMODE(metadata.st_mode) != entry.mode
+                    ):
+                        raise OSError(f"registered file identity changed: {key}")
+                    os.unlink(entry.name, dir_fd=entry.parent_fd)
+                except OSError as error:
+                    cleanup_errors.append(str(error))
+            for key in sorted(
+                self._directories,
+                key=lambda value: value.count("/"),
+                reverse=True,
+            ):
+                descriptor, entry = self._directories[key]
+                try:
+                    metadata = os.stat(
+                        entry.name,
+                        dir_fd=entry.parent_fd,
+                        follow_symlinks=False,
+                    )
+                    if (
+                        not stat.S_ISDIR(metadata.st_mode)
+                        or (metadata.st_dev, metadata.st_ino) != entry.identity
+                        or stat.S_IMODE(metadata.st_mode) != entry.mode
+                    ):
+                        raise OSError(f"registered directory identity changed: {key}")
+                    os.rmdir(entry.name, dir_fd=entry.parent_fd)
+                except OSError as error:
+                    cleanup_errors.append(str(error))
+                finally:
+                    os.close(descriptor)
+            if cleanup_errors:
+                fail("SCRATCH_CLEANUP_FAILURE", "; ".join(cleanup_errors))
+            os.rmdir("scratch", dir_fd=self._holding_fd)
+            os.rmdir(self._holding_name, dir_fd=self._base_fd)
+        finally:
+            for descriptor in (self._scratch_fd, self._holding_fd, self._base_fd):
+                try:
+                    os.close(descriptor)
+                except OSError:
+                    pass
+
+    def __enter__(self) -> PinnedScratch:
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
+
+
 def run_git(
     root: pathlib.Path,
     args: Sequence[str],
@@ -110,10 +364,13 @@ def run_git(
     env: Mapping[str, str] | None = None,
     input_bytes: bytes | None = None,
     check: bool = True,
+    pass_fds: Sequence[int] = (),
 ) -> subprocess.CompletedProcess[bytes]:
     command_env = os.environ.copy()
+    command_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     if env:
         command_env.update(env)
+    command_env["GIT_NO_REPLACE_OBJECTS"] = "1"
     result = subprocess.run(
         ["git", *args],
         cwd=root,
@@ -121,6 +378,7 @@ def run_git(
         input=input_bytes,
         capture_output=True,
         check=False,
+        pass_fds=tuple(pass_fds),
     )
     if check and result.returncode:
         stderr = result.stderr.decode("utf-8", "replace").strip()
@@ -269,39 +527,42 @@ def manifest_paths(value: bytes) -> list[str]:
     return paths
 
 
-def write_task_patch_and_deletion_patch(
+def write_task_patch(
     root: pathlib.Path,
     commit: str,
     task: pathlib.PurePosixPath,
     candidate: bytes,
-) -> tuple[bytes, bytes]:
-    with tempfile.TemporaryDirectory(prefix="gate9-index-") as temporary:
-        index_path = pathlib.Path(temporary) / "index"
+) -> bytes:
+    with PinnedScratch("gate9-task-index-") as scratch:
+        index_path = scratch.path / "index"
         environment = {"GIT_INDEX_FILE": os.fspath(index_path)}
-        run_git(root, ["read-tree", commit], env=environment)
-        candidate_oid = run_git(root, ["hash-object", "-w", "--stdin"], input_bytes=candidate).stdout.decode().strip()
+        run_git(
+            root,
+            ["read-tree", commit],
+            env=environment,
+            pass_fds=scratch.pass_fds,
+        )
+        scratch.register_file("index")
+        candidate_oid = run_git(
+            root,
+            ["hash-object", "-w", "--stdin"],
+            input_bytes=candidate,
+        ).stdout.decode().strip()
         run_git(
             root,
             ["update-index", "--cacheinfo", "100644", candidate_oid, task.as_posix()],
             env=environment,
+            pass_fds=scratch.pass_fds,
         )
-        task_patch = run_git(
+        scratch.register_file("index")
+        result = run_git(
             root,
             ["diff", "--cached", "--binary", "--full-index", commit, "--", task.as_posix()],
             env=environment,
+            pass_fds=scratch.pass_fds,
         ).stdout
-        run_git(root, ["read-tree", commit], env=environment)
-        run_git(
-            root,
-            ["rm", "--cached", "-r", "--quiet", "--", OLD_PACK.as_posix()],
-            env=environment,
-        )
-        deletion_patch = run_git(
-            root,
-            ["diff", "--cached", "--binary", "--full-index", commit, "--", OLD_PACK.as_posix()],
-            env=environment,
-        ).stdout
-    return task_patch, deletion_patch
+        scratch.register_file("index")
+        return result
 
 
 def exclusive_regular_bytes(
@@ -385,447 +646,35 @@ def prove_real_index_unchanged(
         fail("REAL_INDEX_SCOPE_DRIFT", "caller index changed during projection")
 
 
-def prove_owned_worktree_root(
-    holding: pathlib.Path,
-    worktree: pathlib.Path,
-    expected: tuple[int, int] | None = None,
-) -> tuple[int, int]:
-    try:
-        holding_metadata = holding.lstat()
-        worktree_metadata = worktree.lstat()
-        holding_literal = holding.absolute()
-        worktree_literal = worktree.absolute()
-        holding_canonical = holding.resolve(strict=True)
-        worktree_canonical = worktree.resolve(strict=True)
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"literal worktree path cannot be inspected: {error}",
-        )
-    identity = (worktree_metadata.st_dev, worktree_metadata.st_ino)
-    if (
-        not stat.S_ISDIR(holding_metadata.st_mode)
-        or not stat.S_ISDIR(worktree_metadata.st_mode)
-        or holding_canonical != holding_literal
-        or worktree_canonical != worktree_literal
-        or worktree_literal.parent != holding_literal
-        or worktree_literal.name != "detached"
-        or (expected is not None and identity != expected)
-    ):
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            "temporary worktree is not the literal owned holding child",
-        )
-    return identity
+@dataclasses.dataclass(frozen=True)
+class AuthorityProof:
+    live_head: str
+    reviewed_code_head: str
+    code_blob_oids: tuple[str, ...]
 
 
-def control_file_target(
-    path: pathlib.Path,
-    anchor: pathlib.Path,
-    *,
-    prefix: bytes = b"",
-) -> pathlib.Path:
-    _, _, value = exclusive_regular_bytes(
-        path,
-        "DETACHED_PROJECTION_SCOPE_DRIFT",
-        "linked-worktree control file",
-    )
-    if not value.startswith(prefix):
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            "linked-worktree control file has the wrong prefix",
-        )
-    raw_target = value[len(prefix) :]
-    if not raw_target.endswith(b"\n") or b"\n" in raw_target[:-1]:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            "linked-worktree control file is malformed",
-        )
-    target = pathlib.Path(os.fsdecode(raw_target[:-1]))
-    if not target.is_absolute():
-        target = anchor / target
-    try:
-        return target.resolve(strict=True)
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"linked-worktree control target cannot be resolved: {error}",
-        )
+@dataclasses.dataclass(frozen=True)
+class AuthoritativeProjection:
+    package_head: str
+    live_reviewed_head: str
+    reviewed_code_head: str
+    initial_tree_oid: str
+    final_tree_oid: str
+    old_paths: tuple[str, ...]
+    deletion_statuses: tuple[tuple[str, str], ...]
+    proposed_deletion_patch: bytes
+    index_markdown: bytes
+    coverage_markdown: bytes
 
 
-def owned_linked_git_dir(
-    root: pathlib.Path,
-    holding: pathlib.Path,
-    worktree: pathlib.Path,
-    worktree_identity: tuple[int, int],
-) -> tuple[pathlib.Path, pathlib.Path]:
-    prove_owned_worktree_root(holding, worktree, worktree_identity)
-    common_value = run_git(
-        root,
-        ["rev-parse", "--path-format=absolute", "--git-common-dir"],
-    ).stdout.decode().strip()
-    try:
-        common_dir = pathlib.Path(common_value).resolve(strict=True)
-        git_file = worktree.absolute() / ".git"
-        admin_parent = (common_dir / "worktrees").resolve(strict=True)
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"linked-worktree ownership path cannot be resolved: {error}",
-        )
-    candidates: list[pathlib.Path] = []
-    try:
-        entries = tuple(admin_parent.iterdir())
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"linked-worktree registry cannot be inspected: {error}",
-        )
-    for entry in entries:
-        try:
-            metadata = entry.lstat()
-            backlink = control_file_target(entry / "gitdir", entry)
-        except Gate9Error:
-            continue
-        if stat.S_ISDIR(metadata.st_mode) and backlink == git_file:
-            candidates.append(entry.resolve(strict=True))
-    if len(candidates) != 1:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"expected one owned linked-worktree registry entry, found {len(candidates)}",
-        )
-    git_dir = candidates[0]
-    if git_dir.parent != admin_parent:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            "owned Git directory is outside the linked-worktree registry",
-        )
-    return common_dir, git_dir
-
-
-def detached_index_environment(
-    holding: pathlib.Path,
-    worktree: pathlib.Path,
-    worktree_identity: tuple[int, int],
-    common_dir: pathlib.Path,
-    git_dir: pathlib.Path,
-    real_index: tuple[pathlib.Path, tuple[int, int], int, bytes],
-) -> dict[str, str]:
-    prove_real_index_unchanged(real_index)
-    prove_owned_worktree_root(holding, worktree, worktree_identity)
-    owned_worktree = worktree.absolute()
-    git_file = owned_worktree / ".git"
-    pointer = control_file_target(git_file, owned_worktree, prefix=b"gitdir: ")
-    backlink = control_file_target(git_dir / "gitdir", git_dir)
-    linked_common = control_file_target(git_dir / "commondir", git_dir)
-    if pointer != git_dir or backlink != git_file or linked_common != common_dir:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            "temporary worktree Git ownership is not bidirectional",
-        )
-    values = {
-        "git_dir": run_git(worktree, ["rev-parse", "--absolute-git-dir"]),
-        "common_dir": run_git(
-            worktree,
-            ["rev-parse", "--path-format=absolute", "--git-common-dir"],
-        ),
-        "index": run_git(
-            worktree,
-            ["rev-parse", "--path-format=absolute", "--git-path", "index"],
-        ),
-        "top_level": run_git(worktree, ["rev-parse", "--show-toplevel"]),
-    }
-    try:
-        proven = {
-            name: pathlib.Path(result.stdout.decode().strip()).resolve(strict=True)
-            for name, result in values.items()
-        }
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"detached Git identity cannot be resolved: {error}",
-        )
-    expected_index = git_dir / "index"
-    try:
-        expected_index_resolved = expected_index.resolve(strict=True)
-        index_metadata = expected_index.lstat()
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"linked-worktree index identity cannot be inspected: {error}",
-        )
-    index_identity = (index_metadata.st_dev, index_metadata.st_ino)
-    real_index_identity = real_index[1]
-    if (
-        proven["git_dir"] != git_dir
-        or proven["common_dir"] != common_dir
-        or proven["index"] != expected_index_resolved
-        or proven["top_level"] != owned_worktree
-        or not stat.S_ISREG(index_metadata.st_mode)
-        or index_metadata.st_nlink != 1
-        or index_identity == real_index_identity
-    ):
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            "index is not exclusively owned by the temporary linked worktree",
-        )
-    return {"GIT_INDEX_FILE": os.fspath(expected_index)}
-
-
-def restore_owned_git_pointer(
-    worktree: pathlib.Path,
-    git_dir: pathlib.Path,
-) -> str | None:
-    git_file = worktree / ".git"
-    expected = f"gitdir: {git_dir}\n".encode()
-    try:
-        metadata = git_file.lstat()
-        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
-            return "temporary .git pointer is not exclusive and regular"
-        if git_file.read_bytes() == expected:
-            return None
-        descriptor = os.open(
-            git_file,
-            os.O_WRONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
-        )
-        try:
-            opened = os.fstat(descriptor)
-            if (
-                not stat.S_ISREG(opened.st_mode)
-                or opened.st_nlink != 1
-                or (opened.st_dev, opened.st_ino)
-                != (metadata.st_dev, metadata.st_ino)
-            ):
-                return "temporary .git pointer changed before cleanup"
-            os.ftruncate(descriptor, 0)
-            os.write(descriptor, expected)
-        finally:
-            os.close(descriptor)
-    except OSError as error:
-        return f"temporary .git pointer restoration failed: {error}"
-    return None
-
-
-def nul_paths(value: bytes) -> list[str]:
-    if not value:
-        return []
-    if not value.endswith(b"\0"):
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "Git path output is not NUL-terminated")
-    return [
-        raw.decode("utf-8", "surrogateescape")
-        for raw in value[:-1].split(b"\0")
-    ]
-
-
-def prove_detached_projection_source(
-    worktree: pathlib.Path,
-    commit: str,
-    environment: Mapping[str, str],
-) -> list[str]:
-    if head(worktree) != commit:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached worktree HEAD differs")
-    symbolic = run_git(worktree, ["symbolic-ref", "--quiet", "HEAD"], check=False)
-    if symbolic.returncode == 0:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "temporary worktree is not detached")
-    if symbolic.returncode != 1:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached HEAD cannot be proven")
-    committed_tree = run_git(
-        worktree, ["rev-parse", f"{commit}^{{tree}}"]
-    ).stdout.decode().strip()
-    indexed_tree = run_git(
-        worktree, ["write-tree"], env=environment
-    ).stdout.decode().strip()
-    if indexed_tree != committed_tree:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached index differs from HEAD")
-    expected_paths = sorted(manifest_paths(tree_manifest(worktree, commit, OLD_PACK)))
-    tracked_paths = sorted(
-        nul_paths(
-            run_git(
-                worktree,
-                ["ls-files", "-z", "--", OLD_PACK.as_posix()],
-                env=environment,
-            ).stdout
-        )
-    )
-    if tracked_paths != expected_paths or len(expected_paths) != 20:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "retiring path set differs from HEAD")
-    return expected_paths
-
-
-def prove_detached_projected_index(
-    worktree: pathlib.Path,
-    commit: str,
-    expected_paths: Sequence[str],
-    environment: Mapping[str, str],
-) -> None:
-    if head(worktree) != commit:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "detached worktree HEAD changed")
-    remaining = nul_paths(
-        run_git(
-            worktree,
-            ["ls-files", "-z", "--", OLD_PACK.as_posix()],
-            env=environment,
-        ).stdout
-    )
-    if remaining:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "retiring paths remain indexed")
-    raw_status = run_git(
-        worktree,
-        ["diff", "--cached", "--name-status", "--no-renames", "-z", commit, "--"],
-        env=environment,
-    ).stdout
-    fields = nul_paths(raw_status)
-    if len(fields) % 2:
-        fail("DETACHED_PROJECTION_SCOPE_DRIFT", "projected status is malformed")
-    statuses = sorted(
-        (fields[index], fields[index + 1])
-        for index in range(0, len(fields), 2)
-    )
-    expected = sorted(("D", path) for path in expected_paths)
-    if statuses != expected:
-        fail(
-            "DETACHED_PROJECTION_SCOPE_DRIFT",
-            f"expected exact retiring deletions, found {statuses!r}",
-        )
-
-
-def materialize_trusted_generator(
-    root: pathlib.Path,
-    commit: str,
-    generator: pathlib.PurePosixPath,
-    destination: pathlib.Path,
-) -> pathlib.Path:
-    value = run_git(root, ["show", f"{commit}:{generator.as_posix()}"]).stdout
-    destination.write_bytes(value)
-    destination.chmod(0o500)
-    return destination
-
-
-def projection_output_identity(
-    holding: pathlib.Path,
-    worktree: pathlib.Path,
-    worktree_identity: tuple[int, int],
-    relative: pathlib.PurePosixPath,
-    expected: tuple[int, int] | None = None,
-) -> tuple[pathlib.Path, tuple[int, int]]:
-    prove_owned_worktree_root(holding, worktree, worktree_identity)
-    try:
-        owned_worktree = worktree.absolute()
-        root_metadata = owned_worktree.lstat()
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-            f"projection root cannot be inspected: {error}",
-        )
-    if not stat.S_ISDIR(root_metadata.st_mode):
-        fail("DETACHED_PROJECTION_OUTPUT_UNSAFE", "projection root is not a directory")
-    parent = owned_worktree
-    for part in relative.parts[:-1]:
-        parent /= part
-        try:
-            metadata = parent.lstat()
-        except OSError as error:
-            fail(
-                "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-                f"projection output parent cannot be inspected: {error}",
-            )
-        if not stat.S_ISDIR(metadata.st_mode):
-            fail(
-                "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-                f"projection output parent is not a real directory: {relative}",
-            )
-    target = parent / relative.name
-    try:
-        metadata = target.lstat()
-        resolved = target.resolve(strict=True)
-        resolved.relative_to(owned_worktree)
-    except (OSError, ValueError) as error:
-        fail(
-            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-            f"projection output cannot be contained: {error}",
-        )
-    identity = (metadata.st_dev, metadata.st_ino)
-    if (
-        resolved != target
-        or not stat.S_ISREG(metadata.st_mode)
-        or stat.S_IMODE(metadata.st_mode) != 0o644
-        or metadata.st_nlink != 1
-        or (expected is not None and identity != expected)
-    ):
-        fail(
-            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-            f"projection output is not an exclusive tracked regular file: {relative}",
-        )
-    return target, identity
-
-
-def seed_projection_output(
-    target: pathlib.Path,
-    identity: tuple[int, int],
-    sentinel: bytes,
-) -> None:
-    try:
-        descriptor = os.open(
-            target,
-            os.O_WRONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
-        )
-        try:
-            metadata = os.fstat(descriptor)
-            if (
-                not stat.S_ISREG(metadata.st_mode)
-                or stat.S_IMODE(metadata.st_mode) != 0o644
-                or metadata.st_nlink != 1
-                or (metadata.st_dev, metadata.st_ino) != identity
-            ):
-                fail(
-                    "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-                    "projection output changed before sentinel write",
-                )
-            os.ftruncate(descriptor, 0)
-            offset = 0
-            while offset < len(sentinel):
-                offset += os.write(descriptor, sentinel[offset:])
-        finally:
-            os.close(descriptor)
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-            f"projection sentinel cannot be written safely: {error}",
-        )
-
-
-def read_projection_output(
-    target: pathlib.Path,
-    identity: tuple[int, int],
-) -> bytes:
-    try:
-        descriptor = os.open(
-            target,
-            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
-        )
-        try:
-            metadata = os.fstat(descriptor)
-            if (
-                not stat.S_ISREG(metadata.st_mode)
-                or stat.S_IMODE(metadata.st_mode) != 0o644
-                or metadata.st_nlink != 1
-                or (metadata.st_dev, metadata.st_ino) != identity
-            ):
-                fail(
-                    "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-                    "projection output changed before safe read",
-                )
-            chunks: list[bytes] = []
-            while chunk := os.read(descriptor, 1024 * 1024):
-                chunks.append(chunk)
-            return b"".join(chunks)
-        finally:
-            os.close(descriptor)
-    except OSError as error:
-        fail(
-            "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-            f"projection output cannot be read safely: {error}",
-        )
+@dataclasses.dataclass(frozen=True)
+class RepositorySnapshot:
+    head: str
+    real_index: tuple[pathlib.Path, tuple[int, int], int, bytes]
+    old_files: tuple[tuple[str, tuple[tuple[int, int], int, bytes]], ...]
+    outputs: tuple[tuple[str, tuple[tuple[int, int], int, bytes]], ...]
+    worktree_registry: tuple[tuple[str, str, int, int, int, bytes], ...]
+    evidence_refs: bytes
 
 
 def trusted_system_tool(name: str) -> str:
@@ -842,232 +691,542 @@ def trusted_system_tool(name: str) -> str:
     return os.fspath(resolved)
 
 
-def projected_generated_outputs(root: pathlib.Path, commit: str) -> tuple[bytes, bytes]:
-    real_index = capture_real_index(root)
-    registry_before = run_git(root, ["worktree", "list", "--porcelain"]).stdout
-    holding = pathlib.Path(tempfile.mkdtemp(prefix="gate9-worktree-holding-"))
-    worktree = holding / "detached"
-    result: tuple[bytes, bytes] | None = None
-    primary_error: BaseException | None = None
-    cleanup_errors: list[str] = []
-    owned_git_dir: pathlib.Path | None = None
-    worktree_identity: tuple[int, int] | None = None
+def git_common_dir(root: pathlib.Path) -> pathlib.Path:
+    raw = run_git(
+        root,
+        ["rev-parse", "--path-format=absolute", "--git-common-dir"],
+    ).stdout.decode().strip()
     try:
-        run_git(root, ["worktree", "add", "--quiet", "--detach", os.fspath(worktree), commit])
-        prove_real_index_unchanged(real_index)
-        worktree_identity = prove_owned_worktree_root(holding, worktree)
-        common_dir, owned_git_dir = owned_linked_git_dir(
-            root,
-            holding,
-            worktree,
-            worktree_identity,
-        )
-        environment = detached_index_environment(
-            holding,
-            worktree,
-            worktree_identity,
-            common_dir,
-            owned_git_dir,
-            real_index,
-        )
-        prove_real_index_unchanged(real_index)
-        prove_owned_worktree_root(holding, worktree, worktree_identity)
-        expected_paths = prove_detached_projection_source(
-            worktree, commit, environment
-        )
-        prove_real_index_unchanged(real_index)
-        prove_owned_worktree_root(holding, worktree, worktree_identity)
-        run_git(
-            worktree,
-            ["rm", "--cached", "-r", "-f", "--", OLD_PACK.as_posix()],
-            env=environment,
-        )
-        prove_real_index_unchanged(real_index)
-        prove_owned_worktree_root(holding, worktree, worktree_identity)
-        prove_detached_projected_index(
-            worktree, commit, expected_paths, environment
-        )
-        trusted_generators = holding / "trusted-generators"
-        trusted_generators.mkdir()
-        output_paths = (INDEX, COVERAGE)
-        outputs = {
-            output: projection_output_identity(
-                holding,
-                worktree,
-                worktree_identity,
-                output,
+        return pathlib.Path(raw).resolve(strict=True)
+    except OSError as error:
+        fail("AMBIGUOUS_GIT_HISTORY", f"Git common directory cannot be proved: {error}")
+
+
+def object_format_width(root: pathlib.Path) -> int:
+    result = run_git(root, ["rev-parse", "--show-object-format"])
+    value = result.stdout.decode().strip()
+    widths = {"sha1": 40, "sha256": 64}
+    if value not in widths:
+        fail("AMBIGUOUS_GIT_HISTORY", f"unsupported object format: {value}")
+    return widths[value]
+
+
+def require_full_commit_oid(
+    root: pathlib.Path,
+    value: object,
+    *,
+    code: str,
+) -> str:
+    width = object_format_width(root)
+    if not isinstance(value, str) or re.fullmatch(rf"[0-9a-f]{{{width}}}", value) is None:
+        fail(code, "a full immutable commit OID is required")
+    result = run_git(root, ["cat-file", "-t", value], check=False)
+    if result.returncode or result.stdout != b"commit\n":
+        fail(code, "the supplied full OID is not a commit")
+    return value
+
+
+def assert_unambiguous_history(root: pathlib.Path) -> None:
+    replacements = run_git(
+        root,
+        ["for-each-ref", "--format=%(refname)", "refs/replace/"],
+    ).stdout
+    common_dir = git_common_dir(root)
+    grafts = common_dir / "info/grafts"
+    shallow = common_dir / "shallow"
+    try:
+        graft_bytes = grafts.read_bytes() if grafts.exists() else b""
+        shallow_exists = shallow.exists()
+    except OSError as error:
+        fail("AMBIGUOUS_GIT_HISTORY", f"history boundary cannot be inspected: {error}")
+    shallow_result = run_git(root, ["rev-parse", "--is-shallow-repository"])
+    if (
+        replacements.strip()
+        or graft_bytes
+        or shallow_exists
+        or shallow_result.stdout.strip() != b"false"
+    ):
+        fail("AMBIGUOUS_GIT_HISTORY", "replace, graft, or shallow history is forbidden")
+
+
+def commit_tree_oid(root: pathlib.Path, commit: str) -> str:
+    value = run_git(root, ["cat-file", "commit", commit]).stdout
+    first = value.splitlines()[0] if value else b""
+    if not first.startswith(b"tree "):
+        fail("AMBIGUOUS_GIT_HISTORY", "commit tree header is missing")
+    tree_oid = first.removeprefix(b"tree ").decode("ascii", "strict")
+    width = object_format_width(root)
+    if re.fullmatch(rf"[0-9a-f]{{{width}}}", tree_oid) is None:
+        fail("AMBIGUOUS_GIT_HISTORY", "commit tree OID is malformed")
+    return tree_oid
+
+
+def tracked_blob_oid(
+    root: pathlib.Path,
+    commit: str,
+    path: pathlib.PurePosixPath,
+) -> str:
+    raw = run_git(
+        root,
+        ["ls-tree", "--full-tree", commit, "--", path.as_posix()],
+    ).stdout
+    rows = raw.splitlines()
+    if len(rows) != 1:
+        fail("REVIEWED_CODE_DRIFT", f"tracked code path is missing: {path}")
+    metadata, separator, raw_path = rows[0].partition(b"\t")
+    fields = metadata.split()
+    if (
+        not separator
+        or raw_path.decode("utf-8", "surrogateescape") != path.as_posix()
+        or len(fields) != 3
+        or fields[1] != b"blob"
+    ):
+        fail("REVIEWED_CODE_DRIFT", f"tracked code identity is malformed: {path}")
+    return fields[2].decode("ascii")
+
+
+def authority_preflight(
+    root: pathlib.Path,
+    live_reviewed_head: object,
+    reviewed_code_head: object,
+) -> AuthorityProof:
+    assert_unambiguous_history(root)
+    live_oid = require_full_commit_oid(
+        root,
+        live_reviewed_head,
+        code="LIVE_HEAD_REQUIRED",
+    )
+    reviewed_oid = require_full_commit_oid(
+        root,
+        reviewed_code_head,
+        code="LIVE_HEAD_REQUIRED",
+    )
+    current = require_full_commit_oid(root, head(root), code="AMBIGUOUS_GIT_HISTORY")
+    if current != live_oid:
+        fail("UNTRUSTED_PACKAGE_HEAD", "current HEAD differs from live reviewed HEAD")
+    ancestor = run_git(
+        root,
+        ["merge-base", "--is-ancestor", reviewed_oid, live_oid],
+        check=False,
+    )
+    if ancestor.returncode != 0:
+        fail("REVIEWED_CODE_DRIFT", "reviewed code commit is not an ancestor of live HEAD")
+    code_paths = (
+        pathlib.PurePosixPath(
+            "scripts/validation/agentic-research-gate9-evidence.py"
+        ),
+        INDEX_GENERATOR,
+        COVERAGE_GENERATOR,
+    )
+    live_blobs: list[str] = []
+    for path in code_paths:
+        live_blob = tracked_blob_oid(root, live_oid, path)
+        reviewed_blob = tracked_blob_oid(root, reviewed_oid, path)
+        if live_blob != reviewed_blob:
+            fail("REVIEWED_CODE_DRIFT", f"reviewed code blob differs: {path}")
+        if (
+            run_git(root, ["diff", "--quiet", "--", path.as_posix()], check=False).returncode
+            or run_git(
+                root,
+                ["diff", "--cached", "--quiet", "--", path.as_posix()],
+                check=False,
+            ).returncode
+        ):
+            fail("REVIEWED_CODE_DRIFT", f"reviewed code path is dirty: {path}")
+        live_blobs.append(live_blob)
+    try:
+        task_bytes = (root / pathlib.Path(*TASK_PATH.parts)).read_bytes()
+    except OSError as error:
+        fail("REVIEWED_CODE_DRIFT", f"Task code binding cannot be read: {error}")
+    bindings = re.findall(
+        rb"GATE9_REVIEWED_CODE_HEAD:\s*`([0-9a-f]+)`",
+        task_bytes,
+    )
+    if bindings != [reviewed_oid.encode()]:
+        fail("REVIEWED_CODE_DRIFT", "Task does not bind the exact reviewed code OID")
+    return AuthorityProof(live_oid, reviewed_oid, tuple(live_blobs))
+
+
+def authority_from_args(root: pathlib.Path, args: argparse.Namespace) -> AuthorityProof:
+    if (
+        not getattr(args, "require_live_head", False)
+        or getattr(args, "live_reviewed_head", None) is None
+        or getattr(args, "reviewed_code_head", None) is None
+    ):
+        fail("LIVE_HEAD_REQUIRED", "all live authority bindings are mandatory")
+    return authority_preflight(
+        root,
+        args.live_reviewed_head,
+        args.reviewed_code_head,
+    )
+
+
+def snapshot_directory_tree(root: pathlib.Path) -> tuple[tuple[str, str, int, int, int, bytes], ...]:
+    if not root.exists():
+        return ()
+    rows: list[tuple[str, str, int, int, int, bytes]] = []
+
+    def visit(current: pathlib.Path, relative: pathlib.PurePosixPath) -> None:
+        try:
+            entries = sorted(os.scandir(current), key=lambda entry: os.fsencode(entry.name))
+        except OSError as error:
+            fail("SCRATCH_SCOPE_DRIFT", f"worktree registry cannot be read: {error}")
+        for entry in entries:
+            child_relative = relative / entry.name
+            metadata = entry.stat(follow_symlinks=False)
+            if stat.S_ISDIR(metadata.st_mode):
+                kind = "directory"
+                payload = b""
+            elif stat.S_ISREG(metadata.st_mode):
+                kind = "file"
+                payload = pathlib.Path(entry.path).read_bytes()
+            elif stat.S_ISLNK(metadata.st_mode):
+                kind = "symlink"
+                payload = os.fsencode(os.readlink(entry.path))
+            else:
+                kind = "other"
+                payload = b""
+            rows.append(
+                (
+                    child_relative.as_posix(),
+                    kind,
+                    stat.S_IMODE(metadata.st_mode),
+                    metadata.st_dev,
+                    metadata.st_ino,
+                    payload,
+                )
             )
-            for output in output_paths
-        }
-        trusted_bash = trusted_system_tool("bash")
-        trusted_git = pathlib.Path(trusted_system_tool("git"))
-        trusted_python = pathlib.Path(trusted_system_tool("python3"))
-        trusted_path = os.pathsep.join(
+            if kind == "directory":
+                visit(pathlib.Path(entry.path), child_relative)
+
+    visit(root, pathlib.PurePosixPath())
+    return tuple(rows)
+
+
+def capture_repository_snapshot(root: pathlib.Path) -> RepositorySnapshot:
+    old_paths = tuple(manifest_paths(tree_manifest(root, head(root), OLD_PACK)))
+    old_files = tuple(
+        (
+            path,
+            exclusive_regular_bytes(
+                root / pathlib.Path(*pathlib.PurePosixPath(path).parts),
+                "PROJECTED_INDEX_SCOPE_DRIFT",
+                path,
+            ),
+        )
+        for path in old_paths
+    )
+    outputs = tuple(
+        (
+            path.as_posix(),
+            exclusive_regular_bytes(
+                root / pathlib.Path(*path.parts),
+                "PROJECTED_INDEX_SCOPE_DRIFT",
+                path.as_posix(),
+            ),
+        )
+        for path in (INDEX, COVERAGE)
+    )
+    registry = git_common_dir(root) / "worktrees"
+    refs = run_git(
+        root,
+        ["for-each-ref", "--format=%(refname) %(objectname)", f"{REF_PREFIX}/"],
+    ).stdout
+    return RepositorySnapshot(
+        head(root),
+        capture_real_index(root),
+        old_files,
+        outputs,
+        snapshot_directory_tree(registry),
+        refs,
+    )
+
+
+def prove_repository_snapshot(root: pathlib.Path, snapshot: RepositorySnapshot) -> None:
+    if head(root) != snapshot.head:
+        fail("PROJECTED_INDEX_SCOPE_DRIFT", "branch HEAD changed during projection")
+    prove_real_index_unchanged(snapshot.real_index)
+    for path, expected in snapshot.old_files:
+        observed = exclusive_regular_bytes(
+            root / pathlib.Path(*pathlib.PurePosixPath(path).parts),
+            "PROJECTED_INDEX_SCOPE_DRIFT",
+            path,
+        )
+        if observed != expected:
+            fail("PROJECTED_INDEX_SCOPE_DRIFT", f"old-pack file changed: {path}")
+    for path, expected in snapshot.outputs:
+        observed = exclusive_regular_bytes(
+            root / pathlib.Path(*pathlib.PurePosixPath(path).parts),
+            "PROJECTED_INDEX_SCOPE_DRIFT",
+            path,
+        )
+        if observed != expected:
+            fail("PROJECTED_INDEX_SCOPE_DRIFT", f"generated output changed: {path}")
+    if snapshot_directory_tree(git_common_dir(root) / "worktrees") != snapshot.worktree_registry:
+        fail("PROJECTED_INDEX_SCOPE_DRIFT", "linked-worktree registry changed")
+    refs = run_git(
+        root,
+        ["for-each-ref", "--format=%(refname) %(objectname)", f"{REF_PREFIX}/"],
+    ).stdout
+    if refs != snapshot.evidence_refs:
+        fail("PROJECTED_INDEX_SCOPE_DRIFT", "Gate 9 evidence refs changed")
+
+
+def nul_paths(value: bytes, *, code: str) -> list[str]:
+    if not value:
+        return []
+    if not value.endswith(b"\0"):
+        fail(code, "Git path output is not NUL-terminated")
+    return [
+        raw.decode("utf-8", "surrogateescape")
+        for raw in value[:-1].split(b"\0")
+    ]
+
+
+def generator_stdout(
+    root: pathlib.Path,
+    scratch: PinnedScratch,
+    index_environment: Mapping[str, str],
+    generator_bytes: bytes,
+    expected_live: bytes,
+    expected_package: bytes | None,
+    label: pathlib.PurePosixPath,
+) -> bytes:
+    trusted_bash = trusted_system_tool("bash")
+    trusted_git = pathlib.Path(trusted_system_tool("git"))
+    trusted_python = pathlib.Path(trusted_system_tool("python3"))
+    environment = {
+        "GIT_INDEX_FILE": index_environment["GIT_INDEX_FILE"],
+        "GIT_NO_REPLACE_OBJECTS": "1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PATH": os.pathsep.join(
             dict.fromkeys(
                 (os.fspath(trusted_git.parent), os.fspath(trusted_python.parent))
             )
+        ),
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1",
+        "PYTHONSAFEPATH": "1",
+    }
+    result = subprocess.run(
+        [trusted_bash, "-s", "--", "--stdout"],
+        cwd=root,
+        env=environment,
+        input=generator_bytes,
+        capture_output=True,
+        check=False,
+        pass_fds=scratch.pass_fds,
+    )
+    scratch.register_file("index")
+    if result.returncode:
+        fail(
+            "GENERATOR_STDOUT_DRIFT",
+            f"{label} exited {result.returncode}: "
+            f"{result.stderr.decode('utf-8', 'replace').strip()}",
         )
-        generator_environment = {
-            "GIT_INDEX_FILE": environment["GIT_INDEX_FILE"],
-            "LANG": "C.UTF-8",
-            "LC_ALL": "C.UTF-8",
-            "PATH": trusted_path,
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "PYTHONNOUSERSITE": "1",
-            "PYTHONSAFEPATH": "1",
+    try:
+        decoded = result.stdout.decode("utf-8", "strict")
+    except UnicodeDecodeError as error:
+        fail("GENERATOR_STDOUT_DRIFT", f"{label} is not UTF-8: {error}")
+    if (
+        not result.stdout
+        or result.stderr
+        or "\r" in decoded
+        or not result.stdout.endswith(b"\n")
+        or result.stdout.endswith(b"\n\n")
+    ):
+        fail("GENERATOR_STDOUT_DRIFT", f"{label} stdout is not canonical LF Markdown")
+    if result.stdout != expected_live:
+        fail("GENERATOR_STDOUT_DRIFT", f"{label} stdout differs from live HEAD")
+    if expected_package is not None and result.stdout != expected_package:
+        fail("PACKAGE_SEMANTIC_DRIFT", f"{label} attachment differs from projection")
+    return result.stdout
+
+
+def authoritative_projection(
+    root: pathlib.Path,
+    package_head: object,
+    live_reviewed_head: object,
+    reviewed_code_head: object,
+    *,
+    expected_index: bytes | None = None,
+    expected_coverage: bytes | None = None,
+) -> AuthoritativeProjection:
+    proof = authority_preflight(root, live_reviewed_head, reviewed_code_head)
+    package_oid = require_full_commit_oid(
+        root,
+        package_head,
+        code="UNTRUSTED_PACKAGE_HEAD",
+    )
+    if package_oid != proof.live_head:
+        fail("UNTRUSTED_PACKAGE_HEAD", "package HEAD differs from live reviewed HEAD")
+    snapshot = capture_repository_snapshot(root)
+    primary_error: BaseException | None = None
+    projection: AuthoritativeProjection | None = None
+    try:
+        generator_blobs = {
+            INDEX_GENERATOR: run_git(
+                root, ["cat-file", "blob", proof.code_blob_oids[1]]
+            ).stdout,
+            COVERAGE_GENERATOR: run_git(
+                root, ["cat-file", "blob", proof.code_blob_oids[2]]
+            ).stdout,
         }
-        generators = (
-            (INDEX_GENERATOR, INDEX),
-            (COVERAGE_GENERATOR, COVERAGE),
-        )
-        for ordinal, (generator, output) in enumerate(generators):
-            prove_real_index_unchanged(real_index)
-            for checked_output, (_, identity) in outputs.items():
-                projection_output_identity(
-                    holding,
-                    worktree,
-                    worktree_identity,
-                    checked_output,
-                    identity,
-                )
-            target, identity = outputs[output]
-            sentinel = (
-                b"GATE9-PROJECTION-SENTINEL\0"
-                + hashlib.sha256(f"{commit}:{output}".encode()).digest()
-            )
-            seed_projection_output(target, identity, sentinel)
-            projection_output_identity(
-                holding,
-                worktree,
-                worktree_identity,
-                output,
-                identity,
-            )
-            if read_projection_output(target, identity) != sentinel:
-                fail(
-                    "DETACHED_PROJECTION_OUTPUT_UNSAFE",
-                    f"projection sentinel was not written exactly: {output}",
-                )
-            trusted_generator = materialize_trusted_generator(
+        tracked_outputs = {
+            INDEX: run_git(
                 root,
-                commit,
-                generator,
-                trusted_generators / f"generator-{ordinal}.sh",
+                ["cat-file", "blob", tracked_blob_oid(root, proof.live_head, INDEX)],
+            ).stdout,
+            COVERAGE: run_git(
+                root,
+                ["cat-file", "blob", tracked_blob_oid(root, proof.live_head, COVERAGE)],
+            ).stdout,
+        }
+        initial_tree = commit_tree_oid(root, package_oid)
+        with PinnedScratch("gate9-index-") as scratch:
+            index_path = scratch.path / "index"
+            environment = {"GIT_INDEX_FILE": os.fspath(index_path)}
+            run_git(
+                root,
+                ["read-tree", package_oid],
+                env=environment,
+                pass_fds=scratch.pass_fds,
             )
-            generator_result = subprocess.run(
-                [trusted_bash, os.fspath(trusted_generator)],
-                cwd=worktree,
-                env=generator_environment,
-                capture_output=True,
-                check=False,
+            scratch.register_file(
+                "index",
+                forbidden_identity=snapshot.real_index[1],
             )
-            if generator_result.returncode:
+            indexed_tree = run_git(
+                root,
+                ["write-tree"],
+                env=environment,
+                pass_fds=scratch.pass_fds,
+            ).stdout.decode().strip()
+            if indexed_tree != initial_tree or initial_tree != commit_tree_oid(root, proof.live_head):
+                fail("PROJECTED_INDEX_SCOPE_DRIFT", "initial projected tree differs from live HEAD")
+            tree_paths = tuple(
+                sorted(
+                    manifest_paths(tree_manifest(root, package_oid, OLD_PACK)),
+                    key=os.fsencode,
+                )
+            )
+            indexed_paths = tuple(
+                sorted(
+                    nul_paths(
+                        run_git(
+                            root,
+                            ["ls-files", "-z", "--", OLD_PACK.as_posix()],
+                            env=environment,
+                            pass_fds=scratch.pass_fds,
+                        ).stdout,
+                        code="PROJECTED_INDEX_SCOPE_DRIFT",
+                    )
+                )
+            )
+            if tree_paths != indexed_paths or len(tree_paths) != 20:
                 fail(
-                    "GENERATOR_FAILURE",
-                    f"{generator}: {generator_result.stderr.decode('utf-8', 'replace').strip()}",
+                    "PROJECTED_DELETION_DRIFT",
+                    f"retiring path tuple is not exact 20/20: tree={tree_paths!r} index={indexed_paths!r}",
                 )
-            prove_real_index_unchanged(real_index)
-            for checked_output, (_, checked_identity) in outputs.items():
-                projection_output_identity(
-                    holding,
-                    worktree,
-                    worktree_identity,
-                    checked_output,
-                    checked_identity,
+            removal = b"".join(os.fsencode(path) + b"\0" for path in tree_paths)
+            run_git(
+                root,
+                ["update-index", "--force-remove", "-z", "--stdin"],
+                env=environment,
+                input_bytes=removal,
+                pass_fds=scratch.pass_fds,
+            )
+            scratch.register_file("index")
+            raw_status = run_git(
+                root,
+                [
+                    "diff",
+                    "--cached",
+                    "--name-status",
+                    "--no-renames",
+                    "-z",
+                    package_oid,
+                    "--",
+                ],
+                env=environment,
+                pass_fds=scratch.pass_fds,
+            ).stdout
+            fields = nul_paths(raw_status, code="PROJECTED_DELETION_DRIFT")
+            if len(fields) % 2:
+                fail("PROJECTED_DELETION_DRIFT", "projected status is malformed")
+            statuses = tuple(
+                (fields[index], fields[index + 1])
+                for index in range(0, len(fields), 2)
+            )
+            expected_statuses = tuple(("D", path) for path in tree_paths)
+            if statuses != expected_statuses:
+                fail(
+                    "PROJECTED_DELETION_DRIFT",
+                    f"expected exact twenty deletions, found {statuses!r}",
                 )
-        prove_real_index_unchanged(real_index)
-        prove_owned_worktree_root(holding, worktree, worktree_identity)
-        prove_detached_projected_index(
-            worktree, commit, expected_paths, environment
-        )
-        projected_index = read_projection_output(*outputs[INDEX])
-        projected_coverage = read_projection_output(*outputs[COVERAGE])
-        tracked_index = run_git(root, ["show", f"{commit}:{INDEX.as_posix()}"]).stdout
-        tracked_coverage = run_git(root, ["show", f"{commit}:{COVERAGE.as_posix()}"]).stdout
-        if projected_index != tracked_index or projected_coverage != tracked_coverage:
-            fail("GENERATED_OUTPUT_DRIFT", "projected LLM Wiki outputs differ from HEAD")
-        result = projected_index, projected_coverage
+            if run_git(
+                root,
+                ["ls-files", "-z", "--", OLD_PACK.as_posix()],
+                env=environment,
+                pass_fds=scratch.pass_fds,
+            ).stdout:
+                fail("PROJECTED_DELETION_DRIFT", "retiring paths remain in projected index")
+            final_tree = run_git(
+                root,
+                ["write-tree"],
+                env=environment,
+                pass_fds=scratch.pass_fds,
+            ).stdout.decode().strip()
+            if final_tree == initial_tree:
+                fail("PROJECTED_DELETION_DRIFT", "projected deletion did not change the tree")
+            patch = run_git(
+                root,
+                ["diff", "--cached", "--binary", "--full-index", package_oid, "--"],
+                env=environment,
+                pass_fds=scratch.pass_fds,
+            ).stdout
+            index_bytes = generator_stdout(
+                root,
+                scratch,
+                environment,
+                generator_blobs[INDEX_GENERATOR],
+                tracked_outputs[INDEX],
+                expected_index,
+                INDEX_GENERATOR,
+            )
+            coverage_bytes = generator_stdout(
+                root,
+                scratch,
+                environment,
+                generator_blobs[COVERAGE_GENERATOR],
+                tracked_outputs[COVERAGE],
+                expected_coverage,
+                COVERAGE_GENERATOR,
+            )
+            projection = AuthoritativeProjection(
+                package_oid,
+                proof.live_head,
+                proof.reviewed_code_head,
+                initial_tree,
+                final_tree,
+                tree_paths,
+                statuses,
+                patch,
+                index_bytes,
+                coverage_bytes,
+            )
     except BaseException as error:
         primary_error = error
-    finally:
-        owned_root = False
-        if worktree_identity is not None:
-            try:
-                prove_owned_worktree_root(holding, worktree, worktree_identity)
-                owned_root = True
-            except Gate9Error as error:
-                if primary_error is None:
-                    primary_error = error
-        if owned_git_dir is not None and owned_root:
-            pointer_error = restore_owned_git_pointer(worktree, owned_git_dir)
-            if pointer_error is not None:
-                cleanup_errors.append(pointer_error)
-        redirected_root = False
-        try:
-            if stat.S_ISLNK(worktree.lstat().st_mode):
-                worktree.unlink()
-                redirected_root = True
-        except FileNotFoundError:
-            pass
-        except OSError as error:
-            cleanup_errors.append(f"redirected worktree unlink failed: {error}")
-        registry_during = run_git(root, ["worktree", "list", "--porcelain"], check=False)
-        if registry_during.returncode:
-            cleanup_errors.append("cannot inspect worktree registry")
-        elif f"worktree {worktree.absolute()}\n".encode() in registry_during.stdout:
-            if redirected_root:
-                prune = run_git(
-                    root, ["worktree", "prune", "--expire", "now"], check=False
-                )
-                if prune.returncode:
-                    cleanup_errors.append("git worktree prune failed")
-            else:
-                removal = run_git(
-                    root,
-                    ["worktree", "remove", "--force", os.fspath(worktree)],
-                    check=False,
-                )
-                if removal.returncode:
-                    cleanup_errors.append("git worktree remove failed")
-                    try:
-                        if worktree.is_symlink():
-                            worktree.unlink()
-                        elif worktree.exists():
-                            shutil.rmtree(worktree)
-                    except OSError as error:
-                        cleanup_errors.append(
-                            f"worktree directory cleanup failed: {error}"
-                        )
-                    prune = run_git(
-                        root, ["worktree", "prune", "--expire", "now"], check=False
-                    )
-                    if prune.returncode:
-                        cleanup_errors.append("git worktree prune failed")
-        try:
-            if holding.exists():
-                shutil.rmtree(holding)
-        except OSError as error:
-            cleanup_errors.append(f"temporary directory cleanup failed: {error}")
-        registry_after = run_git(root, ["worktree", "list", "--porcelain"], check=False)
-        if registry_after.returncode or registry_after.stdout != registry_before:
-            cleanup_errors.append("worktree registry was not restored")
-        try:
-            prove_real_index_unchanged(real_index)
-        except Gate9Error as error:
-            if primary_error is None:
-                primary_error = error
-            elif not (
-                isinstance(primary_error, Gate9Error)
-                and primary_error.code == "REAL_INDEX_SCOPE_DRIFT"
-            ):
-                cleanup_errors.append(str(error))
-    if cleanup_errors:
-        fail("WORKTREE_CLEANUP_FAILURE", "; ".join(cleanup_errors))
+    try:
+        prove_repository_snapshot(root, snapshot)
+    except BaseException as invariant_error:
+        primary_error = invariant_error
     if primary_error is not None:
         raise primary_error
-    if result is None:
-        fail("GENERATOR_FAILURE", "projection produced no outputs")
-    return result
+    if projection is None:
+        fail("PROJECTED_INDEX_SCOPE_DRIFT", "projection produced no result")
+    return projection
 
 
 def assignment_run_id(commit: str, attempt: int, role: str) -> str:
@@ -1086,7 +1245,11 @@ def existing_evidence_refs(root: pathlib.Path) -> list[str]:
     return sorted(filter(None, result.stdout.decode().splitlines()))
 
 
-def derive_attempt(root: pathlib.Path, marker: dict[str, Any]) -> int:
+def derive_attempt(
+    root: pathlib.Path,
+    marker: dict[str, Any],
+    authority: AuthorityProof,
+) -> int:
     refs = existing_evidence_refs(root)
     if len(refs) > 2:
         fail("THIRD_ATTEMPT", "more than two durable Gate 9 refs exist")
@@ -1098,7 +1261,12 @@ def derive_attempt(root: pathlib.Path, marker: dict[str, Any]) -> int:
         return 1
     if len(refs) == 1 and state == "ATTEMPT_2_PENDING" and attempt == 2:
         evidence_ref = refs[0]
-        terminal = replay_terminal_evidence_ref(root, evidence_ref)
+        terminal = replay_terminal_evidence_ref(
+            root,
+            evidence_ref,
+            authority.live_head,
+            authority.reviewed_code_head,
+        )
         terminal_state = terminal["state"]
         package_sha256 = terminal["package_sha256"]
         tree_oid = terminal["tree"]
@@ -1119,7 +1287,11 @@ def derive_attempt(root: pathlib.Path, marker: dict[str, Any]) -> int:
 
 
 def validate_package_prehistory(
-    root: pathlib.Path, attempt: int, marker: dict[str, Any]
+    root: pathlib.Path,
+    attempt: int,
+    marker: dict[str, Any],
+    live_reviewed_head: str,
+    reviewed_code_head: str,
 ) -> None:
     if attempt == 1:
         return
@@ -1139,7 +1311,12 @@ def validate_package_prehistory(
     if not isinstance(evidence_ref, str):
         fail("ATTEMPT_PREHISTORY_INVALID", "attempt-1 evidence ref is missing")
     try:
-        terminal = replay_terminal_evidence_ref(root, evidence_ref)
+        terminal = replay_terminal_evidence_ref(
+            root,
+            evidence_ref,
+            live_reviewed_head,
+            reviewed_code_head,
+        )
     except Gate9Error as error:
         fail("ATTEMPT_PREHISTORY_INVALID", f"{error.code}: {error.detail}")
     expected_attempt_one = {
@@ -1190,27 +1367,33 @@ def build_package(args: argparse.Namespace) -> None:
     if args.attempt not in (1, 2):
         fail("THIRD_ATTEMPT", f"attempt {args.attempt} is forbidden")
     root = repository_root()
+    authority = authority_from_args(root, args)
     task_relative, task_path = repo_path(root, args.task)
     spec_relative, spec_path = repo_path(root, args.spec)
     plan_relative, plan_path = repo_path(root, args.plan)
     del spec_relative, plan_relative
     assert_clean_real_index(root)
     assert_task_only_worktree(root, task_relative)
-    current_head = head(root)
+    current_head = authority.live_head
     before = run_git(root, ["show", f"{current_head}:{task_relative.as_posix()}"]).stdout
     candidate = task_path.read_bytes()
     marker, _ = parse_marker(candidate)
-    derived_attempt = derive_attempt(root, marker)
+    derived_attempt = derive_attempt(root, marker, authority)
     if args.attempt != derived_attempt:
         fail("ATTEMPT_STATE_MISMATCH", f"derived {derived_attempt}, asserted {args.attempt}")
     old_manifest = tree_manifest(root, current_head, OLD_PACK)
     new_manifest = tree_manifest(root, current_head, NEW_PACK)
     if len(manifest_paths(old_manifest)) != 20 or len(manifest_paths(new_manifest)) != 20:
         fail("PACK_CARDINALITY", "old and new packs must each contain exactly 20 files")
-    task_patch, deletion_patch = write_task_patch_and_deletion_patch(
+    task_patch = write_task_patch(
         root, current_head, task_relative, candidate
     )
-    projected_index, projected_coverage = projected_generated_outputs(root, current_head)
+    projection = authoritative_projection(
+        root,
+        current_head,
+        authority.live_head,
+        authority.reviewed_code_head,
+    )
     assignments = {
         "assignments": [
             {
@@ -1246,12 +1429,12 @@ def build_package(args: argparse.Namespace) -> None:
         "HEAD.txt": f"{current_head}\n".encode(),
         "assignments.json": canonical_json(assignments),
         "gate-results.json": canonical_json(gates),
-        "llm-wiki-index.md": projected_index,
-        "llm-wiki-stage-category-coverage.md": projected_coverage,
+        "llm-wiki-index.md": projection.index_markdown,
+        "llm-wiki-stage-category-coverage.md": projection.coverage_markdown,
         "new-manifest.tsv": new_manifest,
         "old-manifest.tsv": old_manifest,
         "plan.md": plan_path.read_bytes(),
-        "proposed-deletion.patch": deletion_patch,
+        "proposed-deletion.patch": projection.proposed_deletion_patch,
         "spec.md": spec_path.read_bytes(),
         "task-before.md": before,
         "task-before-to-candidate.patch": task_patch,
@@ -1293,7 +1476,8 @@ def verify_package_path(
     root: pathlib.Path,
     package: pathlib.Path,
     *,
-    require_live_head: bool,
+    live_reviewed_head: str,
+    reviewed_code_head: str,
     require_read_only: bool = True,
 ) -> dict[str, Any]:
     if not package.is_dir():
@@ -1301,6 +1485,20 @@ def verify_package_path(
     actual_paths = sorted(path.name for path in package.iterdir())
     if actual_paths != sorted(PACKAGE_ATTACHMENTS):
         fail("ATTACHMENT_SET_DRIFT", repr(actual_paths))
+    try:
+        package_head = (package / "HEAD.txt").read_text(encoding="ascii").strip()
+    except (OSError, UnicodeDecodeError) as error:
+        fail("UNTRUSTED_PACKAGE_HEAD", f"package HEAD cannot be read: {error}")
+    projection = authoritative_projection(
+        root,
+        package_head,
+        live_reviewed_head,
+        reviewed_code_head,
+        expected_index=(package / "llm-wiki-index.md").read_bytes(),
+        expected_coverage=(
+            package / "llm-wiki-stage-category-coverage.md"
+        ).read_bytes(),
+    )
     if require_read_only:
         for path in package.iterdir():
             metadata = path.lstat()
@@ -1318,13 +1516,6 @@ def verify_package_path(
     for name, expected in checksums.items():
         if sha256_bytes((package / name).read_bytes()) != expected:
             fail("CHECKSUM_DRIFT", name)
-    package_head = (package / "HEAD.txt").read_text(encoding="ascii").strip()
-    if not re.fullmatch(r"[0-9a-f]{40,64}", package_head):
-        fail("INVALID_PACKAGE_HEAD", package_head)
-    if run_git(root, ["cat-file", "-e", f"{package_head}^{{commit}}"], check=False).returncode:
-        fail("INVALID_PACKAGE_HEAD", package_head)
-    if require_live_head and head(root) != package_head:
-        fail("STALE_HEAD", f"live HEAD differs from package HEAD {package_head}")
     attempt = package_doc.get("attempt")
     if not nonnegative_int(attempt) or attempt not in (1, 2):
         fail("PACKAGE_SEMANTIC_DRIFT", "invalid package attempt")
@@ -1395,25 +1586,29 @@ def verify_package_path(
     expected_state = "PACKAGE_REVIEW_PENDING" if attempt == 1 else "ATTEMPT_2_PENDING"
     if candidate_marker.get("attempt") != attempt or candidate_marker.get("state") != expected_state:
         fail("PACKAGE_SEMANTIC_DRIFT", "task-candidate.md marker")
-    validate_package_prehistory(root, attempt, candidate_marker)
-    task_patch, deletion_patch = write_task_patch_and_deletion_patch(
-        root, package_head, TASK_PATH, candidate
+    validate_package_prehistory(
+        root,
+        attempt,
+        candidate_marker,
+        live_reviewed_head,
+        reviewed_code_head,
     )
+    task_patch = write_task_patch(root, package_head, TASK_PATH, candidate)
     semantic_payloads = {
         "task-before.md": task_before,
         "task-before-to-candidate.patch": task_patch,
-        "proposed-deletion.patch": deletion_patch,
+        "proposed-deletion.patch": projection.proposed_deletion_patch,
         "spec.md": run_git(root, ["show", f"{package_head}:{SPEC_PATH.as_posix()}"]).stdout,
         "plan.md": run_git(root, ["show", f"{package_head}:{PLAN_PATH.as_posix()}"]).stdout,
     }
     for name, expected in semantic_payloads.items():
         if (package / name).read_bytes() != expected:
             fail("PACKAGE_SEMANTIC_DRIFT", name)
-    tracked_index = run_git(root, ["show", f"{package_head}:{INDEX.as_posix()}"]).stdout
-    tracked_coverage = run_git(root, ["show", f"{package_head}:{COVERAGE.as_posix()}"]).stdout
-    if (package / "llm-wiki-index.md").read_bytes() != tracked_index:
+    if (package / "llm-wiki-index.md").read_bytes() != projection.index_markdown:
         fail("PACKAGE_SEMANTIC_DRIFT", INDEX.as_posix())
-    if (package / "llm-wiki-stage-category-coverage.md").read_bytes() != tracked_coverage:
+    if (
+        package / "llm-wiki-stage-category-coverage.md"
+    ).read_bytes() != projection.coverage_markdown:
         fail("PACKAGE_SEMANTIC_DRIFT", COVERAGE.as_posix())
     return {
         "attempt": attempt,
@@ -1426,10 +1621,12 @@ def verify_package_path(
 
 def verify_package(args: argparse.Namespace) -> None:
     root = repository_root()
+    authority = authority_from_args(root, args)
     result = verify_package_path(
         root,
         pathlib.Path(args.package).resolve(),
-        require_live_head=args.require_live_head,
+        live_reviewed_head=authority.live_head,
+        reviewed_code_head=authority.reviewed_code_head,
     )
     print(canonical_json({"package_sha256": result["package_sha256"], "state": "VERIFIED"}).decode(), end="")
 
@@ -1485,8 +1682,12 @@ def load_attestation(
 
 def verify_assignments(args: argparse.Namespace) -> None:
     root = repository_root()
+    authority = authority_from_args(root, args)
     package_result = verify_package_path(
-        root, pathlib.Path(args.package).resolve(), require_live_head=False
+        root,
+        pathlib.Path(args.package).resolve(),
+        live_reviewed_head=authority.live_head,
+        reviewed_code_head=authority.reviewed_code_head,
     )
     attestation_path = pathlib.Path(args.attestation).resolve()
     load_attestation(package_result, attestation_path)
@@ -1636,8 +1837,14 @@ def validate_task_state(
 
 def verify_backfill(args: argparse.Namespace) -> None:
     root = repository_root()
+    authority = authority_from_args(root, args)
     package = pathlib.Path(args.package).resolve()
-    package_result = verify_package_path(root, package, require_live_head=False)
+    package_result = verify_package_path(
+        root,
+        package,
+        live_reviewed_head=authority.live_head,
+        reviewed_code_head=authority.reviewed_code_head,
+    )
     attestation_path = pathlib.Path(args.assignment_attestation).resolve()
     attestation = load_attestation(package_result, attestation_path)
     attestation_sha256 = sha256_bytes(attestation_path.read_bytes())
@@ -1675,9 +1882,15 @@ def task_transition_patch(
     after: bytes,
     task: pathlib.PurePosixPath,
 ) -> bytes:
-    with tempfile.TemporaryDirectory(prefix="gate9-task-transition-") as temporary:
-        environment = {"GIT_INDEX_FILE": os.fspath(pathlib.Path(temporary) / "index")}
-        run_git(root, ["read-tree", "--empty"], env=environment)
+    with PinnedScratch("gate9-task-transition-") as scratch:
+        environment = {"GIT_INDEX_FILE": os.fspath(scratch.path / "index")}
+        run_git(
+            root,
+            ["read-tree", "--empty"],
+            env=environment,
+            pass_fds=scratch.pass_fds,
+        )
+        scratch.register_file("index")
         before_oid = run_git(
             root, ["hash-object", "-w", "--stdin"], env=environment, input_bytes=before
         ).stdout.decode().strip()
@@ -1685,8 +1898,15 @@ def task_transition_patch(
             root,
             ["update-index", "--add", "--cacheinfo", "100644", before_oid, task.as_posix()],
             env=environment,
+            pass_fds=scratch.pass_fds,
         )
-        before_tree = run_git(root, ["write-tree"], env=environment).stdout.decode().strip()
+        scratch.register_file("index")
+        before_tree = run_git(
+            root,
+            ["write-tree"],
+            env=environment,
+            pass_fds=scratch.pass_fds,
+        ).stdout.decode().strip()
         after_oid = run_git(
             root, ["hash-object", "-w", "--stdin"], env=environment, input_bytes=after
         ).stdout.decode().strip()
@@ -1694,8 +1914,10 @@ def task_transition_patch(
             root,
             ["update-index", "--cacheinfo", "100644", after_oid, task.as_posix()],
             env=environment,
+            pass_fds=scratch.pass_fds,
         )
-        return run_git(
+        scratch.register_file("index")
+        result = run_git(
             root,
             [
                 "diff",
@@ -1707,7 +1929,10 @@ def task_transition_patch(
                 task.as_posix(),
             ],
             env=environment,
+            pass_fds=scratch.pass_fds,
         ).stdout
+        scratch.register_file("index")
+        return result
 
 
 def file_record(path: str, value: bytes) -> dict[str, object]:
@@ -1823,22 +2048,38 @@ def evidence_commit_message(attempt: int, package_sha256: str, state: str) -> by
 
 
 def write_evidence_tree(root: pathlib.Path, leaves: Mapping[str, bytes]) -> str:
-    with tempfile.TemporaryDirectory(prefix="gate9-evidence-index-") as temporary:
-        environment = {"GIT_INDEX_FILE": os.fspath(pathlib.Path(temporary) / "index")}
-        run_git(root, ["read-tree", "--empty"], env=environment)
+    with PinnedScratch("gate9-evidence-index-") as scratch:
+        environment = {"GIT_INDEX_FILE": os.fspath(scratch.path / "index")}
+        run_git(
+            root,
+            ["read-tree", "--empty"],
+            env=environment,
+            pass_fds=scratch.pass_fds,
+        )
+        scratch.register_file("index")
         for path in sorted(leaves):
             oid = run_git(
                 root,
                 ["hash-object", "-w", "--stdin"],
                 env=environment,
                 input_bytes=leaves[path],
+                pass_fds=scratch.pass_fds,
             ).stdout.decode().strip()
             run_git(
                 root,
                 ["update-index", "--add", "--cacheinfo", "100644", oid, path],
                 env=environment,
+                pass_fds=scratch.pass_fds,
             )
-        return run_git(root, ["write-tree"], env=environment).stdout.decode().strip()
+            scratch.register_file("index")
+        result = run_git(
+            root,
+            ["write-tree"],
+            env=environment,
+            pass_fds=scratch.pass_fds,
+        ).stdout.decode().strip()
+        scratch.register_file("index")
+        return result
 
 
 def commit_identity(root: pathlib.Path, commit: str) -> tuple[str, str, bytes]:
@@ -2079,8 +2320,14 @@ def build_evidence_leaves(
 
 def publish_evidence_ref(args: argparse.Namespace) -> None:
     root = repository_root()
+    authority = authority_from_args(root, args)
     package = pathlib.Path(args.package).resolve()
-    package_result = verify_package_path(root, package, require_live_head=False)
+    package_result = verify_package_path(
+        root,
+        package,
+        live_reviewed_head=authority.live_head,
+        reviewed_code_head=authority.reviewed_code_head,
+    )
     task_relative, task_path = repo_path(root, args.task)
     evidence_ref = fixed_evidence_ref(
         package_result["attempt"], package_result["package_sha256"]
@@ -2182,24 +2429,29 @@ def read_ref_leaves(
     return commit, leaves
 
 
-def materialize_evidence(leaves: Mapping[str, bytes], root: pathlib.Path) -> None:
+def materialize_evidence(
+    leaves: Mapping[str, bytes], scratch: PinnedScratch
+) -> pathlib.Path:
     for relative, value in leaves.items():
-        path = root / pathlib.Path(*pathlib.PurePosixPath(relative).parts)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(value)
-        path.chmod(0o444)
+        scratch.create_file(relative, value, mode=0o444)
+    return scratch.path
 
 
 def replay_terminal_evidence_ref(
-    root: pathlib.Path, evidence_ref: str
+    root: pathlib.Path,
+    evidence_ref: str,
+    live_reviewed_head: str,
+    reviewed_code_head: str,
 ) -> dict[str, object]:
     evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
-    with tempfile.TemporaryDirectory(prefix="gate9-terminal-replay-") as temporary:
-        evidence_root = pathlib.Path(temporary)
-        materialize_evidence(leaves, evidence_root)
+    with PinnedScratch("gate9-terminal-replay-") as scratch:
+        evidence_root = materialize_evidence(leaves, scratch)
         package = evidence_root / "package"
         package_result = verify_package_path(
-            root, package, require_live_head=False
+            root,
+            package,
+            live_reviewed_head=live_reviewed_head,
+            reviewed_code_head=reviewed_code_head,
         )
         evidence = load_canonical_json(evidence_root / "evidence.json")
         state = evidence.get("state")
@@ -2269,22 +2521,48 @@ def replay_terminal_evidence_ref(
 
 def verify_authorized(args: argparse.Namespace) -> None:
     root = repository_root()
+    authority = authority_from_args(root, args)
+    if args.package:
+        external_package = pathlib.Path(args.package).resolve()
+        if not external_package.is_dir():
+            fail("MISSING_PACKAGE", os.fspath(external_package))
+        try:
+            external_head = (external_package / "HEAD.txt").read_text(
+                encoding="ascii"
+            ).strip()
+        except (OSError, UnicodeDecodeError) as error:
+            fail("UNTRUSTED_PACKAGE_HEAD", f"package HEAD cannot be read: {error}")
+        external_oid = require_full_commit_oid(
+            root,
+            external_head,
+            code="UNTRUSTED_PACKAGE_HEAD",
+        )
+        if external_oid != authority.live_head:
+            fail(
+                "UNTRUSTED_PACKAGE_HEAD",
+                "package HEAD differs from live reviewed HEAD",
+            )
     task_relative, task_path = repo_path(root, args.task)
     live_task = task_path.read_bytes()
     task_marker, _ = parse_marker(live_task)
     evidence_ref = resolve_evidence_ref(task_marker, args.evidence_ref)
     evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
-    with tempfile.TemporaryDirectory(prefix="gate9-ref-replay-") as temporary:
-        evidence_root = pathlib.Path(temporary)
-        materialize_evidence(leaves, evidence_root)
+    with PinnedScratch("gate9-ref-replay-") as scratch:
+        evidence_root = materialize_evidence(leaves, scratch)
         package = evidence_root / "package"
         package_result = verify_package_path(
-            root, package, require_live_head=args.require_live_head
+            root,
+            package,
+            live_reviewed_head=authority.live_head,
+            reviewed_code_head=authority.reviewed_code_head,
         )
         if args.package:
             external_package = pathlib.Path(args.package).resolve()
             external_result = verify_package_path(
-                root, external_package, require_live_head=args.require_live_head
+                root,
+                external_package,
+                live_reviewed_head=authority.live_head,
+                reviewed_code_head=authority.reviewed_code_head,
             )
             if external_result["package_sha256"] != package_result["package_sha256"]:
                 fail("PACKAGE_ID_DRIFT", os.fspath(external_package))
@@ -2456,8 +2734,6 @@ def verify_authorized(args: argparse.Namespace) -> None:
         assert_clean_real_index(root)
     if args.require_task_only_worktree:
         assert_task_only_worktree(root, task_relative)
-    if args.require_live_head and head(root) != package_result["head"]:
-        fail("STALE_HEAD", package_result["head"])
     print(
         canonical_json(
             {
@@ -2470,6 +2746,12 @@ def verify_authorized(args: argparse.Namespace) -> None:
     )
 
 
+def add_authority_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--require-live-head", action="store_true")
+    parser.add_argument("--live-reviewed-head")
+    parser.add_argument("--reviewed-code-head")
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="mode", required=True)
@@ -2479,12 +2761,14 @@ def make_parser() -> argparse.ArgumentParser:
     build.add_argument("--spec", required=True)
     build.add_argument("--plan", required=True)
     build.add_argument("--task", required=True)
+    add_authority_arguments(build)
     verify = subparsers.add_parser("verify-package")
     verify.add_argument("--package", required=True)
-    verify.add_argument("--require-live-head", action="store_true")
+    add_authority_arguments(verify)
     assignments = subparsers.add_parser("verify-assignments")
     assignments.add_argument("--package", required=True)
     assignments.add_argument("--attestation", required=True)
+    add_authority_arguments(assignments)
     backfill = subparsers.add_parser("verify-backfill")
     backfill.add_argument("--package", required=True)
     backfill.add_argument("--migration-receipt", required=True)
@@ -2494,6 +2778,7 @@ def make_parser() -> argparse.ArgumentParser:
     backfill.add_argument(
         "--expect-state", choices=("PACKAGE_REVIEWED", "TASK_BACKFILLED"), required=True
     )
+    add_authority_arguments(backfill)
     publish = subparsers.add_parser("publish-evidence-ref")
     publish.add_argument("--package", required=True)
     publish.add_argument("--task", required=True)
@@ -2512,13 +2797,14 @@ def make_parser() -> argparse.ArgumentParser:
     publish.add_argument("--quality-closure")
     publish.add_argument("--drift-proof")
     publish.add_argument("--evidence-ref", required=True)
+    add_authority_arguments(publish)
     authorized = subparsers.add_parser("verify-authorized")
     package_source = authorized.add_mutually_exclusive_group(required=True)
     package_source.add_argument("--package")
     package_source.add_argument("--package-from-ref", action="store_true")
     authorized.add_argument("--task", required=True)
     authorized.add_argument("--evidence-ref", required=True)
-    authorized.add_argument("--require-live-head", action="store_true")
+    add_authority_arguments(authorized)
     authorized.add_argument("--require-clean-real-index", action="store_true")
     authorized.add_argument("--require-task-only-worktree", action="store_true")
     return parser
@@ -2544,7 +2830,7 @@ def main() -> int:
             fail("MODE_NOT_IMPLEMENTED", args.mode)
     except Gate9Error as error:
         print(str(error), file=sys.stderr)
-        return 1
+        return 2 if error.code == "LIVE_HEAD_REQUIRED" else 1
     return 0
 
 

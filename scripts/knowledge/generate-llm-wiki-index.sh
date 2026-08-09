@@ -6,23 +6,31 @@ cd "$BASE_DIR"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/knowledge/generate-llm-wiki-index.sh [--check]
+Usage: bash scripts/knowledge/generate-llm-wiki-index.sh [--check|--stdout]
 
 Generate the repo-local LLM Wiki path index.
 
 Options:
   --check   Fail when docs/90.references/llm-wiki/llm-wiki-index.md is stale.
+  --stdout  Write the rendered Markdown to stdout without modifying the repository.
   -h, --help
             Show this help.
 EOF
 }
 
 mode="write"
+if (( $# > 1 )); then
+  usage >&2
+  exit 2
+fi
 case "${1:-}" in
   "")
     ;;
   --check)
     mode="check"
+    ;;
+  --stdout)
+    mode="stdout"
     ;;
   -h|--help)
     usage
@@ -324,7 +332,9 @@ tracked.update(path for path in REQUIRED_LOCAL_PATHS if pathlib.Path(path).exist
 safe_paths = sorted(path for path in tracked if pathlib.Path(path).exists() and is_safe_candidate(path))
 generated = render(safe_paths)
 
-if MODE == "check":
+if MODE == "stdout":
+    sys.stdout.buffer.write(generated.encode("utf-8"))
+elif MODE == "check":
     if not OUTPUT.is_file():
         print(f"FAIL: missing generated LLM Wiki index: {OUTPUT}", file=sys.stderr)
         sys.exit(1)

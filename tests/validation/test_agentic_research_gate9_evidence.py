@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
@@ -8,6 +9,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -25,6 +27,14 @@ COVERAGE = (
     "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"
 )
 ROLES = ("migration-specification", "quality")
+AUTHORITY_MODES = {
+    "build-package",
+    "verify-package",
+    "verify-assignments",
+    "verify-backfill",
+    "publish-evidence-ref",
+    "verify-authorized",
+}
 
 
 def canonical_json(value: object) -> bytes:
@@ -117,21 +127,19 @@ class Gate9Fixture:
         self.write(
             "scripts/knowledge/generate-llm-wiki-index.sh",
             "#!/usr/bin/env bash\nset -eu\n"
-            + "if [[ -e "
-            + SPEC
-            + " ]]; then printf 'fixed index\\n'; else printf 'drifted index\\n'; fi > "
+            + "if [[ ${1:-} == --stdout && $# == 1 ]]; then printf 'fixed index\\n'; "
+            + "elif [[ $# == 0 ]]; then printf 'fixed index\\n' > "
             + INDEX
-            + "\n",
+            + "; else exit 2; fi\n",
             executable=True,
         )
         self.write(
             "scripts/knowledge/generate-llm-wiki-coverage.sh",
             "#!/usr/bin/env bash\nset -eu\n"
-            + "if [[ -e "
-            + SPEC
-            + " ]]; then printf 'fixed coverage\\n'; else printf 'drifted coverage\\n'; fi > "
+            + "if [[ ${1:-} == --stdout && $# == 1 ]]; then printf 'fixed coverage\\n'; "
+            + "elif [[ $# == 0 ]]; then printf 'fixed coverage\\n' > "
             + COVERAGE
-            + "\n",
+            + "; else exit 2; fi\n",
             executable=True,
         )
         self.pending_payload: dict[str, object] = {
@@ -140,10 +148,21 @@ class Gate9Fixture:
             "state": "PACKAGE_REVIEW_PENDING",
         }
         self.write(TASK, "# Task\n\n" + marker(self.pending_payload) + "\n")
+        helper_path = self.root / HELPER.relative_to(ROOT)
+        helper_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(HELPER, helper_path)
         git(root, "add", ".")
-        git(root, "commit", "--quiet", "-m", "fixture baseline")
-        self.head = git(root, "rev-parse", "HEAD").stdout.strip()
+        git(root, "commit", "--quiet", "-m", "fixture reviewed code")
+        self.reviewed_code_head = git(root, "rev-parse", "HEAD").stdout.strip()
         task_path = root / TASK
+        task_path.write_text(
+            task_path.read_text(encoding="utf-8")
+            + f"\nGATE9_REVIEWED_CODE_HEAD: `{self.reviewed_code_head}`\n",
+            encoding="utf-8",
+        )
+        git(root, "add", TASK)
+        git(root, "commit", "--quiet", "-m", "fixture reviewed closure")
+        self.head = git(root, "rev-parse", "HEAD").stdout.strip()
         task_path.write_text(
             task_path.read_text(encoding="utf-8") + "\nCandidate gate results.\n",
             encoding="utf-8",
@@ -161,12 +180,22 @@ class Gate9Fixture:
         *args: str,
         check: bool = False,
         env: dict[str, str] | None = None,
+        bind_live: bool = True,
     ) -> subprocess.CompletedProcess[str]:
         command_env = os.environ.copy()
         if env:
             command_env.update(env)
+        command_args = list(args)
+        if bind_live and command_args and command_args[0] in AUTHORITY_MODES:
+            command_args[1:1] = [
+                "--require-live-head",
+                "--live-reviewed-head",
+                self.head,
+                "--reviewed-code-head",
+                self.reviewed_code_head,
+            ]
         return subprocess.run(
-            ["python3", os.fspath(HELPER), *args],
+            ["python3", os.fspath(HELPER), *command_args],
             cwd=self.root,
             env=command_env,
             capture_output=True,
@@ -188,6 +217,104 @@ class Gate9Fixture:
             "--task",
             TASK,
         )
+
+    def repository_state(self) -> dict[str, object]:
+        protected_paths = (
+            *(f"{OLD_PACK}/file-{ordinal:02d}.md" for ordinal in range(20)),
+            INDEX,
+            COVERAGE,
+        )
+        return {
+            "head": git(self.root, "rev-parse", "HEAD").stdout,
+            "index": regular_file_snapshot(self.root / ".git/index"),
+            "old_tree": git(
+                self.root, "ls-tree", "-r", "--full-tree", "HEAD", OLD_PACK
+            ).stdout,
+            "protected": {
+                path: regular_file_snapshot(self.root / path)
+                for path in protected_paths
+            },
+            "refs": git(
+                self.root,
+                "for-each-ref",
+                "--format=%(refname) %(objectname)",
+                "refs/codex/review-evidence/agentic-research/gate9/v1/",
+            ).stdout,
+            "worktrees": git(self.root, "worktree", "list", "--porcelain").stdout,
+        }
+
+    def advance_reviewed_generator(self, relative: str, value: str) -> None:
+        task_path = self.root / TASK
+        committed_task = subprocess.run(
+            ["git", "show", f"HEAD:{TASK}"],
+            cwd=self.root,
+            capture_output=True,
+            check=True,
+        ).stdout
+        task_path.write_bytes(committed_task)
+        self.write(relative, value, executable=True)
+        git(self.root, "add", relative)
+        git(self.root, "commit", "--quiet", "-m", "fixture reviewed generator")
+        old_reviewed = self.reviewed_code_head
+        self.reviewed_code_head = git(
+            self.root, "rev-parse", "HEAD"
+        ).stdout.strip()
+        task_path.write_text(
+            task_path.read_text(encoding="utf-8").replace(
+                old_reviewed, self.reviewed_code_head
+            ),
+            encoding="utf-8",
+        )
+        git(self.root, "add", TASK)
+        git(self.root, "commit", "--quiet", "-m", "fixture reviewed closure")
+        self.head = git(self.root, "rev-parse", "HEAD").stdout.strip()
+        task_path.write_text(
+            task_path.read_text(encoding="utf-8") + "\nCandidate gate results.\n",
+            encoding="utf-8",
+        )
+
+    def authorize_package(
+        self, package: pathlib.Path
+    ) -> tuple[dict[str, pathlib.Path], str]:
+        materials = self.review_materials(package)
+        self.backfill_task(package, materials)
+        self.closure_materials(package, materials)
+        terminal = self.root / "evidence/terminal.md"
+        terminal.write_text("AUTHORIZED\n", encoding="utf-8")
+        published = self.run(
+            "publish-evidence-ref",
+            "--package",
+            os.fspath(package),
+            "--task",
+            TASK,
+            "--terminal-state",
+            "AUTHORIZED",
+            "--terminal-report",
+            os.fspath(terminal),
+            "--migration-report",
+            os.fspath(materials["migration-specification-report"]),
+            "--migration-receipt",
+            os.fspath(materials["migration-specification-receipt"]),
+            "--quality-report",
+            os.fspath(materials["quality-report"]),
+            "--quality-receipt",
+            os.fspath(materials["quality-receipt"]),
+            "--assignment-attestation",
+            os.fspath(materials["attestation"]),
+            "--migration-closure-report",
+            os.fspath(materials["migration-specification-closure-report"]),
+            "--migration-closure",
+            os.fspath(materials["migration-specification-closure"]),
+            "--quality-closure-report",
+            os.fspath(materials["quality-closure-report"]),
+            "--quality-closure",
+            os.fspath(materials["quality-closure"]),
+            "--evidence-ref",
+            "auto",
+        )
+        if published.returncode != 0:
+            raise AssertionError(published.stderr)
+        return materials, json.loads(published.stdout)["evidence_ref"]
 
     def build_attempt_two(self, output: pathlib.Path) -> tuple[pathlib.Path, str]:
         package_one = self.root / "attempt-one-package"
@@ -572,12 +699,19 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             "verify-package", "--package", os.fspath(package), "--require-live-head"
         )
         self.assertNotEqual(0, stale.returncode)
-        self.assertIn("STALE_HEAD", stale.stderr)
+        self.assertIn("UNTRUSTED_PACKAGE_HEAD", stale.stderr)
 
-        attachment = package / "spec.md"
+        shutil.rmtree(package)
+        self.fixture.head = git(self.root, "rev-parse", "HEAD").stdout.strip()
+        fresh_package = self.root / "fresh-package"
+        fresh = self.fixture.build(fresh_package)
+        self.assertEqual(0, fresh.returncode, fresh.stderr)
+        attachment = fresh_package / "spec.md"
         attachment.chmod(0o644)
         attachment.write_text("drift\n", encoding="utf-8")
-        drift = self.fixture.run("verify-package", "--package", os.fspath(package))
+        drift = self.fixture.run(
+            "verify-package", "--package", os.fspath(fresh_package)
+        )
         self.assertNotEqual(0, drift.returncode)
         self.assertRegex(drift.stderr, "(CHECKSUM_DRIFT|ATTACHMENT_MODE_DRIFT)")
 
@@ -1364,609 +1498,351 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                 self.assertNotEqual(0, result.returncode)
                 self.assertIn("ATTEMPT_PREHISTORY_INVALID", result.stderr)
 
-    def test_detached_worktree_cleanup_handles_partial_add_and_failed_remove(self) -> None:
-        before = git(self.root, "worktree", "list", "--porcelain").stdout
-        wrappers = {
-            "partial-add": self.fixture.git_wrapper(
-                "partial-add",
-                'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-                '  "$REAL_GIT" "$@"\n'
-                '  touch "$GATE9_WRAPPER_MARKER"\n'
-                "  exit 91\n"
-                "fi\n"
-                'exec "$REAL_GIT" "$@"\n',
+    def test_projected_index_proves_exact_twenty_deletions_without_worktree_mutation(
+        self,
+    ) -> None:
+        before = self.fixture.repository_state()
+        package = self.root / "step0d-package"
+        built = self.fixture.build(package)
+        self.assertEqual(0, built.returncode, built.stderr)
+        patch = (package / "proposed-deletion.patch").read_bytes()
+        self.assertEqual(20, patch.count(b"deleted file mode 100644"))
+        for ordinal in range(20):
+            self.assertIn(
+                f"{OLD_PACK}/file-{ordinal:02d}.md".encode(),
+                patch,
+            )
+        self.assertNotIn(SPEC.encode(), patch)
+        self.assertEqual(before, self.fixture.repository_state())
+
+        module_spec = importlib.util.spec_from_file_location("gate9_helper", HELPER)
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        projector = getattr(module, "authoritative_projection", None)
+        self.assertIsNotNone(projector, "Step 0d authoritative projector is missing")
+        if projector is None:
+            return
+        projection = projector(
+            self.root,
+            self.fixture.head,
+            self.fixture.head,
+            self.fixture.reviewed_code_head,
+        )
+        expected_tree = git(
+            self.root, "rev-parse", f"{self.fixture.head}^{{tree}}"
+        ).stdout.strip()
+        self.assertEqual(expected_tree, projection.initial_tree_oid)
+        self.assertNotEqual(projection.initial_tree_oid, projection.final_tree_oid)
+        self.assertEqual(20, len(projection.old_paths))
+        self.assertEqual(
+            tuple(("D", path) for path in projection.old_paths),
+            projection.deletion_statuses,
+        )
+
+    def test_projected_index_rejects_outside_status_drift(self) -> None:
+        before = self.fixture.repository_state()
+        environment = self.fixture.git_wrapper(
+            "step0d-outside-index",
+            'if [[ "$1" == "update-index" && "$2" == "--force-remove" && "$3" == "-z" ]]; then\n'
+            '  "$REAL_GIT" "$@"\n'
+            '  "$REAL_GIT" update-index --force-remove -- ' + json.dumps(SPEC) + "\n"
+            '  touch "$GATE9_WRAPPER_MARKER"\n'
+            "  exit 0\n"
+            "fi\n"
+            'exec "$REAL_GIT" "$@"\n',
+        )
+        result = self.fixture.run(
+            "build-package",
+            "--attempt",
+            "1",
+            "--output",
+            os.fspath(self.root / "outside-status-package"),
+            "--spec",
+            SPEC,
+            "--plan",
+            PLAN,
+            "--task",
+            TASK,
+            env=environment,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("PROJECTED_DELETION_DRIFT", result.stderr)
+        self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
+        self.assertEqual(before, self.fixture.repository_state())
+
+    def test_projector_rejects_empty_noisy_crlf_and_non_utf8_stdout_without_writes(
+        self,
+    ) -> None:
+        variants = {
+            "empty": "exit 0\n",
+            "noisy": "printf 'fixed index\\nnoise\\n'\n",
+            "crlf": "printf 'fixed index\\r\\n'\n",
+            "non-utf8": "printf '\\377'\n",
+        }
+        for name, output_program in variants.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory(
+                prefix=f"gate9-stdout-{name}-"
+            ) as directory:
+                fixture = Gate9Fixture(pathlib.Path(directory))
+                try:
+                    fixture.advance_reviewed_generator(
+                        "scripts/knowledge/generate-llm-wiki-index.sh",
+                        "#!/usr/bin/env bash\nset -eu\n"
+                        "[[ ${1:-} == --stdout && $# == 1 ]] || exit 2\n"
+                        + output_program,
+                    )
+                    before = fixture.repository_state()
+                    result = fixture.build(pathlib.Path(directory) / "package")
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertIn("GENERATOR_STDOUT_DRIFT", result.stderr)
+                    self.assertEqual(before, fixture.repository_state())
+                finally:
+                    fixture.cleanup()
+
+    def test_every_public_mode_reprojects_and_rejects_resealed_noop_generator(
+        self,
+    ) -> None:
+        package = self.root / "resealed-package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        materials = self.fixture.review_materials(package)
+        (package / "llm-wiki-index.md").chmod(0o644)
+        (package / "llm-wiki-index.md").write_bytes(b"forged no-op output\n")
+        self.fixture.reseal_package(package)
+        marker_path = self.root / "generator-executed"
+        generator_path = self.root / "scripts/knowledge/generate-llm-wiki-index.sh"
+        generator_path.write_text(
+            "#!/usr/bin/env bash\nset -eu\nprintf executed > "
+            + os.fspath(marker_path)
+            + "\nexit 0\n",
+            encoding="utf-8",
+        )
+        dummy = self.root / "dummy"
+        dummy.write_text("dummy\n", encoding="utf-8")
+        commands = {
+            "build-package": (
+                "build-package", "--attempt", "1", "--output",
+                os.fspath(self.root / "dirty-code-package"), "--spec", SPEC,
+                "--plan", PLAN, "--task", TASK,
             ),
-            "failed-remove": self.fixture.git_wrapper(
-                "failed-remove",
-                'if [[ "$1" == "worktree" && "$2" == "remove" ]]; then\n'
-                '  touch "$GATE9_WRAPPER_MARKER"\n'
-                "  exit 91\n"
-                "fi\n"
-                'exec "$REAL_GIT" "$@"\n',
+            "verify-package": ("verify-package", "--package", os.fspath(package)),
+            "verify-assignments": (
+                "verify-assignments", "--package", os.fspath(package),
+                "--attestation", os.fspath(materials["attestation"]),
+            ),
+            "verify-backfill": (
+                "verify-backfill", "--package", os.fspath(package),
+                "--migration-receipt", os.fspath(materials["migration-specification-receipt"]),
+                "--quality-receipt", os.fspath(materials["quality-receipt"]),
+                "--assignment-attestation", os.fspath(materials["attestation"]),
+                "--task", TASK, "--expect-state", "PACKAGE_REVIEWED",
+            ),
+            "publish-evidence-ref": (
+                "publish-evidence-ref", "--package", os.fspath(package),
+                "--task", TASK, "--terminal-state", "INVALIDATED",
+                "--terminal-report", os.fspath(dummy),
+                "--assignment-attestation", os.fspath(materials["attestation"]),
+                "--drift-proof", os.fspath(dummy), "--evidence-ref", "auto",
+            ),
+            "verify-authorized": (
+                "verify-authorized", "--package", os.fspath(package),
+                "--task", TASK, "--evidence-ref", "auto",
             ),
         }
-        for name, environment in wrappers.items():
+        for mode, command in commands.items():
+            with self.subTest(mode=mode):
+                result = self.fixture.run(*command)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("REVIEWED_CODE_DRIFT", result.stderr)
+                self.assertFalse(marker_path.exists())
+
+    def test_non_live_package_generator_is_rejected_before_shell_across_all_modes(
+        self,
+    ) -> None:
+        package = self.root / "historical-package"
+        self.assertEqual(0, self.fixture.build(package).returncode)
+        marker_path = self.root / "historical-generator-executed"
+        self.fixture.advance_reviewed_generator(
+            "scripts/knowledge/generate-llm-wiki-index.sh",
+            "#!/usr/bin/env bash\nset -eu\nprintf executed > "
+            + os.fspath(marker_path)
+            + "\nexit 0\n",
+        )
+        historical_head = self.fixture.reviewed_code_head
+        for name in ("HEAD.txt", "package.json", "assignments.json", "gate-results.json"):
+            (package / name).chmod(0o644)
+        (package / "HEAD.txt").write_text(f"{historical_head}\n", encoding="ascii")
+        for name in ("package.json", "assignments.json", "gate-results.json"):
+            value = json.loads((package / name).read_text(encoding="utf-8"))
+            value["package_head"] = historical_head
+            (package / name).write_bytes(canonical_json(value))
+        self.fixture.reseal_package(package)
+        materials = self.fixture.review_materials(package)
+        dummy = self.root / "non-live-dummy"
+        dummy.write_text("dummy\n", encoding="utf-8")
+        commands = {
+            "verify-package": ("verify-package", "--package", os.fspath(package)),
+            "verify-assignments": (
+                "verify-assignments", "--package", os.fspath(package),
+                "--attestation", os.fspath(materials["attestation"]),
+            ),
+            "verify-backfill": (
+                "verify-backfill", "--package", os.fspath(package),
+                "--migration-receipt", os.fspath(materials["migration-specification-receipt"]),
+                "--quality-receipt", os.fspath(materials["quality-receipt"]),
+                "--assignment-attestation", os.fspath(materials["attestation"]),
+                "--task", TASK, "--expect-state", "PACKAGE_REVIEWED",
+            ),
+            "publish-evidence-ref": (
+                "publish-evidence-ref", "--package", os.fspath(package),
+                "--task", TASK, "--terminal-state", "INVALIDATED",
+                "--terminal-report", os.fspath(dummy),
+                "--assignment-attestation", os.fspath(materials["attestation"]),
+                "--drift-proof", os.fspath(dummy), "--evidence-ref", "auto",
+            ),
+            "verify-authorized": (
+                "verify-authorized", "--package", os.fspath(package),
+                "--task", TASK, "--evidence-ref", "auto",
+            ),
+        }
+        for mode, command in commands.items():
+            with self.subTest(mode=mode):
+                result = self.fixture.run(*command)
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("UNTRUSTED_PACKAGE_HEAD", result.stderr)
+                self.assertFalse(marker_path.exists())
+
+    def test_package_authority_requires_live_binding_and_unambiguous_history(
+        self,
+    ) -> None:
+        missing = self.fixture.run(
+            "build-package", "--attempt", "1", "--output",
+            os.fspath(self.root / "missing-binding"), "--spec", SPEC,
+            "--plan", PLAN, "--task", TASK, bind_live=False,
+        )
+        self.assertEqual(2, missing.returncode)
+        self.assertIn("LIVE_HEAD_REQUIRED", missing.stderr)
+        abbreviated = self.fixture.run(
+            "build-package", "--require-live-head", "--live-reviewed-head",
+            self.fixture.head[:12], "--reviewed-code-head",
+            self.fixture.reviewed_code_head, "--attempt", "1", "--output",
+            os.fspath(self.root / "abbreviated-binding"), "--spec", SPEC,
+            "--plan", PLAN, "--task", TASK, bind_live=False,
+        )
+        self.assertEqual(2, abbreviated.returncode)
+        self.assertIn("LIVE_HEAD_REQUIRED", abbreviated.stderr)
+
+        common_dir = pathlib.Path(
+            git(self.root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+            .stdout.strip()
+        )
+        ambiguous_cases = {
+            "replace": common_dir / f"refs/replace/{self.fixture.head}",
+            "grafts": common_dir / "info/grafts",
+            "shallow": common_dir / "shallow",
+        }
+        for name, path in ambiguous_cases.items():
             with self.subTest(name=name):
-                if name == "partial-add":
-                    result = self.fixture.run(
-                        "build-package",
-                        "--attempt",
-                        "1",
-                        "--output",
-                        os.fspath(self.root / f"package-{name}"),
-                        "--spec",
-                        SPEC,
-                        "--plan",
-                        PLAN,
-                        "--task",
-                        TASK,
-                        env=environment,
-                    )
-                else:
-                    result = self.fixture.run(
-                        "build-package",
-                        "--attempt",
-                        "1",
-                        "--output",
-                        os.fspath(self.root / f"package-{name}"),
-                        "--spec",
-                        SPEC,
-                        "--plan",
-                        PLAN,
-                        "--task",
-                        TASK,
-                        env=environment,
-                    )
-                self.assertNotEqual(0, result.returncode, name)
-                self.assertTrue(
-                    pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file(),
-                    name,
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(
+                    f"{self.fixture.head}\n" if name != "grafts" else f"{self.fixture.head} {self.fixture.reviewed_code_head}\n",
+                    encoding="ascii",
                 )
-                expected = (
-                    "GIT_FAILURE: git worktree add"
-                    if name == "partial-add"
-                    else "WORKTREE_CLEANUP_FAILURE"
-                )
-                self.assertIn(expected, result.stderr, name)
-                self.assertEqual(
-                    before,
-                    git(self.root, "worktree", "list", "--porcelain").stdout,
-                    name,
-                )
-
-    def test_detached_projection_uses_exact_index_only_old_pack_removal(self) -> None:
-        before = git(self.root, "worktree", "list", "--porcelain").stdout
-        environment = self.fixture.git_wrapper(
-            "index-only-removal",
-            'if [[ "$1" == "rm" && "$PWD" == */detached ]]; then\n'
-            '  printf "CALL\\n" >> "$GATE9_WRAPPER_MARKER"\n'
-            '  printf "%s\\n" "$@" >> "$GATE9_WRAPPER_MARKER"\n'
-            '  printf "END\\n" >> "$GATE9_WRAPPER_MARKER"\n'
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        package = self.root / "package-index-only-removal"
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "1",
-            "--output",
-            os.fspath(package),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-            env=environment,
-        )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertEqual(
-            ["CALL", "rm", "--cached", "-r", "-f", "--", OLD_PACK, "END"],
-            pathlib.Path(environment["GATE9_WRAPPER_MARKER"])
-            .read_text(encoding="utf-8")
-            .splitlines(),
-        )
-        verified = self.fixture.run(
-            "verify-package", "--package", os.fspath(package), "--require-live-head"
-        )
-        self.assertEqual(0, verified.returncode, verified.stderr)
-        self.assertEqual(before, git(self.root, "worktree", "list", "--porcelain").stdout)
-
-    def test_detached_projection_tolerates_broad_checkout_content_drift(self) -> None:
-        before = git(self.root, "worktree", "list", "--porcelain").stdout
-        environment = self.fixture.git_wrapper(
-            "broad-checkout-drift",
-            'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-            '  "$REAL_GIT" "$@"\n'
-            '  while IFS= read -r -d "" path; do\n'
-            '    if [[ -f "$5/$path" ]]; then\n'
-            "      printf '\\n# checkout-local drift\\n' >> \"$5/$path\"\n"
-            "    fi\n"
-            '  done < <("$REAL_GIT" -C "$5" ls-files -z)\n'
-            "  printf '#!/usr/bin/env bash\\nexit 93\\n' > \"$5/scripts/knowledge/generate-llm-wiki-index.sh\"\n"
-            "  printf '#!/usr/bin/env bash\\nexit 94\\n' > \"$5/scripts/knowledge/generate-llm-wiki-coverage.sh\"\n"
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 0\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        package = self.root / "package-broad-checkout-drift"
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "1",
-            "--output",
-            os.fspath(package),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-            env=environment,
-        )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
-        verified = self.fixture.run(
-            "verify-package", "--package", os.fspath(package), "--require-live-head"
-        )
-        self.assertEqual(0, verified.returncode, verified.stderr)
-        self.assertEqual(before, git(self.root, "worktree", "list", "--porcelain").stdout)
-
-    def test_detached_projection_rejects_index_or_old_path_set_drift(self) -> None:
-        for name, removed_path in (
-            ("outside-index", SPEC),
-            ("old-path-set", f"{OLD_PACK}/file-00.md"),
-        ):
-            with self.subTest(name=name):
-                environment = self.fixture.git_wrapper(
-                    name,
-                    'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-                    '  "$REAL_GIT" "$@"\n'
-                    '  "$REAL_GIT" -C "$5" update-index --force-remove -- '
-                    + json.dumps(removed_path)
-                    + "\n"
-                    '  touch "$GATE9_WRAPPER_MARKER"\n'
-                    "  exit 0\n"
-                    "fi\n"
-                    'exec "$REAL_GIT" "$@"\n',
-                )
-                result = self.fixture.run(
-                    "build-package",
-                    "--attempt",
-                    "1",
-                    "--output",
-                    os.fspath(self.root / f"package-{name}"),
-                    "--spec",
-                    SPEC,
-                    "--plan",
-                    PLAN,
-                    "--task",
-                    TASK,
-                    env=environment,
-                )
-                self.assertNotEqual(0, result.returncode, name)
-                self.assertIn("DETACHED_PROJECTION_SCOPE_DRIFT", result.stderr, name)
-
-    def test_detached_projection_rejects_unprovable_detached_state(self) -> None:
-        environment = self.fixture.git_wrapper(
-            "unprovable-detached-state",
-            'if [[ "$1" == "symbolic-ref" && "$2" == "--quiet" && "$3" == "HEAD" ]]; then\n'
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 91\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "1",
-            "--output",
-            os.fspath(self.root / "package-unprovable-detached-state"),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-            env=environment,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
-        self.assertIn("DETACHED_PROJECTION_SCOPE_DRIFT", result.stderr)
-
-    def test_detached_projection_rejects_foreign_index_before_mutation(self) -> None:
-        before_index = git(self.root, "diff", "--cached", "--binary").stdout
-        before_index_bytes = (self.root / ".git/index").read_bytes()
-        environment = self.fixture.git_wrapper(
-            "foreign-index",
-            'if [[ "$1" == "rev-parse" && "$2" == "--path-format=absolute" && "$3" == "--git-path" && "$4" == "index" ]]; then\n'
-            '  printf "%s\\n" "$FOREIGN_INDEX_PATH"\n'
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 0\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        environment["FOREIGN_INDEX_PATH"] = os.fspath(self.root / ".git/index")
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "1",
-            "--output",
-            os.fspath(self.root / "package-foreign-index"),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-            env=environment,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
-        self.assertIn("DETACHED_PROJECTION_SCOPE_DRIFT", result.stderr)
-        self.assertEqual(
-            before_index,
-            git(self.root, "diff", "--cached", "--binary").stdout,
-        )
-        self.assertEqual(before_index_bytes, (self.root / ".git/index").read_bytes())
-
-    def test_detached_projection_binds_index_to_created_worktree(self) -> None:
-        foreign_parent = pathlib.Path(
-            tempfile.mkdtemp(prefix="gate9-foreign-linked-worktree-")
-        )
-        foreign_worktree = foreign_parent / "foreign"
-        try:
-            git(
-                self.root,
-                "worktree",
-                "add",
-                "--quiet",
-                "--detach",
-                os.fspath(foreign_worktree),
-                self.fixture.head,
-            )
-            foreign_git_dir = pathlib.Path(
-                git(foreign_worktree, "rev-parse", "--absolute-git-dir")
-                .stdout.strip()
-            )
-            foreign_index = foreign_git_dir / "index"
-            before_index = foreign_index.read_bytes()
-            before_registry = git(
-                self.root, "worktree", "list", "--porcelain"
-            ).stdout
-            environment = self.fixture.git_wrapper(
-                "foreign-linked-worktree",
-                'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-                '  "$REAL_GIT" "$@"\n'
-                '  printf "gitdir: %s\\n" "$FOREIGN_GIT_DIR" > "$5/.git"\n'
-                '  touch "$GATE9_WRAPPER_MARKER"\n'
-                "  exit 0\n"
-                "fi\n"
-                'exec "$REAL_GIT" "$@"\n',
-            )
-            environment["FOREIGN_GIT_DIR"] = os.fspath(foreign_git_dir)
-            result = self.fixture.run(
-                "build-package",
-                "--attempt",
-                "1",
-                "--output",
-                os.fspath(self.root / "package-foreign-linked-worktree"),
-                "--spec",
-                SPEC,
-                "--plan",
-                PLAN,
-                "--task",
-                TASK,
-                env=environment,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertTrue(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).is_file())
-            self.assertIn("DETACHED_PROJECTION_SCOPE_DRIFT", result.stderr)
-            self.assertEqual(before_index, foreign_index.read_bytes())
-            self.assertEqual(
-                before_registry,
-                git(self.root, "worktree", "list", "--porcelain").stdout,
-            )
-        finally:
-            git(
-                self.root,
-                "worktree",
-                "remove",
-                "--force",
-                os.fspath(foreign_worktree),
-                check=False,
-            )
-            shutil.rmtree(foreign_parent, ignore_errors=True)
-
-    def test_detached_projection_rejects_redirected_worktree_root(self) -> None:
-        relocated_parent = pathlib.Path(
-            tempfile.mkdtemp(prefix="gate9-relocated-worktree-")
-        )
-        relocated_worktree = relocated_parent / "relocated"
-        package = relocated_parent / "package"
-        before_registry = git(self.root, "worktree", "list", "--porcelain").stdout
-        environment = self.fixture.git_wrapper(
-            "redirected-worktree-root",
-            'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-            '  "$REAL_GIT" "$@"\n'
-            '  mv "$5" "$RELOCATED_WORKTREE"\n'
-            '  ln -s "$RELOCATED_WORKTREE" "$5"\n'
-            '  printf "relocated sentinel\\n" > "$RELOCATED_WORKTREE/'
-            + INDEX
-            + '"\n'
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 0\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        environment["RELOCATED_WORKTREE"] = os.fspath(relocated_worktree)
-        try:
-            result = self.fixture.run(
-                "build-package",
-                "--attempt",
-                "1",
-                "--output",
-                os.fspath(package),
-                "--spec",
-                SPEC,
-                "--plan",
-                PLAN,
-                "--task",
-                TASK,
-                env=environment,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("DETACHED_PROJECTION_SCOPE_DRIFT", result.stderr)
-            self.assertEqual(
-                b"relocated sentinel\n",
-                (relocated_worktree / INDEX).read_bytes(),
-            )
-            self.assertFalse(package.exists())
-            self.assertEqual(
-                before_registry,
-                git(self.root, "worktree", "list", "--porcelain").stdout,
-            )
-        finally:
-            shutil.rmtree(relocated_parent, ignore_errors=True)
-
-    def test_detached_projection_rejects_real_index_alias_before_write(self) -> None:
-        guard_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-real-index-alias-"))
-        real_index = self.root / ".git/index"
-        backup_index = guard_parent / "real-index-backup"
-        before_index = regular_file_snapshot(real_index)
-        before_registry = git(self.root, "worktree", "list", "--porcelain").stdout
-        environment = self.fixture.git_wrapper(
-            "real-index-alias",
-            'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-            '  "$REAL_GIT" "$@"\n'
-            '  linked_index=$("$REAL_GIT" -C "$5" rev-parse --path-format=absolute --git-path index)\n'
-            '  mv "$REAL_INDEX_PATH" "$REAL_INDEX_BACKUP"\n'
-            '  ln -s "$linked_index" "$REAL_INDEX_PATH"\n'
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 0\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        environment["REAL_INDEX_BACKUP"] = os.fspath(backup_index)
-        environment["REAL_INDEX_PATH"] = os.fspath(real_index)
-        package = guard_parent / "package"
-        try:
-            result = self.fixture.run(
-                "build-package",
-                "--attempt",
-                "1",
-                "--output",
-                os.fspath(package),
-                "--spec",
-                SPEC,
-                "--plan",
-                PLAN,
-                "--task",
-                TASK,
-                env=environment,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("REAL_INDEX_SCOPE_DRIFT", result.stderr)
-            self.assertTrue(real_index.is_symlink())
-            self.assertFalse(package.exists())
-            self.assertEqual(
-                before_registry,
-                git(self.root, "worktree", "list", "--porcelain").stdout,
-            )
-        finally:
-            if real_index.is_symlink():
-                real_index.unlink()
-            if backup_index.exists():
-                backup_index.replace(real_index)
-            self.assertEqual(before_index, regular_file_snapshot(real_index))
-            shutil.rmtree(guard_parent, ignore_errors=True)
-
-    def test_detached_projection_rejects_unsafe_output_paths_before_write(self) -> None:
-        for name in ("target-symlink", "target-hardlink", "parent-symlink"):
-            with self.subTest(name=name):
-                victim_parent = pathlib.Path(
-                    tempfile.mkdtemp(prefix=f"gate9-output-{name}-")
-                )
-                victim = victim_parent / (
-                    pathlib.PurePosixPath(INDEX).name
-                    if name == "parent-symlink"
-                    else "outside-victim.md"
-                )
-                victim.write_bytes(b"outside sentinel\n")
                 try:
-                    if name == "parent-symlink":
-                        mutation = (
-                            '  rm -rf "$5/'
-                            + os.fspath(pathlib.PurePosixPath(INDEX).parent)
-                            + '"\n'
-                            '  ln -s "$OUTPUT_VICTIM_PARENT" "$5/'
-                            + os.fspath(pathlib.PurePosixPath(INDEX).parent)
-                            + '"\n'
-                        )
-                    else:
-                        link_flag = "-s " if name == "target-symlink" else ""
-                        mutation = (
-                            '  rm -f "$5/'
-                            + INDEX
-                            + '"\n'
-                            "  ln "
-                            + link_flag
-                            + '"$OUTPUT_VICTIM" "$5/'
-                            + INDEX
-                            + '"\n'
-                        )
-                    environment = self.fixture.git_wrapper(
-                        f"unsafe-output-{name}",
-                        'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-                        '  "$REAL_GIT" "$@"\n'
-                        + mutation
-                        + '  touch "$GATE9_WRAPPER_MARKER"\n'
-                        + "  exit 0\n"
-                        + "fi\n"
-                        + 'exec "$REAL_GIT" "$@"\n',
-                    )
-                    environment["OUTPUT_VICTIM"] = os.fspath(victim)
-                    environment["OUTPUT_VICTIM_PARENT"] = os.fspath(victim_parent)
-                    package = victim_parent / "package"
-                    result = self.fixture.run(
-                        "build-package",
-                        "--attempt",
-                        "1",
-                        "--output",
-                        os.fspath(package),
-                        "--spec",
-                        SPEC,
-                        "--plan",
-                        PLAN,
-                        "--task",
-                        TASK,
-                        env=environment,
-                    )
+                    result = self.fixture.build(self.root / f"ambiguous-{name}")
                     self.assertNotEqual(0, result.returncode)
-                    self.assertIn("DETACHED_PROJECTION_OUTPUT_UNSAFE", result.stderr)
-                    self.assertEqual(b"outside sentinel\n", victim.read_bytes())
-                    self.assertFalse(package.exists())
+                    self.assertIn("AMBIGUOUS_GIT_HISTORY", result.stderr)
                 finally:
-                    shutil.rmtree(victim_parent, ignore_errors=True)
+                    path.unlink(missing_ok=True)
 
-    def test_generator_execution_sanitizes_startup_environment(self) -> None:
-        for name in ("bash-env", "python-path"):
-            with self.subTest(name=name):
-                injection = pathlib.Path(
-                    tempfile.mkdtemp(prefix=f"gate9-generator-{name}-")
-                )
-                victim = injection / "outside-victim.md"
-                victim.write_bytes(b"outside sentinel\n")
-                try:
-                    if name == "bash-env":
-                        startup = injection / "startup.sh"
-                        startup.write_text(
-                            'if [[ "$PWD" == */detached ]]; then\n'
-                            '  printf "outside poisoned\\n" > "$GENERATOR_ENV_VICTIM"\n'
-                            "fi\n",
-                            encoding="utf-8",
-                        )
-                        environment = {
-                            "BASH_ENV": os.fspath(startup),
-                            "GENERATOR_ENV_VICTIM": os.fspath(victim),
-                        }
-                    else:
-                        (injection / "sitecustomize.py").write_text(
-                            "import os, pathlib\n"
-                            "if pathlib.Path.cwd().name == 'detached':\n"
-                            "    pathlib.Path(os.environ['GENERATOR_ENV_VICTIM']).write_text('outside poisoned\\n')\n",
-                            encoding="utf-8",
-                        )
-                        environment = {
-                            "GENERATOR_ENV_VICTIM": os.fspath(victim),
-                            "PYTHONPATH": os.fspath(injection),
-                        }
-                    package = injection / "package"
+    def test_pinned_scratch_cleanup_preserves_victim_after_ancestor_substitution(
+        self,
+    ) -> None:
+        module_spec = importlib.util.spec_from_file_location("gate9_scratch", HELPER)
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        owner_class = getattr(module, "PinnedScratch", None)
+        self.assertIsNotNone(owner_class, "Step 0d pinned scratch owner is missing")
+        if owner_class is None:
+            return
+        victim_parent = pathlib.Path(tempfile.mkdtemp(prefix="gate9-victim-"))
+        victim = victim_parent / "victim.txt"
+        victim.write_bytes(b"outside victim\n")
+        owner = owner_class("gate9-test-")
+        holding = owner.holding_path
+        relocated = holding.with_name(holding.name + "-relocated")
+        try:
+            owner.create_file("index", b"scratch\n")
+            holding.rename(relocated)
+            holding.symlink_to(victim_parent, target_is_directory=True)
+            with self.assertRaises(module.Gate9Error) as caught:
+                owner.close()
+            self.assertIn(
+                caught.exception.code,
+                {"SCRATCH_SCOPE_DRIFT", "SCRATCH_CLEANUP_FAILURE"},
+            )
+            self.assertEqual(b"outside victim\n", victim.read_bytes())
+            self.assertTrue(relocated.exists())
+        finally:
+            if holding.is_symlink():
+                holding.unlink()
+            shutil.rmtree(relocated, ignore_errors=True)
+            shutil.rmtree(victim_parent, ignore_errors=True)
+
+    def test_projection_never_invokes_worktree_or_drifts_registry(self) -> None:
+        before_registry = git(self.root, "worktree", "list", "--porcelain").stdout
+        environment = self.fixture.git_wrapper(
+            "forbid-worktree",
+            'if [[ "$1" == "worktree" ]]; then touch "$GATE9_WRAPPER_MARKER"; exit 97; fi\n'
+            'exec "$REAL_GIT" "$@"\n',
+        )
+        result = self.fixture.run(
+            "build-package", "--attempt", "1", "--output",
+            os.fspath(self.root / "no-worktree-package"), "--spec", SPEC,
+            "--plan", PLAN, "--task", TASK, env=environment,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertFalse(pathlib.Path(environment["GATE9_WRAPPER_MARKER"]).exists())
+        self.assertEqual(
+            before_registry,
+            git(self.root, "worktree", "list", "--porcelain").stdout,
+        )
+        source = HELPER.read_text(encoding="utf-8")
+        for forbidden in (
+            '"worktree", "add"',
+            '"worktree", "remove"',
+            '"worktree", "prune"',
+            "shutil.rmtree",
+            "TemporaryDirectory",
+            "mkdtemp",
+        ):
+            self.assertNotIn(forbidden, source)
+
+    def test_valid_package_and_ref_replay_preserve_repository_state(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="gate9-authorized-package-") as outside:
+            package = pathlib.Path(outside) / "authorized-package"
+            self.assertEqual(0, self.fixture.build(package).returncode)
+            _, evidence_ref = self.fixture.authorize_package(package)
+            shutil.rmtree(self.root / "evidence")
+            before = self.fixture.repository_state()
+            for source_args in (
+                ("--package", os.fspath(package)),
+                ("--package-from-ref",),
+            ):
+                with self.subTest(source=source_args[0]):
                     result = self.fixture.run(
-                        "build-package",
-                        "--attempt",
-                        "1",
-                        "--output",
-                        os.fspath(package),
-                        "--spec",
-                        SPEC,
-                        "--plan",
-                        PLAN,
-                        "--task",
-                        TASK,
-                        env=environment,
+                        "verify-authorized", *source_args, "--task", TASK,
+                        "--evidence-ref", evidence_ref,
+                        "--require-clean-real-index", "--require-task-only-worktree",
                     )
                     self.assertEqual(0, result.returncode, result.stderr)
-                    self.assertEqual(b"outside sentinel\n", victim.read_bytes())
-                    verified = self.fixture.run(
-                        "verify-package",
-                        "--package",
-                        os.fspath(package),
-                        "--require-live-head",
-                    )
-                    self.assertEqual(0, verified.returncode, verified.stderr)
-                finally:
-                    shutil.rmtree(injection, ignore_errors=True)
-
-    def test_detached_projection_rejects_exit_zero_noop_generator(self) -> None:
-        self.fixture.write(
-            "scripts/knowledge/generate-llm-wiki-index.sh",
-            "#!/usr/bin/env bash\nexit 0\n",
-            executable=True,
-        )
-        git(self.root, "add", "scripts/knowledge/generate-llm-wiki-index.sh")
-        git(self.root, "commit", "--quiet", "-m", "make generator a no-op")
-        package_parent = pathlib.Path(
-            tempfile.mkdtemp(prefix="gate9-noop-generator-")
-        )
-        try:
-            result = self.fixture.run(
-                "build-package",
-                "--attempt",
-                "1",
-                "--output",
-                os.fspath(package_parent / "package"),
-                "--spec",
-                SPEC,
-                "--plan",
-                PLAN,
-                "--task",
-                TASK,
-            )
-            self.assertNotEqual(0, result.returncode)
-            self.assertIn("GENERATED_OUTPUT_DRIFT", result.stderr)
-        finally:
-            shutil.rmtree(package_parent, ignore_errors=True)
-
-    def test_detached_projection_rejects_checkout_drift_that_changes_generator_inputs(self) -> None:
-        environment = self.fixture.git_wrapper(
-            "missing-generator-input",
-            'if [[ "$1" == "worktree" && "$2" == "add" ]]; then\n'
-            '  "$REAL_GIT" "$@"\n'
-            "  rm -f \"$5/" + SPEC + "\"\n"
-            '  touch "$GATE9_WRAPPER_MARKER"\n'
-            "  exit 0\n"
-            "fi\n"
-            'exec "$REAL_GIT" "$@"\n',
-        )
-        result = self.fixture.run(
-            "build-package",
-            "--attempt",
-            "1",
-            "--output",
-            os.fspath(self.root / "package-missing-generator-input"),
-            "--spec",
-            SPEC,
-            "--plan",
-            PLAN,
-            "--task",
-            TASK,
-            env=environment,
-        )
-        self.assertNotEqual(0, result.returncode)
-        self.assertIn("GENERATED_OUTPUT_DRIFT", result.stderr)
+                    self.assertEqual("AUTHORIZED", json.loads(result.stdout)["state"])
+                    self.assertEqual(before, self.fixture.repository_state())
 
     def test_concurrent_create_race_reuses_identical_tuple_without_drift(self) -> None:
         package = self.root / "package"

@@ -88,6 +88,17 @@ def coverage_metrics(content: str) -> dict[str, int]:
     return metrics
 
 
+def output_snapshot(path: Path) -> tuple[int, int, int, int, bytes]:
+    metadata = path.lstat()
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_nlink,
+        path.read_bytes(),
+    )
+
+
 class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
     def create_repository(self, root: Path) -> None:
         run(["git", "init", "--quiet"], cwd=root)
@@ -194,6 +205,53 @@ class LlmWikiRetiringPackExclusionTest(unittest.TestCase):
                     msg=f"new-pack coverage projection omitted {retained_path}",
                 )
                 run(["git", "add", retained_path], cwd=root)
+
+    def test_stdout_mode_is_byte_exact_and_write_free(self) -> None:
+        for generator, output in (
+            (INDEX_GENERATOR, INDEX_OUTPUT),
+            (COVERAGE_GENERATOR, COVERAGE_OUTPUT),
+        ):
+            with self.subTest(generator=generator):
+                output_path = REPOSITORY_ROOT / output
+                before = output_snapshot(output_path)
+                result = subprocess.run(
+                    ["bash", str(generator), "--stdout"],
+                    cwd=REPOSITORY_ROOT,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr.decode())
+                self.assertEqual(before[-1], result.stdout)
+                self.assertEqual(b"", result.stderr)
+                self.assertEqual(before, output_snapshot(output_path))
+
+    def test_generator_cli_rejects_conflicting_and_extra_arguments_without_writes(
+        self,
+    ) -> None:
+        invalid_arguments = (
+            ("--check", "--stdout"),
+            ("--stdout", "--check"),
+            ("--stdout", "extra"),
+            ("--unknown",),
+        )
+        for generator, output in (
+            (INDEX_GENERATOR, INDEX_OUTPUT),
+            (COVERAGE_GENERATOR, COVERAGE_OUTPUT),
+        ):
+            output_path = REPOSITORY_ROOT / output
+            for arguments in invalid_arguments:
+                with self.subTest(generator=generator, arguments=arguments):
+                    before = output_snapshot(output_path)
+                    result = subprocess.run(
+                        ["bash", str(generator), *arguments],
+                        cwd=REPOSITORY_ROOT,
+                        capture_output=True,
+                        check=False,
+                    )
+                    self.assertEqual(2, result.returncode)
+                    self.assertEqual(b"", result.stdout)
+                    self.assertNotEqual(b"", result.stderr)
+                    self.assertEqual(before, output_snapshot(output_path))
 
 
 if __name__ == "__main__":
