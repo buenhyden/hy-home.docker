@@ -45,6 +45,9 @@ COVERAGE_GENERATOR: Final = pathlib.PurePosixPath(
     "scripts/knowledge/generate-llm-wiki-coverage.sh"
 )
 REF_PREFIX: Final = "refs/codex/review-evidence/agentic-research/gate9/v1"
+EVIDENCE_REF_PATTERN: Final = re.compile(
+    rf"{re.escape(REF_PREFIX)}/attempt-[12]/[0-9a-f]{{64}}"
+)
 SPEC_PATH: Final = pathlib.PurePosixPath(
     "docs/03.specs/137-agentic-research-pack-rebuild/spec.md"
 )
@@ -94,6 +97,15 @@ EVIDENCE_LEAF_PATHS: Final = frozenset(
 )
 MARKER_PATTERN: Final = re.compile(
     rb"<!-- GATE9-EVIDENCE/v1\n(?P<payload>\{[^\r\n]*\}\n)-->",
+)
+REQUIREMENT_PATTERN: Final = re.compile(
+    rb"(?<![A-Za-z0-9_-])REQ-[0-9]+(?![A-Za-z0-9_-])"
+)
+EXPECTED_REQUIREMENTS: Final = frozenset(
+    f"REQ-{ordinal:02d}".encode() for ordinal in range(1, 37)
+)
+TASK_REQUIREMENT_SUMMARY_PATTERN: Final = re.compile(
+    rb"(?<![0-9])36/36 requirements(?![A-Za-z0-9_-])"
 )
 
 
@@ -381,6 +393,39 @@ def manifest_paths(value: bytes) -> list[str]:
             fail("INVALID_TREE_MANIFEST", line.decode("utf-8", "replace"))
         paths.append(fields[3].decode("utf-8"))
     return paths
+
+
+def validate_pack_semantics(
+    spec: bytes,
+    task: bytes,
+    new_manifest: bytes,
+    old_manifest: bytes | None = None,
+) -> None:
+    """Validate the semantic pack shape shared by build and every replay."""
+    new_paths = manifest_paths(new_manifest)
+    readme = (NEW_PACK / "README.md").as_posix()
+    if (
+        len(new_paths) != 21
+        or len(set(new_paths)) != 21
+        or readme not in new_paths
+        or any(pathlib.PurePosixPath(path).parent != NEW_PACK for path in new_paths)
+    ):
+        fail(
+            "PACK_CARDINALITY",
+            "new pack must be one README and twenty flat leaf paths",
+        )
+    if old_manifest is not None:
+        old_paths = manifest_paths(old_manifest)
+        if len(old_paths) != 20 or len(set(old_paths)) != 20:
+            fail("PACK_CARDINALITY", "old pack must contain exactly twenty files")
+    for label, value in (("spec", spec), ("task", task)):
+        if frozenset(REQUIREMENT_PATTERN.findall(value)) != EXPECTED_REQUIREMENTS:
+            fail(
+                "PACKAGE_SEMANTIC_DRIFT",
+                f"{label} requirement set is not exact REQ-01 through REQ-36",
+            )
+    if TASK_REQUIREMENT_SUMMARY_PATTERN.search(task) is None:
+        fail("PACKAGE_SEMANTIC_DRIFT", "task lacks token-bounded 36/36 requirements")
 
 
 def _mapping_patch(
@@ -1671,6 +1716,7 @@ def write_atomic_bundle(attempt: int, payloads: Mapping[str, bytes]) -> BundleDa
     outer, _ = _bundle_bytes(payloads)
     parent_fd: int | None = None
     descriptor: int | None = None
+    final_descriptor: int | None = None
     path: pathlib.Path | None = None
     try:
         parent_fd = os.open(
@@ -1722,12 +1768,87 @@ def write_atomic_bundle(attempt: int, payloads: Mapping[str, bytes]) -> BundleDa
             or bytes(readback) != outer
         ):
             fail("BUNDLE_CREATE_FAILURE", "bundle same-FD readback drift")
+        entry = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+        expected_metadata = (
+            after.st_dev,
+            after.st_ino,
+            after.st_mode,
+            after.st_nlink,
+            after.st_size,
+            after.st_mtime_ns,
+        )
+        if (
+            not stat.S_ISREG(entry.st_mode)
+            or entry.st_nlink != 1
+            or stat.S_IMODE(entry.st_mode) != 0o444
+            or entry.st_size != len(outer)
+            or (
+                entry.st_dev,
+                entry.st_ino,
+                entry.st_mode,
+                entry.st_nlink,
+                entry.st_size,
+                entry.st_mtime_ns,
+            )
+            != expected_metadata
+        ):
+            fail("BUNDLE_CREATE_FAILURE", "bundle directory entry identity drift")
         os.fsync(parent_fd)
+        final_descriptor = os.open(
+            name,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+            dir_fd=parent_fd,
+        )
+        final_before = os.fstat(final_descriptor)
+        if (
+            not stat.S_ISREG(final_before.st_mode)
+            or final_before.st_nlink != 1
+            or stat.S_IMODE(final_before.st_mode) != 0o444
+            or final_before.st_size != len(outer)
+            or (
+                final_before.st_dev,
+                final_before.st_ino,
+                final_before.st_mode,
+                final_before.st_nlink,
+                final_before.st_size,
+                final_before.st_mtime_ns,
+            )
+            != expected_metadata
+        ):
+            fail("BUNDLE_CREATE_FAILURE", "bundle final entry identity drift")
+        final_readback = bytearray()
+        while len(final_readback) < len(outer):
+            chunk = os.read(
+                final_descriptor,
+                min(1024 * 1024, len(outer) - len(final_readback)),
+            )
+            if not chunk:
+                fail("BUNDLE_CREATE_FAILURE", "bundle final readback ended early")
+            final_readback.extend(chunk)
+        if os.read(final_descriptor, 1):
+            fail("BUNDLE_CREATE_FAILURE", "bundle final readback exceeds expected size")
+        final_after = os.fstat(final_descriptor)
+        if (
+            (
+                final_after.st_dev,
+                final_after.st_ino,
+                final_after.st_mode,
+                final_after.st_nlink,
+                final_after.st_size,
+                final_after.st_mtime_ns,
+            )
+            != expected_metadata
+            or bytes(final_readback) != outer
+            or sha256_bytes(final_readback) != sha256_bytes(outer)
+        ):
+            fail("BUNDLE_CREATE_FAILURE", "bundle final entry readback drift")
     except Gate9Error:
         raise
     except OSError as error:
         fail("BUNDLE_CREATE_FAILURE", str(error))
     finally:
+        if final_descriptor is not None:
+            os.close(final_descriptor)
         if descriptor is not None:
             os.close(descriptor)
         if parent_fd is not None:
@@ -1810,14 +1931,19 @@ def build_package(args: argparse.Namespace) -> None:
     current_head = authority.live_head
     before = run_git(root, ["show", f"{current_head}:{task_relative.as_posix()}"]).stdout
     candidate = task_path.read_bytes()
+    spec_bytes = spec_path.read_bytes()
     marker, _ = parse_marker(candidate)
     derived_attempt = derive_attempt(root, marker, authority)
     if args.attempt != derived_attempt:
         fail("ATTEMPT_STATE_MISMATCH", f"derived {derived_attempt}, asserted {args.attempt}")
     old_manifest = tree_manifest(root, current_head, OLD_PACK)
     new_manifest = tree_manifest(root, current_head, NEW_PACK)
-    if len(manifest_paths(old_manifest)) != 20 or len(manifest_paths(new_manifest)) != 21:
-        fail("PACK_CARDINALITY", "old/new packs must be exact 20/21 files")
+    validate_pack_semantics(
+        spec_bytes,
+        candidate,
+        new_manifest,
+        old_manifest,
+    )
     task_patch = _task_candidate_patch(
         root, current_head, task_relative, candidate
     )
@@ -1868,7 +1994,7 @@ def build_package(args: argparse.Namespace) -> None:
         "old-manifest.tsv": old_manifest,
         "plan.md": plan_path.read_bytes(),
         "proposed-deletion.patch": projection.proposed_deletion_patch,
-        "spec.md": spec_path.read_bytes(),
+        "spec.md": spec_bytes,
         "task-before.md": before,
         "task-before-to-candidate.patch": task_patch,
         "task-candidate.md": candidate,
@@ -2009,12 +2135,14 @@ def verify_package_mapping(
         fail("PACKAGE_SEMANTIC_DRIFT", "old-manifest.tsv")
     if package["new-manifest.tsv"] != new_manifest:
         fail("PACKAGE_SEMANTIC_DRIFT", "new-manifest.tsv")
-    old_paths = manifest_paths(old_manifest)
-    if len(old_paths) != 20 or len(manifest_paths(new_manifest)) != 21:
-        fail("PACK_CARDINALITY", "manifest cardinality")
-    del old_paths
-    task_before = run_git(root, ["show", f"{package_head}:{TASK_PATH.as_posix()}"]).stdout
     candidate = package["task-candidate.md"]
+    validate_pack_semantics(
+        package["spec.md"],
+        candidate,
+        new_manifest,
+        old_manifest,
+    )
+    task_before = run_git(root, ["show", f"{package_head}:{TASK_PATH.as_posix()}"]).stdout
     candidate_marker, _ = parse_marker(candidate)
     expected_state = "PACKAGE_REVIEW_PENDING" if attempt == 1 else "ATTEMPT_2_PENDING"
     if candidate_marker.get("attempt") != attempt or candidate_marker.get("state") != expected_state:
@@ -2481,6 +2609,44 @@ def commit_identity(root: pathlib.Path, commit: str) -> tuple[str, str, bytes]:
     return parents[0], tree_lines[0], message
 
 
+def direct_evidence_ref_oid(root: pathlib.Path, evidence_ref: str) -> str | None:
+    if EVIDENCE_REF_PATTERN.fullmatch(evidence_ref) is None:
+        fail("FOREIGN_REF", "evidence ref is outside the fixed Gate 9 namespace")
+    symbolic = run_git(
+        root,
+        ["symbolic-ref", "--quiet", evidence_ref],
+        check=False,
+    )
+    if symbolic.returncode == 0:
+        fail("FOREIGN_REF", "symbolic evidence refs are forbidden")
+    if symbolic.returncode != 1:
+        fail("FOREIGN_REF", "evidence ref direct identity cannot be inspected")
+    raw = run_git(
+        root,
+        [
+            "for-each-ref",
+            "--format=%(refname)%00%(objectname)%00%(objecttype)%00%(symref)",
+            evidence_ref,
+        ],
+    ).stdout
+    if not raw:
+        return None
+    if not raw.endswith(b"\n") or raw.count(b"\n") != 1:
+        fail("FOREIGN_REF", "evidence ref identity is ambiguous")
+    fields = raw[:-1].split(b"\0")
+    width = object_format_width(root)
+    if (
+        len(fields) != 4
+        or fields[0] != evidence_ref.encode("ascii")
+        or re.fullmatch(rb"[0-9a-f]+", fields[1]) is None
+        or len(fields[1]) != width
+        or fields[2] != b"commit"
+        or fields[3]
+    ):
+        fail("FOREIGN_REF", "evidence ref is not one direct commit ref")
+    return fields[1].decode("ascii")
+
+
 def create_or_reuse_ref(
     root: pathlib.Path,
     evidence_ref: str,
@@ -2488,8 +2654,7 @@ def create_or_reuse_ref(
     tree_oid: str,
     message: bytes,
 ) -> str:
-    existing_result = run_git(root, ["show-ref", "--verify", "--hash", evidence_ref], check=False)
-    existing = existing_result.stdout.decode().strip() if existing_result.returncode == 0 else ""
+    existing = direct_evidence_ref_oid(root, evidence_ref)
     desired_identity = (package_head, tree_oid, message)
 
     def matches(commit: str) -> bool:
@@ -2498,8 +2663,8 @@ def create_or_reuse_ref(
         except Gate9Error:
             return False
 
-    if existing:
-        if matches(existing):
+    if existing is not None:
+        if matches(existing) and direct_evidence_ref_oid(root, evidence_ref) == existing:
             return existing
         fail("FOREIGN_REF", evidence_ref)
     commit = run_git(
@@ -2516,14 +2681,24 @@ def create_or_reuse_ref(
         fail("INVALID_EVIDENCE_COMMIT", "commit-tree identity drift")
     update = run_git(
         root,
-        ["update-ref", evidence_ref, commit, "0" * width],
+        ["update-ref", "--no-deref", evidence_ref, commit, "0" * width],
         check=False,
     )
     if update.returncode == 0:
-        return commit
-    raced = run_git(root, ["show-ref", "--verify", "--hash", evidence_ref], check=False)
-    raced_commit = raced.stdout.decode().strip() if raced.returncode == 0 else ""
-    if raced_commit and matches(raced_commit):
+        published = direct_evidence_ref_oid(root, evidence_ref)
+        if (
+            published == commit
+            and matches(published)
+            and direct_evidence_ref_oid(root, evidence_ref) == published
+        ):
+            return published
+        fail("FOREIGN_REF", evidence_ref)
+    raced_commit = direct_evidence_ref_oid(root, evidence_ref)
+    if (
+        raced_commit is not None
+        and matches(raced_commit)
+        and direct_evidence_ref_oid(root, evidence_ref) == raced_commit
+    ):
         return raced_commit
     fail("FOREIGN_REF", evidence_ref)
 

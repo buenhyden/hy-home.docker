@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import ast
 import base64
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
 import os
 import pathlib
@@ -14,6 +16,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from collections.abc import Mapping
 from unittest import mock
@@ -1176,6 +1179,320 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         short_path.chmod(0o600)
         short_path.unlink()
 
+    def test_atomic_bundle_writer_rejects_directory_entry_substitution(
+        self,
+    ) -> None:
+        module = load_helper("gate9_bundle_entry_substitution")
+        payloads = logical_package_fixture()
+        for attack in ("rename-replacement", "hardlink-unlink-replacement"):
+            with self.subTest(attack=attack):
+                token = secrets.token_hex(16)
+                path = pathlib.Path(
+                    f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+                )
+                displaced = pathlib.Path(f"{path}.displaced")
+                anchor = pathlib.Path(f"{path}.anchor")
+                victim = pathlib.Path(f"{path}.victim")
+                victim_bytes = b"unrelated victim must remain unchanged\n"
+                victim.write_bytes(victim_bytes)
+                real_fsync = module.os.fsync
+                attacked = False
+
+                def substitute_on_file_fsync(descriptor: int) -> None:
+                    nonlocal attacked
+                    real_fsync(descriptor)
+                    if attacked or not stat.S_ISREG(module.os.fstat(descriptor).st_mode):
+                        return
+                    attacked = True
+                    if attack == "rename-replacement":
+                        path.rename(displaced)
+                    else:
+                        os.link(path, anchor)
+                        path.unlink()
+                    os.link(victim, path)
+
+                output = io.StringIO()
+                caught: object | None = None
+                try:
+                    with mock.patch.object(
+                        module.secrets, "token_hex", return_value=token
+                    ), mock.patch.object(
+                        module.os, "fsync", side_effect=substitute_on_file_fsync
+                    ), contextlib.redirect_stdout(output):
+                        try:
+                            module.write_atomic_bundle(1, payloads)
+                        except module.Gate9Error as error:
+                            caught = error
+                    self.assertTrue(attacked)
+                    self.assertEqual(victim_bytes, victim.read_bytes())
+                    self.assertNotIn("BUILT", output.getvalue())
+                    self.assertIsNotNone(caught, "path replacement was accepted")
+                    self.assertEqual("BUNDLE_CREATE_FAILURE", caught.code)
+                finally:
+                    for artifact in (path, displaced, anchor, victim):
+                        if artifact.exists():
+                            artifact.chmod(0o600)
+                            artifact.unlink()
+
+    def test_atomic_bundle_writer_rejects_io_metadata_and_size_faults(
+        self,
+    ) -> None:
+        module = load_helper("gate9_bundle_writer_faults")
+        payloads = logical_package_fixture()
+
+        for fault in (
+            "midstream-write",
+            "file-fsync",
+            "directory-fsync",
+            "chmod",
+            "readback-eof",
+            "readback-digest",
+        ):
+            with self.subTest(fault=fault):
+                token = secrets.token_hex(16)
+                path = pathlib.Path(
+                    f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+                )
+                real_write = module.os.write
+                real_fsync = module.os.fsync
+                real_read = module.os.read
+                write_calls = 0
+                fsync_calls = 0
+                read_calls = 0
+
+                def injected_write(descriptor: int, value: bytes) -> int:
+                    nonlocal write_calls
+                    write_calls += 1
+                    if write_calls == 1:
+                        midpoint = max(1, len(value) // 2)
+                        return real_write(descriptor, value[:midpoint])
+                    raise OSError("injected midstream write failure")
+
+                def injected_fsync(descriptor: int) -> None:
+                    nonlocal fsync_calls
+                    fsync_calls += 1
+                    target = 1 if fault == "file-fsync" else 2
+                    if fsync_calls == target:
+                        raise OSError("injected fsync failure")
+                    real_fsync(descriptor)
+
+                def injected_read(descriptor: int, size: int) -> bytes:
+                    nonlocal read_calls
+                    read_calls += 1
+                    if fault == "readback-eof" and read_calls == 1:
+                        return b""
+                    value = real_read(descriptor, size)
+                    if fault == "readback-digest" and value and read_calls == 1:
+                        return bytes((value[0] ^ 1,)) + value[1:]
+                    return value
+
+                output = io.StringIO()
+                caught: object | None = None
+                try:
+                    with contextlib.ExitStack() as stack:
+                        stack.enter_context(
+                            mock.patch.object(
+                                module.secrets, "token_hex", return_value=token
+                            )
+                        )
+                        if fault == "midstream-write":
+                            stack.enter_context(
+                                mock.patch.object(
+                                    module.os, "write", side_effect=injected_write
+                                )
+                            )
+                        elif fault in {"file-fsync", "directory-fsync"}:
+                            stack.enter_context(
+                                mock.patch.object(
+                                    module.os, "fsync", side_effect=injected_fsync
+                                )
+                            )
+                        elif fault == "chmod":
+                            stack.enter_context(
+                                mock.patch.object(
+                                    module.os,
+                                    "fchmod",
+                                    side_effect=OSError("injected chmod failure"),
+                                )
+                            )
+                        else:
+                            stack.enter_context(
+                                mock.patch.object(
+                                    module.os, "read", side_effect=injected_read
+                                )
+                            )
+                        with contextlib.redirect_stdout(output):
+                            try:
+                                module.write_atomic_bundle(1, payloads)
+                            except module.Gate9Error as error:
+                                caught = error
+                    self.assertIsNotNone(caught)
+                    self.assertEqual("BUNDLE_CREATE_FAILURE", caught.code)
+                    self.assertNotIn("BUILT", output.getvalue())
+                finally:
+                    if path.exists():
+                        path.chmod(0o600)
+                        path.unlink()
+
+        for field, replacement in (
+            ("st_nlink", 2),
+            ("st_mode", stat.S_IFREG | 0o600),
+            ("st_size", 1),
+            ("st_dev", -1),
+            ("st_ino", -1),
+        ):
+            with self.subTest(metadata=field):
+                token = secrets.token_hex(16)
+                path = pathlib.Path(
+                    f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+                )
+                real_fstat = module.os.fstat
+                regular_calls = 0
+
+                def drifted_fstat(descriptor: int) -> object:
+                    nonlocal regular_calls
+                    observed = real_fstat(descriptor)
+                    if not stat.S_ISREG(observed.st_mode):
+                        return observed
+                    regular_calls += 1
+                    if regular_calls != 2:
+                        return observed
+                    values = {
+                        name: getattr(observed, name)
+                        for name in dir(observed)
+                        if name.startswith("st_")
+                    }
+                    values[field] = replacement
+                    return types.SimpleNamespace(**values)
+
+                try:
+                    with mock.patch.object(
+                        module.secrets, "token_hex", return_value=token
+                    ), mock.patch.object(
+                        module.os, "fstat", side_effect=drifted_fstat
+                    ), self.assertRaises(module.Gate9Error) as caught:
+                        module.write_atomic_bundle(1, payloads)
+                    self.assertEqual("BUNDLE_CREATE_FAILURE", caught.exception.code)
+                finally:
+                    if path.exists():
+                        path.chmod(0o600)
+                        path.unlink()
+
+        with self.subTest(fault="oversize-before-create"):
+            outer, _ = module._bundle_bytes(payloads)
+            token = secrets.token_hex(16)
+            path = pathlib.Path(
+                f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+            )
+            caught: object | None = None
+            try:
+                with mock.patch.object(
+                    module.secrets, "token_hex", return_value=token
+                ), mock.patch.object(
+                    module, "BUNDLE_MAX_BYTES", len(outer) - 1
+                ):
+                    try:
+                        module.write_atomic_bundle(1, payloads)
+                    except module.Gate9Error as error:
+                        caught = error
+                self.assertIsNotNone(caught, "oversize bundle was created")
+                self.assertEqual("BUNDLE_SIZE_DRIFT", caught.code)
+                self.assertFalse(path.exists(), "oversize failure left a bundle path")
+            finally:
+                if path.exists():
+                    path.chmod(0o600)
+                    path.unlink()
+
+        with self.subTest(contract="entry-check-before-directory-fsync"):
+            token = secrets.token_hex(16)
+            path = pathlib.Path(
+                f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+            )
+            events: list[str] = []
+            real_fsync = module.os.fsync
+            real_fchmod = module.os.fchmod
+            real_read = module.os.read
+            real_open = module.os.open
+            real_fstat = module.os.fstat
+            real_stat = module.os.stat
+            final_descriptor: int | None = None
+
+            def ordered_open(
+                name: object, flags: int, *args: object, **kwargs: object
+            ) -> int:
+                nonlocal final_descriptor
+                descriptor = real_open(name, flags, *args, **kwargs)
+                if kwargs.get("dir_fd") is not None:
+                    if flags & os.O_CREAT:
+                        events.append("entry-create")
+                    else:
+                        events.append("final-reopen")
+                        final_descriptor = descriptor
+                return descriptor
+
+            def ordered_fstat(descriptor: int) -> os.stat_result:
+                observed = real_fstat(descriptor)
+                if descriptor == final_descriptor:
+                    events.append("final-fstat")
+                return observed
+
+            def ordered_fsync(descriptor: int) -> None:
+                kind = (
+                    "directory-fsync"
+                    if stat.S_ISDIR(real_fstat(descriptor).st_mode)
+                    else "file-fsync"
+                )
+                events.append(kind)
+                real_fsync(descriptor)
+
+            def ordered_fchmod(descriptor: int, mode: int) -> None:
+                events.append("chmod")
+                real_fchmod(descriptor, mode)
+
+            def ordered_read(descriptor: int, size: int) -> bytes:
+                events.append("readback")
+                return real_read(descriptor, size)
+
+            def ordered_stat(*args: object, **kwargs: object) -> object:
+                if kwargs.get("dir_fd") is not None:
+                    events.append("entry-stat")
+                return real_stat(*args, **kwargs)
+
+            try:
+                with mock.patch.object(
+                    module.secrets, "token_hex", return_value=token
+                ), mock.patch.object(
+                    module.os, "fsync", side_effect=ordered_fsync
+                ), mock.patch.object(
+                    module.os, "fchmod", side_effect=ordered_fchmod
+                ), mock.patch.object(
+                    module.os, "read", side_effect=ordered_read
+                ), mock.patch.object(
+                    module.os, "open", side_effect=ordered_open
+                ), mock.patch.object(
+                    module.os, "fstat", side_effect=ordered_fstat
+                ), mock.patch.object(
+                    module.os, "stat", side_effect=ordered_stat
+                ):
+                    module.write_atomic_bundle(1, payloads)
+                self.assertIn("entry-stat", events)
+                self.assertIn("final-reopen", events)
+                self.assertIn("final-fstat", events)
+                self.assertLess(events.index("file-fsync"), events.index("chmod"))
+                self.assertLess(events.index("chmod"), events.index("readback"))
+                self.assertLess(events.index("readback"), events.index("entry-stat"))
+                self.assertLess(
+                    events.index("entry-stat"), events.index("directory-fsync")
+                )
+                self.assertLess(
+                    events.index("directory-fsync"), events.index("final-reopen")
+                )
+                self.assertLess(events.index("final-reopen"), events.index("final-fstat"))
+            finally:
+                if path.exists():
+                    path.chmod(0o600)
+                    path.unlink()
+
     def test_bundle_verification_reads_once_without_extraction(self) -> None:
         module = load_helper("gate9_bundle_read_once")
         payloads = logical_package_fixture()
@@ -1360,6 +1677,248 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         document = self.fixture.read_bundle(receipt)
         self.assertEqual(sorted(PACKAGE_ATTACHMENTS), [row["path"] for row in document["attachments"]])
         self.assertTrue(all(row["mode"] == "0444" for row in document["attachments"]))
+
+    def test_pack_semantic_validator_rejects_exact_requirement_and_manifest_shape_drift(
+        self,
+    ) -> None:
+        module = load_helper("gate9_pack_semantic_table")
+        spec = (self.root / SPEC).read_bytes()
+        task = (self.root / TASK).read_bytes()
+        manifest = module.tree_manifest(self.root, self.fixture.head, module.NEW_PACK)
+        cases = {
+            "spec-missing-requirement": (
+                spec.replace(b"- REQ-36: fixture requirement 36\n", b""),
+                task,
+                manifest,
+            ),
+            "spec-extra-requirement": (
+                spec + b"- REQ-37: forbidden extra requirement\n",
+                task,
+                manifest,
+            ),
+            "task-missing-requirement": (
+                spec,
+                task.replace(b"- REQ-36: fixture requirement 36\n", b""),
+                manifest,
+            ),
+            "task-extra-requirement": (
+                spec,
+                task + b"\n- REQ-37: forbidden extra requirement\n",
+                manifest,
+            ),
+            "task-not-36-of-36": (
+                spec,
+                task.replace(
+                    b"36/36 requirements verified.",
+                    b"35/36 requirements verified.",
+                ),
+                manifest,
+            ),
+            "renamed-readme": (
+                spec,
+                task,
+                manifest.replace(
+                    f"{NEW_PACK}/README.md".encode(),
+                    f"{NEW_PACK}/OVERVIEW.md".encode(),
+                ),
+            ),
+            "twenty-one-leaves-without-readme": (
+                spec,
+                task,
+                manifest.replace(
+                    f"{NEW_PACK}/README.md".encode(),
+                    f"{NEW_PACK}/leaf-20.md".encode(),
+                ),
+            ),
+        }
+        validator = getattr(module, "validate_pack_semantics", lambda *_: None)
+        for case, arguments in cases.items():
+            with self.subTest(drift=case):
+                caught: object | None = None
+                try:
+                    validator(*arguments)
+                except module.Gate9Error as error:
+                    caught = error
+                self.assertIsNotNone(caught, f"semantic validator accepted {case}")
+                expected = (
+                    "PACK_CARDINALITY"
+                    if case in {"renamed-readme", "twenty-one-leaves-without-readme"}
+                    else "PACKAGE_SEMANTIC_DRIFT"
+                )
+                self.assertEqual(expected, caught.code)
+
+    def test_shared_semantic_validation_rejects_requirement_task_and_pack_shape_drift(
+        self,
+    ) -> None:
+        def commit_fixture_change(fixture: Gate9Fixture, *paths: str) -> None:
+            git(fixture.root, "add", "-A", *paths)
+            git(fixture.root, "commit", "--quiet", "-m", "semantic drift fixture")
+            fixture.head = (
+                git(fixture.root, "rev-parse", "HEAD").stdout.decode().strip()
+            )
+
+        def mutate(fixture: Gate9Fixture, case: str) -> None:
+            if case == "spec-missing-requirement":
+                path = fixture.root / SPEC
+                path.write_text(
+                    path.read_text(encoding="utf-8").replace(
+                        "- REQ-36: fixture requirement 36\n", ""
+                    ),
+                    encoding="utf-8",
+                )
+                commit_fixture_change(fixture, SPEC)
+            elif case == "spec-extra-requirement":
+                path = fixture.root / SPEC
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "- REQ-37: forbidden extra requirement\n",
+                    encoding="utf-8",
+                )
+                commit_fixture_change(fixture, SPEC)
+            elif case == "task-missing-requirement":
+                path = fixture.root / TASK
+                path.write_text(
+                    path.read_text(encoding="utf-8").replace(
+                        "- REQ-36: fixture requirement 36\n", ""
+                    ),
+                    encoding="utf-8",
+                )
+            elif case == "task-extra-requirement":
+                path = fixture.root / TASK
+                path.write_text(
+                    path.read_text(encoding="utf-8")
+                    + "\n- REQ-37: forbidden extra requirement\n",
+                    encoding="utf-8",
+                )
+            elif case == "task-not-36-of-36":
+                path = fixture.root / TASK
+                path.write_text(
+                    path.read_text(encoding="utf-8").replace(
+                        "36/36 requirements verified.",
+                        "35/36 requirements verified.",
+                    ),
+                    encoding="utf-8",
+                )
+            elif case == "renamed-readme":
+                (fixture.root / NEW_PACK / "README.md").rename(
+                    fixture.root / NEW_PACK / "OVERVIEW.md"
+                )
+                commit_fixture_change(fixture, NEW_PACK)
+            elif case == "twenty-one-leaves-without-readme-file":
+                readme = fixture.root / NEW_PACK / "README.md"
+                holding = fixture.root / NEW_PACK / ".readme-fixture"
+                readme.rename(holding)
+                readme.mkdir()
+                holding.rename(readme / "content.md")
+                commit_fixture_change(fixture, NEW_PACK)
+            else:
+                raise AssertionError(case)
+
+        for case in (
+            "spec-missing-requirement",
+            "spec-extra-requirement",
+            "task-missing-requirement",
+            "task-extra-requirement",
+            "task-not-36-of-36",
+            "renamed-readme",
+            "twenty-one-leaves-without-readme-file",
+        ):
+            with self.subTest(mode="build", drift=case):
+                with tempfile.TemporaryDirectory(
+                    prefix="gate9-semantic-build-"
+                ) as temporary:
+                    fixture = Gate9Fixture(pathlib.Path(temporary))
+                    try:
+                        mutate(fixture, case)
+                        result = fixture.build_process()
+                        if result.returncode == 0:
+                            fixture.bundle_paths.append(
+                                pathlib.Path(json.loads(result.stdout)["bundle_path"])
+                            )
+                        self.assertNotEqual(
+                            0,
+                            result.returncode,
+                            f"build accepted {case}: {result.stdout}",
+                        )
+                        expected = (
+                            "PACK_CARDINALITY"
+                            if case
+                            in {
+                                "renamed-readme",
+                                "twenty-one-leaves-without-readme-file",
+                            }
+                            else "PACKAGE_SEMANTIC_DRIFT"
+                        )
+                        self.assertIn(expected, result.stderr)
+                    finally:
+                        fixture.cleanup()
+
+        module = load_helper("gate9_shared_semantic_replay")
+        receipt = self.fixture.build()
+        attachments = self.fixture.attachments(receipt)
+        candidate = attachments["task-candidate.md"].replace(
+            b"36/36 requirements verified.", b"35/36 requirements verified."
+        )
+        self.assertNotEqual(attachments["task-candidate.md"], candidate)
+        attachments["task-candidate.md"] = candidate
+        attachments["task-before-to-candidate.patch"] = task_transition_patch(
+            self.root, attachments["task-before.md"], candidate
+        )
+        package_payloads = {
+            name: value
+            for name, value in attachments.items()
+            if name not in {"SHA256SUMS", "package.json"}
+        }
+        package_document = json.loads(attachments["package.json"])
+        package_document["attachments"] = module.package_records(package_payloads)
+        attachments["package.json"] = canonical_json(package_document)
+        attachments["SHA256SUMS"] = module.checksum_manifest(
+            {
+                name: value
+                for name, value in attachments.items()
+                if name != "SHA256SUMS"
+            }
+        )
+        _, malformed_receipt = self.fixture.rewritten_bundle(receipt, attachments)
+
+        with self.subTest(mode="bundle-replay", drift="task-not-36-of-36"):
+            replay = self.verify_bundle(malformed_receipt)
+            self.assertNotEqual(0, replay.returncode, replay.stdout)
+            self.assertIn("PACKAGE_SEMANTIC_DRIFT", replay.stderr)
+
+        _, evidence_ref = self.fixture.authorize(receipt)
+        evidence_commit, leaves = module.read_ref_leaves(self.root, evidence_ref)
+        forged_leaves = dict(leaves)
+        for name, value in attachments.items():
+            forged_leaves[f"package/{name}"] = value
+        forged_leaves["SHA256SUMS"] = module.checksum_manifest(
+            {
+                name: value
+                for name, value in forged_leaves.items()
+                if name != "SHA256SUMS"
+            }
+        )
+        parent, _, message = module.commit_identity(self.root, evidence_commit)
+        forged_tree = module._evidence_tree(self.root, forged_leaves)
+        forged_commit = git(
+            self.root,
+            "commit-tree",
+            forged_tree,
+            "-p",
+            parent,
+            input_bytes=message,
+        ).stdout.decode().strip()
+        git(
+            self.root,
+            "update-ref",
+            evidence_ref,
+            forged_commit,
+            evidence_commit,
+        )
+        with self.subTest(mode="ref-replay", drift="task-not-36-of-36"):
+            replay = self.verify_authorized(evidence_ref)
+            self.assertNotEqual(0, replay.returncode, replay.stdout)
+            self.assertIn("PACKAGE_SEMANTIC_DRIFT", replay.stderr)
 
     def test_all_public_modes_preserve_repository_and_lifecycle_invariants(
         self,
@@ -1568,7 +2127,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         self.fixture.closure_materials(receipt, materials)
         environment = self.fixture.git_wrapper(
             "create-race",
-            'if [[ "$1" == update-ref && "${4:-}" == 0000000000000000000000000000000000000000 ]]; then\n'
+            'if [[ "$1" == update-ref && "${2:-}" == --no-deref && "${5:-}" == 0000000000000000000000000000000000000000 ]]; then\n'
             '  "$REAL_GIT" "$@"\n'
             '  touch "$GATE9_WRAPPER_MARKER"\n'
             "  exit 73\n"
@@ -1699,6 +2258,164 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         finally:
             replace.unlink(missing_ok=True)
 
+    def test_evidence_ref_creation_rejects_symbolic_and_outside_namespace_refs(
+        self,
+    ) -> None:
+        module = load_helper("gate9_symbolic_ref_contract")
+        tree = module.build_tree_from_mapping(
+            self.root, {"evidence.json": ("100644", b"{}\n")}
+        )
+        message = module.evidence_commit_message(1, "a" * 64, "AUTHORIZED")
+        desired = git(
+            self.root,
+            "commit-tree",
+            tree,
+            "-p",
+            self.fixture.head,
+            input_bytes=message,
+        ).stdout.decode().strip()
+
+        with self.subTest(case="preexisting-symbolic-ref"):
+            target = "refs/heads/gate9-symbolic-target"
+            evidence_ref = f"{module.REF_PREFIX}/attempt-1/{'a' * 64}"
+            git(self.root, "update-ref", target, desired)
+            git(self.root, "symbolic-ref", evidence_ref, target)
+            caught: object | None = None
+            try:
+                try:
+                    module.create_or_reuse_ref(
+                        self.root,
+                        evidence_ref,
+                        self.fixture.head,
+                        tree,
+                        message,
+                    )
+                except module.Gate9Error as error:
+                    caught = error
+                self.assertIsNotNone(caught, "symbolic evidence ref was reused")
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertEqual(
+                    target,
+                    git(self.root, "symbolic-ref", "-q", evidence_ref)
+                    .stdout.decode()
+                    .strip(),
+                )
+            finally:
+                git(self.root, "symbolic-ref", "--delete", evidence_ref, check=False)
+                git(self.root, "update-ref", "-d", target, check=False)
+
+        with self.subTest(case="dangling-symbolic-ref-does-not-create-target"):
+            target = "refs/heads/gate9-dangling-target"
+            evidence_ref = f"{module.REF_PREFIX}/attempt-1/{'c' * 64}"
+            git(self.root, "symbolic-ref", evidence_ref, target)
+            caught = None
+            try:
+                try:
+                    module.create_or_reuse_ref(
+                        self.root,
+                        evidence_ref,
+                        self.fixture.head,
+                        tree,
+                        message,
+                    )
+                except module.Gate9Error as error:
+                    caught = error
+                self.assertIsNotNone(caught, "dangling symbolic ref was dereferenced")
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertNotEqual(
+                    0,
+                    git(self.root, "show-ref", "--verify", target, check=False).returncode,
+                    "symbolic update created an outside-namespace target",
+                )
+            finally:
+                git(self.root, "symbolic-ref", "--delete", evidence_ref, check=False)
+                git(self.root, "update-ref", "-d", target, check=False)
+
+        with self.subTest(case="symbolic-update-ref-race"):
+            target = "refs/heads/gate9-race-target"
+            evidence_ref = f"{module.REF_PREFIX}/attempt-1/{'b' * 64}"
+            git(self.root, "update-ref", target, desired)
+            real_run_git = module.run_git
+            raced = False
+
+            def symbolic_race(
+                root: pathlib.Path,
+                arguments: list[str],
+                **kwargs: object,
+            ) -> subprocess.CompletedProcess[bytes]:
+                nonlocal raced
+                if (
+                    not raced
+                    and arguments
+                    and arguments[0] == "update-ref"
+                    and evidence_ref in arguments
+                ):
+                    raced = True
+                    real_run_git(root, ["symbolic-ref", evidence_ref, target])
+                    return subprocess.CompletedProcess(
+                        ["git", *arguments], 1, b"", b"injected symbolic race\n"
+                    )
+                return real_run_git(root, arguments, **kwargs)
+
+            caught = None
+            try:
+                with mock.patch.object(module, "run_git", side_effect=symbolic_race):
+                    try:
+                        module.create_or_reuse_ref(
+                            self.root,
+                            evidence_ref,
+                            self.fixture.head,
+                            tree,
+                            message,
+                        )
+                    except module.Gate9Error as error:
+                        caught = error
+                self.assertTrue(raced)
+                self.assertIsNotNone(caught, "symbolic CAS race was reused")
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertEqual(
+                    target,
+                    git(self.root, "symbolic-ref", "-q", evidence_ref)
+                    .stdout.decode()
+                    .strip(),
+                )
+            finally:
+                git(self.root, "symbolic-ref", "--delete", evidence_ref, check=False)
+                git(self.root, "update-ref", "-d", target, check=False)
+
+        with self.subTest(case="outside-namespace"):
+            outside_ref = "refs/heads/gate9-outside-namespace"
+            caught = None
+            try:
+                try:
+                    module.create_or_reuse_ref(
+                        self.root,
+                        outside_ref,
+                        self.fixture.head,
+                        tree,
+                        message,
+                    )
+                except module.Gate9Error as error:
+                    caught = error
+                self.assertIsNotNone(caught, "outside-namespace ref was created")
+                self.assertEqual("FOREIGN_REF", caught.code)
+            finally:
+                git(self.root, "update-ref", "-d", outside_ref, check=False)
+
+        source = HELPER.read_text(encoding="utf-8")
+        syntax = ast.parse(source)
+        create_source = next(
+            ast.get_source_segment(source, node)
+            for node in syntax.body
+            if isinstance(node, ast.FunctionDef)
+            and node.name == "create_or_reuse_ref"
+        )
+        assert create_source is not None
+        with self.subTest(case="no-deref-zero-oid-cas"):
+            self.assertIn('"--no-deref"', create_source)
+            self.assertIn('"0" * width', create_source)
+            self.assertNotIn('"update-ref", evidence_ref, commit', create_source)
+
     def test_create_only_ref_uses_repository_object_width(self) -> None:
         module = load_helper("gate9_sha256_ref")
         sha256_root = self.root / "sha256-repository"
@@ -1721,7 +2438,10 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         tree = module.build_tree_from_mapping(
             sha256_root, {"evidence.txt": ("100644", b"evidence\n")}
         )
-        evidence_ref = "refs/codex/review-evidence/test-sha256"
+        evidence_ref = (
+            "refs/codex/review-evidence/agentic-research/gate9/v1/"
+            f"attempt-1/{'d' * 64}"
+        )
         message = b"test-sha256-evidence\n"
         commit = module.create_or_reuse_ref(
             sha256_root, evidence_ref, parent, tree, message
