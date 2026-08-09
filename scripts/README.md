@@ -21,6 +21,13 @@ repository update. `mutation: runtime` scripts are Operations entrypoints;
 they are not run during document migration and require a current Runbook plus
 the declared test evidence before explicit invocation.
 
+Do not invoke a `mutation: runtime` row from inventory or migration evidence;
+follow its current Runbook and explicit operator boundary. Do not invoke a
+default-write generator without its documented non-mutating check option;
+rows that lack safe defaults are classified for rewrite or merge. Consumers
+and tests require semantic invocation/import evidence: a manifest mention,
+generated index, archive record, or ownership glob is not consumption.
+
 ## Verification
 
 Run the focused inventory contract with:
@@ -31,4 +38,4 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 
 The test derives tracked coverage from `git ls-files scripts`, verifies exact
 field and vocabulary contracts, checks deterministic ordering, and requires
-all declared consumer, successor, and test paths to be tracked evidence.
+all declared consumer and test paths to contain invocation/import evidence.
