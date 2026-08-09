@@ -24,9 +24,20 @@ Task 1 started from branch `codex/agentic-research-rebuild` at immutable BASE
 from `f8a72211`; it remains advisory and was corroborated against tracked
 governance, the active Spec, the active Plan, and the old pack.
 
+Task 9a Step 1 starts from clean, independently reviewed Plan-amendment HEAD
+`7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`. The amended Spec authority is the
+three-commit chain `90eca714941c48ad2aa3b5767dcf0211bdb7cec5`,
+`768086362b50087c63a149a246efca06ec50701d`, and
+`af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`, with aggregate review range
+`b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`.
+This prerequisite records the approved 21-file/20-leaf/36-requirement target;
+the tracked new pack still contains 20 files and 19 leaves, the retiring pack
+still contains 20 files, and no REQ-36 leaf or refreshed generated output is
+claimed to exist yet.
+
 ## Inputs
 
-| Input | Immutable or tracked identity | Task 1 state |
+| Input | Immutable or tracked identity | Evidence state |
 | --- | --- | --- |
 | Active Spec 137 | `docs/03.specs/137-agentic-research-pack-rebuild/spec.md` at `353182551d47c4232bceb58e573abd55b846420a` | Verified tracked input |
 | Active Plan | `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md` at Task BASE `9917fcdadf700e7f68541e73188620e133485470` | Verified tracked input |
@@ -34,6 +45,11 @@ governance, the active Spec, the active Plan, and the old pack.
 | Canonical Task template | `docs/99.templates/templates/sdlc/task.template.md` at Task BASE | Applied; all required headings retained |
 | Stage 00 governance | `docs/00.agent-governance/` at Task BASE | Corroborated; private and secret boundaries preserved |
 | Graphify | `graphify-out/GRAPH_REPORT.md`, built from `f8a72211` | Advisory and stale; not used as current evidence |
+| Amended Spec 137 | `docs/03.specs/137-agentic-research-pack-rebuild/spec.md`; commits `90eca714`, `76808636`, `af37969b`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23` | Final independent specification and documentation-quality re-reviews Approved C0/I0/M0 |
+| Reviewed Plan amendment | `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`; commit `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`; range `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23..7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | `/root/vv_step0e_plan_spec_review` and `/root/vv_step0e_plan_quality_review` both Approved C0/I0/M0 |
+| Ignored V&V external-source report | `.superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/vv-external-research-report.md`; SHA-256 `e6df4c9242e0e5bec7779ddb5f025f2bda1a1ed0e5fa198d75fbac22d275d9a5` | Advisory research input only; public-source access and license limitations must be rechecked during authoring |
+| Ignored V&V workspace audit | `.superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/vv-workspace-audit-report.md`; SHA-256 `5693b4a8dffb57b74e7c9747efba33315912a6d461f5972c62cb98470f628670` | Advisory tracked-workspace observation only; counts are baseline-specific and runtime/remote state was not observed |
+| Ignored V&V implementation blueprint | `.superpowers/sdd/2026-08-08-agentic-research-pack-rebuild/vv-leaf-blueprint.md`; SHA-256 `4309a1b80c1c91a57d044b2d728f8289c187ab4394db3ad7c54fd66f9f5d5502` | Advisory implementation input only; not durable authority and not evidence that authoring or generation ran |
 
 ### Immutable old-pack file objects
 
@@ -111,6 +127,37 @@ generator-repair sub-unit." That approval covers the security-readiness
 generator, its focused tests, its generator-owned snapshot, and this Task
 ledger only. It does not authorize the remaining human/LLM route switch,
 old-pack deletion, runtime or remote mutation, secrets, Graphify, or push.
+
+On 2026-08-09 (Asia/Seoul), the user approved the verification-and-validation
+and Gate 9 amendment now fixed in Spec commits `90eca714`, `76808636`, and
+`af37969b`. The initial review of `90eca714` returned specification Needs fixes
+C0/I1/M0 because REQ-36 omitted V&V planning, entry/readiness,
+success/exit/completion, acceptance/decision authority, and residual-risk
+acceptance. Its initial quality review returned Approved-with-Minor C0/I0/M2:
+M1 found that the original 2026-08-08 approval/reviews ambiguously appeared to
+cover the amendment, and M2 found that the nine-H2 wording mischaracterized the
+registry contract, which requires seven headings while the pack convention
+adds two. Fix 1 `76808636` addressed I1, M1, and M2. The specification
+re-review then returned Approved C0/I0/M0; the quality re-review remained
+Approved-with-Minor C0/I0/M1 because the phrase `reviews pending` was transient
+and self-referential. Fix 2 `af37969b` made amendment provenance timeless, and
+both final re-reviews returned Approved C0/I0/M0 over aggregate range
+`b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`.
+
+The Plan amendment is commit
+`7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`, exact range
+`af37969b26f7e96d684fa0fdf8a0ee2418a4ac23..7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`.
+Independent tasks `/root/vv_step0e_plan_spec_review` and
+`/root/vv_step0e_plan_quality_review` both returned final Approved C0/I0/M0.
+The Plan author ran the repository contract through the isolated
+`/tmp/agentic-research-validation-venv` and recorded PASS. The reviewers'
+separate environments lacked `html5lib`, so their inability to replay that
+aggregate command is an environment dependency limitation, not an attributable
+Plan failure and not a replacement for the author's isolated-environment PASS.
+This authority opens only Task 9a Step 1, the one-file immutable prerequisite.
+V&V authoring, generator or generated-output changes, implementation review,
+Step 0e, Gate 9, deletion, lifecycle reconciliation, runtime/remote action, and
+push remain `Not Run` and closed.
 
 Task 11 Step 0 is authorized by the reviewed Plan correction
 `6bb256b275c701f5a0e6f1aa46a2d74011b6c602`. Its independent
@@ -247,9 +294,25 @@ GATE9_REVIEWED_CODE_HEAD: `71eb4feb7d4a085fd2910038a374987773de1e1d`
 | Task 7 | Author automation, CI/CD, GitHub Actions, and QA | Assigned requirement and claim rows plus leaf gates | Complete after fix `910ce5f3`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 8 | Author Compose, infrastructure, and security | Assigned requirement and claim rows plus leaf gates | Complete after fix `8d447997`; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 9 | Assemble and review the new pack | 19 leaves, 35 requirements, 14 scopes, sources, claims | Complete after fix `44fdb494`; scoped specification and quality re-reviews Approved C0/I0/M0 |
+| Task 9a | Integrate the verification-and-validation amendment before Gate 9 | Task-only authority prerequisite, REQ-36 leaf, 21/20/36 cardinality, 14 scopes, routes, generators, and reviews | Step 1 Task-only prerequisite is the current unit; authoring, generator refresh, implementation review, and fix/re-review are `Not Run`; the existing 20-file/19-leaf new pack remains unchanged |
 | Task 10 | Switch human and machine routes | Literal scan, reviewed allowlist, generators, metadata exceptions, route checks | Complete through fix `6d6e93b6`; route switch, generated navigation, mutable metadata reconciliation, four visible-label repairs, and all-twenty-file projection coverage are implemented; scoped specification and quality re-reviews Approved C0/I0/M0; old-pack deletion and pinned lifecycle-row reconciliation remain Task 11 and the deletion gate stays closed |
 | Task 11 | Delete the old pack behind fail-closed gates | Proposed and staged deletion reviews plus recovery evidence | Step 0 is preserved as a reviewed failed attempt; Step 0b is reviewed complete at `8a35fe07`; Step 0c fix 5 `4796b462` remains superseded by the separately bounded Step 0d recovery; Step 0d recovery through fix round 1 is reviewed at `71eb4feb`; fix round 2 `a642d9d0` received specification Approved C0/I0/M0 and Python/security Needs fixes C0/I0/M1; fix round 3 `459c4a03` received specification Approved C0/I0/M0 and Python/security Needs fixes C0/I0/M2; fix round 4 `db39e644` received specification Approved C0/I0/M0 and Python/security Needs fixes C0/I1/M1; final-breaker fix round 5 closes pre-bind substitution/unproved deletion and ordinary-close reporting with RED/GREEN/full evidence but independent reviews Not Run; all failed constructions and temporary packages are non-authoritative diagnostics only; reviewed-code rebinding, real Gate 9 package/reviews/ref, real-index staging, old-pack deletion, and lifecycle reconciliation remain Not Run and closed |
 | Task 12 | Final verification and handoff | Whole-branch checks, reviews, closure, and handoff | Not Run |
+
+### Task 9a amendment-state ledger
+
+| State | Current result | Closure condition |
+| --- | --- | --- |
+| Step 1 Task-only prerequisite | Current one-file logical unit; focused validation is recorded below; post-commit specification and documentation-quality reviews are `Not Run` | Commit exact subject `docs(task): record verification validation amendment`, then obtain both C0/I0/M0 reviews over its immutable range |
+| REQ-36 authoring and owner-leaf integration | `Not Run` | Create and review `verification-validation.md`, update only the approved owner routes, and preserve Stage 90 advisory authority boundaries |
+| New-pack target | Target is exactly 21 files: one README plus 20 reviewed leaves; current tracked state remains 20 files/19 leaves | Authoring and route integration complete with deterministic 21/20 assertion |
+| Requirement target | Target is 36/36; this prerequisite registers REQ-36 as `Not Run` while historical REQ-01 through REQ-35 evidence remains unchanged | REQ-36 implementation and both independent reviews complete |
+| Retiring pack | Exactly 20 files now and after Task 9a; unchanged | No Task 9a edit to any retiring-pack path |
+| LLM Wiki regression, generator writes, and freshness checks | `Not Run`; Task 10b's 1,338/1,337 result remains historical current evidence for the existing 20-file new pack | After the new leaf is tracked, prove old exact 20/new exact 21, then run the canonical owners and reach the reviewed 1,339/1,338 target |
+| V&V implementation reviews and any fix/re-review | `Not Run` | Two independent C0/I0/M0 verdicts over the exact implementation range; every fix gets its own range and both re-reviews |
+| Step 0e and reviewed-code rebinding | `Not Run` and closed | Current 21/20/36 Task 9a implementation must be committed and independently approved first |
+| Gate 9 durable package, assignments, reviews, evidence ref, and real-index staging | `Not Run` and closed under the amended prerequisite | Step 0e closure plus all current pre-deletion gates |
+| Old-pack deletion, lifecycle reconciliation, post-deletion verification, Task 12, and handoff | `Not Run` and closed | Reviewed Gate 9 authority and every deletion/lifecycle gate; no historical diagnostic substitutes |
 
 ### Requirement matrix
 
@@ -293,6 +356,7 @@ states are intentional and may change only with named evidence and review.
 | REQ-33 | New authorship plus claim-level validation and integration before old-pack deletion | `README.md` | Task old-claim migration ledger | All authoring source rows carry reviewed retrieval and verification dispositions | WS-OLD-PACK and Task 2-8 evidence owners | 14/14 routes in pack index and dispositions in scope matrix | Implemented in Task 9: exact 20-file pack, 19 direct leaf links, claim-level migration closure, parent human route, and corrected canonical-owner paths | Task 9 implementer self-review PASS C0/I0; initial specification and quality Needs fixes C0/I1/M0 on the same pseudo-route finding; fix round 1 scoped specification and quality re-reviews Approved C0/I0/M0 | [canonical pack index](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md) |
 | REQ-34 | One-off cleanup, canonical cross-link switch, stale-path control, and affected generated artifacts | Task `Generated-artifact inventory` | Pack migration state and parent human router | Source retrieval is complete; predecessor failures remain named beside current results | WS-VALIDATORS, WS-TASK10A-SECURITY, WS-TASK10A-FIX1, WS-TASK10A-FIX2, WS-TASK10A-FIX3, WS-TASK10A-FIX4, WS-TASK10A-FIX5 | Task 10 preserves all 14 dispositions | Implemented and reviewed for the non-destructive Task 10 scope: security readiness is fresh at 11/1/1; commit `186aceee` switches every owned Markdown/LLM route; fix `6d6e93b6` removes exactly sixteen mutable metadata exceptions, preserves the seven pinned lifecycle selectors, corrects four visible labels, and proves all twenty new-pack paths survive both projections; old-pack deletion remains pending in Task 11 | Task 10b fix round 1 scoped specification and quality re-reviews Approved C0/I0/M0; every initial I3/M1 and I1 finding is resolved; Task 10a parked Minor remains non-blocking; deletion review is Not Run | [generated-artifact inventory](#generated-artifact-inventory) |
 | REQ-35 | Logical-unit commits, independent reviews, final verification, and branch handoff | Task `Commit Ledger` | Implementation Plan and Review Evidence | No new external source required for final execution closure | WS-PLAN and WS-VALIDATORS | Task 12 must retain all 14 dispositions | Not Run: Task 12 owns final verification, independent whole-branch reviews, and handoff | Not Run: Task 12 independent reviews pending | [commit ledger](#commit-ledger) |
+| REQ-36 | Primary-source research and current-workspace implementation-and-gap analysis for verification and validation systems and rules that distinguishes conformance verification from intended-use and stakeholder-need validation and covers V&V planning, entry and readiness criteria, success and exit or completion criteria, static and dynamic methods, evidence and traceability, independence and risk-based depth, environments, data, oracles, defect disposition, acceptance and decision authority, residual-risk acceptance, release acceptance, monitoring, and revalidation across all fourteen scopes | Current owner is the approved target `verification-validation.md`; the leaf does not exist yet | `workspace-baseline.md`, `scope-application-matrix.md`, `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`, `llm-wiki-system.md`, `automation-pipeline-workflow.md`, `quality-ci-formatting.md`, `docker-compose-infrastructure.md`, `security-governance.md` | EXT-VV placeholders below preserve official-route, public-access, license, product-capability, and runtime/remote limitations; reopening is `Not Run` | WS-SPEC-137-AMENDMENT, WS-PLAN-VV-AMENDMENT, WS-TASK9A-VV, WS-VALIDATORS-TASK9A | 14/14 dispositions registered below | `Not Run`: no leaf, supporting-link integration, generated refresh, or current 21-file output is claimed | `Not Run`: Task 9a implementation specification and documentation-quality reviews pending | Target path only: `docs/90.references/research/2026-08-08-agentic-engineering-research-pack/verification-validation.md` |
 
 ### Normative scope ledger
 
@@ -312,6 +376,29 @@ states are intentional and may change only with named evidence and review.
 | `product` | `docs/00.agent-governance/scopes/product.md` | SDLC, roles, documentation architecture | Partial; 26 Stage 01 files; typed owner missing | Human approval before Spec and Stage 01 mutation | Product persona/human stakeholder | Human approval plus docs gates | Outside enum; 0 agents | Implementer PASS; Task 9 whole-pack disposition review PASS; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | `qa` | `docs/00.agent-governance/scopes/qa.md` | Harness, loop, automation, quality, security, LLM Wiki | Partial; extensive gates; remote state unverified | Smallest applicable check; docs coverage N/A; no direct pre-commit | `qa-engineer` | `eval-engineer` | Enum + 2 agents | Implementer PASS; Task 9 whole-pack disposition review PASS; scoped specification and quality re-reviews Approved C0/I0/M0 |
 | `security` | `docs/00.agent-governance/scopes/security.md` | Security, Compose, quality, automation, provider/harness | Partial; tracked controls; secret/runtime/remote excluded | Metadata-only secret evidence and concrete approval | Relevant layer implementer | `security-auditor` and named gates | Enum + 1 read-only agent | Implementer PASS; Task 9 whole-pack disposition review PASS; scoped specification and quality re-reviews Approved C0/I0/M0 |
+
+#### Task 9a REQ-36 scope-disposition amendment
+
+These rows add the approved V&V applicability target without rewriting the
+historical Task 9 scope verdicts. Every REQ-36 leaf result and its review remain
+`Not Run` until the leaf exists and the exact implementation range is reviewed.
+
+| Scope | V&V disposition | Required emphasis and limit | Task 9a result |
+| --- | --- | --- | --- |
+| `agentic` | Direct | Verify catalogs, prompts, tools, permissions, stop criteria, and evidence schemas; validate intended human handoff and task outcome; provider runtime stays `UNVERIFIED` | Not Run |
+| `architecture` | Direct | Verify requirement, ADR, ARD, Spec, interface, and quality-attribute traceability; validate against stakeholder constraints and operational concept | Not Run |
+| `backend` | Not applicable now | No current backend product surface; API, authorization, data, migration, error, load, and runtime acceptance require a later approved surface | Not Run |
+| `common` | Direct | Verify shared scripts, contracts, and conventions; validate that common rules reduce drift without erasing legitimate scope variation | Not Run |
+| `docs` | Direct | Verify metadata, headings, links, templates, generated freshness, and traceability; validate intended reader tasks and maintenance decisions | Not Run |
+| `entry` | Partial | Verify gateway, TLS, authentication, and routing configuration; edge reachability, certificates, log forwarding, and user ingress stay `UNVERIFIED` | Not Run |
+| `frontend` | Partial | Verify Storybook lint, type, build, component, and coverage evidence; product journey, accessibility, and usability validation are not established | Not Run |
+| `infra` | Direct, mostly verification | Verify Compose, configuration, network, volume, secret metadata, provenance, and hardening; live health, recovery, latency, backup, and rollback stay `UNVERIFIED` | Not Run |
+| `meta` | Direct | Verify profiles, transitions, taxonomy, lifecycle, and generated inventories; validate usefulness for discovery and governance decisions | Not Run |
+| `mobile` | Not applicable now | No mobile source; platform build, signing, device, accessibility, and user-context evidence require a later approved surface | Not Run |
+| `ops` | Partial | Verify Runbook, Incident, Release, monitoring, and rollback definitions; drills, service outcomes, MTTR, backup/restore, and release runtime stay `UNVERIFIED` | Not Run |
+| `product` | Partial | Verify PRD acceptance criteria and traceability; stakeholder validation and acceptance remain with the human product authority | Not Run |
+| `qa` | Direct | Verify plan, environment, data, oracle, coverage, flakes, and results; validate suite sufficiency against approved risk and release decision | Not Run |
+| `security` | Direct | Verify threat models, secure checks, approvals, supply-chain evidence, and redaction; residual-risk and operational-security acceptance require named authority and observation | Not Run |
 
 ### External source ledger
 
@@ -367,6 +454,18 @@ remain bounded to their recorded retrieval time.
 | EXT-SLSA | Supply chain | SLSA | `https://slsa.dev/spec/v1.2/` | Approved specification v1.2 | 2026-08-08T18:18:06+09:00 | External fixed version | Verified official versioned page; Build/Source tracks and attestation formats only; no local SLSA level | REQ-27 |
 | EXT-OPENSSF | Supply chain | OpenSSF | `https://github.com/ossf/scorecard/commit/40c1e35996730d4fdcbdb2e6a23917a2467e29b7` | `main` resolved to `40c1e35996730d4fdcbdb2e6a23917a2467e29b7` | 2026-08-08T18:18:06+09:00 | External fixed at pinned revision; repository root remains mutable | Verified with `git ls-remote` and immutable commit page; advisory heuristics only; no score run or security certification | REQ-27 |
 | EXT-AGENCY | AI-agent catalogs | agency-agents | `https://github.com/msitarzewski/agency-agents` | Default branch `main` pinned at `ebe9c99acb5c96f9468de368d8bead775387d1a7`; exact count command recorded in leaf | 2026-08-08T16:18:04+09:00 | External fixed at pinned revision | Verified with `git ls-remote`, detached checkout, `divisions.json`, and immutable `git ls-tree`: 17 divisions / 270 agents; historical workspace pin `8ef49232` remains distinct | REQ-28 |
+| EXT-VV-IEEE-1012 | Verification and validation | IEEE | `https://standards.ieee.org/ieee/1012/7324/` | IEEE 1012-2024 current official route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official route | Placeholder: reopen during authoring; public route/abstract supports status and high-level scope only, not paid clauses, a specific integrity level, or local conformance/adoption | REQ-36 |
+| EXT-VV-ISO-12207 | Software lifecycle processes | ISO | `https://www.iso.org/standard/90219.html` | ISO/IEC/IEEE 12207:2026 Edition 2 official route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official route | Placeholder: reopen during authoring; public preview/status only, with no purchased-clause or local-conformance claim | REQ-36 |
+| EXT-VV-IEEE-12207 | Software lifecycle processes | IEEE | `https://standards.ieee.org/ieee/12207/11416/` | IEEE/ISO/IEC 12207-2026 official route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official route | Placeholder: reopen during authoring; route/abstract and supersession corroboration only | REQ-36 |
+| EXT-VV-NASA-SEH | Systems-engineering V&V | NASA | `https://www.nasa.gov/reference/systems-engineering-handbook/` | Current official handbook route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official guidance | Placeholder: reopen during authoring; NASA-specific guidance, not universal compliance authority | REQ-36 |
+| EXT-VV-NASA-REALIZATION | Product realization V&V | NASA | `https://www.nasa.gov/reference/5-0-product-realization/` | Current official Product Realization route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official guidance | Placeholder: reopen during authoring; supports NASA-specific verification/validation framing, iterative practice, and discrepancy/repeat logic only | REQ-36 |
+| EXT-VV-NASA-SEH-PDF | Systems-engineering handbook artifact | NASA | `https://www.nasa.gov/wp-content/uploads/2018/09/nasa_systems_engineering_handbook_0.pdf` | NASA/SP-2016-6105 Rev. 2 official PDF | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External fixed official artifact | Placeholder: verify artifact identity during authoring; older fixed handbook artifact while current web guidance can change | REQ-36 |
+| EXT-VV-NIST-SSDF | Secure development | NIST | `https://csrc.nist.gov/pubs/sp/800/218/final` | SP 800-218 SSDF v1.1 | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External fixed official publication | Placeholder: security/SDLC scope only; not complete systems V&V or release acceptance | REQ-36 |
+| EXT-VV-NIST-800-160 | Trustworthy systems engineering | NIST | `https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final` | SP 800-160 Vol. 1 Rev. 1 | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External fixed official publication | Placeholder: trustworthy secure-systems context only; not a substitute for IEEE 1012/12207 | REQ-36 |
+| EXT-VV-NISTIR-8397 | Developer verification techniques | NIST | `https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software` | NISTIR 8397 | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External fixed official publication | Placeholder: minimum software/security verification techniques only; explicitly not total V&V | REQ-36 |
+| EXT-VV-GHA-STATUS | Status checks | GitHub | `https://docs.github.com/en/pull-requests/reference/status-checks` | Current product documentation route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official product docs | Placeholder: product capability only; this repository's hosted runs, required checks, and remote settings remain `UNVERIFIED` | REQ-36 |
+| EXT-VV-GHA-PROTECTION | Branch protection and merge gates | GitHub | `https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches` | Current product documentation route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official product docs | Placeholder: reopen and record the effective URL during authoring; capability only, with repository enforcement `UNVERIFIED` absent authorized observation | REQ-36 |
+| EXT-VV-GHA-WORKFLOW | Workflow and job semantics | GitHub | `https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions` | Current product documentation route | Implementation access `Not Run`; ignored advisory report observed it at `2026-08-09T10:51:35Z` | External mutable official product docs | Placeholder: workflow configuration semantics only; tracked intent is not hosted execution | REQ-36 |
 
 ### Workspace evidence ledger
 
@@ -374,6 +473,10 @@ remain bounded to their recorded retrieval time.
 | --- | --- | --- | --- | --- | --- | --- |
 | WS-SPEC-137 | `docs/03.specs/137-agentic-research-pack-rebuild/spec.md` | `artifact_id: spec:137-agentic-research-pack-rebuild` | `353182551d47c4232bceb58e573abd55b846420a` | Verified tracked input | Does not prove runtime or remote state | REQ-01 through REQ-35 |
 | WS-PLAN | `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md` | `artifact_id: plan:2026-08-08-agentic-research-pack-rebuild` | `9917fcdadf700e7f68541e73188620e133485470` | Verified tracked input | Prospective plan, not execution proof | REQ-33 through REQ-35 |
+| WS-SPEC-137-AMENDMENT | `docs/03.specs/137-agentic-research-pack-rebuild/spec.md` | Commits `90eca714`, `76808636`, `af37969b`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23` | `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23` | REQ-36, 21/20 cardinality, nine-H2 convention, and amendment provenance reviewed; both final reviews Approved C0/I0/M0 | Specification authority only; does not prove the leaf, generation, runtime, remote state, acceptance, Gate 9, or deletion | REQ-36 |
+| WS-PLAN-VV-AMENDMENT | `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md` | Commit `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`; range `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23..7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`; review tasks `/root/vv_step0e_plan_spec_review`, `/root/vv_step0e_plan_quality_review` | `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | Both Plan reviews Approved C0/I0/M0; author repository contract PASS used the isolated venv; reviewer replay was limited by missing `html5lib` in separate reviewer environments | Prospective Plan and bounded Task 9a Step 1 authority only; no downstream action is execution proof | REQ-35, REQ-36 |
+| WS-TASK9A-VV | This Task plus target `verification-validation.md` and the ten approved supporting owners | Ignored advisory reports `vv-external-research-report.md`, `vv-workspace-audit-report.md`, and `vv-leaf-blueprint.md` at the SHA-256 identities in Inputs | `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | Task-only authority backfill in progress; authoring, remeasurement, owner-link integration, 21/20 assertions, generator writes/checks, and implementation reviews are `Not Run` | Advisory reports are ignored inputs, not durable authority; no runtime, remote, secret, provider, release, residual-risk, Gate 9, deletion, or lifecycle proof | REQ-36 |
+| WS-VALIDATORS-TASK9A | `scripts/validation/check-document-metadata.py`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-repo-contracts.sh`, and named generator owners | The Plan author used the isolated repository contract; Step 1 uses focused metadata, traceability, whitespace, and exact one-file scope; later implementation commands remain `Not Run` | `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | Step 1 and Plan-author results are separately attributed in Verification Evidence; no Task 1 baseline is stretched to prove Task 9a | Each local result proves only its exact command, inputs, environment, and candidate; aggregate repository contract does not replace named freshness or runtime gates | REQ-35, REQ-36 |
 | WS-OLD-PACK | `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` | `find` plus `git ls-tree -r HEAD` | `9917fcdadf700e7f68541e73188620e133485470` | 20 files / 20 blobs verified | Historical input only | REQ-33, REQ-34 |
 | WS-SCOPES | `docs/00.agent-governance/scopes/` | Fourteen normative filenames plus complete content analysis | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | 14/14 verified and dispositioned | Tracked governance only | REQ-32 |
 | WS-CONTRACTS | `docs/00.agent-governance/contracts/` | Parsed agent and provider-model registries | `528c225d35d6c986b50f9b997fd08921a8df9a9b` | 8 scopes, 14 agents, 24 functions, 5 profiles, 11 models verified | Tracked definitions do not prove execution | REQ-31, REQ-32 |
@@ -491,6 +594,14 @@ Task 11 deletion gate; gates 1 through 9 remain separate controls.
 | `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` | Tracked Stage/category path set changes | `scripts/knowledge/generate-llm-wiki-coverage.sh` | `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | Design-time FAIL; Task 1 observation FAIL, exit 1: stale coverage | Regenerate after route switch and require PASS | Task 10b canonical write/check PASS; 1,337 safe tracked source paths; current Stage/archive/category changes are reflected and the retiring directory contributes zero rows |
 | `docs/90.references/data/security/security-automation-readiness.md` | Security controls, scripts, workflows, or typed workflow registry changes | `scripts/validation/generate-security-automation-readiness.sh` | `bash scripts/validation/generate-security-automation-readiness.sh --check` | Design-time FAIL; Task 1 and Task 8 observations preserved as stale/7-3-3 predecessors | Separate approval obtained; repair with focused RED/GREEN evidence, then regenerate canonically and require PASS | Task 10a canonical write/check PASS; 13 controls = 11 Implemented / 1 Partially Implemented / 1 Gap; broad dependency SCA remains the only Gap; both research destinations use the 2026-08-08 security leaf |
 | `graphify-out/**` | Tracked corpus changes | Graphify workspace updater | `bash scripts/knowledge/report-graphify-health.sh` after explicitly authorized refresh | Advisory and stale at `f8a72211`; no refresh authorized | Keep advisory and unchanged; corroborate against tracked sources | Not Run |
+
+Task 9a does not forward-update those historical final-result rows during this
+prerequisite. The approved later target is 1,339 LLM Wiki index rows and 1,338
+coverage paths after the new leaf is tracked and both canonical write/check
+flows run. That authoring, regression, generation, and freshness evidence is
+`Not Run`; the tracked output bytes therefore do not yet contain or prove a
+`verification-validation.md` route. Security readiness stays unchanged at its
+reviewed 11/1/1 state, and Graphify stays stale/advisory.
 
 ### Old-path allowlist
 
@@ -682,6 +793,9 @@ manifest/summary rows unchanged.
 | 2026-08-09 | Task 11 Step 0d recovery fix round 4 reviews | Reviewed exact commit `db39e644974c0f2540f3ccb42409e8bd6c36b929` and range `459c4a03061dfbc8bd2d28882a80cf898d686d3b..db39e644974c0f2540f3ccb42409e8bd6c36b929` | Independent specification Approved C0/I0/M0; independent Python/security Needs fixes C0/I1/M1 because pre-bind name identity could bless and remove an attacker replacement, while ordinary close still claimed the attacker-visible alias as a proved retained location |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 5 TDD RED/GREEN | Replaced cleanup-by-guessing expectations with no-unproved-delete and truthful-report contracts, added pre-bind substitution, then implemented absent/unbound/bound ownership plus trusted-FD capture and same-parent reproof | Exact three-method RED ran in 45.026 seconds with four intended failures: holding-open and scratch-open invoked unproved `rmdir`, pre-bind substitution removed the attacker replacement, and ordinary close named the attacker path; focused GREEN passes 3/3 in 47.109 seconds with the attacker replacement/victim untouched, unbound debris retained, all FDs closed, and identity-only errors |
 | 2026-08-09 | Task 11 Step 0d recovery fix round 5 expanded/full verification | Extended the trusted-FD rule to registered files and nested directories, corrected the obsolete unregistered-lock path assertion, and replayed all cleanup/adversarial, authority, generator, static, parity, and invariant checks | Exact cleanup/adversarial set passes 9/9 in 142.478 seconds; complete two-class suite passes 40/40 in 747.885 seconds; Python compile, Ruff, Bash syntax, ShellCheck, both stdout `cmp`, both canonical `--check`, metadata, and whitespace pass; generated/lifecycle and real staged diffs are empty; old pack is 20/20 at `HEAD` and in the real index; five-entry worktree registry and Gate 9 refs remain unchanged; exact three-file scope after this Task update; independent fix reviews Not Run and Gate 9 remains closed |
+| 2026-08-09 | Task 9a Spec amendment authority | Recorded commits `90eca714`, `76808636`, and `af37969b`, aggregate range `b77abacb..af37969b`, exact initial findings, both fix dispositions, and final review closure | Initial specification Needs fixes C0/I1/M0 and quality Approved-with-Minor C0/I0/M2; fix 1 specification Approved C0/I0/M0 and quality Approved-with-Minor C0/I0/M1; fix 2 final specification and quality both Approved C0/I0/M0 |
+| 2026-08-09 | Task 9a Plan amendment barrier | Recorded commit `7e526040`, range `af37969b..7e526040`, and exact independent review task identities | `/root/vv_step0e_plan_spec_review` and `/root/vv_step0e_plan_quality_review` both Approved C0/I0/M0; author isolated-venv repository contract PASS remains distinct from reviewer-environment missing-`html5lib` limitations |
+| 2026-08-09 | Task 9a Step 1 Task-only prerequisite | Registered REQ-36, 14 scope dispositions, source/workspace placeholders, advisory report hashes, 21/20/36 targets, and downstream fail-closed states from clean reviewed HEAD `7e526040` | Only this Task is edited; V&V authoring, generator refresh, implementation reviews, Step 0e, Gate 9, deletion, lifecycle reconciliation, and Task 12 remain `Not Run` and closed |
 
 ## Verification Evidence
 
@@ -691,6 +805,12 @@ private-state material.
 
 | Command | Comparison / baseline | Exit | Classification | Attributable result |
 | --- | --- | --- | --- | --- |
+| `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh` | Plan amendment author environment before `7e526040` | 0 | PASS | Author evidence: isolated environment included `html5lib`; both Plan reviewers separately reported their own missing-`html5lib` replay limitation without attributing a Plan failure |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb --changed-path docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` | Task 9a Step 1 reviewed Plan HEAD | 0 | PASS | `selected=1 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| `bash scripts/validation/check-doc-traceability.sh` | Task 9a Step 1 working tree | 0 | PASS | `catalog_pairs_total=46 failures=0` |
+| `git diff --check` | Task 9a Step 1 working tree | 0 | PASS | No whitespace errors |
+| `git diff --name-only 7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb --` plus `git status --short` | Task 9a Step 1 working tree | 0 | PASS | Exactly `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`; no other tracked change |
+| `git diff --cached --name-only` and `git diff --cached --check` | Task 9a Step 1 final index | 0 | PASS | Exactly the Task path is staged and the staged diff has no whitespace error; ignored advisory inputs are not staged |
 | `find docs/90.references/research/2026-07-05-agentic-research-pack-refresh -maxdepth 1 -type f -printf '%f\n' \| sort` | Task BASE | 0 | PASS | 20 filenames |
 | `git ls-tree -r HEAD docs/90.references/research/2026-07-05-agentic-research-pack-refresh` | Task BASE | 0 | PASS | 20 blob records |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | Task BASE | 1 | FAIL, predecessor | Stale index; differs from design-time PASS and is preserved as observed |
@@ -876,6 +996,19 @@ backfilled.
 
 | Review | Range | Reviewer | Verdict | Findings / disposition |
 | --- | --- | --- | --- | --- |
+| V&V Spec amendment initial specification review | Amendment commit `90eca714941c48ad2aa3b5767dcf0211bdb7cec5` within aggregate range `b77abacb..af37969b` | Independent specification reviewer | Needs fixes; C0/I1/M0 | I1: REQ-36 omitted V&V planning, entry/readiness, success/exit/completion, acceptance/decision authority, and residual-risk acceptance |
+| V&V Spec amendment initial quality review | Amendment commit `90eca714941c48ad2aa3b5767dcf0211bdb7cec5` within aggregate range `b77abacb..af37969b` | Independent documentation-quality reviewer | Approved-with-Minor; C0/I0/M2 | M1: original 2026-08-08 approval/reviews ambiguously appeared to cover the amendment. M2: nine-H2 wording mischaracterized the registry contract as nine required headings rather than seven required plus two pack-convention headings |
+| V&V Spec amendment fix 1 specification re-review | Fix commit `768086362b50087c63a149a246efca06ec50701d` | Independent specification reviewer | Approved; C0/I0/M0 | Fix 1 added the complete planning/readiness/completion/authority/residual-risk criteria and resolved I1 |
+| V&V Spec amendment fix 1 quality re-review | Fix commit `768086362b50087c63a149a246efca06ec50701d` | Independent documentation-quality reviewer | Approved-with-Minor; C0/I0/M1 | M1 and the heading-contract M2 were addressed; one Minor remained because `reviews pending` was transient self-referential provenance |
+| V&V Spec amendment final specification re-review | Fix commit `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23` | Independent specification reviewer | Approved; C0/I0/M0 | Fix 2 made provenance timeless; no finding remains |
+| V&V Spec amendment final quality re-review | Fix commit `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23` | Independent documentation-quality reviewer | Approved; C0/I0/M0 | Fix 2 routes immutable review provenance to this Task; no finding remains |
+| V&V/Step 0e Plan specification review | `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23..7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | `/root/vv_step0e_plan_spec_review` | Approved; C0/I0/M0 | Exact Plan-amendment range approved; reviewer-environment `html5lib` absence did not invalidate the author's isolated-venv repository-contract PASS |
+| V&V/Step 0e Plan quality review | `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23..7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | `/root/vv_step0e_plan_quality_review` | Approved; C0/I0/M0 | Exact Plan-amendment range approved; reviewer-environment dependency limitation is not attributed to Plan content |
+| Task 9a Step 1 implementer self-review | Working tree before prerequisite commit | Task 9a Task-ledger implementer | PASS; C0/I0/M0 | Exact one-file scope, immutable amendment provenance, precise finding/fix/review sequence, 36 requirement IDs, 14 scope dispositions, current 20/19 plus target 21/20 cardinality, unchanged retiring 20, advisory report identities, and all downstream `Not Run` boundaries verified |
+| Task 9a Step 1 Task-only specification review | Not Run; exact prerequisite commit range pending | Independent specification reviewer | Not Run | Must review only this Task-only prerequisite commit before V&V authoring starts |
+| Task 9a Step 1 Task-only quality review | Not Run; exact prerequisite commit range pending | Independent documentation-quality reviewer | Not Run | Must review only this Task-only prerequisite commit before V&V authoring starts |
+| Task 9a V&V implementation specification review | Not Run | Independent specification reviewer | Not Run | No leaf, owner-link integration, generator refresh, or implementation commit exists |
+| Task 9a V&V implementation quality review | Not Run | Independent documentation-quality reviewer | Not Run | No leaf, owner-link integration, generator refresh, or implementation commit exists |
 | Implementer self-review | Working tree before Task 1 commit | Task 1 implementer | PASS | Exact row counts are 35 requirements, 14 scopes, and 20 pinned old-file claim containers; two owned tracked files only; no Critical or Important finding |
 | Specification compliance | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Approved; C0/I0/M0 | First committed-unit specification review returned no findings |
 | Documentation quality | `9917fcdadf700e7f68541e73188620e133485470..c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4` | Independent reviewer | Needs fixes; C0/I1/M0 | Important finding: backfill the known Task 1 commit and review identities; fix re-review Not Run |
@@ -994,6 +1127,11 @@ backfilled.
 
 | Unit | Commit identity | Logical unit | Validation | Review state |
 | --- | --- | --- | --- | --- |
+| V&V Spec amendment | `90eca714941c48ad2aa3b5767dcf0211bdb7cec5`; `docs(spec): add verification and validation research` | Add REQ-36, 21/20 target, V&V leaf contract, and Gate 9 architecture boundary | Spec amendment checks | Initial specification Needs fixes C0/I1/M0; initial quality Approved-with-Minor C0/I0/M2 |
+| V&V Spec amendment fix 1 | `768086362b50087c63a149a246efca06ec50701d`; `docs(spec): complete verification validation criteria` | Add planning/readiness/completion/authority/residual-risk criteria and disambiguate original approval plus seven-required/two-convention heading contract | Spec amendment checks | Specification re-review Approved C0/I0/M0; quality re-review Approved-with-Minor C0/I0/M1 for transient self-referential provenance |
+| V&V Spec amendment fix 2 | `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`; `docs(spec): make amendment provenance timeless`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23` | Route exact amendment commit/review provenance to Stage 04 Task evidence | Spec amendment checks | Final specification and documentation-quality re-reviews Approved C0/I0/M0 |
+| V&V/Step 0e Plan amendment | `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb`; `docs(plan): integrate verification validation and tree object recovery`; range `af37969b26f7e96d684fa0fdf8a0ee2418a4ac23..7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | Integrate Task 9a and current 21/20/36 prerequisite before Step 0e/Gate 9 | Author isolated-venv repository contract PASS; focused Plan checks PASS; reviewer replay environments lacked `html5lib` | `/root/vv_step0e_plan_spec_review` and `/root/vv_step0e_plan_quality_review` both Approved C0/I0/M0 |
+| Task 9a Step 1 Task-only prerequisite | Pending self-identity closure; `docs(task): record verification validation amendment`; BASE `7e5260403e6ad4fa4340c51c06cdf1e31b03a8bb` | Exactly this Task: immutable Spec/Plan authority, REQ-36, advisory inputs, source/workspace owners, 14 scope dispositions, target cardinalities, and fail-closed states | Focused Task metadata 1/0, traceability 46/0, whitespace, exact one-file working/staged scope PASS | Implementer self-review PASS C0/I0/M0; post-commit specification and documentation-quality reviews `Not Run`; authoring and every downstream action remain closed |
 | Task 1 | `c15c296b5d3dc90c95a28dbee4336f2aa98cc3e4`; `docs(task): initialize agentic research rebuild ledger` | Execution ledger and immutable baselines | Task 1 scoped checks | Specification Approved C0/I0/M0; quality Needs fixes C0/I1/M0 |
 | Task 1 fix 1 | `528c225d35d6c986b50f9b997fd08921a8df9a9b`; `docs(task): backfill task 1 review identity` | Review-identity/evidence correction | Focused metadata and diff PASS | Scoped specification and quality re-reviews Approved C0/I0/M0 |
 | Task 2 | `9a6e09ca06d99ae8234199443974c978640f3ae6`; `docs(research): establish workspace and scope baseline` | Workspace baseline, scope matrix, and execution evidence | Focused metadata/scope/diff PASS; repository contract has separate predecessor | Implementer PASS C0/I0; specification and quality Approved C0/I0/M0 |
@@ -1042,6 +1180,17 @@ backfilled.
 
 ## Deferred and Blocked Items
 
+- Task 9a Step 1 records only the reviewed amendment authority and the current
+  target contract. The new pack is still the existing 20 files/19 leaves; the
+  retiring pack remains exactly 20 unchanged files; REQ-36 authoring, all ten
+  owner-leaf integrations, Stage 03 routing, the old-20/new-21 regression,
+  canonical LLM Wiki writes/checks, the 1,339/1,338 generated target, V&V
+  implementation reviews, and any fix/re-review are `Not Run`. Step 0e,
+  reviewed-code rebinding, Gate 9 package/assignment/reviews/evidence-ref,
+  real-index staging, deletion, lifecycle reconciliation, post-deletion
+  verification, Task 12, remote actions, and push remain `Not Run` and closed.
+  Historical Task 9/10/11 evidence remains factual but cannot satisfy this
+  amended 21/20/36 prerequisite.
 - Task 11 Step 0 cleared metadata but failed the first fresh Phase A lifecycle
   checkpoint at `10/27/10`, so it remains historical failed-attempt evidence
   despite its C0/I0 committed-unit reviews. Reviewed Plan fix `62591cfe`
