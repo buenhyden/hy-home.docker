@@ -2092,6 +2092,87 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             for name in child_names() - before_children:
                 shutil.rmtree(temporary_root / name, ignore_errors=True)
 
+    def test_pinned_scratch_partial_constructor_failures_roll_back_children_and_fds(
+        self,
+    ) -> None:
+        module_spec = importlib.util.spec_from_file_location(
+            "gate9_partial_constructor_failures", HELPER
+        )
+        self.assertIsNotNone(module_spec)
+        self.assertIsNotNone(module_spec.loader)
+        module = importlib.util.module_from_spec(module_spec)
+        sys.modules[module_spec.name] = module
+        module_spec.loader.exec_module(module)
+        owner_class = module.PinnedScratch
+        temporary_root = pathlib.Path(os.environ.get("TMPDIR", "/tmp")).absolute()
+        original_open = module.os.open
+        original_mkdir = module.os.mkdir
+
+        def open_descriptors() -> set[int]:
+            return {
+                int(path.name)
+                for path in pathlib.Path("/proc/self/fd").iterdir()
+                if path.name.isdigit()
+            }
+
+        for stage in ("holding-open", "scratch-mkdir", "scratch-open"):
+            with self.subTest(stage=stage):
+                prefix = f"gate9-partial-{stage}-{self.root.name}-"
+
+                def child_names() -> set[str]:
+                    return {
+                        path.name for path in temporary_root.glob(f"{prefix}*")
+                    }
+
+                def injected_open(
+                    path: object,
+                    flags: int,
+                    mode: int = 0o777,
+                    *,
+                    dir_fd: int | None = None,
+                ) -> int:
+                    if (
+                        stage == "holding-open"
+                        and isinstance(path, str)
+                        and path.startswith(prefix)
+                        and dir_fd is not None
+                    ) or (stage == "scratch-open" and path == "scratch"):
+                        raise OSError(f"injected {stage} failure")
+                    keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
+                    return original_open(path, flags, mode, **keyword)
+
+                def injected_mkdir(
+                    path: object,
+                    mode: int = 0o777,
+                    *,
+                    dir_fd: int | None = None,
+                ) -> None:
+                    if stage == "scratch-mkdir" and path == "scratch":
+                        raise OSError(f"injected {stage} failure")
+                    keyword = {} if dir_fd is None else {"dir_fd": dir_fd}
+                    original_mkdir(path, mode, **keyword)
+
+                before_children = child_names()
+                before_descriptors = open_descriptors()
+                try:
+                    with (
+                        mock.patch.object(module.os, "open", injected_open),
+                        mock.patch.object(module.os, "mkdir", injected_mkdir),
+                    ):
+                        with self.assertRaises(module.Gate9Error) as caught:
+                            owner_class(prefix)
+                    self.assertEqual("SCRATCH_SCOPE_DRIFT", caught.exception.code)
+                    self.assertEqual(before_children, child_names())
+                    self.assertEqual(before_descriptors, open_descriptors())
+                finally:
+                    for descriptor in open_descriptors() - before_descriptors:
+                        try:
+                            os.close(descriptor)
+                        except OSError:
+                            pass
+                    for name in child_names() - before_children:
+                        shutil.rmtree(temporary_root / name, ignore_errors=True)
+
     def test_pinned_scratch_initial_rollback_preserves_victim_on_ownership_drift(
         self,
     ) -> None:
@@ -2109,10 +2190,12 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         victim.write_bytes(b"outside victim\n")
         visible_holding: pathlib.Path | None = None
         relocated_holding: pathlib.Path | None = None
+        retained_identity: tuple[int, int, int] | None = None
 
         def substitute_holding(owner: object) -> None:
-            nonlocal visible_holding, relocated_holding
+            nonlocal visible_holding, relocated_holding, retained_identity
             visible_holding = owner.holding_path
+            retained_identity = owner._holding_identity
             relocated_holding = visible_holding.with_name(
                 visible_holding.name + "-relocated"
             )
@@ -2131,10 +2214,18 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                 with self.assertRaises(module.Gate9Error) as caught:
                     owner_class("gate9-initial-drift-")
             self.assertEqual("SCRATCH_CLEANUP_FAILURE", caught.exception.code)
-            self.assertIn("retained holding requires inspection", caught.exception.detail)
             self.assertEqual(b"outside victim\n", victim.read_bytes())
             self.assertIsNotNone(visible_holding)
             self.assertIsNotNone(relocated_holding)
+            self.assertIsNotNone(retained_identity)
+            if visible_holding is not None:
+                self.assertNotIn(os.fspath(visible_holding), caught.exception.detail)
+            if retained_identity is not None:
+                device, inode, mode = retained_identity
+                self.assertIn(
+                    f"retained holding identity dev={device} ino={inode} mode={mode:#o}",
+                    caught.exception.detail,
+                )
             if visible_holding is not None:
                 self.assertTrue(visible_holding.is_symlink())
             if relocated_holding is not None:
