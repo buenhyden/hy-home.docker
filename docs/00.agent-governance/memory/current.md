@@ -36,23 +36,26 @@ status: active
 
 ## Active boundary
 
-- Branch `codex/agentic-research-vv-gha` in worktree
-  `.worktrees/agentic-research-vv-gha`, based on `4122cecf`.
+- Delivered on `codex/agentic-research-vv-gha` from base `4122cecf` and
+  fast-forward merged into `codex/sdlc-taxonomy-convergence`. The feature
+  branch and its worktree are removed; the base branch carries the history.
 - Covered: two new pack leaves, five sibling leaves cross-linked, the pack
   README, the scope matrix, the two generated LLM Wiki artifacts, the
   frontmatter of all 19 pre-existing pack leaves and of the 12 audit-pack
   documents, and two guarded-surface code fixes in
   `scripts/validation/agent_governance_contract.py` and
   `scripts/operations/provider_surface_renderer.py`.
-- Push, PR, merge, remote mutation, Stage 00 policy body changes, runtime and
-  Compose changes, full external source re-verification, and the controlled
-  all-files wrapper all stay outside this work.
-- Two rounds of independent review happened: one per new leaf, then a
-  confirming review of the corrections. All findings are applied.
+- Push, PR, remote mutation, Stage 00 policy body changes, runtime and Compose
+  changes, full external source re-verification, and the controlled all-files
+  wrapper all stay outside this work. The merge was local only.
+- Three rounds of independent review happened: one per new leaf, a confirming
+  review of the corrections, and a fourth round that settled the claims which
+  had flip-flopped. All accepted findings are applied; two reviewer claims were
+  rejected after verification.
 
 ## Verified state
 
-- Verified commit: `a37c08f3`
+- Verified commit: `f5dddbcf`
 - Verified at: `2026-08-10T14:05:00+09:00`
 - Coverage analysis found 23 of the requested topics already covered across 20
   files and 6,934 lines. The single confirmed gap was Verification and
@@ -85,7 +88,7 @@ status: active
   profile does not declare it, no script, workflow, test, or config reads it,
   and every affected leaf states its cadence in its Maintenance section, so the
   removal is information-preserving. The diff is 19 identical deletions.
-- Fifteen logical-unit commits span `26906ee6` to `a37c08f3`.
+- Eighteen logical-unit commits span `26906ee6` to `f5dddbcf`.
 - Three stale prunable worktrees under `/tmp` were removed with
   `git worktree prune`.
 - The local QA runner was executed end to end for the first time in a while,
@@ -246,10 +249,10 @@ status: active
 
 ## Next handoff
 
-- The branch is kept as-is by decision: not merged, not pushed, worktree
-  preserved at `.worktrees/agentic-research-vv-gha`. Integration was deliberately
-  not offered because the QA suite is not green, and it is not green on the base
-  branch either.
+- The work is fast-forward merged into `codex/sdlc-taxonomy-convergence` and
+  not pushed. The QA suite is not green here, but it is not green at the base
+  commit either and the regression delta is zero, so the merge changes no
+  verification outcome.
 - Two code fixes landed here and both are verified: the confined reader now
   accepts a symlinked root while still rejecting symlinked components, and the
   provider surface renderer emits the normalized contract error message it
