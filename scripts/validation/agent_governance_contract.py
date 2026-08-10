@@ -978,8 +978,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "configured supervision default."
                 ),
                 "source_url": (
-                    "https://platform.claude.com/docs/en/about-claude/models/"
-                    "overview"
+                    "https://platform.claude.com/docs/en/about-claude/models/overview"
                 ),
                 "source_retrieved_at": "2026-07-26T20:08:18+09:00",
             }
@@ -1000,8 +999,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "remain in the active provider contract."
                 ),
                 "source_url": (
-                    "https://developers.openai.com/api/docs/models/"
-                    "gpt-5.2-codex"
+                    "https://developers.openai.com/api/docs/models/gpt-5.2-codex"
                 ),
                 "source_retrieved_at": "2026-07-16T01:17:36+09:00",
             }
@@ -1057,9 +1055,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "The shut-down preview is historical and its stable "
                     "replacement owns active use."
                 ),
-                "source_url": (
-                    "https://ai.google.dev/gemini-api/docs/deprecations"
-                ),
+                "source_url": ("https://ai.google.dev/gemini-api/docs/deprecations"),
                 "source_retrieved_at": "2026-07-16T01:17:36+09:00",
             }
         ),
@@ -1112,8 +1108,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "governance owns policy review."
                 ),
                 "source_url": (
-                    "docs/03.specs/132-agent-governance-harness-convergence/"
-                    "spec.md"
+                    "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
                 ),
                 "source_retrieved_at": "2026-07-15T10:00:00+09:00",
             }
@@ -1131,8 +1126,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "replace the standalone identity."
                 ),
                 "source_url": (
-                    "docs/03.specs/132-agent-governance-harness-convergence/"
-                    "spec.md"
+                    "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
                 ),
                 "source_retrieved_at": "2026-07-15T10:00:00+09:00",
             }
@@ -1303,9 +1297,17 @@ def _read_root_confined_regular_text(
     ):
         raise _UnsafeRootFileError
 
+    # The root is the caller-supplied trust anchor, not a component discovered
+    # during the walk, so it is opened without O_NOFOLLOW. It may legitimately be
+    # reached through a symlink: the gate runner hands children the repository
+    # root as /proc/self/fd/<fd>, which is always a symlink, and a checkout can
+    # sit under a symlinked parent. Confinement is enforced on every component
+    # *below* the root, which keeps the anti-escape property intact.
+    root_flags = os.O_RDONLY | os.O_DIRECTORY
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     final_flags = os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW
     close_on_exec = getattr(os, "O_CLOEXEC", 0)
+    root_flags |= close_on_exec
     directory_flags |= close_on_exec
     final_flags |= close_on_exec
     descriptors: list[int] = []
@@ -1326,7 +1328,7 @@ def _read_root_confined_regular_text(
         return descriptor
 
     try:
-        current = open_component(root, directory_flags)
+        current = open_component(root, root_flags)
         for part in relative_path.parts[:-1]:
             current = open_component(part, directory_flags, dir_fd=current)
         final = open_component(relative_path.parts[-1], final_flags, dir_fd=current)
@@ -3282,9 +3284,7 @@ def _validate_harness_layers(
                 source,
             )
         layer_id = raw.get("layer_id")
-        if _check_string(
-            layer_id, path, f"{location}.layer_id", findings, source
-        ):
+        if _check_string(layer_id, path, f"{location}.layer_id", findings, source):
             observed_ids.append(str(layer_id))
         owner = raw.get("owner_agent")
         if not _is_registered_string(owner, agent_ids):
@@ -3316,9 +3316,7 @@ def _validate_harness_layers(
         )
         failure_return = raw.get("failure_return")
         handoff_target = raw.get("handoff_target")
-        if not _is_registered_string(
-            failure_return, state_references | {"stop"}
-        ):
+        if not _is_registered_string(failure_return, state_references | {"stop"}):
             _add(
                 findings,
                 "AGC-HARNESS-LAYER-REFERENCE",
@@ -3328,9 +3326,7 @@ def _validate_harness_layers(
                 "unknown-layer-failure-return",
                 source,
             )
-        if not _is_registered_string(
-            handoff_target, state_references | {"complete"}
-        ):
+        if not _is_registered_string(handoff_target, state_references | {"complete"}):
             _add(
                 findings,
                 "AGC-HARNESS-LAYER-REFERENCE",
@@ -3423,9 +3419,7 @@ def _validate_workflow_states(
                 source,
             )
         state_id = raw.get("state_id")
-        if _check_string(
-            state_id, path, f"{location}.state_id", findings, source
-        ):
+        if _check_string(state_id, path, f"{location}.state_id", findings, source):
             observed_ids.append(str(state_id))
         owner = raw.get("owner_agent")
         if not _is_registered_string(owner, agent_ids):
@@ -3455,9 +3449,7 @@ def _validate_workflow_states(
             source,
         )
         for field in ("entry_condition", "exit_gate"):
-            _check_string(
-                raw.get(field), path, f"{location}.{field}", findings, source
-            )
+            _check_string(raw.get(field), path, f"{location}.{field}", findings, source)
         attempts = raw.get("max_attempts")
         if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts <= 0:
             _add(
@@ -3471,9 +3463,7 @@ def _validate_workflow_states(
             )
         failure_return = raw.get("failure_return")
         handoff_target = raw.get("handoff_target")
-        if not _is_registered_string(
-            failure_return, state_references | {"stop"}
-        ):
+        if not _is_registered_string(failure_return, state_references | {"stop"}):
             _add(
                 findings,
                 "AGC-WORKFLOW-STATE-REFERENCE",
@@ -3483,9 +3473,7 @@ def _validate_workflow_states(
                 "unknown-state-failure-return",
                 source,
             )
-        if not _is_registered_string(
-            handoff_target, state_references | {"complete"}
-        ):
+        if not _is_registered_string(handoff_target, state_references | {"complete"}):
             _add(
                 findings,
                 "AGC-WORKFLOW-STATE-REFERENCE",
@@ -4276,9 +4264,7 @@ def _validate_provider_contract(
                 )
                 or ()
             )
-            expected_workflow_states = EXPECTED_HARNESS_LOOP_STATES.get(
-                str(event_id)
-            )
+            expected_workflow_states = EXPECTED_HARNESS_LOOP_STATES.get(str(event_id))
             if (
                 expected_workflow_states is None
                 or workflow_states != expected_workflow_states
@@ -4780,9 +4766,7 @@ def validate_retirement_ledger(
         )
         return False
 
-    records = _as_sequence(
-        document.get("records"), path, "records", findings, source
-    )
+    records = _as_sequence(document.get("records"), path, "records", findings, source)
     superseded_models = {
         (str(raw.get("provider")), str(raw.get("former_id")))
         for raw in records or ()
@@ -4825,9 +4809,7 @@ def validate_retirement_ledger(
                 record_id, path, f"{location}.record_id", findings, source
             ):
                 record_ids.append(str(record_id))
-            _check_string(
-                former_id, path, f"{location}.former_id", findings, source
-            )
+            _check_string(former_id, path, f"{location}.former_id", findings, source)
             replacements = (
                 _check_string_list(
                     entry.get("replacement_ids"),
@@ -4894,9 +4876,7 @@ def validate_retirement_ledger(
                     if (
                         isinstance(approved_value, tuple)
                         and isinstance(observed_value, Sequence)
-                        and not isinstance(
-                            observed_value, (str, bytes, bytearray)
-                        )
+                        and not isinstance(observed_value, (str, bytes, bytearray))
                     ):
                         observed_value = tuple(observed_value)
                     if observed_value != approved_value:
@@ -4969,9 +4949,7 @@ def validate_retirement_ledger(
             elif kind in {"deprecated-model", "superseded-model"}:
                 provider = entry.get("provider")
                 if not _is_registered_string(provider, active_providers):
-                    _unknown_reference(
-                        findings, path, f"{location}.provider", source
-                    )
+                    _unknown_reference(findings, path, f"{location}.provider", source)
                 if record_id != f"model:{provider}:{former_id}":
                     _add(
                         findings,
@@ -5073,13 +5051,19 @@ def validate_retirement_ledger(
                         source,
                     )
                 for replacement in replacements:
-                    if not isinstance(provider, str) or (
-                        provider,
-                        replacement,
-                    ) not in active_models and (
-                        provider,
-                        replacement,
-                    ) not in superseded_models:
+                    if (
+                        not isinstance(provider, str)
+                        or (
+                            provider,
+                            replacement,
+                        )
+                        not in active_models
+                        and (
+                            provider,
+                            replacement,
+                        )
+                        not in superseded_models
+                    ):
                         _unknown_reference(
                             findings, path, f"{location}.replacement_ids", source
                         )
@@ -6630,8 +6614,7 @@ def _validate_provider_native_surfaces(
             )
         if provider == "gemini" and (
             not isinstance(config, Mapping)
-            or config.get("modelConfigs")
-            != {"overrides": expected_gemini_overrides}
+            or config.get("modelConfigs") != {"overrides": expected_gemini_overrides}
         ):
             _provider_native_schema_finding(
                 findings,
