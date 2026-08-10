@@ -18,10 +18,10 @@ thoroughly and the other only where it rehearses a documented procedure.
 
 Verification asks whether a product conforms to the requirements placed on it.
 Validation asks whether the product satisfies its intended use. A conformance
-checker cannot answer the second question. Fifteen of the repository's sixteen
-required-quality job roots are conformance checkers. Two of them also execute
-procedure rehearsals, and those rehearsals are the only executable validation
-the repository has.
+checker cannot answer the second question. All sixteen required-quality job
+roots are conformance checkers, and two of the sixteen additionally execute
+procedure rehearsals. Those rehearsals are the only executable validation the
+repository has.
 
 This reference establishes the standards distinction from retrievable primary
 sources, maps it onto the repository's actual checking surface, and names the
@@ -193,7 +193,7 @@ The repository operates a large, layered conformance apparatus and almost no
 executable validation. Separating the two explains several things the pack
 records but does not name. All counts derived at `4122cecf`.
 
-### The gate population is verification, with one exception
+### The gate population is verification, with two exceptions
 
 `.github/workflow-contract.yml` registers 16 job roots, all carrying
 `classification: required-quality`. The counts behind that registry —
@@ -201,14 +201,14 @@ records but does not name. All counts derived at `4122cecf`.
 owned by [automation, pipeline, and workflow](./automation-pipeline-workflow.md)
 and are not re-derived here.
 
-Fifteen of the sixteen roots ask a conformance question. One does not, and it
-is the most interesting row in the table.
+Every root asks a conformance question. Two of them also reach a procedure
+rehearsal, and those two are the interesting rows in the table.
 
 | Job root                          | Question it answers                                    | Class                   |
 | --------------------------------- | ------------------------------------------------------ | ----------------------- |
 | `docs-traceability`               | Does each document link to its declared parent?        | Verification            |
 | `docs-implementation-alignment`   | Does documentation match tracked implementation?       | Verification            |
-| `repo-contracts`                  | Does the tree satisfy the repository contract set?     | Verification            |
+| `repo-contracts`                  | Contract conformance, and one procedure rehearsal      | **Mixed**               |
 | `agent-output-eval-fixture-gate`  | Is the fixture catalog self-consistent and calibrated? | Verification            |
 | `supply-chain-fixture-policy`     | Five subjects, two of which rehearse a procedure       | **Mixed**               |
 | `dependency-vulnerability-audit`  | Do sandbox dependencies carry known advisories?        | Verification (arguable) |
@@ -311,11 +311,12 @@ Three files break the pattern. `test_postgres_logical_upgrade_rehearsal.py` and
 `test_sample_service_delivery_rehearsal.py` execute a documented operational
 procedure in a temporary sandbox. `test_run_agent_precommit_all_files.sh` does
 the same for the controlled all-files wrapper, driving it end to end in a
-temporary repository against a fake pre-commit binary.
+temporary linked git worktree of the real repository against a fake pre-commit
+binary.
 
 **The boundary here is editorial and worth stating.** Mechanism does not draw
 it: `test_compose_core_readiness.py`, `test_grype_db_seed.py`, and
-`test_supply_chain_policy.py` also use `subprocess` and `tempfile`, and three of
+`test_supply_chain_policy.py` also use `subprocess` and `tempfile`, and two of
 the four `tests/fixtures/` directories belong to non-rehearsal modules. The
 distinction used here is what the test exercises. A rehearsal drives a procedure
 that exists as a documented operational artifact — an upgrade runbook, a
@@ -329,8 +330,9 @@ Rehearsing a documented procedure end to end asks whether the procedure actually
 works. That is a validation question, and these three are where the repository
 asks it. The first two run inside the `supply-chain-fixture-policy` gate. The
 third is registered in no gate node — `leaf.ci-precommit-regressions` runs the
-sibling `test_run_ci_precommit.sh` — so it executes only when a Stage 04
-procedure invokes it by hand.
+sibling `test_run_ci_precommit.sh` — but it is enforced all the same, because
+`check-repo-contracts.sh` executes it directly and that script is the entrypoint
+of `leaf.repo-contracts`.
 
 ### The rest of validation is procedural
 
@@ -361,7 +363,7 @@ matches broad industry usage and is not a defect, but it obscures the gap above.
 
 | Location                       | Label                               | What it actually invokes                                                                                                                                                                                                                                                                                                        |
 | ------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `approval-boundaries.md:32-44` | Column header "Required Validation" | Five conformance checkers — `validate-docker-compose.sh`, `check-repo-contracts.sh`, `validate-harness.sh`, `check-doc-traceability.sh`, and `check-agent-governance-contract.py --mode contract` — plus non-script entries: "Doc link integrity", "+ workflow security review", and "plus provider renderer check when active" |
+| `approval-boundaries.md:32-44` | Column header "Required Validation" | Five conformance checkers — `validate-docker-compose.sh`, `check-repo-contracts.sh`, `validate-harness.sh`, `check-doc-traceability.sh`, and `check-agent-governance-contract.py --mode contract` — plus non-script qualifiers such as "Doc link integrity", "+ all-profile run", "--preflight (path-only)", "+ workflow security review", "plus provider renderer check when active", and "template loop" |
 | `scripts/validation/`          | Directory name                      | 41 tracked files (21 shell, 19 Python, 1 JSON contract), predominantly conformance                                                                                                                                                                                                                                              |
 | `tests/validation/`            | Directory name                      | 26 tests, 23 of which target verification machinery                                                                                                                                                                                                                                                                             |
 
@@ -398,8 +400,9 @@ read as "the right thing was built."
 ## Application Notes for This Workspace
 
 - When citing gate coverage, say which question the gate answers. "16 required
-  quality jobs" is a verification claim for fifteen of them and a mixed claim
-  for `supply-chain-fixture-policy`.
+  quality jobs" is a verification claim for fourteen of them and a mixed claim
+  for `supply-chain-fixture-policy` and `repo-contracts`, each of which also
+  reaches a procedure rehearsal.
 - Do not describe `ci.agent-output-eval-fixture-gate` as validation or as
   quality judgement. In CI it checks its own fixture catalog and regression
   calibration and scores no agent output; state that wherever it is cited.

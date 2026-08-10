@@ -177,9 +177,10 @@ Permission flow is monotonic downward: "Permissions can only be maintained or
 reduced — not elevated — throughout the chain."
 
 A comparison against composite actions, condensed from GitHub's own comparison
-table. This is a selection, not a reproduction: GitHub's table carries eight
-rows, four of which are omitted here, and the Runner row below is drawn from the
-adjacent "Specifying runners" prose rather than from the table itself.
+table. This is a selection, not a reproduction: GitHub's table carries nine
+data rows, four of which are omitted here, and the Runner row below is drawn
+from the adjacent "Specifying runners" prose rather than from the table
+itself.
 
 | Dimension   | Reusable workflow                    | Composite action                        | Source         |
 | ----------- | ------------------------------------ | --------------------------------------- | -------------- |
@@ -396,17 +397,28 @@ no GitHub support commitment, and are themselves supply-chain dependencies that
 should be SHA-pinned like any other action.
 
 **zizmor** is security-focused. At **v1.29.0**, published 2026-08-01, it
-implements **41 audit rules** covering the hazards described earlier in this
+implements **40 audit rules** covering the hazards described earlier in this
 document: `template-injection` for the substitution-order problem,
 `cache-poisoning` for the unsigned-cache channel, `dangerous-triggers` for
 `pull_request_target`, `excessive-permissions` for the token model,
 `unpinned-uses` and `impostor-commit` for pinning, `secrets-inherit` and
 `overprovisioned-secrets` for reusable-workflow secret flow, and
-`self-hosted-runner` for the public-repository runner warning. It groups
-findings by three personas: `regular` (default, core security findings),
+`self-hosted-runner` for the public-repository runner warning.
+
+That count is version-pinned deliberately. `https://docs.zizmor.sh/audits/`
+currently renders 41 audits because it tracks unreleased main; the extra entry,
+`self-repository`, does not exist at the v1.29.0 tag. Counting the audit
+sources at the tag gives 41 `.rs` files under `crates/zizmor/src/audit/`, one of
+which is `mod.rs`, so 40. This is the same rendered-page-versus-release trap the
+Application Notes warn about for action versions, and it caught this document
+once.
+
+zizmor sorts findings by three personas: `regular` (default, core security findings),
 `pedantic` (adds quality-focused audits with limited security impact), and
 `auditor` (the most comprehensive, flagging findings that include probable
-false positives, so the highest noise tolerance).
+false positives, so the highest noise tolerance). The personas are sensitivity
+thresholds that decide which findings are emitted, not a grouping applied to a
+fixed finding set.
 
 **actionlint** is correctness-focused. At **v1.7.12**, published 2026-03-30,
 MIT licensed, it validates workflow syntax, type-checks `${{ }}` expressions,
@@ -421,7 +433,9 @@ written and should not.
 
 This repository runs both, by different routes. zizmor is the `zizmor` job in
 `ci-quality.yml`, uploading SARIF; there is no zizmor configuration file, so the
-default persona applies. actionlint runs as a pre-commit hook:
+default persona applies. Note the version gap: the figures above are for
+v1.29.0, while `ci_gate_adapters.py:1010` pins `zizmor==1.28.0`, so the audit
+count in force here is whatever 1.28.0 shipped rather than the 40 above. actionlint runs as a pre-commit hook:
 `.pre-commit-config.yaml` pins `rhysd/actionlint` at `rev: v1.7.12` scoped to
 `^\.github/workflows/.*\.(yml|yaml)$`, and `run-ci-precommit.sh` — the
 entrypoint of `leaf.pre-commit` under the required-quality root
