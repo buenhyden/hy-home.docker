@@ -216,7 +216,24 @@ status: active
 - Tooling is a secondary constraint. A scripted bulk `git mv` with frontmatter
   rewriting is refused by the local permission classifier, while per-subject
   moves are permitted, so the mechanical half is workable at subject
-  granularity. The blocking half is the metadata policy, not the moves.
+  granularity.
+- **A full trial of one subject proved 6A cannot run standalone, and why.** With
+  the relaxed profiles in place, `ops-0007-llm-wiki-maintenance` was migrated
+  end to end: three moves, frontmatter authored from the ledger and git dates,
+  `parent_ids` preserved as `policy-0007` because `policy` is an allowed parent
+  type for `runbook`, and all sixteen inbound referrers repaired. Metadata
+  validation passed for the three migrated files.
+- The repository still regressed. Failing subjects went from 11 to 12 with a new
+  `Spec document traceability contract`, Markdown findings rose from 2 to 6, and
+  changed-document metadata violations went from 0 to 8. The cause is
+  structural: repairing an inbound link inside a Stage 04 document makes that
+  document a changed-document validation target, and `docs/04.execution/` still
+  resolves to profile `unsupported`. Moving Stage 05 therefore drags unmigrated
+  Stage 04 into validation.
+- That is precisely why the breakdown separates Task 13, "Repair Cross-Links,
+  Indexes, Memory, and Generated Evidence", from Tasks 6A through 6D. The moves
+  and the link repair cannot land in the same change while Stage 04 is
+  mid-migration. The trial was reverted; the tree is clean at `5e39cdf7`.
 - The target is `docs/05.operations/<domain>/ops-<id>-<subject>/` with the
   parallel roots removed. Current shape: 101 distinct subject paths across 260
   files (88 guides, 87 policies, 85 runbooks), which the ledger consolidates
