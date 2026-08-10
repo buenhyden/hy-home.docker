@@ -38,8 +38,11 @@ regression도 tracked validation owner에 연결되어 있습니다. 외부 capa
 intake는 source date가 2026-07-26인 9개 merge/defer 결정으로 고정됩니다.
 
 QA/CI tracked source는 7개 workflow와 23개 job, `ci-quality.yml`의 16개 quality
-job, 24개 pre-commit hook, 기본 24개와
-harness 22개의 script-backed local QA step입니다. Controlled all-files wrapper는
+job, 24개 pre-commit hook, 그리고 typed gate registry가 소유하는 3개 local
+profile의 script-backed QA step입니다. profile별 step 수는 기본
+(`local-script-backed`) 34개, `local-all-profiles` 35개, `local-harness` 32개이며
+`python3 scripts/validation/run-ci-gate.py --profile <p> --list`로 재현합니다.
+Controlled all-files wrapper는
 별도 승인된 최종 evidence gate이므로 이 step 수에 포함하지 않습니다. 이
 구현 정합화에 따라 canonical audit 분포는 161개 criterion 중 Implemented 77,
 Partial 60, Missing 13, Not Applicable 2, Needs Revalidation 9입니다.
@@ -91,8 +94,10 @@ Codex binding은 provider 한계가 아니라 repository-side gap으로 재분�
 Claude는 31개, Gemini는 `Notification`을 포함한 11개 event를 문서화합니다.
 Gemini subagent 파일 schema에는 reasoning/thinking 필드가 없으므로 기존
 per-agent effort 서술을 settings/API 수준으로 정정했습니다. Local QA runner의
-script-backed step은 helper 두 개가 누락되어 있었고, runner source에서 다시
-계산한 결과 기본 24개와 harness 22개입니다. `actions/attest@v4` 권한 집합과
+script-backed step은 helper 두 개가 누락되어 있었고, 당시 runner source에서 다시
+계산한 결과는 기본 24개와 harness 22개였습니다. 이 두 수치는 runner가 typed gate
+registry로 재구성된 뒤 2026-08-10 재검증에서 34/32로 대체되었으며, 아래 2026-08-10
+문단이 현재 값을 기록합니다. `actions/attest@v4` 권한 집합과
 immutable release attestation을 반영했고, redirect된 provider URL 4개를
 교체했습니다. ISO catalog(403), Diataxis(429), editorconfig spec(429),
 OpenAI practical guide(403), pytest fixtures(429)는 이번 재검증에서 다시 열지
