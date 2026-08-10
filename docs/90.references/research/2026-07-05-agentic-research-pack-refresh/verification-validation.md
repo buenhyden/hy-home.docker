@@ -62,10 +62,13 @@ proposes no renaming and requires no change to any existing surface.
 
 ## Definitions / Facts
 
-The authoritative formulation retrieved for this document is the abstract of
+Two retrievable sources anchor this document: the abstract of **IEEE Std 1012**
+for the process framing, and SEVOCAB for the normative term definitions.
+
 **IEEE Std 1012**, _IEEE Standard for System, Software, and Hardware
-Verification and Validation_. Only that abstract was read; the full text is
-paywalled. It defines V&V processes as assessing whether "development products of a given activity conform to the
+Verification and Validation_, frames V&V as a pair of lifecycle processes. Only
+its abstract was read; the full text is paywalled. It defines V&V processes as
+assessing whether "development products of a given activity conform to the
 requirements of that activity and whether the product satisfies its intended use
 and user needs."
 
@@ -90,6 +93,30 @@ Three further facts from the same source:
   not a synonym for either V or V.
 - The retrieved edition, 1012-2016, is marked superseded by 1012-2024. The 2024
   text was not retrieved and nothing here is attributed to it.
+
+**The ISO/IEC/IEEE definitions are available, despite the paywall.** The full
+standards are paid, but SEVOCAB — the ISO/IEC/IEEE Systems and Software
+Engineering Vocabulary published by the IEEE Computer Society — carries their
+normative definitions with clause numbers, and a search for `verification`
+returns 44 results including both halves:
+
+- **verification** — "confirmation, through the provision of objective
+  evidence, that specified requirements have been fulfilled", attributed to
+  ISO/IEC 25000:2014 §4.43, ISO/IEC/IEEE 12207:2026 §3.1.72, and
+  ISO/IEC/IEEE 15288:2023.
+- **validation** — "confirmation, through the provision of objective evidence,
+  that the requirements for a specific intended use or application have been
+  fulfilled", attributed to ISO/IEC 25000:2014 §4.41 and
+  ISO/IEC/IEEE 12207:2026.
+
+These are sharper than the IEEE 1012 abstract. Both halves share the identical
+frame, "confirmation, through the provision of objective evidence, that … have
+been fulfilled", and differ in exactly one clause: **specified requirements**
+versus **the requirements for a specific intended use or application**. The
+distinction is therefore not about rigor, timing, or technique. It is entirely
+about which requirement set is the reference. The same result set also carries
+an IEEE 1012-2024 §3.1 entry, so the superseding edition is partially reachable
+here even though its full text was not retrieved.
 
 **On the popular formulation.** The widely repeated phrasing "verification: are
 we building the product right; validation: are we building the right product" is
@@ -442,9 +469,10 @@ read as "the right thing was built."
   destination and currently defines neither term. Renaming
   `scripts/validation/` or `tests/validation/` is not proposed; the churn would
   exceed the benefit.
-- ISO/IEC/IEEE 12207 and 15288 process definitions could not be retrieved and
-  should be obtained through an institutional subscription before any normative
-  claim is made from them.
+- The ISO/IEC/IEEE 12207 and 15288 *definitions* are now quoted from SEVOCAB,
+  but their **process requirements** remain unread behind the paywall. Any
+  normative claim about what those processes require, as opposed to what the
+  terms mean, still needs an institutional subscription.
 
 ## Source Rules
 
@@ -453,11 +481,14 @@ read as "the right thing was built."
   authoritative for what it states; the full text is paywalled and was not read.
   1012-2024 supersedes it and was not retrieved, so no claim is attributed to
   the 2024 edition.
-- ISO/IEC/IEEE 12207, 15288, and the paywalled 29119 parts were **not
-  retrieved**. `iso.org` returned HTTP 403 to automated retrieval, and the ISO
-  publicly-available-standards page now redirects to the paid webstores. No
-  definition from those standards is quoted or paraphrased here. This matches
-  the ISO catalog 403 already recorded in this pack on 2026-08-07.
+- The full texts of ISO/IEC/IEEE 12207, 15288, and the paywalled 29119 parts
+  were **not retrieved**. `iso.org` returned HTTP 403 to automated retrieval,
+  and the ISO publicly-available-standards page now redirects to the paid
+  webstores, matching the ISO catalog 403 already recorded in this pack on
+  2026-08-07. Their **definitions** of verification and validation are quoted
+  above, but only through SEVOCAB, which reproduces them with clause
+  attribution; the surrounding process requirements remain unread and nothing
+  beyond those definitions is attributed to either standard.
 - The ISO/IEC/IEEE 29119 part list comes from the standard series' own
   maintenance site, not from ISO, and is treated as descriptive rather than
   normative.
@@ -472,6 +503,7 @@ read as "the right thing was built."
 
 ## Sources
 
+- [SEVOCAB, ISO/IEC/IEEE Systems and Software Engineering Vocabulary](https://pascal.computer.org/sev_display/index.action) - normative verification and validation definitions with clause attribution to ISO/IEC/IEEE 12207:2026, 15288:2023, ISO/IEC 25000:2014, and IEEE 1012-2024; searched for `verification`, 44 results
 - [IEEE Std 1012-2016](https://standards.ieee.org/ieee/1012/5609/) - System, Software, and Hardware Verification and Validation; scope, integrity levels, technique enumeration; abstract only, full text paywalled, superseded by 1012-2024
 - [ISO/IEC/IEEE 29119 series site](https://www.softwaretestingstandard.org/) - eight-part structure of the software testing standard series including Part 11 for AI-based systems
 - [SWEBOK Guide v4.0](https://www.computer.org/education/bodies-of-knowledge/software-engineering) - IEEE Computer Society, 2024, freely accessible; 18 knowledge areas separating Software Testing from Software Quality
