@@ -94,6 +94,39 @@ status: active
   detached worktree at base commit `4122cecf` produced 342 output lines against
   this branch's 342, differing only in the two elapsed-time lines. Regression
   delta from this branch is zero.
+- **`AGC-CONTRACT-UNSAFE-FILE` root cause is identified.** The contract file is
+  sound. `ci_gate_runner.py` hands child gates the repository root as
+  `/proc/self/fd/<fd>`, which is a symlink, while
+  `agent_governance_contract.py` opens the root with `O_DIRECTORY|O_NOFOLLOW`.
+  That combination raises `ENOTDIR`, which `:1322` converts to
+  `_UnsafeRootFileError` and `:1370` reports as `AGC-CONTRACT-UNSAFE-FILE`.
+  Demonstrated by calling the same reader on the same file with two roots: the
+  real path reads 20,614 bytes, the descriptor root raises. Two independently
+  sound hardening measures, root TOCTOU protection and symlink-escape
+  confinement, are mutually incompatible. Nothing was changed;
+  `scripts/validation/` is a guarded surface and the remedy is a design choice.
+- **Both new leaves went through independent review and both returned REQUEST
+  CHANGES.** Every finding was reproduced before acting.
+- The V&V leaf's thesis was falsified by its own evidence: it claimed no tracked
+  gate answers a validation question while identifying procedure rehearsal as
+  the closest thing to validation, and `leaf.supply-chain-fixture-policy`
+  executes two rehearsals among five unittest modules. Also corrected: the
+  frontend gate runs no tests, the eval gate scores no agent output but checks
+  its own fixture catalog, `tests/validation/` holds 26 tests not 24, and the
+  "Required Validation" column carries five checkers plus a non-script entry.
+- The GitHub Actions leaf claimed permission elevation was confined to one job.
+  Five jobs across four workflows hold a write scope. The sibling states the
+  one-job fact correctly but scopes it to `ci-quality.yml`; this leaf dropped
+  the scoping into a repository-wide table. Also corrected: a declared
+  Third-Party Workflow Static Analysis section had never been written despite
+  two cited sources, three quotations were paraphrases inside quotation marks,
+  and the `actions/checkout` safer default was scoped to v7 when it was
+  backported to v2 through v6 on 2026-07-20.
+- One reviewer claim was itself wrong and was corrected rather than copied:
+  `test_run_agent_precommit_all_files.sh` is registered in no gate node.
+- The `review_cycle` migration is complete for every document that can be
+  completed. Fifteen documents outside the research pack carried the key;
+  twelve audit-pack documents are migrated and their violations fall to zero.
 
 ## Blockers and unverified facts
 
@@ -106,10 +139,19 @@ status: active
   `docs/03.specs/136-sdlc-taxonomy-convergence/` whose directory name does not
   match the declared `spec-*` glob either. No Task record was invented; this
   needs a decision.
-- Thirteen documents outside the research pack still carry `review_cycle` and
-  will fail the same rule when next touched. That is migration debt owned by the
-  SDLC taxonomy work; the reference profile is still marked
-  `disposition: migration candidate`.
+- Three operations documents still carry `review_cycle` and are deliberately
+  untouched: one policy and two runbooks under `docs/05.operations/`. Their
+  profiles resolve to `unsupported` because the policy and runbook globs are
+  `docs/05.operations/*/ops-*/policy.md` and `.../runbook.md` while the files
+  sit at `docs/05.operations/policies/00-workspace/` and
+  `docs/05.operations/runbooks/**`. Removing the key would not make them valid,
+  and two of them state no cadence in the body, so removal would lose
+  information. They need the path migration first. This is the same root cause
+  as the Stage 04 Task location problem: `review_cycle` was a symptom, not the
+  disease.
+- `implementation-overview.md` in the audit pack retains two
+  `invalid-parent-type` findings, one for a spec that moved to archive and one
+  for a task that resolves to `unsupported`. Both predate this work.
 - `agent-catalog.yaml` declares `evaluation.input_roots` pointing at two
   directories that do not exist. Both gates pass, so this is a dangling
   declaration rather than a broken gate.
@@ -158,10 +200,14 @@ status: active
   preserved at `.worktrees/agentic-research-vv-gha`. Integration was deliberately
   not offered because the QA suite is not green, and it is not green on the base
   branch either.
-- Two follow-ups are worth more than they cost and neither belongs to this work:
-  investigate `AGC-CONTRACT-UNSAFE-FILE`, and make
-  `provider_surface_renderer.py` print the exception message it currently
-  discards.
+- Three follow-ups are worth more than they cost and none belongs to this work:
+  decide how to reconcile the descriptor root with the `O_NOFOLLOW` reader,
+  make `provider_surface_renderer.py` print the exception message it currently
+  discards, and migrate the operations document paths so the remaining three
+  `review_cycle` documents can be completed.
+- Independent review of both new leaves is done and its findings are applied.
+  Neither reviewer re-reviewed the corrections, so a confirming pass is still
+  open if one is wanted.
 - Keep the result on the local branch and do not push. Decide where a Stage 04
   Task record for this work belongs before treating it as complete, since the
   governance verification gate expects one and none can currently be written
