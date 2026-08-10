@@ -14,14 +14,14 @@ The words "verification" and "validation" appear in every leaf of this pack and
 in most of the repository's tracked policy, but the distinction between them is
 stated nowhere. That absence is not cosmetic. Under the standards vocabulary the
 two words name different questions, and this repository answers one of them
-thoroughly and the other in exactly one place.
+thoroughly and the other only where it rehearses a documented procedure.
 
 Verification asks whether a product conforms to the requirements placed on it.
 Validation asks whether the product satisfies its intended use. A conformance
 checker cannot answer the second question. Fifteen of the repository's sixteen
-required-quality job roots are conformance checkers; the sixteenth also runs two
-procedure rehearsals, and those are the only executable validation the
-repository has.
+required-quality job roots are conformance checkers. Two of them also execute
+procedure rehearsals, and those rehearsals are the only executable validation
+the repository has.
 
 This reference establishes the standards distinction from retrievable primary
 sources, maps it onto the repository's actual checking surface, and names the
@@ -139,8 +139,9 @@ running it and techniques that observe it running.
 
 This matters for the repository because its checking surface is overwhelmingly
 static. Schema conformance, contract conformance, link integrity, and metadata
-validation all examine artifacts without running a product — and there is no
-product to run.
+validation all examine artifacts without running a product. There is barely a
+product to run: the exceptions are the sandboxed procedure rehearsals described
+below.
 
 ## V&V Under Non-Determinism
 
@@ -222,10 +223,12 @@ is the most interesting row in the table.
 | `storybook-coverage`              | Does component coverage satisfy the contract?          | Verification            |
 | `zizmor`                          | Do workflows satisfy workflow security rules?          | Verification (static)   |
 
-Every technique in this table except the two rehearsals is static in the IEEE
-1012 sense: it examines an artifact without running a product. The `zizmor` row
-is marked static only because static analysis is its named category, not
-because the others execute anything.
+Most of these roots are static in the IEEE 1012 sense: they examine artifacts
+without running a product. Several do execute tools — `compose-validation`,
+`frontend-quality`, `pre-commit`, and `dependency-vulnerability-audit` all
+invoke external programs — but they run those tools _over_ artifacts rather than
+exercising a product under test. The `zizmor` row is marked static only because
+static analysis is its named category.
 
 **The `supply-chain-fixture-policy` exception.** This root expands to three
 leaves. Two are `--check` invocations on deterministic supply-chain policy and
@@ -245,9 +248,17 @@ required-quality CI gate on every push and pull request to `main`. Dependency
 policy is one subject of five, and describing this root as a dependency check
 hides the rehearsals entirely.
 
-That single root is the repository's only executable validation. Fifteen of
-sixteen roots ask a conformance question; the sixteenth asks a conformance
-question about three subjects and a does-it-actually-work question about two.
+`supply-chain-fixture-policy` is not the only root that reaches a rehearsal.
+`ci.repo-contracts` does too, by a route no gate node declares:
+`leaf.repo-contracts` has entrypoint `scripts/validation/check-repo-contracts.sh`,
+and that script runs `bash tests/validation/test_run_agent_precommit_all_files.sh`
+directly at line 2817, asserting a `passed=N failed=0` line. Both files are mode
+`100755`, so the guarded branch is always taken.
+
+Two roots therefore carry executable validation and fourteen do not. Neither of
+the two is named for it, and one of them reaches its rehearsal through a shell
+script rather than through the typed registry — so the gate graph alone does not
+reveal the repository's validation coverage.
 
 The remaining seven of the repository's 23 jobs sit in non-gating workflows —
 `document-corpus-lifecycle`, `changelog`, `issue-greeting`,
@@ -268,8 +279,8 @@ output at all. `scripts/validation/ci_gate_adapters.py` runs
 then asserts that stdout contains `fixtures_check=pass` and
 `regressions_check=pass`. Those two modes check that the fixture catalog is
 internally consistent and that its 16 synthetic regressions still classify as
-calibrated. Scoring a real output requires `--fixture` and `--classification`
-arguments on stdin, which no gate supplies.
+calibrated. Scoring a real output requires `--fixture`, an
+`--output`/`--stdin` source, and `--classification`, which no gate supplies.
 
 So the gate verifies the measuring instrument, not any measurement. It is two
 levels removed from validation: it does not judge whether output served the
@@ -297,11 +308,22 @@ Verification is therefore recursive here: the apparatus that checks the
 repository is itself checked. That is a genuine strength and is unusual.
 
 Three files break the pattern. `test_postgres_logical_upgrade_rehearsal.py` and
-`test_sample_service_delivery_rehearsal.py` execute a procedure in a temporary
-sandbox through `subprocess` and `tempfile`, against fixtures under
-`tests/fixtures/`. `test_run_agent_precommit_all_files.sh` does the same for the
-controlled all-files wrapper, driving it end to end in a temporary repository
-against a fake pre-commit binary.
+`test_sample_service_delivery_rehearsal.py` execute a documented operational
+procedure in a temporary sandbox. `test_run_agent_precommit_all_files.sh` does
+the same for the controlled all-files wrapper, driving it end to end in a
+temporary repository against a fake pre-commit binary.
+
+**The boundary here is editorial and worth stating.** Mechanism does not draw
+it: `test_compose_core_readiness.py`, `test_grype_db_seed.py`, and
+`test_supply_chain_policy.py` also use `subprocess` and `tempfile`, and three of
+the four `tests/fixtures/` directories belong to non-rehearsal modules. The
+distinction used here is what the test exercises. A rehearsal drives a procedure
+that exists as a documented operational artifact — an upgrade runbook, a
+delivery flow, an approved wrapper invocation — and asks whether following it
+produces the intended outcome. The others drive a script to check that the
+script honours its contract. Both execute; only the first has a documented
+procedure as its reference point. A reader who rejects that distinction should
+read the count as five rather than three.
 
 Rehearsing a documented procedure end to end asks whether the procedure actually
 works. That is a validation question, and these three are where the repository
@@ -314,7 +336,7 @@ procedure invokes it by hand.
 
 Outside the three rehearsals, validation lives in human approval gates:
 
-- `docs/00.agent-governance/rules/approval-boundaries.md:46-62` defines 11 Hard
+- `docs/00.agent-governance/rules/approval-boundaries.md:46-62` defines 10 Hard
   Stops requiring recorded user approval.
 - `docs/00.agent-governance/rules/task-checklists.md:103` opens a Completion
   Checklist asking whether completion criteria for the affected stage are
@@ -337,11 +359,11 @@ everything else — whether a capability meets a need — is human judgement.
 The repository uses "validation" where the standards say verification. This
 matches broad industry usage and is not a defect, but it obscures the gap above.
 
-| Location                       | Label                               | What it actually invokes                                                                                                                                                                                                                            |
-| ------------------------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `approval-boundaries.md:32-44` | Column header "Required Validation" | Five conformance checkers — `validate-docker-compose.sh`, `check-repo-contracts.sh`, `validate-harness.sh`, `check-doc-traceability.sh`, and `check-agent-governance-contract.py --mode contract` — plus one non-script entry, "Doc link integrity" |
-| `scripts/validation/`          | Directory name                      | 41 tracked files (21 shell, 19 Python, 1 JSON contract), predominantly conformance                                                                                                                                                                  |
-| `tests/validation/`            | Directory name                      | 26 tests, 23 of which target verification machinery                                                                                                                                                                                                 |
+| Location                       | Label                               | What it actually invokes                                                                                                                                                                                                                                                                                                        |
+| ------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `approval-boundaries.md:32-44` | Column header "Required Validation" | Five conformance checkers — `validate-docker-compose.sh`, `check-repo-contracts.sh`, `validate-harness.sh`, `check-doc-traceability.sh`, and `check-agent-governance-contract.py --mode contract` — plus non-script entries: "Doc link integrity", "+ workflow security review", and "plus provider renderer check when active" |
+| `scripts/validation/`          | Directory name                      | 41 tracked files (21 shell, 19 Python, 1 JSON contract), predominantly conformance                                                                                                                                                                                                                                              |
+| `tests/validation/`            | Directory name                      | 26 tests, 23 of which target verification machinery                                                                                                                                                                                                                                                                             |
 
 A reader taking these labels at face value concludes the repository has a
 validation programme. It has a verification programme with human validation
@@ -397,21 +419,20 @@ read as "the right thing was built."
 
 ## Potential Follow-up / Gap
 
-- Exactly one job root carries executable validation, and it is not named for
-  it. `supply-chain-fixture-policy` runs two procedure rehearsals among five
-  unittest modules, so the repository's only enforced validation is invisible
-  from the gate name.
+- Two job roots carry executable validation and neither is named for it.
+  `supply-chain-fixture-policy` runs two procedure rehearsals among five
+  unittest modules, and `repo-contracts` reaches a third through its entrypoint
+  script. The repository's enforced validation is invisible from both gate
+  names.
 - The `agent-output-eval` gate does not score agent output in CI; it checks its
   own fixture catalog and regression calibration. The pack cites it as the
   repository's evaluation loop without stating this.
-- Three rehearsals exist and only two are gated.
-  `test_run_agent_precommit_all_files.sh` is registered in no gate node; the
-  registered `leaf.ci-precommit-regressions` runs the sibling
-  `test_run_ci_precommit.sh` instead. The all-files wrapper rehearsal is invoked
-  only by Stage 04 plan procedures, so the repository's most safety-relevant
-  rehearsal is the one nothing enforces. Whether the rehearsal pattern should
-  extend to other runbooks, and whether this one should be gated, are Stage 03
-  questions rather than Stage 90 ones.
+- All three rehearsals are enforced, but only two are visible in the gate
+  graph. `test_run_agent_precommit_all_files.sh` appears in no gate node; it is
+  executed by `check-repo-contracts.sh`, which is itself the entrypoint of
+  `leaf.repo-contracts`. Registry-only reasoning about coverage will therefore
+  understate it. Whether the rehearsal pattern should extend to other runbooks
+  is a Stage 03 question rather than a Stage 90 one.
 - A glossary entry distinguishing the two terms would remove the ambiguity
   without renaming any directory.
   `docs/90.references/data/glossary/stable-reference-terms.md` is the existing

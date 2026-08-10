@@ -405,7 +405,8 @@ document: `template-injection` for the substitution-order problem,
 `self-hosted-runner` for the public-repository runner warning. It groups
 findings by three personas: `regular` (default, core security findings),
 `pedantic` (adds quality-focused audits with limited security impact), and
-`auditor` (adds non-mandatory recommendations, highest noise tolerance).
+`auditor` (the most comprehensive, flagging findings that include probable
+false positives, so the highest noise tolerance).
 
 **actionlint** is correctness-focused. At **v1.7.12**, published 2026-03-30,
 MIT licensed, it validates workflow syntax, type-checks `${{ }}` expressions,
@@ -418,9 +419,19 @@ The two are complementary rather than alternative: actionlint catches workflows
 that will not behave as written, zizmor catches workflows that behave exactly as
 written and should not.
 
-This repository runs zizmor as the `zizmor` job in `ci-quality.yml`, uploading
-SARIF, and carries no `actionlint` invocation and no zizmor configuration file,
-so the default persona applies.
+This repository runs both, by different routes. zizmor is the `zizmor` job in
+`ci-quality.yml`, uploading SARIF; there is no zizmor configuration file, so the
+default persona applies. actionlint runs as a pre-commit hook:
+`.pre-commit-config.yaml` pins `rhysd/actionlint` at `rev: v1.7.12` scoped to
+`^\.github/workflows/.*\.(yml|yaml)$`, and `run-ci-precommit.sh` — the
+entrypoint of `leaf.pre-commit` under the required-quality root
+`ci.pre-commit` — executes `pre-commit run --all-files` skipping only
+`eslint-nextjs`. Both therefore run on every push and pull request to `main`.
+
+Worth noting against the pinning guidance above: the actionlint hook is pinned
+by tag, not by commit SHA. `.pre-commit-config.yaml` is a different mechanism
+from `uses:` and GitHub's immutable-release argument does not transfer to it
+unchanged, but the mutable-tag exposure is the same in kind.
 
 ## Platform Capability Adoption in This Repository
 
