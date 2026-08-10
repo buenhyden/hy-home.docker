@@ -14,12 +14,14 @@ The words "verification" and "validation" appear in every leaf of this pack and
 in most of the repository's tracked policy, but the distinction between them is
 stated nowhere. That absence is not cosmetic. Under the standards vocabulary the
 two words name different questions, and this repository answers one of them
-thoroughly while answering the other only through human judgement.
+thoroughly and the other in exactly one place.
 
 Verification asks whether a product conforms to the requirements placed on it.
 Validation asks whether the product satisfies its intended use. A conformance
-checker cannot answer the second question, and the repository's entire tracked
-gate population consists of conformance checkers.
+checker cannot answer the second question. Fifteen of the repository's sixteen
+required-quality job roots are conformance checkers; the sixteenth also runs two
+procedure rehearsals, and those are the only executable validation the
+repository has.
 
 This reference establishes the standards distinction from retrievable primary
 sources, maps it onto the repository's actual checking surface, and names the
@@ -60,10 +62,10 @@ proposes no renaming and requires no change to any existing surface.
 
 ## Definitions / Facts
 
-The authoritative formulation retrieved for this document is the scope
-statement of **IEEE Std 1012**, _IEEE Standard for System, Software, and
-Hardware Verification and Validation_. Its abstract defines V&V processes as
-assessing whether "development products of a given activity conform to the
+The authoritative formulation retrieved for this document is the abstract of
+**IEEE Std 1012**, _IEEE Standard for System, Software, and Hardware
+Verification and Validation_. Only that abstract was read; the full text is
+paywalled. It defines V&V processes as assessing whether "development products of a given activity conform to the
 requirements of that activity and whether the product satisfies its intended use
 and user needs."
 
@@ -104,8 +106,8 @@ maintenance site lists eight parts: Part 1 Concepts and Definitions, Part 2 Test
 Processes, Part 3 Test Documentation, Part 4 Test Techniques, Part 5 Keyword
 Driven Testing, Part 6 Guidelines for Agile Projects, Part 11 Testing of
 AI-Based Systems, and Part 13 Testing of Biometric Systems. Parts 1 and 11 are
-noted as freely available from ISO; the remainder are paywalled and were not
-retrieved.
+described by that site as freely available from ISO; the remainder are paywalled
+and were not retrieved.
 
 The existence of a separate testing standard alongside a separate V&V standard
 is itself the point. Testing is a technique that can serve either question
@@ -150,8 +152,10 @@ Two standards bodies have begun addressing this, and neither was retrievable in
 full for this document:
 
 - **ISO/IEC/IEEE 29119-11**, Testing of AI-Based Systems, exists as a named part
-  of the testing series and is listed as freely available from ISO. Its content
-  was not retrieved.
+  of the testing series. The same maintenance site describes it as freely
+  available from ISO. That is a claim about ISO's distribution policy which could
+  not be confirmed against ISO itself, because `iso.org` refused automated
+  retrieval. Its content was not retrieved either.
 - **NIST AI 100-1**, the AI Risk Management Framework, was released
   2023-01-26 and is organized around four functions: Govern, Map, Measure, and
   Manage. The retrieved page describes the framework as "intended for voluntary
@@ -173,7 +177,9 @@ secondary one. FDA's _General Principles of Software Validation_, final guidance
 Version 2.0 issued in 2002 and superseding a 1997 draft, governs validation of
 medical device software and of software used to design, develop, or manufacture
 devices. The document itself returned HTTP 404 on direct retrieval and is
-recorded here from search metadata only; no definition from it is quoted.
+recorded here from search-result metadata only. The version, year, supersession,
+and scope above come from that metadata and were not read in the document
+itself; no content from its body is asserted.
 
 The contrast worth carrying is directional, not detailed: where a commercial
 repository can treat validation as a review step, a regulated one must produce
@@ -186,34 +192,67 @@ The repository operates a large, layered conformance apparatus and almost no
 executable validation. Separating the two explains several things the pack
 records but does not name. All counts derived at `4122cecf`.
 
-### The gate population is entirely verification
+### The gate population is verification, with one exception
 
-`.github/workflow-contract.yml` registers `schema_version: 2` with 7 workflows,
-23 jobs, 80 gate nodes, 16 job roots, 3 profile roots, and 8 pinned actions. All
-16 job roots carry `classification: required-quality`, and every one asks a
-conformance question.
+`.github/workflow-contract.yml` registers 16 job roots, all carrying
+`classification: required-quality`. The counts behind that registry —
+7 workflows, 23 jobs, 80 gate nodes, 3 profile roots, 8 pinned actions — are
+owned by [automation, pipeline, and workflow](./automation-pipeline-workflow.md)
+and are not re-derived here.
 
-| Job root                          | Question it answers                                 | Class                 |
-| --------------------------------- | --------------------------------------------------- | --------------------- |
-| `docs-traceability`               | Does each document link to its declared parent?     | Verification          |
-| `docs-implementation-alignment`   | Does documentation match tracked implementation?    | Verification          |
-| `repo-contracts`                  | Does the tree satisfy the repository contract set?  | Verification          |
-| `agent-output-eval-fixture-gate`  | Does agent output match the governed fixture?       | Verification          |
-| `supply-chain-fixture-policy`     | Does the dependency set satisfy declared policy?    | Verification          |
-| `dependency-vulnerability-audit`  | Do dependencies carry known advisories?             | Verification          |
-| `git-flow-contract`               | Does branch and commit shape satisfy the contract?  | Verification          |
-| `compose-validation`              | Does Compose resolve under the core profile?        | Verification          |
-| `compose-all-profiles-validation` | Does Compose resolve under every profile?           | Verification          |
-| `infrastructure-hardening`        | Do service definitions meet the hardening baseline? | Verification          |
-| `template-security-baseline`      | Do templates meet the security baseline?            | Verification          |
-| `quickwin-baseline`               | Does the tree hold the declared baseline set?       | Verification          |
-| `pre-commit`                      | Do staged files satisfy hook contracts?             | Verification          |
-| `frontend-quality`                | Does the sandbox satisfy lint/type/test contracts?  | Verification          |
-| `storybook-coverage`              | Does component coverage satisfy the contract?       | Verification          |
-| `zizmor`                          | Do workflows satisfy workflow security rules?       | Verification (static) |
+Fifteen of the sixteen roots ask a conformance question. One does not, and it
+is the most interesting row in the table.
 
-Not one job asks whether a delivered capability satisfies a stated need. In IEEE
-1012 vocabulary this is a verification battery, not a V&V programme.
+| Job root                          | Question it answers                                    | Class                   |
+| --------------------------------- | ------------------------------------------------------ | ----------------------- |
+| `docs-traceability`               | Does each document link to its declared parent?        | Verification            |
+| `docs-implementation-alignment`   | Does documentation match tracked implementation?       | Verification            |
+| `repo-contracts`                  | Does the tree satisfy the repository contract set?     | Verification            |
+| `agent-output-eval-fixture-gate`  | Is the fixture catalog self-consistent and calibrated? | Verification            |
+| `supply-chain-fixture-policy`     | Five subjects, two of which rehearse a procedure       | **Mixed**               |
+| `dependency-vulnerability-audit`  | Do sandbox dependencies carry known advisories?        | Verification (arguable) |
+| `git-flow-contract`               | Does branch and commit shape satisfy the contract?     | Verification            |
+| `compose-validation`              | Does Compose resolve under the core profile?           | Verification            |
+| `compose-all-profiles-validation` | Does Compose resolve under every profile?              | Verification            |
+| `infrastructure-hardening`        | Do service definitions meet the hardening baseline?    | Verification            |
+| `template-security-baseline`      | Do templates meet the security baseline?               | Verification            |
+| `quickwin-baseline`               | Does the tree hold the declared baseline set?          | Verification            |
+| `pre-commit`                      | Do staged files satisfy hook contracts?                | Verification            |
+| `frontend-quality`                | Does the sandbox lint, typecheck, and build?           | Verification            |
+| `storybook-coverage`              | Does component coverage satisfy the contract?          | Verification            |
+| `zizmor`                          | Do workflows satisfy workflow security rules?          | Verification (static)   |
+
+Every technique in this table except the two rehearsals is static in the IEEE
+1012 sense: it examines an artifact without running a product. The `zizmor` row
+is marked static only because static analysis is its named category, not
+because the others execute anything.
+
+**The `supply-chain-fixture-policy` exception.** This root expands to three
+leaves. Two are `--check` invocations on deterministic supply-chain policy and
+summary freshness. The third runs five unittest modules:
+
+```
+run-unittest tests.validation.test_compose_core_readiness
+             tests.validation.test_postgres_logical_upgrade_rehearsal
+             tests.validation.test_grype_db_seed
+             tests.validation.test_supply_chain_policy
+             tests.validation.test_sample_service_delivery_rehearsal -v
+```
+
+Two of those five are the procedure rehearsals described below. So the
+rehearsals are not merely present in the tree — they execute inside a
+required-quality CI gate on every push and pull request to `main`. Dependency
+policy is one subject of five, and describing this root as a dependency check
+hides the rehearsals entirely.
+
+That single root is the repository's only executable validation. Fifteen of
+sixteen roots ask a conformance question; the sixteenth asks a conformance
+question about three subjects and a does-it-actually-work question about two.
+
+The remaining seven of the repository's 23 jobs sit in non-gating workflows —
+`document-corpus-lifecycle`, `changelog`, `issue-greeting`,
+`pull-request-greeting`, `triage`, `stale`, and `drift-gate`. None asks a
+validation question either.
 
 ### The eval gate is verification, not validation
 
@@ -223,10 +262,19 @@ quality. The implementation contradicts that reading.
 `scripts/validation/agent_output_eval.py:2` declares itself
 `"""Deterministic, model-free semantic evaluation for governed agent outputs."""`
 
-Model-free and deterministic means the gate compares output against a governed
-fixture expectation. It answers whether output conforms to a specified shape.
-It cannot answer whether the output served the requester, because no judgement
-step exists. The gate covers 11 fixtures and 16 synthetic regressions.
+The gate is weaker than even that docstring suggests. In CI it scores no agent
+output at all. `scripts/validation/ci_gate_adapters.py` runs
+`run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` and
+then asserts that stdout contains `fixtures_check=pass` and
+`regressions_check=pass`. Those two modes check that the fixture catalog is
+internally consistent and that its 16 synthetic regressions still classify as
+calibrated. Scoring a real output requires `--fixture` and `--classification`
+arguments on stdin, which no gate supplies.
+
+So the gate verifies the measuring instrument, not any measurement. It is two
+levels removed from validation: it does not judge whether output served the
+requester, and it does not even score output. It covers 11 fixtures and 16
+synthetic regressions.
 
 This is a deliberate and defensible choice: a deterministic gate is
 reproducible, cheap, and cannot drift with a model version. Naming it correctly
@@ -235,8 +283,10 @@ loop, which invites a stronger claim than the implementation supports.
 
 ### The dynamic test suite verifies the verifiers
 
-`tests/validation/` holds 24 `test_*.py` files and is the entire tracked test
-tree. Every file targets a validator or contract engine rather than a product:
+`tests/validation/` is the entire tracked test tree and holds 26 tests: 24
+`test_*.py` files plus two shell tests, `test_run_ci_precommit.sh` and
+`test_run_agent_precommit_all_files.sh`. Nearly every one targets a validator or
+contract engine rather than a product:
 `test_document_metadata.py` targets the metadata validator, `test_ci_gate_runner.py`
 and `test_ci_gate_contract.py` target the gate engine,
 `test_agent_governance_contract.py` targets the governance checker,
@@ -246,16 +296,23 @@ and `test_ci_gate_contract.py` target the gate engine,
 Verification is therefore recursive here: the apparatus that checks the
 repository is itself checked. That is a genuine strength and is unusual.
 
-Two files break the pattern. `test_postgres_logical_upgrade_rehearsal.py` and
+Three files break the pattern. `test_postgres_logical_upgrade_rehearsal.py` and
 `test_sample_service_delivery_rehearsal.py` execute a procedure in a temporary
 sandbox through `subprocess` and `tempfile`, against fixtures under
-`tests/fixtures/`. Rehearsing a documented procedure end to end asks whether the
-procedure actually works, which is the closest the tracked surface comes to
-validation.
+`tests/fixtures/`. `test_run_agent_precommit_all_files.sh` does the same for the
+controlled all-files wrapper, driving it end to end in a temporary repository
+against a fake pre-commit binary.
 
-### Validation is procedural, not executable
+Rehearsing a documented procedure end to end asks whether the procedure actually
+works. That is a validation question, and these three are where the repository
+asks it. The first two run inside the `supply-chain-fixture-policy` gate. The
+third is registered in no gate node — `leaf.ci-precommit-regressions` runs the
+sibling `test_run_ci_precommit.sh` — so it executes only when a Stage 04
+procedure invokes it by hand.
 
-What validation exists lives in human approval gates:
+### The rest of validation is procedural
+
+Outside the three rehearsals, validation lives in human approval gates:
 
 - `docs/00.agent-governance/rules/approval-boundaries.md:46-62` defines 11 Hard
   Stops requiring recorded user approval.
@@ -265,21 +322,26 @@ What validation exists lives in human approval gates:
 - `docs/00.agent-governance/rules/postflight-checklist.md` groups per-layer
   gates a human confirms.
 
-These ask the validation question. None is executable, so none produces a
-machine-checkable result. The repository's validation evidence is a recorded
-human judgement in a Stage 04 Task — legitimate evidence, but a different class
-from a gate exit code, and it should not be counted alongside gate results.
+These ask the validation question about scope and need, which no rehearsal can
+answer: a procedure can work perfectly and still be the wrong procedure. None of
+them is executable, so each produces a recorded human judgement rather than a
+gate exit code. That is legitimate evidence of a different class, and it should
+not be counted alongside gate results.
+
+The accurate summary is therefore narrower than "validation is not executable":
+procedure validation is executable and enforced for three procedures, and
+everything else — whether a capability meets a need — is human judgement.
 
 ### Terminology drift in tracked labels
 
 The repository uses "validation" where the standards say verification. This
 matches broad industry usage and is not a defect, but it obscures the gap above.
 
-| Location                       | Label                               | What it actually invokes                                                                                                               |
-| ------------------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `approval-boundaries.md:32-44` | Column header "Required Validation" | `validate-docker-compose.sh`, `check-repo-contracts.sh`, `validate-harness.sh`, `check-doc-traceability.sh` — all conformance checkers |
-| `scripts/validation/`          | Directory name                      | 41 tracked files (21 shell, 19 Python, 1 JSON contract), predominantly conformance                                                     |
-| `tests/validation/`            | Directory name                      | 24 tests, all targeting verification machinery                                                                                         |
+| Location                       | Label                               | What it actually invokes                                                                                                                                                                                                                            |
+| ------------------------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `approval-boundaries.md:32-44` | Column header "Required Validation" | Five conformance checkers — `validate-docker-compose.sh`, `check-repo-contracts.sh`, `validate-harness.sh`, `check-doc-traceability.sh`, and `check-agent-governance-contract.py --mode contract` — plus one non-script entry, "Doc link integrity" |
+| `scripts/validation/`          | Directory name                      | 41 tracked files (21 shell, 19 Python, 1 JSON contract), predominantly conformance                                                                                                                                                                  |
+| `tests/validation/`            | Directory name                      | 26 tests, 23 of which target verification machinery                                                                                                                                                                                                 |
 
 A reader taking these labels at face value concludes the repository has a
 validation programme. It has a verification programme with human validation
@@ -293,8 +355,19 @@ grammars, deterministic evaluation. That is a coherent and rigorous strategy, an
 it is why the eval gate is model-free.
 
 The cost is that no tracked mechanism answers whether a governed output was
-useful. Every executable gate answers the specification question. The need
-question is answered only by a human at an approval boundary, and only in prose.
+useful. The one executable exception, procedure rehearsal, answers a narrow
+validation question — does this documented procedure work — and does not
+generalise to agent output. The broader need question is answered only by a
+human at an approval boundary, and only in prose.
+
+One gate resists even the specification framing. `dependency-vulnerability-audit`
+runs `npm audit --audit-level=high` against a single sandbox project, and its
+reference point is an external, mutable advisory database rather than a
+repository-authored specification. Its verdict can flip with no change to any
+tracked artifact — precisely the drift property the model-free eval gate was
+designed to avoid. It is classified as verification here because it checks a
+declared dependency set against a stated threshold, but the classification is
+genuinely arguable.
 
 This is not an argument for adding a model-judged gate. It is an argument for
 labelling the existing evidence accurately, so that "all gates green" is never
@@ -303,10 +376,16 @@ read as "the right thing was built."
 ## Application Notes for This Workspace
 
 - When citing gate coverage, say which question the gate answers. "16 required
-  quality jobs" is a verification claim.
+  quality jobs" is a verification claim for fifteen of them and a mixed claim
+  for `supply-chain-fixture-policy`.
 - Do not describe `ci.agent-output-eval-fixture-gate` as validation or as
-  quality judgement. State that it is deterministic and model-free wherever it
-  is cited.
+  quality judgement. In CI it checks its own fixture catalog and regression
+  calibration and scores no agent output; state that wherever it is cited.
+- Do not infer a gate's subject from its name. `supply-chain-fixture-policy`
+  runs two procedure rehearsals among five unittest modules, and
+  `leaf.ci-precommit-regressions` runs `test_run_ci_precommit.sh` rather than
+  the similarly named all-files wrapper rehearsal. Resolve the gate through
+  `.github/workflow-contract.yml` before describing it.
 - Treat approval-gate evidence and gate-exit evidence as separate classes, as
   the pack already does for tracked intent versus remote enforcement.
 - Read the "Required Validation" column in `approval-boundaries.md` as required
@@ -318,17 +397,27 @@ read as "the right thing was built."
 
 ## Potential Follow-up / Gap
 
-- No tracked gate answers a validation question. Recording this explicitly would
-  keep the pack's evaluation-loop language from being read as validation
-  coverage.
-- The `agent-output-eval` gate's model-free property is a deliberate constraint
-  that the pack does not state where it cites the gate.
-- The two rehearsal tests are the only executable procedure validation. Whether
-  that pattern should extend to other runbooks is a Stage 03 question, not a
-  Stage 90 one.
+- Exactly one job root carries executable validation, and it is not named for
+  it. `supply-chain-fixture-policy` runs two procedure rehearsals among five
+  unittest modules, so the repository's only enforced validation is invisible
+  from the gate name.
+- The `agent-output-eval` gate does not score agent output in CI; it checks its
+  own fixture catalog and regression calibration. The pack cites it as the
+  repository's evaluation loop without stating this.
+- Three rehearsals exist and only two are gated.
+  `test_run_agent_precommit_all_files.sh` is registered in no gate node; the
+  registered `leaf.ci-precommit-regressions` runs the sibling
+  `test_run_ci_precommit.sh` instead. The all-files wrapper rehearsal is invoked
+  only by Stage 04 plan procedures, so the repository's most safety-relevant
+  rehearsal is the one nothing enforces. Whether the rehearsal pattern should
+  extend to other runbooks, and whether this one should be gated, are Stage 03
+  questions rather than Stage 90 ones.
 - A glossary entry distinguishing the two terms would remove the ambiguity
-  without renaming any directory. Renaming `scripts/validation/` or
-  `tests/validation/` is not proposed; the churn would exceed the benefit.
+  without renaming any directory.
+  `docs/90.references/data/glossary/stable-reference-terms.md` is the existing
+  destination and currently defines neither term. Renaming
+  `scripts/validation/` or `tests/validation/` is not proposed; the churn would
+  exceed the benefit.
 - ISO/IEC/IEEE 12207 and 15288 process definitions could not be retrieved and
   should be obtained through an institutional subscription before any normative
   claim is made from them.
@@ -348,7 +437,8 @@ read as "the right thing was built."
 - The ISO/IEC/IEEE 29119 part list comes from the standard series' own
   maintenance site, not from ISO, and is treated as descriptive rather than
   normative.
-- The FDA guidance is recorded from search metadata only; direct retrieval
+- The FDA guidance is recorded from search-result metadata only, including its
+  version, year, and scope; direct retrieval
   returned HTTP 404 and no definition from it is quoted.
 - The "building the right product" mnemonic is recorded as an unattributed
   common formulation because its origin was not verified.
