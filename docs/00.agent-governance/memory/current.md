@@ -7,9 +7,9 @@ status: active
 
 ## Current objective
 
-- Current task: none. This work has **no valid Stage 04 Task record**, because
-  the repository is mid-migration and no conformant location exists for a new
-  one. See Blockers.
+- Current task: none, and correctly so. Under the incoming spec 136 contract a
+  Task is a role inside an active capability and this work is a Stage 90
+  reference extension. See Blockers.
 - Extended the canonical agentic research pack at
   `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` with
   two leaves and revalidated its workspace-derived figures. The originating
@@ -39,16 +39,20 @@ status: active
 - Branch `codex/agentic-research-vv-gha` in worktree
   `.worktrees/agentic-research-vv-gha`, based on `4122cecf`.
 - Covered: two new pack leaves, five sibling leaves cross-linked, the pack
-  README, the scope matrix, the two generated LLM Wiki artifacts, and the
-  frontmatter of all 19 pre-existing pack leaves.
+  README, the scope matrix, the two generated LLM Wiki artifacts, the
+  frontmatter of all 19 pre-existing pack leaves and of the 12 audit-pack
+  documents, and two guarded-surface code fixes in
+  `scripts/validation/agent_governance_contract.py` and
+  `scripts/operations/provider_surface_renderer.py`.
 - Push, PR, merge, remote mutation, Stage 00 policy body changes, runtime and
   Compose changes, full external source re-verification, and the controlled
   all-files wrapper all stay outside this work.
-- Independent review has not happened.
+- Two rounds of independent review happened: one per new leaf, then a
+  confirming review of the corrections. All findings are applied.
 
 ## Verified state
 
-- Verified commit: `4fde01f8`
+- Verified commit: `a37c08f3`
 - Verified at: `2026-08-10T14:05:00+09:00`
 - Coverage analysis found 23 of the requested topics already covered across 20
   files and 6,934 lines. The single confirmed gap was Verification and
@@ -81,7 +85,7 @@ status: active
   profile does not declare it, no script, workflow, test, or config reads it,
   and every affected leaf states its cadence in its Maintenance section, so the
   removal is information-preserving. The diff is 19 identical deletions.
-- Six logical-unit commits span `26906ee6` to `4fde01f8`.
+- Fifteen logical-unit commits span `26906ee6` to `a37c08f3`.
 - Three stale prunable worktrees under `/tmp` were removed with
   `git worktree prune`.
 - The local QA runner was executed end to end for the first time in a while,
@@ -103,8 +107,12 @@ status: active
   Demonstrated by calling the same reader on the same file with two roots: the
   real path reads 20,614 bytes, the descriptor root raises. Two independently
   sound hardening measures, root TOCTOU protection and symlink-escape
-  confinement, are mutually incompatible. Nothing was changed;
-  `scripts/validation/` is a guarded surface and the remedy is a design choice.
+  confinement, were mutually incompatible. **Fixed here.** The root is a
+  caller-supplied trust anchor rather than a component discovered during the
+  walk, so it is now opened without `O_NOFOLLOW` while every component below it
+  keeps it. A symlinked leaf and a symlinked intermediate directory are both
+  still rejected, and the governance suite reports 158 tests with 24 failures
+  both at base and here.
 - **Both new leaves went through independent review and both returned REQUEST
   CHANGES.** Every finding was reproduced before acting.
 - The V&V leaf's thesis was falsified by its own evidence: it claimed no tracked
@@ -122,23 +130,43 @@ status: active
   two cited sources, three quotations were paraphrases inside quotation marks,
   and the `actions/checkout` safer default was scoped to v7 when it was
   backported to v2 through v6 on 2026-07-20.
-- One reviewer claim was itself wrong and was corrected rather than copied:
-  `test_run_agent_precommit_all_files.sh` is registered in no gate node.
+- A confirming review then caught two defects the corrections introduced. The
+  V&V leaf had swung from "no gate answers a validation question" to "exactly
+  one job root carries executable validation"; two do. It had also concluded
+  that `test_run_agent_precommit_all_files.sh` is unenforced. The narrow premise
+  was right — no gate node names it — but `check-repo-contracts.sh:2817` runs it
+  and that script is the entrypoint of `leaf.repo-contracts`, so all three
+  rehearsals run in CI. The GitHub Actions leaf's newly written static-analysis
+  section wrongly said the repository carries no `actionlint` invocation;
+  `.pre-commit-config.yaml` pins it at `rev: v1.7.12` and `leaf.pre-commit` runs
+  it. Registry-only reasoning about gate coverage understates it; the entrypoint
+  script has to be followed.
 - The `review_cycle` migration is complete for every document that can be
   completed. Fifteen documents outside the research pack carried the key;
   twelve audit-pack documents are migrated and their violations fall to zero.
 
 ## Blockers and unverified facts
 
-- **No conformant Stage 04 Task location exists.** The task profile in
-  `docs/99.templates/support/document-metadata-profiles.yaml` now globs
-  `docs/03.specs/spec-*/task.md`, and every existing file under
-  `docs/04.execution/tasks/` resolves to profile `unsupported` and fails
-  validation. The new location would require creating a numbered Spec, which
-  this work deliberately avoided, and the one existing co-located task sits in
-  `docs/03.specs/136-sdlc-taxonomy-convergence/` whose directory name does not
-  match the declared `spec-*` glob either. No Task record was invented; this
-  needs a decision.
+- **This work correctly has no Stage 04 Task record, and that is now a settled
+  conclusion rather than an open blocker.** Spec 136 defines Task as a role
+  inside an active capability directory that "exists only while an approved
+  change is active", with atomic completion that writes implemented behavior
+  back into `spec.md`. This work is a Stage 90 reference extension: it has no
+  active capability, its historical governing spec 123 is archived under
+  `docs/98.archive/03.specs/`, and minting a capability spec to host a Task
+  would misrepresent documentation research as a capability change. The
+  evidence therefore lives in the commit ledger and this record, which is where
+  the incoming contract puts it. The old location is separately dead: every
+  file under `docs/04.execution/tasks/` resolves to profile `unsupported`, and
+  spec 136 requires `docs/04.execution` to be absent at completion.
+- **The operations path migration is blocked on spec 136 and must not be done
+  piecemeal.** Spec 136 §Operations Contract specifies
+  `docs/05.operations/<domain>/ops-<id>-<subject>/{guide,policy,runbook}.md`
+  and removes the parallel roots. Those roots still hold 260 files (88 guides,
+  87 policies, 85 runbooks) and **no `ops-*` subject exists yet**, so the
+  migration is specified but unstarted. Moving the three `review_cycle`
+  documents alone would invent the first `ops-<id>` numbers without the
+  registry and leave a tree matching neither contract.
 - Three operations documents still carry `review_cycle` and are deliberately
   untouched: one policy and two runbooks under `docs/05.operations/`. Their
   profiles resolve to `unsupported` because the policy and runbook globs are
@@ -200,14 +228,15 @@ status: active
   preserved at `.worktrees/agentic-research-vv-gha`. Integration was deliberately
   not offered because the QA suite is not green, and it is not green on the base
   branch either.
-- Three follow-ups are worth more than they cost and none belongs to this work:
-  decide how to reconcile the descriptor root with the `O_NOFOLLOW` reader,
-  make `provider_surface_renderer.py` print the exception message it currently
-  discards, and migrate the operations document paths so the remaining three
-  `review_cycle` documents can be completed.
-- Independent review of both new leaves is done and its findings are applied.
-  Neither reviewer re-reviewed the corrections, so a confirming pass is still
-  open if one is wanted.
+- Two code fixes landed here and both are verified: the confined reader now
+  accepts a symlinked root while still rejecting symlinked components, and the
+  provider surface renderer emits the normalized contract error message it
+  previously discarded. Neither changed any test outcome against base.
+- Both new leaves went through independent review, then a confirming review of
+  the corrections, and all findings from both rounds are applied. The confirming
+  review has not itself been re-reviewed.
+- The one remaining follow-up that belongs elsewhere is spec 136's Stage 05
+  operations migration, which unblocks the last three `review_cycle` documents.
 - Keep the result on the local branch and do not push. Decide where a Stage 04
   Task record for this work belongs before treating it as complete, since the
   governance verification gate expects one and none can currently be written
