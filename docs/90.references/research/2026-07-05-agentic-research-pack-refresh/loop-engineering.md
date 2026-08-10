@@ -291,4 +291,5 @@ from the tracked tree on the same date.
 - [harness engineering](./harness-engineering.md)
 - [workspace baseline](./workspace-baseline.md)
 - [provider implementation comparison](./provider-implementation-comparison.md)
+- [verification and validation](./verification-validation.md)
 - [agentic rule](../../../00.agent-governance/rules/agentic.md)

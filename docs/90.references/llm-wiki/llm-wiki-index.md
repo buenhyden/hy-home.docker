@@ -260,6 +260,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 | Path | Role |
 | --- | --- |
+| [docs/01.requirements/README.md](../../01.requirements/README.md) | folder index |
 | [docs/01.requirements/prd-001-gateway.md](../../01.requirements/prd-001-gateway.md) | Markdown reference |
 | [docs/01.requirements/prd-002-auth.md](../../01.requirements/prd-002-auth.md) | Markdown reference |
 | [docs/01.requirements/prd-003-security.md](../../01.requirements/prd-003-security.md) | Markdown reference |
@@ -285,8 +286,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/01.requirements/prd-023-standardize-infra-net.md](../../01.requirements/prd-023-standardize-infra-net.md) | Markdown reference |
 | [docs/01.requirements/prd-024-agent-governance-standardization.md](../../01.requirements/prd-024-agent-governance-standardization.md) | Markdown reference |
 | [docs/01.requirements/prd-025-operational-readiness-closure.md](../../01.requirements/prd-025-operational-readiness-closure.md) | Markdown reference |
-| [docs/01.requirements/README.md](../../01.requirements/README.md) | folder index |
 | [docs/02.architecture/README.md](../../02.architecture/README.md) | folder index |
+| [docs/02.architecture/decisions/README.md](../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md) | Markdown reference |
 | [docs/02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md](../../02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md) | Markdown reference |
 | [docs/02.architecture/decisions/adr-0003-vault-as-secrets-manager.md](../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md) | Markdown reference |
@@ -312,7 +313,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/adr-0026-standardize-infra-net.md](../../02.architecture/decisions/adr-0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md](../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md) | Markdown reference |
 | [docs/02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md](../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md) | Markdown reference |
-| [docs/02.architecture/decisions/README.md](../../02.architecture/decisions/README.md) | folder index |
+| [docs/02.architecture/descriptions/README.md](../../02.architecture/descriptions/README.md) | folder index |
 | [docs/02.architecture/descriptions/ad-0001-gateway-architecture.md](../../02.architecture/descriptions/ad-0001-gateway-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/ad-0002-auth-architecture.md](../../02.architecture/descriptions/ad-0002-auth-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/ad-0003-security-architecture.md](../../02.architecture/descriptions/ad-0003-security-architecture.md) | Markdown reference |
@@ -338,7 +339,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../02.architecture/descriptions/ad-0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md](../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md) | Markdown reference |
 | [docs/02.architecture/descriptions/ad-0028-operational-readiness-closure.md](../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md) | Markdown reference |
-| [docs/02.architecture/descriptions/README.md](../../02.architecture/descriptions/README.md) | folder index |
 | [docs/03.specs/001-gateway/README.md](../../03.specs/001-gateway/README.md) | folder index |
 | [docs/03.specs/001-gateway/spec.md](../../03.specs/001-gateway/spec.md) | Markdown reference |
 | [docs/03.specs/002-auth/README.md](../../03.specs/002-auth/README.md) | folder index |
@@ -390,6 +390,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/134-agent-governance-canonical-convergence/spec.md](../../03.specs/134-agent-governance-canonical-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/135-target-surface-delta-convergence/spec.md](../../03.specs/135-target-surface-delta-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/136-sdlc-taxonomy-convergence/spec.md](../../03.specs/136-sdlc-taxonomy-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/136-sdlc-taxonomy-convergence/task.md](../../03.specs/136-sdlc-taxonomy-convergence/task.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -980,6 +981,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md](../research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md](../research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md](../research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md](../research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md](../research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md) | Markdown reference |
@@ -991,6 +993,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md](../research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md](../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md) | Markdown reference |
+| [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md](../research/2026-07-05-agentic-research-pack-refresh/verification-validation.md) | Markdown reference |
 | [docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](../research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/README.md](../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../99.templates/README.md) | folder index |
@@ -1012,7 +1015,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/common/README.md](../../99.templates/templates/common/README.md) | folder index |
 | [docs/99.templates/templates/common/archive.template.md](../../99.templates/templates/common/archive.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/audit.template.md](../../99.templates/templates/common/audit.template.md) | Markdown reference |
-| [docs/99.templates/templates/common/content-archive.template.md](../../99.templates/templates/common/content-archive.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/readme.template.md](../../99.templates/templates/common/readme.template.md) | Markdown reference |
 | [docs/99.templates/templates/common/reference.template.md](../../99.templates/templates/common/reference.template.md) | Markdown reference |
 | [docs/99.templates/templates/governance/README.md](../../99.templates/templates/governance/README.md) | folder index |
@@ -1027,10 +1029,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/templates/operations/runbook.template.md](../../99.templates/templates/operations/runbook.template.md) | Markdown reference |
 | [docs/99.templates/templates/sdlc/README.md](../../99.templates/templates/sdlc/README.md) | folder index |
 | [docs/99.templates/templates/sdlc/adr.template.md](../../99.templates/templates/sdlc/adr.template.md) | Markdown reference |
-| [docs/99.templates/templates/sdlc/ard.template.md](../../99.templates/templates/sdlc/ard.template.md) | Markdown reference |
+| [docs/99.templates/templates/sdlc/architecture-description.template.md](../../99.templates/templates/sdlc/architecture-description.template.md) | Markdown reference |
+| [docs/99.templates/templates/sdlc/interface-requirement.template.md](../../99.templates/templates/sdlc/interface-requirement.template.md) | Markdown reference |
 | [docs/99.templates/templates/sdlc/plan.template.md](../../99.templates/templates/sdlc/plan.template.md) | Markdown reference |
 | [docs/99.templates/templates/sdlc/prd.template.md](../../99.templates/templates/sdlc/prd.template.md) | Markdown reference |
 | [docs/99.templates/templates/sdlc/spec.template.md](../../99.templates/templates/sdlc/spec.template.md) | Markdown reference |
+| [docs/99.templates/templates/sdlc/srs.template.md](../../99.templates/templates/sdlc/srs.template.md) | Markdown reference |
 | [docs/99.templates/templates/sdlc/task.template.md](../../99.templates/templates/sdlc/task.template.md) | Markdown reference |
 | [docs/99.templates/templates/spec-contracts/README.md](../../99.templates/templates/spec-contracts/README.md) | folder index |
 | [docs/99.templates/templates/spec-contracts/agent-design.template.md](../../99.templates/templates/spec-contracts/agent-design.template.md) | Markdown reference |
@@ -1311,6 +1315,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
+| [scripts/manifest.yaml](../../../scripts/manifest.yaml) | YAML config |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-compose-profile-service-coverage.sh](../../../scripts/operations/generate-compose-profile-service-coverage.sh) | script |
 | [scripts/operations/generate-tech-stack-version-provenance.sh](../../../scripts/operations/generate-tech-stack-version-provenance.sh) | script |
@@ -1447,6 +1452,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/05.operations/policies/07-workflow/airbyte.md](../../98.archive/05.operations/policies/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md](../../98.archive/05.operations/runbooks/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/README.md](../../98.archive/README.md) | folder index |
+| [docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md](../../98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 
 ## Sources
 

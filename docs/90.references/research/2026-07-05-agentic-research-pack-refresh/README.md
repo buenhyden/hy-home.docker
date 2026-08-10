@@ -105,6 +105,22 @@ OpenAI practical guide(403), pytest fixtures(429)는 이번 재검증에서 다�
 model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 변경하지 않습니다.
 
+2026-08-10에는 leaf 두 개를 추가하고 workspace-derived 수치만 재검증했습니다.
+외부 source는 2026-08-07 검증 결과를 유지하며, 새 leaf가 인용하는 자료만
+2026-08-10에 새로 조회했습니다. 확인된 사실은 다음과 같습니다. 검사한 13개
+수치 중 11개가 그대로 일치했고, 두 가지가 drift했습니다. Local QA runner가
+typed gate registry로 재구성되면서 profile이 2개에서 3개로 늘고 step 수는
+기본 34개, `local-all-profiles` 35개, `local-harness` 32개가 되었습니다.
+그리고 semantic-event binding 21개 중 20개만 `configured-not-executed`이며
+Codex `session-end` binding은 `unsupported`이므로, "21개 전부"라는 서술
+4곳을 정정했습니다. 새 leaf 두 개는 Verification/Validation 구분과 GitHub
+Actions 플랫폼 메커니즘을 다루며, 후자는 automation leaf의 tracked inventory를
+복제하지 않고 미채택 capability 대조만 추가합니다. 이 확장은 2026-07-10 model
+cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를 변경하지
+않습니다. ISO 표준 본문은 `iso.org`가 자동 조회에 403을 반환하고 공개 표준
+페이지가 유료 webstore로 이전되어 이번에도 열지 못했으므로, 해당 정의는
+인용하지 않고 미재검증으로 남겼습니다.
+
 ## Audience
 
 이 README의 주요 독자:
@@ -131,6 +147,8 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 - Diataxis 기준 문서 architecture와 quadrant 커버리지 분석
 - LLM-WIKI 체계, 생성 방식, freshness/safety 계약 분석
 - 단기/장기/영역별 memory tier와 promotion/retention/eviction 분석
+- Verification과 Validation의 표준 구분과 저장소 gate/test/승인 표면 분류
+- GitHub Actions 플랫폼 메커니즘과 미채택 capability 대조
 
 ### Out of Scope
 
@@ -158,6 +176,8 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 ├── docker-compose-infrastructure.md      # Docker Compose and infrastructure harness analysis
 ├── security-governance.md                # Secure SDLC and security governance analysis
 ├── automation-pipeline-workflow.md       # Automation, pipeline, and workflow analysis
+├── github-actions-platform.md            # GitHub Actions platform mechanics and unadopted capability
+├── verification-validation.md            # V&V standards distinction and repository gate classification
 ├── ai-agent-catalogs.md                  # External agent catalog vs curated catalog analysis
 ├── documentation-architecture.md         # Diataxis quadrant mapping and mode-mixing findings
 ├── llm-wiki-system.md                    # LLM Wiki structure, generation, and enforcement
@@ -181,6 +201,8 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 - [docker-compose-infrastructure.md](./docker-compose-infrastructure.md) - Docker Compose, infrastructure harness, profiles, networks, secrets, validation, hardening 분석
 - [security-governance.md](./security-governance.md) - secure SDLC reference frameworks, workflow security, secret boundaries, approval evidence 분석
 - [automation-pipeline-workflow.md](./automation-pipeline-workflow.md) - automation, pipeline, workflow loop, provider hook, Release/deployment, local/CI/remote enforcement boundary 분석
+- [github-actions-platform.md](./github-actions-platform.md) - GITHUB_TOKEN scope 모델, OIDC claim/subject, reusable workflow와 composite action, script injection과 privileged trigger, SHA pinning/attestation/immutable release, concurrency·matrix·cache, ruleset read-back 경계, runner 모델, 그리고 저장소가 채택하지 않은 capability 대조
+- [verification-validation.md](./verification-validation.md) - IEEE 1012 기준 Verification/Validation 구분, 기법으로서의 testing 위치, 비결정성 아래의 V&V, 16개 job root와 24개 test와 승인 게이트의 분류, tracked label의 용어 표류
 - [ai-agent-catalogs.md](./ai-agent-catalogs.md) - agency-agents 같은 외부 agent catalog 패턴과 repo-local curated catalog, import 경계 분석
 - [documentation-architecture.md](./documentation-architecture.md) - Diataxis 4분면과 저장소 문서 타입 매핑, 미충족 quadrant, template mode-mixing 분석
 - [llm-wiki-system.md](./llm-wiki-system.md) - LLM Wiki artifact 구조, 생성/freshness/safety 계약, 외부 convention 비교
@@ -194,8 +216,8 @@ model cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를
 3. [spec-driven-sdlc.md](./spec-driven-sdlc.md)에서 stage-gate를, [sdlc-document-roles.md](./sdlc-document-roles.md)에서 문서 역할을, [document-metadata-lifecycle.md](./document-metadata-lifecycle.md)에서 metadata/lifecycle 기준을 확인합니다.
 4. Pack leaf metadata는 stable `artifact_id`와 direct `parent_ids`를 통해
    Spec 123에 연결하며, 이 README는 folder-index 예외로 유지합니다.
-5. [agent-instructions-vibe-coding.md](./agent-instructions-vibe-coding.md)에서 instruction/vibe 기준을 확인하고 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 실제 QA evidence surface를 확인합니다.
-6. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다.
+5. [agent-instructions-vibe-coding.md](./agent-instructions-vibe-coding.md)에서 instruction/vibe 기준을 확인하고 [quality-ci-formatting.md](./quality-ci-formatting.md)에서 실제 QA evidence surface를 확인합니다. gate 커버리지를 주장하기 전에 [verification-validation.md](./verification-validation.md)에서 각 gate가 실제로 답하는 질문을 확인합니다.
+6. [docker-compose-infrastructure.md](./docker-compose-infrastructure.md), [security-governance.md](./security-governance.md), [automation-pipeline-workflow.md](./automation-pipeline-workflow.md)에서 targeted reference를 확인합니다. workflow를 변경하기 전에는 [github-actions-platform.md](./github-actions-platform.md)에서 플랫폼 규칙을 먼저 확인합니다.
 7. [provider-implementation-comparison.md](./provider-implementation-comparison.md)에서 Claude, Codex, Gemini adapter 차이를 확인하고, [provider-model-landscape.md](./provider-model-landscape.md)에서 cutoff-bound 공식 model/lifecycle evidence를 확인한 뒤 [agent-model-selection.md](./agent-model-selection.md)에서 작업 특성에 맞는 model tier와 reasoning-effort 분석을 읽습니다.
 8. [ai-agent-catalogs.md](./ai-agent-catalogs.md)에서 외부 agent catalog와 repo-local catalog의 import 경계를 확인합니다.
 9. [documentation-architecture.md](./documentation-architecture.md)에서 Diataxis 기준 문서 구조를, [llm-wiki-system.md](./llm-wiki-system.md)에서 machine-facing navigation surface를, [memory-hierarchy.md](./memory-hierarchy.md)에서 memory tier 구조를 확인합니다.

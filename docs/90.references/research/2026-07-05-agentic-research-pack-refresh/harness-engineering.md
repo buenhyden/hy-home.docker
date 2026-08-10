@@ -291,3 +291,4 @@ from the tracked tree on 2026-08-07 rather than carried from earlier text.
 - [loop engineering](./loop-engineering.md)
 - [provider implementation comparison](./provider-implementation-comparison.md)
 - [quality, CI, and formatting](./quality-ci-formatting.md)
+- [verification and validation](./verification-validation.md)

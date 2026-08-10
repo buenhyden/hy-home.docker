@@ -541,4 +541,5 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - [automation, pipeline, and workflow](./automation-pipeline-workflow.md)
 - [quality, CI, CD, QA, and formatting](./quality-ci-formatting.md)
 - [security governance](./security-governance.md)
+- [verification and validation](./verification-validation.md)
 - [GitHub governance](../../../00.agent-governance/rules/github-governance.md)
