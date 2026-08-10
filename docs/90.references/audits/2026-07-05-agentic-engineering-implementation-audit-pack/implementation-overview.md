@@ -7,7 +7,6 @@ parent_ids:
   - task:2026-07-11-agentic-engineering-audit-remediation
 supersedes: [audit:agentic-engineering-implementation-2026-07-07:overview]
 reviewed_at: 2026-07-27
-review_cycle: per-remediation-task
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md -->

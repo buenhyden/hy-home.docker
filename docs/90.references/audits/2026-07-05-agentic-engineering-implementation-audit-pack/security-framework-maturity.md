@@ -4,7 +4,6 @@ artifact_id: audit:agentic-engineering-implementation:security-framework-maturit
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 reviewed_at: 2026-07-27
-review_cycle: per-remediation-task
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md -->

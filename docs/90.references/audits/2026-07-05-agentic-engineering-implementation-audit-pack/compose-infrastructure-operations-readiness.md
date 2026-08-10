@@ -4,7 +4,6 @@ artifact_id: audit:agentic-engineering-implementation:compose-infrastructure-ope
 artifact_type: audit
 parent_ids: [audit:agentic-engineering-implementation:overview]
 reviewed_at: 2026-07-22
-review_cycle: per-remediation-task
 ---
 
 <!-- Target: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md -->
