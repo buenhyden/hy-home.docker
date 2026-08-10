@@ -4,7 +4,6 @@ artifact_id: reference:agentic-research:llm-wiki-system
 artifact_type: reference
 parent_ids: []
 reviewed_at: 2026-08-07
-review_cycle: on-source-change
 ---
 
 # Reference: LLM-WIKI System, Rules, and Implementation

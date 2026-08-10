@@ -4,7 +4,6 @@ artifact_id: reference:agentic-research:scope-application-matrix
 artifact_type: reference
 parent_ids: []
 reviewed_at: 2026-08-07
-review_cycle: on-source-change
 ---
 
 # Reference: Scope Application Matrix

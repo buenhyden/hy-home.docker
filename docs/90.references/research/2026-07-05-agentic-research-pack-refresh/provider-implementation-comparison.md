@@ -4,7 +4,6 @@ artifact_id: reference:agentic-research:provider-implementation-comparison
 artifact_type: reference
 parent_ids: []
 reviewed_at: 2026-08-07
-review_cycle: on-source-change
 ---
 
 <!-- Target: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md -->
