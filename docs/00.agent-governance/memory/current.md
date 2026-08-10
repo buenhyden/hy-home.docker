@@ -173,10 +173,35 @@ status: active
   follows. Executing them here would run another capability's work items and
   collide with its own execution, against spec 136's rule that one capability
   has at most one active change packet.
+- **The migration is fully specified by a frozen ledger, and an earlier entry
+  here wrongly said no registry existed.**
+  `docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md` is the
+  Task 3 output: 5,624 lines, 796 records, of which 264 target
+  `docs/05.operations/`. Each record fixes `legacy_path`, `stable_path`,
+  `artifact_id`, `action`, and the inbound-link count, so no identity has to be
+  invented. Whoever runs 6A through 6D should drive them from that file.
+- Record counts per work item, parsed from the ledger: 6A domains 00-03 is 42
+  records, 6B domains 04-06 is 124, 6C domains 07-09 is 59, 6D domains 10-12 is
+  33, plus 6 for the root README, incidents, and releases.
+- 6A preconditions were verified and are green: all 42 legacy files exist and no
+  target path has been created yet. Its 42 records split into 33 mechanical
+  moves and 9 merges. Eight of the merges are domain README consolidations,
+  three role-scoped READMEs collapsing into one domain README, and the ninth
+  folds `docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md`
+  into `ops-0006-infra-service-optimization-catalog/policy.md`. Only those nine
+  need authoring; the rest is path plus `artifact_id` rewriting.
+- `ops-0007-llm-wiki-maintenance` receives all three roles, so finishing the
+  `00-workspace` domain alone clears two of the three remaining `review_cycle`
+  documents. The third, the PostgreSQL rehearsal runbook, lands in 6B.
+- Execution was attempted and stopped on tooling, not judgement: a scripted
+  bulk `git mv` plus frontmatter rewrite is refused by the local permission
+  classifier. A single `git mv` is permitted, but splitting 264 moves into
+  individual commands would work around the intent of that refusal, so it was
+  not done. The one probe move was reverted and the tree is clean.
 - The target is `docs/05.operations/<domain>/ops-<id>-<subject>/` with the
-  parallel roots removed. Current shape: 101 distinct subjects across 260 files
-  (88 guides, 87 policies, 85 runbooks), 79 subjects carrying all three roles
-  and 22 carrying fewer, with no `ops-*` subject created yet. The last three
+  parallel roots removed. Current shape: 101 distinct subject paths across 260
+  files (88 guides, 87 policies, 85 runbooks), which the ledger consolidates
+  into 93 ops subjects, with no `ops-*` subject created yet. The last three
   `review_cycle` documents and the audit overview's parent-type findings all
   clear when 6A through 6D land in their own task.
 - Three operations documents still carry `review_cycle` and are deliberately
@@ -268,7 +293,8 @@ status: active
 - The one remaining follow-up that belongs elsewhere is spec 136's Stage 05
   operations migration, Tasks 6A through 6D of its own breakdown. It unblocks
   the last three `review_cycle` documents and the audit overview's parent
-  types.
+  types. It was scoped and precondition-checked here but deliberately not
+  executed; drive it from the frozen ledger recorded in Blockers.
 - Keep the result on the local branch and do not push. No repository defect
   from this work remains open: the two items previously listed as needing
   approval, the `agent-catalog.yaml` input-root declaration and the audit
