@@ -177,12 +177,25 @@ status: active
   information. They need the path migration first. This is the same root cause
   as the Stage 04 Task location problem: `review_cycle` was a symptom, not the
   disease.
-- `implementation-overview.md` in the audit pack retains two
-  `invalid-parent-type` findings, one for a spec that moved to archive and one
-  for a task that resolves to `unsupported`. Both predate this work.
-- `agent-catalog.yaml` declares `evaluation.input_roots` pointing at two
-  directories that do not exist. Both gates pass, so this is a dangling
-  declaration rather than a broken gate.
+- `implementation-overview.md` retains two `invalid-parent-type` findings and
+  they are not document defects. Both declared parents exist and the provenance
+  is factually correct: the audit really did descend from spec 123, now at
+  `docs/98.archive/03.specs/`, and from task `2026-07-11`, still in the retired
+  `docs/04.execution/tasks/` location. The `audit` profile allows parent types
+  `spec` and `task`, but the resolver types a parent by its location, so the
+  archived spec resolves to `archive` and the retired task to `unsupported`.
+  Rewriting `parent_ids` would falsify the audit's ancestry, so it was left
+  alone. This clears when spec 136 finishes relocating those ancestors.
+- `agent-catalog.yaml` `evaluation.input_roots` is **not** a dangling
+  declaration; an earlier entry here characterized it wrongly. It is a security
+  allowlist. `agent_output_eval.py:1421` rejects any input path outside those
+  roots with `AOE-INPUT-PATH-REJECTED`, and
+  `agent_governance_contract.py:2952` enforces the exact two-root tuple through
+  `AGC-EVAL-INPUT-POLICY`, with a negative test at
+  `test_agent_governance_contract.py:4626`. The directories not existing is
+  correct: the allowlist names permitted locations, and the repository holds no
+  synthetic input files, so the policy currently admits nothing. Nothing to
+  fix.
 - ISO/IEC/IEEE 12207, 15288, and the paywalled 29119 parts could not be
   retrieved. `iso.org` returns HTTP 403 to automated clients and the publicly
   available standards page now redirects to the paid webstores. No definition
@@ -237,9 +250,8 @@ status: active
   review has not itself been re-reviewed.
 - The one remaining follow-up that belongs elsewhere is spec 136's Stage 05
   operations migration, which unblocks the last three `review_cycle` documents.
-- Keep the result on the local branch and do not push. Decide where a Stage 04
-  Task record for this work belongs before treating it as complete, since the
-  governance verification gate expects one and none can currently be written
-  conformantly. Independent review of the two new leaves has not happened. The
-  `review_cycle` migration for the remaining thirteen documents and the
-  `agent-catalog.yaml` dangling path both need separate approval.
+- Keep the result on the local branch and do not push. No repository defect
+  from this work remains open: the two items previously listed as needing
+  approval, the `agent-catalog.yaml` input-root declaration and the audit
+  overview's parent types, were both investigated and are correct as they
+  stand. See Blockers for why.
