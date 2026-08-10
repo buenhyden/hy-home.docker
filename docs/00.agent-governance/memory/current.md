@@ -55,7 +55,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `f5dddbcf`
+- Verified commit: `8352d420`
 - Verified at: `2026-08-10T14:05:00+09:00`
 - Coverage analysis found 23 of the requested topics already covered across 20
   files and 6,934 lines. The single confirmed gap was Verification and
@@ -88,7 +88,7 @@ status: active
   profile does not declare it, no script, workflow, test, or config reads it,
   and every affected leaf states its cadence in its Maintenance section, so the
   removal is information-preserving. The diff is 19 identical deletions.
-- Eighteen logical-unit commits span `26906ee6` to `f5dddbcf`.
+- Twenty-one logical-unit commits span `26906ee6` onward on `codex/sdlc-taxonomy-convergence`.
 - Three stale prunable worktrees under `/tmp` were removed with
   `git worktree prune`.
 - The local QA runner was executed end to end for the first time in a while,
@@ -208,11 +208,16 @@ status: active
   correct: the allowlist names permitted locations, and the repository holds no
   synthetic input files, so the policy currently admits nothing. Nothing to
   fix.
-- ISO/IEC/IEEE 12207, 15288, and the paywalled 29119 parts could not be
-  retrieved. `iso.org` returns HTTP 403 to automated clients and the publicly
-  available standards page now redirects to the paid webstores. No definition
-  from them is quoted or paraphrased anywhere.
-- IEEE 1012-2024 was not retrieved; only the 1012-2016 abstract was read.
+- The ISO/IEC/IEEE 12207 and 15288 **definitions** were reachable after all,
+  through SEVOCAB, the ISO/IEC/IEEE vocabulary published by the IEEE Computer
+  Society. Reproduced live: the search action returns HTTP 200, 72,082 bytes,
+  44 results, carrying both definitions with clause attribution. Their
+  **process requirements** remain unread behind the paywall, `iso.org` still
+  returns 403, and the leaf now separates the two cases. The lesson is that a
+  paywalled standard can still have a freely published normative vocabulary,
+  which the earlier blanket "not retrieved" record missed.
+- IEEE 1012-2024 was not retrieved in full; only the 1012-2016 abstract was
+  read, though SEVOCAB carries a 1012-2024 clause 3.1 entry.
   The FDA software validation guidance 404ed on direct fetch and is recorded
   from search metadata only. The "right product" mnemonic is left unattributed
   because its origin was not verified.
