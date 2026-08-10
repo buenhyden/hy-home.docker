@@ -7,128 +7,129 @@ status: active
 
 ## Current objective
 
-- Current task: `docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md`
-- T-ARPE-001 through T-ARPE-013 are complete. The canonical agentic research
-  pack gained three leaves covering documentation architecture, the LLM-WIKI
-  system, and the agent memory hierarchy, and its fifteen existing leaves were
-  revalidated against repository facts and current external sources. This Task
-  is the successor Task the previous handoff asked for, so the lifecycle
-  boundary that paused
-  `task:2026-07-26-agent-governance-canonical-convergence` is released.
+- Current task: none. This work has **no valid Stage 04 Task record**, because
+  the repository is mid-migration and no conformant location exists for a new
+  one. See Blockers.
+- Extended the canonical agentic research pack at
+  `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` with
+  two leaves and revalidated its workspace-derived figures. The originating
+  request asked for research across roughly 25 topics; pre-task discovery found
+  23 already covered by dedicated leaves, so the deliverable became an in-place
+  extension rather than a new pack.
 
 ## Approved decisions
 
-- The pack is extended in place. No new dated research pack directory is
-  created, which preserves the Spec 122 consolidation outcome.
-- The `2026-07-07-agentic-research-pack-update/` pack is removed. It held only
-  redirect stubs with no analysis, and its canonical destination mapping now
-  lives in the Superseded Paths table of the research category index. Spec 122
-  paired this disposition with a human-escalation precondition, which the user
-  instruction satisfies.
-- Revalidation covers two axes: repository-local counted facts and current
-  official external sources.
-- Governance lifecycle for this work is one co-located Task, without a new Spec
-  or Plan.
-- Fixed historical boundaries stay unchanged by this revalidation: the
-  2026-07-10 model cutoff, the 2026-07-26 typed contract timestamps, and every
-  claim recorded as unverified.
+- Extend the 2026-07-05 pack in place. Do not create a dated pack. This
+  preserves the Spec 122 single-canonical-pack outcome and follows the
+  2026-08-07 precedent.
+- Revalidate workspace-derived counts only. External sources keep their
+  2026-08-07 verification; only sources cited by the two new leaves were
+  retrieved fresh, on 2026-08-10.
+- Work in an isolated worktree based on `codex/sdlc-taxonomy-convergence` HEAD
+  rather than on `main`, because that branch redefines the document identity
+  contracts the new leaves must satisfy.
+- Add exactly two leaves: `verification-validation.md` and
+  `github-actions-platform.md`.
+- Keep the GitHub Actions leaf to platform mechanics. The automation leaf keeps
+  its repository inventory; the new leaf adds only the complement, a table of
+  unadopted capability.
 
 ## Active boundary
 
-- The Task covers three new Stage 90 leaves, fifteen revalidated leaves, both
-  README indexes, this record, the three generated artifacts whose freshness
-  contracts the changes tripped, and the consolidation unit that removed the
-  duplicate pack and repaired its inbound links in Spec 122, its README, and
-  the two 2026-07-10 consolidation artifacts.
-- Push, remote mutation, live provider calls beyond read-only public
-  documentation retrieval, runtime changes, Compose operations, Stage 00 policy
-  changes, and the controlled all-files wrapper stay outside this Task.
-- Independent review of this Task has not happened.
+- Branch `codex/agentic-research-vv-gha` in worktree
+  `.worktrees/agentic-research-vv-gha`, based on `4122cecf`.
+- Covered: two new pack leaves, five sibling leaves cross-linked, the pack
+  README, the scope matrix, the two generated LLM Wiki artifacts, and the
+  frontmatter of all 19 pre-existing pack leaves.
+- Push, PR, merge, remote mutation, Stage 00 policy body changes, runtime and
+  Compose changes, full external source re-verification, and the controlled
+  all-files wrapper all stay outside this work.
+- Independent review has not happened.
 
 ## Verified state
 
-- Verified commit: `6faf9444d2eeda93766d1912100a28c4628c8aa4`
-- Verified at: `2026-08-07T13:52:00+09:00`
-- Coverage analysis before authoring found that nineteen of twenty-two
-  requested research topics already had canonical coverage across fifteen
-  leaves totalling 3,523 lines, and that three had none.
-- Workspace fact re-derivation confirmed twenty-one of twenty-three cited
-  figures and found one real drift: local QA runner step counts were
-  understated by four in both modes because two helper functions were omitted
-  from the original enumeration. Re-derived counts are 24 default and 22
-  harness steps, which reconciles with the 25 bullets the list mode prints
-  minus one advisory recommender.
-- External revalidation corrected the Codex `SessionEnd` claim in five places,
-  the Gemini per-agent reasoning claim, the Codex effort range, the Claude and
-  Gemini hook event counts, and six stale or redirected source URLs.
-- Five external sources could not be re-fetched and are recorded as not
-  re-verified rather than removed, since none was disproven.
-- The repository contract check exits with ten failures, down from thirteen
-  during this Task. Every failing subject is untouched by this work, and no
-  `infra/`, `scripts/`, or `.github/` path changed.
-- Changed-document metadata validation selected twenty-four documents and
-  reports three findings, all the same heading-contract conflict on the three
-  new leaves.
-- Traceability passes with forty-six catalog pairs and zero failures, and the
-  final diff has no whitespace drift.
-- The research category now holds one pack. The removed pack's six files and
-  416 lines carried no analysis. The generated LLM Wiki index fell from 1,330
-  to 1,324 path rows.
-- Spec 122 line 173 stated that the pack remains at its current path, and its
-  acceptance criterion VAL-ARC-006 referred to the pack and its children. Both
-  are superseded by this removal; the mapping they protected is preserved in
-  the category index. Spec 122 stays `completed` and was reopened only for
-  inbound-link repair.
-- The repository contract check after consolidation reports the same ten
-  predecessor failures with no new subject.
-- Sixteen logical-unit commits span `19ee4727` to `6faf9444`.
-- All five previously unfetchable sources are verified through upstream sources
-  of record. The earlier HTTP 429 diagnosis was wrong: those hosts return a
-  Cloudflare bot challenge that retrying never clears from an automated client.
-- The heading-contract conflict is resolved by aligning the reference template,
-  the reference role required headings, and the template-source heading list to
-  the heading 69 documents already use. The audit role forbidden-heading entry
-  is unchanged because 34 audit documents would break.
-- Predecessor drift fell from ten findings to two. Six registry entries, the
-  provenance snapshot, and two hardcoded hardening image-tag expectations were
-  catch-up corrections only; Compose already declared every newer image, so no
-  service version changed. A seventh drifted image, dozzle, surfaced only after
-  the Keycloak expectation was corrected.
-- The repository contract check now reports two remaining subjects. Metadata
-  validation selected thirty-nine documents with zero violations.
+- Verified commit: `4fde01f8`
+- Verified at: `2026-08-10T14:05:00+09:00`
+- Coverage analysis found 23 of the requested topics already covered across 20
+  files and 6,934 lines. The single confirmed gap was Verification and
+  Validation: a grep for `Verification and Validation`, `V&V`, `IEEE 1012`, and
+  `ISO/IEC/IEEE 29119` over the pack returned zero matches.
+- Baseline `check-repo-contracts.sh` at `4122cecf` reported **11 failing
+  subjects and 103 FAIL lines**, none of them under
+  `docs/90.references/research/`. All originate in the in-flight taxonomy
+  migration on the base branch.
+- After all changes the failing-subject set is unchanged at 11 with no new
+  subject. Markdown documentation contract fell from 4 to 2, because
+  regenerating the LLM Wiki index dropped two dead rows pointing at
+  `content-archive.template.md` and `ard.template.md`, which the taxonomy
+  migration had removed.
+- Changed-document metadata validation reports 0 violations at every commit.
+  Traceability passes with 46 catalog pairs and 0 failures. No whitespace drift.
+- Workspace fact re-derivation checked 13 figures. Eleven held exactly: 14
+  roles, 24 functions, 3 providers, 4 projection surfaces, 7 workflows, 23 jobs,
+  16 quality jobs, 24 pre-commit hooks, 8 harness layers, 8 workflow states, 4
+  typed loops, 11 fixtures, 16 synthetic regressions, 161 audit criteria at
+  77/60/13/2/9, 5 work profiles, and 11 model records.
+- Two figures drifted. Local QA runner steps are now 34 default, 35
+  all-profiles, and 32 harness across three profiles, not 24 and 22 across two;
+  the English leaves already recorded this and only the pack README still
+  asserted the retired numbers. Semantic-event binding depth is 20 of 21
+  `configured-not-executed` with the Codex `session-end` binding `unsupported`;
+  the blanket "all 21" claim appeared in four places and contradicted adjacent
+  text in the same table cell.
+- `review_cycle` was removed from all 19 pre-existing pack leaves. The reference
+  profile does not declare it, no script, workflow, test, or config reads it,
+  and every affected leaf states its cadence in its Maintenance section, so the
+  removal is information-preserving. The diff is 19 identical deletions.
+- Six logical-unit commits span `26906ee6` to `4fde01f8`.
+- Three stale prunable worktrees under `/tmp` were removed with
+  `git worktree prune`.
 
 ## Blockers and unverified facts
 
-- Two repository-check subjects stay open and both need an action outside the
-  repository. The private `.env` carries `INFLUXDB_BUCKET`, `INFLUXDB_ORG`, and
-  `INFLUXDB_USERNAME`, which `.env.example` does not; the user chose to leave
-  that as an environment fact, and it links to the separate InfluxDB review.
-  The `html5lib` dependency is declared in `scripts/requirements.txt` but is not
-  installed, and PEP 668 blocks installation in this externally-managed Python
-  environment; a virtual environment or the distribution package is needed.
-- The audit role still forbids the reference heading that 34 audit documents
-  carry. That rule is vacuous today and retargeting it would surface 34
-  violations, so it is recorded rather than changed.
-- Provider acceptance and entitlement, live comparative model evaluation, and
-  authenticated remote GitHub enforcement stay unverified.
-- A typed domain-memory taxonomy with validator-enforced promotion, retention,
-  archival, and deletion stays outside current scope. The new memory-hierarchy
-  leaf records the research basis for it. That leaf also corrects the record
-  that the deferral wording originates in the co-located Task ledger rather than
-  in Spec 134.
+- **No conformant Stage 04 Task location exists.** The task profile in
+  `docs/99.templates/support/document-metadata-profiles.yaml` now globs
+  `docs/03.specs/spec-*/task.md`, and every existing file under
+  `docs/04.execution/tasks/` resolves to profile `unsupported` and fails
+  validation. The new location would require creating a numbered Spec, which
+  this work deliberately avoided, and the one existing co-located task sits in
+  `docs/03.specs/136-sdlc-taxonomy-convergence/` whose directory name does not
+  match the declared `spec-*` glob either. No Task record was invented; this
+  needs a decision.
+- Thirteen documents outside the research pack still carry `review_cycle` and
+  will fail the same rule when next touched. That is migration debt owned by the
+  SDLC taxonomy work; the reference profile is still marked
+  `disposition: migration candidate`.
+- `agent-catalog.yaml` declares `evaluation.input_roots` pointing at two
+  directories that do not exist. Both gates pass, so this is a dangling
+  declaration rather than a broken gate.
+- ISO/IEC/IEEE 12207, 15288, and the paywalled 29119 parts could not be
+  retrieved. `iso.org` returns HTTP 403 to automated clients and the publicly
+  available standards page now redirects to the paid webstores. No definition
+  from them is quoted or paraphrased anywhere.
+- IEEE 1012-2024 was not retrieved; only the 1012-2016 abstract was read.
+  The FDA software validation guidance 404ed on direct fetch and is recorded
+  from search metadata only. The "right product" mnemonic is left unattributed
+  because its origin was not verified.
+- The two pre-existing repository blockers are unchanged: `html5lib` is declared
+  but not installed under PEP 668, and the `.env` versus `.env.example` variable
+  gap remains an environment fact.
+- Provider acceptance, live model evaluation, and authenticated remote GitHub
+  enforcement stay unverified.
 
 ## Evidence links
 
-- [Active Task ledger](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md)
 - [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Documentation architecture leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/documentation-architecture.md)
-- [LLM-WIKI system leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/llm-wiki-system.md)
-- [Memory hierarchy leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/memory-hierarchy.md)
-- [Predecessor convergence Task](../../04.execution/tasks/2026-07-26-agent-governance-canonical-convergence.md)
+- [Verification and validation leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md)
+- [GitHub Actions platform leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md)
+- [Scope application matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md)
+- [Predecessor extension record](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md)
 
 ## Next handoff
 
-- Keep the result on the local branch and do not push. Seek separate approval
-  for the heading-contract correction, for independent review of this Task, and
-  for the runtime and Compose drift task. A future Stage 03 memory-governance
-  specification can build on the new memory-hierarchy leaf.
+- Keep the result on the local branch and do not push. Decide where a Stage 04
+  Task record for this work belongs before treating it as complete, since the
+  governance verification gate expects one and none can currently be written
+  conformantly. Independent review of the two new leaves has not happened. The
+  `review_cycle` migration for the remaining thirteen documents and the
+  `agent-catalog.yaml` dangling path both need separate approval.
