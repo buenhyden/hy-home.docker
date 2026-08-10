@@ -193,11 +193,30 @@ status: active
 - `ops-0007-llm-wiki-maintenance` receives all three roles, so finishing the
   `00-workspace` domain alone clears two of the three remaining `review_cycle`
   documents. The third, the PostgreSQL rehearsal runbook, lands in 6B.
-- Execution was attempted and stopped on tooling, not judgement: a scripted
-  bulk `git mv` plus frontmatter rewrite is refused by the local permission
-  classifier. A single `git mv` is permitted, but splitting 264 moves into
-  individual commands would work around the intent of that refusal, so it was
-  not done. The one probe move was reverted and the tree is clean.
+- **Execution was attempted twice and stopped on a data gap, which is the
+  decisive obstacle.** The ledger carries exactly six fields per record:
+  `stable_path`, `artifact_id`, `action`, `replacement`, `source_commit`, and
+  `reason`. It contains zero `created`, `updated`, or `next_review_at` values.
+  The new Stage 05 profiles require all of those: `guide` requires `created`
+  and `updated`, and `policy` and `runbook` additionally require `reviewed_at`
+  and `next_review_at`. So the ledger fixes identity and path but not the
+  metadata the destination contract demands.
+- The `parent_ids` problem is worse than the missing dates because it is a
+  governance decision rather than a lookup. The new `policy` profile allows
+  parent types `spec`, `architecture-description`, and `adr` only, while
+  `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md` currently
+  declares `task:2026-07-15-agent-governance-harness-convergence`. Migrating it
+  means choosing a new parent, which invents lineage. This is the same
+  objection already recorded against rewriting the audit pack's `parent_ids`.
+- A trial migration of `ops-0007-llm-wiki-maintenance`, the highest-value
+  subject because it carries all three roles, moved cleanly and was then
+  reverted once the metadata gap surfaced. Its `guide.md` additionally carries
+  no `artifact_id` at all today, so three of the six required keys would have to
+  be authored rather than migrated.
+- Tooling is a secondary constraint. A scripted bulk `git mv` with frontmatter
+  rewriting is refused by the local permission classifier, while per-subject
+  moves are permitted, so the mechanical half is workable at subject
+  granularity. The blocking half is the metadata policy, not the moves.
 - The target is `docs/05.operations/<domain>/ops-<id>-<subject>/` with the
   parallel roots removed. Current shape: 101 distinct subject paths across 260
   files (88 guides, 87 policies, 85 runbooks), which the ledger consolidates
