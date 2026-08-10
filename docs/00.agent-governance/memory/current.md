@@ -159,14 +159,23 @@ status: active
   the incoming contract puts it. The old location is separately dead: every
   file under `docs/04.execution/tasks/` resolves to profile `unsupported`, and
   spec 136 requires `docs/04.execution` to be absent at completion.
-- **The operations path migration is blocked on spec 136 and must not be done
-  piecemeal.** Spec 136 §Operations Contract specifies
-  `docs/05.operations/<domain>/ops-<id>-<subject>/{guide,policy,runbook}.md`
-  and removes the parallel roots. Those roots still hold 260 files (88 guides,
-  87 policies, 85 runbooks) and **no `ops-*` subject exists yet**, so the
-  migration is specified but unstarted. Moving the three `review_cycle`
-  documents alone would invent the first `ops-<id>` numbers without the
-  registry and leave a tree matching neither contract.
+- **The operations path migration belongs to spec 136 and was declined on
+  ownership, not size.** Its task decomposes the work as four numbered items in
+  a seventeen-item breakdown — Task 6A through 6D, "Reorganize Operations
+  Domains 00 through 03" and onward, at
+  `docs/03.specs/136-sdlc-taxonomy-convergence/task.md:49-52` — and Tasks 1
+  through 5 of that same breakdown are the twelve commits this branch is based
+  on. 6A through 6D are literally the next items in that sequence, and Task 13
+  of the same breakdown owns the cross-link, index, and memory repair that
+  follows. Executing them here would run another capability's work items and
+  collide with its own execution, against spec 136's rule that one capability
+  has at most one active change packet.
+- The target is `docs/05.operations/<domain>/ops-<id>-<subject>/` with the
+  parallel roots removed. Current shape: 101 distinct subjects across 260 files
+  (88 guides, 87 policies, 85 runbooks), 79 subjects carrying all three roles
+  and 22 carrying fewer, with no `ops-*` subject created yet. The last three
+  `review_cycle` documents and the audit overview's parent-type findings all
+  clear when 6A through 6D land in their own task.
 - Three operations documents still carry `review_cycle` and are deliberately
   untouched: one policy and two runbooks under `docs/05.operations/`. Their
   profiles resolve to `unsupported` because the policy and runbook globs are
@@ -249,7 +258,9 @@ status: active
   the corrections, and all findings from both rounds are applied. The confirming
   review has not itself been re-reviewed.
 - The one remaining follow-up that belongs elsewhere is spec 136's Stage 05
-  operations migration, which unblocks the last three `review_cycle` documents.
+  operations migration, Tasks 6A through 6D of its own breakdown. It unblocks
+  the last three `review_cycle` documents and the audit overview's parent
+  types.
 - Keep the result on the local branch and do not push. No repository defect
   from this work remains open: the two items previously listed as needing
   approval, the `agent-catalog.yaml` input-root declaration and the audit
