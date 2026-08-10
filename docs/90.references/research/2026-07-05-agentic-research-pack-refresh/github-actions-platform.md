@@ -25,8 +25,10 @@ inventory rather than a copy of it.
 
 Every external claim here was retrieved on **2026-08-10**. GitHub Actions
 documentation is mutable guidance under continuous revision, and during this
-retrieval several previously valid documentation paths returned HTTP 404 after
-a docs-tree restructure. Treat every figure as a point-in-time snapshot.
+retrieval several documentation paths returned HTTP 404. An independent check
+the same day could not reproduce those failures, so they may have been
+transient rather than evidence of a completed docs-tree restructure. Either
+way, treat every figure as a point-in-time snapshot.
 
 ## Purpose
 
@@ -85,7 +87,9 @@ workflow-level one.
 The rule that makes least privilege practical is that omission means denial:
 "If you specify the access for any of these permissions, all of those that are
 not specified are set to `none`." Each scope accepts `read`, `write`, or
-`none`, and write implies read.
+`none`. That write subsumes read is the conventional reading of the scope
+values and is recorded here as an inference; no retrieved page states it as a
+sentence.
 
 The current scope list holds **16 scopes**: `actions`, `artifact-metadata`,
 `attestations`, `checks`, `code-quality`, `contents`, `deployments`,
@@ -120,8 +124,9 @@ on its own.
 
 ## OIDC and Keyless Authentication
 
-`id-token: write` is the enabling permission; it "allows GitHub's OIDC
-provider to create a JSON Web Token for every run." The issuer is
+`id-token: write` is the enabling permission: "The job or workflow must grant
+the `id-token: write` permission to allow GitHub's OIDC provider to create a
+JSON Web Token (JWT)." The issuer is
 `https://token.actions.githubusercontent.com`, with discovery at that host's
 `/.well-known/openid-configuration`.
 
@@ -171,16 +176,19 @@ and up to nine levels of reusable workflows," and loops are rejected.
 Permission flow is monotonic downward: "Permissions can only be maintained or
 reduced — not elevated — throughout the chain."
 
-The official comparison against composite actions:
+A comparison against composite actions, condensed from GitHub's own comparison
+table. This is a selection, not a reproduction: GitHub's table carries eight
+rows, four of which are omitted here, and the Runner row below is drawn from the
+adjacent "Specifying runners" prose rather than from the table itself.
 
-| Dimension   | Reusable workflow                    | Composite action                        |
-| ----------- | ------------------------------------ | --------------------------------------- |
-| Unit        | Jobs                                 | Steps run as a single caller step       |
-| Logging     | Every job and step logged separately | Only the calling step appears           |
-| Secrets     | Can use secrets                      | Cannot use secrets                      |
-| Runner      | Can select a different machine       | Runs on the caller's machine            |
-| Marketplace | Cannot publish                       | Can publish                             |
-| Nesting     | 10 levels                            | Up to 10 composite actions per workflow |
+| Dimension   | Reusable workflow                    | Composite action                        | Source         |
+| ----------- | ------------------------------------ | --------------------------------------- | -------------- |
+| Unit        | Jobs                                 | Steps run as a single caller step       | Official table |
+| Logging     | Every job and step logged separately | Only the calling step appears           | Official table |
+| Secrets     | Can use secrets                      | Cannot use secrets                      | Official table |
+| Marketplace | Cannot publish                       | Can publish                             | Official table |
+| Nesting     | 10 levels                            | Up to 10 composite actions per workflow | Official table |
+| Runner      | Can select a different machine       | Runs on the caller's machine            | Adjacent prose |
 
 A composite action runs inside the caller's job and therefore has no
 `permissions:` key of its own. That follows from the "single step within the
@@ -227,11 +235,18 @@ request if it checks out or downloads and executes untrusted code."
 permissions and access to secrets even if the triggering workflow doesn't have
 such privileges," with artifact poisoning as the companion pattern.
 
-The platform has begun closing this by default. `actions/checkout` v7 "refuses
-to check out fork pull request code by default when the workflow is triggered
-by `pull_request_target` or `workflow_run`," and opting out requires
-`allow-unsafe-pr-checkout: true` — a name GitHub says "is intentionally named
-to be easy to spot in code review."
+The platform has begun closing this by default. `actions/checkout` "refuses to
+check out fork pull request code by default when the workflow is triggered by
+`pull_request_target` or `workflow_run`," and opting out requires
+`allow-unsafe-pr-checkout: true` — a flag GitHub says "is intentionally named to
+be easy to spot in code review and static analysis."
+
+The safer default is **not** confined to v7. It shipped in v7.0.0 on 2026-06-18
+and was then backported as a breaking change to v6.1.0, v5.1.0, v4.4.0, v3.7.0,
+and v2.8.0, all published 2026-07-20. Pinning to an older major therefore no
+longer exempts a workflow from the change. This matters here: the repository
+pins `actions/checkout` by commit SHA with no version comment, so the effective
+major is not readable from the workflow file.
 
 ## Supply Chain Hardening
 
@@ -242,13 +257,14 @@ for a valid Git object payload." Tag pinning is acceptable "only if you trust
 the creator," because tags can be moved or deleted if the upstream repository
 is compromised.
 
-Artifact attestations reach **SLSA v1.0 Build Level 2** by default, with Build
-Level 3 reachable "by implementing reusable workflows that provide isolation
-between build and calling processes." Trust roots differ by visibility: public
-repositories use the Sigstore Public Good Instance with a publicly readable
-immutable transparency log, while private repositories use GitHub's Sigstore
-instance, "which lacks a transparency log and federates exclusively with GitHub
-Actions." Attestation requires `id-token: write`, `attestations: write`, and
+Artifact attestations reach **SLSA v1.0 Build Level 2** by default: "Artifact
+attestations by itself provides SLSA v1.0 Build Level 2." Level 3 is reachable
+through isolation — "Reusable workflows can provide isolation between the build
+process and the calling workflow, to meet SLSA v1.0 Build Level 3." Trust roots
+differ by visibility: public repositories use the Sigstore Public Good Instance
+with a publicly readable immutable transparency log, while for private
+repositories GitHub's own Sigstore instance is used and "it does not have a
+transparency log and only federates with GitHub Actions." Attestation requires `id-token: write`, `attestations: write`, and
 `contents: read`, plus `packages: write` for container images and
 `artifact-metadata: write` when `push-to-registry: true`.
 
@@ -312,7 +328,10 @@ restore-only cache operation such as `actions/cache/restore`."
 tokens for untrusted triggers — `pull_request_target`, `issue_comment`, and
 fork-PR `workflow_run` cascades scoped to the default-branch SHA — while
 `push`, `schedule`, `workflow_dispatch`, `repository_dispatch`, `delete`,
-`registry_package`, and `page_build` retain read-write. Behavior on a blocked
+`registry_package`, and `page_build` retain read-write, as do triggers whose
+scope is not the default branch, `pull_request` and `release` among them. The
+seven named triggers are therefore not an exhaustive read-write list.
+Behavior on a blocked
 save is a warning, not a failure: "`actions/cache` logs a warning in the run and
 the job continues without saving." Any cache-poisoning guidance written before
 this date is partially superseded.
@@ -370,39 +389,89 @@ Standard GitHub-hosted runners are free and unlimited on public repositories.
 Larger runners bill per active minute, are not eligible for included minutes on
 private repositories, and require a card on file plus a nonzero spending limit.
 
+## Third-Party Workflow Static Analysis
+
+Neither tool below is GitHub-official. Both are independently versioned, carry
+no GitHub support commitment, and are themselves supply-chain dependencies that
+should be SHA-pinned like any other action.
+
+**zizmor** is security-focused. At **v1.29.0**, published 2026-08-01, it
+implements **41 audit rules** covering the hazards described earlier in this
+document: `template-injection` for the substitution-order problem,
+`cache-poisoning` for the unsigned-cache channel, `dangerous-triggers` for
+`pull_request_target`, `excessive-permissions` for the token model,
+`unpinned-uses` and `impostor-commit` for pinning, `secrets-inherit` and
+`overprovisioned-secrets` for reusable-workflow secret flow, and
+`self-hosted-runner` for the public-repository runner warning. It groups
+findings by three personas: `regular` (default, core security findings),
+`pedantic` (adds quality-focused audits with limited security impact), and
+`auditor` (adds non-mandatory recommendations, highest noise tolerance).
+
+**actionlint** is correctness-focused. At **v1.7.12**, published 2026-03-30,
+MIT licensed, it validates workflow syntax, type-checks `${{ }}` expressions,
+verifies action inputs and step outputs, checks reusable-workflow input, output
+and secret wiring, validates `needs:` graphs, runner labels, glob syntax, and
+cron expressions, and shells out to shellcheck and pyflakes to analyse `run:`
+blocks. Its security coverage is a sideline rather than its purpose.
+
+The two are complementary rather than alternative: actionlint catches workflows
+that will not behave as written, zizmor catches workflows that behave exactly as
+written and should not.
+
+This repository runs zizmor as the `zizmor` job in `ci-quality.yml`, uploading
+SARIF, and carries no `actionlint` invocation and no zizmor configuration file,
+so the default persona applies.
+
 ## Platform Capability Adoption in This Repository
 
 This is the complement of the tracked inventory in
 [automation, pipeline, and workflow](./automation-pipeline-workflow.md), which
-records what exists. Derived at `4122cecf` by scanning `.github/workflows/`.
+records what the repository _does_ declare. This table is therefore strictly
+negative: it records only capabilities the repository does **not** use. What it
+does use is not restated here. Derived at `4122cecf` by scanning
+`.github/workflows/`.
 
-| Capability                           | Adopted      | Evidence                                                                                          |
-| ------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------- |
-| Scoped `permissions`                 | Yes          | All 7 workflows declare top-level `permissions`; `ci-quality.yml` defaults to `contents: read`    |
-| Permission elevation                 | One job only | `zizmor` raises `security-events: write` and `actions: read` for SARIF upload                     |
-| Concurrency                          | Yes          | `ci-quality.yml` declares a group with `cancel-in-progress: true`                                 |
-| Full-SHA action pinning              | Yes          | All resolved action references pinned to 40-character SHAs                                        |
-| `pull_request_target`                | Not used     | No occurrence — the principal injection hazard is absent by construction                          |
-| OIDC (`id-token`)                    | Not used     | No occurrence; no keyless cloud authentication exists                                             |
-| Reusable workflows (`workflow_call`) | Not used     | No occurrence; the 16 quality jobs are declared in full rather than factored                      |
-| Composite actions                    | Not used     | No `action.yml` or `action.yaml` in the repository                                                |
-| Environments                         | Not used     | No job references an `environment`, consistent with the Missing CD finding                        |
-| Artifact attestation                 | Not used     | No `attest` reference despite the pack citing the guidance                                        |
-| Matrix strategy                      | Not used     | No `strategy:`/`matrix:` in any workflow                                                          |
-| Custom caching                       | Not used     | Only `setup-node`'s built-in `cache: 'npm'` at three sites; no `actions/cache` with explicit keys |
+| Capability                           | Evidence of non-use                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `pull_request_target`                | No occurrence — the principal injection hazard is absent by construction                          |
+| OIDC (`id-token`)                    | No occurrence; no keyless cloud authentication exists                                             |
+| Reusable workflows (`workflow_call`) | No occurrence; the 16 quality jobs are declared in full rather than factored                      |
+| Composite actions                    | No `action.yml` or `action.yaml` anywhere in the repository                                       |
+| Environments                         | No job references an `environment`; the automation leaf records the resulting CD gap              |
+| Artifact attestation                 | No `attest` reference despite the pack citing the guidance                                        |
+| Matrix strategy                      | No `strategy:`/`matrix:` in any workflow                                                          |
+| Custom caching                       | Only `setup-node`'s built-in `cache: 'npm'` at three sites; no `actions/cache` with explicit keys |
 
-Two observations follow. First, the repository's exposure to the highest-severity
-platform hazards — pwn requests and cache poisoning — is low because it uses
-neither `pull_request_target` nor writable custom caches, not because it
-mitigates them. That is a property to preserve deliberately rather than assume.
-Second, the absence of `workflow_call` means the 16 quality jobs share no
-factored definition; the typed gate registry in
-`.github/workflow-contract.yml` performs that deduplication at a different
-layer instead.
+Two platform-side observations follow, neither of which the sibling records.
+
+First, the repository already uses the deny-all-then-grant idiom analysed
+above. `greetings.yml`, `pr-labeler.yml`, and `stale.yml` each declare
+`permissions: {}` at workflow level and grant per job. That is the community
+convention this document declines to attribute to GitHub, in live use here.
+
+Second, permission elevation is broader than the sibling's `ci-quality.yml`
+scope implies. Across all seven workflows, **five jobs in four workflows** hold
+a write scope: `zizmor` (`security-events: write`, `actions: read`),
+`issue-greeting` and `pull-request-greeting` (`issues: write`), `triage`
+(`pull-requests: write`), and `stale` (`issues: write`,
+`pull-requests: write`). The sibling's statement that only `zizmor` elevates is
+correct **within `ci-quality.yml`** and must not be generalised to the
+repository, which is exactly the error this table previously made.
+
+Exposure to the two highest-severity platform hazards — pwn requests and cache
+poisoning — is nonetheless low, because the repository uses neither
+`pull_request_target` nor writable custom caches. That is a property held by
+construction rather than by mitigation, so it is worth preserving deliberately
+rather than assuming it will survive the next workflow change.
 
 ## Documented Limits
 
-Every figure retrieved 2026-08-10 and version-sensitive.
+Every figure retrieved 2026-08-10 and version-sensitive. Most come from the
+Actions limits reference, but six do not and are cited to their own pages
+instead: reusable-workflow nesting and composite-action nesting from the
+reuse-workflows and reusable-workflows pages, required reviewers from
+manage-environments, rulesets per repository from about-rulesets, and cache
+eviction and key length from dependency-caching.
 
 | Limit                              | Value                          |
 | ---------------------------------- | ------------------------------ |
@@ -443,9 +512,9 @@ an authenticated API. A green workflow file proves intent and nothing more.
 
 ## Application Notes for This Workspace
 
-- Treat every figure in this document as dated. GitHub restructured its Actions
-  documentation tree during this retrieval, and several previously canonical
-  paths now return 404.
+- Treat every figure in this document as dated. Several documentation paths
+  returned 404 during retrieval; a same-day independent check could not
+  reproduce them, so re-test before repeating that caveat as a live condition.
 - Verify action versions against the REST release endpoint rather than a
   rendered page. A summarizing fetch of the `attest-build-provenance` releases
   page during this research returned a publication year one full year off; the
@@ -508,7 +577,8 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - [Securely using pull_request_target](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target) - pwn-request patterns and the data-not-code rule
 - [Security Lab: untrusted input](https://securitylab.github.com/resources/github-actions-untrusted-input/) - substitution mechanism and attacker-controlled fields
 - [Security Lab: new patterns](https://securitylab.github.com/resources/github-actions-new-patterns-and-mitigations/) - `workflow_run`, artifact poisoning, `permissions: {}` caveat
-- [actions/checkout](https://github.com/actions/checkout) - v7 default refusal of unsafe fork checkout
+- [actions/checkout](https://github.com/actions/checkout) - default refusal of unsafe fork checkout and the `allow-unsafe-pr-checkout` opt-out
+- [Safer pull_request_target defaults for actions/checkout](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) - the flag naming rationale and the backport to every supported major version
 - [Artifact attestations concepts](https://docs.github.com/en/actions/concepts/security/artifact-attestations) - SLSA build levels, Sigstore trust roots
 - [Use artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) - required permission set
 - [Immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) - tag locking and resurrection protection
@@ -523,7 +593,7 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) - runner classes and public-repository availability
 - [Actions Runner Controller](https://docs.github.com/en/actions/concepts/runners/actions-runner-controller) - operator model and constraints
 - [Manage runner access](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/manage-access) - runner group defaults
-- [Actions limits](https://docs.github.com/en/actions/reference/limits) - documented quantitative limits
+- [Actions limits](https://docs.github.com/en/actions/reference/limits) - run, job, queue, matrix, re-run, and API-rate limits; six further limits in the table below it are cited to their own pages
 - [zizmor audits](https://docs.zizmor.sh/audits/) - third-party audit rule catalog
 - [actionlint](https://github.com/rhysd/actionlint) - third-party workflow linter check classes
 - [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
