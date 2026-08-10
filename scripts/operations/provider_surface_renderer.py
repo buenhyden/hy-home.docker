@@ -312,9 +312,7 @@ def _provider_selections(
                 "gemini": "thinking_level",
             }[provider]
             control = (
-                entry.get("effort")
-                if provider == "claude"
-                else entry.get("reasoning")
+                entry.get("effort") if provider == "claude" else entry.get("reasoning")
             )
             selections[(profile_id, provider)] = ProviderSelection(
                 model_id=str(entry["model_id"]),
@@ -634,11 +632,15 @@ def _render_gemini_settings(
     overrides = []
     for agent in catalog.agents:
         selection = selections[(agent.work_profile, "gemini")]
-        if selection.control_kind != "thinking_level" or selection.control_value not in {
-            "high",
-            "medium",
-            "minimal",
-        }:
+        if (
+            selection.control_kind != "thinking_level"
+            or selection.control_value
+            not in {
+                "high",
+                "medium",
+                "minimal",
+            }
+        ):
             raise ValueError("Gemini selection lacks a supported thinking level")
         overrides.append(
             {
@@ -1441,7 +1443,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.write:
             write_native_projection(root)
         findings = find_native_projection_drift(root)
-    except (ContractLoadError, OSError, ValueError) as error:
+    except ContractLoadError as error:
+        # ContractLoadError is normalized and value-free by construction, so its
+        # code/path/location message is safe to emit and is the only thing that
+        # makes this failure diagnosable.
+        print(f"provider_surface_renderer: ERROR {error}", file=sys.stderr)
+        return 1
+    except (OSError, ValueError) as error:
+        # These carry arbitrary text, so only the type is emitted.
         print(
             f"provider_surface_renderer: ERROR {type(error).__name__}", file=sys.stderr
         )
