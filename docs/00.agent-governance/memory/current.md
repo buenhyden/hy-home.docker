@@ -84,6 +84,16 @@ status: active
 - Six logical-unit commits span `26906ee6` to `4fde01f8`.
 - Three stale prunable worktrees under `/tmp` were removed with
   `git worktree prune`.
+- The local QA runner was executed end to end for the first time in a while,
+  using a throwaway virtual environment holding the declared
+  `scripts/requirements.txt` set. Result: the 38-test unittest suite reports
+  `OK`, 28 gate checks report pass, `fixtures_check` and `regressions_check`
+  both pass, and the run then terminates non-zero on
+  `AGC-CONTRACT-UNSAFE-FILE`.
+- That terminal failure is not caused by this work. The same command run in a
+  detached worktree at base commit `4122cecf` produced 342 output lines against
+  this branch's 342, differing only in the two elapsed-time lines. Regression
+  delta from this branch is zero.
 
 ## Blockers and unverified facts
 
@@ -111,9 +121,26 @@ status: active
   The FDA software validation guidance 404ed on direct fetch and is recorded
   from search metadata only. The "right product" mnemonic is left unattributed
   because its origin was not verified.
-- The two pre-existing repository blockers are unchanged: `html5lib` is declared
-  but not installed under PEP 668, and the `.env` versus `.env.example` variable
-  gap remains an environment fact.
+- The `html5lib` remedy is now demonstrated rather than assumed. Installing the
+  declared `scripts/requirements.txt` set into a virtual environment lets the
+  local QA runner start, so the previously recorded "a virtual environment or
+  the distribution package is needed" is confirmed. This is an environment
+  action only; nothing in the repository changed.
+- **A second blocker sat behind the first and had never been observable.** With
+  `html5lib` present the runner reaches its end and fails on
+  `AGC-CONTRACT-UNSAFE-FILE path=docs/00.agent-governance/contracts/agent-governance-artifacts.yaml location=file`.
+  While the dependency was missing, the runner aborted at its first gate, so
+  this failure could not surface at all. It reproduces identically at base
+  commit `4122cecf` and belongs to the in-flight SDLC taxonomy work, not to this
+  branch. It has not been investigated.
+- **Diagnosability defect.** `scripts/operations/provider_surface_renderer.py`
+  catches `ContractLoadError`, `OSError`, and `ValueError` in `main` and prints
+  only `type(error).__name__`, discarding the message. The underlying
+  `AGC-DEPENDENCY-MISSING path=html5lib location=validation-runtime` was only
+  obtainable by calling the loader directly. Printing the message would make
+  both blockers above self-explaining.
+- The `.env` versus `.env.example` variable gap remains an environment fact and
+  is unchanged.
 - Provider acceptance, live model evaluation, and authenticated remote GitHub
   enforcement stay unverified.
 
@@ -127,6 +154,14 @@ status: active
 
 ## Next handoff
 
+- The branch is kept as-is by decision: not merged, not pushed, worktree
+  preserved at `.worktrees/agentic-research-vv-gha`. Integration was deliberately
+  not offered because the QA suite is not green, and it is not green on the base
+  branch either.
+- Two follow-ups are worth more than they cost and neither belongs to this work:
+  investigate `AGC-CONTRACT-UNSAFE-FILE`, and make
+  `provider_surface_renderer.py` print the exception message it currently
+  discards.
 - Keep the result on the local branch and do not push. Decide where a Stage 04
   Task record for this work belongs before treating it as complete, since the
   governance verification gate expects one and none can currently be written
