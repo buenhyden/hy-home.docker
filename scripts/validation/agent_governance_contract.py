@@ -978,8 +978,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "configured supervision default."
                 ),
                 "source_url": (
-                    "https://platform.claude.com/docs/en/about-claude/models/"
-                    "overview"
+                    "https://platform.claude.com/docs/en/about-claude/models/overview"
                 ),
                 "source_retrieved_at": "2026-07-26T20:08:18+09:00",
             }
@@ -1000,8 +999,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "remain in the active provider contract."
                 ),
                 "source_url": (
-                    "https://developers.openai.com/api/docs/models/"
-                    "gpt-5.2-codex"
+                    "https://developers.openai.com/api/docs/models/gpt-5.2-codex"
                 ),
                 "source_retrieved_at": "2026-07-16T01:17:36+09:00",
             }
@@ -1057,9 +1055,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "The shut-down preview is historical and its stable "
                     "replacement owns active use."
                 ),
-                "source_url": (
-                    "https://ai.google.dev/gemini-api/docs/deprecations"
-                ),
+                "source_url": ("https://ai.google.dev/gemini-api/docs/deprecations"),
                 "source_retrieved_at": "2026-07-16T01:17:36+09:00",
             }
         ),
@@ -1112,8 +1108,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "governance owns policy review."
                 ),
                 "source_url": (
-                    "docs/03.specs/132-agent-governance-harness-convergence/"
-                    "spec.md"
+                    "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
                 ),
                 "source_retrieved_at": "2026-07-15T10:00:00+09:00",
             }
@@ -1131,8 +1126,7 @@ RETIREMENT_APPROVED_RECORD_FACTS = MappingProxyType(
                     "replace the standalone identity."
                 ),
                 "source_url": (
-                    "docs/03.specs/132-agent-governance-harness-convergence/"
-                    "spec.md"
+                    "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
                 ),
                 "source_retrieved_at": "2026-07-15T10:00:00+09:00",
             }
@@ -3282,9 +3276,7 @@ def _validate_harness_layers(
                 source,
             )
         layer_id = raw.get("layer_id")
-        if _check_string(
-            layer_id, path, f"{location}.layer_id", findings, source
-        ):
+        if _check_string(layer_id, path, f"{location}.layer_id", findings, source):
             observed_ids.append(str(layer_id))
         owner = raw.get("owner_agent")
         if not _is_registered_string(owner, agent_ids):
@@ -3316,9 +3308,7 @@ def _validate_harness_layers(
         )
         failure_return = raw.get("failure_return")
         handoff_target = raw.get("handoff_target")
-        if not _is_registered_string(
-            failure_return, state_references | {"stop"}
-        ):
+        if not _is_registered_string(failure_return, state_references | {"stop"}):
             _add(
                 findings,
                 "AGC-HARNESS-LAYER-REFERENCE",
@@ -3328,9 +3318,7 @@ def _validate_harness_layers(
                 "unknown-layer-failure-return",
                 source,
             )
-        if not _is_registered_string(
-            handoff_target, state_references | {"complete"}
-        ):
+        if not _is_registered_string(handoff_target, state_references | {"complete"}):
             _add(
                 findings,
                 "AGC-HARNESS-LAYER-REFERENCE",
@@ -3423,9 +3411,7 @@ def _validate_workflow_states(
                 source,
             )
         state_id = raw.get("state_id")
-        if _check_string(
-            state_id, path, f"{location}.state_id", findings, source
-        ):
+        if _check_string(state_id, path, f"{location}.state_id", findings, source):
             observed_ids.append(str(state_id))
         owner = raw.get("owner_agent")
         if not _is_registered_string(owner, agent_ids):
@@ -3455,9 +3441,7 @@ def _validate_workflow_states(
             source,
         )
         for field in ("entry_condition", "exit_gate"):
-            _check_string(
-                raw.get(field), path, f"{location}.{field}", findings, source
-            )
+            _check_string(raw.get(field), path, f"{location}.{field}", findings, source)
         attempts = raw.get("max_attempts")
         if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts <= 0:
             _add(
@@ -3471,9 +3455,7 @@ def _validate_workflow_states(
             )
         failure_return = raw.get("failure_return")
         handoff_target = raw.get("handoff_target")
-        if not _is_registered_string(
-            failure_return, state_references | {"stop"}
-        ):
+        if not _is_registered_string(failure_return, state_references | {"stop"}):
             _add(
                 findings,
                 "AGC-WORKFLOW-STATE-REFERENCE",
@@ -3483,9 +3465,7 @@ def _validate_workflow_states(
                 "unknown-state-failure-return",
                 source,
             )
-        if not _is_registered_string(
-            handoff_target, state_references | {"complete"}
-        ):
+        if not _is_registered_string(handoff_target, state_references | {"complete"}):
             _add(
                 findings,
                 "AGC-WORKFLOW-STATE-REFERENCE",
@@ -4276,9 +4256,7 @@ def _validate_provider_contract(
                 )
                 or ()
             )
-            expected_workflow_states = EXPECTED_HARNESS_LOOP_STATES.get(
-                str(event_id)
-            )
+            expected_workflow_states = EXPECTED_HARNESS_LOOP_STATES.get(str(event_id))
             if (
                 expected_workflow_states is None
                 or workflow_states != expected_workflow_states
@@ -4780,9 +4758,7 @@ def validate_retirement_ledger(
         )
         return False
 
-    records = _as_sequence(
-        document.get("records"), path, "records", findings, source
-    )
+    records = _as_sequence(document.get("records"), path, "records", findings, source)
     superseded_models = {
         (str(raw.get("provider")), str(raw.get("former_id")))
         for raw in records or ()
@@ -4825,9 +4801,7 @@ def validate_retirement_ledger(
                 record_id, path, f"{location}.record_id", findings, source
             ):
                 record_ids.append(str(record_id))
-            _check_string(
-                former_id, path, f"{location}.former_id", findings, source
-            )
+            _check_string(former_id, path, f"{location}.former_id", findings, source)
             replacements = (
                 _check_string_list(
                     entry.get("replacement_ids"),
@@ -4894,9 +4868,7 @@ def validate_retirement_ledger(
                     if (
                         isinstance(approved_value, tuple)
                         and isinstance(observed_value, Sequence)
-                        and not isinstance(
-                            observed_value, (str, bytes, bytearray)
-                        )
+                        and not isinstance(observed_value, (str, bytes, bytearray))
                     ):
                         observed_value = tuple(observed_value)
                     if observed_value != approved_value:
@@ -4969,9 +4941,7 @@ def validate_retirement_ledger(
             elif kind in {"deprecated-model", "superseded-model"}:
                 provider = entry.get("provider")
                 if not _is_registered_string(provider, active_providers):
-                    _unknown_reference(
-                        findings, path, f"{location}.provider", source
-                    )
+                    _unknown_reference(findings, path, f"{location}.provider", source)
                 if record_id != f"model:{provider}:{former_id}":
                     _add(
                         findings,
@@ -5073,13 +5043,19 @@ def validate_retirement_ledger(
                         source,
                     )
                 for replacement in replacements:
-                    if not isinstance(provider, str) or (
-                        provider,
-                        replacement,
-                    ) not in active_models and (
-                        provider,
-                        replacement,
-                    ) not in superseded_models:
+                    if (
+                        not isinstance(provider, str)
+                        or (
+                            provider,
+                            replacement,
+                        )
+                        not in active_models
+                        and (
+                            provider,
+                            replacement,
+                        )
+                        not in superseded_models
+                    ):
                         _unknown_reference(
                             findings, path, f"{location}.replacement_ids", source
                         )
@@ -6630,8 +6606,7 @@ def _validate_provider_native_surfaces(
             )
         if provider == "gemini" and (
             not isinstance(config, Mapping)
-            or config.get("modelConfigs")
-            != {"overrides": expected_gemini_overrides}
+            or config.get("modelConfigs") != {"overrides": expected_gemini_overrides}
         ):
             _provider_native_schema_finding(
                 findings,
@@ -7001,14 +6976,24 @@ def _validate_harness_semantic_surfaces(
 ) -> None:
     required_fragments = {
         "scripts/validation/validate-harness.sh": ("run-local-qa-gates.sh --harness",),
+        # The runner delegates every gate to the typed projection in
+        # .github/workflow-contract.yml, so it no longer names leaf commands
+        # inline. Only its controlled-wrapper guidance is asserted here; the
+        # gate-wiring assurance is asserted against the typed registry below.
         "scripts/validation/run-local-qa-gates.sh": (
-            "sync-provider-surfaces.sh --check",
-            "run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions",
-            "--mode repository --section all",
             "scripts/validation/run-agent-precommit-all-files.sh",
             "initially clean linked worktree",
             "tracked Task evidence",
             "--allow-prefix",
+        ),
+        # Gate-wiring assurance for the local QA profile. These leaf gates used
+        # to be named inline by run-local-qa-gates.sh; the typed-gate cutover
+        # moved them here, so the registry is where their presence is enforced.
+        ".github/workflow-contract.yml": (
+            '"gate_id": "leaf.local-provider-surface-drift"',
+            '"gate_id": "leaf.agent-output-eval-fixture-gate"',
+            '"gate_id": "leaf.agent-output-eval-fixture-regressions"',
+            '"gate_id": "leaf.local-agent-governance-contract"',
         ),
         ".github/PULL_REQUEST_TEMPLATE.md": (
             "## Harness Impact",
