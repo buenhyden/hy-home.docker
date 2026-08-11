@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:document-metadata-lifecycle
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-08
+reviewed_at: 2026-08-11
 review_cycle: on-source-change
 ---
 
@@ -63,16 +63,16 @@ refresh.
 
 ### Application-profile model
 
-| Concern | Canonical representation | Meaning and boundary |
-| --- | --- | --- |
-| Identity | `artifact_id` | Stable typed identity across links and approved moves; a filename/number alone is not a cross-stage key. |
-| Role | `artifact_type` | Selects one registered profile such as PRD, ADR, Spec, Task, Policy, Release, Reference, or Archive. Generic `type` aliases are forbidden. |
-| Direct parents | `parent_ids` | Evidence-backed direct upstream artifacts admitted by the child profile. Ordering is deterministic presentation, not priority or approval rank. |
-| Replacement direction | `supersedes` | Optional typed relation from current artifact to replaced identity where the profile admits it. It does not erase history. |
-| Freshness | `reviewed_at`, `review_cycle` | Profile-specific review evidence, not universal fields and not automatic truth. |
-| Lifecycle | `status` | Document-state vocabulary; body/event state remains separate for Incident and other operational records. |
-| Generation | `generated_by` | Identifies a canonical generator where admitted; does not replace required lifecycle state or permit hand editing. |
-| Archive provenance | `archived_from`, `archived_on`, disposition, commit/blob, preservation fields | Exact source identity and recovery evidence for a tombstone; the removed body is not current guidance. |
+| Concern               | Canonical representation                                                      | Meaning and boundary                                                                                                                            |
+| --------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identity              | `artifact_id`                                                                 | Stable typed identity across links and approved moves; a filename/number alone is not a cross-stage key.                                        |
+| Role                  | `artifact_type`                                                               | Selects one registered profile such as PRD, ADR, Spec, Task, Policy, Release, Reference, or Archive. Generic `type` aliases are forbidden.      |
+| Direct parents        | `parent_ids`                                                                  | Evidence-backed direct upstream artifacts admitted by the child profile. Ordering is deterministic presentation, not priority or approval rank. |
+| Replacement direction | `supersedes`                                                                  | Optional typed relation from current artifact to replaced identity where the profile admits it. It does not erase history.                      |
+| Freshness             | `reviewed_at`, `review_cycle`                                                 | Profile-specific review evidence, not universal fields and not automatic truth.                                                                 |
+| Lifecycle             | `status`                                                                      | Document-state vocabulary; body/event state remains separate for Incident and other operational records.                                        |
+| Generation            | `generated_by`                                                                | Identifies a canonical generator where admitted; does not replace required lifecycle state or permit hand editing.                              |
+| Archive provenance    | `archived_from`, `archived_on`, disposition, commit/blob, preservation fields | Exact source identity and recovery evidence for a tombstone; the removed body is not current guidance.                                          |
 
 Every new target must resolve to exactly one profile and one mapped template.
 Zero matches, overlapping matches, an unsupported path, or an unclear role is
@@ -83,17 +83,20 @@ manufacture a parent to satisfy a field.
 
 The following counts exclude `README.md` unless stated otherwise and were
 derived from current canonical paths after the 2026-08-08 archive migration.
+Re-verified at the 2026-08-11 source-refresh boundary: the Stage 01-05 and
+Stage 04 totals are one leaf higher than the Task 5 baseline because this
+pack's own source-refresh Task added one `draft`, typed Stage 04 Task leaf.
 
-| Population | Count and state | Typed-depth interpretation |
-| --- | --- | --- |
-| Stage 01-05 non-README leaves | 531: 294 `active`, 235 `completed`, 2 `draft` | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration. |
-| PRD / ARD / ADR role paths | 25 / 25 / 25 | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated. |
-| Parent Specs | 28 current, 32 archived | Current and archived Spec populations coexist; archive zero is obsolete. |
-| Stage 04 role paths | 103 Plans, 131 Tasks | 16 Plans and 18 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints. |
-| Stage 05 role paths | 66 Guides, 64 Policies, 62 Runbooks | Current typed role coverage is 1 Guide, 1 Policy, and 2 Runbooks; current path remains the role evidence for legacy leaves. |
-| Incident / Postmortem / Release targets | 0 / 0 / 0 | Profiles/templates exist but no real target has exercised them. |
-| Stage 98 non-README leaves | 52, all `archived` | 32 expose `artifact_type: archive`; 20 are legacy tombstones. Stage 98 total Markdown is 69 including navigation. |
-| Stage 99 non-README Markdown | 35 | 24 declare template-source `status: draft`; support contracts are governance inputs rather than copyable lifecycle targets. |
+| Population                              | Count and state                               | Typed-depth interpretation                                                                                                       |
+| --------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Stage 01-05 non-README leaves           | 532: 294 `active`, 235 `completed`, 3 `draft` | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration.                                       |
+| PRD / ARD / ADR role paths              | 25 / 25 / 25                                  | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated.               |
+| Parent Specs                            | 28 current, 32 archived                       | Current and archived Spec populations coexist; archive zero is obsolete.                                                         |
+| Stage 04 role paths                     | 103 Plans, 132 Tasks                          | 16 Plans and 19 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints. |
+| Stage 05 role paths                     | 66 Guides, 64 Policies, 62 Runbooks           | Current typed role coverage is 1 Guide, 1 Policy, and 2 Runbooks; current path remains the role evidence for legacy leaves.      |
+| Incident / Postmortem / Release targets | 0 / 0 / 0                                     | Profiles/templates exist but no real target has exercised them.                                                                  |
+| Stage 98 non-README leaves              | 52, all `archived`                            | 32 expose `artifact_type: archive`; 20 are legacy tombstones. Stage 98 total Markdown is 69 including navigation.                |
+| Stage 99 non-README Markdown            | 35                                            | 24 declare template-source `status: draft`; support contracts are governance inputs rather than copyable lifecycle targets.      |
 
 The historical corpus is intentionally not bulk-rewritten. A changed legacy
 leaf outside the approved migration set may use the checker's legacy exception
@@ -106,34 +109,34 @@ error. New documents can never use that exception.
 This table summarizes semantic differences; it does not replace the registry's
 exact arrays or validation algorithm.
 
-| Profile | Required freshness | Direct-parent boundary | Notable lifecycle/relation rule |
-| --- | --- | --- | --- |
-| PRD | None | Root; empty allowed | Product root may be draft/active/completed/superseded. |
-| ARD | None | PRD | Non-empty parent required. |
-| ADR | None | PRD or ARD | Preserve decision history; supersession is directional. |
-| Spec | None required; freshness optional | PRD, ARD, ADR, Spec, or Archive | Parent required; focused child contracts remain Spec family. |
-| Plan | None | PRD, ARD, ADR, Spec, or Archive | Prospective artifact; parent required. |
-| Task | None | Spec, Plan, Task, or Archive | Evidence artifact; parent required and historical results preserved. |
-| Guide | Optional | Spec, Plan, Task, or Policy | Parent required; usage context links controls/procedures. |
-| Policy | `reviewed_at` and `review_cycle` required | PRD, ARD, ADR, Spec, Plan, or Task | Periodically reviewed operational control. |
-| Runbook | `reviewed_at` and `review_cycle` required | Spec, Plan, Task, Guide, Policy, or Archive | Periodically reviewed executable procedure. |
-| Incident | None | Runbook; empty allowed | May be root if no verified Runbook parent; event state belongs in body. |
-| Postmortem | `reviewed_at` required; `review_cycle` forbidden | Incident only | Strict child of paired Incident; reviewed learning is dated once. |
-| Release | `reviewed_at` optional; `review_cycle` forbidden | Spec, Plan, or Task | Must be backed by a real release event; not deployment/runtime proof. |
-| Reference | Both optional | PRD/ARD/ADR/Spec/Plan/Task/Guide/Policy/Runbook/Reference; empty allowed | Advisory support role; cannot become policy or execution evidence. |
+| Profile    | Required freshness                               | Direct-parent boundary                                                   | Notable lifecycle/relation rule                                         |
+| ---------- | ------------------------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| PRD        | None                                             | Root; empty allowed                                                      | Product root may be draft/active/completed/superseded.                  |
+| ARD        | None                                             | PRD                                                                      | Non-empty parent required.                                              |
+| ADR        | None                                             | PRD or ARD                                                               | Preserve decision history; supersession is directional.                 |
+| Spec       | None required; freshness optional                | PRD, ARD, ADR, Spec, or Archive                                          | Parent required; focused child contracts remain Spec family.            |
+| Plan       | None                                             | PRD, ARD, ADR, Spec, or Archive                                          | Prospective artifact; parent required.                                  |
+| Task       | None                                             | Spec, Plan, Task, or Archive                                             | Evidence artifact; parent required and historical results preserved.    |
+| Guide      | Optional                                         | Spec, Plan, Task, or Policy                                              | Parent required; usage context links controls/procedures.               |
+| Policy     | `reviewed_at` and `review_cycle` required        | PRD, ARD, ADR, Spec, Plan, or Task                                       | Periodically reviewed operational control.                              |
+| Runbook    | `reviewed_at` and `review_cycle` required        | Spec, Plan, Task, Guide, Policy, or Archive                              | Periodically reviewed executable procedure.                             |
+| Incident   | None                                             | Runbook; empty allowed                                                   | May be root if no verified Runbook parent; event state belongs in body. |
+| Postmortem | `reviewed_at` required; `review_cycle` forbidden | Incident only                                                            | Strict child of paired Incident; reviewed learning is dated once.       |
+| Release    | `reviewed_at` optional; `review_cycle` forbidden | Spec, Plan, or Task                                                      | Must be backed by a real release event; not deployment/runtime proof.   |
+| Reference  | Both optional                                    | PRD/ARD/ADR/Spec/Plan/Task/Guide/Policy/Runbook/Reference; empty allowed | Advisory support role; cannot become policy or execution evidence.      |
 
 The three research leaves in this pack set both reference freshness keys as a
 pack convention. The reference profile permits but does not require them.
 
 ### Lifecycle states and transitions
 
-| Status | Human meaning | Machine boundary |
-| --- | --- | --- |
-| `draft` | In-progress target or template source; not accepted current truth. | Ordinary forward transition is to `active`. |
-| `active` | Current contract, guidance, reference, or working evidence. | May transition to `completed` or `superseded`. |
-| `completed` | Finished execution/historical-but-valid evidence retained in its owning stage. | May transition to `superseded`; age alone does not archive it. |
-| `superseded` | Replaced artifact retained in the active chain with replacement direction/evidence. | Terminal in the common graph. |
-| `archived` | Stage 98/root archive tombstone after removal from the current chain. | Archive-profile terminal state, not a status to assign to an active-stage leaf. |
+| Status       | Human meaning                                                                       | Machine boundary                                                                |
+| ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `draft`      | In-progress target or template source; not accepted current truth.                  | Ordinary forward transition is to `active`.                                     |
+| `active`     | Current contract, guidance, reference, or working evidence.                         | May transition to `completed` or `superseded`.                                  |
+| `completed`  | Finished execution/historical-but-valid evidence retained in its owning stage.      | May transition to `superseded`; age alone does not archive it.                  |
+| `superseded` | Replaced artifact retained in the active chain with replacement direction/evidence. | Terminal in the common graph.                                                   |
+| `archived`   | Stage 98/root archive tombstone after removal from the current chain.               | Archive-profile terminal state, not a status to assign to an active-stage leaf. |
 
 ```text
 draft -> active -> completed -> superseded
@@ -211,40 +214,40 @@ and archive/deployment outcomes remain separate observations.
 
 ## Scope Implications
 
-| Scope | Application and disposition |
-| --- | --- |
-| `agentic` | Agents must resolve one profile/template, preserve deterministic metadata and evidence, and stop rather than invent relations or transitions. |
-| `architecture` | ARD/ADR identity and supersession preserve constraints/decision history consumed by Specs; metadata never replaces architectural review. |
-| `backend` | Parent/child Spec relations can type API, data, service, and test contracts; runtime behavior still needs implementation and validation evidence. |
-| `common` | Shared Markdown/style rules coexist with consumer-specific profiles; uniform appearance is not authority to normalize metadata. |
-| `docs` | Owns profile/template selection, link/heading validation, language boundaries, archive routing, and changed/new enforcement. |
-| `entry` | Gateway documents follow the same typed chain; path/parent validity does not prove deployed routing. |
-| `frontend` | UI Specs/Tasks/Guides use their actual profiles; screenshots and generated assets cannot supply missing identity, parent, or verification evidence. |
-| `infra` | Compose/config paths are implementation evidence, not lifecycle profiles; typed docs must link but cannot claim runtime acceptance. |
-| `meta` | Registry/checker are the machine owners; changes require explicit approval, tests, migration impact analysis, and no copied schema in Stage 90. |
-| `mobile` | No current mobile chain exists; future documents must use admitted profiles and device/runtime evidence without adding ad hoc types. |
-| `ops` | Policy/Runbook freshness, Incident/Postmortem parent rules, and Release event boundaries are role-specific and currently partly unexercised. |
-| `product` | PRD is a root profile and human approval owner; metadata completeness cannot infer stakeholder acceptance. |
-| `qa` | Checker results, traceability, exact-range reviews, and skipped-check reasons belong in Task evidence; historical exception counts remain explicit. |
-| `security` | Archive and evidence metadata must remain redacted and provenance-safe; no profile authorizes secret/private payloads or protected mutation. |
+| Scope          | Application and disposition                                                                                                                         |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agentic`      | Agents must resolve one profile/template, preserve deterministic metadata and evidence, and stop rather than invent relations or transitions.       |
+| `architecture` | ARD/ADR identity and supersession preserve constraints/decision history consumed by Specs; metadata never replaces architectural review.            |
+| `backend`      | Parent/child Spec relations can type API, data, service, and test contracts; runtime behavior still needs implementation and validation evidence.   |
+| `common`       | Shared Markdown/style rules coexist with consumer-specific profiles; uniform appearance is not authority to normalize metadata.                     |
+| `docs`         | Owns profile/template selection, link/heading validation, language boundaries, archive routing, and changed/new enforcement.                        |
+| `entry`        | Gateway documents follow the same typed chain; path/parent validity does not prove deployed routing.                                                |
+| `frontend`     | UI Specs/Tasks/Guides use their actual profiles; screenshots and generated assets cannot supply missing identity, parent, or verification evidence. |
+| `infra`        | Compose/config paths are implementation evidence, not lifecycle profiles; typed docs must link but cannot claim runtime acceptance.                 |
+| `meta`         | Registry/checker are the machine owners; changes require explicit approval, tests, migration impact analysis, and no copied schema in Stage 90.     |
+| `mobile`       | No current mobile chain exists; future documents must use admitted profiles and device/runtime evidence without adding ad hoc types.                |
+| `ops`          | Policy/Runbook freshness, Incident/Postmortem parent rules, and Release event boundaries are role-specific and currently partly unexercised.        |
+| `product`      | PRD is a root profile and human approval owner; metadata completeness cannot infer stakeholder acceptance.                                          |
+| `qa`           | Checker results, traceability, exact-range reviews, and skipped-check reasons belong in Task evidence; historical exception counts remain explicit. |
+| `security`     | Archive and evidence metadata must remain redacted and provenance-safe; no profile authorizes secret/private payloads or protected mutation.        |
 
 ## Sources
 
-| Source | Accessed | Class | Use and verification state |
-| --- | --- | --- | --- |
-| [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/) | 2026-08-08 | External fixed vocabulary | Identifier/type/relation comparison only; no schema adoption. |
-| [W3C PROV-O](https://www.w3.org/TR/prov-o/) | 2026-08-08 | External fixed standard | Provenance/revision comparison only; workspace registry remains canonical. |
-| [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288) | 2026-08-08 | External fixed standard | Relation semantics comparison; no repository profile adoption. |
-| [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article | HTTP 200; preserved/superseded ADR history comparison. |
-| [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/) | 2026-08-08 | External fixed publication | HTTP 200; reviewed learning supports the Postmortem freshness boundary. |
-| [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) | 2026-08-08 | Workspace tracked | Canonical routing, template-first, language, and changed/new enforcement boundary. |
-| [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml) | 2026-08-08 | Workspace tracked | Sole machine-readable fields, relations, headings, states, exceptions, and serialization owner. |
-| [Lifecycle status](../../../99.templates/support/lifecycle-status.md) | 2026-08-08 | Workspace tracked | Human lifecycle vocabulary and interpretation boundary. |
-| [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md) | 2026-08-08 | Workspace tracked | Human role, relation, feedback, and release boundary. |
-| [Common document contract](../../../99.templates/support/common-document-contract.md) | 2026-08-08 | Workspace tracked | Reference/audit/archive/generated/governance ownership. |
-| [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md) | 2026-08-08 | Workspace tracked | Provenance, confidentiality, review signals, and directory budgets. |
-| [Metadata checker](../../../../scripts/validation/check-document-metadata.py) | 2026-08-08 | Workspace tracked | Executable profile and lifecycle interpreter. |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | 2026-08-08 | Workspace stale/advisory | Built from `f8a72211`; no uncorroborated graph inference used. |
+| Source                                                                                                                         | Accessed   | Class                      | Use and verification state                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------------------------- | ----------------------------------------------------------------------------------------------- |
+| [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary  | Identifier/type/relation comparison only; no schema adoption.                                   |
+| [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard    | Provenance/revision comparison only; workspace registry remains canonical.                      |
+| [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard    | Relation semantics comparison; no repository profile adoption.                                  |
+| [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article     | HTTP 200; preserved/superseded ADR history comparison.                                          |
+| [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                         |
+| [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked          | Canonical routing, template-first, language, and changed/new enforcement boundary.              |
+| [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)                                             | 2026-08-08 | Workspace tracked          | Sole machine-readable fields, relations, headings, states, exceptions, and serialization owner. |
+| [Lifecycle status](../../../99.templates/support/lifecycle-status.md)                                                          | 2026-08-08 | Workspace tracked          | Human lifecycle vocabulary and interpretation boundary.                                         |
+| [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)                                              | 2026-08-08 | Workspace tracked          | Human role, relation, feedback, and release boundary.                                           |
+| [Common document contract](../../../99.templates/support/common-document-contract.md)                                          | 2026-08-08 | Workspace tracked          | Reference/audit/archive/generated/governance ownership.                                         |
+| [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)                                  | 2026-08-08 | Workspace tracked          | Provenance, confidentiality, review signals, and directory budgets.                             |
+| [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-08 | Workspace tracked          | Executable profile and lifecycle interpreter.                                                   |
+| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                    | 2026-08-08 | Workspace stale/advisory   | Built from `f8a72211`; no uncorroborated graph inference used.                                  |
 
 ## Maintenance
 
