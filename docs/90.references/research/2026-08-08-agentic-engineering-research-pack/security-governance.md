@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:security-governance
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-08
+reviewed_at: 2026-08-11
 review_cycle: on-source-change
 ---
 
@@ -83,18 +83,18 @@ and incident/disclosure sinks. No external system or secret value was probed.
 
 ### Security control map
 
-| Concern | Current tracked evidence | State and limit | Owner / follow-up |
-| --- | --- | --- | --- |
-| Disclosure | `.github/SECURITY.md` gives private routes and response targets. | Implemented as policy; contact availability and target attainment unverified. | Security owner; exercise through approved incident procedure. |
-| Approval / sandbox | `approval-boundaries.md` protects Compose, secrets, workflows, runtime, policy, and provider surfaces with validation/rollback records. | Implemented governance; provider prompts do not broaden repository authority. | Stage 00/human approver. |
-| Workflow privilege | Seven workflows declare top-level permissions; `zizmor` has scoped SARIF rights; 32 resolved external action references are full SHA pins. | Implemented tracked definition; current hosted grants, runs, rulesets, and branch enforcement unverified. | GitHub governance plus security review. |
-| Secret scanning/boundary | Gitleaks hook/config, template security baseline, root secret IDs and file-based grants. | Implemented static control; rotation, host permissions, and alternate plaintext channels unverified. | Security/infra owners; metadata-only evidence. |
-| Container hardening | Eleven-tier hardening PASS, shared security templates, QuickWin/template checks, and registered exceptions. | Partially Implemented overall; selected repository assertions do not certify runtime/host posture. | Security auditor and infra implementer. |
-| Dependency update/audit | Dependabot plus typed Storybook `npm audit --audit-level=high`. | Partially Implemented by ecosystem; broad multi-ecosystem SCA remains a gap. | QA/security Spec and gate owner. |
-| Image provenance | 18 curated components/21 images; 20 pinned and one approved floating row. | Partially Implemented; declaration provenance is not digest resolution, SBOM, signature, or SLSA provenance. | Infra registry owner. |
-| SBOM/scan/sign/Scorecard capability | Digest-pinned syft, grype, cosign, and Scorecard tool images plus sample-service verification/rehearsal scripts. | Partially Implemented, local and sample-scoped; no release/CI/public score evidence. | Supply-chain Spec owner; separate approval for integration. |
-| Incident response | Disclosure targets, security scope, incident/runbook ownership, and Stage 05 routes exist. | Partially Implemented; no exercise, live incident, or objective-attainment evidence. | Human incident commander / operations. |
-| Provider/model change | Typed model registry, exact-target approval, coupled adapter/generator/validator rules, and Task evidence are required. | Implemented governance; entitlement and live behavior unverified. | Stage 00 model/provider owner and user approval. |
+| Concern                             | Current tracked evidence                                                                                                                                                                                                                   | State and limit                                                                                              | Owner / follow-up                                             |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| Disclosure                          | `.github/SECURITY.md` gives private routes and response targets.                                                                                                                                                                           | Implemented as policy; contact availability and target attainment unverified.                                | Security owner; exercise through approved incident procedure. |
+| Approval / sandbox                  | `approval-boundaries.md` protects Compose, secrets, workflows, runtime, policy, and provider surfaces with validation/rollback records.                                                                                                    | Implemented governance; provider prompts do not broaden repository authority.                                | Stage 00/human approver.                                      |
+| Workflow privilege                  | Seven workflows declare top-level permissions; `zizmor` has scoped SARIF rights; re-verified 2026-08-11, all 17 tracked `uses:` action references (8 distinct actions in `.github/workflow-contract.yml`) are full-length commit SHA pins. | Implemented tracked definition; current hosted grants, runs, rulesets, and branch enforcement unverified.    | GitHub governance plus security review.                       |
+| Secret scanning/boundary            | Gitleaks hook/config, template security baseline, root secret IDs and file-based grants.                                                                                                                                                   | Implemented static control; rotation, host permissions, and alternate plaintext channels unverified.         | Security/infra owners; metadata-only evidence.                |
+| Container hardening                 | Eleven-tier hardening PASS, shared security templates, QuickWin/template checks, and registered exceptions.                                                                                                                                | Partially Implemented overall; selected repository assertions do not certify runtime/host posture.           | Security auditor and infra implementer.                       |
+| Dependency update/audit             | Dependabot plus typed Storybook `npm audit --audit-level=high`.                                                                                                                                                                            | Partially Implemented by ecosystem; broad multi-ecosystem SCA remains a gap.                                 | QA/security Spec and gate owner.                              |
+| Image provenance                    | 18 curated components/21 images; 20 pinned and one approved floating row.                                                                                                                                                                  | Partially Implemented; declaration provenance is not digest resolution, SBOM, signature, or SLSA provenance. | Infra registry owner.                                         |
+| SBOM/scan/sign/Scorecard capability | Digest-pinned syft, grype, cosign, and Scorecard tool images plus sample-service verification/rehearsal scripts.                                                                                                                           | Partially Implemented, local and sample-scoped; no release/CI/public score evidence.                         | Supply-chain Spec owner; separate approval for integration.   |
+| Incident response                   | Disclosure targets, security scope, incident/runbook ownership, and Stage 05 routes exist.                                                                                                                                                 | Partially Implemented; no exercise, live incident, or objective-attainment evidence.                         | Human incident commander / operations.                        |
+| Provider/model change               | Typed model registry, exact-target approval, coupled adapter/generator/validator rules, and Task evidence are required.                                                                                                                    | Implemented governance; entitlement and live behavior unverified.                                            | Stage 00 model/provider owner and user approval.              |
 
 ### Secret-policy conflict is not secret exposure
 
@@ -128,32 +128,37 @@ internet-reachable, unauthenticated, or exploitable. A future threat review
 must either document a narrow protocol/localhost/gateway exception or remediate
 the selected topology.
 
-### Security-readiness predecessor and typed-registry defect
+### Security-readiness predecessor and typed-registry defect (resolved since Task 8)
 
-The canonical readiness `--check` exited 1 because the stored generated file
-is stale. Its non-writing `--dry-run` scanned 7 workflows, 37 shell scripts,
-and `.pre-commit-config.yaml`, producing 13 controls: 7 Implemented, 3
-Partially Implemented, and 3 Gap. The stored snapshot says 11/1/1 and 36
-scripts. Neither artifact was edited or regenerated.
+At Task 8 baseline `910ce5f`, the canonical readiness `--check` exited 1
+because the generator searched raw workflow text for leaf commands after CI
+migrated to typed gate IDs, downgrading four controls (`SEC-AUTO-002`,
+`SEC-AUTO-003`, `SEC-AUTO-005`, `SEC-AUTO-008`) below the semantic
+classification that direct resolution of `.github/workflow-contract.yml`
+supported. That semantic classification was 11 Implemented, 1 Partial, and
+1 Gap, with the one real gap being broad dependency SCA.
 
-The dry-run downgrades four controls because the generator searches raw
-workflow text for leaf commands after CI migrated to typed gate IDs:
-
-| Control | Dry-run result | Current tracked resolution |
-| --- | --- | --- |
-| `SEC-AUTO-002` workflow security | Partial | Workflow permissions, Zizmor/SARIF job, typed workflow contract, and repository checks remain reachable. |
-| `SEC-AUTO-003` secret baseline | Partial | Gitleaks remains configured and `ci.template-security-baseline` resolves to the tracked leaf script. |
-| `SEC-AUTO-005` hardening | Gap | `ci.infrastructure-hardening` resolves through setup to `leaf.infrastructure-hardening`, whose entrypoint is `check-all-hardening.sh`. |
-| `SEC-AUTO-008` scoped audit | Gap | `ci.dependency-vulnerability-audit` resolves to the leaf adapter arguments `npm audit --audit-level=high --prefix projects/storybook/nextjs`. |
-
-Direct resolution of `.github/workflow-contract.yml` supports the prior
-semantic classifications 11 Implemented, 1 Partial, and 1 Gap; the one real
-gap is broad dependency SCA. The stored snapshot is still stale because its
-evidence/count and old-pack routes are obsolete, while the current generator
-is semantically invalid because it cannot resolve typed indirection. Task 10
-must remain blocked until the user separately approves a tested generator
-correction; only then may the canonical output be regenerated. This reference
-does not call either readiness check a PASS.
+Re-verified at `5580931` on 2026-08-11 against two independent evidence
+sources. First, direct re-execution: `bash
+scripts/validation/generate-security-automation-readiness.sh --check` now
+exits 0 (`PASS: ... snapshot is fresh`), and `--dry-run` reports the same 13
+controls as the stored snapshot: 11 Implemented, 1 Partially Implemented
+(`SEC-AUTO-007` branch protection, live-remote-evidence limited), and 1 Gap
+(`SEC-AUTO-012` broad dependency SCA), scanning 7 workflows, 37 scripts,
+`.pre-commit-config.yaml`, and 54 reachable typed gates. Second, the tracked
+Task ledger: the [Task 10a workstream](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+(`WS-TASK10A-FIX1` through `WS-TASK10A-FIX5`, commits `eed66ec7` through
+`08bbba79`, all landed 2026-08-08 after the Task 8 baseline) rebuilt the
+generator's gate parser/expander, action registry, and workflow-projection
+logic under RED/GREEN evidence, and records the final round's independent
+reviews as specification "Needs fixes C0/I0/M1, load-bearing
+Approved-equivalent" and Python/security "Approved-with-Minor C0/I0/M1" with
+the prior Important finding resolved. Both sources agree the generator now
+resolves typed gate indirection directly and the stored snapshot and live
+generator output match; the typed-registry defect described above no longer
+reproduces. This reference does not certify the readiness snapshot as a
+vulnerability assessment or security certification, and it does not observe
+whether Task 10 as a whole has been separately closed.
 
 ### Secure SDLC and supply-chain interpretation
 
@@ -178,58 +183,58 @@ evidence.
 
 ### Severity-ranked findings
 
-| Severity | Finding | Evidence / reachability | Remediation owner |
-| --- | --- | --- | --- |
-| Important | Readiness generator produces false downgrades and stale routes. | `--check` FAIL; dry-run 7/3/3 versus typed resolution 11/1/1. Blocks truthful regeneration and Task 10. | Separately approved generator/test owner; Task 10. |
-| Important | 37 non-gateway port-bearing services lack explicit host-IP binding and registered exposure exceptions. | Static Compose declarations only; runtime reachability unverified. | Infra/entry/security owners by selected topology. |
-| Important | Persistent-volume backup and restore proof is missing. | 102 declarations, zero backup labels, no runtime exercise. | Infra/ops per dataset. |
-| Important | Secret-read policy owners conflict. | Two tracked Stage 00 owners; no value was read or exposed. | Separately approved governance/security task. |
-| Important | Broad dependency SCA remains absent. | One scoped npm audit and one sample image path do not cover repository ecosystems. | Security/QA specification owner. |
-| Minor | Supply-chain tools can be overreported as release automation. | Tool registry/scripts exist; no CI/release/published result was observed. | Supply-chain and documentation reviewers. |
+| Severity                           | Finding                                                                                                | Evidence / reachability                                                                                                                                                                  | Remediation owner                                                                                                                                                                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Resolved (was Important at Task 8) | Readiness generator produced false downgrades and stale routes.                                        | Task 8: `--check` FAIL; dry-run 7/3/3 versus typed resolution 11/1/1. Re-verified 2026-08-11: `--check` PASS (fresh); dry-run and stored snapshot both report 11/1/1 across 13 controls. | Fixed by the tracked Task 10a workstream (`WS-TASK10A-FIX1`-`FIX5`, commits `eed66ec7`-`08bbba79`), independently reviewed Approved-equivalent/Approved-with-Minor with no remaining Critical/Important finding; Task 10's overall status is otherwise outside this leaf's observation. |
+| Important                          | 37 non-gateway port-bearing services lack explicit host-IP binding and registered exposure exceptions. | Static Compose declarations only; runtime reachability unverified.                                                                                                                       | Infra/entry/security owners by selected topology.                                                                                                                                                                                                                                       |
+| Important                          | Persistent-volume backup and restore proof is missing.                                                 | 102 declarations, zero backup labels, no runtime exercise.                                                                                                                               | Infra/ops per dataset.                                                                                                                                                                                                                                                                  |
+| Important                          | Secret-read policy owners conflict.                                                                    | Two tracked Stage 00 owners; no value was read or exposed.                                                                                                                               | Separately approved governance/security task.                                                                                                                                                                                                                                           |
+| Important                          | Broad dependency SCA remains absent.                                                                   | One scoped npm audit and one sample image path do not cover repository ecosystems.                                                                                                       | Security/QA specification owner.                                                                                                                                                                                                                                                        |
+| Minor                              | Supply-chain tools can be overreported as release automation.                                          | Tool registry/scripts exist; no CI/release/published result was observed.                                                                                                                | Supply-chain and documentation reviewers.                                                                                                                                                                                                                                               |
 
 No Critical finding is established by the authorized static evidence. That is
 not a statement that no Critical runtime vulnerability exists.
 
 ## Scope Implications
 
-| Scope | Security implication |
-| --- | --- |
-| `agentic` | Enforce permission, evidence, retry, redaction, and approval boundaries; synthetic/configured controls do not prove native execution. |
-| `architecture` | Own threat boundaries, trust zones, identity/data flows, secure-delivery requirements, SLO/recovery design, and exception criteria. |
-| `backend` | No backend product surface is established; future services need authz, validation, dependency, secret, data, logging, and abuse-case tests. |
-| `common` | Keep shared secure defaults, dependency/format rules, and reusable redaction patterns centralized without weakening layer-specific controls. |
-| `docs` | Preserve source dates, evidence states, incident secrecy, exception ownership, and the distinction between policy conflict and exposure. |
-| `entry` | Review gateway auth/TLS and the 37 non-gateway published-port declarations; require explicit host binding or registered exception evidence. |
-| `frontend` | Current Storybook audit is scoped QA evidence, not a complete frontend security program; future UI needs CSP/auth/session/input tests. |
-| `infra` | Own Compose privileges, networks, ports, volumes, images, secrets, backup/restore, and runtime-approved remediation. |
-| `meta` | Generated readiness must resolve typed registry semantics and stay byte-exact; stale counts and links cannot be treated as current truth. |
-| `mobile` | No mobile surface exists; future clients need secure storage, transport, identity, privacy, dependency, and release-integrity contracts. |
-| `ops` | Own incident command, private disclosure, audit/log access, rotation, recovery, exercises, and verified operational objectives. |
-| `product` | Define abuse cases, protected assets, privacy impact, risk acceptance, and user-visible security/recovery requirements. |
-| `qa` | Keep secret, workflow, dependency, container, supply-chain, runtime, and remote tests separate; record exact scope and skipped checks. |
-| `security` | Rank reachability and impact, preserve stricter secret boundaries, review exceptions, and require remediation/residual-risk ownership. |
+| Scope          | Security implication                                                                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agentic`      | Enforce permission, evidence, retry, redaction, and approval boundaries; synthetic/configured controls do not prove native execution.        |
+| `architecture` | Own threat boundaries, trust zones, identity/data flows, secure-delivery requirements, SLO/recovery design, and exception criteria.          |
+| `backend`      | No backend product surface is established; future services need authz, validation, dependency, secret, data, logging, and abuse-case tests.  |
+| `common`       | Keep shared secure defaults, dependency/format rules, and reusable redaction patterns centralized without weakening layer-specific controls. |
+| `docs`         | Preserve source dates, evidence states, incident secrecy, exception ownership, and the distinction between policy conflict and exposure.     |
+| `entry`        | Review gateway auth/TLS and the 37 non-gateway published-port declarations; require explicit host binding or registered exception evidence.  |
+| `frontend`     | Current Storybook audit is scoped QA evidence, not a complete frontend security program; future UI needs CSP/auth/session/input tests.       |
+| `infra`        | Own Compose privileges, networks, ports, volumes, images, secrets, backup/restore, and runtime-approved remediation.                         |
+| `meta`         | Generated readiness must resolve typed registry semantics and stay byte-exact; stale counts and links cannot be treated as current truth.    |
+| `mobile`       | No mobile surface exists; future clients need secure storage, transport, identity, privacy, dependency, and release-integrity contracts.     |
+| `ops`          | Own incident command, private disclosure, audit/log access, rotation, recovery, exercises, and verified operational objectives.              |
+| `product`      | Define abuse cases, protected assets, privacy impact, risk acceptance, and user-visible security/recovery requirements.                      |
+| `qa`           | Keep secret, workflow, dependency, container, supply-chain, runtime, and remote tests separate; record exact scope and skipped checks.       |
+| `security`     | Rank reachability and impact, preserve stricter secret boundaries, review exceptions, and require remediation/residual-risk ownership.       |
 
 ## Sources
 
-| Source | Accessed | Class | Verification state |
-| --- | --- | --- | --- |
-| [NIST SP 800-218, SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final) | 2026-08-08T18:18:06+09:00 | External fixed publication | Verified official page; February 2022 final, comparison only. |
-| [NIST Cybersecurity Framework 2.0](https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20) | 2026-08-08T18:18:06+09:00 | External fixed publication | Verified official CSWP 29 page; outcome/risk framework, not workspace adoption. |
-| [OWASP SAMM model](https://owaspsamm.org/model/) | 2026-08-08T18:18:06+09:00 | External mutable | Verified official model 2.0 page; five functions/fifteen practices. |
-| [SLSA specification 1.2](https://slsa.dev/spec/v1.2/) | 2026-08-08T18:18:06+09:00 | External fixed version | Verified Approved v1.2 page; no local SLSA level inferred. |
-| [OpenSSF Scorecard repository](https://github.com/ossf/scorecard) | 2026-08-08T18:18:06+09:00 | External mutable | Official repository verified; mutable `main` not used as immutable proof. |
-| [OpenSSF Scorecard commit `40c1e359`](https://github.com/ossf/scorecard/commit/40c1e35996730d4fdcbdb2e6a23917a2467e29b7) | 2026-08-08T18:18:06+09:00 | External fixed at pinned revision | `git ls-remote` and immutable commit page verified. |
-| [Docker Compose file reference](https://docs.docker.com/reference/compose-file/) | 2026-08-08T18:18:06+09:00 | External mutable | Verified official application-model page; local adoption remains tracked evidence. |
-| [Security scope](../../../00.agent-governance/scopes/security.md) | 2026-08-08 | Workspace tracked policy | Identity, secrets, container/network hardening, and approved-secret-work protocol. |
-| [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) | 2026-08-08 | Workspace tracked policy | Protected surfaces and unconditional secret-value-read prohibition. |
-| [Typed workflow contract](../../../../.github/workflow-contract.yml) | 2026-08-08 | Workspace tracked at `910ce5f` | Gate indirection, leaf entrypoints, action pins, and profiles resolved directly. |
-| [CI quality workflow](../../../../.github/workflows/ci-quality.yml) | 2026-08-08 | Workspace tracked | Permissions and typed gate calls; no hosted result inferred. |
-| [Security readiness generator](../../../../scripts/validation/generate-security-automation-readiness.sh) | 2026-08-08 | Workspace tracked/executed read-only | `--check` FAIL; `--dry-run` 7/3/3 over 7 workflows/37 scripts; no write. |
-| [Stored readiness snapshot](../../data/security/security-automation-readiness.md) | 2026-08-08 | Workspace generated/tracked stale | 11/1/1 and 36-script text retained; not current canonical evidence. |
-| [Hardening entry point](../../../../scripts/hardening/check-all-hardening.sh) and [template exceptions](../../../../infra/common-optimizations.exceptions.json) | 2026-08-08 | Workspace tracked/executed | Eleven tiers PASS; selected static controls and registered exceptions only. |
-| [Supply-chain tool registry](../../../../infra/supply-chain.tool-images.json) | 2026-08-08 | Workspace tracked | Digest-pinned tool identities; execution/release integration unverified. |
-| [Security disclosure policy](../../../../.github/SECURITY.md) | 2026-08-08 | Workspace tracked | Private reporting paths and response targets; operational attainment unverified. |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated and not used as security proof. |
+| Source                                                                                                                                                          | Accessed                    | Class                                | Verification state                                                                                                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [NIST SP 800-218, SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                                                                                        | 2026-08-08T18:18:06+09:00   | External fixed publication           | Verified official page; February 2022 final, comparison only.                                                                                                                                                                                                                                 |
+| [NIST Cybersecurity Framework 2.0](https://www.nist.gov/publications/nist-cybersecurity-framework-csf-20)                                                       | 2026-08-08T18:18:06+09:00   | External fixed publication           | Verified official CSWP 29 page; outcome/risk framework, not workspace adoption.                                                                                                                                                                                                               |
+| [OWASP SAMM model](https://owaspsamm.org/model/)                                                                                                                | 2026-08-08T18:18:06+09:00   | External mutable                     | Verified official model 2.0 page; five functions/fifteen practices.                                                                                                                                                                                                                           |
+| [SLSA specification 1.2](https://slsa.dev/spec/v1.2/)                                                                                                           | 2026-08-08T18:18:06+09:00   | External fixed version               | Verified Approved v1.2 page; no local SLSA level inferred.                                                                                                                                                                                                                                    |
+| [OpenSSF Scorecard repository](https://github.com/ossf/scorecard)                                                                                               | 2026-08-08T18:18:06+09:00   | External mutable                     | Official repository verified; mutable `main` not used as immutable proof.                                                                                                                                                                                                                     |
+| [OpenSSF Scorecard commit `40c1e359`](https://github.com/ossf/scorecard/commit/40c1e35996730d4fdcbdb2e6a23917a2467e29b7)                                        | 2026-08-08T18:18:06+09:00   | External fixed at pinned revision    | `git ls-remote` and immutable commit page verified.                                                                                                                                                                                                                                           |
+| [Docker Compose file reference](https://docs.docker.com/reference/compose-file/)                                                                                | 2026-08-08T18:18:06+09:00   | External mutable                     | Verified official application-model page; local adoption remains tracked evidence.                                                                                                                                                                                                            |
+| [Security scope](../../../00.agent-governance/scopes/security.md)                                                                                               | 2026-08-08                  | Workspace tracked policy             | Identity, secrets, container/network hardening, and approved-secret-work protocol.                                                                                                                                                                                                            |
+| [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)                                                                                | 2026-08-08                  | Workspace tracked policy             | Protected surfaces and unconditional secret-value-read prohibition.                                                                                                                                                                                                                           |
+| [Typed workflow contract](../../../../.github/workflow-contract.yml)                                                                                            | 2026-08-08                  | Workspace tracked at `910ce5f`       | Gate indirection, leaf entrypoints, action pins, and profiles resolved directly.                                                                                                                                                                                                              |
+| [CI quality workflow](../../../../.github/workflows/ci-quality.yml)                                                                                             | 2026-08-08                  | Workspace tracked                    | Permissions and typed gate calls; no hosted result inferred.                                                                                                                                                                                                                                  |
+| [Security readiness generator](../../../../scripts/validation/generate-security-automation-readiness.sh)                                                        | 2026-08-11 (was 2026-08-08) | Workspace tracked/executed read-only | Re-verified at `5580931`: `--check` PASS (fresh, exit 0); `--dry-run` 11/1/1 over 7 workflows/37 scripts/54 reachable typed gates. The Task 8 `--check` FAIL / dry-run 7/3/3 result no longer reproduces after fix commits `eed66ec7`-`08bbba79`; no write performed by this re-verification. |
+| [Stored readiness snapshot](../../data/security/security-automation-readiness.md)                                                                               | 2026-08-11 (was 2026-08-08) | Workspace generated/tracked          | Re-verified: 11/1/1 and 37-script text, matching the live `--check`/`--dry-run` output; now current canonical evidence (was stale at Task 8).                                                                                                                                                 |
+| [Hardening entry point](../../../../scripts/hardening/check-all-hardening.sh) and [template exceptions](../../../../infra/common-optimizations.exceptions.json) | 2026-08-08                  | Workspace tracked/executed           | Eleven tiers PASS; selected static controls and registered exceptions only.                                                                                                                                                                                                                   |
+| [Supply-chain tool registry](../../../../infra/supply-chain.tool-images.json)                                                                                   | 2026-08-08                  | Workspace tracked                    | Digest-pinned tool identities; execution/release integration unverified.                                                                                                                                                                                                                      |
+| [Security disclosure policy](../../../../.github/SECURITY.md)                                                                                                   | 2026-08-08                  | Workspace tracked                    | Private reporting paths and response targets; operational attainment unverified.                                                                                                                                                                                                              |
+| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                                                     | 2026-08-08                  | Workspace tracked stale/advisory     | Built from `f8a72211`; corroborated and not used as security proof.                                                                                                                                                                                                                           |
 
 ## Maintenance
 
