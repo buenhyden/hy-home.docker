@@ -116,7 +116,7 @@ separate.
 
 ## Sources
 
-- [Workspace baseline research](../../research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md)
+- [Workspace baseline research](../../research/2026-08-08-agentic-engineering-research-pack/workspace-baseline.md)
 - [Stage 00 governance hub](../../../00.agent-governance/README.md)
 - [Agentic rule](../../../00.agent-governance/rules/agentic.md)
 - [Task checklists](../../../00.agent-governance/rules/task-checklists.md)

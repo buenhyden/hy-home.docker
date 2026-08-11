@@ -34,6 +34,96 @@ TARGET_SURFACE_MANIFEST = (
     ROOT
     / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
 )
+TARGET_SURFACE_SUMMARY = (
+    ROOT
+    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md"
+)
+RETIRING_RESEARCH_PACK_PREFIX = (
+    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/"
+)
+NEW_RESEARCH_PACK_PREFIX = (
+    "docs/90.references/research/"
+    "2026-08-08-agentic-engineering-research-pack/"
+)
+RETIRING_APPROVED_MIGRATION_PATHS = frozenset(
+    {
+        f"{RETIRING_RESEARCH_PACK_PREFIX}README.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}agent-instructions-vibe-coding.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}agent-model-selection.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}ai-agent-catalogs.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}automation-pipeline-workflow.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}docker-compose-infrastructure.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}document-metadata-lifecycle.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}harness-engineering.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}loop-engineering.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}provider-implementation-comparison.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}provider-model-landscape.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}quality-ci-formatting.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}sdlc-document-roles.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}security-governance.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}spec-driven-sdlc.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}workspace-baseline.md",
+    }
+)
+PRESERVED_MIGRATION_SENTINELS = frozenset(
+    {
+        "docs/03.specs/123-agentic-engineering-audit-remediation/README.md",
+        "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
+        "docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md",
+        "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md",
+    }
+)
+PRESERVED_AUDIT_MIGRATION_PATHS = frozenset(
+    {
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md",
+        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md",
+    }
+)
+PRESERVED_TEMPLATE_MIGRATION_PATHS = frozenset(
+    {
+        "docs/99.templates/templates/common/archive.template.md",
+        "docs/99.templates/templates/common/readme.template.md",
+        "docs/99.templates/templates/common/reference.template.md",
+        "docs/99.templates/templates/operations/guide.template.md",
+        "docs/99.templates/templates/operations/incident.template.md",
+        "docs/99.templates/templates/operations/policy.template.md",
+        "docs/99.templates/templates/operations/postmortem.template.md",
+        "docs/99.templates/templates/operations/runbook.template.md",
+        "docs/99.templates/templates/sdlc/adr.template.md",
+        "docs/99.templates/templates/sdlc/ard.template.md",
+        "docs/99.templates/templates/sdlc/plan.template.md",
+        "docs/99.templates/templates/sdlc/prd.template.md",
+        "docs/99.templates/templates/sdlc/spec.template.md",
+        "docs/99.templates/templates/sdlc/task.template.md",
+    }
+)
+PRESERVED_APPROVED_MIGRATION_PATHS = (
+    PRESERVED_MIGRATION_SENTINELS
+    | PRESERVED_AUDIT_MIGRATION_PATHS
+    | PRESERVED_TEMPLATE_MIGRATION_PATHS
+)
+PINNED_TARGET_SURFACE_RESEARCH_PATHS = frozenset(
+    {
+        f"{RETIRING_RESEARCH_PACK_PREFIX}README.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}automation-pipeline-workflow.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}docker-compose-infrastructure.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}document-metadata-lifecycle.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}quality-ci-formatting.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}security-governance.md",
+        f"{RETIRING_RESEARCH_PACK_PREFIX}workspace-baseline.md",
+    }
+)
 CORPUS_MIGRATION_HUMAN_CONTRACT = (
     ROOT / "docs/99.templates/support/corpus-migration-contract.md"
 )
@@ -375,11 +465,158 @@ class ProfileSchemaTests(unittest.TestCase):
             ],
         }
 
+    def test_retiring_pack_exceptions_are_removed_without_baseline_drift(self) -> None:
+        current_paths = metadata.APPROVED_MIGRATION_PATHS
+        pre_route_paths = (
+            PRESERVED_APPROVED_MIGRATION_PATHS
+            | RETIRING_APPROVED_MIGRATION_PATHS
+        )
+
+        self.assertFalse(
+            any(
+                path.startswith(
+                    (RETIRING_RESEARCH_PACK_PREFIX, NEW_RESEARCH_PACK_PREFIX)
+                )
+                for path in current_paths
+            )
+        )
+        self.assertEqual(
+            RETIRING_APPROVED_MIGRATION_PATHS,
+            pre_route_paths - current_paths,
+        )
+        self.assertEqual(frozenset(), current_paths - pre_route_paths)
+        self.assertEqual(PRESERVED_APPROVED_MIGRATION_PATHS, current_paths)
+        self.assertEqual(
+            PRESERVED_MIGRATION_SENTINELS,
+            current_paths & PRESERVED_MIGRATION_SENTINELS,
+        )
+        self.assertEqual(
+            PRESERVED_AUDIT_MIGRATION_PATHS,
+            frozenset(
+                path
+                for path in current_paths
+                if path.startswith(
+                    "docs/90.references/audits/"
+                    "2026-07-05-agentic-engineering-implementation-audit-pack/"
+                )
+            ),
+        )
+
+        migration_contract = yaml.safe_load(
+            MIGRATION_CONTRACT.read_text(encoding="utf-8")
+        )
+        contract_paths = migration_contract["waves"]["target-surface-convergence"][
+            "direct_source_paths"
+        ]
+        python_research_paths = frozenset(
+            path
+            for path in metadata.TARGET_SURFACE_DIRECT_SOURCE_PATHS
+            if path.startswith(RETIRING_RESEARCH_PACK_PREFIX)
+        )
+        contract_research_paths = frozenset(
+            path
+            for path in contract_paths
+            if path.startswith(RETIRING_RESEARCH_PACK_PREFIX)
+        )
+        self.assertEqual(PINNED_TARGET_SURFACE_RESEARCH_PATHS, python_research_paths)
+        self.assertEqual(PINNED_TARGET_SURFACE_RESEARCH_PATHS, contract_research_paths)
+        self.assertEqual(tuple(contract_paths), metadata.TARGET_SURFACE_DIRECT_SOURCE_PATHS)
+
+        manifest = yaml.safe_load(TARGET_SURFACE_MANIFEST.read_text(encoding="utf-8"))
+        pinned_rows = [
+            row
+            for row in manifest["entries"]
+            if row["source_path"].startswith(RETIRING_RESEARCH_PACK_PREFIX)
+        ]
+        self.assertEqual("target-surface-convergence", manifest["wave"])
+        self.assertEqual(metadata.TARGET_SURFACE_BASELINE, manifest["baseline_commit"])
+        self.assertEqual(
+            PINNED_TARGET_SURFACE_RESEARCH_PATHS,
+            frozenset(row["source_path"] for row in pinned_rows),
+        )
+        self.assertEqual(
+            "f3c8d0202e90f4d026056d5f53e879478fbc2ae15b216e65901932a3f917d1a4",
+            hashlib.sha256(
+                yaml.safe_dump(pinned_rows, sort_keys=False).encode("utf-8")
+            ).hexdigest(),
+        )
+
+        summary_lines = [
+            line
+            for line in TARGET_SURFACE_SUMMARY.read_text(encoding="utf-8").splitlines()
+            if line.startswith(f"| {RETIRING_RESEARCH_PACK_PREFIX}")
+        ]
+        self.assertEqual(7, len(summary_lines))
+        self.assertEqual(
+            "b8cb6af5b13483110447017ccae9623f80db8ca0f70a2f142e642fa6dec97a5e",
+            hashlib.sha256(("\n".join(summary_lines) + "\n").encode("utf-8")).hexdigest(),
+        )
+
     def test_schema_version_rejects_boolean(self) -> None:
         self.mutate_and_load(lambda values: values.__setitem__("schema_version", True))
 
     def test_profile_lists_reject_non_string_members(self) -> None:
         self.mutate_and_load(lambda values: values["profiles"]["spec"]["required"].append(7))
+
+    def test_allowed_parent_types_are_exact_by_profile(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        expected = {
+            "prd": [],
+            "ard": ["prd"],
+            "adr": ["prd", "ard"],
+            "spec": ["prd", "ard", "adr", "spec", "archive"],
+            "plan": ["prd", "ard", "adr", "spec", "archive"],
+            "task": ["spec", "plan", "task", "archive"],
+            "guide": ["spec", "plan", "task", "policy"],
+            "policy": ["prd", "ard", "adr", "spec", "plan", "task"],
+            "runbook": ["spec", "plan", "task", "guide", "policy", "archive"],
+            "incident": ["runbook"],
+            "postmortem": ["incident"],
+            "release": ["spec", "plan", "task"],
+            "reference": [
+                "prd",
+                "ard",
+                "adr",
+                "spec",
+                "plan",
+                "task",
+                "guide",
+                "policy",
+                "runbook",
+                "reference",
+            ],
+            "audit": ["spec", "archive", "plan", "task", "reference", "audit"],
+            "readme": [],
+            "repo-support": [],
+            "generated": [],
+            "template-source": [],
+            "governance": [],
+            "archive": [
+                "prd",
+                "ard",
+                "adr",
+                "spec",
+                "plan",
+                "task",
+                "guide",
+                "policy",
+                "runbook",
+                "incident",
+                "postmortem",
+                "release",
+                "reference",
+                "audit",
+            ],
+            "unsupported": [],
+        }
+
+        self.assertEqual(
+            expected,
+            {
+                profile_name: profile["allowed_parent_types"]
+                for profile_name, profile in profiles["profiles"].items()
+            },
+        )
 
     def test_transitions_reject_unknown_statuses(self) -> None:
         self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))

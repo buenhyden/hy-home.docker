@@ -126,8 +126,8 @@ discovery.
 
 ## Sources
 
-- [Provider comparison research and official evidence ledger](../../research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md)
-- [Provider model landscape](../../research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md)
+- [Provider comparison research and official evidence ledger](../../research/2026-08-08-agentic-engineering-research-pack/provider-implementation-comparison.md)
+- [Provider model landscape](../../research/2026-08-08-agentic-engineering-research-pack/provider-model-landscape.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
 - [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md)
 - [Claude notes](../../../00.agent-governance/providers/claude.md)

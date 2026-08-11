@@ -163,7 +163,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 | Source control and change review | Partially Implemented | [GitHub governance](../../../00.agent-governance/rules/github-governance.md), [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml), [CODEOWNERS](../../../../.github/CODEOWNERS), [CI quality workflow](../../../../.github/workflows/ci-quality.yml) | Dated public evidence records a failed 15-job run; current authenticated protection/ruleset state and complete CODEOWNERS enforcement remain unverified. |
 | Workflow token and action integrity | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [repo contracts](../../../../scripts/validation/check-repo-contracts.sh), [GitHub governance](../../../00.agent-governance/rules/github-governance.md) | Workflows use explicit permissions and SHA-pinned actions; continue checking any new workflow action references through repo contracts and workflow review. |
 | Build track and artifact production | Gap | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [quality audit](./sdlc-quality-formatting-implementation.md) | CI validates docs, Compose, hardening, frontend build, coverage, and workflow security, but does not publish SLSA build provenance or declare SLSA build-level compliance. |
-| Provenance, attestations, and verification | Gap | [security research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) | No tracked provenance, attestation, signing, verification summary, or consumer verification workflow was found. |
+| Provenance, attestations, and verification | Gap | [security research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) | No tracked provenance, attestation, signing, verification summary, or consumer verification workflow was found. |
 | Dependency and image update hygiene | Partially Implemented | [Dependabot](../../../../.github/dependabot.yml), [tech-stack registry](../../../../infra/tech-stack.versions.json), [tech-stack sync script](../../../../scripts/operations/sync-tech-stack-versions.sh), [image tag policy](../../../../infra/image-tag-policy.exceptions.json), `.github/workflows/ci-quality.yml` | Dependency update, version-drift, and scoped Storybook Next.js npm vulnerability audit controls exist; SBOM, broad OSV/container vulnerability scanning, and signed dependency provenance are not implemented. |
 
 ## OpenSSF Scorecard Readiness Matrix
@@ -248,8 +248,8 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - [OpenSSF Scorecard checks](https://github.com/ossf/scorecard/blob/main/docs/checks.md) - detailed check criteria for CI, code review, dangerous workflows, dependency update tools, token permissions, and vulnerabilities.
 - [zizmor 1.27.0 advisory](https://github.com/zizmorcore/zizmor/security/advisories/GHSA-f42p-wjw5-97qh) - affected-version boundary.
 - [zizmor 1.28.0 release](https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0) - patched release evidence.
-- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - prior secure SDLC and supply-chain reference analysis.
-- [Quality CI formatting research](../../research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) - QA/CI and secure quality gate criteria.
+- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - prior secure SDLC and supply-chain reference analysis.
+- [Quality CI formatting research](../../research/2026-08-08-agentic-engineering-research-pack/quality-ci-formatting.md) - QA/CI and secure quality gate criteria.
 - [Security scope](../../../00.agent-governance/scopes/security.md) - repo-local security and redaction scope.
 - [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow security and repository protection policy.
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md) - protected-surface approval matrix.
@@ -277,5 +277,5 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - [Implementation overview](./implementation-overview.md)
 - [SDLC quality formatting implementation](./sdlc-quality-formatting-implementation.md)
 - [Automation candidates](./automation-candidates.md)
-- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md)
 - [Security automation readiness](../../data/security/security-automation-readiness.md)

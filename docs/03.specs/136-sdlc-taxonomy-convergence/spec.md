@@ -77,19 +77,19 @@ The target is an internal repository convention informed by standards and
 official practices. No cited source mandates the repository's numeric folder
 names.
 
-| Source | Supported use in this design |
-| :-- | :-- |
-| ISO/IEC/IEEE 15289:2019 | Lifecycle information items may be selected, combined, or subdivided to fit an organization's lifecycle model. |
-| ISO/IEC/IEEE 29148:2018 | Requirements engineering and requirements information items justify a distinct requirements authority. |
-| ISO/IEC/IEEE 42010:2022 | Architecture Description, stakeholder concerns, viewpoints, views, and models justify the Stage 02 vocabulary. |
-| NIST SP 800-218 SSDF 1.1 | Security practices and evidence must integrate into the chosen SDLC rather than form an unrelated lifecycle. |
-| NIST AI RMF 1.0 | Govern is cross-cutting; agent governance is a control plane, not a serial delivery stage. |
-| GitHub Spec Kit | Specification, plan, tasks, and implementation form a practical spec-driven flow. |
-| OpenSpec | Completed changes write back into durable specifications. |
-| MADR | Architecture decisions use stable sequential identities and supersession links. |
-| Google SRE guidance | Runbooks, incident records, postmortems, and corrective actions have different operational roles. |
-| Diátaxis | Content purpose should be explicit, but empty classification buckets should not be created. |
-| DCMI Metadata Terms | Created, modified, issued, and related dates belong in structured metadata. |
+| Source                   | Supported use in this design                                                                                   |
+| :----------------------- | :------------------------------------------------------------------------------------------------------------- |
+| ISO/IEC/IEEE 15289:2019  | Lifecycle information items may be selected, combined, or subdivided to fit an organization's lifecycle model. |
+| ISO/IEC/IEEE 29148:2018  | Requirements engineering and requirements information items justify a distinct requirements authority.         |
+| ISO/IEC/IEEE 42010:2022  | Architecture Description, stakeholder concerns, viewpoints, views, and models justify the Stage 02 vocabulary. |
+| NIST SP 800-218 SSDF 1.1 | Security practices and evidence must integrate into the chosen SDLC rather than form an unrelated lifecycle.   |
+| NIST AI RMF 1.0          | Govern is cross-cutting; agent governance is a control plane, not a serial delivery stage.                     |
+| GitHub Spec Kit          | Specification, plan, tasks, and implementation form a practical spec-driven flow.                              |
+| OpenSpec                 | Completed changes write back into durable specifications.                                                      |
+| MADR                     | Architecture decisions use stable sequential identities and supersession links.                                |
+| Google SRE guidance      | Runbooks, incident records, postmortems, and corrective actions have different operational roles.              |
+| Diátaxis                 | Content purpose should be explicit, but empty classification buckets should not be created.                    |
+| DCMI Metadata Terms      | Created, modified, issued, and related dates belong in structured metadata.                                    |
 
 Primary references:
 
@@ -111,18 +111,18 @@ The following measurements were corroborated against tracked files at
 78b60974164ff5427ba8c64aaf3ecde4a7faf41a. The Graphify report was stale and
 was used only as advisory context.
 
-| Surface | Current state |
-| :-- | :-- |
+| Surface  | Current state                                                                          |
+| :------- | :------------------------------------------------------------------------------------- |
 | Stage 00 | 109 files; authority, language, provider, date, load-order, and persona rules conflict |
-| Stage 01 | 25 PRDs plus README; no SRS or Interface Requirement profile |
-| Stage 02 | 25 architecture-requirements documents, 25 ADRs, and 3 READMEs |
-| Stage 03 | 27 Spec directories; 22 redundant child READMEs |
-| Stage 04 | 102 dated Plans and 130 dated Tasks |
-| Stage 05 | 263 Markdown files; 66 guides, 64 policies, 62 runbooks, and 71 READMEs |
-| Stage 90 | 92 Markdown files plus 5 other artifacts; several dated research paths |
-| Stage 98 | 52 tombstones, including 32 complete Specs incorrectly treated as tombstones |
-| Stage 99 | 27 template sources; only 300 of 600 measured instances conform |
-| scripts | 63 tracked files, including 39 Shell and 20 Python files, totaling about 53,748 lines |
+| Stage 01 | 25 PRDs plus README; no SRS or Interface Requirement profile                           |
+| Stage 02 | 25 architecture-requirements documents, 25 ADRs, and 3 READMEs                         |
+| Stage 03 | 27 Spec directories; 22 redundant child READMEs                                        |
+| Stage 04 | 102 dated Plans and 130 dated Tasks                                                    |
+| Stage 05 | 263 Markdown files; 66 guides, 64 policies, 62 runbooks, and 71 READMEs                |
+| Stage 90 | 92 Markdown files plus 5 other artifacts; several dated research paths                 |
+| Stage 98 | 52 tombstones, including 32 complete Specs incorrectly treated as tombstones           |
+| Stage 99 | 27 template sources; only 300 of 600 measured instances conform                        |
+| scripts  | 63 tracked files, including 39 Shell and 20 Python files, totaling about 53,748 lines  |
 
 Focused traceability currently passes 46 fixed pairs, but broader alignment
 fails on 184 links. Of those, 182 are active documents linking directly to
@@ -144,13 +144,13 @@ the existing typed registries change before dependent corpus movement.
 
 Each policy topic has exactly one canonical owner:
 
-| Topic | Canonical owner |
-| :-- | :-- |
-| Agent roles, authority, approvals, provider projection | Stage 00 typed governance contracts |
-| Document types, paths, frontmatter, headings, lifecycle | Stage 99 typed document contracts |
-| Script ownership, mutation, consumers, disposition, tests | scripts/manifest.yaml |
-| Gate IDs, ordering, environment, and timeout | .github/workflow-contract.yml |
-| Current product behavior | Stage 01 through Stage 05 artifacts according to role |
+| Topic                                                     | Canonical owner                                       |
+| :-------------------------------------------------------- | :---------------------------------------------------- |
+| Agent roles, authority, approvals, provider projection    | Stage 00 typed governance contracts                   |
+| Document types, paths, frontmatter, headings, lifecycle   | Stage 99 typed document contracts                     |
+| Script ownership, mutation, consumers, disposition, tests | scripts/manifest.yaml                                 |
+| Gate IDs, ordering, environment, and timeout              | .github/workflow-contract.yml                         |
+| Current product behavior                                  | Stage 01 through Stage 05 artifacts according to role |
 
 Human-readable documents point to these owners and do not copy complete rule
 sets. When two surfaces disagree, typed path authority wins. Ambiguous
@@ -328,14 +328,14 @@ Each domain directly contains stable operation subjects:
 
 Only required roles exist for a subject:
 
-| Role | Sole responsibility |
-| :-- | :-- |
-| Guide | Purpose, concepts, normal use, and non-destructive checks |
-| Policy | Mandatory and prohibited behavior, controls, exceptions, verification, and review cadence |
-| Runbook | Trigger, prerequisites, safety, ordered commands, expected observations, stop conditions, validation, recovery, and escalation |
-| Incident | Occurrence, impact, response timeline, and current state |
-| Postmortem | Root cause, contributing factors, learning, follow-up owner, and due condition |
-| Release | Scope, evidence, known risk, promotion result, and rollback condition |
+| Role       | Sole responsibility                                                                                                            |
+| :--------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| Guide      | Purpose, concepts, normal use, and non-destructive checks                                                                      |
+| Policy     | Mandatory and prohibited behavior, controls, exceptions, verification, and review cadence                                      |
+| Runbook    | Trigger, prerequisites, safety, ordered commands, expected observations, stop conditions, validation, recovery, and escalation |
+| Incident   | Occurrence, impact, response timeline, and current state                                                                       |
+| Postmortem | Root cause, contributing factors, learning, follow-up owner, and due condition                                                 |
+| Release    | Scope, evidence, known risk, promotion result, and rollback condition                                                          |
 
 Guide Runbook Handoff is conditional on a sibling Runbook. Runbook Automation
 Handoff is conditional on real automation. Policy does not copy procedures.
@@ -393,16 +393,16 @@ Common frontmatter includes:
 created is immutable. updated changes only for semantic changes. Additional
 typed dates are:
 
-| Type | Additional fields |
-| :-- | :-- |
-| Plan and Task | completed_at |
-| Guide, Policy, Runbook | reviewed_at, next_review_at |
-| Incident | occurred_at, resolved_at |
-| Postmortem | reviewed_at |
-| Release | released_at |
-| Change packet and Tombstone | archived_at |
-| Migration | completed_at |
-| Reference evidence | observed_at when applicable |
+| Type                        | Additional fields           |
+| :-------------------------- | :-------------------------- |
+| Plan and Task               | completed_at                |
+| Guide, Policy, Runbook      | reviewed_at, next_review_at |
+| Incident                    | occurred_at, resolved_at    |
+| Postmortem                  | reviewed_at                 |
+| Release                     | released_at                 |
+| Change packet and Tombstone | archived_at                 |
+| Migration                   | completed_at                |
+| Reference evidence          | observed_at when applicable |
 
 Dates use ISO 8601. Event timelines may include timestamps in their body; path
 identity never uses them.
@@ -529,20 +529,20 @@ Runbook.
 
 The implementation performs these directed consolidations:
 
-| Current surface | Required disposition |
-| :-- | :-- |
-| LLM Wiki index and coverage Shell generators | Merge their duplicated source-selection and classification engine; remove old files after consumer migration |
-| Document traceability and implementation-alignment Shell validators | Share one document-graph library and one mode-driven Python CLI |
-| Metadata and lifecycle Python validators | Share frontmatter, path, Git provenance, and migration parsing while retaining role-specific CLIs |
-| Generated artifact checks | Register owners and outputs once and execute one aggregate freshness gate |
-| check-repo-contracts.sh | Move typed rules to their owners, replace residual invariants with a focused validator, and delete the 4,056-line Shell policy engine |
-| recommend-qa-gates.sh | Merge selection into the typed gate runner |
-| report-provider-hook-parity.sh | Merge reporting into provider rendering |
-| patch-graphify-post-commit.sh | Move the filter into canonical hook generation and delete the after-install patch |
-| post-tool-validate.sh | Reduce to a non-mutating typed gate dispatcher |
-| Rehearsals with dated Task paths | Replace paths with stable artifact IDs; retain only if a current Runbook and test consume them |
-| Consumerless reports, recommendations, and rehearsals | Merge useful behavior or evidence into the canonical owner, then delete |
-| Dormant lifecycle modes | Give them a current consumer and test or remove them |
+| Current surface                                                     | Required disposition                                                                                                                  |
+| :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------ |
+| LLM Wiki index and coverage Shell generators                        | Merge their duplicated source-selection and classification engine; remove old files after consumer migration                          |
+| Document traceability and implementation-alignment Shell validators | Share one document-graph library and one mode-driven Python CLI                                                                       |
+| Metadata and lifecycle Python validators                            | Share frontmatter, path, Git provenance, and migration parsing while retaining role-specific CLIs                                     |
+| Generated artifact checks                                           | Register owners and outputs once and execute one aggregate freshness gate                                                             |
+| check-repo-contracts.sh                                             | Move typed rules to their owners, replace residual invariants with a focused validator, and delete the 4,056-line Shell policy engine |
+| recommend-qa-gates.sh                                               | Merge selection into the typed gate runner                                                                                            |
+| report-provider-hook-parity.sh                                      | Merge reporting into provider rendering                                                                                               |
+| patch-graphify-post-commit.sh                                       | Move the filter into canonical hook generation and delete the after-install patch                                                     |
+| post-tool-validate.sh                                               | Reduce to a non-mutating typed gate dispatcher                                                                                        |
+| Rehearsals with dated Task paths                                    | Replace paths with stable artifact IDs; retain only if a current Runbook and test consume them                                        |
+| Consumerless reports, recommendations, and rehearsals               | Merge useful behavior or evidence into the canonical owner, then delete                                                               |
+| Dormant lifecycle modes                                             | Give them a current consumer and test or remove them                                                                                  |
 
 The typed gate CLI, local QA runner, CI pre-commit runner, controlled agent
 all-files runner, metadata CLI, lifecycle CLI, provider sync wrapper, and
@@ -551,7 +551,7 @@ roles. The manifest audit may still delete one if its consumers and tests do
 not justify it.
 
 One-time migration utilities are not tracked. Their durable output is the
-migration ledger and validated corpus. __pycache__, temporary evidence, and
+migration ledger and validated corpus. **pycache**, temporary evidence, and
 generated intermediates do not remain in the final tree.
 
 ## Validation and CI Contract
@@ -742,3 +742,6 @@ The work is complete only when:
 - [SDLC document contract](../../99.templates/support/sdlc-document-contract.md)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)
 - [Parent Spec 134](../134-agent-governance-canonical-convergence/spec.md)
+- [Lifecycle status](../../99.templates/support/lifecycle-status.md)
+- [Spec-driven development and SDLC reference](../../90.references/research/2026-08-08-agentic-engineering-research-pack/spec-driven-sdlc.md)
+- [Current project memory](../../00.agent-governance/memory/current.md)

@@ -1083,7 +1083,7 @@ verdict in this document.
 - **Previous Spec**:
   [Agentic Research Pack Refresh](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - **Canonical Research Pack**:
-  [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [Agentic Engineering Research Pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Duplicate Pack**:
   `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
   (path removed after this Plan completed; the canonical destination mapping is

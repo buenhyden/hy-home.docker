@@ -141,7 +141,7 @@ This task records execution evidence for refreshing and extending the Stage 90 a
 | --- | --- | --- | --- |
 | Stage 03 Spec | [Agentic Research Pack Refresh Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md) | Design contract | Active |
 | Stage 04 Plan | [Agentic Research Pack Refresh Plan](../plans/2026-07-05-agentic-research-pack-refresh.md) | Execution plan | Active |
-| Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md) | Target research category | Active |
+| Stage 90 Research Pack | [Agentic Engineering Research Pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md) | Target research category | Active |
 
 ## Deviation Log
 
@@ -155,7 +155,7 @@ Validation runs after research documents and indexes are updated.
 
 - [Plan](../plans/2026-07-05-agentic-research-pack-refresh.md)
 - [Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
-- [Research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Research references](../../90.references/research/README.md)
 ```
 
@@ -665,7 +665,7 @@ Expected: commit succeeds. If `llm-wiki-index.md` did not change, `git add` safe
 ## Related Documents
 
 - **Spec**: [Agentic Research Pack Refresh Spec](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
-- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Research References**: [Research References](../../90.references/research/README.md)
 - **Task**: [Agentic Research Pack Refresh Task](../tasks/2026-07-05-agentic-research-pack-refresh.md)
 - **Reference Template**: [Reference Template](../../99.templates/templates/common/reference.template.md)

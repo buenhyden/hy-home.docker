@@ -399,7 +399,7 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 ## Related Documents
 
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Research category README](../../90.references/research/README.md)
 - [Spec 123 audit remediation](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Predecessor convergence Task](./2026-07-26-agent-governance-canonical-convergence.md)

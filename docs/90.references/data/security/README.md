@@ -88,5 +88,5 @@ security/
 - [security automation readiness](./security-automation-readiness.md)
 - [sample-service supply-chain summary](./supply-chain-sample-service.md)
 - [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
-- [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- [security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)

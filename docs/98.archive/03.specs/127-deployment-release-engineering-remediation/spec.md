@@ -313,7 +313,7 @@ The repository-wide archive mapping is recorded in
 - **Quality audit**: [SDLC quality and formatting](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
 - **Automation audit**: [Automation candidates](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
 - **Compose audit**: [Compose, infrastructure, and operations readiness](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md)
-- **Research**: [Automation/pipeline/workflow research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md), [security research](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- **Research**: [Automation/pipeline/workflow research](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/automation-pipeline-workflow.md), [security research](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/security-governance.md)
 - **Runtime dependency**: [Spec 124](../124-compose-runtime-readiness-remediation/spec.md)
 - **Recovery dependency**: [Spec 125](../125-infrastructure-operations-readiness-remediation/spec.md)
 - **Security dependency**: [Spec 126](../126-security-supply-chain-remediation/spec.md)

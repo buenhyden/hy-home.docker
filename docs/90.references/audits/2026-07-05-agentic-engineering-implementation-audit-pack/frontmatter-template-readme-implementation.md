@@ -167,8 +167,8 @@ unrelated historical findings remain advisory.
 
 ## Sources
 
-- [Document metadata and lifecycle criteria](../../research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md) - DML-01 through DML-14
-- [SDLC document roles](../../research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md) - artifact-type boundaries
+- [Document metadata and lifecycle criteria](../../research/2026-08-08-agentic-engineering-research-pack/document-metadata-lifecycle.md) - DML-01 through DML-14
+- [SDLC document roles](../../research/2026-08-08-agentic-engineering-research-pack/sdlc-document-roles.md) - artifact-type boundaries
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - current key/profile and README/generated rules
 - [Lifecycle status](../../../99.templates/support/lifecycle-status.md) - current status vocabulary and replacement requirement
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - target-stage status, template, and numbering rules

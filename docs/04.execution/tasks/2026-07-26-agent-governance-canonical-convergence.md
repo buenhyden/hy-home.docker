@@ -334,5 +334,5 @@ when required.
 - [Spec 134](../../03.specs/134-agent-governance-canonical-convergence/spec.md)
 - [Implementation Plan](../plans/2026-07-26-agent-governance-canonical-convergence.md)
 - [Agent governance](../../00.agent-governance/README.md)
-- [Canonical research](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)

@@ -163,7 +163,7 @@ recovery, and deployment remain unobserved runtime work.
 
 ## Sources
 
-- [Docker Compose infrastructure research](../../research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) - source-backed structural/runtime evidence ladder.
+- [Docker Compose infrastructure research](../../research/2026-08-08-agentic-engineering-research-pack/docker-compose-infrastructure.md) - source-backed structural/runtime evidence ladder.
 - [Compose profile/service coverage](../../data/docker/compose-profile-service-coverage.md) - generated tracked topology.
 - [Tech-stack version provenance](../../data/docker/tech-stack-version-provenance.md) - generated declaration provenance and drift evidence.
 - [Infrastructure README](../../../../infra/README.md) - repository topology and validation routing.

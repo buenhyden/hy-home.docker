@@ -84,7 +84,7 @@ routed to independent specifications and plans for later approval.
 - [Implementation plan](../../../04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Task evidence](../../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
 - [Previous research consolidation specification](../122-agentic-research-pack-consolidation/spec.md)
-- [Canonical research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Canonical implementation audit pack](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)

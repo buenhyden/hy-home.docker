@@ -53,7 +53,7 @@ This specification's work reached a terminal state (`completed` or `superseded`)
 - **ARD**: N/A - no architecture runtime surface changes are proposed.
 - **Related ADRs**: N/A - no architecture decision is introduced.
 - **Research Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Stage 90 Contract**:
   [../../90.references/README.md](../../../90.references/README.md)
 - **Reference Template**:
@@ -269,7 +269,7 @@ The repository-wide archive mapping is recorded in
 - **README**: [README.md](./README.md)
 - [spec README](./README.md)
 - [docs/03.specs README](../../../03.specs/README.md)
-- [agentic engineering research pack](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [agentic engineering research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [research references](../../../90.references/research/README.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

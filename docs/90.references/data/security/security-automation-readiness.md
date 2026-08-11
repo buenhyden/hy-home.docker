@@ -75,12 +75,12 @@ management procedures.
 | SEC-AUTO-005 | Infrastructure hardening baseline | Implemented | [scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | Hardening script is wired into CI quality checks. |
 | SEC-AUTO-006 | Tracked image/version provenance snapshot | Implemented | [infra/tech-stack.versions.json](../../../../infra/tech-stack.versions.json)<br>[infra/image-tag-policy.exceptions.json](../../../../infra/image-tag-policy.exceptions.json)<br>[scripts/operations/generate-tech-stack-version-provenance.sh](../../../../scripts/operations/generate-tech-stack-version-provenance.sh)<br>[docs/90.references/data/docker/tech-stack-version-provenance.md](../../../../docs/90.references/data/docker/tech-stack-version-provenance.md) | Generated provenance describes tracked registry/Compose evidence, not SBOMs, signatures, or SLSA attestations. |
 | SEC-AUTO-008 | Scoped ecosystem vulnerability gate | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml) | The tracked Storybook Next.js npm audit gate has an explicit project and severity scope. |
-| SEC-AUTO-009 | SBOM generation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | An SBOM generation command is present in tracked workflow/script surfaces. |
-| SEC-AUTO-010 | Artifact signing or provenance attestation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Signing or attestation command is present in tracked workflow/script surfaces. |
-| SEC-AUTO-011 | OpenSSF Scorecard automation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Scorecard automation is present in tracked workflow/script surfaces. |
-| SEC-AUTO-013 | Container/image vulnerability scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | A container/image vulnerability scanning command is present in tracked workflow/script surfaces. |
+| SEC-AUTO-009 | SBOM generation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | An SBOM generation command is present in tracked workflow/script surfaces. |
+| SEC-AUTO-010 | Artifact signing or provenance attestation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Signing or attestation command is present in tracked workflow/script surfaces. |
+| SEC-AUTO-011 | OpenSSF Scorecard automation | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | Scorecard automation is present in tracked workflow/script surfaces. |
+| SEC-AUTO-013 | Container/image vulnerability scanning | Implemented | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | A container/image vulnerability scanning command is present in tracked workflow/script surfaces. |
 | SEC-AUTO-007 | Branch protection and review evidence | Partially Implemented | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/rulesets/main-protection.md](../../../../.github/rulesets/main-protection.md) | Local and last-recorded branch-protection evidence exist; live remote enforcement must be re-verified before current claims. |
-| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 36 scripts, and `.pre-commit-config.yaml`. |
+| SEC-AUTO-012 | Broad dependency SCA coverage | Gap | [.github/workflows/ci-quality.yml](../../../../.github/workflows/ci-quality.yml)<br>[.github/workflow-contract.yml](../../../../.github/workflow-contract.yml)<br>[scripts/README.md](../../../../scripts/README.md)<br>[.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) | No tracked broad dependency SCA command was found; the scoped npm audit does not satisfy this control. Scanned tracked workflow/script surfaces: 7 workflows, 37 scripts, `.pre-commit-config.yaml`, and 54 reachable typed gates. |
 
 ## Findings
 
@@ -93,7 +93,7 @@ management procedures.
 - The scoped Storybook Next.js npm audit gate does not close broad dependency
   SCA. Local sample-service image scanning is a separate fixture-policy and
   advisory-rehearsal contract, not a live runtime or release claim.
-- broad dependency SCA are still gaps in tracked workflow/script surfaces.
+- broad dependency SCA remains a gap in tracked workflow/script surfaces.
 
 ## Gap / Follow-up
 
@@ -104,6 +104,9 @@ management procedures.
 ## Source Rules
 
 - Use tracked repository files for readiness claims.
+- Admit typed commands and Actions only after complete canonical workflow
+  validation plus narrow fail-closed job/step shape and failure checks;
+  registered Action evidence must use a single unconditional parsed `uses`.
 - Treat this generated snapshot as planning evidence, not active policy or
   runtime truth.
 - Do not include secret values, private keys, tokens, shell history, raw
@@ -116,7 +119,8 @@ management procedures.
 - [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.
 - [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.
 - [Security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) - framework coverage and gap baseline.
-- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - secure SDLC and supply-chain reference context.
+- [Security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md) - secure SDLC and supply-chain reference context.
+- [.github/workflow-contract.yml](../../../../.github/workflow-contract.yml) - typed workflow gates, adapters, actions, and job-root reachability.
 - [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.
 
 ## Maintenance
@@ -135,4 +139,4 @@ management procedures.
 - [reference data index](../README.md)
 - [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
 - [automation candidates](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
-- [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- [security governance research](../../research/2026-08-08-agentic-engineering-research-pack/security-governance.md)

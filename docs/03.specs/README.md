@@ -71,6 +71,9 @@ docs/03.specs/
 ├── 103-document-restructure-audit-contract-archive/ # Active document restructure disposition contract
 ├── 105-agentic-engineering-implementation-audit-pack/ # Completed Stage 90 implementation audit pack design spec
 ├── 134-agent-governance-canonical-convergence/ # Active provider, memory, harness, loop, CI, and evidence convergence
+├── 135-target-surface-delta-convergence/ # Active tracked target-surface delta convergence spec
+├── 136-sdlc-taxonomy-convergence/        # Draft SDLC taxonomy and lifecycle convergence spec
+├── 137-agentic-research-pack-rebuild/    # Active source-backed agentic research pack rebuild spec
 └── README.md                            # This file
 ```
 
@@ -88,6 +91,9 @@ docs/03.specs/
 | Workflow orchestration and cross-validation agent behavior                                            | `008-workflow/spec.md`, `008-workflow/agent-design.md`        |
 | Agentic engineering reference-audit pack design                                                       | `105-agentic-engineering-implementation-audit-pack/spec.md`   |
 | Active agent-governance provider, memory, harness, loop, CI, and evidence convergence                 | `134-agent-governance-canonical-convergence/spec.md`          |
+| Active target-surface delta convergence                                                               | `135-target-surface-delta-convergence/spec.md`                |
+| SDLC taxonomy and lifecycle convergence                                                               | `136-sdlc-taxonomy-convergence/spec.md`                       |
+| Source-backed agentic engineering research pack rebuild                                               | `137-agentic-research-pack-rebuild/spec.md`                   |
 | Second-wave document restructure disposition contract                                                 | `103-document-restructure-audit-contract-archive/spec.md`     |
 | Workspace-wide document contract audit/disposition model                                              | `102-workspace-document-contract-audit-pack/spec.md`          |
 | Local AI inference, RAG UI, model-serving contracts                                                   | `009-ai/spec.md`, `009-ai/open-webui.md`                      |
@@ -154,6 +160,9 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Agentic Engineering Implementation Audit Pack Spec**: [105-agentic-engineering-implementation-audit-pack/spec.md](./105-agentic-engineering-implementation-audit-pack/spec.md)
 - **Operational Readiness Program evidence owner**: [Program Task](../04.execution/tasks/2026-07-19-operational-readiness-closure-program.md)
 - **Agent Governance Canonical Convergence Spec (active)**: [134-agent-governance-canonical-convergence/spec.md](./134-agent-governance-canonical-convergence/spec.md)
+- **Target Surface Delta Convergence Spec (active)**: [135-target-surface-delta-convergence/spec.md](./135-target-surface-delta-convergence/spec.md)
+- **SDLC Taxonomy Convergence Spec (draft)**: [136-sdlc-taxonomy-convergence/spec.md](./136-sdlc-taxonomy-convergence/spec.md)
+- **Agentic Engineering Research Pack Rebuild Spec (active)**: [137-agentic-research-pack-rebuild/spec.md](./137-agentic-research-pack-rebuild/spec.md)
 - **Document Restructure Audit, Contract, and Archive Spec**: [103-document-restructure-audit-contract-archive/spec.md](./103-document-restructure-audit-contract-archive/spec.md)
 - **Harness / Agent-first Engineering Spec**: [094-harness-agent-first-engineering/spec.md](./094-harness-agent-first-engineering/spec.md)
 - **Home Docker Revalidation Deferred Follow-up Spec**: [097-home-docker-revalidation-deferred-follow-up/spec.md](./097-home-docker-revalidation-deferred-follow-up/spec.md)

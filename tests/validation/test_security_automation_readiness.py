@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import copy
+import json
 import pathlib
 import re
+import shutil
 import subprocess
+import tempfile
 import unittest
+
+import yaml
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -27,6 +33,499 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr)
         return result.stdout
+
+    def render_fixture(
+        self,
+        workflow_contract: dict[str, object],
+        workflow_text: str,
+    ) -> str:
+        with tempfile.TemporaryDirectory(prefix="security-readiness-") as temporary:
+            root = pathlib.Path(temporary)
+            overrides = {
+                GENERATOR: (ROOT / GENERATOR).read_text(encoding="utf-8"),
+                ".github/workflow-contract.yml": json.dumps(
+                    workflow_contract, indent=2
+                ),
+                ".github/workflows/ci-quality.yml": workflow_text,
+                ".github/SECURITY.md": "# Security\n",
+                ".github/dependabot.yml": "package-ecosystem: npm\n",
+                ".gitleaks.toml": "[allowlist]\n",
+                ".pre-commit-config.yaml": "- id: gitleaks\n",
+            }
+            fixture_paths = subprocess.run(
+                [
+                    "git",
+                    "ls-files",
+                    "scripts",
+                    "tests/validation/test_run_ci_precommit.sh",
+                    ".github/workflows",
+                ],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.splitlines()
+            for relative in fixture_paths:
+                if relative in overrides:
+                    continue
+                source = ROOT / relative
+                if not source.is_file():
+                    continue
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, destination)
+            for relative, content in overrides.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+            subprocess.run(
+                ["git", "init", "--quiet"], cwd=root, check=True
+            )
+            subprocess.run(
+                ["git", "add", "."], cwd=root, check=True
+            )
+            result = subprocess.run(
+                ["bash", GENERATOR, "--dry-run"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stderr)
+            return result.stdout
+
+    def typed_fixture(self) -> tuple[dict[str, object], str]:
+        loaded = yaml.safe_load(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        assert isinstance(loaded, dict)
+        contract: dict[str, object] = loaded
+        workflow_text = (
+            ROOT / ".github/workflows/ci-quality.yml"
+        ).read_text(encoding="utf-8")
+        return contract, workflow_text
+
+    def test_typed_workflow_evidence_requires_reachable_gates_and_actions(
+        self,
+    ) -> None:
+        contract, workflow_text = self.typed_fixture()
+        for raw_literal in (
+            "run-zizmor-sarif",
+            "check-all-hardening.sh",
+            "check-template-security-baseline.sh",
+            "npm audit",
+        ):
+            self.assertNotIn(raw_literal, workflow_text)
+        literal_false_job_failure = workflow_text.replace(
+            "  zizmor:\n",
+            "  zizmor:\n    continue-on-error: false\n",
+            1,
+        )
+        for name, fixture_workflow in (
+            ("absent failure override", workflow_text),
+            ("literal false job failure override", literal_false_job_failure),
+        ):
+            with self.subTest(name=name):
+                output = self.render_fixture(contract, fixture_workflow)
+                for control_id in ("002", "003", "005", "008"):
+                    self.assertRegex(
+                        output,
+                        rf"(?m)^\| SEC-AUTO-{control_id} \|.*\| Implemented \|",
+                    )
+                self.assertIn(
+                    "| SEC-AUTO-012 | Broad dependency SCA coverage | Gap |",
+                    output,
+                )
+
+    def test_malformed_or_mismatched_gate_graph_fails_closed(self) -> None:
+        base_contract, base_workflow = self.typed_fixture()
+
+        def gate_node(contract: dict[str, object], gate_id: str) -> dict[str, object]:
+            return next(
+                node
+                for node in contract["gate_nodes"]
+                if node["gate_id"] == gate_id
+            )
+
+        gate_program = (
+            "python3 scripts/validation/run-ci-gate.py "
+            "--profile ci --gate ci.zizmor"
+        )
+        upload_sha = base_contract["actions"][
+            "github/codeql-action/upload-sarif"
+        ]["sha"]
+        upload_uses = "github/codeql-action/upload-sarif@" + upload_sha
+
+        cycle = copy.deepcopy(base_contract)
+        gate_node(cycle, "ci.zizmor")["children"].append("ci.zizmor")
+
+        non_string_child = copy.deepcopy(base_contract)
+        gate_node(non_string_child, "ci.zizmor")["children"].append(42)
+
+        absent_actual_job_workflow = base_workflow.replace(
+            "  zizmor:\n", "  actual-zizmor:\n", 1
+        )
+
+        missing_gate_projection_workflow = base_workflow.replace(
+            "run: " + gate_program,
+            "run: echo no-registered-gate",
+        )
+
+        wrong_gate_projection_workflow = base_workflow.replace(
+            "--gate ci.zizmor",
+            "--gate ci.infrastructure-hardening",
+        )
+
+        partial_gate_projection_workflow = base_workflow.replace(
+            "--gate ci.infrastructure-hardening",
+            "--gate leaf.infrastructure-hardening",
+        )
+
+        duplicate_gate_projection_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - name: Run zizmor gate again\n"
+            f"        run: {gate_program}\n"
+            "      - name: Upload SARIF file\n",
+        )
+
+        dynamic_gate_projection_workflow = base_workflow.replace(
+            "--gate ci.zizmor",
+            "--gate ${{ github.ref }}",
+        )
+
+        disabled_gate_step_workflow = base_workflow.replace(
+            f"        run: {gate_program}",
+            "        if: ${{ false }}\n" f"        run: {gate_program}",
+        )
+
+        disabled_gate_job_workflow = base_workflow.replace(
+            "  zizmor:\n",
+            "  zizmor:\n    if: ${{ false }}\n",
+            1,
+        )
+
+        non_string_run_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - name: Invalid non-string program\n"
+            "        run: 123\n"
+            "      - name: Upload SARIF file\n",
+        )
+
+        explicit_shell_workflow = base_workflow.replace(
+            gate_program + "\n",
+            gate_program + "\n        shell: bash\n",
+        )
+
+        working_directory_workflow = base_workflow.replace(
+            gate_program + "\n",
+            gate_program + "\n"
+            "        working-directory: scripts\n",
+        )
+
+        workflow_defaults_workflow = base_workflow.replace(
+            "on:\n",
+            "defaults:\n  run:\n    shell: bash\n"
+            "on:\n",
+        )
+
+        job_defaults_workflow = base_workflow.replace(
+            "  zizmor:\n",
+            "  zizmor:\n    defaults:\n      run:\n        shell: bash\n",
+            1,
+        )
+
+        failure_weakening_workflow = base_workflow.replace(
+            gate_program + "\n",
+            gate_program + "\n"
+            "        continue-on-error: true\n",
+        )
+
+        disabled_sarif_action_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - name: Upload SARIF file\n        if: ${{ false }}\n",
+        )
+
+        missing_sarif_permission_workflow = base_workflow.replace(
+            "      security-events: write\n",
+            "",
+            1,
+        )
+
+        weakened_job_workflow = base_workflow.replace(
+            "  zizmor:\n",
+            "  zizmor:\n    continue-on-error: true\n",
+            1,
+        )
+
+        dynamic_job_failure_workflow = base_workflow.replace(
+            "  zizmor:\n",
+            "  zizmor:\n"
+            "    continue-on-error: ${{ github.ref == 'refs/heads/main' }}\n",
+            1,
+        )
+
+        truthy_job_failure_workflow = base_workflow.replace(
+            "  zizmor:\n",
+            "  zizmor:\n    continue-on-error: always\n",
+            1,
+        )
+
+        scalar_step_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - scalar-step\n      - name: Upload SARIF file\n",
+        )
+
+        run_and_uses_step_workflow = base_workflow.replace(
+            f"        run: {gate_program}\n",
+            f"        run: {gate_program}\n        uses: {upload_uses}\n",
+        )
+
+        neither_run_nor_uses_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - name: Shape-only step\n"
+            "      - name: Upload SARIF file\n",
+        )
+
+        empty_run_workflow = base_workflow.replace(
+            f"        run: {gate_program}",
+            '        run: ""',
+        )
+
+        empty_uses_workflow = base_workflow.replace(
+            "        uses: " + upload_uses,
+            '        uses: ""',
+        )
+
+        non_string_uses_workflow = base_workflow.replace(
+            "        uses: " + upload_uses,
+            "        uses: 123",
+        )
+
+        dynamic_step_failure_workflow = base_workflow.replace(
+            f"        run: {gate_program}\n",
+            f"        run: {gate_program}\n"
+            "        continue-on-error: ${{ github.ref == 'refs/heads/main' }}\n",
+        )
+
+        truthy_step_failure_workflow = base_workflow.replace(
+            f"        run: {gate_program}\n",
+            f"        run: {gate_program}\n        continue-on-error: always\n",
+        )
+
+        conditional_gate_workflow = base_workflow.replace(
+            f"        run: {gate_program}",
+            "        if: ${{ github.ref == 'refs/heads/main' }}\n"
+            f"        run: {gate_program}",
+        )
+
+        conditional_action_workflow = base_workflow.replace(
+            "      - name: Upload SARIF file\n",
+            "      - name: Upload SARIF file\n"
+            "        if: ${{ github.ref == 'refs/heads/main' }}\n",
+        )
+
+        duplicate_gate = copy.deepcopy(base_contract)
+        duplicate_gate["gate_nodes"].append(
+            copy.deepcopy(gate_node(duplicate_gate, "leaf.zizmor"))
+        )
+
+        duplicate_root = copy.deepcopy(base_contract)
+        duplicate_root["job_roots"].append(
+            copy.deepcopy(duplicate_root["job_roots"][0])
+        )
+
+        cases = (
+            ("aggregate cycle", cycle, base_workflow),
+            ("non-string aggregate child", non_string_child, base_workflow),
+            ("job absent from actual workflow", base_contract, absent_actual_job_workflow),
+            (
+                "job does not project registered gate",
+                base_contract,
+                missing_gate_projection_workflow,
+            ),
+            (
+                "job projects a gate outside its root",
+                base_contract,
+                wrong_gate_projection_workflow,
+            ),
+            (
+                "job projects only part of its root",
+                base_contract,
+                partial_gate_projection_workflow,
+            ),
+            (
+                "job projects its root more than once",
+                base_contract,
+                duplicate_gate_projection_workflow,
+            ),
+            (
+                "job uses a dynamic gate expression",
+                base_contract,
+                dynamic_gate_projection_workflow,
+            ),
+            (
+                "registered gate step is disabled",
+                base_contract,
+                disabled_gate_step_workflow,
+            ),
+            (
+                "registered gate job is disabled",
+                base_contract,
+                disabled_gate_job_workflow,
+            ),
+            (
+                "job includes a non-string run program",
+                base_contract,
+                non_string_run_workflow,
+            ),
+            (
+                "gate step declares a shell",
+                base_contract,
+                explicit_shell_workflow,
+            ),
+            (
+                "gate step declares a working directory",
+                base_contract,
+                working_directory_workflow,
+            ),
+            (
+                "workflow declares run defaults",
+                base_contract,
+                workflow_defaults_workflow,
+            ),
+            (
+                "job declares run defaults",
+                base_contract,
+                job_defaults_workflow,
+            ),
+            (
+                "registered gate step weakens failures",
+                base_contract,
+                failure_weakening_workflow,
+            ),
+            (
+                "SARIF action step is disabled",
+                base_contract,
+                disabled_sarif_action_workflow,
+            ),
+            (
+                "SARIF permission is missing",
+                base_contract,
+                missing_sarif_permission_workflow,
+            ),
+            (
+                "registered gate job weakens failures",
+                base_contract,
+                weakened_job_workflow,
+            ),
+            (
+                "registered gate job has dynamic failure handling",
+                base_contract,
+                dynamic_job_failure_workflow,
+            ),
+            (
+                "registered gate job has truthy failure handling",
+                base_contract,
+                truthy_job_failure_workflow,
+            ),
+            (
+                "job contains a scalar step",
+                base_contract,
+                scalar_step_workflow,
+            ),
+            (
+                "step declares both run and uses",
+                base_contract,
+                run_and_uses_step_workflow,
+            ),
+            (
+                "step declares neither run nor uses",
+                base_contract,
+                neither_run_nor_uses_workflow,
+            ),
+            (
+                "run program is empty",
+                base_contract,
+                empty_run_workflow,
+            ),
+            (
+                "Action reference is empty",
+                base_contract,
+                empty_uses_workflow,
+            ),
+            (
+                "Action reference is non-string",
+                base_contract,
+                non_string_uses_workflow,
+            ),
+            (
+                "step has dynamic failure handling",
+                base_contract,
+                dynamic_step_failure_workflow,
+            ),
+            (
+                "step has truthy failure handling",
+                base_contract,
+                truthy_step_failure_workflow,
+            ),
+            (
+                "registered gate step has a dynamic condition",
+                base_contract,
+                conditional_gate_workflow,
+            ),
+            (
+                "SARIF action step has a dynamic condition",
+                base_contract,
+                conditional_action_workflow,
+            ),
+            ("duplicate gate", duplicate_gate, base_workflow),
+            ("duplicate root", duplicate_root, base_workflow),
+        )
+        for name, contract, workflow in cases:
+            with self.subTest(name=name):
+                output = self.render_fixture(contract, workflow)
+                for control_id in ("002", "003", "005", "008"):
+                    self.assertNotRegex(
+                        output,
+                        rf"(?m)^\| SEC-AUTO-{control_id} \|.*\| Implemented \|",
+                    )
+                self.assertIn(
+                    "| SEC-AUTO-012 | Broad dependency SCA coverage | Gap |",
+                    output,
+                )
+
+    def test_invalid_or_comment_only_action_evidence_fails_closed(self) -> None:
+        base_contract, base_workflow = self.typed_fixture()
+        upload_sha = base_contract["actions"][
+            "github/codeql-action/upload-sarif"
+        ]["sha"]
+
+        invalid_sha_contract = copy.deepcopy(base_contract)
+        invalid_sha_contract["actions"]["github/codeql-action/upload-sarif"][
+            "sha"
+        ] = "v4"
+        invalid_sha_workflow = base_workflow.replace("@" + upload_sha, "@v4")
+
+        comment_only_workflow = base_workflow.replace(
+            "        uses: github/codeql-action/upload-sarif@" + upload_sha,
+            "        run: echo no-action\n"
+            "        # uses: github/codeql-action/upload-sarif@" + upload_sha,
+        )
+
+        for name, contract, workflow in (
+            ("non-40-hex action SHA", invalid_sha_contract, invalid_sha_workflow),
+            ("action reference only in YAML comment", base_contract, comment_only_workflow),
+        ):
+            with self.subTest(name=name):
+                output = self.render_fixture(contract, workflow)
+                self.assertNotRegex(
+                    output,
+                    r"(?m)^\| SEC-AUTO-002 \|.*\| Implemented \|",
+                )
+                self.assertIn(
+                    "| SEC-AUTO-012 | Broad dependency SCA coverage | Gap |",
+                    output,
+                )
 
     def test_supply_chain_fixture_contract_keeps_broad_sca_open(self) -> None:
         output = self.render()
@@ -58,11 +557,11 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         self.assertIn("| Partially Implemented | 1 |", output)
         self.assertIn("| Gap | 1 |", output)
 
-    def test_broad_supply_chain_gaps_route_to_draft_spec_126(self) -> None:
+    def test_broad_supply_chain_gaps_route_to_archived_spec_126(self) -> None:
         output = self.render()
         spec_126 = (
             "[Spec 126]"
-            "(../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+            "(../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)"
         )
         for control_id in (
             "SEC-AUTO-012",
@@ -83,7 +582,8 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
             security_audit,
         )
 
-    def test_canonical_automation_leaf_routes_broad_gaps_to_spec_126(self) -> None:
+    def test_historical_audit_label_points_to_archived_spec_126(self) -> None:
+        """The audited `draft` label is historical; its target is archived."""
         automation_audit = (AUDIT_PACK / "automation-candidates.md").read_text(
             encoding="utf-8"
         )
@@ -92,7 +592,7 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         )
         self.assertIn(
             "[draft Spec 126]"
-            "(../../../03.specs/126-security-supply-chain-remediation/spec.md)",
+            "(../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)",
             automation_audit,
         )
 

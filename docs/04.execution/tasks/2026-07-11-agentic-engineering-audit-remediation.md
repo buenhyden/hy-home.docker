@@ -21,7 +21,7 @@ independent task/branch reviews.
 
 - **Parent Spec**: [Agentic engineering audit and remediation spec](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - **Parent Plan**: [Agentic engineering audit and remediation plan](../plans/2026-07-11-agentic-engineering-audit-remediation.md)
-- **Canonical Research**: [Agentic engineering research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- **Canonical Research**: [Agentic engineering research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Canonical Audit**: [Agentic engineering implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 
 ## Goals and Non-goals
@@ -1122,6 +1122,6 @@ verdicts, findings, or review evidence.
 
 - [Parent specification](../../98.archive/03.specs/123-agentic-engineering-audit-remediation/spec.md)
 - [Parent plan](../plans/2026-07-11-agentic-engineering-audit-remediation.md)
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Canonical audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - [Subagent protocol](../../00.agent-governance/subagent-protocol.md)

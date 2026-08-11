@@ -207,4 +207,4 @@ The repository-wide archive mapping is recorded in
 - **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
 - **Runner spec**: [../116-agent-output-eval-runner/spec.md](../116-agent-output-eval-runner/spec.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)
-- **Loop research**: [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)
+- **Loop research**: [../../90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/loop-engineering.md)
