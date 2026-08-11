@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 artifact_id: task:2026-08-11-agentic-research-pack-source-refresh
 artifact_type: task
 parent_ids:
@@ -343,6 +343,23 @@ finding, resolved in fix round 1/5. Review of `7a5eb5cd..22b06ba1` returned
   prohibited from running any Git command, with the controller owning every
   commit. File ownership was partitioned so that no two agents could write the
   same path.
+- Critical, resolved: the final whole-unit review found that this unit's own
+  memory handoff summarized the outcome as six leaves unchanged and eight
+  changed. The true split is eleven unchanged and nine changed; the bad figures
+  came from summing only some clusters and dropping cluster A3. The controller
+  re-derived the true split from `git diff --name-only` over the pack before the
+  correction landed. This defect was in the controller's own bookkeeping, not in
+  any agent's output.
+- Important, resolved: the final review found this Task's front matter status
+  inconsistent with its own closed Work Log, and identified that the status is
+  load-bearing because this Task leaf is inside the Stage 01-05 corpus whose
+  status split two refreshed leaves report. The first fix set `completed`, which
+  then failed `AGC-MEMORY-STALE-STATE` because the memory contract requires the
+  current-task label to name a `draft` or `active` Task. The resolved value is
+  `active`: execution and verification are finished, owner acceptance is not.
+  Both dependent leaves were re-measured to 295 active, 235 completed, and 2
+  draft over 532 leaves, and their boundary sentences were rewritten to describe
+  the coupling instead of naming a status value that would go stale again.
 
 ## Commit Ledger
 

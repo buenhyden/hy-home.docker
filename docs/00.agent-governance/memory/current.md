@@ -37,8 +37,8 @@ status: active
 - Verified at: `2026-08-11T10:16:09+09:00`
 - The pack keeps 21 files, 20 leaves, the fourteen-scope axis, and 36
   requirement destinations; only claim text changed.
-- Six leaves survived re-verification unchanged; eight leaves received corrected
-  counts, source rows, or freshness routing.
+- Eleven leaves survived re-verification unchanged; nine leaves received
+  corrected counts, source rows, or freshness routing.
 - Changed-path metadata validation returned zero violations before every commit.
   The repository contract returned `failures=0` in an isolated interpreter and
   `failures=1` in the default interpreter, where only the pre-existing

@@ -85,11 +85,12 @@ The following counts exclude `README.md` unless stated otherwise and were
 derived from current canonical paths after the 2026-08-08 archive migration.
 Re-verified at the 2026-08-11 source-refresh boundary: the Stage 01-05 and
 Stage 04 totals are one leaf higher than the Task 5 baseline because this
-pack's own source-refresh Task added one `draft`, typed Stage 04 Task leaf.
+pack's own source-refresh Task leaf is counted in Stage 04; the
+draft/completed split below moves whenever that Task's own status moves.
 
 | Population                              | Count and state                               | Typed-depth interpretation                                                                                                       |
 | --------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Stage 01-05 non-README leaves           | 532: 294 `active`, 235 `completed`, 3 `draft` | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration.                                       |
+| Stage 01-05 non-README leaves           | 532: 295 `active`, 235 `completed`, 2 `draft` | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration.                                       |
 | PRD / ARD / ADR role paths              | 25 / 25 / 25                                  | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated.               |
 | Parent Specs                            | 28 current, 32 archived                       | Current and archived Spec populations coexist; archive zero is obsolete.                                                         |
 | Stage 04 role paths                     | 103 Plans, 132 Tasks                          | 16 Plans and 19 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints. |

@@ -81,12 +81,13 @@ Counts below exclude `README.md` navigation files. They are path and parsed
 frontmatter measurements, not claims that every legacy leaf has completed typed
 metadata migration. Re-verified at the 2026-08-11 source-refresh boundary: the
 totals below are one leaf higher than the Task 5 baseline because this pack's
-own source-refresh Task added one `draft` Stage 04 Task leaf.
+own source-refresh Task leaf is counted in Stage 04; the draft/completed split
+below moves whenever that Task's own status moves.
 
 | Surface                            | Current measured result                                                     | Interpretation                                                                                                                                              |
 | ---------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Stage 01-05 lifecycle leaves       | 532                                                                         | 25 requirements, 50 architecture, 30 Spec-stage, 235 execution, and 192 operations leaves.                                                                  |
-| Lifecycle statuses in those leaves | 294 `active`, 235 `completed`, 3 `draft`                                    | Status exists across the measured active-stage corpus; `completed` remains durable evidence, not archive.                                                   |
+| Lifecycle statuses in those leaves | 295 `active`, 235 `completed`, 2 `draft`                                    | Status exists across the measured active-stage corpus; `completed` remains durable evidence, not archive.                                                   |
 | Current parent Specs               | 28 `docs/03.specs/*/spec.md`                                                | Replaces the predecessor's stale active-Spec count.                                                                                                         |
 | Archived parent Specs              | 32 `docs/98.archive/**/spec.md`                                             | Archive is populated after the 2026-08-08 migration; zero is false.                                                                                         |
 | Stage 98 non-README leaves         | 52, all `status: archived`                                                  | Includes 32 typed archive leaves and 20 legacy tombstones without `artifact_type`; path/profile evidence and typed-field evidence must remain distinct.     |
