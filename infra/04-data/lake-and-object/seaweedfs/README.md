@@ -57,7 +57,7 @@ seaweedfs/
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`; not declared for `seaweedfs-mount` |
 | Privilege boundary | `seaweedfs-mount` runs `privileged: true` with `SYS_ADMIN` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md), [Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md) |
+| Operations | [Guide](../../../../docs/05.operations/04-data/ops-0024-lake-and-object-seaweedfs/guide.md), [Policy](../../../../docs/05.operations/04-data/ops-0024-lake-and-object-seaweedfs/policy.md), [Runbook](../../../../docs/05.operations/04-data/ops-0024-lake-and-object-seaweedfs/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -96,9 +96,9 @@ seaweedfs/
 
 ## Related Documents
 
-- **Guide**: [Technical Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md)
-- **Policy**: [Operations Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md)
-- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md)
+- **Guide**: [Technical Guide](../../../../docs/05.operations/04-data/ops-0024-lake-and-object-seaweedfs/guide.md)
+- **Policy**: [Operations Policy](../../../../docs/05.operations/04-data/ops-0024-lake-and-object-seaweedfs/policy.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/04-data/ops-0024-lake-and-object-seaweedfs/runbook.md)
 - **Spec**: [Data Persistence Spec](../../../../docs/03.specs/spec-0004-data/spec.md)
 
 ---

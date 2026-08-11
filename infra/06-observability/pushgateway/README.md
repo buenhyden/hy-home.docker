@@ -89,9 +89,9 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 ## Related Documents
 
-- [Usage guide](../../../docs/05.operations/guides/06-observability/pushgateway.md)
-- [Operations policy](../../../docs/05.operations/policies/06-observability/pushgateway.md)
-- [Recovery runbook](../../../docs/05.operations/runbooks/06-observability/pushgateway.md)
+- [Usage guide](../../../docs/05.operations/06-observability/ops-0046-pushgateway/guide.md)
+- [Operations policy](../../../docs/05.operations/06-observability/ops-0046-pushgateway/policy.md)
+- [Recovery runbook](../../../docs/05.operations/06-observability/ops-0046-pushgateway/runbook.md)
 
 ## How to Work in This Area
 

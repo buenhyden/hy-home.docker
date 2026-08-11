@@ -14,9 +14,12 @@ MIGRATED_DOMAINS = (
     "01-gateway",
     "02-auth",
     "03-security",
+    "04-data",
+    "05-messaging",
+    "06-observability",
 )
 
-# Frozen Task 6A boundary: each tuple is (domain, exact ledger subject path,
+# Frozen Task 6A/6B boundary: each tuple is (domain, exact ledger subject path,
 # shared ops identity, existing role set).  A subject is intentionally absent
 # from a role when mig-0001 has no row for that role.
 EXPECTED_SUBJECTS = (
@@ -36,6 +39,44 @@ EXPECTED_SUBJECTS = (
     ("02-auth", "keycloak", "0014", {"guide", "policy", "runbook"}),
     ("02-auth", "oauth2-proxy", "0015", {"guide", "policy", "runbook"}),
     ("03-security", "vault", "0016", {"guide", "policy", "runbook"}),
+    ("04-data", "analytics-influxdb", "0017", {"guide", "policy", "runbook"}),
+    ("04-data", "analytics-ksqldb", "0018", {"guide", "policy", "runbook"}),
+    ("04-data", "analytics-opensearch", "0019", {"guide", "policy", "runbook"}),
+    ("04-data", "analytics-warehouses", "0020", {"guide", "policy", "runbook"}),
+    ("04-data", "backup-backup-policy", "0021", {"policy"}),
+    ("04-data", "cache-and-kv-valkey-cluster", "0022", {"guide", "policy", "runbook"}),
+    ("04-data", "lake-and-object-minio", "0023", {"guide", "policy", "runbook"}),
+    ("04-data", "lake-and-object-seaweedfs", "0024", {"guide", "policy", "runbook"}),
+    ("04-data", "nosql-cassandra", "0025", {"guide", "policy", "runbook"}),
+    ("04-data", "nosql-couchdb", "0026", {"guide", "policy", "runbook"}),
+    ("04-data", "nosql-mongodb", "0027", {"guide", "policy", "runbook"}),
+    ("04-data", "operational-mng-db", "0028", {"guide", "policy", "runbook"}),
+    ("04-data", "operational-supabase", "0029", {"guide", "policy", "runbook"}),
+    ("04-data", "optimization-optimization-hardening", "0030", {"guide", "policy", "runbook"}),
+    ("04-data", "relational-postgresql-cluster", "0031", {"guide", "policy", "runbook"}),
+    (
+        "04-data",
+        "relational-postgresql-logical-upgrade-restore-rehearsal",
+        "0032",
+        {"runbook"},
+    ),
+    ("04-data", "specialized-neo4j", "0033", {"guide", "policy", "runbook"}),
+    ("04-data", "specialized-qdrant", "0034", {"guide", "policy", "runbook"}),
+    ("04-data", "storage-storage-exhaustion", "0035", {"runbook"}),
+    ("05-messaging", "kafka", "0036", {"guide", "policy", "runbook"}),
+    ("05-messaging", "optimization-hardening", "0037", {"guide", "policy", "runbook"}),
+    ("05-messaging", "rabbitmq", "0038", {"guide", "policy", "runbook"}),
+    ("06-observability", "alertmanager", "0039", {"guide", "policy", "runbook"}),
+    ("06-observability", "alloy", "0040", {"guide", "policy", "runbook"}),
+    ("06-observability", "grafana", "0041", {"guide", "policy", "runbook"}),
+    ("06-observability", "lgtm-stack", "0042", {"guide"}),
+    ("06-observability", "loki", "0043", {"guide", "policy", "runbook"}),
+    ("06-observability", "optimization-hardening", "0044", {"guide", "policy", "runbook"}),
+    ("06-observability", "prometheus", "0045", {"guide", "policy", "runbook"}),
+    ("06-observability", "pushgateway", "0046", {"guide", "policy", "runbook"}),
+    ("06-observability", "pyroscope", "0047", {"guide", "policy", "runbook"}),
+    ("06-observability", "retention", "0048", {"policy"}),
+    ("06-observability", "tempo", "0049", {"guide", "policy", "runbook"}),
 )
 
 
@@ -123,33 +164,100 @@ class OperationsTaxonomyTests(unittest.TestCase):
                         violations.append(f"{path.relative_to(ROOT)}: {destination}")
         self.assertEqual([], violations)
 
-    def test_each_readme_merge_preserves_its_historical_subject_navigation(self):
+    def test_scoped_active_consumers_do_not_name_deleted_role_roots(self):
+        deleted_root = re.compile(
+            r"docs/05\.operations/(guides|policies|runbooks)/"
+            r"(04-data|05-messaging|06-observability)(?:/|\b)"
+        )
+        active_consumers = (
+            ROOT / "infra/04-data/lake-and-object/README.md",
+        )
+        violations: list[str] = []
+        for path in active_consumers:
+            for line_number, line in enumerate(path.read_text().splitlines(), 1):
+                if deleted_root.search(line):
+                    violations.append(
+                        f"{path.relative_to(ROOT)}:{line_number}: {line.strip()}"
+                    )
+        self.assertEqual([], violations)
+
+    def test_each_readme_merge_preserves_relevant_current_navigation(self):
         scoped_prefix = "docs/05.operations/"
         merge_rows = [
             row
             for row in ledger_records()
             if row["action"] == "merge"
             and re.fullmatch(
-                r"docs/05\.operations/(policies|runbooks)/(00-workspace|01-gateway|02-auth|03-security)/README\.md",
+                r"docs/05\.operations/(guides|policies|runbooks)/"
+                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability)"
+                r"(?:/[^/]+)?/README\.md",
                 str(row["legacy_path"]),
             )
         ]
-        self.assertEqual(8, len(merge_rows))
+        self.assertEqual(40, len(merge_rows))
         stable_paths = {
             str(row["legacy_path"]): str(row["stable_path"])
             for row in ledger_records()
             if str(row["legacy_path"]).startswith(scoped_prefix)
         }
+        merge_rows_by_source = {
+            str(row["legacy_path"]): row for row in merge_rows
+        }
         link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
 
-        def linked_operations_paths(source: str, body: str) -> set[str]:
+        preserved_navigation_indexes = {
+            "docs/05.operations/README.md",
+            "docs/05.operations/guides/README.md",
+            "docs/05.operations/policies/README.md",
+            "docs/05.operations/runbooks/README.md",
+            "docs/05.operations/incidents/README.md",
+        }
+
+        def linked_current_navigation_paths(
+            source: str, body: str, seen: set[str] | None = None
+        ) -> set[str]:
+            visited = set() if seen is None else seen
             paths: set[str] = set()
             for destination in link_pattern.findall(body):
                 resolved = resolve_repo_path(ROOT / source, destination)
                 if resolved is None:
                     continue
-                canonical = stable_paths.get(str(resolved.relative_to(ROOT)), str(resolved.relative_to(ROOT)))
-                if re.fullmatch(r"docs/05\.operations/(00-workspace|01-gateway|02-auth|03-security)/ops-[^/]+/(guide|policy|runbook)\.md", canonical):
+                resolved_path = str(resolved.relative_to(ROOT))
+                child_row = merge_rows_by_source.get(resolved_path)
+                if child_row is not None and resolved_path not in visited:
+                    result = subprocess.run(
+                        [
+                            "git",
+                            "show",
+                            f"{child_row['source_commit']}:{resolved_path}",
+                        ],
+                        cwd=ROOT,
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                    )
+                    paths.update(
+                        linked_current_navigation_paths(
+                            resolved_path,
+                            result.stdout,
+                            visited | {resolved_path},
+                        )
+                    )
+                canonical = stable_paths.get(resolved_path, resolved_path)
+                if re.fullmatch(
+                    r"docs/05\.operations/"
+                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability)"
+                    r"/ops-[^/]+/(guide|policy|runbook)\.md",
+                    canonical,
+                ) or (
+                    re.match(
+                        r"docs/05\.operations/"
+                        r"(?:(guides|policies|runbooks)/)?"
+                        r"(04-data|05-messaging|06-observability)/",
+                        source,
+                    )
+                    and canonical in preserved_navigation_indexes
+                ):
                     paths.add(canonical)
             return paths
 
@@ -164,11 +272,26 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
             )
-            source_paths = linked_operations_paths(source, result.stdout)
-            target_paths = linked_operations_paths(target, (ROOT / target).read_text())
+            target_body = (ROOT / target).read_text()
+            source_paths = linked_current_navigation_paths(source, result.stdout)
+            target_paths = linked_current_navigation_paths(target, target_body)
+            source_paths.discard(target)
+            target_paths.discard(target)
             with self.subTest(source=source):
                 self.assertTrue(source_paths)
                 self.assertTrue(source_paths.issubset(target_paths))
+                if re.match(
+                    r"docs/05\.operations/(04-data|05-messaging|06-observability)/",
+                    target,
+                ):
+                    archive_links = []
+                    for destination in link_pattern.findall(target_body):
+                        resolved = resolve_repo_path(ROOT / target, destination)
+                        if resolved is not None and resolved.is_relative_to(
+                            ROOT / "docs/98.archive"
+                        ):
+                            archive_links.append(destination)
+                    self.assertEqual([], archive_links)
 
 
 if __name__ == "__main__":

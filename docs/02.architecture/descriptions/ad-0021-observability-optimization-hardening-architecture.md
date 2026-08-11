@@ -109,6 +109,6 @@ updated: 2026-08-10
 - **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/06-observability/optimization-hardening.md)
-- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/06-observability/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/06-observability/ops-0044-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/06-observability/ops-0044-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/06-observability/ops-0044-optimization-hardening/runbook.md)

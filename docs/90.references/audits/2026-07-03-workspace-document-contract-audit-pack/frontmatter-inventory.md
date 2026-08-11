@@ -125,7 +125,7 @@ PY
 | Provider and hook metadata keys | `name` 79, `description` 60, `model` 30, `action` 19, `enabled` 19, `event` 19 | `.claude/agents/code-reviewer.md`, `docs/00.agent-governance/rules/hooks/hookify.block-gha-secrets-in-run.md` | no-action |
 | Archive and generated metadata | Archive keys each appear 15 times; `generated_by` appears once | `docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md`, `docs/90.references/llm-wiki/llm-wiki-index.md` | no-action |
 | Removed duplicate-purpose keys | `type`, `owner`, `links`, `document_type`, and `template_type` each appear 0 times in top frontmatter | Full tracked Markdown corpus | no-action |
-| Legacy `updated` metadata | `updated` appears 3 times | `docs/05.operations/guides/06-observability/loki.md`, `docs/05.operations/policies/06-observability/01.retention.md`, `docs/05.operations/policies/06-observability/loki.md` | batch-fix |
+| Legacy `updated` metadata | `updated` appears 3 times | `docs/05.operations/06-observability/ops-0043-loki/guide.md`, `docs/05.operations/policies/06-observability/01.retention.md`, `docs/05.operations/06-observability/ops-0043-loki/policy.md` | batch-fix |
 
 ## Gaps For Register
 

@@ -56,9 +56,9 @@ analytics/
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/guides/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
-- **Policies**: [docs/05.operations/policies/04-data/analytics/](../../../docs/05.operations/policies/04-data/analytics/README.md)
-- **Runbooks**: [docs/05.operations/runbooks/04-data/analytics/](../../../docs/05.operations/runbooks/04-data/analytics/README.md)
+- **System Guide**: [docs/05.operations/guides/04-data/analytics/](../../../docs/05.operations/04-data/README.md)
+- **Policies**: [docs/05.operations/policies/04-data/analytics/](../../../docs/05.operations/04-data/README.md)
+- **Runbooks**: [docs/05.operations/runbooks/04-data/analytics/](../../../docs/05.operations/04-data/README.md)
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.

@@ -100,7 +100,7 @@ non-template taxonomy drift in this task.
 | --- | --- | --- | --- | --- |
 | Example scaffold service template path | `examples/sample-web-service/README.md:61` and `examples/sample-web-service/service.md:3,56` point to `docs/99.templates/service.template.md`. | out-of-scope gap | out-of-scope-gap | Carry forward as an examples-surface decision; Task 2 already classified example README profile drift as out of scope. |
 | Non-template stale taxonomy found in matched project README context | `projects/README.md:47` repeats a removed operations-stage path literal. | out-of-scope gap | out-of-scope-gap | Record for a later taxonomy cleanup; this task is limited to template application and governance comparison. |
-| Legacy Stage 05 `updated` metadata from Task 2 | `docs/05.operations/guides/06-observability/loki.md:7`, `docs/05.operations/policies/06-observability/01.retention.md:7`, and `docs/05.operations/policies/06-observability/loki.md:7`. | out-of-scope gap | out-of-scope-gap | Keep in the final register as a frontmatter cleanup batch, not a Task 3 edit. |
+| Legacy Stage 05 `updated` metadata from Task 2 | `docs/05.operations/06-observability/ops-0043-loki/guide.md:7`, `docs/05.operations/policies/06-observability/01.retention.md:7`, and `docs/05.operations/06-observability/ops-0043-loki/policy.md:7`. | out-of-scope gap | out-of-scope-gap | Keep in the final register as a frontmatter cleanup batch, not a Task 3 edit. |
 
 ## Gaps For Register
 

@@ -61,7 +61,7 @@ cassandra/
 | Labels | `hy-home.tier` |
 | Secret refs | names: `cassandra_password`; mounts: `/run/secrets/cassandra_password` |
 | Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md), [Policy](../../../../docs/05.operations/policies/04-data/nosql/cassandra.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/cassandra.md) |
+| Operations | [Guide](../../../../docs/05.operations/04-data/ops-0025-nosql-cassandra/guide.md), [Policy](../../../../docs/05.operations/04-data/ops-0025-nosql-cassandra/policy.md), [Runbook](../../../../docs/05.operations/04-data/ops-0025-nosql-cassandra/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -104,9 +104,9 @@ cassandra/
 
 ## Related Documents
 
-- **Guide**: [Cassandra Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)
-- **Policy**: [Cassandra Operation](../../../../docs/05.operations/policies/04-data/nosql/cassandra.md)
-- **Runbook**: [Cassandra Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/cassandra.md)
+- **Guide**: [Cassandra Guide](../../../../docs/05.operations/04-data/ops-0025-nosql-cassandra/guide.md)
+- **Policy**: [Cassandra Operation](../../../../docs/05.operations/04-data/ops-0025-nosql-cassandra/policy.md)
+- **Runbook**: [Cassandra Runbook](../../../../docs/05.operations/04-data/ops-0025-nosql-cassandra/runbook.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

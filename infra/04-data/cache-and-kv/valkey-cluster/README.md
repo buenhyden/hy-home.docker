@@ -54,7 +54,7 @@ valkey-cluster/
 | Labels | `hy-home.tier` |
 | Secret refs | names: `service_valkey_password`; mounts: `/run/secrets/service_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, plus 2 more; not declared for `valkey-cluster-init` |
-| Operations | [Guide](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md), [Policy](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md) |
+| Operations | [Guide](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/guide.md), [Policy](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/policy.md), [Runbook](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -62,9 +62,9 @@ valkey-cluster/
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 클러스터 노드 구성을 확인한다.
 2. [scripts/valkey-cluster-init.sh](./scripts/valkey-cluster-init.sh)를 통해 초기화 로직을 이해한다.
-3. 가이드 문서는 [docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조한다.
-4. 운영 정책은 [docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
-5. 장애 조치 지침은 [docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
+3. 가이드 문서는 [docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/guide.md](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/guide.md)를 참조한다.
+4. 운영 정책은 [docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/policy.md](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/policy.md)를 확인한다.
+5. 장애 조치 지침은 [docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/runbook.md](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/runbook.md)를 따른다.
 
 ## Validation
 
@@ -83,9 +83,9 @@ valkey-cluster/
 
 ## Related Documents
 
-- **Guide**: [Valkey Cluster Guide](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
-- **Policy**: [Valkey Operations Policy](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbook**: [Valkey Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md)
+- **Guide**: [Valkey Cluster Guide](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/guide.md)
+- **Policy**: [Valkey Operations Policy](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/policy.md)
+- **Runbook**: [Valkey Recovery Runbook](../../../../docs/05.operations/04-data/ops-0022-cache-and-kv-valkey-cluster/runbook.md)
 
 ## Tech Stack
 
