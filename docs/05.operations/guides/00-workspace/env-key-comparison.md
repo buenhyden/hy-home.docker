@@ -60,18 +60,24 @@ status: active
 
 ## 감사 기준일
 
-2026-06-04
+2026-08-11
 
 ## 요약
 
 | 항목                    | 결과                                          |
 | ----------------------- | --------------------------------------------- |
-| `.env.example` 키 수    | 322                                           |
+| `.env.example` 키 수    | 325                                           |
 | `.env` 키 수            | 325                                           |
-| 키셋 동일 여부          | ✗ 상이 (3개 차이)                             |
+| 키셋 동일 여부          | ✓ 동일                                        |
 | `.env.example`에만 존재 | 없음                                          |
-| `.env`에만 존재         | `INFLUXDB_BUCKET`, `INFLUXDB_ORG`, `INFLUXDB_USERNAME` |
+| `.env`에만 존재         | 없음                                          |
 | 순서 차이               | `KAFKA_EXTERNAL_HOSTNAME`, `QDRANT_GRPC_PORT` |
+
+2026-08-11 감사에서 `INFLUXDB_ORG`, `INFLUXDB_BUCKET`, `INFLUXDB_USERNAME` 세 키를
+`.env.example`의 InfluxDB 섹션에 플레이스홀더로 추가하여 키셋 차이를 해소했다.
+세 키는 이전까지 로컬 `.env`에만 존재했다. `INFLUXDB_USERNAME`의 자격 증명 값은
+`secrets/SENSITIVE_ENV_VARS.md`의 `CACHE-013` 항목이 계속 소유하며, `.env.example`은
+계정 이름 플레이스홀더만 담는다.
 
 ## 상세 분석
 
