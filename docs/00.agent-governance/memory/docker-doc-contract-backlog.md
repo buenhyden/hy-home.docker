@@ -120,8 +120,8 @@ validators as the source of truth for whether this backlog has reopened.
   `infra_service_readmes_rubric_partial=0`
 - `find scripts -maxdepth 1 -type f -name '*.sh'` on 2026-05-26: no root shell
   scripts
-- [Scripts lifecycle cleanup task](../../04.execution/tasks/2026-05-09-scripts-lifecycle-contract-cleanup.md)
-- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- Scripts lifecycle cleanup task
+- Workspace governance bounded re-audit task
 
 ## Related Documents
 
@@ -129,4 +129,4 @@ validators as the source of truth for whether this backlog has reopened.
 - [Documentation stage matrix](../rules/stage-authoring-matrix.md)
 - [Documentation protocol](../rules/documentation-protocol.md)
 - [Specs index](../../03.specs/README.md)
-- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- Workspace governance bounded re-audit task

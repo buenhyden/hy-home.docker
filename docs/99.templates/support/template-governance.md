@@ -115,5 +115,5 @@ and repository contract checks. A task touching these surfaces must record:
 - [README profile contract](./readme-profile-contract.md)
 - [corpus migration contract](./corpus-migration-contract.md)
 - [archive and retention contract](./archive-retention-contract.md)
-- [task evidence](../../04.execution/tasks/2026-07-02-template-system-reorganization.md)
-- [contract standardization task evidence](../../04.execution/tasks/2026-07-03-template-system-contract-standardization.md)
+- task evidence
+- contract standardization task evidence

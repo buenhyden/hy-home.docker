@@ -78,7 +78,7 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
 
 - **PRD**: [../01.requirements/prd-021-tooling-optimization-hardening.md](../../01.requirements/prd-021-tooling-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md](../descriptions/ad-0024-tooling-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/010-tooling/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
+- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/spec-0010-tooling/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
+- **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Related ADR**: [./adr-adr-adr-adr-0009-tooling-services.md](./adr-0009-tooling-services.md)

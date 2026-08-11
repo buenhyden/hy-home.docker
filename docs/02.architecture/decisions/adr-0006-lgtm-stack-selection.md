@@ -60,4 +60,4 @@ updated: 2026-08-10
 
 - **PRD**: [../../01.requirements/prd-007-observability.md](../../01.requirements/prd-007-observability.md)
 - **Architecture Description**: [../descriptions/ad-0006-observability-architecture.md](../descriptions/ad-0006-observability-architecture.md)
-- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)
+- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/spec-0007-observability/spec.md)

@@ -139,8 +139,8 @@ corpus.
 - [SDLC spec archive candidates](./sdlc-spec-archive-candidates.md) - Supplies Stage 03 candidate findings.
 - [Operations bucket restructure](./operations-bucket-restructure.md) - Supplies operations bucket findings and `PLN-DRA-005` closure evidence.
 - [CI, QA, and formatting contract](./ci-qa-formatting-contract.md) - Supplies automation findings.
-- [Document restructure implementation plan](../../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md) - Supplies batch boundaries.
-- [Document restructure task evidence](../../../04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md) - Supplies execution evidence.
+- Document restructure implementation plan - Supplies batch boundaries.
+- Document restructure task evidence - Supplies execution evidence.
 
 ## Maintenance
 
@@ -152,6 +152,6 @@ corpus.
 ## Related Documents
 
 - [Document restructure audit references](./README.md)
-- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
-- [Document restructure implementation plan](../../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md)
-- [Document restructure task evidence](../../../04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md)
+- [Document restructure design spec](../../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md)
+- Document restructure implementation plan
+- Document restructure task evidence

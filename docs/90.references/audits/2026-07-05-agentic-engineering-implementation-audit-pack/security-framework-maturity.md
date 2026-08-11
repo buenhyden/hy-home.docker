@@ -111,7 +111,7 @@ current remote control state.
 
 The framework criterion statuses below preserve the existing baseline, while the
 2026-07-19 scanner observations remain dated historical evidence. The current
-[security supply-chain task](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
+security supply-chain task
 has deterministic local fixture, policy, orchestration, and immutable
 build-context surfaces with hardened input validation. Its present runtime boundary is still blocked before
 Docker execution because no approved current scanner database seed is
@@ -119,7 +119,7 @@ available; consequently, no current policy pass, accepted verdicts, or
 generation-bound pair manifest exists. The earlier vulnerable-image advisory result is historical
 and superseded, not an active exception or current acceptance result.
 
-The [deployment and release task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+The deployment and release task
 therefore has implementation and static verification only. It has not produced
 positive promotion or rollback runtime evidence. This bounded local progress
 does not establish broad dependency or image coverage, SBOM retention, SLSA
@@ -207,9 +207,9 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | [Draft Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
-| SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | [Draft Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
-| SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | [Draft Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
+| SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | Draft Spec 126 |
+| SEC-MAT-002 | Add SBOM generation and storage rules for build or release artifacts. | Draft Spec 126 |
+| SEC-MAT-003 | Add SLSA provenance/attestation design for any artifact-producing workflow. | Draft Spec 126 |
 | SEC-MAT-004 | Define change-scoped threat-model evidence requirements for protected surfaces. | Stage 00 governance update + Stage 04 task evidence |
 | SEC-MAT-005 | Verify authenticated protection/ruleset/environment state, recent named runs, and complete CODEOWNERS enforcement; reconcile any confirmed drift only through a separately approved rollback-bound remote task. | Stage 04 GitHub governance audit |
 
@@ -258,7 +258,7 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - workflow action pinning and required quality-gate contract.
 - [Security automation readiness](../../data/security/security-automation-readiness.md) - generated repo-local security automation readiness snapshot.
 - [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary.
-- [Spec 129](../../../98.archive/03.specs/129-document-contract-canonicalization/spec.md) - 2026-07-12 read-only remote evidence boundary and later-wave mutation guardrail.
+- Spec 129 - 2026-07-12 read-only remote evidence boundary and later-wave mutation guardrail.
 
 ## Maintenance
 

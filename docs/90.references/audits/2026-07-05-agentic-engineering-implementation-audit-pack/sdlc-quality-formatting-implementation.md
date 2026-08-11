@@ -102,8 +102,8 @@ than current evidence. No remote setting was changed.
 | Area | Status | Evidence | Notes |
 | --- | --- | --- | --- |
 | Spec-driven development | Partially Implemented | [SDLC and document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md) | Stage roles, numbering, templates, tasks, broad traceability, and typed direct-parent/transition checks are implemented for the migrated active chain and changed/new documents. Historical lifecycle reconstruction and release execution records remain incomplete. |
-| Execution planning | Implemented | [Stage 04 plans README](../../../04.execution/plans/README.md), [audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Plans define WBS, verification, risk, and completion criteria. |
-| Task evidence | Implemented | [Stage 04 tasks README](../../../04.execution/tasks/README.md), [audit pack task](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) | Task files record evidence, status, deviation, and validation results. |
+| Execution planning | Implemented | [Stage 04 plans README](../../../03.specs/README.md), audit pack plan | Plans define WBS, verification, risk, and completion criteria. |
+| Task evidence | Implemented | [Stage 04 tasks README](../../../03.specs/README.md), audit pack task | Task files record evidence, status, deviation, and validation results. |
 | Documentation contracts | Partially Implemented | [frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
 | CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines 16 docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, supply-chain-fixture, and workflow-security jobs. The latest public remote observation saw 15 jobs in a failed run; tracked definitions do not prove current remote success or enforcement. |
 | Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
@@ -167,8 +167,8 @@ runtime cost before adding new gates.
 - [Docker Compose infrastructure research](../../research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md) - Compose/infrastructure validation criteria.
 - [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - security criteria.
 - [Stage 03 README](../../../03.specs/README.md) - spec stage contract.
-- [Stage 04 plans README](../../../04.execution/plans/README.md) - plan stage contract.
-- [Stage 04 tasks README](../../../04.execution/tasks/README.md) - task evidence contract.
+- [Stage 04 plans README](../../../03.specs/README.md) - plan stage contract.
+- [Stage 04 tasks README](../../../03.specs/README.md) - task evidence contract.
 - [scripts README](../../../../scripts/README.md) - local validation and QA scripts.
 - [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - remote CI/CD gates.
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - external CI syntax criteria.

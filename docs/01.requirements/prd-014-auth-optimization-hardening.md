@@ -79,6 +79,6 @@ updated: 2026-08-10
 ## Related Documents
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/002-auth/spec.md](../03.specs/002-auth/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
+- **Spec**: [../03.specs/002-auth/spec.md](../03.specs/spec-0002-auth/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md](../02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md)

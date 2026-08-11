@@ -194,10 +194,10 @@ escape 0건, secret exposure 0건, unowned Docker resource mutation 0건이다.
 
 - **Architecture Description**: [Operational readiness closure architecture](../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
-- **Compose Spec**: [Spec 124](../98.archive/03.specs/124-compose-runtime-readiness-remediation/spec.md)
-- **Infrastructure Spec**: [Spec 125](../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
-- **Supply-chain Spec**: [Spec 126](../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
-- **Deployment Spec**: [Spec 127](../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
+- **Compose Spec**: Spec 124
+- **Infrastructure Spec**: Spec 125
+- **Supply-chain Spec**: Spec 126
+- **Deployment Spec**: Spec 127
 - **Canonical audit matrix**: [Audit implementation matrix](../90.references/data/governance/audit-implementation-matrix.md)
 - **Docker startup-order guidance**: [Control startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - **SLSA provenance model**: [SLSA provenance](https://slsa.dev/spec/v1.2/provenance)

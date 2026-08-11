@@ -105,7 +105,7 @@ requirements.
 - [Agent-output fixtures](../../data/governance/agent-output-eval-fixtures.md)
 - [Subagent protocol](../../../00.agent-governance/subagent-protocol.md)
 - [Approval boundaries](../../../00.agent-governance/rules/approval-boundaries.md)
-- [Task evidence](../../../04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md)
+- Task evidence
 
 ## Maintenance
 

@@ -83,10 +83,10 @@ Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, �
 ## Related Documents
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](../03.specs/010-tooling/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
+- **Spec**: [../03.specs/010-tooling/spec.md](../03.specs/spec-0010-tooling/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
+- **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/09-tooling/optimization-hardening.md](../05.operations/guides/09-tooling/optimization-hardening.md)
 - **Operation**: [../05.operations/policies/09-tooling/optimization-hardening.md](../05.operations/policies/09-tooling/optimization-hardening.md)
 - **Runbook**: [../05.operations/runbooks/09-tooling/optimization-hardening.md](../05.operations/runbooks/09-tooling/optimization-hardening.md)

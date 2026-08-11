@@ -92,5 +92,5 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [009-ai.md](../../01.requirements/prd-009-ai.md)
-- **Spec**: [009-ai/spec.md](../../03.specs/009-ai/spec.md)
+- **Spec**: [009-ai/spec.md](../../03.specs/spec-0009-ai/spec.md)
 - **ADR**: [0008-ollama-openwebui-local-ai.md](../decisions/adr-0008-ollama-openwebui-local-ai.md)

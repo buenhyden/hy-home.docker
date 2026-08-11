@@ -86,10 +86,10 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 ## Related Documents
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/012-laboratory/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
+- **Spec**: [../03.specs/012-laboratory/spec.md](../03.specs/spec-0012-laboratory/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
+- **Tasks**: ../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/11-laboratory/optimization-hardening.md](../05.operations/guides/11-laboratory/optimization-hardening.md)
 - **Policy**: [../05.operations/policies/11-laboratory/optimization-hardening.md](../05.operations/policies/11-laboratory/optimization-hardening.md)
 - **Runbook**: [../05.operations/runbooks/11-laboratory/optimization-hardening.md](../05.operations/runbooks/11-laboratory/optimization-hardening.md)

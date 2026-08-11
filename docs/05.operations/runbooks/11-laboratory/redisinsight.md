@@ -19,7 +19,7 @@ RedisInsight의 current image/route/storage boundary를 유지하면서 운영 �
 
 ### Canonical References
 
-- **Spec**: [Laboratory spec](../../../03.specs/012-laboratory/spec.md)
+- **Spec**: [Laboratory spec](../../../03.specs/spec-0012-laboratory/spec.md)
 - **Policy**: [RedisInsight policy](../../policies/11-laboratory/redisinsight.md)
 - **Guide**: [RedisInsight guide](../../guides/11-laboratory/redisinsight.md)
 

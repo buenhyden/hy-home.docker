@@ -522,4 +522,4 @@ or measured workspace results are supplied.
 - [research pack index](./README.md)
 - [provider implementation comparison](./provider-implementation-comparison.md)
 - [subagent protocol](../../../00.agent-governance/subagent-protocol.md)
-- [consolidation task evidence](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md)
+- consolidation task evidence

@@ -118,9 +118,9 @@ updated: 2026-08-10
 ## Related Documents
 
 - **PRD**: [../01.requirements/prd-015-security-optimization-hardening.md](../../01.requirements/prd-015-security-optimization-hardening.md)
-- **Spec**: [../03.specs/003-security/spec.md](../../03.specs/003-security/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
+- **Spec**: [../03.specs/003-security/spec.md](../../03.specs/spec-0003-security/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
+- **Tasks**: ../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md
 - **Policy**: [../../05.operations/policies/03-security/vault.md](../../05.operations/policies/03-security/vault.md)
 - **Runbook**: [../../05.operations/runbooks/03-security/vault.md](../../05.operations/runbooks/03-security/vault.md)

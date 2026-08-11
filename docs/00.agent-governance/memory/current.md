@@ -166,7 +166,7 @@ status: active
   ownership, not size.** Its task decomposes the work as four numbered items in
   a seventeen-item breakdown — Task 6A through 6D, "Reorganize Operations
   Domains 00 through 03" and onward, at
-  `docs/03.specs/136-sdlc-taxonomy-convergence/task.md:49-52` — and Tasks 1
+  `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md:49-52` — and Tasks 1
   through 5 of that same breakdown are the twelve commits this branch is based
   on. 6A through 6D are literally the next items in that sequence, and Task 13
   of the same breakdown owns the cross-link, index, and memory repair that
@@ -311,7 +311,7 @@ status: active
 - [Verification and validation leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md)
 - [GitHub Actions platform leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md)
 - [Scope application matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md)
-- [Predecessor extension record](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md)
+- [Predecessor extension record](../../03.specs/spec-0123-agentic-engineering-audit-remediation/task.md)
 
 ## Next handoff
 

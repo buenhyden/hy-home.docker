@@ -156,11 +156,11 @@ Current Stage 03 status count after the 2026-07-05 lifecycle cleanup:
 
 ## Sources
 
-- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md) - Defines the Stage 03 archive model.
+- [Document restructure design spec](../../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Defines the Stage 03 archive model.
 - [Stage 03 README](../../../03.specs/README.md) - Supplies current Stage 03 routing.
 - [Archive template](../../../99.templates/templates/common/archive.template.md) - Defines tombstone shape for future archive moves.
 - [Historical evidence preservation](../2026-07-03-workspace-document-contract-audit-pack/historical-evidence-preservation.md) - Supplies preservation rules for completed evidence.
-- [Document restructure task evidence](../../../04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md) - Supplies baseline and protected boundaries.
+- Document restructure task evidence - Supplies baseline and protected boundaries.
 
 ## Maintenance
 
@@ -175,4 +175,4 @@ Current Stage 03 status count after the 2026-07-05 lifecycle cleanup:
 - [Document restructure audit references](./README.md)
 - [Restructure gap register](./restructure-gap-register.md)
 - [Frontmatter profile inventory](./frontmatter-profile-inventory.md)
-- [Document restructure implementation plan](../../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md)
+- Document restructure implementation plan

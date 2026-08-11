@@ -18,10 +18,10 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/009-ai/spec.md)
+- [Spec](../../../03.specs/spec-0009-ai/spec.md)
 - [Operations Policy](../../policies/08-ai/optimization-hardening.md)
-- [Plan](../../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md)
-- [Tasks](../../../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
+- Plan
+- Tasks
 
 ## When to Use
 

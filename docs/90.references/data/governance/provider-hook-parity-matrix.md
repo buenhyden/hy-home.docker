@@ -108,4 +108,4 @@ Generated audit context only. Stage 00 owns policy and `scripts/hooks/agent-even
 
 - **Governance data index**: [README.md](./README.md)
 - **Provider capability matrix**: [../../../00.agent-governance/rules/provider-capability-matrix.md](../../../00.agent-governance/rules/provider-capability-matrix.md)
-- **Provider hook parity spec**: [../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md](../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)
+- **Provider hook parity spec**: ../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md

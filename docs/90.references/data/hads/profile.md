@@ -90,7 +90,7 @@ HADS is not a format for rewriting the entire documentation system at once. In t
 
 - [Documentation Protocol](../../../00.agent-governance/rules/documentation-protocol.md) - repository documentation policy and HADS boundary.
 - [Template Catalog](../../../99.templates/README.md) - reference template and target-stage mapping.
-- [Task Evidence](../../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) - approval-gate implementation history.
+- Task Evidence - approval-gate implementation history.
 
 ## Maintenance
 

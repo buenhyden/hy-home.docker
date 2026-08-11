@@ -324,7 +324,7 @@ another merely because one automation loop completed successfully.
 
 ## Sources
 
-- [Task 4 source ledger](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) - fixed-source retrieval and caveats
+- Task 4 source ledger - fixed-source retrieval and caveats
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - triggers, permissions, jobs, and steps
 - [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secrets, and action pinning
 - [GitHub deployments and environments](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments) - environment approvals, restrictions, secrets, and protection rules

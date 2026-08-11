@@ -26,7 +26,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 
 #### Canonical References
 
-- [Specification](../../../03.specs/094-harness-agent-first-engineering/spec.md)
+- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
 - [Usage Guide](../../guides/00-workspace/harness-agent-first-engineering.md)
 - [Operations Policy](../../policies/00-workspace/harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../../00.agent-governance/README.md)
@@ -170,8 +170,8 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 
 - [Operations Policy](../../policies/00-workspace/harness-agent-first-engineering.md)
 - [Usage Guide](../../guides/00-workspace/harness-agent-first-engineering.md)
-- [Plan](../../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
-- [Task Evidence](../../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
+- Plan
+- Task Evidence
 - [Agent Governance Hub](../../../00.agent-governance/README.md)
 
 ## Evidence

@@ -140,4 +140,4 @@ not approval to mutate workflows, scripts, or pre-commit hooks.
 
 - [Document restructure audit references](./README.md)
 - [Restructure gap register](./restructure-gap-register.md)
-- [Document restructure implementation plan](../../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md)
+- Document restructure implementation plan

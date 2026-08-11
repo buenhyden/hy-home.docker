@@ -85,10 +85,10 @@ AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운�
 ## Related Documents
 
 - **Architecture Description**: [../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/009-ai/spec.md](../03.specs/009-ai/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md)
+- **Spec**: [../03.specs/009-ai/spec.md](../03.specs/spec-0009-ai/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
+- **Tasks**: ../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
 - **Guide**: [../05.operations/guides/08-ai/optimization-hardening.md](../05.operations/guides/08-ai/optimization-hardening.md)
 - **Operation**: [../05.operations/policies/08-ai/optimization-hardening.md](../05.operations/policies/08-ai/optimization-hardening.md)
 - **Runbook**: [../05.operations/runbooks/08-ai/optimization-hardening.md](../05.operations/runbooks/08-ai/optimization-hardening.md)

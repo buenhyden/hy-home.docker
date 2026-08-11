@@ -71,5 +71,5 @@ updated: 2026-08-10
 ## Related Documents
 
 - **Architecture Description**: [0008-ai-architecture.md](../02.architecture/descriptions/ad-0008-ai-architecture.md)
-- **Spec**: [009-ai/spec.md](../03.specs/009-ai/spec.md)
+- **Spec**: [009-ai/spec.md](../03.specs/spec-0009-ai/spec.md)
 - **ADR**: [0008-ollama-openwebui-local-ai.md](../02.architecture/decisions/adr-0008-ollama-openwebui-local-ai.md)

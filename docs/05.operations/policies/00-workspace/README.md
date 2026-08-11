@@ -53,7 +53,7 @@ policies/00-workspace/
 | --- | --- |
 | [common-optimizations-template-exceptions.md](./common-optimizations-template-exceptions.md) | Common optimizations template exceptions policy 문서 |
 | [harness-agent-first-engineering.md](./harness-agent-first-engineering.md) | Harness / Agent-first Engineering policy 문서 |
-| [infra-service-optimization-catalog.md](./infra-service-optimization-catalog.md) | Infra service optimization catalog policy 문서 |
+| [infra-service-optimization-catalog.md](../../00-workspace/ops-0006-infra-service-optimization-catalog/policy.md) | Infra service optimization catalog policy 문서 |
 | [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | LLM Wiki maintenance policy 문서 |
 
 ## Related Documents

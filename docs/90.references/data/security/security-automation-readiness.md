@@ -99,7 +99,7 @@ management procedures.
 
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
-| `SEC-AUTO-012` | Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode. | [Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md) |
+| `SEC-AUTO-012` | Define broad dependency SCA ecosystems, thresholds, exceptions, remediation ownership, and rollout mode. | Spec 126 |
 
 ## Source Rules
 

@@ -119,7 +119,7 @@ for archive tombstones.
   `WDC-GAP-015` old-template-path evidence.
 - [Gap register](./gap-register.md) - Supplies dispositions and future
   implementation boundaries.
-- [Document contract remediation task](../../../04.execution/tasks/2026-07-03-document-contract-remediation-batches.md) -
+- Document contract remediation task -
   Supplies T-006 execution evidence.
 
 ## Maintenance
@@ -134,4 +134,4 @@ for archive tombstones.
 
 - [Document contract audit references](./README.md)
 - [Gap register](./gap-register.md)
-- [Document contract remediation task](../../../04.execution/tasks/2026-07-03-document-contract-remediation-batches.md)
+- Document contract remediation task

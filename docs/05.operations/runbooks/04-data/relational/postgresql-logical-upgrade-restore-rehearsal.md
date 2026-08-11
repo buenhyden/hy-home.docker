@@ -69,9 +69,9 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 
 ## Related Documents
 
-- [Spec 125](../../../../98.archive/03.specs/125-infrastructure-operations-readiness-remediation/spec.md)
-- [Infrastructure Plan](../../../../04.execution/plans/2026-07-11-infrastructure-operations-readiness-remediation.md)
-- [Infrastructure Task](../../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+- Spec 125
+- Infrastructure Plan
+- Infrastructure Task
 - [Rehearsal wrapper](../../../../../scripts/validation/rehearse-postgres-logical-upgrade.sh)
 - [Synthetic Compose fixture](../../../../../tests/fixtures/postgres-logical-upgrade/docker-compose.yml)
 - [Relational runbook index](./README.md)

@@ -145,7 +145,7 @@ Post-batch path evidence:
 
 ## Sources
 
-- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md) - Defines operations bucket restructure scope.
+- [Document restructure design spec](../../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Defines operations bucket restructure scope.
 - [Operations guide template](../../../99.templates/templates/operations/guide.template.md) - Defines guide role.
 - [Operations policy template](../../../99.templates/templates/operations/policy.template.md) - Defines policy role.
 - [Operations runbook template](../../../99.templates/templates/operations/runbook.template.md) - Defines runbook role.
@@ -164,5 +164,5 @@ Post-batch path evidence:
 
 - [Document restructure audit references](./README.md)
 - [Restructure gap register](./restructure-gap-register.md)
-- [Document restructure task evidence](../../../04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md)
+- Document restructure task evidence
 - [Operations README](../../../05.operations/README.md)

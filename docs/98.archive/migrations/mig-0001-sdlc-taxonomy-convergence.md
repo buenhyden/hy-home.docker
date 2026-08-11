@@ -2160,7 +2160,7 @@ records:
   reason: Move baseline completed source to stable typed target docs/98.archive/changes/chg-0122-language-policy-normalization-batch-3/task.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/04.execution/tasks/2026-06-05-language-policy-plan-normalization-batch-1.md
   stable_path: docs/98.archive/changes/chg-0123-language-policy-plan-normalization-batch-1/task.md
-  artifact_id: task-0123-01
+  artifact_id: task-0123-02
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
@@ -2237,21 +2237,21 @@ records:
   reason: Move baseline completed source to stable typed target docs/98.archive/changes/chg-0133-language-policy-task-normalization-batch-2/task.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-3.md
   stable_path: docs/98.archive/changes/chg-0134-language-policy-task-normalization-batch-3/task.md
-  artifact_id: task-0134-01
+  artifact_id: task-0134-02
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Move baseline completed source to stable typed target docs/98.archive/changes/chg-0134-language-policy-task-normalization-batch-3/task.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-4.md
   stable_path: docs/98.archive/changes/chg-0135-language-policy-task-normalization-batch-4/task.md
-  artifact_id: task-0135-01
+  artifact_id: task-0135-02
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Move baseline completed source to stable typed target docs/98.archive/changes/chg-0135-language-policy-task-normalization-batch-4/task.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/04.execution/tasks/2026-06-05-language-policy-task-normalization-batch-5.md
   stable_path: docs/98.archive/changes/chg-0136-language-policy-task-normalization-batch-5/task.md
-  artifact_id: task-0136-01
+  artifact_id: task-0136-02
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
@@ -5616,9 +5616,10 @@ records:
 | Wave | Mapping state | Git provenance | Consumer state | Commit |
 | :-- | :-- | :-- | :-- | :-- |
 | Task 4 — Stage 01/02 | 76 moves executed: 25 PRDs, 25 Architecture Descriptions, 25 ADRs, and the Description README; the original README rewrite-row defect is corrected above | Git rename index preserves every source-to-target relation | Tracked inbound links migrated to stable targets; final validation evidence is recorded in the Task 4 report | pending root-controller commit |
+| Task 5 — Stage 03/04 boundary | Executed all 337 approved rows in the bounded wave: 262 moves, 28 archives, 8 merges, 38 direct deletes, and 1 README rewrite. The result contains 31 current Specs, 7 current Plan/Task documents, 137 completed change packets with 223 physical documents, and 28 concise Spec tombstones. The authorized cycle-breaking exception executed both frozen rows that converge on `policy-0006`: the policy move and the Stage 04 roadmap merge. | All 290 move/archive sources resolve at their recorded `source_commit`; all 290 resolve to blobs, with 290 unique source blobs. Moved change evidence and tombstones retain the recorded commit/blob provenance. | The atomic inbound migration rewrote 2,103 links in 494 files and converted 612 active-to-archive links to non-link evidence labels. Merge sources and all 38 capability child READMEs are absent; Stage 04 is absent. Final validation evidence is recorded in the Task 5 report. | pending root-controller commit |
 
 ## Related Documents
 
-- [Approved specification](../../03.specs/136-sdlc-taxonomy-convergence/spec.md)
-- [Approved plan](../../04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md)
+- [Approved specification](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md)
+- [Approved plan](../../03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md)
 - [Archive retention contract](../../99.templates/support/archive-retention-contract.md)

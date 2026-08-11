@@ -70,11 +70,11 @@ document-corpus-lifecycle/
 
 - [governance reference data](../README.md)
 - [reference data](../../README.md)
-- [Foundation Spec](../../../../98.archive/03.specs/131-document-corpus-lifecycle-migration-foundation/spec.md)
-- [Foundation Plan](../../../../04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
-- [Foundation Task](../../../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
-- [Target Surface Spec](../../../../98.archive/03.specs/133-target-surface-contract-convergence/spec.md)
-- [Target Surface Plan](../../../../04.execution/plans/2026-07-18-target-surface-contract-convergence.md)
-- [Target Surface Task](../../../../04.execution/tasks/2026-07-18-target-surface-contract-convergence.md)
+- [Foundation Spec](../../../../03.specs/spec-0131-document-corpus-lifecycle-migration-foundation/spec.md)
+- Foundation Plan
+- Foundation Task
+- [Target Surface Spec](../../../../03.specs/spec-0133-target-surface-contract-convergence/spec.md)
+- Target Surface Plan
+- Target Surface Task
 - [corpus migration contract](../../../../99.templates/support/corpus-migration-contract.md)
 - [machine migration registry](../../../../99.templates/support/document-corpus-migration-contract.yaml)

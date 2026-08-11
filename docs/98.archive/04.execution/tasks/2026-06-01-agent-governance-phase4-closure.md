@@ -25,7 +25,7 @@ current_replacement: docs/04.execution/tasks/2026-06-02-agent-governance-missing
 
 ## Current Replacement
 
-- [Agent Governance Missing Items Implementation Task](../../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)
+- [Agent Governance Missing Items Implementation Task](../../changes/chg-0115-agent-governance-missing-items-implementation/task.md)
 
 ## Archive Ledger
 
@@ -34,4 +34,4 @@ current_replacement: docs/04.execution/tasks/2026-06-02-agent-governance-missing
 ## Related Documents
 
 - [Archive README](../../README.md)
-- [Current replacement task](../../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)
+- [Current replacement task](../../changes/chg-0115-agent-governance-missing-items-implementation/task.md)

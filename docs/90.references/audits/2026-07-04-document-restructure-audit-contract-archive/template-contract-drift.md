@@ -93,7 +93,7 @@ move, remove, archive, or relink target documents.
 
 ## Sources
 
-- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
+- [Document restructure design spec](../../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md) - Supplies the approved disposition model and implementation handoff.
 - [Template contract](../../../99.templates/support/template-contract.md) - Defines template-source and target-document boundaries.
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Defines lifecycle and archive frontmatter ownership.
 - [Template governance](../../../99.templates/support/template-governance.md) - Owns template-system governance rules.

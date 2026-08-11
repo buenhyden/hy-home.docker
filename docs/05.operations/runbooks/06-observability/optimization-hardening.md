@@ -19,10 +19,10 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/007-observability/spec.md)
+- [Spec](../../../03.specs/spec-0007-observability/spec.md)
 - [Operations Policy](../../policies/06-observability/optimization-hardening.md)
-- [Plan](../../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
-- [Tasks](../../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
+- Plan
+- Tasks
 
 ## When to Use
 

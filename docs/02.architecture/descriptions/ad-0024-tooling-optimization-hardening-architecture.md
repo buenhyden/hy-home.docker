@@ -115,10 +115,10 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 ## Related Documents
 
 - **PRD**: [../01.requirements/prd-021-tooling-optimization-hardening.md](../../01.requirements/prd-021-tooling-optimization-hardening.md)
-- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/010-tooling/spec.md)
-- **Plan**: [../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
+- **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/spec-0010-tooling/spec.md)
+- **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Tasks**: [../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
+- **Tasks**: ../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/guides/09-tooling/optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/09-tooling/optimization-hardening.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/runbooks/09-tooling/optimization-hardening.md)

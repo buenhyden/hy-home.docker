@@ -22,7 +22,7 @@ status: active
 
 - 이 2026-07-05 pack은 현재 agentic engineering research의 **유일한 active canonical pack**입니다.
 - 검증된 2026-07-07 자료는 책임이 분명한 이 pack의 canonical 문서에 한 번만 반영했습니다. 2026-07-07 duplicate pack은 redirect stub만 남은 상태로 제거되었고, 경로 mapping은 [research references](../README.md)의 Superseded Paths 표가 대신합니다.
-- 이전에 완료된 [Stage 03 research refresh spec](../../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md), [Stage 04 plan](../../../04.execution/plans/2026-07-05-agentic-research-pack-refresh.md), [Stage 04 task evidence](../../../04.execution/tasks/2026-07-05-agentic-research-pack-refresh.md), [2026-07-05 implementation audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md), [2026-07-07 audit update](../../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)는 삭제하거나 본문을 복제하지 않고 historical evidence로 유지합니다.
+- 이전에 완료된 Stage 03 research refresh spec, Stage 04 plan, Stage 04 task evidence, [2026-07-05 implementation audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md), [2026-07-07 audit update](../../audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)는 삭제하거나 본문을 복제하지 않고 historical evidence로 유지합니다.
 - Stage 90은 source-backed comparison과 routing을 제공할 뿐입니다. 현재 policy는 Stage 00/05 policy 문서, execution evidence는 Stage 04, runtime truth는 tracked provider/Compose/script/config surface가 계속 담당합니다.
 - 2026-07-13 document-contract 연구는 이 canonical pack의 관련 leaf만 in-place로 재검증했습니다. 별도 날짜 pack이나 dated audit snapshot을 만들거나 다시 쓰지 않았습니다.
 
@@ -239,6 +239,6 @@ cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를 변경하지
 - [research references](../README.md)
 - [90.references](../../README.md)
 - [agent governance hub](../../../00.agent-governance/README.md)
-- [HAFE specification](../../../03.specs/094-harness-agent-first-engineering/spec.md)
+- [HAFE specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
 - [HAFE operations guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
 - [HAFE operations policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)

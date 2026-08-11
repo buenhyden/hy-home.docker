@@ -25,7 +25,7 @@ current_replacement: docs/04.execution/plans/2026-06-02-agent-governance-decisio
 
 ## Current Replacement
 
-- [Agent Governance Decision Items and Attachment-Gap Plan](../../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
+- [Agent Governance Decision Items and Attachment-Gap Plan](../../changes/chg-0055-agent-governance-decision-items/plan.md)
 
 ## Archive Ledger
 
@@ -34,4 +34,4 @@ current_replacement: docs/04.execution/plans/2026-06-02-agent-governance-decisio
 ## Related Documents
 
 - [Archive README](../../README.md)
-- [Current replacement plan](../../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
+- [Current replacement plan](../../changes/chg-0055-agent-governance-decision-items/plan.md)

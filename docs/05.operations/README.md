@@ -64,7 +64,7 @@ docs/05.operations/
 | execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md)                                                               |
 | record an incident or postmortem                            | [incidents/](./incidents/README.md)                                                              |
 | record evidence for an executed release                     | [릴리스](./releases/README.md)                                                                    |
-| confirm execution traceability                              | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
+| confirm execution traceability                              | [execution plans](../03.specs/README.md) and [tasks](../03.specs/README.md) |
 
 ## How to Work in This Area
 
@@ -107,8 +107,8 @@ docs/05.operations/
 ## Related Documents
 
 - [Docs Index](../README.md)
-- [Plans](../04.execution/plans/README.md)
-- [Tasks](../04.execution/tasks/README.md)
+- [Plans](../03.specs/README.md)
+- [Tasks](../03.specs/README.md)
 - [Releases](./releases/README.md)
 - [Templates](../99.templates/README.md)
 - [Documentation protocol](../00.agent-governance/rules/documentation-protocol.md)

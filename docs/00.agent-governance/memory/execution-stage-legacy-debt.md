@@ -85,16 +85,16 @@ rewrite targets.
   and `legacy_target_stage_docs_skipped=0`
 - Historical 2026-05-22 contract metrics were 465/465 normalized target-stage
   docs with `legacy_target_stage_docs_skipped=0`.
-- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- Workspace governance bounded re-audit task
 
 ## Related Documents
 
-- [Execution README](../../04.execution/README.md)
-- [Execution plans README](../../04.execution/plans/README.md)
-- [Execution tasks README](../../04.execution/tasks/README.md)
-- [Execution stage remediation plan](../../04.execution/plans/2026-05-18-execution-stage-remediation.md)
-- [Execution stage remediation task](../../04.execution/tasks/2026-05-18-execution-stage-remediation.md)
+- [Execution README](../../03.specs/README.md)
+- [Execution plans README](../../03.specs/README.md)
+- [Execution tasks README](../../03.specs/README.md)
+- Execution stage remediation plan
+- Execution stage remediation task
 - [Plan template](../../99.templates/templates/sdlc/plan.template.md)
 - [Task template](../../99.templates/templates/sdlc/task.template.md)
 - [Progress log](./progress.md)
-- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- Workspace governance bounded re-audit task

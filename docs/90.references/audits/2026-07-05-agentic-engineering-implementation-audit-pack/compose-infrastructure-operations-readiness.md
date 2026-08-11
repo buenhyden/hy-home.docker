@@ -79,14 +79,14 @@ The criterion matrix below remains the historical 2026-07-19 assessment and is
 not rewritten as if its original observation scope included later work. Current
 bounded evidence is narrower and is owned by the Stage 04 task records:
 
-- [Compose runtime remediation](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+- Compose runtime remediation
   has current passing local startup, recovery, and timeout cases for its
   governed test boundary; its latest image-identity hardening review is pending.
-- [Infrastructure operations remediation](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+- Infrastructure operations remediation
   has current passing synthetic PostgreSQL backup-and-restore evidence with
   integrity checks inside its governed test boundary; its latest image-identity
   hardening review is pending.
-- [Deployment and release remediation](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+- Deployment and release remediation
   completed implementation and static verification only. Positive promotion
   and rollback runtime evidence remain blocked until the security workstream
   supplies accepted verdicts and their generation-bound pair manifest.

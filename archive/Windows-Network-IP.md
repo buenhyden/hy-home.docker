@@ -47,6 +47,6 @@ approved owner, validation, and rollback plan.
 ## Related Documents
 
 - [Archive and retention contract](../docs/99.templates/support/archive-retention-contract.md)
-- [Target surface convergence specification](../docs/03.specs/133-target-surface-contract-convergence/spec.md)
-- [Target surface convergence plan](../docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md)
-- [Target surface convergence task](../docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md)
+- [Target surface convergence specification](../docs/03.specs/spec-0133-target-surface-contract-convergence/spec.md)
+- Target surface convergence plan
+- Target surface convergence task

@@ -22,8 +22,8 @@ status: active
 ### Canonical References
 
 - [Operations Policy](../../policies/02-auth/oauth2-proxy.md)
-- [Plan](../../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
-- [Tasks](../../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
+- Plan
+- Tasks
 
 ## When to Use
 

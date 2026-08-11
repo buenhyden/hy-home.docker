@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import collections
 import contextlib
 import dataclasses
 import datetime
@@ -10,6 +11,7 @@ import importlib.util
 import inspect
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -52,6 +54,221 @@ def load_script(path: pathlib.Path, name: str):
 
 lifecycle = load_script(SCRIPT, "document_corpus_lifecycle")
 metadata = load_script(METADATA_SCRIPT, "document_metadata_for_lifecycle_tests")
+
+
+class CoLocatedExecutionTests(unittest.TestCase):
+    TASK5_LINK_CONSUMERS = (
+        ROOT / "_workspace/README.md",
+        ROOT / "_workspace/repo-support/README.md",
+        ROOT / "archive/Windows-Network-IP.md",
+        ROOT / "examples/sample-web-service/service.md",
+        ROOT
+        / "docs/05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md",
+    )
+
+    def test_all_capability_directories_use_stable_identity(self) -> None:
+        legacy_capabilities = sorted(
+            path.name
+            for path in (ROOT / "docs/03.specs").iterdir()
+            if path.is_dir() and not path.name.startswith("spec-")
+        )
+        self.assertEqual([], legacy_capabilities)
+
+    def test_active_capability_has_no_child_readme(self) -> None:
+        readmes = sorted((ROOT / "docs/03.specs").glob("spec-*/README.md"))
+        self.assertEqual([], readmes)
+
+    def test_stage_04_is_absent(self) -> None:
+        self.assertFalse((ROOT / "docs/04.execution").exists())
+
+    def test_task5_moved_documents_publish_no_broken_relative_links(self) -> None:
+        documents = sorted((ROOT / "docs/98.archive/changes").glob("chg-*/*.md"))
+        documents.extend(path for path in self.TASK5_LINK_CONSUMERS if path.is_file())
+        link_pattern = re.compile(r"(?<!!)(?<!\\)\[[^\]\n]+\]\(([^)\n]+)\)")
+        violations: list[str] = []
+        for document in documents:
+            in_fence = False
+            for line_number, line in enumerate(
+                document.read_text(encoding="utf-8").splitlines(), start=1
+            ):
+                stripped = line.lstrip()
+                if stripped.startswith(("```", "~~~")):
+                    in_fence = not in_fence
+                    continue
+                if in_fence:
+                    continue
+                for match in link_pattern.finditer(line):
+                    raw = match.group(1).strip()
+                    href = (
+                        raw[1 : raw.index(">")] if raw.startswith("<") and ">" in raw
+                        else raw.split()[0]
+                    )
+                    if (
+                        not href
+                        or href.startswith("#")
+                        or re.match(r"^[a-z][a-z0-9+.-]*:", href, flags=re.I)
+                    ):
+                        continue
+                    target = (document.parent / href.split("#", 1)[0]).resolve()
+                    try:
+                        target.relative_to(ROOT.resolve())
+                    except ValueError:
+                        violations.append(f"{document.relative_to(ROOT)}:{line_number}: {href}")
+                        continue
+                    if not target.exists():
+                        violations.append(f"{document.relative_to(ROOT)}:{line_number}: {href}")
+        self.assertEqual([], violations)
+
+    def test_active_change_uses_only_canonical_role_names(self) -> None:
+        for capability in sorted((ROOT / "docs/03.specs").glob("spec-*")):
+            with self.subTest(capability=capability.name):
+                execution_documents = {
+                    path.name
+                    for path in capability.iterdir()
+                    if path.is_file()
+                    and ("plan" in path.stem.casefold() or "task" in path.stem.casefold())
+                }
+                self.assertLessEqual(execution_documents, {"plan.md", "task.md"})
+
+    def test_task5_promoted_reconciliation_is_exactly_bounded(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        contract = lifecycle.load_migration_contract(CONTRACT)
+        _, findings = lifecycle._load_declared_manifests(
+            ROOT,
+            profiles,
+            contract,
+            promoted_only=True,
+        )
+        task5_residual = [
+            finding
+            for finding in findings
+            if finding.code == "manifest-consumer-evidence-mismatch"
+            or (
+                finding.code == "manifest-target-missing"
+                and finding.path.startswith(("docs/03.specs/", "docs/04.execution/"))
+            )
+            or finding.code == "promoted-manifest-file-invalid"
+        ]
+        operations = [
+            finding
+            for finding in findings
+            if finding.path.startswith("docs/05.operations/")
+        ]
+        task4 = [
+            finding
+            for finding in findings
+            if finding.path.startswith(("docs/01.requirements/", "docs/02.architecture/"))
+        ]
+        unrelated = [
+            finding
+            for finding in findings
+            if finding not in operations and finding not in task4
+        ]
+
+        self.assertEqual([], task5_residual)
+        self.assertEqual(28, len(operations))
+        self.assertEqual(4, len(task4))
+        self.assertEqual(10, len(unrelated))
+        self.assertEqual(42, len(findings))
+
+    def test_task5_reconciliation_requires_every_exact_ledger_disposition(self) -> None:
+        rows = lifecycle._task5_migration_rows(ROOT)
+        selected = lifecycle._task5_selected_rows(rows)
+
+        self.assertEqual(337, len(selected))
+        self.assertEqual(
+            {
+                "archive": 28,
+                "delete": 38,
+                "merge": 8,
+                "move": 262,
+                "rewrite": 1,
+            },
+            dict(collections.Counter(row["action"] for row in selected.values())),
+        )
+        self.assertTrue(lifecycle._task5_dispositions_executed(ROOT, selected))
+
+    def test_task5_reconciliation_requires_a_resolvable_legacy_source_blob(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            legacy = root / "docs/04.execution/plan.md"
+            legacy.parent.mkdir(parents=True)
+            legacy.write_text("legacy\n", encoding="utf-8")
+            non_blob = root / "docs/04.execution/non-blob"
+            non_blob.mkdir()
+            (non_blob / "child.md").write_text("child\n", encoding="utf-8")
+            source_commit = commit_all(root, "record legacy sources")
+
+            legacy.unlink()
+            shutil.rmtree(non_blob)
+            target = root / "docs/03.specs/spec-0001-example/plan.md"
+            target.parent.mkdir(parents=True)
+            target.write_text("moved\n", encoding="utf-8")
+            destination_commit = commit_all(root, "move disposition target")
+
+            def row(
+                source_commit: str,
+                legacy_path: str = "docs/04.execution/plan.md",
+            ) -> dict[str, dict[str, object]]:
+                return {
+                    legacy_path: {
+                        "action": "move",
+                        "stable_path": "docs/03.specs/spec-0001-example/plan.md",
+                        "source_commit": source_commit,
+                    }
+                }
+
+            self.assertFalse(
+                lifecycle._task5_dispositions_executed(root, row("0" * 40))
+            )
+            self.assertFalse(
+                lifecycle._task5_dispositions_executed(
+                    root,
+                    row(destination_commit, "docs/04.execution/missing.md"),
+                )
+            )
+            self.assertFalse(
+                lifecycle._task5_dispositions_executed(
+                    root,
+                    row(source_commit, "docs/04.execution/non-blob"),
+                )
+            )
+            self.assertTrue(lifecycle._task5_dispositions_executed(root, row(source_commit)))
+
+    def test_task5_promoted_reconciliation_stays_disabled_without_source_proof(self) -> None:
+        contract = lifecycle.load_migration_contract(CONTRACT)
+        rows = lifecycle._task5_migration_rows(ROOT)
+        selected = lifecycle._task5_selected_rows(rows)
+        corrupted = copy.deepcopy(selected)
+        _, first_row = next(iter(corrupted.items()))
+        first_row["source_commit"] = "0" * 40
+
+        with mock.patch.object(
+            lifecycle, "_task5_migration_rows", return_value=corrupted
+        ):
+            self.assertFalse(lifecycle._task5_reconciliation_ready(ROOT, contract))
+
+    def test_task5_reconciliation_rejects_a_stale_current_consumer(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_repo(root)
+            consumer = root / "docs/active.md"
+            consumer.parent.mkdir(parents=True)
+            consumer.write_text("[stale](missing.md)\n", encoding="utf-8")
+            commit_all(root)
+
+            self.assertFalse(lifecycle._task5_current_links_resolve(root))
+            (root / "docs/missing.md").write_text("# Target\n", encoding="utf-8")
+            commit_all(root, "add target")
+            self.assertTrue(lifecycle._task5_current_links_resolve(root))
+
+    def test_task5_promoted_mismatch_is_not_hidden_when_link_proof_fails(self) -> None:
+        contract = lifecycle.load_migration_contract(CONTRACT)
+        with mock.patch.object(
+            lifecycle, "_task5_current_links_resolve", return_value=False
+        ):
+            self.assertFalse(lifecycle._task5_reconciliation_ready(ROOT, contract))
 
 
 def run(*args: str, cwd: pathlib.Path) -> subprocess.CompletedProcess[str]:
@@ -2387,6 +2604,13 @@ class CandidateManifestCliTests(LifecycleTestCase):
         contract["waves"]["foundation"]["enforcement"] = "advisory"
         contract["waves"]["foundation"]["manifest_path"] = None
         source_paths = contract["waves"]["foundation"]["source_paths"]
+        foundation_manifest = yaml.safe_load(
+            (
+                ROOT
+                / self.contract["waves"]["foundation"]["manifest_path"]
+            ).read_text(encoding="utf-8")
+        )
+        baseline_commit = foundation_manifest["baseline_commit"]
         for source_path in source_paths:
             source = root / source_path
             source.parent.mkdir(parents=True, exist_ok=True)
@@ -2396,7 +2620,19 @@ class CandidateManifestCliTests(LifecycleTestCase):
                     encoding="utf-8",
                 )
             else:
-                source.write_bytes((ROOT / source_path).read_bytes())
+                current_source = ROOT / source_path
+                if current_source.is_file():
+                    source.write_bytes(current_source.read_bytes())
+                    continue
+                historical_source = run(
+                    "git",
+                    "show",
+                    f"{baseline_commit}:{source_path}",
+                    cwd=ROOT,
+                )
+                if historical_source.returncode != 0:
+                    raise AssertionError(historical_source.stderr)
+                source.write_text(historical_source.stdout, encoding="utf-8")
         baseline = commit_all(root, "candidate baseline")
         document = lifecycle.generate_manifest_skeleton(
             root,

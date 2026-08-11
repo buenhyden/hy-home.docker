@@ -73,6 +73,6 @@ updated: 2026-08-10
 ## Related Documents
 
 - **Architecture Description**: [Gateway architecture descriptions](../02.architecture/descriptions/ad-0001-gateway-architecture.md)
-- **Spec**: [Gateway technical specification](../03.specs/001-gateway/spec.md)
-- **Plan**: [Gateway standardization plan](../04.execution/plans/2026-03-26-01-gateway-standardization.md)
+- **Spec**: [Gateway technical specification](../03.specs/spec-0001-gateway/spec.md)
+- **Plan**: Gateway standardization plan
 - **ADR**: [Traefik and Nginx hybrid decision](../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md)

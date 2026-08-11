@@ -152,4 +152,4 @@ lifecycle inference.
 - [common document contract](./common-document-contract.md)
 - [archive template](../templates/common/archive.template.md)
 - [Stage 98 archive](../../98.archive/README.md)
-- [Foundation task evidence](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- Foundation task evidence

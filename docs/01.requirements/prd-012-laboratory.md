@@ -63,6 +63,6 @@ N/A
 ## Related Documents
 
 - **Architecture Description**: [Laboratory architecture descriptions](../02.architecture/descriptions/ad-0011-laboratory-architecture.md)
-- **Spec**: [Laboratory technical specification](../03.specs/012-laboratory/spec.md)
-- **Plan**: [Laboratory standardization plan](../04.execution/plans/2026-03-26-11-laboratory-standardization.md)
+- **Spec**: [Laboratory technical specification](../03.specs/spec-0012-laboratory/spec.md)
+- **Plan**: Laboratory standardization plan
 - **ADR**: [Laboratory services decision](../02.architecture/decisions/adr-0011-laboratory-services.md)

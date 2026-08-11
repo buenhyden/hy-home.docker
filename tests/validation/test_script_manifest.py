@@ -450,7 +450,7 @@ class ScriptManifestTests(unittest.TestCase):
             "docs/05.operations/runbooks/03-security/vault.md",
             "docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md",
         }
-        migration_authority = "docs/03.specs/136-sdlc-taxonomy-convergence/spec.md"
+        migration_authority = "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
             with self.subTest(path=row["path"]):
                 authority = row["authority"]
@@ -560,8 +560,12 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                     self.assertIsNotNone(match)
                     identity, role = match.groups()
-                    expected_id = f"plan-{identity}" if role == "plan" else f"task-{identity}-01"
-                    self.assertEqual(expected_id, row["artifact_id"])
+                    if role == "plan":
+                        self.assertEqual(f"plan-{identity}", row["artifact_id"])
+                    else:
+                        self.assertRegex(
+                            str(row["artifact_id"]), rf"^task-{identity}-[0-9]{{2}}$"
+                        )
 
     def test_ledger_artifact_ids_match_target_profile_identities(self) -> None:
         direct_profiles = {
@@ -614,8 +618,18 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                     self.assertIsNotNone(match)
                     identity, role = match.groups()
-                    expected = f"plan-{identity}" if role == "plan" else f"task-{identity}-01"
-                    self.assertEqual(expected, artifact_id)
+                    if role == "plan":
+                        self.assertEqual(f"plan-{identity}", artifact_id)
+                    else:
+                        self.assertRegex(artifact_id, rf"^task-{identity}-[0-9]{{2}}$")
+                    target_path = ROOT / target
+                    if target_path.is_file():
+                        target_metadata = frontmatter(
+                            target_path.read_text(encoding="utf-8")
+                        )
+                        self.assertEqual(
+                            target_metadata.get("artifact_id"), artifact_id
+                        )
                 elif target_type == "tombstone":
                     filename = PurePosixPath(target).stem
                     self.assertTrue(filename.startswith(f"{artifact_id}-") or filename == artifact_id)

@@ -138,7 +138,7 @@ PY
 
 ## Sources
 
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines the Task 2 audit scope and execution evidence.
+- Workspace document contract audit pack task - Defines the Task 2 audit scope and execution evidence.
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Defines canonical and legacy frontmatter key expectations.
 - [Template selection](../../../99.templates/support/template-selection.md) - Supports document-profile routing for later comparison work.
 - [Reference template](../../../99.templates/templates/common/reference.template.md) - Defines the required Stage 90 reference structure.
@@ -154,7 +154,7 @@ PY
 ## Related Documents
 
 - [Document contract audit references](./README.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
 - [Template selection](../../../99.templates/support/template-selection.md)
 - [Reference template](../../../99.templates/templates/common/reference.template.md)

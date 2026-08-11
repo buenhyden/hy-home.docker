@@ -194,9 +194,9 @@ No direct-fix candidates were approved in the source reports.
 - [Contract governance map](./contract-governance-map.md) - Supplies governance, provider, rule-duplication, and no-action ownership rows.
 - [Template application gaps](./template-application-gaps.md) - Supplies stale template-path, historical, broad-reference, and out-of-scope classifications.
 - [Automation coverage map](./automation-coverage-map.md) - Supplies CI/CD, QA, security, supply-chain, remote, Graphify, provider-sync, and infra-drift rows.
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Records execution evidence for this audit pack.
-- [Workspace document contract audit pack plan](../../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md) - Defines Task 5 and future batch requirements.
-- [Workspace document contract audit pack spec](../../../03.specs/102-workspace-document-contract-audit-pack/spec.md) - Defines the audit-only contract and approved dispositions.
+- Workspace document contract audit pack task - Records execution evidence for this audit pack.
+- Workspace document contract audit pack plan - Defines Task 5 and future batch requirements.
+- [Workspace document contract audit pack spec](../../../03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md) - Defines the audit-only contract and approved dispositions.
 - [Reference template](../../../99.templates/templates/common/reference.template.md) - Defines the Stage 90 reference report contract.
 
 ## Maintenance
@@ -218,4 +218,4 @@ No direct-fix candidates were approved in the source reports.
 - [Contract governance map](./contract-governance-map.md)
 - [Template application gaps](./template-application-gaps.md)
 - [Automation coverage map](./automation-coverage-map.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task

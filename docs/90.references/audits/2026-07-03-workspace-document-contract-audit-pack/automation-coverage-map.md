@@ -227,4 +227,4 @@ not a validator specification, and not a replacement for `.github/workflows/`,
 - [Frontmatter inventory](./frontmatter-inventory.md)
 - [Section profile inventory](./section-profile-inventory.md)
 - [README profile inventory](./readme-profile-inventory.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task

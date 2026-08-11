@@ -65,4 +65,4 @@ updated: 2026-08-10
 
 - **PRD**: [../../01.requirements/prd-001-gateway.md](../../01.requirements/prd-001-gateway.md)
 - **Architecture Description**: [../descriptions/ad-0001-gateway-architecture.md](../descriptions/ad-0001-gateway-architecture.md)
-- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/001-gateway/spec.md)
+- **Related Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/spec-0001-gateway/spec.md)

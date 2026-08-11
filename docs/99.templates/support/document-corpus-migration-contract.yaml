@@ -486,9 +486,9 @@ waves:
       - docs/90.references
       - docs/98.archive
     evidence_paths:
-      - docs/03.specs/136-sdlc-taxonomy-convergence/spec.md
+      - docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
       - docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md
-      - docs/03.specs/136-sdlc-taxonomy-convergence/task.md
+      - docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md
     declared_outputs: []
   wave-a-active-sdlc:
     enforcement: advisory

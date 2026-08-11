@@ -63,5 +63,5 @@ Existing alternatives, rationale, or rejected options in this ADR remain the alt
 
 - [Communication PRD](../../01.requirements/prd-011-communication.md)
 - [Communication Architecture Description](../descriptions/ad-0010-communication-architecture.md)
-- [Communication spec](../../03.specs/011-communication/spec.md)
-- [Communication standardization plan](../../04.execution/plans/2026-03-26-10-communication-standardization.md)
+- [Communication spec](../../03.specs/spec-0011-communication/spec.md)
+- Communication standardization plan

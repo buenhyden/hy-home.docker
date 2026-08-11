@@ -103,7 +103,7 @@ Service-level Kubernetes migration suitability is evaluated with these criteria.
 - [infra index](../../../../infra/README.md) - Compose tier and service entrypoints
 - [docs index](../../../README.md) - stage taxonomy and migration routing
 - [architecture index](../../../02.architecture/README.md) - target location for accepted migration architecture decisions
-- [execution index](../../../04.execution/README.md) - target location for active migration plans and task evidence
+- [execution index](../../../03.specs/README.md) - target location for active migration plans and task evidence
 
 ## Maintenance
 
@@ -117,5 +117,5 @@ Service-level Kubernetes migration suitability is evaluated with these criteria.
 - [90.references](../../README.md)
 - [docs index](../../../README.md)
 - [architecture index](../../../02.architecture/README.md)
-- [execution index](../../../04.execution/README.md)
+- [execution index](../../../03.specs/README.md)
 - [operations index](../../../05.operations/README.md)

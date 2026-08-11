@@ -184,7 +184,7 @@ PY
 
 ## Sources
 
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines the Task 2 audit scope and validation evidence.
+- Workspace document contract audit pack task - Defines the Task 2 audit scope and validation evidence.
 - [Template selection](../../../99.templates/support/template-selection.md) - Supports later mapping from observed headings to document profiles.
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - Defines stage-level authoring expectations for comparison work.
 - [Reference template](../../../99.templates/templates/common/reference.template.md) - Defines the required Stage 90 reference structure.
@@ -201,7 +201,7 @@ PY
 ## Related Documents
 
 - [Document contract audit references](./README.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task
 - [Template selection](../../../99.templates/support/template-selection.md)
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Reference template](../../../99.templates/templates/common/reference.template.md)

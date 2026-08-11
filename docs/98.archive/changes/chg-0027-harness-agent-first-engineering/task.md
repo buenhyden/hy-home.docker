@@ -1,0 +1,118 @@
+---
+status: archived
+artifact_id: task-0027-01
+artifact_type: archive
+parent_ids: []
+archived_from: docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md
+archived_at: 2026-08-11
+archive_reason: "Move baseline completed source to stable typed target docs/98.archive/changes/chg-0027-harness-agent-first-engineering/task.md; migrate 6 resolved inbound link(s) with it."
+archive_disposition: evidence-preserve
+archived_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
+archived_blob: c31fe00fd9f9b04e18e28a3ef79b7cfcfbd1a910
+preservation_class: git-history
+---
+<!-- Target: docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md -->
+
+# Task: Harness / Agent-first Engineering Documentation
+
+## Overview
+
+This task document records evidence that the harness engineering and Agent-first Engineering analysis results were implemented and verified as official stage documents.
+
+## Inputs
+
+- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
+- [Plan](plan.md)
+- [Documentation Protocol](../../../00.agent-governance/rules/documentation-protocol.md)
+- [Stage Authoring Matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
+
+## Working Rules
+
+- Templates from `docs/99.templates/` are mandatory for new stage documents.
+- Parent README files must be updated when files are added.
+- Runtime policy files are not modified unless a concrete validator failure requires it.
+- Completion is based on repository checks, not subjective review.
+
+## Task Table
+
+| ID | Type | Task | Status | Validation / Evidence |
+| --- | --- | --- | --- | --- |
+| HAFE-001 | Analyze | Review root, docs, infra, scripts, governance, runtime, template, and validator files. | Done | Captured in the specification file analysis table. |
+| HAFE-002 | Document | Create Spec, Plan, Task, Guide, Policy, and Runbook stage docs. | Done | New docs under `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, and `docs/05.operations/runbooks`. |
+| HAFE-003 | Sync | Update parent README files for new artifacts. | Done | README structure and related links updated. |
+| HAFE-004 | Verify | Run governance, docs, runtime, default/core Compose, and supported hardening checks. | Done | Scoped validation commands passed on 2026-05-09; `10-communication` remediation is separate infra scope. |
+| HAFE-005 | Scan | Confirm no external source-label references in active runtime/governance surfaces. | Done | `rg` returned no matches in active runtime/governance surfaces. |
+| HAFE-006 | Context Quality | Add Graphify health fallback so contaminated graph output remains advisory. | Done | `bash scripts/knowledge/report-graphify-health.sh` exits 0 and reports `status=advisory` for current generated corpus. |
+| HAFE-007 | Runtime Hook | Fix Claude hook quoting so markdown backticks are not executed by the shell. | Done | `.claude/hooks/docker-compose-pre.sh` and `.claude/hooks/session-start.sh` use heredoc/argv Python invocation. |
+| HAFE-008 | Evidence Scope | Tighten evidence wording for catalog parity, scoped infra validation, and Graphify authority. | Done | Stage docs distinguish catalog parity from semantic parity and `core`/supported-tier validation from full workspace validation. |
+| HAFE-009 | Taxonomy Hardening | Split HAFE guide/policy/runbook content and add stricter stale taxonomy drift checks. | Done | Guide content moved to `docs/05.operations/guides`; repo contract now checks active stale taxonomy shorthand. |
+
+## Suggested Types
+
+- Analyze
+- Document
+- Sync
+- Verify
+- Scan
+
+## Agent-specific Types (If Applicable)
+
+- `agentic-analysis`: inspect agent/runtime contracts.
+- `runtime-boundary-check`: verify `.claude`/`.codex` boundaries.
+- `template-contract-check`: verify stage docs and README traceability.
+
+## Phase View (Optional)
+
+### Phase 1
+
+Analyze existing workspace and runtime contracts, then create template-compliant documentation.
+
+### Phase 2
+
+Run validation commands and record command outcomes in the final response.
+
+## Verification Summary
+
+Executed commands:
+
+```bash
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/knowledge/report-graphify-health.sh
+python3 -m json.tool .codex/hooks.json >/dev/null
+python3 -m json.tool .claude/settings.json >/dev/null
+bash -n .claude/hooks/*.sh scripts/*.sh
+printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
+CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
+printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-quickwin-baseline.sh
+bash scripts/hardening/check-all-hardening.sh
+! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
+```
+
+Results:
+
+- `check-repo-contracts.sh`: PASS, `failures=0`; includes active taxonomy shorthand and operations target-comment checks.
+- `check-doc-traceability.sh`: PASS, `catalog_pairs_total=46`, `failures=0`.
+- `report-graphify-health.sh`: PASS/non-failing advisory, `status=advisory`, `manifest_volume_paths=223`, `manifest_gitlink_paths=309`, `graph_source_file_contamination_count=282`.
+- JSON and shell syntax checks: PASS.
+- Hook payload simulations: PASS; Claude hook payloads emit JSON system messages without command substitution side effects, and Codex post-tool wrapper completes validation.
+- `validate-docker-compose.sh`: PASS, default/core scoped validation, `services_total=5`.
+- `check-template-security-baseline.sh`: PASS, `template_adoption_missing=0`, required security controls enforced.
+- `check-quickwin-baseline.sh`: PASS, default/core scoped validation, `services_total=5`, baseline violations all zero.
+- `check-all-hardening.sh`: PASS, supported tier checks passed.
+- Source-label scan: no matches in active runtime/governance surfaces.
+- Active taxonomy shorthand scan: no matches outside the allowed `docs/README.md` migration map and validator implementation.
+- Operations target-comment scan: all `docs/05.operations` target comments point to `guides/`, `policies/`, `runbooks/`, or `incidents/`.
+- `graphify update .`: skipped because `graphify` CLI is unavailable in the active shell.
+- Residual risk: `10-communication` compose/include/IP remediation is intentionally out of scope for this HAFE pass.
+
+## Related Documents
+
+- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
+- [Plan](plan.md)
+- [Guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
+- [Operations Policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
+- [Validation Runbook](../../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md)

@@ -106,9 +106,9 @@ Current document-contract counts and implementation status route to the
 ## Related Documents
 
 - [Audit references](../README.md)
-- [Document restructure design spec](../../../03.specs/103-document-restructure-audit-contract-archive/spec.md)
-- [Document restructure implementation plan](../../../04.execution/plans/2026-07-04-document-restructure-audit-contract-archive.md)
-- [Document restructure task evidence](../../../04.execution/tasks/2026-07-04-document-restructure-audit-contract-archive.md)
+- [Document restructure design spec](../../../03.specs/spec-0103-document-restructure-audit-contract-archive/spec.md)
+- Document restructure implementation plan
+- Document restructure task evidence
 - [Template contract](../../../99.templates/support/template-contract.md)
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)
 - [Template governance](../../../99.templates/support/template-governance.md)

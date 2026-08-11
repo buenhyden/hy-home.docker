@@ -136,5 +136,5 @@ The existing infrastructure strategy section defines the deployment boundary for
 
 - **PRD**: [005-data-analytics.md](../../01.requirements/prd-005-data-analytics.md)
 - **ADR**: [0015-analytics-engine-selection.md](../decisions/adr-0015-analytics-engine-selection.md)
-- **Specs**: [spec.md](../../03.specs/005-data-analytics/spec.md)
+- **Specs**: [spec.md](../../03.specs/spec-0005-data-analytics/spec.md)
 - **Guides**: [README.md](../../05.operations/guides/04-data/analytics/README.md)

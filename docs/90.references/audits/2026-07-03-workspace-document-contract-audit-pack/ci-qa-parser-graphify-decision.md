@@ -138,4 +138,4 @@ script surfaces.
 - [Document contract audit references](./README.md)
 - [Automation coverage map](./automation-coverage-map.md)
 - [Gap register](./gap-register.md)
-- [Document contract remediation task](../../../04.execution/tasks/2026-07-03-document-contract-remediation-batches.md)
+- Document contract remediation task

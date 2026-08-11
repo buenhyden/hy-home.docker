@@ -110,7 +110,7 @@ infra image/version drift.
 
 ## Sources
 
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines Task 3 scope and required verification.
+- Workspace document contract audit pack task - Defines Task 3 scope and required verification.
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - Defines stage-level template ownership.
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - Defines template-first, language, frontmatter status, and DOCS 3 rules.
 - [Template contract](../../../99.templates/support/template-contract.md) - Defines source-template and target-document boundaries.
@@ -136,4 +136,4 @@ infra image/version drift.
 - [Frontmatter inventory](./frontmatter-inventory.md)
 - [Section profile inventory](./section-profile-inventory.md)
 - [README profile inventory](./readme-profile-inventory.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task

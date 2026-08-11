@@ -122,17 +122,17 @@ not current implementation state.
 The 2026-07-12 criterion distribution and the 2026-07-19 observations above
 remain a historical audit baseline. The following narrower state is current:
 
-- [Compose runtime remediation](../../../04.execution/tasks/2026-07-19-compose-runtime-readiness-remediation.md)
+- Compose runtime remediation
   has current passing bounded local startup, recovery, and timeout evidence;
   its latest identity-hardening review is pending.
-- [Infrastructure operations remediation](../../../04.execution/tasks/2026-07-19-infrastructure-operations-readiness-remediation.md)
+- Infrastructure operations remediation
   has current passing bounded synthetic PostgreSQL backup-and-restore evidence;
   its latest identity-hardening review is pending.
-- [Security supply-chain remediation](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
+- Security supply-chain remediation
   has hardened deterministic scanning behavior, but remains active because an
   approved current scanner database seed, policy pass, and accepted artifact
   verdicts, and generation-bound pair manifest do not exist.
-- [Deployment and release remediation](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
+- Deployment and release remediation
   has completed implementation and static verification, but positive promotion
   and rollback runtime evidence remain blocked on the accepted supply-chain
   manifest-bound accepted verdict pair.
@@ -163,7 +163,7 @@ implicit substitution.
 | Common provider-neutral rules/environment | Partial | [Workspace rules audit](./workspace-rules-environment-implementation.md) | Authority, catalog parity, skills, and validation are strong; live/global environment facts and measured evidence closure remain incomplete. |
 | Agent instructions, catalogs, vibe coding, and model routing | Partial | [Instruction/catalog/model audit](./agent-instructions-catalog-vibe-models.md) | Sixteen AIV, seven AIC, and seven AMS rows cover authority, safe iteration, catalog add/merge/reject, exact literals, cutoff integrity, and eval gaps without importing identities or changing policy. |
 | Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, `.gemini/`, [provider hook parity matrix](../../data/governance/provider-hook-parity-matrix.md), [agent-output eval fixtures](../../data/governance/agent-output-eval-fixtures.md) | Local scripts, CI gates, generated native adapters/hooks, exact `11/11` plus `16/16` semantic evaluation, indexes, sync checks, and the controlled pre-commit wrapper exist; live provider execution, remote enforcement, and CD remain partial or missing. |
-| Spec-driven SDLC | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../04.execution/plans/README.md), [Stage 04 tasks README](../../../04.execution/tasks/README.md) | Stage taxonomy, document roles, type-specific numbering, templates, broad traceability, and typed direct-parent/transition checks are validator-backed for the migrated active chain and changed/new documents. The full historical corpus remains advisory, so retroactive parent and lifecycle history is incomplete. |
+| Spec-driven SDLC | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Stage 03 README](../../../03.specs/README.md), [Stage 04 plans README](../../../03.specs/README.md), [Stage 04 tasks README](../../../03.specs/README.md) | Stage taxonomy, document roles, type-specific numbering, templates, broad traceability, and typed direct-parent/transition checks are validator-backed for the migrated active chain and changed/new documents. The full historical corpus remains advisory, so retroactive parent and lifecycle history is incomplete. |
 | Frontmatter, templates, and README profiles | Partially Implemented | [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md), [metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml), `scripts/validation/check-document-metadata.py` | Typed profiles, stable IDs, direct relations, deterministic serialization, freshness fields, transitions, template instantiation, and exact-one README profile classification are implemented. The historical inventory remains advisory, and the 37 status-bearing README baseline awaits the next migration wave. |
 | Release communication and records | Partially Implemented | [SDLC/document-contract audit](./sdlc-document-contracts-implementation.md), [Release index](../../../05.operations/releases/README.md), [release runbook](../../../05.operations/runbooks/00-workspace/release-management.md), `CHANGELOG.md`, `.github/workflows/generate-changelog.yml` | A distinct Release profile, checker route, copyable template, selection route, and Stage 05 index now exist beside manual readiness and tag-string changelog verification. `CHANGELOG.md` has no released entry, and no Release event record, GitHub Release, artifact, or CD deployment evidence exists. |
 | Docker Compose / infrastructure | Partial | [Compose/infrastructure/operations readiness](./compose-infrastructure-operations-readiness.md), [Compose coverage](../../data/docker/compose-profile-service-coverage.md) | Inventory, static render, hardening, and tracked version provenance are strong. Startup, observed health, migration, and promotion are missing; recovery, upgrade, backup/restore, and rollback have procedure evidence without current rehearsal. |
@@ -241,7 +241,7 @@ tracked workflow/script surfaces.
 ## Sources
 
 - [Agentic engineering research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md) - criteria source.
-- [Audit pack task evidence](../../../04.execution/tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md) - source inventory and validation evidence.
+- Audit pack task evidence - source inventory and validation evidence.
 - [Stage 00 governance hub](../../../00.agent-governance/README.md) - governance SSoT.
 - [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) - common capability mapping.
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md) - harness surface routing.
@@ -272,5 +272,5 @@ tracked workflow/script surfaces.
 - [Frontmatter, template, and README implementation audit](./frontmatter-template-readme-implementation.md)
 - [Security framework maturity coverage](./security-framework-maturity.md)
 - [Research pack](../../research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Audit pack spec](../../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
-- [Audit pack plan](../../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md)
+- [Audit pack spec](../../../03.specs/spec-0105-agentic-engineering-implementation-audit-pack/spec.md)
+- Audit pack plan

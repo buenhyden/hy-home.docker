@@ -69,5 +69,5 @@ updated: 2026-08-10
 ## Related Documents
 
 - **Architecture Description**: [Observability architecture descriptions](../02.architecture/descriptions/ad-0006-observability-architecture.md)
-- **Spec**: [Observability technical specification](../03.specs/007-observability/spec.md)
+- **Spec**: [Observability technical specification](../03.specs/spec-0007-observability/spec.md)
 - **ADR**: [LGTM stack selection decision](../02.architecture/decisions/adr-0006-lgtm-stack-selection.md)

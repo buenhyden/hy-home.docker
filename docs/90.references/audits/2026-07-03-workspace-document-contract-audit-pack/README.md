@@ -102,8 +102,8 @@ document-contract counts and implementation status route to the
 ## Related Documents
 
 - [Audit references](../README.md)
-- [Workspace document contract audit pack spec](../../../03.specs/102-workspace-document-contract-audit-pack/spec.md)
-- [Workspace document contract audit pack plan](../../../04.execution/plans/2026-07-03-workspace-document-contract-audit-pack.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- [Workspace document contract audit pack spec](../../../03.specs/spec-0102-workspace-document-contract-audit-pack/spec.md)
+- Workspace document contract audit pack plan
+- Workspace document contract audit pack task
 - [Template contract](../../../99.templates/support/template-contract.md)
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)

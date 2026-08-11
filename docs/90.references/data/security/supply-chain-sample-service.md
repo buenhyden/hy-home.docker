@@ -118,7 +118,7 @@ was available or run.
 
 ## Related Documents
 
-- [Supply-chain Task](../../../04.execution/tasks/2026-07-19-security-supply-chain-remediation.md)
-- [Supply-chain Plan](../../../04.execution/plans/2026-07-11-security-supply-chain-remediation.md)
-- [Spec 126](../../../98.archive/03.specs/126-security-supply-chain-remediation/spec.md)
+- Supply-chain Task
+- Supply-chain Plan
+- Spec 126
 - [security data index](./README.md)

@@ -172,6 +172,14 @@ def run_checker(
     )
 
 
+class Task5ChangedMetadataRegressionTests(unittest.TestCase):
+    def test_task5_changed_repository_range_has_zero_metadata_violations(self) -> None:
+        result = run_checker(ROOT, "check-changed", "--base-ref", "HEAD")
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("metadata check-changed: selected=", result.stdout)
+        self.assertIn("violations=0", result.stdout)
+
+
 def git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", "-C", str(root), *args],
@@ -7275,7 +7283,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         self.assertIn("archive", wave["source_roots"])
         self.assertIn("docs/04.execution", wave["source_roots"])
         self.assertIn(
-            "docs/03.specs/136-sdlc-taxonomy-convergence/spec.md",
+            "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md",
             wave["evidence_paths"],
         )
 

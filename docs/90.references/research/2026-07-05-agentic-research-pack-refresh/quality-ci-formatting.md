@@ -398,7 +398,7 @@ schema introduction from becoming an accidental corpus-wide or remote gate.
 
 ## Sources
 
-- [Task 4 source ledger](../../../04.execution/tasks/2026-07-10-agentic-research-pack-consolidation.md) - retrieval date, supported claim, evidence-surface class, and caveat for every fixed source
+- Task 4 source ledger - retrieval date, supported claim, evidence-surface class, and caveat for every fixed source
 - [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - workflow/job/step and trigger syntax
 - [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use) - least privilege, untrusted input, secret, and immutable-action guidance
 - [GitHub workflow monitoring](https://docs.github.com/en/actions/how-tos/monitor-workflows) - run graph, history, job status, and log evidence surfaces

@@ -66,5 +66,5 @@ performance.
 
 - **PRD**: [../../01.requirements/prd-013-ai-open-webui.md](../../01.requirements/prd-013-ai-open-webui.md)
 - **Architecture Description**: [../descriptions/ad-0013-open-webui-architecture.md](../descriptions/ad-0013-open-webui-architecture.md)
-- **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/009-ai/open-webui.md)
-- **Plan**: [../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
+- **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/spec-0009-ai/spec.md)
+- **Plan**: ../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md

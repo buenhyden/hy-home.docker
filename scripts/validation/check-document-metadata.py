@@ -405,9 +405,9 @@ SDLC_TAXONOMY_SOURCE_ROOTS = (
     "docs/98.archive",
 )
 SDLC_TAXONOMY_EVIDENCE_PATHS = (
-    "docs/03.specs/136-sdlc-taxonomy-convergence/spec.md",
+    "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md",
     "docs/04.execution/plans/2026-08-07-sdlc-taxonomy-convergence.md",
-    "docs/03.specs/136-sdlc-taxonomy-convergence/task.md",
+    "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md",
 )
 SDLC_TAXONOMY_BOUNDED_README_INPUTS = frozenset(
     {
@@ -5216,24 +5216,146 @@ def _legacy_exception_evidence(
     findings: Sequence[Finding],
     base_record: Record | None,
     base_findings: Sequence[Finding],
+    body_findings: Sequence[Finding],
+    link_only_change: bool,
+    task5_legacy_parent_ids: set[str],
 ) -> tuple[int, int] | None:
-    if record.path.as_posix() in APPROVED_MIGRATION_PATHS or record.parse_error or base_record is None:
+    if record.parse_error or base_record is None:
         return None
-    if record.artifact_type in {"readme", "generated", "template-source", "governance", "archive", "unsupported"}:
+    if base_record.parse_error or record.metadata != base_record.metadata:
         return None
-    if base_record.parse_error or MIGRATION_TYPED_KEYS & set(base_record.metadata) or MIGRATION_TYPED_KEYS & set(record.metadata):
+    if any(finding.severity == "error" for finding in body_findings):
         return None
     current_errors = [finding for finding in findings if finding.severity == "error"]
     base_errors = [finding for finding in base_findings if finding.severity == "error"]
     if not current_errors:
         return None
-    if any(finding.code not in LEGACY_EXCEPTION_CODES for finding in [*base_errors, *current_errors]):
-        return None
     current_deficits = {_legacy_deficit_identity(finding) for finding in current_errors}
     base_deficits = {_legacy_deficit_identity(finding) for finding in base_errors}
-    if not current_deficits <= base_deficits:
+    new_deficits = current_deficits - base_deficits
+    if new_deficits:
+        proven_parent_deficits = {
+            _legacy_deficit_identity(finding)
+            for finding in current_errors
+            if finding.code == "unresolved-parent"
+            and finding.message.removeprefix("parent artifact_id is unresolved: ")
+            in task5_legacy_parent_ids
+        }
+        if not link_only_change or not new_deficits <= proven_parent_deficits:
+            return None
+    if link_only_change:
+        return len(current_deficits), len(base_deficits)
+    if record.path.as_posix() in APPROVED_MIGRATION_PATHS:
+        return None
+    if record.artifact_type in {
+        "readme",
+        "generated",
+        "template-source",
+        "governance",
+        "archive",
+        "unsupported",
+    }:
+        return None
+    if MIGRATION_TYPED_KEYS & set(base_record.metadata) or MIGRATION_TYPED_KEYS & set(record.metadata):
+        return None
+    if any(finding.code not in LEGACY_EXCEPTION_CODES for finding in [*base_errors, *current_errors]):
         return None
     return len(current_deficits), len(base_deficits)
+
+
+MARKDOWN_LINK_TARGET = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\([^)\n]+\)")
+
+
+def _link_target_neutral_text(text: str) -> str:
+    """Erase only Markdown destinations so link-only rewrites compare exactly."""
+
+    return MARKDOWN_LINK_TARGET.sub(r"\1", text)
+
+
+def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
+    """Return exact moved target -> immutable source mappings from mig-0001."""
+
+    ledger = root / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+    try:
+        text = ledger.read_text(encoding="utf-8")
+        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
+            "```", 1
+        )[0]
+        document = _safe_load_unique(fenced)
+    except (OSError, UnicodeError, IndexError, yaml.YAMLError):
+        return {}
+    records = document.get("records") if isinstance(document, dict) else None
+    if not isinstance(records, list):
+        return {}
+    mappings: dict[str, tuple[str, str]] = {}
+    for row in records:
+        if not isinstance(row, dict) or row.get("action") != "move":
+            continue
+        target = row.get("stable_path")
+        source = row.get("legacy_path")
+        commit = row.get("source_commit")
+        if not all(isinstance(value, str) and value for value in (target, source, commit)):
+            return {}
+        if target in mappings:
+            return {}
+        mappings[target] = (source, commit)
+    return mappings
+
+
+def _task5_legacy_parent_ids(root: pathlib.Path) -> set[str]:
+    """Derive retired pre-taxonomy parent IDs only from frozen ledger rows."""
+
+    ledger = root / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+    try:
+        text = ledger.read_text(encoding="utf-8")
+        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
+            "```", 1
+        )[0]
+        document = _safe_load_unique(fenced)
+    except (OSError, UnicodeError, IndexError, yaml.YAMLError):
+        return set()
+    records = document.get("records") if isinstance(document, dict) else None
+    if not isinstance(records, list):
+        return set()
+    identities: set[str] = set()
+    for row in records:
+        if not isinstance(row, dict):
+            return set()
+        legacy = row.get("legacy_path")
+        artifact_id = row.get("artifact_id")
+        if not isinstance(legacy, str) or not isinstance(artifact_id, str):
+            continue
+        spec_match = re.fullmatch(r"docs/(?:98\.archive/03\.specs/|03\.specs/)(\d{3})-([^/]+)/spec\.md", legacy)
+        if artifact_id.startswith("spec-") and spec_match:
+            identities.add(f"spec:{spec_match.group(1)}-{spec_match.group(2)}")
+        execution_match = re.fullmatch(r"docs/04\.execution/(plans|tasks)/([^/]+)\.md", legacy)
+        if execution_match:
+            role = "plan" if execution_match.group(1) == "plans" else "task"
+            identities.add(f"{role}:{execution_match.group(2)}")
+    return identities
+
+
+def _task5_moved_body_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    profiles: dict[str, object],
+    mappings: Mapping[str, tuple[str, str]],
+) -> tuple[Record | None, str | None]:
+    """Read a moved document's body baseline through its frozen Git provenance."""
+
+    source = mappings.get(target.as_posix())
+    if source is None:
+        return None, None
+    legacy_path, source_commit = source
+    shown = _run_git(
+        root,
+        ["show", f"{source_commit}:{legacy_path}"],
+        operation="Task 5 moved-body baseline discovery",
+        text=True,
+    )
+    if shown.returncode != 0:
+        return None, None
+    return _record_from_text(target, shown.stdout, profiles=profiles), shown.stdout
 
 
 def _relation_impact_findings(
@@ -5753,7 +5875,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     }
     records_by_path = {record.path.as_posix(): record for record in records}
     changed_body_findings: dict[str, list[Finding]] = {}
+    link_only_changes: set[str] = set()
     if args.mode == "check-changed":
+        task5_move_sources = _task5_move_body_sources(root)
         for path_text in sorted(changed_selection):
             record = records_by_path.get(path_text)
             if record is None:
@@ -5767,6 +5891,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                 continue
             base_record = base_records_by_path.get(path_text)
             base_text = _text_at_ref(root, record.path, base.merge_base)
+            if (
+                base_text is not None
+                and current_text != base_text
+                and _link_target_neutral_text(current_text)
+                == _link_target_neutral_text(base_text)
+            ):
+                link_only_changes.add(path_text)
+            if base_record is None or base_text is None:
+                moved_record, moved_text = _task5_moved_body_baseline(
+                    root,
+                    record.path,
+                    profiles,
+                    task5_move_sources,
+                )
+                base_record = moved_record or base_record
+                base_text = moved_text or base_text
             changed_body_findings[path_text] = _introduced_body_findings(
                 record,
                 current_text,
@@ -5816,6 +5956,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else {record.path.as_posix() for record in records if record.metadata.get("status") == "active"}
     )
     selected_paths = directly_selected_paths | set(relation_impact_findings)
+    task5_legacy_parent_ids = _task5_legacy_parent_ids(root)
     legacy_exception_evidence = {
         path: evidence
         for path in selected_paths
@@ -5826,6 +5967,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 findings_by_path.get(path, []),
                 base_records_by_path.get(path),
                 base_findings_by_path.get(path, []),
+                changed_body_findings.get(path, []),
+                path in link_only_changes,
+                task5_legacy_parent_ids,
             )
         )
         is not None

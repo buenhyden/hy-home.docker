@@ -84,7 +84,7 @@ workspace governance bounded re-audit.
   - `infra_service_readmes_rubric_partial=0`
 - Historical 2026-05-22 repository contract metrics were 465/465 normalized
   target-stage docs.
-- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- Workspace governance bounded re-audit task
 
 ## Related Documents
 
@@ -93,4 +93,4 @@ workspace governance bounded re-audit.
 - [Documentation protocol](../rules/documentation-protocol.md)
 - [Stage authoring matrix](../rules/stage-authoring-matrix.md)
 - [Docs scope](../scopes/docs.md)
-- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- Workspace governance bounded re-audit task

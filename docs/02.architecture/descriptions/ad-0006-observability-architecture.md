@@ -92,6 +92,6 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 ## Related Documents
 
 - **PRD**: [../../01.requirements/prd-007-observability.md](../../01.requirements/prd-007-observability.md)
-- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/007-observability/spec.md)
+- **Spec**: [../../03.specs/007-observability/spec.md](../../03.specs/spec-0007-observability/spec.md)
 - **ADR**: [../decisions/adr-0006-lgtm-stack-selection.md](../decisions/adr-0006-lgtm-stack-selection.md)
-- **Plan**: [../../04.execution/plans/2026-03-26-06-observability-standardization.md](../../04.execution/plans/2026-03-26-06-observability-standardization.md)
+- **Plan**: ../../04.execution/plans/2026-03-26-06-observability-standardization.md

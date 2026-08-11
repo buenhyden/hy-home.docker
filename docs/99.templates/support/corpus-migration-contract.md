@@ -190,4 +190,4 @@ safe credential-related option names without assigned values remain allowed.
 - [frontmatter contract](./frontmatter-contract.md)
 - [lifecycle status](./lifecycle-status.md)
 - [template governance](./template-governance.md)
-- [Foundation task evidence](../../04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md)
+- Foundation task evidence

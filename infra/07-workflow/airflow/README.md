@@ -67,7 +67,7 @@ airflow/
 
 5. **Idempotency**: 모든 DAG 및 태스크는 멱등성을 보장해야 하며, Scheduler에서 무거운 계산을 수행하지 않아야 합니다.
 6. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
-7. **Traceability**: 모든 변경 사항은 관련 [Architecture Description](../../../docs/02.architecture/descriptions/ad-0007-workflow-architecture.md) 또는 [Spec](../../../docs/03.specs/008-workflow/spec.md)과 연결되어야 합니다.
+7. **Traceability**: 모든 변경 사항은 관련 [Architecture Description](../../../docs/02.architecture/descriptions/ad-0007-workflow-architecture.md) 또는 [Spec](../../../docs/03.specs/spec-0008-workflow/spec.md)과 연결되어야 합니다.
 
 ## Tech Stack
 

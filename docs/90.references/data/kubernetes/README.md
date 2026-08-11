@@ -73,5 +73,5 @@ docs/90.references/data/kubernetes/
 - [references index](../../README.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)
 - [architecture index](../../../02.architecture/README.md)
-- [execution index](../../../04.execution/README.md)
+- [execution index](../../../03.specs/README.md)
 - [operations index](../../../05.operations/README.md)

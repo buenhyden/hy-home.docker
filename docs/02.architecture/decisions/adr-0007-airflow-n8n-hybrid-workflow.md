@@ -63,4 +63,4 @@ updated: 2026-08-10
 
 - **PRD**: [008-workflow.md](../../01.requirements/prd-008-workflow.md)
 - **Architecture Description**: [0007-workflow-architecture.md](../descriptions/ad-0007-workflow-architecture.md)
-- **Spec**: [008-workflow/spec.md](../../03.specs/008-workflow/spec.md)
+- **Spec**: [008-workflow/spec.md](../../03.specs/spec-0008-workflow/spec.md)

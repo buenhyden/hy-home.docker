@@ -444,6 +444,288 @@ def _finding(
     return Finding(pathlib.PurePosixPath(path).as_posix(), code, message, severity)
 
 
+TASK5_MIGRATION_LEDGER = pathlib.PurePosixPath(
+    "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+)
+TASK5_LEDGER_ACTION_COUNTS = {
+    "archive": 28,
+    "delete": 38,
+    "merge": 8,
+    "move": 262,
+    "rewrite": 1,
+}
+TASK5_STAGE_PREFIXES = (
+    "docs/03.specs/",
+    "docs/04.execution/",
+    "docs/98.archive/03.specs/",
+)
+TASK5_OPERATIONS_EXCEPTION = (
+    "docs/05.operations/policies/00-workspace/"
+    "infra-service-optimization-catalog.md"
+)
+TASK5_RELATIVE_LINK = re.compile(r"(?<!!)\[[^\]\n]+\]\(([^)\n]+)\)")
+
+
+def _task5_migration_rows(root: pathlib.Path) -> dict[str, dict[str, object]]:
+    """Load only the frozen ledger fields needed for promoted reconciliation."""
+
+    payload = _read_regular_repo_bytes(
+        root,
+        TASK5_MIGRATION_LEDGER.as_posix(),
+        require_tracked=True,
+    )
+    if payload is None:
+        return {}
+    try:
+        text = payload.decode("utf-8")
+        fenced = text.split("## Archive Ledger", 1)[1].split("```yaml", 1)[1].split(
+            "```", 1
+        )[0]
+        document = metadata._safe_load_unique(fenced)
+    except (
+        IndexError,
+        UnicodeDecodeError,
+        metadata.FrontmatterError,
+        metadata.ProfileError,
+    ):
+        return {}
+    if not isinstance(document, dict) or document.get("migration_id") != "mig-0001":
+        return {}
+    records = document.get("records")
+    if not isinstance(records, list):
+        return {}
+    rows: dict[str, dict[str, object]] = {}
+    for row in records:
+        if not isinstance(row, dict):
+            return {}
+        legacy = row.get("legacy_path")
+        if not isinstance(legacy, str) or not _safe_path(legacy) or legacy in rows:
+            return {}
+        rows[legacy] = row
+    return rows
+
+
+def _task5_selected_rows(
+    rows: dict[str, dict[str, object]],
+) -> dict[str, dict[str, object]]:
+    """Select the frozen Stage 03/04 wave plus its one approved Ops exception."""
+
+    return {
+        legacy: row
+        for legacy, row in rows.items()
+        if legacy.startswith(TASK5_STAGE_PREFIXES)
+        or legacy == TASK5_OPERATIONS_EXCEPTION
+    }
+
+
+def _task5_dispositions_executed(
+    root: pathlib.Path,
+    rows: dict[str, dict[str, object]],
+) -> bool:
+    """Prove each selected ledger row against the current repository topology."""
+
+    for legacy, row in rows.items():
+        action = row.get("action")
+        stable = row.get("stable_path")
+        replacement = row.get("replacement")
+        source_commit = row.get("source_commit")
+        if (
+            not _safe_path(legacy)
+            or action not in TASK5_LEDGER_ACTION_COUNTS
+            or not isinstance(source_commit, str)
+            or OBJECT_ID.fullmatch(source_commit) is None
+        ):
+            return False
+        try:
+            source_is_commit = _verified_commit(root, source_commit) == source_commit
+            source_has_legacy_blob = _baseline_regular_blob(root, source_commit, legacy)
+        except ProfileError:
+            return False
+        if not source_is_commit or not source_has_legacy_blob:
+            return False
+        destination = replacement if action == "delete" else stable
+        if action == "merge":
+            destination = replacement or stable
+        if not isinstance(destination, str) or not _safe_path(destination):
+            return False
+        if action == "rewrite":
+            if destination != legacy or not (root / legacy).is_file():
+                return False
+            continue
+        if (root / legacy).exists() or not (root / destination).is_file():
+            return False
+    return True
+
+
+def _task5_current_links_resolve(root: pathlib.Path) -> bool:
+    """Resolve tracked current-surface and Task 5 change-packet Markdown links."""
+
+    result = _run_git(root, ["ls-files", "-z", "--", "*.md"], text=False)
+    if result.returncode != 0:
+        return False
+    try:
+        paths = tuple(
+            item.decode("utf-8") for item in result.stdout.split(b"\0") if item
+        )
+    except UnicodeDecodeError:
+        return False
+    resolved_root = root.resolve()
+    for path in paths:
+        if not _safe_path(path):
+            return False
+        if path.startswith("docs/98.archive/") and not path.startswith(
+            "docs/98.archive/changes/"
+        ):
+            continue
+        payload = _read_regular_repo_bytes(root, path, require_tracked=True)
+        if payload is None:
+            return False
+        try:
+            lines = payload.decode("utf-8").splitlines()
+        except UnicodeDecodeError:
+            return False
+        in_fence = False
+        document = root / path
+        for line in lines:
+            stripped = line.lstrip()
+            if stripped.startswith(("```", "~~~")):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+            for match in TASK5_RELATIVE_LINK.finditer(line):
+                raw = match.group(1).strip()
+                href = (
+                    raw[1 : raw.index(">")]
+                    if raw.startswith("<") and ">" in raw
+                    else raw.split()[0]
+                )
+                if (
+                    not href
+                    or href.startswith("#")
+                    or href.endswith("...")
+                    or re.match(r"^[a-z][a-z0-9+.-]*:", href, flags=re.I)
+                ):
+                    continue
+                relative = href.split("#", 1)[0]
+                target = (
+                    resolved_root / relative.lstrip("/")
+                    if relative.startswith("/")
+                    else document.parent / relative
+                ).resolve()
+                try:
+                    target.relative_to(resolved_root)
+                except ValueError:
+                    return False
+                if not target.exists():
+                    return False
+    return True
+
+
+def _task5_reconciliation_ready(
+    root: pathlib.Path,
+    contract: dict[str, object],
+) -> bool:
+    """Require the completed Task 5 topology before reconciling old manifests."""
+
+    waves = contract.get("waves")
+    wave = waves.get("sdlc-taxonomy-convergence") if isinstance(waves, dict) else None
+    stage03 = root / "docs/03.specs"
+    rows = _task5_selected_rows(_task5_migration_rows(root))
+    actions = collections.Counter(row.get("action") for row in rows.values())
+    return (
+        isinstance(wave, dict)
+        and wave.get("scope_state") == "approved"
+        and not (root / "docs/04.execution").exists()
+        and stage03.is_dir()
+        and all(
+            not child.is_dir() or child.name.startswith("spec-")
+            for child in stage03.iterdir()
+        )
+        and len(rows) == 337
+        and dict(actions) == TASK5_LEDGER_ACTION_COUNTS
+        and _task5_dispositions_executed(root, rows)
+        and _task5_current_links_resolve(root)
+    )
+
+
+def _task5_target_missing_is_reconciled(
+    root: pathlib.Path,
+    path: str,
+    rows: dict[str, dict[str, object]],
+) -> bool:
+    """Prove one retired Stage 03/04 target through the frozen Task 5 ledger."""
+
+    if not path.startswith(("docs/03.specs/", "docs/04.execution/")):
+        return False
+    row = rows.get(path)
+    if row is not None:
+        action = row.get("action")
+        destination = row.get("stable_path") or row.get("replacement")
+        return (
+            action in {"move", "merge", "delete", "archive"}
+            and not (root / path).exists()
+            and isinstance(destination, str)
+            and _safe_path(destination)
+            and (root / destination).is_file()
+        )
+    match = re.fullmatch(r"docs/03\.specs/(\d{3})-([^/]+)/spec\.md", path)
+    if match is None:
+        return False
+    stable = f"docs/03.specs/spec-0{match.group(1)}-{match.group(2)}/spec.md"
+    stable_id = f"spec-0{match.group(1)}"
+    proving_rows = [
+        row
+        for row in rows.values()
+        if row.get("action") == "move"
+        and row.get("stable_path") == stable
+        and row.get("artifact_id") == stable_id
+    ]
+    return (
+        len(proving_rows) == 1
+        and not (root / path).exists()
+        and (root / stable).is_file()
+    )
+
+
+def _reconcile_task5_promoted_findings(
+    root: pathlib.Path,
+    contract: dict[str, object],
+    document: MigrationManifestDocument,
+    findings: collections.abc.Iterable[Finding],
+) -> list[Finding]:
+    """Keep historical manifests immutable while honoring the executed Task 5 wave."""
+
+    values = list(findings)
+    if not _task5_reconciliation_ready(root, contract):
+        return sorted(set(values))
+    rows = _task5_migration_rows(root)
+    waves = contract.get("waves")
+    foundation = waves.get("foundation") if isinstance(waves, dict) else None
+    source_paths = foundation.get("source_paths") if isinstance(foundation, dict) else []
+    foundation_sources = {
+        path for path in source_paths if isinstance(path, str) and _safe_path(path)
+    }
+    reconciled: list[Finding] = []
+    for finding in values:
+        if (
+            document.wave == "foundation"
+            and finding.code == "manifest-consumer-evidence-mismatch"
+            and finding.path in foundation_sources
+        ):
+            # Foundation active_consumers is point-in-time evidence. Task 5 owns
+            # the current consumer graph through mig-0001 and the zero-link gate.
+            continue
+        if (
+            document.wave in {"foundation", "target-surface-convergence"}
+            and finding.code == "manifest-target-missing"
+            and _task5_target_missing_is_reconciled(root, finding.path, rows)
+        ):
+            continue
+        reconciled.append(finding)
+    return sorted(set(reconciled))
+
+
 def _run_git(
     root: pathlib.Path,
     args: collections.abc.Sequence[str],
@@ -2817,7 +3099,12 @@ def validate_migration_manifest(
     """Return stable manifest findings without changing human dispositions."""
 
     if document.schema_version == 2:
-        return _validate_surface_manifest(root, profiles, contract, document)
+        return _reconcile_task5_promoted_findings(
+            root,
+            contract,
+            document,
+            _validate_surface_manifest(root, profiles, contract, document),
+        )
 
     findings: list[Finding] = []
     path = "manifest"
@@ -3502,7 +3789,12 @@ def validate_migration_manifest(
                         "destructive row requires independent passing reviews",
                     )
                 )
-    return sorted(set(findings))
+    return _reconcile_task5_promoted_findings(
+        root,
+        contract,
+        document,
+        findings,
+    )
 
 
 def _changed_path_sets(root: pathlib.Path, base_ref: str) -> tuple[set[str], set[str]]:
@@ -4937,6 +5229,18 @@ def _load_declared_manifests(
         try:
             document = _load_repo_migration_manifest(root, manifest_path)
         except ProfileError:
+            if (
+                wave_name == "sdlc-taxonomy-convergence"
+                and enforcement == "advisory"
+                and raw_wave.get("scope_state") == "approved"
+                and manifest_path
+                == "docs/99.templates/support/document-corpus-migration-contract.yaml"
+                and _task5_reconciliation_ready(root, contract)
+            ):
+                # The approved SDLC registry is the bounded migration owner,
+                # not a serialized lifecycle-manifest document. mig-0001 owns
+                # its executed rows after Task 5 completes.
+                continue
             findings.append(
                 _finding(
                     manifest_path,

@@ -90,8 +90,8 @@ Runtime이 실행 중이면 Airflow와 n8n의 internal health를 각각 `airflow
 ## Related Documents
 
 - **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/descriptions/ad-0007-workflow-architecture.md)
-- **Spec**: [008-workflow/spec.md](../03.specs/008-workflow/spec.md)
-- **Plan**: [2026-03-26-07-workflow-standardization.md](../04.execution/plans/2026-03-26-07-workflow-standardization.md)
+- **Spec**: [008-workflow/spec.md](../03.specs/spec-0008-workflow/spec.md)
+- **Plan**: 2026-03-26-07-workflow-standardization.md
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../02.architecture/decisions/adr-0007-airflow-n8n-hybrid-workflow.md)
 - **Guide**: [airflow.md](../05.operations/guides/07-workflow/airflow.md), [n8n.md](../05.operations/guides/07-workflow/n8n.md)
 - **Policy**: [airflow.md](../05.operations/policies/07-workflow/airflow.md), [n8n.md](../05.operations/policies/07-workflow/n8n.md)

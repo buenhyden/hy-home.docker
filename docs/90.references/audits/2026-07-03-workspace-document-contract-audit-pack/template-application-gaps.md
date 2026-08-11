@@ -114,7 +114,7 @@ non-template taxonomy drift in this task.
 
 ## Sources
 
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines Task 3 scope and disposition rules.
+- Workspace document contract audit pack task - Defines Task 3 scope and disposition rules.
 - [Contract governance map](./contract-governance-map.md) - Summarizes ownership surfaces for the same scan set.
 - [Template contract](../../../99.templates/support/template-contract.md) - Defines template source and target-document rules.
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Defines duplicate-purpose metadata handling.
@@ -139,4 +139,4 @@ non-template taxonomy drift in this task.
 - [Frontmatter inventory](./frontmatter-inventory.md)
 - [Section profile inventory](./section-profile-inventory.md)
 - [README profile inventory](./readme-profile-inventory.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task

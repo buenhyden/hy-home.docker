@@ -83,7 +83,7 @@ provider runtime surfaces, or modifying secret material.
 
 ## Sources
 
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md) - Defines Task 2 scope and README baseline evidence.
+- Workspace document contract audit pack task - Defines Task 2 scope and README baseline evidence.
 - [Template selection](../../../99.templates/support/template-selection.md) - Supports profile routing for README comparison work.
 - [README template](../../../99.templates/templates/common/readme.template.md) - Defines the common README section profile used for comparison.
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - Provides supporting metadata contract context for README profiles.
@@ -101,7 +101,7 @@ provider runtime surfaces, or modifying secret material.
 ## Related Documents
 
 - [Document contract audit references](./README.md)
-- [Workspace document contract audit pack task](../../../04.execution/tasks/2026-07-03-workspace-document-contract-audit-pack.md)
+- Workspace document contract audit pack task
 - [Template selection](../../../99.templates/support/template-selection.md)
 - [README template](../../../99.templates/templates/common/readme.template.md)
 - [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md)

@@ -71,6 +71,6 @@ status: active
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [infra_net spec](../../../03.specs/098-standardize-infra-net/spec.md)
+- [infra_net spec](../../../03.specs/spec-0098-standardize-infra-net/spec.md)
 - [Operations policy](../../policies/12-infra-net/standardize-infra-net.md)
 - [Recovery runbook](../../runbooks/12-infra-net/standardize-infra-net.md)

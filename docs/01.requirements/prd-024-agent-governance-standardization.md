@@ -107,6 +107,6 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 
 - **Architecture Description**: [Agent Governance Canonical Adapter Architecture Description](../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
 - **ADR**: [ADR-0027 Stage 00 Canonical Adapter Model](../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
-- **Current Plan**: [Agent Governance Decision Items and Attachment-Gap Plan](../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
-- **Current Task**: [Agent Governance Missing Items Implementation Task](../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)
+- **Current Plan**: Agent Governance Decision Items and Attachment-Gap Plan
+- **Current Task**: Agent Governance Missing Items Implementation Task
 - **Stage 00 Governance Hub**: [Agent governance](../00.agent-governance/README.md)

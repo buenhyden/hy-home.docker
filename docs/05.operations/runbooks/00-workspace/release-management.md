@@ -119,7 +119,7 @@ status: active
    승인된 Task 5 positive promotion 및 injected rollback 순서는 완료되었다.
    현재 실행 상태와 정확한 project, timestamp, record hash/inode, cleanup
    증거는
-   [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)가
+   Deployment/release Task가
    소유한다. 과거 14-Critical 결과와 missing-seed 결과는 superseded
    history이며 현재 blocker가 아니다.
 
@@ -184,7 +184,7 @@ status: active
   runtime log, secret, credential, token은 기록하지 않는다.
 - 현재 canonical local-delivery record는 injected-negative 결과이며, positive
   record의 교체 전 hash/inode와 negative record의 교체 후 hash/inode는
-  [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)에서
+  Deployment/release Task에서
   확인한다. 이 상태 확인은 rehearsal 재실행 지시가 아니다.
 
 ## Rollback or Recovery
@@ -209,7 +209,7 @@ status: active
 - [Operations index](../../README.md)
 - [Runbooks index](../README.md)
 - [LLM Wiki maintenance runbook](./llm-wiki-maintenance.md)
-- [Execution plans](../../../04.execution/plans/README.md)
-- [Execution tasks](../../../04.execution/tasks/README.md)
-- [Deployment/release Task](../../../04.execution/tasks/2026-07-19-deployment-release-engineering-remediation.md)
-- [Spec 127](../../../98.archive/03.specs/127-deployment-release-engineering-remediation/spec.md)
+- [Execution plans](../../../03.specs/README.md)
+- [Execution tasks](../../../03.specs/README.md)
+- Deployment/release Task
+- Spec 127
