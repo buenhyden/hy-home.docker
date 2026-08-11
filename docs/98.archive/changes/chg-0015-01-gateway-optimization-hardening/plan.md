@@ -103,5 +103,5 @@ This document is the implementation plan for optimizing `infra/01-gateway` Traef
 - **Operations Catalog**: [infra-service-optimization-catalog.md](../../../05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
 - **Parent Priority Plan**: [2026-03-27-infra-service-optimization-priority-plan.md](../../../05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
 - **Task**: [2026-03-28-01-gateway-optimization-hardening-tasks.md](task.md)
-- **Gateway Operations**: [01-gateway/README.md](../../../05.operations/guides/01-gateway/README.md)
-- **Gateway Runbooks**: [01-gateway/README.md](../../../05.operations/runbooks/01-gateway/README.md)
+- **Gateway Operations**: [01-gateway/README.md](../../../05.operations/01-gateway/README.md)
+- **Gateway Runbooks**: [01-gateway/README.md](../../../05.operations/01-gateway/README.md)

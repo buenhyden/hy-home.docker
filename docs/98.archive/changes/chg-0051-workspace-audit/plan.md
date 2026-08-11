@@ -39,8 +39,8 @@ This audit is performed as part of the recurring workspace governance cycle. Thr
 | ------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------------------------------ |
 | PLN-001 | Create Session Spec/Plan/Task | `docs/03.specs/090-workspace-audit-2026-05/spec.md`, `plans/2026-05-26-workspace-audit.md`, `tasks/2026-05-26-workspace-audit.md` | Low  | Required template sections included |
 | PLN-002 | Create 7 AI Agent skill stubs | `.claude/skills/*/skill.md` (7 files) | Low  | Each skill includes frontmatter and core sections |
-| PLN-003 | Create env key comparison report | `docs/05.operations/guides/00-workspace/env-key-comparison.md` | Low  | No secret values, key names only |
-| PLN-004 | Create secrets key comparison report | `docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md` | Low  | No secret values, IDs/paths only |
+| PLN-003 | Create env key comparison report | `docs/05.operations/00-workspace/ops-0003-env-key-comparison/guide.md` | Low  | No secret values, key names only |
+| PLN-004 | Create secrets key comparison report | `docs/05.operations/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md` | Low  | No secret values, IDs/paths only |
 | PLN-005 | Reinforce Stage README lifecycle | `docs/03.specs/README.md`, `docs/04.execution/README.md`, `docs/05.operations/README.md`, `docs/90.references/README.md` | Low  | frontmatter status and Stage Handoff section added |
 | PLN-006 | Add Execution/Specs index README links | `docs/04.execution/README.md`, `docs/03.specs/README.md` | Low  | New plan/task/spec file links included |
 | PLN-007 | Update progress.md | `docs/00.agent-governance/memory/progress.md` | Low  | Audit session item recorded |

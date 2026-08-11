@@ -93,7 +93,7 @@ updated: 2026-08-11
   - [opensearch cluster compose](../../../../infra/04-data/analytics/opensearch/docker-compose.cluster.yml): **적용 완료**
 - 의도된 템플릿 예외:
   - SSoT: [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)
-  - 운영 정책: [common-optimizations-template-exceptions.md](../../policies/00-workspace/common-optimizations-template-exceptions.md)
+  - 운영 정책: [common-optimizations-template-exceptions.md](../ops-0001-common-optimizations-template-exceptions/policy.md)
 
 ## Quick Win Enforcement Snapshot (2026-03-28)
 
@@ -143,21 +143,21 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 ### 01-gateway
 
 - [traefik](../../../../infra/01-gateway/traefik/README.md): 엔트리포인트별 `rate-limit`/`retry`/`circuit-breaker` 표준화, `restart`/자원 제한 보강
-  ([OPER](../../guides/01-gateway/traefik.md), [RUN](../../runbooks/01-gateway/traefik.md))
+  ([OPER](../../01-gateway/ops-0013-traefik/guide.md), [RUN](../../01-gateway/ops-0013-traefik/runbook.md))
 - [nginx](../../../../infra/01-gateway/nginx/README.md): 업스트림 헬스체크/타임아웃 일원화, `read_only`+`tmpfs` 적용, 정적 자산 캐시 정책 강화
-  ([OPER](../../guides/01-gateway/nginx.md), [RUN](../../runbooks/01-gateway/nginx.md))
+  ([OPER](../../01-gateway/ops-0011-nginx/guide.md), [RUN](../../01-gateway/ops-0011-nginx/runbook.md))
 
 ### 02-auth
 
 - [keycloak](../../../../infra/02-auth/keycloak/README.md): 세션/캐시 외부화 전략 점검, DB/관리자 비밀 회전 자동화, 노드 확장 대비 세션 정책 정리
-  ([OPER](../../guides/02-auth/keycloak.md), [RUN](../../runbooks/02-auth/keycloak.md))
+  ([OPER](../../02-auth/ops-0014-keycloak/guide.md), [RUN](../../02-auth/ops-0014-keycloak/runbook.md))
 - [oauth2-proxy](../../../../infra/02-auth/oauth2-proxy/README.md): 쿠키/세션 만료 정책 표준화, OIDC 장애시 degraded-mode 정책 추가, 보안헤더 강화
-  ([OPER](../../guides/02-auth/oauth2-proxy.md), [RUN](../../runbooks/02-auth/oauth2-proxy.md))
+  ([OPER](../../02-auth/ops-0015-oauth2-proxy/guide.md), [RUN](../../02-auth/ops-0015-oauth2-proxy/runbook.md))
 
 ### 03-security
 
 - [vault](../../../../infra/03-security/vault/README.md): auto-unseal(KMS/HSM) 도입 검토, audit device 원격 적재, `no-new-privileges` 및 자원 상한 일괄 적용
-  ([OPER](../../guides/03-security/vault.md), [RUN](../../runbooks/03-security/vault.md))
+  ([OPER](../../03-security/ops-0016-vault/guide.md), [RUN](../../03-security/ops-0016-vault/runbook.md))
 
 ### 04-data
 

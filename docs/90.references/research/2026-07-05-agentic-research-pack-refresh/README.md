@@ -240,5 +240,5 @@ cutoff, 2026-07-26 typed contract timestamp, `unverified` 상태를 변경하지
 - [90.references](../../README.md)
 - [agent governance hub](../../../00.agent-governance/README.md)
 - [HAFE specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
-- [HAFE operations guide](../../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
-- [HAFE operations policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
+- [HAFE operations guide](../../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md)
+- [HAFE operations policy](../../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md)

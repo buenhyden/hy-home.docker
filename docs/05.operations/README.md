@@ -68,14 +68,14 @@ docs/05.operations/
 
 ## How to Work in This Area
 
-1. 서비스 사용법이나 배경 설명은 `guides/01-gateway/traefik.md` 같은 guide 문서에 둡니다.
-2. 운영 통제, 예외, 보안/가용성 기준은 `policies/01-gateway/traefik.md` 같은 policy 문서에 둡니다.
-3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/01-gateway/traefik.md` 같은 runbook 문서에 둡니다.
+1. 서비스 사용법이나 배경 설명은 `01-gateway/ops-0013-traefik/guide.md` 같은 guide 문서에 둡니다.
+2. 운영 통제, 예외, 보안/가용성 기준은 `01-gateway/ops-0013-traefik/policy.md` 같은 policy 문서에 둡니다.
+3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `01-gateway/ops-0013-traefik/runbook.md` 같은 runbook 문서에 둡니다.
 4. 실제 사고 기록과 postmortem은 `incidents/YYYY/INC-###-incident-title/` packet 안에 둡니다.
 5. 실제 릴리스 증거는 `releases/YYYY-MM-DD-release-name.md`에 기록합니다. changelog나 readiness 자료만으로 release record를 만들지 않습니다.
 6. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
-특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/00-workspace/developer-setup.md`, `policies/00-workspace/infra-service-optimization-catalog.md`, `runbooks/00-workspace/release-management.md`)는 bucket root에 직접 두지 않고 의미별 하위 폴더에 둡니다. `guides/`, `policies/`, `runbooks/` root에는 해당 bucket `README.md`만 남깁니다.
+특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `00-workspace/ops-0002-developer-setup/guide.md`, `00-workspace/ops-0006-infra-service-optimization-catalog/policy.md`, `00-workspace/ops-0009-release-management/runbook.md`)는 domain-first subject 폴더에 둡니다. 아직 마이그레이션되지 않은 domain은 기존 role bucket 경로를 유지합니다.
 
 모든 서비스가 guide, policy, runbook을 모두 가질 필요는 없습니다. 소비자가 실제로 구분해서 찾아야 하는 문서만 추가합니다.
 

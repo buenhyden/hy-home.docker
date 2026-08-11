@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # Checks documentation traceability sync across:
-# - docs/04.execution/plans
+# - docs/03.specs
 # - docs/05.operations
 #
 # Scope:
-# 1) Layer README reciprocal links (execution <-> operations)
-# 2) Priority plan links to the operations policy catalog and operations index
-# 3) Catalog OPER/RUN targets exist in the split operations taxonomy
+# 1) Layer README reciprocal links (specs <-> operations)
+# 2) The migrated workspace catalog is present at its subject-first target
+# 3) Catalog OPER/RUN targets exist where the catalog declares them
 
 failures=0
 pair_total=0
@@ -36,29 +36,17 @@ check_contains_literal() {
   fi
 }
 
-execution_readme="docs/04.execution/README.md"
-plans_readme="docs/04.execution/plans/README.md"
-tasks_readme="docs/04.execution/tasks/README.md"
+specs_readme="docs/03.specs/README.md"
 ops_readme="docs/05.operations/README.md"
-priority_plan="docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md"
-catalog="docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md"
+catalog="docs/05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md"
 
-check_file_exists "$execution_readme" || true
-check_file_exists "$plans_readme" || true
-check_file_exists "$tasks_readme" || true
+check_file_exists "$specs_readme" || true
 check_file_exists "$ops_readme" || true
-check_file_exists "$priority_plan" || true
 check_file_exists "$catalog" || true
 
 if [[ "$failures" -eq 0 ]]; then
-  check_contains_literal "$execution_readme" "../05.operations/README.md" "04.execution README missing 05.operations link"
-  check_contains_literal "$plans_readme" "../../05.operations/README.md" "plans README missing 05.operations link"
-  check_contains_literal "$tasks_readme" "../../05.operations/README.md" "tasks README missing 05.operations link"
-  check_contains_literal "$ops_readme" "../04.execution/plans/README.md" "05.operations README missing plans link"
-  check_contains_literal "$ops_readme" "../04.execution/tasks/README.md" "05.operations README missing tasks link"
-
-  check_contains_literal "$priority_plan" "../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md" "priority plan missing operations policy catalog link"
-  check_contains_literal "$priority_plan" "../../05.operations/README.md" "priority plan missing operations index link"
+  check_contains_literal "$specs_readme" "../05.operations/README.md" "03.specs README missing 05.operations link"
+  check_contains_literal "$ops_readme" "../03.specs/README.md" "05.operations README missing 03.specs link"
 
   catalog_dir="$(dirname "$catalog")"
   while IFS='|' read -r oper_rel run_rel; do
@@ -87,4 +75,4 @@ if [[ "$failures" -gt 0 ]]; then
   exit 1
 fi
 
-echo "PASS: 04.execution/plans <-> 05.operations traceability is synchronized"
+echo "PASS: 03.specs <-> 05.operations traceability is synchronized"

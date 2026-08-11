@@ -180,7 +180,7 @@ active until promotion and final closure reviews pass.
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md) - active stage ownership and done criteria
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md) - naming, template, status, and routing contracts
 - [Lifecycle status](../../../99.templates/support/lifecycle-status.md) - current status meanings and supersession rule
-- [Release management runbook](../../../05.operations/runbooks/00-workspace/release-management.md) - release readiness procedure
+- [Release management runbook](../../../05.operations/00-workspace/ops-0009-release-management/runbook.md) - release readiness procedure
 - [2026-07-03 frontmatter inventory](../2026-07-03-workspace-document-contract-audit-pack/frontmatter-inventory.md) - dated 930-file evidence
 - [2026-07-04 frontmatter profile inventory](../2026-07-04-document-restructure-audit-contract-archive/frontmatter-profile-inventory.md) - dated 948-file evidence
 

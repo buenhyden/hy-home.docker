@@ -72,4 +72,4 @@ the Parent Plan and the contract-check results that were executed.
 
 - **Parent Plan**: [Execution plan](plan.md)
 - **Service template**: [Service scaffold template](../../../99.templates/templates/spec-contracts/service.template.md)
-- **Operations**: [New-service onboarding guide](../../../05.operations/guides/00-workspace/new-service-onboarding.md)
+- **Operations**: [New-service onboarding guide](../../../05.operations/00-workspace/ops-0008-new-service-onboarding/guide.md)

@@ -78,7 +78,7 @@ llm-wiki/
 - [LLM entrypoint](../../../llms.txt)
 - [generated index](./llm-wiki-index.md)
 - [generated coverage snapshot](../data/knowledge/llm-wiki-stage-category-coverage.md)
-- [maintenance guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
+- [maintenance guide](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)
 - [90.references](../README.md)
 - [docs index](../../README.md)
 - [agent governance hub](../../00.agent-governance/README.md)

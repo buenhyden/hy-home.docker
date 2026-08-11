@@ -295,6 +295,12 @@ def reference_proves_use(reference: str, target: str) -> bool:
     return target in text
 
 
+def is_runbook_authority(path: str) -> bool:
+    return path.startswith("docs/05.operations/runbooks/") or bool(
+        re.fullmatch(r"docs/05\.operations/[^/]+/ops-[^/]+/runbook\.md", path)
+    )
+
+
 def stable_target_type(path: str) -> str | None:
     patterns = (
         (r"docs/01\.requirements/prd-[0-9]{3}-[^/]+\.md", "prd"),
@@ -376,7 +382,7 @@ class ScriptManifestTests(unittest.TestCase):
                 if row["disposition"] == "retain" and row["kind"] not in {"contract", "dependency-manifest"}:
                     self.assertTrue(row["tests"])
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
-                    self.assertTrue(row["authority"].startswith("docs/05.operations/runbooks/"))
+                    self.assertTrue(is_runbook_authority(row["authority"]))
                     self.assertTrue(row["tests"])
                 if row["kind"] == "generator" and row["mutation"] == "check-write":
                     self.assertIn(row["disposition"], {"merge", "rewrite"})
@@ -443,7 +449,7 @@ class ScriptManifestTests(unittest.TestCase):
                 if row["disposition"] == "retain":
                     self.assertTrue(row["consumers"])
                     self.assertTrue(row["tests"])
-                    self.assertTrue(row["authority"].startswith("docs/05.operations/runbooks/"))
+                    self.assertTrue(is_runbook_authority(row["authority"]))
 
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
@@ -459,14 +465,12 @@ class ScriptManifestTests(unittest.TestCase):
                 if authority in unrelated and basename not in authority_text and row["path"] not in authority_text:
                     self.fail(f"blanket authority {authority} does not govern {row['path']}")
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
-                    self.assertTrue(authority.startswith("docs/05.operations/runbooks/"))
+                    self.assertTrue(is_runbook_authority(authority))
                     self.assertTrue(
                         basename in authority_text or row["path"] in authority_text,
                         f"runtime Runbook does not name {row['path']}",
                     )
-                elif row["mutation"] == "runtime" and not authority.startswith(
-                    "docs/05.operations/runbooks/"
-                ):
+                elif row["mutation"] == "runtime" and not is_runbook_authority(authority):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(migration_authority, authority)
 

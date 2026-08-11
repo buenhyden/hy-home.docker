@@ -97,7 +97,7 @@ All five waves are complete; this file now preserves final execution evidence.
 
 | Old Path | New Path | Role Bucket | Disposition |
 | --- | --- | --- | --- |
-| `docs/05.operations/guides/01-gateway/01.setup.md` | `docs/05.operations/guides/01-gateway/setup.md` | Guide | `active-canonical` rename; bucket and document role preserved. |
+| `docs/05.operations/guides/01-gateway/01.setup.md` | `docs/05.operations/01-gateway/ops-0012-setup/guide.md` | Guide | `active-canonical` rename; bucket and document role preserved. |
 | `docs/05.operations/guides/06-observability/01.lgtm-stack.md` | `docs/05.operations/guides/06-observability/lgtm-stack.md` | Guide | `active-canonical` rename; bucket and document role preserved. |
 | `docs/05.operations/policies/06-observability/01.retention.md` | `docs/05.operations/policies/06-observability/retention.md` | Policy | `active-canonical` rename; bucket and document role preserved. |
 | `scripts/validation/check-doc-implementation-alignment.sh` non-service stems | `setup`, `lgtm-stack`, `retention` | Validator support | Direct fallout so renamed operations guide/policy documents remain routing/control docs instead of being treated as service leaf implementation docs. |

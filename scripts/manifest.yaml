@@ -17,8 +17,8 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/guides/01-gateway/nginx.md
-  - docs/05.operations/guides/01-gateway/setup.md
+  - docs/05.operations/01-gateway/ops-0011-nginx/guide.md
+  - docs/05.operations/01-gateway/ops-0012-setup/guide.md
   disposition: retain
   successor: null
   tests:
@@ -31,7 +31,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md
+  - docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
   disposition: retain
   successor: null
   tests:
@@ -54,7 +54,7 @@ files:
   lifecycle: transition
   mutation: check-write
   consumers:
-  - docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md
+  - docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
   disposition: rewrite
   successor: scripts/hooks/post-tool-validate.sh
   tests:
@@ -78,8 +78,8 @@ files:
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md
-  - docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md
+  - docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md
+  - docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md
   disposition: merge
   successor: scripts/validation/check-repo-contracts.sh
   tests:
@@ -90,9 +90,9 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md
-  - docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md
-  - docs/05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md
+  - docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md
+  - docs/05.operations/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md
   disposition: retain
   successor: null
   tests:
@@ -145,7 +145,7 @@ files:
   lifecycle: transition
   mutation: runtime
   consumers:
-  - docs/05.operations/guides/01-gateway/setup.md
+  - docs/05.operations/01-gateway/ops-0012-setup/guide.md
   - scripts/validation/check-repo-contracts.sh
   disposition: rewrite
   successor: scripts/operations/gen-secrets.sh
@@ -187,11 +187,11 @@ files:
   - tests/validation/test_provider_native_surfaces.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
-  authority: docs/05.operations/runbooks/00-workspace/release-management.md
+  authority: docs/05.operations/00-workspace/ops-0009-release-management/runbook.md
   lifecycle: transition
   mutation: runtime
   consumers:
-  - docs/05.operations/runbooks/00-workspace/release-management.md
+  - docs/05.operations/00-workspace/ops-0009-release-management/runbook.md
   disposition: retain
   successor: null
   tests:
@@ -393,7 +393,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md
+  - docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
   disposition: merge
   successor: scripts/validation/check-document-metadata.py
   tests:
@@ -444,7 +444,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/policies/00-workspace/common-optimizations-template-exceptions.md
+  - docs/05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md
   disposition: rewrite
   successor: scripts/validation/check-quickwin-baseline.sh
   tests: []
@@ -521,7 +521,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/guides/03-security/vault.md
+  - docs/05.operations/03-security/ops-0016-vault/guide.md
   disposition: rewrite
   successor: scripts/validation/check-template-security-baseline.sh
   tests: []

@@ -204,7 +204,7 @@ status: active
 - The `parent_ids` problem is worse than the missing dates because it is a
   governance decision rather than a lookup. The new `policy` profile allows
   parent types `spec`, `architecture-description`, and `adr` only, while
-  `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md` currently
+  `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md` currently
   declares `task:2026-07-15-agent-governance-harness-convergence`. Migrating it
   means choosing a new parent, which invents lineage. This is the same
   objection already recorded against rewriting the audit pack's `parent_ids`.

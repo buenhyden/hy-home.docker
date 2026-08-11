@@ -104,4 +104,4 @@ bash scripts/knowledge/report-graphify-health.sh
 
 - **Plan**: ../../04.execution/plans/2026-05-10-docs-taxonomy-agent-first-migration.md
 - **Tasks**: ../../04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md
-- **Operations Policy**: [../../05.operations/policies/00-workspace/harness-agent-first-engineering.md](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
+- **Operations Policy**: [../../05.operations/policies/00-workspace/harness-agent-first-engineering.md](../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md)

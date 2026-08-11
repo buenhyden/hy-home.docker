@@ -122,15 +122,15 @@ After the scope correction, `PLN-DRA-005` applies to all
 Tracked Markdown files directly under those buckets:
 
 - `docs/05.operations/guides/01-gateway/01.setup.md`
-- `docs/05.operations/guides/01-gateway/README.md`
-- `docs/05.operations/guides/01-gateway/nginx.md`
-- `docs/05.operations/guides/01-gateway/traefik.md`
-- `docs/05.operations/policies/01-gateway/README.md`
-- `docs/05.operations/policies/01-gateway/nginx.md`
-- `docs/05.operations/policies/01-gateway/traefik.md`
-- `docs/05.operations/runbooks/01-gateway/README.md`
-- `docs/05.operations/runbooks/01-gateway/nginx.md`
-- `docs/05.operations/runbooks/01-gateway/traefik.md`
+- `docs/05.operations/01-gateway/README.md`
+- `docs/05.operations/01-gateway/ops-0011-nginx/guide.md`
+- `docs/05.operations/01-gateway/ops-0013-traefik/guide.md`
+- `docs/05.operations/01-gateway/README.md`
+- `docs/05.operations/01-gateway/ops-0011-nginx/policy.md`
+- `docs/05.operations/01-gateway/ops-0013-traefik/policy.md`
+- `docs/05.operations/01-gateway/README.md`
+- `docs/05.operations/01-gateway/ops-0011-nginx/runbook.md`
+- `docs/05.operations/01-gateway/ops-0013-traefik/runbook.md`
 
 `PLN-DRA-001` does not classify, move, delete, archive, or rewrite these
 targets. The future audit pack must classify them before any target mutation.
@@ -198,12 +198,12 @@ targets. The future audit pack must classify them before any target mutation.
 | `docs/05.operations/guides/00-workspace/` | Kept active; LLM Wiki maintenance guide added | `active-canonical` | Workspace-level guide bucket |
 | `docs/05.operations/policies/00-workspace/` | Kept active; LLM Wiki maintenance policy added | `active-canonical` | Workspace-level policy bucket |
 | `docs/05.operations/runbooks/00-workspace/` | Kept active; LLM Wiki maintenance runbook added | `active-canonical` | Workspace-level runbook bucket |
-| `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md` |
-| `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md` |
-| `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md` |
-| `docs/05.operations/guides/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/guides/00-workspace/README.md` |
-| `docs/05.operations/policies/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/policies/00-workspace/README.md` |
-| `docs/05.operations/runbooks/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/runbooks/00-workspace/README.md` |
+| `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md` |
+| `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md` |
+| `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` | Moved | `historical-archive` / resolved legacy bucket | `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md` |
+| `docs/05.operations/guides/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/00-workspace/README.md` |
+| `docs/05.operations/policies/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/00-workspace/README.md` |
+| `docs/05.operations/runbooks/90-knowledge/README.md` | Removed after bucket emptied | `duplicate-remove` / routing cleanup | `docs/05.operations/00-workspace/README.md` |
 | `docs/05.operations/{guides,policies,runbooks}/01-*...12-*` | Preserved in place | `active-canonical` | No duplicate or conflict justified a broad service-bucket move in this batch |
 
 ## PLN-DRA-006 CI/QA/Formatting Decision List

@@ -26,8 +26,8 @@ Dozzle을 통해 인프라 내 컨테이너 로그를 효율적으로 확인하�
 
 ### Prerequisites
 
-- [Traefik](../01-gateway/README.md) 활성화 및 로컬 도메인 설정.
-- [SSO Auth](../02-auth/README.md)를 통한 인증 및 인가 완료.
+- [Traefik](../../01-gateway/README.md) 활성화 및 로컬 도메인 설정.
+- [SSO Auth](../../02-auth/README.md)를 통한 인증 및 인가 완료.
 
 ### Step-by-step Instructions
 

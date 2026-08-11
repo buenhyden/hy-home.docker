@@ -55,7 +55,7 @@ nginx/
 | Labels | Not declared |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `nginx` |
-| Operations | [Guide](../../../docs/05.operations/guides/01-gateway/nginx.md), [Policy](../../../docs/05.operations/policies/01-gateway/nginx.md), [Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md) |
+| Operations | [Guide](../../../docs/05.operations/01-gateway/ops-0011-nginx/guide.md), [Policy](../../../docs/05.operations/01-gateway/ops-0011-nginx/policy.md), [Runbook](../../../docs/05.operations/01-gateway/ops-0011-nginx/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with static hardening checks; inspect service logs only when an approved Nginx runtime context is already running. |
 
@@ -70,7 +70,7 @@ nginx/
 
 5. Always run `nginx -t` in the approved running context before reloading configuration.
 6. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
-7. Update specific path guides in `docs/05.operations/guides/01-gateway/nginx.md` when adding new routing logic.
+7. Update specific path guides in `docs/05.operations/01-gateway/ops-0011-nginx/guide.md` when adding new routing logic.
 
 ## Configuration
 
@@ -108,7 +108,7 @@ healthcheck:
 ## Related Documents
 
 - [01-gateway Root README](../README.md)
-- [Nginx Guide](../../../docs/05.operations/guides/01-gateway/nginx.md)
-- [Gateway Operations Policy](../../../docs/05.operations/policies/01-gateway/nginx.md)
-- [Nginx Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md)
-- [SSO Setup Guide](../../../docs/05.operations/guides/02-auth/README.md)
+- [Nginx Guide](../../../docs/05.operations/01-gateway/ops-0011-nginx/guide.md)
+- [Gateway Operations Policy](../../../docs/05.operations/01-gateway/ops-0011-nginx/policy.md)
+- [Nginx Runbook](../../../docs/05.operations/01-gateway/ops-0011-nginx/runbook.md)
+- [SSO Setup Guide](../../../docs/05.operations/02-auth/README.md)

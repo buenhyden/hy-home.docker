@@ -220,8 +220,8 @@ bash scripts/hardening/check-all-hardening.sh
 
 - Plan
 - Task Evidence
-- [Guide](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
-- [Operations Policy](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
-- [Validation Runbook](../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md)
+- [Guide](../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md)
+- [Operations Policy](../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md)
+- [Validation Runbook](../../05.operations/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)
 - [Documentation Protocol](../../00.agent-governance/rules/documentation-protocol.md)

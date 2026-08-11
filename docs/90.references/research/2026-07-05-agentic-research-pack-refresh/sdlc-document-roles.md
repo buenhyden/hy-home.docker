@@ -374,6 +374,6 @@ Each item is an investigation prompt with a named owner. None is approved work.
 - [workspace baseline](./workspace-baseline.md)
 - [spec-driven development and SDLC](./spec-driven-sdlc.md)
 - [document metadata and lifecycle criteria](./document-metadata-lifecycle.md)
-- [release management runbook](../../../05.operations/runbooks/00-workspace/release-management.md)
+- [release management runbook](../../../05.operations/00-workspace/ops-0009-release-management/runbook.md)
 - [stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)

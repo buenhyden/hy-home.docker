@@ -104,5 +104,5 @@ This document is the optimization/hardening implementation plan for `infra/02-au
 - **ADR**: [../02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md](../../../02.architecture/decisions/adr-0017-auth-hardening-runtime-and-fail-closed.md)
 - **Spec**: [../03.specs/002-auth/spec.md](../../../03.specs/spec-0002-auth/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](task.md)
-- **Operations**: [../../05.operations/guides/02-auth/README.md](../../../05.operations/guides/02-auth/README.md)
-- **Runbooks**: [../../05.operations/runbooks/02-auth/README.md](../../../05.operations/runbooks/02-auth/README.md)
+- **Operations**: [../../05.operations/guides/02-auth/README.md](../../../05.operations/02-auth/README.md)
+- **Runbooks**: [../../05.operations/runbooks/02-auth/README.md](../../../05.operations/02-auth/README.md)

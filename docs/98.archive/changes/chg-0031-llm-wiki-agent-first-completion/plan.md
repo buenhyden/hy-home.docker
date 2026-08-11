@@ -39,7 +39,7 @@ The existing agent-first/Harness-first structure and docs taxonomy migration are
 | --- | --- | --- | --- | --- |
 | PLN-001 | Add deterministic LLM Wiki generator and generated index | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/llm-wiki-index.md` | VAL-SPC-001 | Generator and `--check` pass |
 | PLN-002 | Add first-class `wiki-curator` role | `.claude/agents/`, `docs/00.agent-governance/agents/`, `subagent-protocol.md` | VAL-SPC-002 | Runtime/governance catalog parity passes |
-| PLN-003 | Add maintenance guide and update LLM Wiki references | `docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md`, `llms.txt`, reference READMEs | VAL-SPC-003 | Link and repo contract checks pass |
+| PLN-003 | Add maintenance guide and update LLM Wiki references | `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md`, `llms.txt`, reference READMEs | VAL-SPC-003 | Link and repo contract checks pass |
 | PLN-004 | Strengthen repository contracts | `scripts/validation/check-repo-contracts.sh`, `scripts/README.md` | VAL-SPC-003 | Missing or stale LLM Wiki assets fail validation |
 | PLN-005 | Record implementation evidence | stage task docs and progress log | VAL-SPC-003 | Completion evidence is current |
 
@@ -80,5 +80,5 @@ The existing agent-first/Harness-first structure and docs taxonomy migration are
 
 - **Spec**: [../../03.specs/096-llm-wiki-agent-first-completion/spec.md](../../../03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md)
 - **Task**: [../tasks/2026-05-10-llm-wiki-agent-first-completion.md](task.md)
-- **Guide**: [../../05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
+- **Guide**: [../../05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)
 - **Reference**: [../../90.references/llm-wiki/README.md](../../../90.references/llm-wiki/README.md)

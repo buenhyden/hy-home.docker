@@ -39,7 +39,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 
 | Approval source | Protected surface | Boundary | Rollback or recovery | Redaction boundary |
 | :-- | :-- | :-- | :-- | :-- |
-| Approved implementation plan (corrected at `5d22b5f0`) and Task 5 controller authorization | Documentation taxonomy, typed metadata, migration ledger, and validation scripts | Tasks 1–5 only. Task 5 includes the single cycle-breaking Operations exception in which the frozen `policy-0006` move row and Stage 04 roadmap merge row converge on the same target; no other Operations migration and no Runtime, remote, secret, deployment, or compatibility-surface change | Git revert of the applicable logical commit; migration mappings retain source-to-target provenance | Record only paths, commit IDs, and command outcomes; do not record credentials or remote state |
+| Approved implementation plan (corrected at `5d22b5f0`) and Task 5 controller authorization | Documentation taxonomy, typed metadata, migration ledger, and validation scripts | Tasks 1–6A. Task 5 includes the single cycle-breaking Operations exception in which the frozen `policy-0006` move row and Stage 04 roadmap merge row converge on the same target; Task 6A is limited to the frozen Operations 00–03 ledger slice; no Runtime, remote, secret, deployment, or compatibility-surface change | Git revert of the applicable logical commit; migration mappings retain source-to-target provenance | Record only paths, commit IDs, and command outcomes; do not record credentials or remote state |
 
 ## Work Breakdown
 
@@ -70,6 +70,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | Task 3 | Froze the evidence-based SDLC migration ledger and script manifest, including replacement-preservation coverage. | Approved; commits `0dd2579f`, `a6f602f5`, `068d6645`, and `ce52501e`. |
 | Task 4 | Migrated Stage 01/02 to stable PRD, Architecture Description, and ADR identities; corrected the Description README ledger row; migrated tracked inbound links and taxonomy regressions. | Committed as `4122cecf` (`docs: migrate requirements and architecture identities`). |
 | Task 5 | Co-located current Specs, Plans, and Tasks; moved completed evidence into typed change packets; restored four current Specs; rewrote 28 retired Specs as concise provenance tombstones; removed capability child READMEs and Stage 04; executed the authorized `policy-0006` move-and-merge exception; migrated inbound consumers and rewrote the Stage 03/98 indexes. | APPROVED after two remediation rounds; implementation committed as `65e994f3`. |
+| Task 6A | Added bounded Operations RED coverage; executed the frozen 00–03 migration as `33` move rows and `8` README merge rows; merged the eight role-root README navigations; normalized moved-role metadata; migrated inbound/rebased moved-relative links; and repaired the traceability gate for the canonical Stage 03 ↔ Stage 05 relationship. The controller performed the exact Git-backed merge-source removals after retaining a bounded recovery archive. | APPROVED; RED `4` tests/`30` failures, then GREEN `5/5`; final staged metadata changed `selected=108 violations=0`, contracts `0`; traceability/alignment, taxonomy `14/14`, manifest `23/23`, provider drift `0`, and diff hygiene pass. Implementation commit pending. |
 
 ## Verification Evidence
 
@@ -95,6 +96,8 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | `python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted` (Task 5 final) | Every Task 5 stale promoted finding is reconciled without accepting later-wave debt. | Findings reduced from `72` to `42`; the exact Task 5 subset reduced from `30` to `0`. The retained `42` are Operations Task 6 `28`, Task 4 Stage 01/02 successor debt `4`, and unrelated Task 7/13/14 target-surface debt `10`. | Task 5 scoped gate PASS; repository command exits `1` on retained later-wave debt |
 | `bash scripts/validation/check-doc-implementation-alignment.sh` (Task 5 remediation) | No active document links directly to Stage 98 and active links resolve. | `381` stage documents, `2,529` links checked, `archive_direct_links_total=0`, `failures=0`. | PASS |
 | Task 5 taxonomy, manifest, provider, compilation, and diff gates | Stable taxonomy, frozen-ledger consumers, provider projections, Python syntax, and whitespace remain valid. | Taxonomy `14/14`; script manifest `23/23`; provider renderer `providers=3 drift=0`; `py_compile` passed; both cached and worktree `git diff --check` passed; `docs/04.execution` is absent. | PASS |
+| `PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py` (Task 6A RED) | Bounded role-root, exact subject/role, metadata, parent, and link assertions fail before the approved migration. | Exit `1`; `4` tests, `30` failures, `0` errors. The expected domain-first paths are absent and legacy role roots remain. | RED confirmed |
+| Task 6A GREEN and migration gates | Domain-first subjects have the exact frozen role cardinality and stable metadata; active links resolve; the canonical Stage 03 ↔ Stage 05 traceability and provider projections remain valid. | Operations taxonomy `5/5`; final staged changed metadata `selected=108 violations=0 legacy_exceptions=6`; metadata contracts `0`; traceability `catalog_pairs_total=46 failures=0`; alignment `2,498` links / `0` failures; stable taxonomy `14/14`; manifest `23/23`; provider `providers=3 drift=0`; cached and worktree diff checks pass. The full metadata suite exited successfully in the repository virtual environment. | PASS |
 
 ## Controlled Agent Pre-commit Evidence
 
@@ -116,6 +119,9 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | Task 5 second independent re-review | CHANGES_REQUIRED (`C0/I1/M0`) | Important finding: the reconciliation source proof accepted a syntactically valid `source_commit` without proving that `source_commit:legacy_path` resolves to a regular Git blob. |
 | Task 5 remediation round 2 | ADDRESSED | Every selected ledger source now requires an exact Git commit and regular-blob proof before promoted reconciliation can be enabled; invalid commit, missing path, and tree-object negatives fail closed while the exact `337`-row distribution and current target/source/link checks remain enforced. |
 | Task 5 third scoped re-review | APPROVED | The prior Important finding is ADDRESSED. The reviewer reproduced focused Task 5 `11/11`, source/promoted `4/4`, promoted residual `42` with Task 5 subset zero, compilation, and cached diff hygiene; no Critical or Important finding remains. |
+| Task 6A initial independent review | CHANGES_REQUIRED (`C0/I1/M0`) | Important evidence mismatch: the canonical Task and migration ledger recorded `selected=104` although the final staged changed-document metadata gate selected `108` documents. Functional Operations migration checks otherwise passed. |
+| Task 6A remediation round 1 | ADDRESSED | Corrected the canonical Task, migration ledger, and implementation report to the final staged evidence `selected=108 violations=0`; no implementation behavior changed. |
+| Task 6A scoped re-review | APPROVED | The prior evidence mismatch is ADDRESSED across the canonical Task and migration ledger; no remaining Critical or Important finding. |
 
 ## Commit Ledger
 
@@ -138,6 +144,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | CI-only and controlled all-files pre-commit evidence for Tasks 1–4 | Unavailable / not run | No durable execution record was found; do not infer a pass from local validation. |
 | Task 5 promoted residual `42` | Deferred outside Task 5 | Task 6 owns `28` Operations findings; the remaining `14` are existing Task 4 successor and Tasks 7, 13, and 14 target-surface/archive-transition work. The Task 5 regression asserts that none can be silently recategorized as Task 5. |
 | Task 5 full lifecycle residual `43` | Deferred outside Task 5 | Plan Tasks 7, 10, and 14 own the archive identity/provenance, validator consolidation, transition-contract, and final full-suite surfaces. Task 5 closes with zero errors, focused lifecycle `11/11`, and historical-source regressions green. |
+| Task 6A merge-source recovery archive | Retained evidence | Controller stored the eight locally rewritten merge-source READMEs before exact Git removal at `/tmp/task6a-readme-merge-sources.OWvDIE.tar` (8 entries; SHA-256 `086d3937903f9ed3de070fe1d679365b848dc7f79eefe9e03895fbaf4a7604ef`). Recover after commit through Git revert; before commit restore only under controller direction and rerun the merge-navigation regression. |
 
 ## Related Documents
 

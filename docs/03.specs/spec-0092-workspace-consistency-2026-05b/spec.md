@@ -24,7 +24,7 @@ This document is the technical specification for follow-up work after PR #89 (`w
 - `scripts/validation/check-repo-contracts.sh`: add `## Common Checks` and `## Runbook Handoff` section requirements to guide profile checks.
 - `docs/99.templates/README.md`: add guide.template.md and runbook.template.md to the list and add a design note for link conventions.
 - `docs/99.templates/templates/spec-contracts/agent-design.template.md`: replace example filenames with directory links.
-- `docs/05.operations/policies/01-gateway/nginx.md`: remove duplicate `## Policy Scope` heading.
+- `docs/05.operations/01-gateway/ops-0011-nginx/policy.md`: remove duplicate `## Policy Scope` heading.
 
 **Non-goals:**
 

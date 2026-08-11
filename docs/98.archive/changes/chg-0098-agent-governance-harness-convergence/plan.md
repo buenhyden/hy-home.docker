@@ -495,8 +495,8 @@ ordinary Markdown links and fenced literals are not counted as imports.
   `docs/00.agent-governance/providers/codex.md`,
   `docs/00.agent-governance/rules/workflows.md`,
   `docs/00.agent-governance/scopes/docs.md`,
-  `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`,
-  `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`,
+  `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md`,
+  `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md`,
   `scripts/README.md`, `scripts/hooks/agent-event-hook.sh`,
   `scripts/knowledge/generate-llm-wiki-index.sh`,
   `scripts/knowledge/generate-llm-wiki-coverage.sh`,
@@ -970,8 +970,8 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
   --allow-prefix docs/04.execution/plans/README.md \
   --allow-prefix docs/04.execution/tasks/2026-07-15-agent-governance-harness-convergence.md \
   --allow-prefix docs/04.execution/tasks/README.md \
-  --allow-prefix docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md \
-  --allow-prefix docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md \
+  --allow-prefix docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md \
+  --allow-prefix docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md \
   --allow-prefix docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack \
   --allow-prefix docs/90.references/research/2026-07-05-agentic-research-pack-refresh \
   --allow-prefix docs/90.references/data/governance/agent-output-eval-fixtures.md \

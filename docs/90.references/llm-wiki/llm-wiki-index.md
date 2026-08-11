@@ -633,22 +633,22 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [docs/05.operations/README.md](../../05.operations/README.md) | folder index |
-| [docs/05.operations/guides/00-workspace/README.md](../../05.operations/guides/00-workspace/README.md) | folder index |
-| [docs/05.operations/guides/00-workspace/developer-setup.md](../../05.operations/guides/00-workspace/developer-setup.md) | Markdown reference |
-| [docs/05.operations/guides/00-workspace/env-key-comparison.md](../../05.operations/guides/00-workspace/env-key-comparison.md) | Markdown reference |
-| [docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md) | Markdown reference |
-| [docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/guides/00-workspace/new-service-onboarding.md](../../05.operations/guides/00-workspace/new-service-onboarding.md) | Markdown reference |
-| [docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md) | Markdown reference |
-| [docs/05.operations/guides/01-gateway/README.md](../../05.operations/guides/01-gateway/README.md) | folder index |
-| [docs/05.operations/guides/01-gateway/nginx.md](../../05.operations/guides/01-gateway/nginx.md) | Markdown reference |
-| [docs/05.operations/guides/01-gateway/setup.md](../../05.operations/guides/01-gateway/setup.md) | Markdown reference |
-| [docs/05.operations/guides/01-gateway/traefik.md](../../05.operations/guides/01-gateway/traefik.md) | Markdown reference |
-| [docs/05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md) | folder index |
-| [docs/05.operations/guides/02-auth/keycloak.md](../../05.operations/guides/02-auth/keycloak.md) | Markdown reference |
-| [docs/05.operations/guides/02-auth/oauth2-proxy.md](../../05.operations/guides/02-auth/oauth2-proxy.md) | Markdown reference |
-| [docs/05.operations/guides/03-security/README.md](../../05.operations/guides/03-security/README.md) | folder index |
-| [docs/05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md) | Markdown reference |
+| [docs/05.operations/00-workspace/README.md](../../05.operations/00-workspace/README.md) | folder index |
+| [docs/05.operations/00-workspace/ops-0002-developer-setup/guide.md](../../05.operations/00-workspace/ops-0002-developer-setup/guide.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0003-env-key-comparison/guide.md](../../05.operations/00-workspace/ops-0003-env-key-comparison/guide.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md](../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0008-new-service-onboarding/guide.md](../../05.operations/00-workspace/ops-0008-new-service-onboarding/guide.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md](../../05.operations/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md) | Markdown reference |
+| [docs/05.operations/01-gateway/README.md](../../05.operations/01-gateway/README.md) | folder index |
+| [docs/05.operations/01-gateway/ops-0011-nginx/guide.md](../../05.operations/01-gateway/ops-0011-nginx/guide.md) | Markdown reference |
+| [docs/05.operations/01-gateway/ops-0012-setup/guide.md](../../05.operations/01-gateway/ops-0012-setup/guide.md) | Markdown reference |
+| [docs/05.operations/01-gateway/ops-0013-traefik/guide.md](../../05.operations/01-gateway/ops-0013-traefik/guide.md) | Markdown reference |
+| [docs/05.operations/02-auth/README.md](../../05.operations/02-auth/README.md) | folder index |
+| [docs/05.operations/02-auth/ops-0014-keycloak/guide.md](../../05.operations/02-auth/ops-0014-keycloak/guide.md) | Markdown reference |
+| [docs/05.operations/02-auth/ops-0015-oauth2-proxy/guide.md](../../05.operations/02-auth/ops-0015-oauth2-proxy/guide.md) | Markdown reference |
+| [docs/05.operations/03-security/README.md](../../05.operations/03-security/README.md) | folder index |
+| [docs/05.operations/03-security/ops-0016-vault/guide.md](../../05.operations/03-security/ops-0016-vault/guide.md) | Markdown reference |
 | [docs/05.operations/guides/04-data/README.md](../../05.operations/guides/04-data/README.md) | folder index |
 | [docs/05.operations/guides/04-data/analytics/README.md](../../05.operations/guides/04-data/analytics/README.md) | folder index |
 | [docs/05.operations/guides/04-data/analytics/influxdb.md](../../05.operations/guides/04-data/analytics/influxdb.md) | Markdown reference |
@@ -722,19 +722,19 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/12-infra-net/standardize-infra-net.md](../../05.operations/guides/12-infra-net/standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/guides/README.md](../../05.operations/guides/README.md) | folder index |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
-| [docs/05.operations/policies/00-workspace/README.md](../../05.operations/policies/00-workspace/README.md) | folder index |
-| [docs/05.operations/policies/00-workspace/common-optimizations-template-exceptions.md](../../05.operations/policies/00-workspace/common-optimizations-template-exceptions.md) | Markdown reference |
-| [docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) | Markdown reference |
-| [docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md) | Markdown reference |
-| [docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md](../../05.operations/policies/00-workspace/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/policies/01-gateway/README.md](../../05.operations/policies/01-gateway/README.md) | folder index |
-| [docs/05.operations/policies/01-gateway/nginx.md](../../05.operations/policies/01-gateway/nginx.md) | Markdown reference |
-| [docs/05.operations/policies/01-gateway/traefik.md](../../05.operations/policies/01-gateway/traefik.md) | Markdown reference |
-| [docs/05.operations/policies/02-auth/README.md](../../05.operations/policies/02-auth/README.md) | folder index |
-| [docs/05.operations/policies/02-auth/keycloak.md](../../05.operations/policies/02-auth/keycloak.md) | Markdown reference |
-| [docs/05.operations/policies/02-auth/oauth2-proxy.md](../../05.operations/policies/02-auth/oauth2-proxy.md) | Markdown reference |
-| [docs/05.operations/policies/03-security/README.md](../../05.operations/policies/03-security/README.md) | folder index |
-| [docs/05.operations/policies/03-security/vault.md](../../05.operations/policies/03-security/vault.md) | Markdown reference |
+| [docs/05.operations/00-workspace/README.md](../../05.operations/00-workspace/README.md) | folder index |
+| [docs/05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md](../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md](../../05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md) | Markdown reference |
+| [docs/05.operations/01-gateway/README.md](../../05.operations/01-gateway/README.md) | folder index |
+| [docs/05.operations/01-gateway/ops-0011-nginx/policy.md](../../05.operations/01-gateway/ops-0011-nginx/policy.md) | Markdown reference |
+| [docs/05.operations/01-gateway/ops-0013-traefik/policy.md](../../05.operations/01-gateway/ops-0013-traefik/policy.md) | Markdown reference |
+| [docs/05.operations/02-auth/README.md](../../05.operations/02-auth/README.md) | folder index |
+| [docs/05.operations/02-auth/ops-0014-keycloak/policy.md](../../05.operations/02-auth/ops-0014-keycloak/policy.md) | Markdown reference |
+| [docs/05.operations/02-auth/ops-0015-oauth2-proxy/policy.md](../../05.operations/02-auth/ops-0015-oauth2-proxy/policy.md) | Markdown reference |
+| [docs/05.operations/03-security/README.md](../../05.operations/03-security/README.md) | folder index |
+| [docs/05.operations/03-security/ops-0016-vault/policy.md](../../05.operations/03-security/ops-0016-vault/policy.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/README.md](../../05.operations/policies/04-data/README.md) | folder index |
 | [docs/05.operations/policies/04-data/analytics/README.md](../../05.operations/policies/04-data/analytics/README.md) | folder index |
 | [docs/05.operations/policies/04-data/analytics/influxdb.md](../../05.operations/policies/04-data/analytics/influxdb.md) | Markdown reference |
@@ -810,18 +810,18 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/12-infra-net/standardize-infra-net.md](../../05.operations/policies/12-infra-net/standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/policies/README.md](../../05.operations/policies/README.md) | folder index |
 | [docs/05.operations/releases/README.md](../../05.operations/releases/README.md) | folder index |
-| [docs/05.operations/runbooks/00-workspace/README.md](../../05.operations/runbooks/00-workspace/README.md) | folder index |
-| [docs/05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md](../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md) | Markdown reference |
-| [docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md](../../05.operations/runbooks/00-workspace/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/runbooks/00-workspace/release-management.md](../../05.operations/runbooks/00-workspace/release-management.md) | Markdown reference |
-| [docs/05.operations/runbooks/01-gateway/README.md](../../05.operations/runbooks/01-gateway/README.md) | folder index |
-| [docs/05.operations/runbooks/01-gateway/nginx.md](../../05.operations/runbooks/01-gateway/nginx.md) | Markdown reference |
-| [docs/05.operations/runbooks/01-gateway/traefik.md](../../05.operations/runbooks/01-gateway/traefik.md) | Markdown reference |
-| [docs/05.operations/runbooks/02-auth/README.md](../../05.operations/runbooks/02-auth/README.md) | folder index |
-| [docs/05.operations/runbooks/02-auth/keycloak.md](../../05.operations/runbooks/02-auth/keycloak.md) | Markdown reference |
-| [docs/05.operations/runbooks/02-auth/oauth2-proxy.md](../../05.operations/runbooks/02-auth/oauth2-proxy.md) | Markdown reference |
-| [docs/05.operations/runbooks/03-security/README.md](../../05.operations/runbooks/03-security/README.md) | folder index |
-| [docs/05.operations/runbooks/03-security/vault.md](../../05.operations/runbooks/03-security/vault.md) | Markdown reference |
+| [docs/05.operations/00-workspace/README.md](../../05.operations/00-workspace/README.md) | folder index |
+| [docs/05.operations/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md](../../05.operations/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md) | Markdown reference |
+| [docs/05.operations/00-workspace/ops-0009-release-management/runbook.md](../../05.operations/00-workspace/ops-0009-release-management/runbook.md) | Markdown reference |
+| [docs/05.operations/01-gateway/README.md](../../05.operations/01-gateway/README.md) | folder index |
+| [docs/05.operations/01-gateway/ops-0011-nginx/runbook.md](../../05.operations/01-gateway/ops-0011-nginx/runbook.md) | Markdown reference |
+| [docs/05.operations/01-gateway/ops-0013-traefik/runbook.md](../../05.operations/01-gateway/ops-0013-traefik/runbook.md) | Markdown reference |
+| [docs/05.operations/02-auth/README.md](../../05.operations/02-auth/README.md) | folder index |
+| [docs/05.operations/02-auth/ops-0014-keycloak/runbook.md](../../05.operations/02-auth/ops-0014-keycloak/runbook.md) | Markdown reference |
+| [docs/05.operations/02-auth/ops-0015-oauth2-proxy/runbook.md](../../05.operations/02-auth/ops-0015-oauth2-proxy/runbook.md) | Markdown reference |
+| [docs/05.operations/03-security/README.md](../../05.operations/03-security/README.md) | folder index |
+| [docs/05.operations/03-security/ops-0016-vault/runbook.md](../../05.operations/03-security/ops-0016-vault/runbook.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/README.md](../../05.operations/runbooks/04-data/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/analytics/README.md](../../05.operations/runbooks/04-data/analytics/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/analytics/influxdb.md](../../05.operations/runbooks/04-data/analytics/influxdb.md) | Markdown reference |
@@ -1471,5 +1471,5 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 - [LLM Wiki references](./README.md)
 - [LLM Wiki repository map](./repository-map.md)
-- [LLM Wiki maintenance guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
+- [LLM Wiki maintenance guide](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)
 - [Agent governance hub](../../00.agent-governance/README.md)

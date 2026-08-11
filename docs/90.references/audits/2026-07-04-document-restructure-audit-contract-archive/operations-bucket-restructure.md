@@ -116,9 +116,9 @@ batch. It is not an operations policy, guide, or runbook.
 
 | Area | Final Action | Evidence |
 | --- | --- | --- |
-| Guide leaf | `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md`. | Target comment, parent README, active links, and LLM Wiki references now use the `00-workspace` path. |
-| Policy leaf | `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`. | Policy role stayed separate from the guide and runbook. |
-| Runbook leaf | `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/runbooks/00-workspace/llm-wiki-maintenance.md`. | Runbook now links to its guide and policy as canonical references. |
+| Guide leaf | `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md`. | Target comment, parent README, active links, and LLM Wiki references now use the `00-workspace` path. |
+| Policy leaf | `docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md`. | Policy role stayed separate from the guide and runbook. |
+| Runbook leaf | `docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md` moved to `docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md`. | Runbook now links to its guide and policy as canonical references. |
 | Legacy bucket indexes | `docs/05.operations/{guides,policies,runbooks}/90-knowledge/README.md` removed. | No tracked Markdown files remain in the legacy bucket after the move. |
 | Service buckets | `01-gateway` through `12-infra-net` preserved in place. | No broad move, merge, or archive was justified by the candidate comparison. |
 | Workspace bucket | `00-workspace` now owns the LLM Wiki maintenance guide, policy, and runbook. | Role-specific `00-workspace` README files list the new leaves. |

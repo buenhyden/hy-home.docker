@@ -263,7 +263,7 @@ the matrices above could be misread as clearance.
 - [Shared hook dispatcher](../../../../scripts/hooks/agent-event-hook.sh)
 - [Post-tool validation script](../../../../scripts/hooks/post-tool-validate.sh)
 - [Harness implementation map](../../../00.agent-governance/harness-implementation-map.md)
-- [HAFE policy](../../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
+- [HAFE policy](../../../05.operations/00-workspace/ops-0004-harness-agent-first-engineering/policy.md)
 
 External provider pages were originally retrieved on 2026-07-10 and
 revalidated at `2026-08-07T12:45:40+09:00`. Current contract facts retain the

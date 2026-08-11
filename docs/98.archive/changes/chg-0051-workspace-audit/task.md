@@ -45,8 +45,8 @@ This document is the implementation and verification task list for the May 2026 
 | T-008   | ops-runbook-agent skill stub | impl | GAP-05 | `.claude/skills/ops-runbook-agent/skill.md` exists | Done |
 | T-009   | knowledge-map-agent skill stub | impl | GAP-05 | `.claude/skills/knowledge-map-agent/skill.md` exists | Done |
 | T-010   | policy-gate-agent skill stub | impl | GAP-05 | `.claude/skills/policy-gate-agent/skill.md` exists | Done |
-| T-011   | Create env key comparison report | doc | GAP-06 | `docs/05.operations/guides/00-workspace/env-key-comparison.md` exists, values excluded | Done |
-| T-012   | Create secrets key comparison report | doc | GAP-07 | `docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md` exists, values excluded | Done |
+| T-011   | Create env key comparison report | doc | GAP-06 | `docs/05.operations/00-workspace/ops-0003-env-key-comparison/guide.md` exists, values excluded | Done |
+| T-012   | Create secrets key comparison report | doc | GAP-07 | `docs/05.operations/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md` exists, values excluded | Done |
 | T-013   | Strengthen Stage README lifecycle metadata | doc | GAP-02 | Added status frontmatter + Stage Handoff to docs/03~05 and 90 README files | Done |
 | T-014   | Add Execution/Specs README links | doc | GAP-10 | Updated docs/04.execution/README.md and docs/03.specs/README.md links | Done |
 | T-015   | Update progress.md | doc | GAP-12 | Added 2026-05-26 entry to progress.md | Done |

@@ -69,10 +69,10 @@ runbooks/
 
 | Path | Purpose |
 | --- | --- |
-| [00-workspace/](./00-workspace/README.md) | Workspace-level runbook 문서 |
-| [01-gateway/](./01-gateway/README.md) | Gateway Traefik/Nginx recovery and escalation runbooks |
-| [02-auth/](./02-auth/README.md) | 02 Auth runbook 문서 |
-| [03-security/](./03-security/README.md) | 03 Security runbook 문서 |
+| [00-workspace/](../00-workspace/README.md) | Workspace-level runbook 문서 |
+| [01-gateway/](../01-gateway/README.md) | Gateway Traefik/Nginx recovery and escalation runbooks |
+| [02-auth/](../02-auth/README.md) | 02 Auth runbook 문서 |
+| [03-security/](../03-security/README.md) | 03 Security runbook 문서 |
 | [04-data/](./04-data/README.md) | 04 Data runbook 문서 |
 | [05-messaging/](./05-messaging/README.md) | 05 Messaging runbook 문서 |
 | [06-observability/](./06-observability/README.md) | 06 Observability runbook 문서 |

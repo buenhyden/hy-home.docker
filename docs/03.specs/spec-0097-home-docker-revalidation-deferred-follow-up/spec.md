@@ -30,7 +30,7 @@ This specification revalidates the 2026-05-25 `hy-home.docker` workspace audit r
 - **Related ADRs**: No new ADR. There is no runtime or architecture decision change.
 - **Baseline Plan**: 2026-05-25 home docker workspace audit improvement plan
 - **Baseline Task**: 2026-05-25 home docker workspace audit improvement task
-- **Release Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
+- **Release Runbook**: [release-management.md](../../05.operations/00-workspace/ops-0009-release-management/runbook.md)
 
 ## Contracts
 
@@ -152,6 +152,6 @@ bash scripts/knowledge/report-graphify-health.sh
 - **Tasks**: 2026-05-25 home docker revalidation deferred follow-up task
 - **Baseline Plan**: 2026-05-25 home docker workspace audit improvement plan
 - **Baseline Task**: 2026-05-25 home docker workspace audit improvement task
-- **Release Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
+- **Release Runbook**: [release-management.md](../../05.operations/00-workspace/ops-0009-release-management/runbook.md)
 - **Governance Memory Progress**: [progress.md](../../00.agent-governance/memory/progress.md)
 - **Graphify Report**: [GRAPH_REPORT.md](../../../graphify-out/GRAPH_REPORT.md)

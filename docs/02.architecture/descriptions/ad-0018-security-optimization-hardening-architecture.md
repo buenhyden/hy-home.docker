@@ -122,5 +122,5 @@ updated: 2026-08-10
 - **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md
-- **Policy**: [../../05.operations/policies/03-security/vault.md](../../05.operations/policies/03-security/vault.md)
-- **Runbook**: [../../05.operations/runbooks/03-security/vault.md](../../05.operations/runbooks/03-security/vault.md)
+- **Policy**: [../../05.operations/policies/03-security/vault.md](../../05.operations/03-security/ops-0016-vault/policy.md)
+- **Runbook**: [../../05.operations/runbooks/03-security/vault.md](../../05.operations/03-security/ops-0016-vault/runbook.md)
