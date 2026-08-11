@@ -1,9 +1,8 @@
 ---
 layer: agentic
-status: active
 ---
 
-# Ignored SDD Scratch Deletion Breaks Cited Advisory Inputs
+# Memory: Ignored SDD Scratch Deletion Breaks Cited Advisory Inputs
 
 - Date: 2026-08-11
 - Layer: agentic

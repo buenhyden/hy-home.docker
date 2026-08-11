@@ -1,15 +1,15 @@
 schema_version: 1
-checked_at: "2026-07-15T10:00:00+09:00"
+checked_at: '2026-07-15T10:00:00+09:00'
 path_pattern_limits:
   max_brace_groups: 64
   max_expanded_paths: 1024
   max_pattern_length: 4096
 governed_families:
   - family_id: provider-entry-indexes
-    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}"
+    path_pattern: '{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}'
     repository_sections: [harness]
   - family_id: root-instruction-shims
-    path_pattern: "{AGENTS,CLAUDE,GEMINI}.md"
+    path_pattern: '{AGENTS,CLAUDE,GEMINI}.md'
     repository_sections: [harness]
   - family_id: stage00-markdown
     path_pattern: docs/00.agent-governance/**/*.md
@@ -150,7 +150,7 @@ artifacts:
       layer: agentic
   - profile_id: governance-memory-note
     artifact_type: governance-document
-    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,docker-doc-contract-backlog,execution-stage-legacy-debt,governance-memory-usage-contract,harness-agent-first-gap-audit,stage-docs-lifecycle-audit}.md
+    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,docker-doc-contract-backlog,execution-stage-legacy-debt,governance-memory-usage-contract,harness-agent-first-gap-audit,ignored-sdd-scratch-deletion,stage-docs-lifecycle-audit}.md
     repository_section: harness
     canonical: true
     required_keys: [layer]
@@ -426,7 +426,7 @@ artifacts:
       layer: agentic
   - profile_id: root-instruction-shim
     artifact_type: root-instruction-shim
-    path_pattern: "{AGENTS,CLAUDE,GEMINI}.md"
+    path_pattern: '{AGENTS,CLAUDE,GEMINI}.md'
     repository_section: harness
     canonical: false
     required_keys: []
@@ -488,7 +488,7 @@ readme_profiles:
       - provider-native-schema
       - retry-policy
   - profile_id: provider-surface-index
-    path_pattern: "{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}"
+    path_pattern: '{.agents/README.md,.claude/CLAUDE.md,.codex/README.md,.gemini/README.md}'
     required_sections:
       - Scope
       - Structure
