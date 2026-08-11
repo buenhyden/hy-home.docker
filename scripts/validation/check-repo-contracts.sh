@@ -3038,12 +3038,18 @@ historical_reference_roots = (
 reference_artifact_roots = ()
 
 # Paths that never existed in this tree but are cited by evidence documents
-# precisely to record their absence. Stage 04 execution evidence and Stage 90
+# precisely to record their absence, or quoted inside embedded code samples as
+# deliberately fictional fixtures. Stage 04 execution evidence and Stage 90
 # references must be able to state "this path is absent and no substitute was
-# invented" without that honest record counting as a broken reference. Keep the
-# set explicit so a genuinely broken link still fails.
+# invented", and must be able to show a test that feeds a validator a path that
+# does not exist, without either honest record counting as a broken reference.
+# Keep the set explicit so a genuinely broken link still fails.
 absent_documented_entrypoints = {
     "scripts/governance/validate-cross-links.sh",
+    # Fictional manifest fixture quoted in the SDLC taxonomy convergence Plan's
+    # ScriptManifestValidationTests sample; it asserts that an unreferenced
+    # executable is rejected, so the path must never exist.
+    "scripts/example.sh",
 }
 
 absence_record_roots = (
