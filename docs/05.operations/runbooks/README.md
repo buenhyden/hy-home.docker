@@ -76,9 +76,9 @@ runbooks/
 | [04-data/](../04-data/README.md) | 04 Data runbook 문서 |
 | [05-messaging/](../05-messaging/README.md) | 05 Messaging runbook 문서 |
 | [06-observability/](../06-observability/README.md) | 06 Observability runbook 문서 |
-| [07-workflow/](./07-workflow/README.md) | 07 Workflow runbook 문서 |
-| [08-ai/](./08-ai/README.md) | 08 Ai runbook 문서 |
-| [09-tooling/](./09-tooling/README.md) | 09 Tooling runbook 문서 |
+| [07-workflow/](../07-workflow/README.md) | 07 Workflow runbook 문서 |
+| [08-ai/](../08-ai/README.md) | 08 Ai runbook 문서 |
+| [09-tooling/](../09-tooling/README.md) | 09 Tooling runbook 문서 |
 | [10-communication/](./10-communication/README.md) | 10 Communication runbook 문서 |
 | [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory runbook 문서 |
 | [12-infra-net/](./12-infra-net/README.md) | infra_net 검증 runbook 문서 |

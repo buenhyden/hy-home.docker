@@ -9,6 +9,13 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+TARGET_SURFACE_MANIFEST = (
+    ROOT
+    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+)
+TARGET_SURFACE_SUMMARY = TARGET_SURFACE_MANIFEST.with_name(
+    "target-surface-convergence-summary.md"
+)
 MIGRATED_DOMAINS = (
     "00-workspace",
     "01-gateway",
@@ -17,9 +24,12 @@ MIGRATED_DOMAINS = (
     "04-data",
     "05-messaging",
     "06-observability",
+    "07-workflow",
+    "08-ai",
+    "09-tooling",
 )
 
-# Frozen Task 6A/6B boundary: each tuple is (domain, exact ledger subject path,
+# Frozen Task 6A/6B/6C boundary: each tuple is (domain, exact ledger subject path,
 # shared ops identity, existing role set).  A subject is intentionally absent
 # from a role when mig-0001 has no row for that role.
 EXPECTED_SUBJECTS = (
@@ -77,6 +87,26 @@ EXPECTED_SUBJECTS = (
     ("06-observability", "pyroscope", "0047", {"guide", "policy", "runbook"}),
     ("06-observability", "retention", "0048", {"policy"}),
     ("06-observability", "tempo", "0049", {"guide", "policy", "runbook"}),
+    ("07-workflow", "airflow", "0050", {"guide", "policy", "runbook"}),
+    ("07-workflow", "airflow-dag-basics", "0051", {"guide"}),
+    ("07-workflow", "dag-deployment", "0052", {"policy"}),
+    ("07-workflow", "n8n", "0053", {"guide", "policy", "runbook"}),
+    ("07-workflow", "optimization-hardening", "0054", {"guide", "policy", "runbook"}),
+    ("08-ai", "gpu-recovery", "0055", {"runbook"}),
+    ("08-ai", "ollama", "0056", {"guide", "policy", "runbook"}),
+    ("08-ai", "open-webui", "0057", {"guide", "policy", "runbook"}),
+    ("08-ai", "optimization-hardening", "0058", {"guide", "policy", "runbook"}),
+    ("08-ai", "rag-workflow", "0059", {"guide"}),
+    ("09-tooling", "iac-deployment-policy", "0060", {"policy"}),
+    ("09-tooling", "k6", "0061", {"guide", "policy", "runbook"}),
+    ("09-tooling", "locust", "0062", {"guide", "policy", "runbook"}),
+    ("09-tooling", "optimization-hardening", "0063", {"guide", "policy", "runbook"}),
+    ("09-tooling", "performance-testing", "0064", {"guide", "policy", "runbook"}),
+    ("09-tooling", "registry", "0065", {"guide", "policy", "runbook"}),
+    ("09-tooling", "sonarqube", "0066", {"guide", "policy", "runbook"}),
+    ("09-tooling", "syncthing", "0067", {"guide", "policy", "runbook"}),
+    ("09-tooling", "terraform", "0068", {"guide", "policy", "runbook"}),
+    ("09-tooling", "terrakube", "0069", {"guide", "policy", "runbook"}),
 )
 
 
@@ -145,6 +175,8 @@ class OperationsTaxonomyTests(unittest.TestCase):
                     self.assertEqual([], metadata["parent_ids"])
                     self.assertRegex(str(metadata["created"]), r"^\d{4}-\d{2}-\d{2}$")
                     self.assertRegex(str(metadata["updated"]), r"^\d{4}-\d{2}-\d{2}$")
+                    if int(identity) >= 50:
+                        self.assertEqual("2026-08-11", str(metadata["updated"]))
 
     def test_subject_links_resolve_without_legacy_role_roots(self):
         link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
@@ -167,11 +199,28 @@ class OperationsTaxonomyTests(unittest.TestCase):
     def test_scoped_active_consumers_do_not_name_deleted_role_roots(self):
         deleted_root = re.compile(
             r"docs/05\.operations/(guides|policies|runbooks)/"
-            r"(04-data|05-messaging|06-observability)(?:/|\b)"
+            r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)"
+            r"(?:/|\b)"
         )
-        active_consumers = (
+        active_roots = (
+            ROOT / "docs/01.requirements",
+            ROOT / "docs/02.architecture",
+            ROOT / "docs/03.specs",
+            ROOT / "infra/07-workflow",
+            ROOT / "infra/08-ai",
+            ROOT / "infra/09-tooling",
+        )
+        active_consumers = [
+            path
+            for active_root in active_roots
+            for path in active_root.rglob("*.md")
+        ] + [
             ROOT / "infra/04-data/lake-and-object/README.md",
-        )
+            ROOT / "docs/05.operations/guides/README.md",
+            ROOT / "docs/05.operations/policies/README.md",
+            ROOT / "docs/05.operations/runbooks/README.md",
+            ROOT / "docs/90.references/llm-wiki/llm-wiki-index.md",
+        ]
         violations: list[str] = []
         for path in active_consumers:
             for line_number, line in enumerate(path.read_text().splitlines(), 1):
@@ -189,12 +238,12 @@ class OperationsTaxonomyTests(unittest.TestCase):
             if row["action"] == "merge"
             and re.fullmatch(
                 r"docs/05\.operations/(guides|policies|runbooks)/"
-                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability)"
+                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)"
                 r"(?:/[^/]+)?/README\.md",
                 str(row["legacy_path"]),
             )
         ]
-        self.assertEqual(40, len(merge_rows))
+        self.assertEqual(46, len(merge_rows))
         stable_paths = {
             str(row["legacy_path"]): str(row["stable_path"])
             for row in ledger_records()
@@ -246,14 +295,14 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 canonical = stable_paths.get(resolved_path, resolved_path)
                 if re.fullmatch(
                     r"docs/05\.operations/"
-                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability)"
+                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)"
                     r"/ops-[^/]+/(guide|policy|runbook)\.md",
                     canonical,
                 ) or (
                     re.match(
                         r"docs/05\.operations/"
                         r"(?:(guides|policies|runbooks)/)?"
-                        r"(04-data|05-messaging|06-observability)/",
+                        r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)/",
                         source,
                     )
                     and canonical in preserved_navigation_indexes
@@ -281,7 +330,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 self.assertTrue(source_paths)
                 self.assertTrue(source_paths.issubset(target_paths))
                 if re.match(
-                    r"docs/05\.operations/(04-data|05-messaging|06-observability)/",
+                    r"docs/05\.operations/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)/",
                     target,
                 ):
                     archive_links = []
@@ -292,6 +341,50 @@ class OperationsTaxonomyTests(unittest.TestCase):
                         ):
                             archive_links.append(destination)
                     self.assertEqual([], archive_links)
+
+    def test_task6c_immutable_target_surface_summary_rows_match_owner(self):
+        source_pattern = re.compile(
+            r"docs/05\.operations/(guides|policies|runbooks)/09-tooling/"
+            r"(k6|locust|performance-testing)\.md"
+        )
+        owner = yaml.safe_load(TARGET_SURFACE_MANIFEST.read_text())
+        owner_entries = [
+            entry
+            for entry in owner["entries"]
+            if source_pattern.fullmatch(str(entry["source_path"]))
+        ]
+        self.assertEqual(9, len(owner_entries))
+
+        owner_sources = {str(entry["source_path"]) for entry in owner_entries}
+        stable_targets = {
+            str(row["stable_path"])
+            for row in ledger_records()
+            if str(row["legacy_path"]) in owner_sources
+        }
+        self.assertEqual(9, len(stable_targets))
+
+        summary_rows = {
+            tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+            for line in TARGET_SURFACE_SUMMARY.read_text().splitlines()
+            if line.startswith("|")
+        }
+        relevant_rows = {
+            row
+            for row in summary_rows
+            if len(row) == 5
+            and (row[0] in owner_sources | stable_targets)
+        }
+        expected_rows = {
+            (
+                str(entry["source_path"]),
+                str(entry["target_path"] or ""),
+                str(entry["disposition"]),
+                str(entry["review_verdict"]["specification"]),
+                str(entry["review_verdict"]["quality"]),
+            )
+            for entry in owner_entries
+        }
+        self.assertEqual(expected_rows, relevant_rows)
 
 
 if __name__ == "__main__":

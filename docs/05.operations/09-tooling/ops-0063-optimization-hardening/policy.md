@@ -1,0 +1,85 @@
+---
+status: active
+artifact_id: policy-0063
+artifact_type: policy
+parent_ids: []
+created: 2026-05-10
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/09-tooling/ops-0063-optimization-hardening/policy.md -->
+
+# 09-Tooling Optimization Hardening Operations Policy
+
+## Overview
+
+이 문서는 `09-tooling` 계층의 최적화/하드닝 운영 정책을 정의한다. 관리 경로 보안, 네트워크 경계, 테스트 도구 안정성, 카탈로그 확장 승인 게이트를 통제한다.
+
+## Policy Scope
+
+- `infra/09-tooling/*/docker-compose.yml`
+- `scripts/hardening/check-all-hardening.sh 09-tooling`
+
+- **Systems**: terraform, terrakube, registry, sonarqube, k6, locust, syncthing
+- **Agents**: Infra/DevOps/Operations agents
+- **Environments**: Local, Dev, Stage, Production-like
+
+## Controls
+
+- **Required**:
+  - SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - tooling compose는 `infra_net` external 경계 선언을 유지한다.
+  - locust-worker healthcheck를 유지한다.
+  - k6 volume 계약(`k6-data:/mnt/locust:rw`)을 유지한다.
+  - tooling 변경은 `check-all-hardening.sh 09-tooling` 및 CI `infrastructure-hardening`을 통과해야 한다.
+  - optimization-hardening 문서(PRD~Procedure) 링크를 유지해야 한다.
+- **Allowed**:
+  - 카탈로그 확장 항목을 단계적으로 도입하는 설계/운영 작업
+  - 성능/품질/보안 기준의 보수적 강화
+- **Disallowed**:
+  - 무승인 SSO/middleware 완화
+  - 검증 게이트 우회 배포
+  - 감사/보존 정책 없이 확장 항목 운영 전환
+
+## Exceptions
+
+- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
+- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
+
+## Verification
+
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
+- Runtime compose rendering for optional tooling services must use root network/secret/dependency context, not service-local compose files alone.
+
+## Review Cadence
+
+- 월 1회 정기 검토
+- tooling 구성/권한/정책 변경 시 수시 검토
+
+## Catalog Expansion Approval Gates
+
+- **terraform 승인 조건**:
+  - plan/apply 승인 게이트 문서화
+  - state 잠금/백업 정책 및 drift 자동 탐지 절차 정의
+- **terrakube 승인 조건**:
+  - workspace 분리 전략 문서화
+  - 실행 권한 모델/RBAC 및 감사로그 연계 정의
+- **registry 승인 조건**:
+  - cosign 서명/검증 정책 정의
+  - 취약점 스캔 실패 차단 정책 및 예외 절차 정의
+- **sonarqube 승인 조건**:
+  - 품질게이트 임계값 재정의
+  - 브랜치 정책과 보안 룰셋 분리 운영
+- **k6/locust 승인 조건**:
+  - 회귀 baseline 저장/비교 및 시나리오 태그 표준화
+  - 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화
+- **syncthing 승인 조건**:
+  - 폴더 ACL/암호화 정책 및 충돌 처리 표준화
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Usage guide](guide.md)
+- [Recovery runbook](runbook.md)

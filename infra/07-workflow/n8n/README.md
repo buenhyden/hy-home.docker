@@ -53,7 +53,7 @@ n8n/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | names: `mng_valkey_password`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/n8n_db_password`, `/run/secrets/n8n_encryption_key`, `/run/secrets/n8n_runner_auth_token`, `/run/secrets/n8n_valkey_password` |
 | Healthcheck | Compose healthcheck declared for `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, and service-local `n8n-valkey`; exporter is dependency-gated |
-| Operations | [Guide](../../../docs/05.operations/guides/07-workflow/n8n.md), [Policy](../../../docs/05.operations/policies/07-workflow/n8n.md), [Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md) |
+| Operations | [Guide](../../../docs/05.operations/07-workflow/ops-0053-n8n/guide.md), [Policy](../../../docs/05.operations/07-workflow/ops-0053-n8n/policy.md), [Runbook](../../../docs/05.operations/07-workflow/ops-0053-n8n/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
 
@@ -108,7 +108,7 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Related Documents
 
-- **Guide**: [n8n usage guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
-- **Policy**: [n8n operations policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
-- **Runbook**: [n8n recovery runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
+- **Guide**: [n8n usage guide](../../../docs/05.operations/07-workflow/ops-0053-n8n/guide.md)
+- **Policy**: [n8n operations policy](../../../docs/05.operations/07-workflow/ops-0053-n8n/policy.md)
+- **Runbook**: [n8n recovery runbook](../../../docs/05.operations/07-workflow/ops-0053-n8n/runbook.md)
 - **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/spec-0008-workflow/spec.md)

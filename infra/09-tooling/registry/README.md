@@ -75,9 +75,9 @@ registry/
 
 ## Related Documents
 
-- **Guide**: [Registry Guide](../../../docs/05.operations/guides/09-tooling/registry.md)
-- **Policy**: [Registry Operations](../../../docs/05.operations/policies/09-tooling/registry.md)
-- **Runbook**: [Registry Runbook](../../../docs/05.operations/runbooks/09-tooling/registry.md)
+- **Guide**: [Registry Guide](../../../docs/05.operations/09-tooling/ops-0065-registry/guide.md)
+- **Policy**: [Registry Operations](../../../docs/05.operations/09-tooling/ops-0065-registry/policy.md)
+- **Runbook**: [Registry Runbook](../../../docs/05.operations/09-tooling/ops-0065-registry/runbook.md)
 
 ---
 
@@ -95,7 +95,7 @@ registry/
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `registry` |
-| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/registry.md), [Policy](../../../docs/05.operations/policies/09-tooling/registry.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/registry.md) |
+| Operations | [Guide](../../../docs/05.operations/09-tooling/ops-0065-registry/guide.md), [Policy](../../../docs/05.operations/09-tooling/ops-0065-registry/policy.md), [Runbook](../../../docs/05.operations/09-tooling/ops-0065-registry/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

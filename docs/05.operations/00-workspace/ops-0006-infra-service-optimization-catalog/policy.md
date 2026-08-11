@@ -228,33 +228,33 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 ### 07-workflow
 
 - [airflow](../../../../infra/07-workflow/airflow/README.md): DAG 품질 게이트(파싱/스케줄/지연) CI 추가, 워커 오토스케일 기준 정의
-  ([OPER](../../guides/07-workflow/airflow.md), [RUN](../../runbooks/07-workflow/airflow.md))
+  ([OPER](../../07-workflow/ops-0050-airflow/guide.md), [RUN](../../07-workflow/ops-0050-airflow/runbook.md))
 - [n8n](../../../../infra/07-workflow/n8n/README.md): 워크플로 버전관리/Git 백업 표준화, 자격증명 스토어 Vault 연계 강화
-  ([OPER](../../guides/07-workflow/n8n.md), [RUN](../../runbooks/07-workflow/n8n.md))
+  ([OPER](../../07-workflow/ops-0053-n8n/guide.md), [RUN](../../07-workflow/ops-0053-n8n/runbook.md))
 
 ### 08-ai
 
 - [ollama](../../../../infra/08-ai/ollama/README.md): 모델 캐시/스토리지 정책, GPU 스케줄링 및 동시성 상한, 모델 승격 절차(실험→운영) 명문화
-  ([OPER](../../guides/08-ai/ollama.md), [RUN](../../runbooks/08-ai/ollama.md))
+  ([OPER](../../08-ai/ops-0056-ollama/guide.md), [RUN](../../08-ai/ops-0056-ollama/runbook.md))
 - [open-webui](../../../../infra/08-ai/open-webui/README.md): SSO 강제, 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책 강화
-  ([OPER](../../guides/08-ai/open-webui.md), [RUN](../../runbooks/08-ai/open-webui.md))
+  ([OPER](../../08-ai/ops-0057-open-webui/guide.md), [RUN](../../08-ai/ops-0057-open-webui/runbook.md))
 
 ### 09-tooling
 
 - [terraform](../../../../infra/09-tooling/terraform/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
-  ([OPER](../../guides/09-tooling/terraform.md), [RUN](../../runbooks/09-tooling/terraform.md))
+  ([OPER](../../09-tooling/ops-0068-terraform/guide.md), [RUN](../../09-tooling/ops-0068-terraform/runbook.md))
 - [terrakube](../../../../infra/09-tooling/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
-  ([OPER](../../guides/09-tooling/terrakube.md), [RUN](../../runbooks/09-tooling/terrakube.md))
+  ([OPER](../../09-tooling/ops-0069-terrakube/guide.md), [RUN](../../09-tooling/ops-0069-terrakube/runbook.md))
 - [registry](../../../../infra/09-tooling/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
-  ([OPER](../../guides/09-tooling/registry.md), [RUN](../../runbooks/09-tooling/registry.md))
+  ([OPER](../../09-tooling/ops-0065-registry/guide.md), [RUN](../../09-tooling/ops-0065-registry/runbook.md))
 - [sonarqube](../../../../infra/09-tooling/sonarqube/README.md): 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 관리
-  ([OPER](../../guides/09-tooling/sonarqube.md), [RUN](../../runbooks/09-tooling/sonarqube.md))
+  ([OPER](../../09-tooling/ops-0066-sonarqube/guide.md), [RUN](../../09-tooling/ops-0066-sonarqube/runbook.md))
 - [k6](../../../../infra/09-tooling/k6/README.md): 성능 회귀 기준선 저장/비교 자동화, 시나리오 태그 표준화
-  ([OPER](../../guides/09-tooling/k6.md), [RUN](../../runbooks/09-tooling/k6.md))
+  ([OPER](../../09-tooling/ops-0061-k6/guide.md), [RUN](../../09-tooling/ops-0061-k6/runbook.md))
 - [locust](../../../../infra/09-tooling/locust/README.md): 분산 실행 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴 추가
-  ([OPER](../../guides/09-tooling/locust.md), [RUN](../../runbooks/09-tooling/locust.md))
+  ([OPER](../../09-tooling/ops-0062-locust/guide.md), [RUN](../../09-tooling/ops-0062-locust/runbook.md))
 - [syncthing](../../../../infra/09-tooling/syncthing/README.md): 동기화 폴더 ACL/암호화 기준 강화, 충돌 파일 처리 정책 명문화
-  ([OPER](../../guides/09-tooling/syncthing.md), [RUN](../../runbooks/09-tooling/syncthing.md))
+  ([OPER](../../09-tooling/ops-0067-syncthing/guide.md), [RUN](../../09-tooling/ops-0067-syncthing/runbook.md))
 
 ### 10-communication
 

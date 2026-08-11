@@ -750,7 +750,7 @@ files:
   mutation: none
   consumers:
   - .github/INDEX.md
-  - docs/05.operations/runbooks/09-tooling/terraform.md
+  - docs/05.operations/09-tooling/ops-0068-terraform/runbook.md
   disposition: retain
   successor: null
   tests:

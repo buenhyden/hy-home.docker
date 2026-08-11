@@ -75,9 +75,9 @@ policies/
 | [04-data/](../04-data/README.md) | 04 Data policy 문서 |
 | [05-messaging/](../05-messaging/README.md) | 05 Messaging policy 문서 |
 | [06-observability/](../06-observability/README.md) | 06 Observability policy 문서 |
-| [07-workflow/](./07-workflow/README.md) | 07 Workflow policy 문서 |
-| [08-ai/](./08-ai/README.md) | 08 Ai policy 문서 |
-| [09-tooling/](./09-tooling/README.md) | 09 Tooling policy 문서 |
+| [07-workflow/](../07-workflow/README.md) | 07 Workflow policy 문서 |
+| [08-ai/](../08-ai/README.md) | 08 Ai policy 문서 |
+| [09-tooling/](../09-tooling/README.md) | 09 Tooling policy 문서 |
 | [10-communication/](./10-communication/README.md) | 10 Communication policy 문서 |
 | [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory policy 문서 |
 | [12-infra-net/](./12-infra-net/README.md) | infra_net IP 관리 policy 문서 |

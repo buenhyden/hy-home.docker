@@ -1767,8 +1767,8 @@ scoped_label_paths = {
         "docs/05.operations/runbooks/04-data/relational.md",
         "docs/05.operations/runbooks/05-messaging/kafka.md",
         "docs/05.operations/runbooks/05-messaging/rabbitmq.md",
-        "docs/05.operations/runbooks/08-ai/ollama.md",
-        "docs/05.operations/runbooks/08-ai/open-webui.md",
+        "docs/05.operations/08-ai/ops-0056-ollama/runbook.md",
+        "docs/05.operations/08-ai/ops-0057-open-webui/runbook.md",
         "docs/05.operations/runbooks/11-laboratory/dashboard.md",
         "docs/05.operations/runbooks/11-laboratory/dozzle.md",
     ]

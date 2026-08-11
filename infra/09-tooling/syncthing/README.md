@@ -85,9 +85,9 @@ syncthing/
 
 ## Related Documents
 
-- **Guide**: [Syncthing Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md)
-- **Policy**: [Syncthing Operations](../../../docs/05.operations/policies/09-tooling/syncthing.md)
-- **Runbook**: [Syncthing Runbook](../../../docs/05.operations/runbooks/09-tooling/syncthing.md)
+- **Guide**: [Syncthing Guide](../../../docs/05.operations/09-tooling/ops-0067-syncthing/guide.md)
+- **Policy**: [Syncthing Operations](../../../docs/05.operations/09-tooling/ops-0067-syncthing/policy.md)
+- **Runbook**: [Syncthing Runbook](../../../docs/05.operations/09-tooling/ops-0067-syncthing/runbook.md)
 
 ---
 
@@ -105,7 +105,7 @@ syncthing/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.syncthing.rule`, `traefik.http.routers.syncthing.entrypoints`, `traefik.http.routers.syncthing.tls`, `traefik.http.routers.syncthing.middlewares`, `traefik.http.services.syncthing.loadbalancer.server.port` |
 | Secret refs | names: `syncthing_password`; mounts: `/run/secrets/syncthing_password` |
 | Healthcheck | Compose healthcheck declared for `syncthing` |
-| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md), [Policy](../../../docs/05.operations/policies/09-tooling/syncthing.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/syncthing.md) |
+| Operations | [Guide](../../../docs/05.operations/09-tooling/ops-0067-syncthing/guide.md), [Policy](../../../docs/05.operations/09-tooling/ops-0067-syncthing/policy.md), [Runbook](../../../docs/05.operations/09-tooling/ops-0067-syncthing/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
