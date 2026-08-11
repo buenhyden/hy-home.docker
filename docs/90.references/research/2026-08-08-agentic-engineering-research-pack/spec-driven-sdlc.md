@@ -96,7 +96,7 @@ own source-refresh Task added one `draft` Stage 04 Task leaf.
 
 The measured status total is deliberately not called an "active document"
 count: `active`, `completed`, and `draft` are different lifecycle states, yet
-all 531 leaves still reside in current Stage 01-05 paths. Likewise, Stage 98
+all 532 leaves still reside in current Stage 01-05 paths. Likewise, Stage 98
 tombstones preserve provenance and are not current guidance.
 
 ### Lifecycle and gates
