@@ -33,7 +33,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `acd46f28cfb0d76bb83cc9cd34dc0874312efa83`
+- Verified commit: `3f433e6808e0f4503fbf6ac0ed34c09baa371492`
 - Verified at: `2026-08-11T10:16:09+09:00`
 - The pack keeps 21 files, 20 leaves, the fourteen-scope axis, and 36
   requirement destinations; only claim text changed.

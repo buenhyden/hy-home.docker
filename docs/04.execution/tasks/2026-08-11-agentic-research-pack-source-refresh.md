@@ -365,29 +365,33 @@ finding, resolved in fix round 1/5. Review of `7a5eb5cd..22b06ba1` returned
 
 ### Commit identity
 
-| Commit      | Logical unit                                                      |
-| ----------- | ----------------------------------------------------------------- |
-| `8976824a`  | Open this Task ledger and its execution index row                 |
-| `7a88efc1`  | Record the out-of-scope ignored-scratch deletion as a memory note |
-| `55809319`  | Tier A refresh; only `memory-hierarchy.md` required correction    |
-| `bc16b198`  | Infrastructure and foundation leaves                              |
-| `7a5eb5cd`  | SDLC and documentation leaves                                     |
-| `22b06ba1`  | Delivery and quality leaves                                       |
-| `acd46f28`  | Fix round 1/5 for the reviewed prose-count finding                |
-| integration | Pack index reconciliation, ledger closure, memory handoff         |
+| Commit     | Logical unit                                                       |
+| ---------- | ------------------------------------------------------------------ |
+| `8976824a` | Open this Task ledger and its execution index row                  |
+| `7a88efc1` | Record the out-of-scope ignored-scratch deletion as a memory note  |
+| `55809319` | Tier A refresh; only `memory-hierarchy.md` required correction     |
+| `bc16b198` | Infrastructure and foundation leaves                               |
+| `7a5eb5cd` | SDLC and documentation leaves                                      |
+| `22b06ba1` | Delivery and quality leaves                                        |
+| `acd46f28` | Fix round 1/5 for the reviewed prose-count finding                 |
+| `7d304cd7` | Pack index reconciliation, ledger closure, memory handoff          |
+| `3f433e68` | Final-review fix wave: outcome summary and Task status coupling    |
+| closing    | This inventory's own completion; a commit cannot name its own hash |
 
 ### Commit logical unit
 
-Realized logical units are six content commits plus a ledger-open commit, a
-memory-note commit, a review fix commit, and one integration commit. Clusters
-A1 and A2 produced no commit because all six of their leaves survived
-re-verification unchanged, which the authoring contract treats as a valid
-outcome rather than a reason to manufacture edits.
+Realized logical units are four leaf-content commits, a ledger-open commit, a
+memory-note commit, two review-fix commits, an integration commit, and this
+closing commit. Clusters A1 and A2 produced no commit because all six of their
+leaves survived re-verification unchanged, which the authoring contract treats
+as a valid outcome rather than a reason to manufacture edits.
 
 ### Commit validation
 
 Each cluster commit is validated by changed-path metadata validation. The
-integration commit is validated by the full repository contract check.
+integration, fix-wave, and closing commits are validated by the full repository
+contract check, which returns zero failures in an interpreter that supplies
+`html5lib`.
 
 ## Deferred and Blocked Items
 
