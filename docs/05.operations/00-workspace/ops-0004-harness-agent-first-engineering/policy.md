@@ -28,9 +28,9 @@ updated: 2026-08-11
 - `docs/03.specs/**`
 - `docs/04.execution/plans/**`
 - `docs/04.execution/tasks/**`
-- `docs/05.operations/guides/**`
-- `docs/05.operations/policies/**`
-- `docs/05.operations/runbooks/**`
+- `docs/05.operations/*/ops-*/guide.md`
+- `docs/05.operations/*/ops-*/policy.md`
+- `docs/05.operations/*/ops-*/runbook.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
 ## Controls

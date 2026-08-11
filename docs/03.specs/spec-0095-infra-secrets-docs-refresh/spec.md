@@ -160,7 +160,7 @@ git diff --check
 
 - **Plan**: ../../04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md
 - **Tasks**: ../../04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md
-- **Guide**: [../../05.operations/guides/README.md](../../05.operations/guides/README.md)
-- **Policy**: [../../05.operations/policies/README.md](../../05.operations/policies/README.md)
-- **Runbook**: [../../05.operations/runbooks/README.md](../../05.operations/runbooks/README.md)
+- **Guide**: [../../05.operations/README.md](../../05.operations/README.md)
+- **Policy**: [../../05.operations/README.md](../../05.operations/README.md)
+- **Runbook**: [../../05.operations/README.md](../../05.operations/README.md)
 - **References**: [../../90.references/README.md](../../90.references/README.md)

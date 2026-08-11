@@ -10,7 +10,7 @@ updated: 2026-08-11
 
 # Harness Agent First Engineering Validation Operations
 
-> Normalized under `docs/05.operations/runbooks/` during the 2026-05-10 operations taxonomy consolidation.
+> Normalized as `docs/05.operations/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Overview
 

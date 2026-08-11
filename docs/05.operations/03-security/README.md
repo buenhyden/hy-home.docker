@@ -32,6 +32,6 @@ rollback or recovery, and escalation conditions.
 
 - [Operations index](../README.md)
 - [Security infrastructure](../../../infra/03-security/README.md)
-- [Guides index](../guides/README.md)
-- [Policies index](../policies/README.md)
-- [Runbooks index](../runbooks/README.md)
+- [Guides index](../README.md)
+- [Policies index](../README.md)
+- [Runbooks index](../README.md)

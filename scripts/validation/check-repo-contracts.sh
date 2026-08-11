@@ -1758,7 +1758,7 @@ scoped_label_paths = {
         "docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md",
         "docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md",
         "docs/04.execution/tasks/2026-04-01-standardize-infra-net.md",
-        "docs/05.operations/runbooks/12-infra-net/standardize-infra-net.md",
+        "docs/05.operations/12-infra-net/ops-0077-standardize-infra-net/runbook.md",
         "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
         "docs/05.operations/runbooks/04-data/analytics/ksqldb.md",
         "docs/05.operations/runbooks/04-data/analytics/opensearch.md",
@@ -1769,8 +1769,8 @@ scoped_label_paths = {
         "docs/05.operations/runbooks/05-messaging/rabbitmq.md",
         "docs/05.operations/08-ai/ops-0056-ollama/runbook.md",
         "docs/05.operations/08-ai/ops-0057-open-webui/runbook.md",
-        "docs/05.operations/runbooks/11-laboratory/dashboard.md",
-        "docs/05.operations/runbooks/11-laboratory/dozzle.md",
+        "docs/05.operations/11-laboratory/ops-0071-dashboard/runbook.md",
+        "docs/05.operations/11-laboratory/ops-0072-dozzle/runbook.md",
     ]
 }
 

@@ -33,6 +33,6 @@ document and are not expanded by this index.
 
 - [Operations index](../README.md)
 - [Auth infrastructure](../../../infra/02-auth/README.md)
-- [Guides index](../guides/README.md)
-- [Policies index](../policies/README.md)
-- [Runbooks index](../runbooks/README.md)
+- [Guides index](../README.md)
+- [Policies index](../README.md)
+- [Runbooks index](../README.md)

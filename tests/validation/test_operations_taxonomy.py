@@ -16,6 +16,10 @@ TARGET_SURFACE_MANIFEST = (
 TARGET_SURFACE_SUMMARY = TARGET_SURFACE_MANIFEST.with_name(
     "target-surface-convergence-summary.md"
 )
+FRONTMATTER_SEMANTIC_INVENTORY = (
+    ROOT
+    / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md"
+)
 MIGRATED_DOMAINS = (
     "00-workspace",
     "01-gateway",
@@ -27,9 +31,12 @@ MIGRATED_DOMAINS = (
     "07-workflow",
     "08-ai",
     "09-tooling",
+    "10-communication",
+    "11-laboratory",
+    "12-infra-net",
 )
 
-# Frozen Task 6A/6B/6C boundary: each tuple is (domain, exact ledger subject path,
+# Frozen Task 6A/6B/6C/6D boundary: each tuple is (domain, exact ledger subject path,
 # shared ops identity, existing role set).  A subject is intentionally absent
 # from a role when mig-0001 has no row for that role.
 EXPECTED_SUBJECTS = (
@@ -107,6 +114,24 @@ EXPECTED_SUBJECTS = (
     ("09-tooling", "syncthing", "0067", {"guide", "policy", "runbook"}),
     ("09-tooling", "terraform", "0068", {"guide", "policy", "runbook"}),
     ("09-tooling", "terrakube", "0069", {"guide", "policy", "runbook"}),
+    ("10-communication", "mail", "0070", {"guide", "policy", "runbook"}),
+    ("11-laboratory", "dashboard", "0071", {"guide", "policy", "runbook"}),
+    ("11-laboratory", "dozzle", "0072", {"guide", "policy", "runbook"}),
+    ("11-laboratory", "open-notebook", "0073", {"guide", "policy", "runbook"}),
+    (
+        "11-laboratory",
+        "optimization-hardening",
+        "0074",
+        {"guide", "policy", "runbook"},
+    ),
+    ("11-laboratory", "portainer", "0075", {"guide", "policy", "runbook"}),
+    ("11-laboratory", "redisinsight", "0076", {"guide", "policy", "runbook"}),
+    (
+        "12-infra-net",
+        "standardize-infra-net",
+        "0077",
+        {"guide", "policy", "runbook"},
+    ),
 )
 
 
@@ -196,19 +221,46 @@ class OperationsTaxonomyTests(unittest.TestCase):
                         violations.append(f"{path.relative_to(ROOT)}: {destination}")
         self.assertEqual([], violations)
 
+    def test_current_stage05_rejects_parallel_role_root_publications(self):
+        parallel_root = re.compile(
+            r"docs/05\.operations/(guides|policies|runbooks)(?:/|\b)"
+        )
+        for role in ("guides", "policies", "runbooks"):
+            with self.subTest(mutation=role):
+                self.assertRegex(f"docs/05.operations/{role}/**", parallel_root)
+        for stable in (
+            "docs/05.operations/10-communication/ops-0070-mail/guide.md",
+            "docs/05.operations/10-communication/ops-0070-mail/policy.md",
+            "docs/05.operations/10-communication/ops-0070-mail/runbook.md",
+        ):
+            with self.subTest(stable=stable):
+                self.assertNotRegex(stable, parallel_root)
+
+        violations = [
+            f"{path.relative_to(ROOT)}:{line_number}: {line.strip()}"
+            for path in (ROOT / "docs/05.operations").rglob("*.md")
+            for line_number, line in enumerate(path.read_text().splitlines(), 1)
+            if parallel_root.search(line)
+        ]
+        self.assertEqual([], violations)
+
     def test_scoped_active_consumers_do_not_name_deleted_role_roots(self):
         deleted_root = re.compile(
             r"docs/05\.operations/(guides|policies|runbooks)/"
-            r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)"
+            r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|"
+            r"10-communication|11-laboratory|12-infra-net)"
             r"(?:/|\b)"
         )
         active_roots = (
             ROOT / "docs/01.requirements",
             ROOT / "docs/02.architecture",
             ROOT / "docs/03.specs",
+            ROOT / "docs/05.operations",
             ROOT / "infra/07-workflow",
             ROOT / "infra/08-ai",
             ROOT / "infra/09-tooling",
+            ROOT / "infra/10-communication",
+            ROOT / "infra/11-laboratory",
         )
         active_consumers = [
             path
@@ -216,9 +268,6 @@ class OperationsTaxonomyTests(unittest.TestCase):
             for path in active_root.rglob("*.md")
         ] + [
             ROOT / "infra/04-data/lake-and-object/README.md",
-            ROOT / "docs/05.operations/guides/README.md",
-            ROOT / "docs/05.operations/policies/README.md",
-            ROOT / "docs/05.operations/runbooks/README.md",
             ROOT / "docs/90.references/llm-wiki/llm-wiki-index.md",
         ]
         violations: list[str] = []
@@ -238,12 +287,12 @@ class OperationsTaxonomyTests(unittest.TestCase):
             if row["action"] == "merge"
             and re.fullmatch(
                 r"docs/05\.operations/(guides|policies|runbooks)/"
-                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)"
+                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
                 r"(?:/[^/]+)?/README\.md",
                 str(row["legacy_path"]),
             )
         ]
-        self.assertEqual(46, len(merge_rows))
+        self.assertEqual(52, len(merge_rows))
         stable_paths = {
             str(row["legacy_path"]): str(row["stable_path"])
             for row in ledger_records()
@@ -256,10 +305,8 @@ class OperationsTaxonomyTests(unittest.TestCase):
 
         preserved_navigation_indexes = {
             "docs/05.operations/README.md",
-            "docs/05.operations/guides/README.md",
-            "docs/05.operations/policies/README.md",
-            "docs/05.operations/runbooks/README.md",
             "docs/05.operations/incidents/README.md",
+            "docs/05.operations/releases/README.md",
         }
 
         def linked_current_navigation_paths(
@@ -295,14 +342,19 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 canonical = stable_paths.get(resolved_path, resolved_path)
                 if re.fullmatch(
                     r"docs/05\.operations/"
-                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)"
+                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
                     r"/ops-[^/]+/(guide|policy|runbook)\.md",
+                    canonical,
+                ) or re.fullmatch(
+                    r"docs/05\.operations/"
+                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
+                    r"/README\.md",
                     canonical,
                 ) or (
                     re.match(
                         r"docs/05\.operations/"
                         r"(?:(guides|policies|runbooks)/)?"
-                        r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)/",
+                        r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
                         source,
                     )
                     and canonical in preserved_navigation_indexes
@@ -330,7 +382,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 self.assertTrue(source_paths)
                 self.assertTrue(source_paths.issubset(target_paths))
                 if re.match(
-                    r"docs/05\.operations/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling)/",
+                    r"docs/05\.operations/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
                     target,
                 ):
                     archive_links = []
@@ -341,6 +393,128 @@ class OperationsTaxonomyTests(unittest.TestCase):
                         ):
                             archive_links.append(destination)
                     self.assertEqual([], archive_links)
+
+    def test_root_readme_merge_preserves_immutable_role_index_navigation(self):
+        root_sources = {
+            "docs/05.operations/guides/README.md",
+            "docs/05.operations/policies/README.md",
+            "docs/05.operations/runbooks/README.md",
+        }
+        records = ledger_records()
+        rows = [row for row in records if str(row["legacy_path"]) in root_sources]
+        self.assertEqual(3, len(rows))
+        stable_paths = {
+            str(row["legacy_path"]): str(row["stable_path"])
+            for row in records
+            if str(row["legacy_path"]).startswith("docs/05.operations/")
+        }
+        link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
+
+        def current_navigation(source: str, body: str) -> set[str]:
+            navigation: set[str] = set()
+            for destination in link_pattern.findall(body):
+                resolved = resolve_repo_path(ROOT / source, destination)
+                if resolved is None or resolved.is_relative_to(ROOT / "docs/98.archive"):
+                    continue
+                resolved_path = str(resolved.relative_to(ROOT))
+                canonical = stable_paths.get(resolved_path, resolved_path)
+                if canonical in {
+                    "docs/05.operations/README.md",
+                    "docs/05.operations/incidents/README.md",
+                    "docs/05.operations/releases/README.md",
+                } or re.fullmatch(
+                    r"docs/05\.operations/"
+                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
+                    r"/README\.md",
+                    canonical,
+                ):
+                    navigation.add(canonical)
+            return navigation
+
+        target = "docs/05.operations/README.md"
+        target_navigation = current_navigation(target, (ROOT / target).read_text())
+        for row in rows:
+            source = str(row["legacy_path"])
+            result = subprocess.run(
+                ["git", "show", f"{row['source_commit']}:{source}"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            source_navigation = current_navigation(source, result.stdout)
+            source_navigation.discard(target)
+            with self.subTest(source=source):
+                self.assertTrue(source_navigation)
+                self.assertTrue(source_navigation.issubset(target_navigation))
+
+    def test_final_operations_root_has_only_root_and_domain_role_indexes(self):
+        operations_root = ROOT / "docs/05.operations"
+        for name in ("guides", "policies", "runbooks"):
+            self.assertFalse((operations_root / name).exists())
+
+        expected_indexes = {
+            operations_root / "README.md",
+            operations_root / "incidents/README.md",
+            operations_root / "releases/README.md",
+            *(operations_root / domain / "README.md" for domain in MIGRATED_DOMAINS),
+        }
+        self.assertEqual(expected_indexes, set(operations_root.rglob("README.md")))
+
+        root_body = (operations_root / "README.md").read_text()
+        self.assertNotRegex(
+            root_body,
+            r"(?:\./|docs/05\.operations/)(guides|policies|runbooks)(?:/|\b)",
+        )
+        for index in expected_indexes - {operations_root / "README.md"}:
+            with self.subTest(index=index):
+                relative = index.relative_to(operations_root).as_posix()
+                self.assertIn(f"./{relative}", root_body)
+
+    def test_operations_handoff_sections_remain_conditional(self):
+        profiles = yaml.safe_load(
+            (ROOT / "docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+        )
+        guide_role = profiles["template_roles"]["guide"]
+        runbook_role = profiles["template_roles"]["runbook"]
+        self.assertIn("## Runbook Handoff", guide_role["conditional_headings"])
+        self.assertNotIn("## Runbook Handoff", guide_role["required_headings"])
+        self.assertIn("## Automation Handoff", runbook_role["conditional_headings"])
+        self.assertNotIn("## Automation Handoff", runbook_role["required_headings"])
+        self.assertNotIn(
+            "## Runbook Handoff", (ROOT / guide_role["source"]).read_text()
+        )
+        self.assertNotIn(
+            "## Automation Handoff", (ROOT / runbook_role["source"]).read_text()
+        )
+
+        link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
+        for domain, subject, identity, roles in EXPECTED_SUBJECTS:
+            if int(identity) < 70 or "guide" not in roles:
+                continue
+            subject_root = ROOT / "docs/05.operations" / domain / f"ops-{identity}-{subject}"
+            guide_path = subject_root / "guide.md"
+            if not guide_path.is_file():
+                continue
+            guide_body = guide_path.read_text()
+            with self.subTest(guide=guide_path):
+                self.assertIn("## Runbook Handoff", guide_body)
+                handoff_targets = {
+                    resolve_repo_path(guide_path, destination)
+                    for destination in link_pattern.findall(guide_body)
+                }
+                self.assertIn(subject_root / "runbook.md", handoff_targets)
+
+            runbook_path = subject_root / "runbook.md"
+            runbook_body = runbook_path.read_text()
+            if "## Automation Handoff" in runbook_body:
+                automation_targets = [
+                    resolve_repo_path(runbook_path, destination)
+                    for destination in link_pattern.findall(runbook_body)
+                    if destination.startswith(("scripts/", "../../../../scripts/"))
+                ]
+                self.assertTrue(automation_targets)
+                self.assertTrue(all(path and path.is_file() for path in automation_targets))
 
     def test_task6c_immutable_target_surface_summary_rows_match_owner(self):
         source_pattern = re.compile(
@@ -385,6 +559,26 @@ class OperationsTaxonomyTests(unittest.TestCase):
             for entry in owner_entries
         }
         self.assertEqual(expected_rows, relevant_rows)
+
+    def test_task6d_current_path_rewrite_preserves_immutable_audit_provenance(self):
+        task6d_legacy = re.compile(
+            r"docs/05\.operations/(guides|policies|runbooks)/"
+            r"(10-communication|11-laboratory|12-infra-net)(?:/|$)"
+        )
+        records = [
+            row
+            for row in ledger_records()
+            if task6d_legacy.match(str(row["legacy_path"]))
+        ]
+        self.assertEqual(33, len(records))
+
+        immutable_body = FRONTMATTER_SEMANTIC_INVENTORY.read_text()
+        for row in records:
+            legacy_path = str(row["legacy_path"])
+            stable_path = str(row["stable_path"])
+            with self.subTest(legacy_path=legacy_path):
+                self.assertIn(f"`{legacy_path}`", immutable_body)
+                self.assertNotIn(f"`{stable_path}`", immutable_body)
 
 
 if __name__ == "__main__":

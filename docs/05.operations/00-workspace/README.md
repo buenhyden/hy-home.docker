@@ -42,6 +42,6 @@ runbook for executable recovery or validation. Do not infer a missing role.
 ## Related Documents
 
 - [Operations index](../README.md)
-- [Guides index](../guides/README.md)
-- [Policies index](../policies/README.md)
-- [Runbooks index](../runbooks/README.md)
+- [Guides index](../README.md)
+- [Policies index](../README.md)
+- [Runbooks index](../README.md)

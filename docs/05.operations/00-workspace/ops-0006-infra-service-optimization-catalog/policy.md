@@ -259,18 +259,18 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 ### 10-communication
 
 - [mail](../../../../infra/10-communication/mail/README.md): SPF/DKIM/DMARC 운영 기준 강화, 큐 적체 경보 및 재전송 정책 표준화
-  ([OPER](../../guides/10-communication/mail.md), [RUN](../../runbooks/10-communication/mail.md))
+  ([OPER](../../10-communication/ops-0070-mail/guide.md), [RUN](../../10-communication/ops-0070-mail/runbook.md))
 
 ### 11-laboratory
 
 - [dashboard](../../../../infra/11-laboratory/dashboard/README.md): 실험성 대시보드 접근정책(SSO/IP allowlist) 적용, 만료 정책(자동 종료) 추가
-  ([OPER](../../guides/11-laboratory/dashboard.md), [RUN](../../runbooks/11-laboratory/dashboard.md))
+  ([OPER](../../11-laboratory/ops-0071-dashboard/guide.md), [RUN](../../11-laboratory/ops-0071-dashboard/runbook.md))
 - [dozzle](../../../../infra/11-laboratory/dozzle/README.md): 로그 열람 권한 제한, 프로덕션 로그 접근 차단 규칙 강화
-  ([OPER](../../guides/11-laboratory/dozzle.md), [RUN](../../runbooks/11-laboratory/dozzle.md))
+  ([OPER](../../11-laboratory/ops-0072-dozzle/guide.md), [RUN](../../11-laboratory/ops-0072-dozzle/runbook.md))
 - [portainer](../../../../infra/11-laboratory/portainer/README.md): 관리자 계정/세션 정책 강화, 엔드포인트 등록 승인 절차 명문화
-  ([OPER](../../guides/11-laboratory/portainer.md), [RUN](../../runbooks/11-laboratory/portainer.md))
+  ([OPER](../../11-laboratory/ops-0075-portainer/guide.md), [RUN](../../11-laboratory/ops-0075-portainer/runbook.md))
 - [redisinsight](../../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
-  ([OPER](../../guides/11-laboratory/redisinsight.md), [RUN](../../runbooks/11-laboratory/redisinsight.md))
+  ([OPER](../../11-laboratory/ops-0076-redisinsight/guide.md), [RUN](../../11-laboratory/ops-0076-redisinsight/runbook.md))
 
 ## Related Documents
 

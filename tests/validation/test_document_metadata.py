@@ -7171,6 +7171,49 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         self.assertEqual("inherited", runbook["path_identity"])
         self.assertNotIn("ard", stable_profiles)
 
+    def test_operations_readme_profile_publishes_only_final_domain_indexes(self) -> None:
+        expected = {
+            "docs/05.operations/README.md",
+            "docs/05.operations/incidents/README.md",
+            "docs/05.operations/releases/README.md",
+            *{
+                f"docs/05.operations/{domain}/README.md"
+                for domain in (
+                    "00-workspace", "01-gateway", "02-auth", "03-security",
+                    "04-data", "05-messaging", "06-observability", "07-workflow",
+                    "08-ai", "09-tooling", "10-communication", "11-laboratory",
+                    "12-infra-net",
+                )
+            },
+        }
+        configured = {
+            path
+            for path in self.profiles["readme_profiles"]["stage-index"]["path_globs"]
+            if path.startswith("docs/05.operations/")
+        }
+        self.assertEqual(expected, configured)
+        for path in expected:
+            with self.subTest(path=path):
+                self.assertEqual(
+                    ["stage-index"],
+                    metadata.matching_readme_profiles(
+                        pathlib.PurePosixPath(path), self.profiles
+                    ),
+                )
+        for retired in (
+            "docs/05.operations/guides/README.md",
+            "docs/05.operations/policies/README.md",
+            "docs/05.operations/runbooks/README.md",
+            "docs/05.operations/10-communication/ops-0070-mail/README.md",
+        ):
+            with self.subTest(retired=retired):
+                self.assertEqual(
+                    [],
+                    metadata.matching_readme_profiles(
+                        pathlib.PurePosixPath(retired), self.profiles
+                    ),
+                )
+
     def test_promoted_sdlc_profiles_require_created_and_updated(self) -> None:
         for role in (
             "prd", "srs", "interface-requirement", "architecture-description",

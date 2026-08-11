@@ -90,6 +90,6 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: ../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
-- **Guide**: [../05.operations/guides/11-laboratory/optimization-hardening.md](../05.operations/guides/11-laboratory/optimization-hardening.md)
-- **Policy**: [../05.operations/policies/11-laboratory/optimization-hardening.md](../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Runbook**: [../05.operations/runbooks/11-laboratory/optimization-hardening.md](../05.operations/runbooks/11-laboratory/optimization-hardening.md)
+- **Guide**: [../05.operations/11-laboratory/ops-0074-optimization-hardening/guide.md](../05.operations/11-laboratory/ops-0074-optimization-hardening/guide.md)
+- **Policy**: [../05.operations/11-laboratory/ops-0074-optimization-hardening/policy.md](../05.operations/11-laboratory/ops-0074-optimization-hardening/policy.md)
+- **Runbook**: [../05.operations/11-laboratory/ops-0074-optimization-hardening/runbook.md](../05.operations/11-laboratory/ops-0074-optimization-hardening/runbook.md)

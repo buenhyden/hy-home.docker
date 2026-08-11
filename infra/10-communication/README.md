@@ -79,9 +79,9 @@ runtime 시작/중지는 root include 활성화와 운영 승격 evidence가 준
 - [Architecture Description](../../docs/02.architecture/descriptions/ad-0010-communication-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/adr-0010-communication-services.md)
 - [Technical Spec](../../docs/03.specs/spec-0011-communication/spec.md)
-- [Guide](../../docs/05.operations/guides/10-communication/mail.md)
-- [Policy](../../docs/05.operations/policies/10-communication/mail.md)
-- [Runbook](../../docs/05.operations/runbooks/10-communication/mail.md)
+- [Guide](../../docs/05.operations/10-communication/ops-0070-mail/guide.md)
+- [Policy](../../docs/05.operations/10-communication/ops-0070-mail/policy.md)
+- [Runbook](../../docs/05.operations/10-communication/ops-0070-mail/runbook.md)
 
 ---
 
@@ -127,6 +127,6 @@ infra/10-communication/
 
 - [infra/README.md](../README.md)
 - [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [Mail operations guide](../../docs/05.operations/guides/10-communication/mail.md)
-- [Mail operations policy](../../docs/05.operations/policies/10-communication/mail.md)
-- [Mail recovery runbook](../../docs/05.operations/runbooks/10-communication/mail.md)
+- [Mail operations guide](../../docs/05.operations/10-communication/ops-0070-mail/guide.md)
+- [Mail operations policy](../../docs/05.operations/10-communication/ops-0070-mail/policy.md)
+- [Mail recovery runbook](../../docs/05.operations/10-communication/ops-0070-mail/runbook.md)

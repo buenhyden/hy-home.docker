@@ -75,6 +75,6 @@ service names, environment variables는 원형을 유지합니다.
 ## Related Documents
 
 - [Operations index](../README.md)
-- [Runbooks](../runbooks/README.md)
+- [Runbooks](../README.md)
 - [Incident template](../../99.templates/templates/operations/incident.template.md)
 - [Postmortem template](../../99.templates/templates/operations/postmortem.template.md)

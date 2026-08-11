@@ -416,7 +416,8 @@ stable domain/subject purpose-profile contract. Profile compliance is machine-ve
   `## Review Cadence`. Forbidden in policies: `## Usage`, `## Runbook Handoff`,
   `### When to Use`, `#### Procedure`.
 - `<domain>/ops-<id>-<slug>/runbook.md` requires `## When to Use`, `## Procedure`, `## Evidence`,
-  `## Escalation`. Forbidden in runbooks: `## Usage`,
+  `## Escalation`. `## Automation Handoff` is conditional on a real automation
+  artifact and a verifiable link to it. Forbidden in runbooks: `## Usage`,
   `## Policy Scope`, `## Controls`, `## Exceptions`, `## Review Cadence`.
 - `incidents/inc-<id>-<slug>/incident.md` documents use
   `incident.template.md` (active incident record).

@@ -33,6 +33,6 @@ runbook only for its existing ordered procedure and recovery boundary.
 
 - [Operations index](../README.md)
 - [Gateway infrastructure](../../../infra/01-gateway/README.md)
-- [Guides index](../guides/README.md)
-- [Policies index](../policies/README.md)
-- [Runbooks index](../runbooks/README.md)
+- [Guides index](../README.md)
+- [Policies index](../README.md)
+- [Runbooks index](../README.md)

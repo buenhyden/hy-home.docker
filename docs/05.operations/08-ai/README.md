@@ -37,7 +37,7 @@ evidence, rollback or recovery, and escalation boundaries.
 
 - [Operations index](../README.md)
 - [AI infrastructure](../../../infra/08-ai/README.md)
-- [Guides index](../guides/README.md)
-- [Policies index](../policies/README.md)
-- [Runbooks index](../runbooks/README.md)
+- [Guides index](../README.md)
+- [Policies index](../README.md)
+- [Runbooks index](../README.md)
 - [Incident records](../incidents/README.md)
