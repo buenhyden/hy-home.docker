@@ -102,7 +102,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | Task 2 independent review | APPROVED | Scratch ledger records approval of the Stage 00/99 contracts, typed role dates, conditional Operations headings, bounded migration phase, stable-ID CLI enforcement, Stage 98 archive authority, active routes, and negative scans. Reviewer identity is unavailable in the examined durable evidence. |
 | Task 3 independent review | APPROVED | Scratch ledger records approval that all `66` script rows and all `796` ledger rows have the required evidence and preservation properties. Reviewer identity is unavailable in the examined durable evidence. |
 | Task 4 initial review | CHANGES_REQUIRED (`C0/I1/M0`) | One Important finding: the canonical Task had blank work, verification, review, and commit evidence even though Task 4 was committed. This evidence remediation records the factual ledger and `4122cecf`; no production behavior changed. |
-| Task 4 re-review | PENDING | Not invented: this remediation has not yet received a recorded re-review verdict. |
+| Task 4 scoped re-review | APPROVED | The original Important finding is ADDRESSED; no new Critical or Important finding. Reviewed fix range: `b827289f..8513d0d1`. The changed-metadata `path-id-mismatch` is explicitly non-blocking because Plan Task 5 owns the atomic capability-directory move. Reviewer identity is not recorded in the supplied evidence. |
 
 ## Commit Ledger
 
@@ -112,6 +112,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | `a69e8681`, `6aca9919`, `10dc809b`, `232effd9` | Task 2 canonical document contracts and typed archive routes | Metadata `237/237`; governance `158/158`; taxonomy `5/5`; zero CLI findings and provider drift. |
 | `0dd2579f`, `a6f602f5`, `068d6645`, `ce52501e` | Task 3 migration ledger and script manifest | Manifest/ledger `23/23`; taxonomy `5/5`; Task 2 fixtures `14/14`; metadata `237/237`; compilation and diff hygiene. |
 | `4122cecf` | Task 4 requirements and architecture identity migration | Task 4 RED/GREEN evidence, metadata `237/237`, ledger/manifest `23/23`, governance contracts and provider projections recorded in the Task 4 report; alignment non-increase gate satisfied. |
+| `8513d0d1` | Task 4 execution-evidence remediation | Scoped re-review APPROVED for `b827289f..8513d0d1`; original Important finding ADDRESSED, with no new Critical or Important finding. |
 
 ## Deferred and Blocked Items
 
