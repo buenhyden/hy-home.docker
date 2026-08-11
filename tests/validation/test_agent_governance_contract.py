@@ -5105,5 +5105,58 @@ class Task5HarnessLoopContractTests(unittest.TestCase):
         self.assertEqual(((), ()), (observed_unsafe, observed_safe))
 
 
+class GateRootHandoffTests(unittest.TestCase):
+    """The hardened runner hands the root in as a /proc/self/fd descriptor."""
+
+    def _run(
+        self, override: str | None, fds: tuple[int, ...]
+    ) -> subprocess.CompletedProcess[str]:
+        environment = {"PATH": "/usr/bin:/bin"}
+        if override is not None:
+            environment["HYHOME_CI_GATE_ROOT"] = override
+        return subprocess.run(
+            [
+                sys.executable,
+                str(CHECKER),
+                "--mode",
+                "repository",
+                "--section",
+                "all",
+            ],
+            cwd=ROOT,
+            env=environment,
+            capture_output=True,
+            text=True,
+            pass_fds=fds,
+        )
+
+    @unittest.skipUnless(
+        pathlib.Path("/proc/self/fd").is_dir(),
+        "requires /proc/self/fd",
+    )
+    def test_proc_fd_root_override_is_accepted(self) -> None:
+        descriptor = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.set_inheritable(descriptor, True)
+            result = self._run(f"/proc/self/fd/{descriptor}", (descriptor,))
+        finally:
+            os.close(descriptor)
+        self.assertEqual(
+            0,
+            result.returncode,
+            f"stdout={result.stdout}\nstderr={result.stderr}",
+        )
+        self.assertNotIn("AGC-CONTRACT-UNSAFE-FILE", result.stdout + result.stderr)
+
+    @unittest.skipUnless(
+        pathlib.Path("/proc/self/fd").is_dir(),
+        "requires /proc/self/fd",
+    )
+    def test_non_proc_fd_root_override_is_still_rejected(self) -> None:
+        result = self._run(str(ROOT), ())
+        self.assertEqual(1, result.returncode)
+        self.assertIn("invalid HYHOME_CI_GATE_ROOT", result.stdout + result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

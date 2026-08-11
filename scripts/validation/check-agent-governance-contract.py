@@ -27,13 +27,19 @@ def _repository_root() -> pathlib.Path:
         direct = fallback.stat()
     except (OSError, ValueError, OverflowError):
         raise SystemExit(_ROOT_ERROR) from None
-    if (
-        not stat.S_ISDIR(descriptor.st_mode)
-        or (descriptor.st_dev, descriptor.st_ino)
-        != (direct.st_dev, direct.st_ino)
-    ):
+    if not stat.S_ISDIR(descriptor.st_mode) or (
+        descriptor.st_dev,
+        descriptor.st_ino,
+    ) != (direct.st_dev, direct.st_ino):
         raise SystemExit(_ROOT_ERROR)
-    return pathlib.Path(override)
+    # The descriptor is now proven to name the same directory inode as the
+    # script-relative root, which is the whole point of the handoff check.
+    # Return that real path rather than the /proc/self/fd magic symlink:
+    # agent_governance_contract opens every root-confined component with
+    # O_NOFOLLOW, so handing it a symlink root fails with ELOOP and surfaces
+    # as AGC-CONTRACT-UNSAFE-FILE. Resolving here keeps both the runner's
+    # pin-by-descriptor verification and the reader's no-symlink guarantee.
+    return fallback
 
 
 ROOT = _repository_root()
