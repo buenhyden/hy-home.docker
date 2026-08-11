@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 # Agentic Engineering Research Pack
 
 > 2026-08-08 기준의 외부 source와 repo-local evidence를 연결하는 비규범적 Stage 90 research map
@@ -39,13 +40,13 @@ generated output 수동 편집은 포함하지 않습니다.
 
 ## Evidence Classes
 
-| Evidence class | 이 pack에서의 의미 | 한계 |
-| --- | --- | --- |
-| External fixed | immutable commit, versioned standard, dated release처럼 다시 식별할 수 있는 자료 | workspace adoption이나 runtime 실행을 증명하지 않음 |
-| External mutable | 공식 vendor/product 문서를 retrieval 시점에 확인한 관찰 | 날짜 이후 변경될 수 있으므로 재검증 필요 |
-| Workspace tracked | pinned commit에서 읽은 tracked source, contract, workflow, test, generated snapshot | configured 또는 declared 상태이며 실제 실행과 remote enforcement를 자동 증명하지 않음 |
-| Runtime or remote | 실제 provider acceptance, entitlement, deployment, branch protection, live Compose 상태 | 별도 관찰이 없는 항목은 명시적으로 `UNVERIFIED` |
-| Historical retained | 이전 pack과 실행 ledger에서 보존한 비교 또는 migration evidence | 현재 canonical fact로 승격하지 않음 |
+| Evidence class      | 이 pack에서의 의미                                                                      | 한계                                                                                  |
+| ------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| External fixed      | immutable commit, versioned standard, dated release처럼 다시 식별할 수 있는 자료        | workspace adoption이나 runtime 실행을 증명하지 않음                                   |
+| External mutable    | 공식 vendor/product 문서를 retrieval 시점에 확인한 관찰                                 | 날짜 이후 변경될 수 있으므로 재검증 필요                                              |
+| Workspace tracked   | pinned commit에서 읽은 tracked source, contract, workflow, test, generated snapshot     | configured 또는 declared 상태이며 실제 실행과 remote enforcement를 자동 증명하지 않음 |
+| Runtime or remote   | 실제 provider acceptance, entitlement, deployment, branch protection, live Compose 상태 | 별도 관찰이 없는 항목은 명시적으로 `UNVERIFIED`                                       |
+| Historical retained | 이전 pack과 실행 ledger에서 보존한 비교 또는 migration evidence                         | 현재 canonical fact로 승격하지 않음                                                   |
 
 ## Structure
 
@@ -56,48 +57,48 @@ generated output 수동 편집은 포함하지 않습니다.
 
 ### Foundation
 
-| Leaf | Use it for |
-| --- | --- |
-| [Workspace baseline](./workspace-baseline.md) | 원래 19개 연구 category와 Task 9a V&V amendment를 포함한 현재 20개 leaf의 tracked baseline, evidence owner, gap |
-| [Scope application matrix](./scope-application-matrix.md) | normative 14-scope axis와 각 scope의 adoption disposition |
+| Leaf                                                      | Use it for                                                                                                      |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [Workspace baseline](./workspace-baseline.md)             | 원래 19개 연구 category와 Task 9a V&V amendment를 포함한 현재 20개 leaf의 tracked baseline, evidence owner, gap |
+| [Scope application matrix](./scope-application-matrix.md) | normative 14-scope axis와 각 scope의 adoption disposition                                                       |
 
 ### Agentic Engineering
 
-| Leaf | Use it for |
-| --- | --- |
-| [Harness engineering](./harness-engineering.md) | harness 구성 요소, control plane, enforcement boundary |
-| [Loop engineering](./loop-engineering.md) | feedback loop anatomy, typed loop, stop/retry/evidence boundary |
-| [Provider implementation comparison](./provider-implementation-comparison.md) | Claude/Codex common construction과 provider-native 차이 |
-| [Agent instructions and vibe coding](./agent-instructions-vibe-coding.md) | instruction hierarchy, disciplined prompting, vibe-coding boundary |
-| [Provider model landscape](./provider-model-landscape.md) | dated provider observations와 fixed local model registry |
-| [Agent model selection](./agent-model-selection.md) | task 특성별 model/tier/effort/fallback 선택 규칙 |
-| [AI agent catalogs](./ai-agent-catalogs.md) | local catalog와 immutable external catalog의 import boundary |
-| [Memory hierarchy](./memory-hierarchy.md) | short-term, durable, domain memory와 lifecycle/privacy gaps |
+| Leaf                                                                          | Use it for                                                         |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [Harness engineering](./harness-engineering.md)                               | harness 구성 요소, control plane, enforcement boundary             |
+| [Loop engineering](./loop-engineering.md)                                     | feedback loop anatomy, typed loop, stop/retry/evidence boundary    |
+| [Provider implementation comparison](./provider-implementation-comparison.md) | Claude/Codex common construction과 provider-native 차이            |
+| [Agent instructions and vibe coding](./agent-instructions-vibe-coding.md)     | instruction hierarchy, disciplined prompting, vibe-coding boundary |
+| [Provider model landscape](./provider-model-landscape.md)                     | dated provider observations와 fixed local model registry           |
+| [Agent model selection](./agent-model-selection.md)                           | task 특성별 model/tier/effort/fallback 선택 규칙                   |
+| [AI agent catalogs](./ai-agent-catalogs.md)                                   | local catalog와 immutable external catalog의 import boundary       |
+| [Memory hierarchy](./memory-hierarchy.md)                                     | short-term, durable, domain memory와 lifecycle/privacy gaps        |
 
 ### SDLC and Documentation
 
-| Leaf | Use it for |
-| --- | --- |
-| [Spec-driven SDLC](./spec-driven-sdlc.md) | lifecycle, gate, traceability, feedback, enforcement layers |
-| [SDLC document roles](./sdlc-document-roles.md) | PRD부터 Runbook까지 12개 문서 역할과 금지 대체 관계 |
-| [Document metadata lifecycle](./document-metadata-lifecycle.md) | metadata, state transition, archive, retention ownership |
-| [Documentation architecture](./documentation-architecture.md) | Diataxis reader modes와 workspace stage architecture의 경계 |
-| [LLM Wiki system](./llm-wiki-system.md) | authored/generated discovery, safety, freshness, stale-output boundary |
+| Leaf                                                            | Use it for                                                             |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [Spec-driven SDLC](./spec-driven-sdlc.md)                       | lifecycle, gate, traceability, feedback, enforcement layers            |
+| [SDLC document roles](./sdlc-document-roles.md)                 | PRD부터 Runbook까지 12개 문서 역할과 금지 대체 관계                    |
+| [Document metadata lifecycle](./document-metadata-lifecycle.md) | metadata, state transition, archive, retention ownership               |
+| [Documentation architecture](./documentation-architecture.md)   | Diataxis reader modes와 workspace stage architecture의 경계            |
+| [LLM Wiki system](./llm-wiki-system.md)                         | authored/generated discovery, safety, freshness, stale-output boundary |
 
 ### Delivery and Quality
 
-| Leaf | Use it for |
-| --- | --- |
-| [Automation pipeline workflow](./automation-pipeline-workflow.md) | local automation topology, GitHub Actions expansion, promotion gaps |
-| [Quality, CI, and formatting](./quality-ci-formatting.md) | formatting/lint/type/test/build/coverage gate와 failure propagation |
-| [Verification and validation](./verification-validation.md) | conformance와 intended use의 구분, evidence state, acceptance authority, residual risk, monitoring/revalidation |
+| Leaf                                                              | Use it for                                                                                                      |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [Automation pipeline workflow](./automation-pipeline-workflow.md) | local automation topology, GitHub Actions expansion, promotion gaps                                             |
+| [Quality, CI, and formatting](./quality-ci-formatting.md)         | formatting/lint/type/test/build/coverage gate와 failure propagation                                             |
+| [Verification and validation](./verification-validation.md)       | conformance와 intended use의 구분, evidence state, acceptance authority, residual risk, monitoring/revalidation |
 
 ### Infrastructure and Security
 
-| Leaf | Use it for |
-| --- | --- |
+| Leaf                                                                    | Use it for                                                           |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | [Docker Compose and infrastructure](./docker-compose-infrastructure.md) | Compose topology, controls, operations evidence ladder, runtime gaps |
-| [Security governance](./security-governance.md) | secure SDLC, supply chain, secrets, approval, readiness boundaries |
+| [Security governance](./security-governance.md)                         | secure SDLC, supply chain, secrets, approval, readiness boundaries   |
 
 ## Reading Routes
 
@@ -123,22 +124,22 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 [Verification and validation](./verification-validation.md)을 cross-cutting route로
 함께 사용하며, 이것은 열다섯 번째 scope를 만들지 않습니다.
 
-| Scope | First pack route | Adoption boundary |
-| --- | --- | --- |
-| `agentic` | [Agentic Engineering](#agentic-engineering) | catalog, harness, loop, instruction, model, memory의 primary analysis scope |
-| `architecture` | [SDLC and Documentation](#sdlc-and-documentation) | enum-only scope이며 현재 concrete catalog adoption을 추론하지 않음 |
-| `backend` | [Foundation](#foundation) | explicit no-current-profile disposition; backend runtime을 추론하지 않음 |
-| `common` | [Agentic Engineering](#agentic-engineering) | shared policies/functions와 provider projection을 구분 |
-| `docs` | [SDLC and Documentation](#sdlc-and-documentation) | lifecycle owner와 reader-mode map을 구분 |
-| `entry` | [Infrastructure and Security](#infrastructure-and-security) | entry boundary와 runtime evidence를 구분 |
-| `frontend` | [Delivery and Quality](#delivery-and-quality) | explicit no-current-profile disposition; UI implementation을 추론하지 않음 |
-| `infra` | [Infrastructure and Security](#infrastructure-and-security) | Compose/configured state와 live state를 구분 |
-| `meta` | [SDLC and Documentation](#sdlc-and-documentation) | metadata/discovery layer이며 generated freshness를 추론하지 않음 |
-| `mobile` | [Foundation](#foundation) | explicit no-current-profile disposition; mobile adoption을 추론하지 않음 |
-| `ops` | [Infrastructure and Security](#infrastructure-and-security) | operations contract, config, runtime evidence를 분리 |
-| `product` | [SDLC and Documentation](#sdlc-and-documentation) | requirement/decision ownership은 active lifecycle stage에 유지 |
-| `qa` | [Delivery and Quality](#delivery-and-quality) | configured, selected, executed, passed, enforced 상태를 분리 |
-| `security` | [Infrastructure and Security](#infrastructure-and-security) | secret values와 formal conformance를 이 pack에서 주장하지 않음 |
+| Scope          | First pack route                                            | Adoption boundary                                                           |
+| -------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `agentic`      | [Agentic Engineering](#agentic-engineering)                 | catalog, harness, loop, instruction, model, memory의 primary analysis scope |
+| `architecture` | [SDLC and Documentation](#sdlc-and-documentation)           | enum-only scope이며 현재 concrete catalog adoption을 추론하지 않음          |
+| `backend`      | [Foundation](#foundation)                                   | explicit no-current-profile disposition; backend runtime을 추론하지 않음    |
+| `common`       | [Agentic Engineering](#agentic-engineering)                 | shared policies/functions와 provider projection을 구분                      |
+| `docs`         | [SDLC and Documentation](#sdlc-and-documentation)           | lifecycle owner와 reader-mode map을 구분                                    |
+| `entry`        | [Infrastructure and Security](#infrastructure-and-security) | entry boundary와 runtime evidence를 구분                                    |
+| `frontend`     | [Delivery and Quality](#delivery-and-quality)               | explicit no-current-profile disposition; UI implementation을 추론하지 않음  |
+| `infra`        | [Infrastructure and Security](#infrastructure-and-security) | Compose/configured state와 live state를 구분                                |
+| `meta`         | [SDLC and Documentation](#sdlc-and-documentation)           | metadata/discovery layer이며 generated freshness를 추론하지 않음            |
+| `mobile`       | [Foundation](#foundation)                                   | explicit no-current-profile disposition; mobile adoption을 추론하지 않음    |
+| `ops`          | [Infrastructure and Security](#infrastructure-and-security) | operations contract, config, runtime evidence를 분리                        |
+| `product`      | [SDLC and Documentation](#sdlc-and-documentation)           | requirement/decision ownership은 active lifecycle stage에 유지              |
+| `qa`           | [Delivery and Quality](#delivery-and-quality)               | configured, selected, executed, passed, enforced 상태를 분리                |
+| `security`     | [Infrastructure and Security](#infrastructure-and-security) | secret values와 formal conformance를 이 pack에서 주장하지 않음              |
 
 ## Current State and Gaps
 
@@ -204,6 +205,12 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 - parent research README의 human route와 superseded mapping만 이 Task에서
   전환합니다. repository-wide cross-link와 generated machine route는 Task 10,
   old-pack 삭제 gate는 Task 11이 소유합니다.
+- 2026-08-11에 별도 source-refresh Task가 20개 leaf를 in-place로 재검증했습니다.
+  pack의 21-file/20-leaf 구성, 14-scope 축, 36개 requirement destination은 바뀌지
+  않았습니다. 갱신된 leaf는 `reviewed_at: 2026-08-11`을 가지며, 변경 없이 재검증만
+  통과한 leaf는 `2026-08-08`을 유지합니다. 두 날짜 모두 현재 유효한 검토 상태이고,
+  refresh evidence는 [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)가
+  소유합니다.
 
 ## Related Documents
 
@@ -211,5 +218,6 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 - [Spec 137](../../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 - [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
