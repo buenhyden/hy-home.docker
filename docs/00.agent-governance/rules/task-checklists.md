@@ -60,7 +60,8 @@ Unified task execution checklists for all agent work.
       destination in the Task evidence.
 - [ ] Route each new gap to exactly one canonical owner first; use downstream
       links instead of duplicating rules or evidence across stages.
-- [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
+- [ ] Apply the document-role language route from
+      `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
 - [ ] Keep assumptions explicit and update them when repository evidence disproves them.
 - [ ] Validate new/changed links as edits are made.
 - [ ] For changed/new target Markdown, run the typed metadata checker with an
@@ -73,9 +74,8 @@ Unified task execution checklists for all agent work.
       only; never paste secret values into docs, logs, commits, PRs, or summaries.
 - [ ] For approved remote GitHub work, record the repository, remote surface,
       command class, before/after evidence, and any unverified remote gate.
-- [ ] Keep provider adapters aligned with Stage 00 lifecycle terms:
-      discovery -> applicability -> provider loading -> canonical artifact ->
-      validation evidence.
+- [ ] Keep provider adapters aligned with the lifecycle owned by
+      `rules/workflows.md`; do not copy its state order here.
 - [ ] Use only the four typed harness loops and their exact retry, stop,
       escalation, permission, and evidence bounds from
       `contracts/provider-models.yaml`; do not add prompt-local loop policy.
@@ -100,7 +100,7 @@ Unified task execution checklists for all agent work.
       only; do not claim detection of ignored/outside writes or sandboxing.
 - [ ] Record out-of-scope issues instead of patching read-only stages.
 
-## 3. Completion Checklist
+## 3. Completion Contract
 
 - [ ] Run relevant repository checks for changed layers.
 - [ ] Confirm each implemented change is traceable to the approved plan when an approved-plan gate applies.

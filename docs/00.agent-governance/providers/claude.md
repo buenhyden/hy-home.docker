@@ -25,21 +25,16 @@ Claude Code-specific guidance for this repository.
 - Claude exposes provider-native Markdown adapters for the Stage 00 canonical
   agent and function catalog (`providers/agents-md.md` §5). `.claude/agents/`
   and `.claude/skills/` are runtime adapters, not separate governance.
-- Apply the work profile in `contracts/agent-catalog.yaml` through the exact
-  Claude model/control record in `contracts/provider-models.yaml`. Claude
-  subagents support `effort` values `low`, `medium`, `high`, `xhigh`, and
-  `max`; the subagent value overrides the session value. Generated Sonnet and
-  Opus adapters therefore emit the selected `high` effort. Per-subagent
-  `thinking` is unsupported and remains inherited from the session, so no
-  generated adapter emits a `thinking` key. Haiku omits `effort` because its
-  selected model profile does not expose that control.
+- Apply each registered work profile through the exact Claude model/control
+  record in `contracts/provider-models.yaml`. Model identifiers and reasoning
+  values are renderer inputs from that typed contract, never copied policy in
+  this overlay. Generated adapters emit only provider-native supported fields.
 - Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
 
 ## 3. Root Import Boundary
 
-The root `CLAUDE.md` owns the executable import list. It loads bootstrap, this
-provider overlay, the shared memory contract, and the bounded `current.md`
-record in that order. Claude-local or user-global memory may supplement session
+The root `CLAUDE.md` owns the executable imports and routes their order to
+`rules/bootstrap.md#3-canonical-load-order`. Claude-local or user-global memory may supplement session
 loading but may not copy, replace, or override the repository current-state
 body.
 

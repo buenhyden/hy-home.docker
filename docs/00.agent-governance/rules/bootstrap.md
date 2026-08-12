@@ -28,23 +28,32 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 | References | `docs/90.references/` | Stable references |
 | Templates | `docs/99.templates/` | Document templates |
 
-## 3. Bootstrap Loading Sequence
+## 3. Canonical Load Order
 
-1. Load `[LOAD:RULES:PERSONA]` from `rules/persona.md`.
-2. Load `[LOAD:RULES:CHECKLISTS]` from `rules/task-checklists.md`.
-3. Load `[LOAD:RULES:AGENTIC]` from `rules/agentic.md`.
-4. Review `[LOAD:MEMORY]` from `memory/README.md` and `memory/current.md`;
-   validate the current Task and verified commit, then retrieve targeted memory
-   notes when governance, docs, runtime, or repeated-failure context is
-   relevant.
-5. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
-6. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
-7. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from `rules/github-governance.md`.
-8. Load stage docs JIT only when required by the active task.
+1. Enter through the active root shim and load this bootstrap, the matching
+   provider overlay, `memory/README.md`, and `memory/current.md`.
+2. Validate the current Task and verified commit before relying on the bounded
+   memory handoff.
+3. Load `[LOAD:RULES:PERSONA]` from `rules/persona.md` and resolve a registered
+   agent identity and primary scope from `contracts/agent-catalog.yaml`.
+4. Load `[LOAD:RULES:CHECKLISTS]` from `rules/task-checklists.md`.
+5. Load `[LOAD:RULES:AGENTIC]` from `rules/agentic.md`.
+6. Retrieve targeted Memory notes only when governance, docs, runtime, or
+   repeated-failure context is relevant; corroborate them against live evidence.
+7. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from
+   `rules/stage-authoring-matrix.md`.
+8. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from
+   `rules/github-governance.md`.
+9. Load stage docs JIT only when required by the active task.
+
+Root shims and provider overlays point here; they do not define another load
+sequence.
 
 ## 4. Hard Constraints
 
-- `docs/00.agent-governance/` must stay English-only.
+- Follow the document-role language authority in
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role`;
+  Stage 00 remains English-only.
 - `docs/01` to `docs/99` are read-only by default unless the user explicitly allows mutation.
 - Root shim files must remain concise and delegate details to this hub.
 - Provider-specific runtime behavior belongs in the matching provider overlay
@@ -59,17 +68,13 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 - **Settings SSOT** — team settings in `settings.json` (git tracked); personal overrides in `settings.local.json` only; no duplication across both files.
 - **Secrets** — never write plaintext credentials; use Docker Secrets or `secrets/` bind-mounts exclusively.
 
-## 5. Verification Gate
+## 5. Verification Routing
 
-For structural or cross-cutting changes:
-
-1. Run applicable repository checks (for infra, include `bash scripts/validation/validate-docker-compose.sh`).
-2. Validate link integrity for changed governance/root files.
-3. Confirm policy text matches current workspace reality.
-4. Record progress, verification evidence, and final status in the applicable co-located Task,
-   then refresh `docs/00.agent-governance/memory/current.md` only with the
-   bounded current handoff.
-5. Record out-of-scope breakages in `docs/00.agent-governance/memory/` from `docs/99.templates/templates/governance/memory.template.md`.
+Use the single completion contract in
+`rules/task-checklists.md#3-completion-contract`. Structural and cross-cutting
+changes add the applicable focused validators named by their typed authority;
+they record results in the applicable co-located Task and do not define a
+second completion checklist here.
 
 ## Related Documents
 

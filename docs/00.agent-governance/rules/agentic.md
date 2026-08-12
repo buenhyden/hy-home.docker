@@ -26,8 +26,8 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Ask for clarification before changing state when a request is underspecified,
   constraints conflict, or a plausible assumption could change the outcome.
   Record low-risk assumptions explicitly when proceeding without a question.
-- Use persona routing, checklist routing, this rule, and one primary scope before
-  task execution.
+- Use the registered agent identity and primary scope selected by
+  `contracts/agent-catalog.yaml`; `rules/bootstrap.md` owns the load order.
 - Use the local agent/function catalog as the runtime boundary:
   - Provider agent adapters under `.claude/agents/`, `.codex/agents/`, and
     `.gemini/agents/` must map to a same-named Stage 00 catalog entry.
@@ -43,27 +43,16 @@ Standard behavior contract for repo-local, auditable agent execution.
   retrieval context. `memory/progress.md` is append-preserved historical
   navigation. Memory must not override current rules, scopes, provider
   overlays, direct user instructions, or live repository evidence.
-- Keep governance text in English and user-facing responses in Korean by default.
+- Route document language through
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role` and
+  conversational language through `rules/output-style.md`.
 
-## 3. Implementation Flow
+## 3. Workflow Routing
 
-1. Bootstrap via `rules/bootstrap.md`.
-2. Load persona via `rules/persona.md` and announce active persona/layer.
-3. Load `rules/task-checklists.md` and run pre-task gate.
-4. Load this Agent-first rule.
-5. Load one primary scope from `scopes/<layer>.md`.
-6. Review `memory/README.md` and `memory/current.md`; use `rg` to retrieve only
-   relevant durable notes when the task matches memory triggers.
-7. Discover current repository state with read-only commands.
-8. Resolve ambiguities: ask before state changes for risky ambiguity; otherwise
-   record explicit assumptions and proceed conservatively.
-9. Plan the smallest scoped change and name the verification gate.
-10. Execute the change in place.
-11. Verify with the smallest checks that prove the contract.
-12. Record progress, verification evidence, and durable memory links in the
-    applicable co-located Task, then refresh `memory/current.md` with only the
-    bounded next handoff.
-13. Report changed files, checks run, and any residual risk or out-of-scope gap.
+`rules/workflows.md` owns the provider-neutral lifecycle and supporting
+workflows. This rule supplies execution constraints only and does not define a
+second sequence. Use `rules/task-checklists.md` for pre-task, in-task, and
+completion evidence.
 
 ### Typed Harness and Workflow
 
@@ -71,11 +60,8 @@ Standard behavior contract for repo-local, auditable agent execution.
   canonical contract, role/function routing, permission/mutation boundary,
   provider model/reasoning policy, semantic event hooks, controlled QA and
   validation, tracked CI, and sanitized evidence/handoff.
-- The lifecycle is owned by
-  [`workflows.md`](./workflows.md). This rule adds no second sequence; the
-  agent-first phases `discover -> design/plan -> approval -> implement ->
-validate -> independent-review -> evidence -> handoff` describe agent
-  behavior within that lifecycle, not a competing one.
+- The lifecycle and its exact state order are owned by
+  [`workflows.md`](./workflows.md). This rule adds no second sequence.
 - Harness layers apply controls to lifecycle states; they are not another
   phase sequence. Existing `harness_loops` are bounded retry/event controls and
   must name their applicable `workflow_states`.

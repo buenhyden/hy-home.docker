@@ -15,47 +15,24 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 - Each subagent MUST load exactly one primary scope file through the active
   runtime's supported context or delegation mechanism before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
-- The supervising/orchestrating agent uses the top-spec model; worker subagents use the right-sized model per the Model Policy below.
-- Each runtime's agent frontmatter MUST carry that provider's own model identifier; never copy another provider's model name across surfaces.
+- Resolve every delegated role's registered work profile through
+  `contracts/agent-catalog.yaml`; provider-native values are generated from the
+  typed provider contract.
 
-### Model Policy (work-profile mapping)
+### Model Policy Routing
 
-Exact provider status, entitlement, runtime acceptance, supported controls,
-fallbacks, source URLs, and the historical cutoff are owned by
-`contracts/provider-models.yaml`. This table is the human routing view.
-
-| Work profile | Claude | GPT / Codex | Gemini |
-| --- | --- | --- | --- |
-| `long-horizon-supervision` | `claude-opus-5` (`xhigh`) | `gpt-5.6-sol` (`xhigh`) | `gemini-3.6-flash` (`high`) |
-| `complex-implementation` | `claude-sonnet-5` (`high`) | `gpt-5.6-sol` (`high`) | `gemini-3.6-flash` (`high`) |
-| `adversarial-review` | `claude-opus-5` (`high`) | `gpt-5.6-sol` (`xhigh`) | `gemini-3.6-flash` (`high`) |
-| `evidence-research` | `claude-sonnet-5` (`low`) | `gpt-5.6-terra` (`medium`) | `gemini-3.5-flash-lite` (`medium`) |
-| `routine-validation` | `claude-haiku-4-5-20251001` (no effort field) | `gpt-5.6-terra` (`low`) | `gemini-3.5-flash-lite` (`minimal`) |
-
-- `workflow-supervisor` is the only supervisor-tier role. Other agents select
-  exactly one profile declared in `contracts/agent-catalog.yaml`.
-- These configured defaults are repository-eligible selections, not live
-  activation claims. Current runtime acceptance and entitlement remain
-  `needs_revalidation`, so runtime activation eligibility remains false.
-- Claude emits only supported native `effort`; Haiku omits it. Codex emits
-  `model_reasoning_effort`. Gemini uses scoped
-  `modelConfigs.overrides` thinking levels and omits deprecated sampling
-  parameters.
-- Fable 5 is a stable non-default candidate. Mythos 5, GPT-5.6 Luna, and
-  GPT-5.3 Codex Spark remain catalog-only under their recorded lifecycle.
-  The active contract has no automatic model fallback graph.
+`contracts/provider-models.yaml` is the sole owner of model identifiers,
+reasoning controls, lifecycle, disposition, runtime acceptance, fallbacks, and
+source evidence. `contracts/agent-catalog.yaml` assigns one work profile to
+each registered role. Human protocol prose does not copy either mapping;
+native adapters are renderer outputs.
 
 ### Model and Provider Adapter Change Protocol
 
 User approval may authorize model policy or provider adapter changes, but those
-changes are valid only when the same task updates all coupled surfaces:
-
-- this Model Policy table or the documented override rule,
-- provider adapter generation logic,
-- generated provider adapters,
-- repository validators that enforce allowed values,
-- co-located Task evidence with the exact approved value, target role, source of
-  evidence, and provider sync result.
+changes remain governed by the typed path authority and provider renderer.
+Record the approved typed value, target role, source evidence, and provider
+sync result in the co-located Task; do not create a protocol-local override.
 
 If the task does not name a concrete model value, role, provider, and validation
 path, the approval is recorded as verified-only and existing model/provider
@@ -116,38 +93,15 @@ agent name set.
 
 ## 5. Error Handling
 
-`contracts/provider-models.yaml` owns the exact semantic loop values. Agents
-must not invent an additional retry policy in prompts or provider adapters.
-Loops reference applicable entries in the ordered `workflow_states` contract;
-they are retry/event controls, not a second lifecycle.
-
-1. Bootstrap has one attempt and escalates when the bootstrap contract does
-   not pass.
-2. Implementation has at most two attempts. After the first focused-check
-   failure, narrow scope; after the second, escalate.
-3. Independent review has at most two attempts and stops only when Critical and
-   Important findings are zero. The reviewer must differ from the loop owner.
-4. The approved all-files gate has one attempt through the controlled wrapper;
-   on failure, record the result and stop.
-5. Evidence contains only `command`, `result`, `rollback`, and
-   `skipped_checks`. Never include raw logs, auth files, credentials, tokens,
-   secret values, or shell history.
-6. Never silently discard output. Record the value-free failure code and the
-   unresolved gap in co-located Task evidence.
+Use the exact semantic loop values and evidence bounds in
+`contracts/provider-models.yaml`. Delegation does not define another retry,
+stop, escalation, permission, or evidence policy.
 
 ## 6. Lifecycle
 
-```text
-discover → design/plan → approval → implement → validate → independent-review → evidence → handoff
-```
-
-Delegation and scope loading occur within the applicable lifecycle state.
-Failed validation returns to `implement`; rejected design remains in
-`design/plan`; missing authority remains in `approval`; review remediation
-returns to `implement`. An exhausted attempt bound stops. Ignored
-`_workspace/repo-support/` scratch files remain task-local; promote durable
-non-secret outcomes to the co-located Task, Stage 90, or bounded Stage 00 Memory before
-handoff, and never delete user-created scratch without explicit approval.
+`rules/workflows.md` is the sole human-readable lifecycle owner. Delegation and
+scope loading occur inside its applicable state; typed loop transitions remain
+in `contracts/provider-models.yaml`.
 
 ## Related Documents
 

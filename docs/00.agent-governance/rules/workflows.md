@@ -9,6 +9,11 @@ A workflow is an ordered chain of orchestration skills routed by `workflow-super
 All runtimes execute the same workflows; the steps are provider-neutral governance
 functions (`agents/functions/`) exposed per the Provider Capability Matrix.
 
+This file is the sole human-readable owner for workflow state order and
+repeatable orchestration sequences. Other Stage 00 rules, scopes, and provider
+overlays point here instead of restating a lifecycle. Typed harness states and
+loops remain machine-owned by `contracts/provider-models.yaml`.
+
 ## 1. Stage-Gate Documentation Pipeline
 
 The primary workflow follows the stage-gate lifecycle. Each step loads the mapped

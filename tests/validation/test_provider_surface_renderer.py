@@ -39,15 +39,17 @@ def copy_stage00(root: pathlib.Path) -> None:
         dirs_exist_ok=True,
     )
     spec_source = (
-        ROOT / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+        ROOT / "docs/03.specs/spec-0132-agent-governance-harness-convergence/spec.md"
     )
-    spec_target = root / spec_source.relative_to(ROOT)
+    spec_target = (
+        root / "docs/03.specs/132-agent-governance-harness-convergence/spec.md"
+    )
     spec_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(spec_source, spec_target)
     ledger_source = (
         ROOT
         / "docs/90.references/data/governance/"
-        "agent-governance-retirement-ledger.yaml"
+        "ref-0063-agent-governance-retirement-ledger.yaml"
     )
     ledger_target = root / ledger_source.relative_to(ROOT)
     ledger_target.parent.mkdir(parents=True, exist_ok=True)
@@ -68,6 +70,23 @@ def generated_surface(function_id: str = "retired") -> str:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_exactly_24_stage00_functions_generate_both_skill_projections(
+        self,
+    ) -> None:
+        renderer = load_renderer()
+        catalog = renderer.load_catalog(ROOT)
+        expected_ids = {item.function_id for item in catalog.functions}
+        self.assertEqual(24, len(expected_ids))
+        for provider in ("claude", "agents-md"):
+            with self.subTest(provider=provider):
+                projection = renderer.expected_projection(ROOT, provider)
+                generated_ids = {
+                    path.parent.name
+                    for path in projection
+                    if path.name == "SKILL.md"
+                }
+                self.assertEqual(expected_ids, generated_ids)
+
     def test_provider_selections_render_exact_models_and_native_controls(self) -> None:
         renderer = load_renderer()
         provider_contract = yaml.safe_load(
@@ -763,11 +782,17 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             ("--write", "--check"),
             ("--check", "--check"),
         )
+        repository_environment = os.environ.copy()
+        repository_environment["PATH"] = (
+            f"{pathlib.Path(sys.executable).parent}:"
+            f"{repository_environment.get('PATH', '')}"
+        )
         for args in accepted:
             with self.subTest(args=args):
                 result = subprocess.run(
                     ["bash", str(WRAPPER), *args],
                     cwd=ROOT,
+                    env=repository_environment,
                     capture_output=True,
                     text=True,
                     check=False,

@@ -47,7 +47,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1240`
+- Safe tracked source paths: `1234`
 - Source buckets: `16`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -59,7 +59,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | `.claude` | 48 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | `.codex` | 16 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
 | `.github` | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
-| `docs/00.agent-governance` | 109 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
+| `docs/00.agent-governance` | 103 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | `docs/01.requirements` | 26 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-001-gateway.md](../../../01.requirements/prd-001-gateway.md)<br>[docs/01.requirements/prd-002-auth.md](../../../01.requirements/prd-002-auth.md) |
 | `docs/02.architecture` | 53 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/README.md](../../../02.architecture/decisions/README.md)<br>[docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md) |
 | `docs/03.specs` | 39 | [docs/03.specs/README.md](../../../03.specs/README.md)<br>[docs/03.specs/spec-0001-gateway/spec.md](../../../03.specs/spec-0001-gateway/spec.md)<br>[docs/03.specs/spec-0002-auth/spec.md](../../../03.specs/spec-0002-auth/spec.md) |
@@ -79,7 +79,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | --- | ---: | --- |
 | Root entrypoints | 8 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | LLM Wiki reference | 2 | [docs/90.references/llm-wiki/README.md](../../llm-wiki/README.md)<br>[docs/90.references/llm-wiki/ref-0083-repository-map.md](../../llm-wiki/ref-0083-repository-map.md) |
-| Agent governance | 109 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
+| Agent governance | 103 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | Runtime surfaces | 64 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | Active stage docs | 118 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-001-gateway.md](../../../01.requirements/prd-001-gateway.md)<br>[docs/01.requirements/prd-002-auth.md](../../../01.requirements/prd-002-auth.md) |
 | Operations docs | 208 | [docs/05.operations/00-workspace/README.md](../../../05.operations/00-workspace/README.md)<br>[docs/05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/00-workspace/ops-0002-developer-setup/guide.md](../../../05.operations/00-workspace/ops-0002-developer-setup/guide.md) |
@@ -95,7 +95,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 74 |
-| Markdown reference | 843 |
+| Markdown reference | 837 |
 | YAML config | 114 |
 | folder index | 120 |
 | script | 58 |

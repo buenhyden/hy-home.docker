@@ -117,26 +117,18 @@ policy remains in the linked Stage 00 documents.
 
 ## How to Work in This Area
 
-1. Resolve layer and load persona before any mutation.
-2. Load the pre-task checklist and `[LOAD:RULES:AGENTIC]`.
-3. Load exactly one primary scope.
-4. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
-5. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify the Completion Gate.
-6. Review `memory/README.md` and `memory/current.md` before editing; use
-   `memory/progress.md` only when historical navigation is needed.
-7. Ask for clarification before state changes when the request is underspecified
-   or governance constraints conflict.
-8. Before changing model/config values, confirm the Stage 00 policy, provider
-   sync script, and validators already encode the same permitted value.
-9. Run `python3 scripts/validation/check-agent-governance-contract.py --mode contract`
-   after editing the typed contracts. Use repository mode only for a section
-   whose aggregate activation is owned by the current task.
-10. After changing canonical functions, run
-    `scripts/operations/sync-provider-surfaces.sh --write`, inspect the bounded
-    projection diff, and confirm `--check` reports zero drift.
-11. Run the completion checklist, record progress and verification in the
-    applicable co-located Task, and refresh `memory/current.md` with only the
-    bounded next handoff.
+- Use the sole repository load order in
+  `rules/bootstrap.md#3-canonical-load-order`.
+- Route orchestration through `rules/workflows.md`, delegated work through
+  `subagent-protocol.md`, and write authority through
+  `rules/approval-boundaries.md`.
+- Read `memory/README.md` and `memory/current.md` as the bounded handoff;
+  `memory/progress.md` is historical navigation only.
+- Use `contracts/provider-models.yaml` for model and provider values, and use
+  the registered provider renderer for projection changes.
+- Decide completion only through
+  `rules/task-checklists.md#3-completion-contract`; record the resulting
+  evidence in the applicable co-located Task.
 
 ## Related Documents
 

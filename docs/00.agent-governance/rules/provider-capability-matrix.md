@@ -20,7 +20,7 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
 | Output style       | `rules/output-style.md`                                    | `.claude/output-styles/*.md` + `settings.json` | behavioral contract                         | behavioral contract                     |
 | Workflows          | `rules/workflows.md` (+ `rules/stage-authoring-matrix.md`) | orchestration skills / commands                | orchestration skills (mirror)               | orchestration skills (pointer)          |
 | Memory             | `memory/README.md` + `memory/current.md`                   | shared bounded handoff                         | shared bounded handoff                      | shared bounded handoff                  |
-| Models             | `contracts/provider-models.yaml` work profiles             | `claude-opus-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` | `gpt-5.6-sol` / `gpt-5.6-terra` + reasoning effort | `gemini-3.6-flash` / `gemini-3.5-flash-lite` |
+| Models             | `contracts/provider-models.yaml` work profiles             | generated native adapter values                | generated native adapter values             | generated native adapter values         |
 | Templates          | `docs/99.templates/` via `rules/documentation-protocol.md` | shared                                         | shared                                      | shared                                  |
 | Harness layers     | `contracts/provider-models.yaml` `harness_layers`          | shared typed controls                          | shared typed controls                       | shared typed controls                    |
 | Workflow states    | `contracts/provider-models.yaml` `workflow_states`         | shared discover-to-handoff lifecycle           | shared discover-to-handoff lifecycle        | shared discover-to-handoff lifecycle     |
@@ -71,29 +71,13 @@ its own native mechanism per the Stage 00 Canonical Adapter Model
   Gemini uses deny/retry only where each generated adapter emits the exact
   provider-native schema.
 
-## 4. Shared Development-Harness Gates
+## 4. Shared Development-Harness Routing
 
-All provider adapters preserve the same lifecycle contract:
-`discover -> design/plan -> approval -> implement -> validate ->
-independent-review -> evidence -> handoff`. The eight typed harness layers
-apply canonical contract, routing, permission, model, event, QA, CI, and
-evidence controls to those states; they do not create another lifecycle.
-Provider-specific hook or reminder mechanics do not change these gates:
-
-- For changed or new target Markdown, run
-  `python3 scripts/validation/check-document-metadata.py --mode check-changed`
-  with a safe comparison base supplied by the execution surface.
-- Direct agent execution of all-files pre-commit remains prohibited. At an
-  approved final QA gate, use only
-  `scripts/validation/run-agent-precommit-all-files.sh` and record the reviewed
-  Git-visible, non-ignored repository paths in co-located Task evidence.
-- A provider reminder, pointer, or hook reports the obligation; it does not
-  create policy or prove that a provider-native interception occurred.
-- All providers use the same four bounded bootstrap, implementation, review,
-  and approved all-files controls. Each loop references its applicable
-  `workflow_states`; provider event names and native support may differ, but
-  retry, stop, escalation, least-privilege tool, and sanitized evidence rules
-  do not.
+Provider adapters route orchestration to `rules/workflows.md`, completion to
+`rules/task-checklists.md#3-completion-contract`, and typed harness
+states/loops to `contracts/provider-models.yaml`. A provider reminder, pointer,
+or hook reports an obligation; it does not create policy or prove native
+interception.
 
 ## 5. Output-Style Placement
 

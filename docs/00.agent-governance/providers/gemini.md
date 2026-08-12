@@ -21,9 +21,8 @@ Gemini CLI-specific guidance for this repository.
 
 ## 3. Root Import Boundary
 
-The root `GEMINI.md` owns the executable import list. It loads bootstrap, this
-provider overlay, the shared memory contract, and the bounded `current.md`
-record in that order. Gemini memory commands may inspect or refresh loaded
+The root `GEMINI.md` owns the executable imports and routes their order to
+`rules/bootstrap.md#3-canonical-load-order`. Gemini memory commands may inspect or refresh loaded
 context but may not copy, replace, or override the repository current-state
 body.
 
@@ -56,8 +55,9 @@ adapter. Stage 00 remains canonical.
   protection. The adapter also translates output schemas: `BeforeAgent` emits
   its native event name, `PreCompress` emits advisory `systemMessage` output
   only, and the other five events retain only their permitted native fields.
-- Gemini model identifiers follow the typed work-profile policy: 3.5 Flash for
-  supervision/complex work and 3.1 Flash-Lite for read-heavy/repetitive work.
+- Gemini model identifiers and reasoning values are rendered from the exact
+  work-profile records in `contracts/provider-models.yaml`; this overlay does
+  not copy their versioned values.
 - The `.agents/` directory is git-tracked.
 
 ## 6. Hook Parity Contract

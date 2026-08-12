@@ -20,37 +20,9 @@ Protocol for maintaining documentation consistency and governance traceability.
   `docs/02.architecture/`, `docs/03.specs/`, `docs/05.operations/`,
   `docs/90.references/`, and `docs/98.archive/`.
 - Use only relative links; never use absolute `file://` links.
-- Keep `docs/00.agent-governance/` English-only.
-- Keep root `README.md` and human-facing folder READMEs Korean by default,
-  while preserving commands, paths, service names, environment variables, stage
-  names, and upstream terms exactly.
-- Keep `docs/01.requirements/**` Korean by default for human-facing product
-  intent and scope. Preserve technical identifiers and write formal acceptance
-  criteria in the template's required structure.
-- Keep `docs/02.architecture/**` mixed-audience: use Korean for explanatory
-  rationale and human review context, while preserving English decision IDs,
-  quality-attribute names, system terms, and required H1 title formats.
-- Keep `docs/03.specs/**` English-only. Capability `spec.md`, `plan.md`, and
-  `task.md` are technical
-  contracts, implementation plans, and execution evidence for agents,
-  reviewers, and CI checks.
-- Keep stable Operations subjects plus Incident and Release records
-  human-facing and Korean by default. Preserve code identifiers, service names,
-  command names, environment variables, Docker profiles, secret IDs, evidence
-  labels, and quoted upstream terms in their original form.
-- In mixed-audience documents, keep policy, contracts, validation criteria,
-  and machine-checkable instructions in English; use Korean only for
-  human-facing usage context, operational explanation, or incident narrative.
-- Keep `docs/90.references/**` audience-specific: generated LLM navigation,
-  source-backed inventories, and machine-readable reference indexes may stay
-  English; human learning/reference notes are Korean by default with quoted
-  upstream terms preserved.
-- Keep `docs/98.archive/**` as concise tombstone evidence. Use Korean for
-  human-facing archive rationale unless the replacement/original artifact is an
-  English-only contract; always preserve original paths, IDs, titles, and dates.
-- Keep `docs/99.templates/**` aligned with the target folder language boundary.
-  Template READMEs are human-facing and Korean by default; template source for
-  English-only targets must not introduce Korean placeholders.
+- Apply the single document-role language table in section 3.1. Preserve
+  commands, identifiers, paths, evidence labels, and quoted upstream terms in
+  their original form.
 - PRD files under `docs/01.requirements/` use the canonical
   `prd-<id>-<slug>.md` filename form.
 - Spec folders under `docs/03.specs/` use the canonical
@@ -223,7 +195,7 @@ create a Task subtype.
 
 See `docs/99.templates/README.md` for the full catalog and usage rules.
 
-## 3.1 Language Boundary by Stage
+## 3.1 Language Boundary by Document Role
 
 | Stage / Surface                                   | Language Boundary                                                                                   | Rationale                                                                                          |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |

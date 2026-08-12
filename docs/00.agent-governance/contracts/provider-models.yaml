@@ -11,7 +11,7 @@ providers:
     canonical_skill_source_pattern: docs/00.agent-governance/agents/functions/*.md
     source_url: https://code.claude.com/docs/en/sub-agents
     hook_source_url: https://code.claude.com/docs/en/hooks
-    local_cli_version: 2.1.209
+    local_cli_version: 2.1.227
     local_cli_observation: observed
     local_runtime_acceptance: needs_revalidation
   - provider_id: codex

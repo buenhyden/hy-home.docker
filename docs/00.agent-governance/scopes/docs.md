@@ -22,9 +22,8 @@ Boundaries and permissions for agents interacting with repository documentation.
 
 ## 3. Maintenance Standards
 
-- Language policy:
-  - AI-focused docs (rules/scopes/providers/root shims): English.
-  - Human-facing docs (README, operations, reports): Korean by default.
+- Language: apply the document-role authority in
+  `rules/documentation-protocol.md#31-language-boundary-by-document-role`.
 - Link integrity: no broken links, no absolute filesystem links, no `file://` URIs.
 - Taxonomy compliance: follow stage mapping in `rules/stage-authoring-matrix.md`.
 - Template-first compliance: before creating or modifying target-stage docs

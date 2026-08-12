@@ -171,16 +171,10 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/rules/workflows.md](../../00.agent-governance/rules/workflows.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/agentic.md](../../00.agent-governance/scopes/agentic.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/architecture.md](../../00.agent-governance/scopes/architecture.md) | Markdown reference |
-| [docs/00.agent-governance/scopes/backend.md](../../00.agent-governance/scopes/backend.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/common.md](../../00.agent-governance/scopes/common.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/docs.md](../../00.agent-governance/scopes/docs.md) | Markdown reference |
-| [docs/00.agent-governance/scopes/entry.md](../../00.agent-governance/scopes/entry.md) | Markdown reference |
-| [docs/00.agent-governance/scopes/frontend.md](../../00.agent-governance/scopes/frontend.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/infra.md](../../00.agent-governance/scopes/infra.md) | Markdown reference |
-| [docs/00.agent-governance/scopes/meta.md](../../00.agent-governance/scopes/meta.md) | Markdown reference |
-| [docs/00.agent-governance/scopes/mobile.md](../../00.agent-governance/scopes/mobile.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/ops.md](../../00.agent-governance/scopes/ops.md) | Markdown reference |
-| [docs/00.agent-governance/scopes/product.md](../../00.agent-governance/scopes/product.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/qa.md](../../00.agent-governance/scopes/qa.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/security.md](../../00.agent-governance/scopes/security.md) | Markdown reference |
 | [docs/00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md) | Markdown reference |

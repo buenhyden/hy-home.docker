@@ -8,40 +8,16 @@ action: warn
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-**Docker infrastructure completion checklist (project rule)**
+**Docker infrastructure completion routing (project rule)**
 
-`docs/00.agent-governance/rules/postflight-checklist.md` — checks before completing infra-layer work:
-
-**Infrastructure Gate (when the infra layer changes):**
-
-- [ ] `bash scripts/validation/validate-docker-compose.sh` passes.
-- [ ] Changed files contain no plaintext secrets; use Docker Secrets or `secrets/` mounts.
-- [ ] Named volumes follow the `[Service]-[Data]-[Volume]` rule.
-
-**Settings Gate (when settings change):**
-
-- [ ] `settings.json` contains only team-shared settings (git tracked).
-- [ ] `settings.local.json` contains only personal overrides.
-- [ ] The two files have no duplicate settings.
-
-**Governance evidence and current handoff:**
-
-- [ ] Record changed files, verification evidence, unresolved risk, and final
-      status in the applicable co-located Task.
-- [ ] Refresh `docs/00.agent-governance/memory/current.md` with only the bounded
-      next handoff; `memory/progress.md` remains historical navigation.
-
-**Completion blockers (halt conditions):**
-
-| Condition | Action |
-| --------- | ------ |
-| `validate-docker-compose.sh` fails | fix Compose and rerun |
-| duplicate settings | remove duplicates from `settings.local.json` |
-| plaintext secret found | replace with Docker Secret reference |
-
-For PR-related work, also check the Completion Gate in
-`docs/00.agent-governance/rules/github-governance.md`.
+This hook warns that infra-layer work has conditional completion gates. Apply
+only the canonical contract in
+`docs/00.agent-governance/rules/task-checklists.md#3-completion-contract` and
+its referenced validators. The hook does not restate pass criteria, blockers,
+settings policy, or evidence fields. Record the result in the applicable
+co-located Task and refresh only the bounded `memory/current.md` handoff.
 
 ## Related Documents
 
 - `docs/00.agent-governance/README.md`
+- `docs/00.agent-governance/rules/task-checklists.md`
