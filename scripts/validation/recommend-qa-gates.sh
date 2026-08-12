@@ -145,7 +145,7 @@ add_target_surface_gates() {
 
 is_target_surface_path() {
   local path="$1"
-  local manifest="docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+  local manifest="docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
 
   case "$path" in
   .github/workflows/ci-quality.yml | \
@@ -185,7 +185,7 @@ recommend_for_path() {
     scripts/validation/check-supply-chain-policy.py | \
     tests/fixtures/supply-chain/* | \
     tests/validation/test_supply_chain_policy.py | \
-    docs/90.references/data/security/supply-chain-sample-service.md)
+    docs/90.references/data/security/ref-0079-supply-chain-sample-service.md)
     add_gate "python3 scripts/validation/check-supply-chain-policy.py --check" "local supply-chain policy or fixture surface changed"
     add_gate "bash scripts/security/generate-supply-chain-sample-service-summary.sh --check" "local supply-chain summary may be stale"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "supply-chain CI and script contracts changed"

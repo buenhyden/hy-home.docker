@@ -77,4 +77,4 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
 - **Spec**: [../03.specs/008-workflow/spec.md](../../03.specs/spec-0008-workflow/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md
-- **Related ADR**: [./adr-adr-adr-adr-0007-airflow-n8n-hybrid-workflow.md](./adr-0007-airflow-n8n-hybrid-workflow.md)
+- **Related ADR**: [./adr-adr-adr-adr-0007-airflow-n8n-hybrid-workflow.md](adr-0007-airflow-n8n-hybrid-workflow.md)

@@ -11,7 +11,7 @@ Usage: bash scripts/knowledge/generate-llm-wiki-coverage.sh [--check]
 Generate the Stage 90 LLM Wiki stage/category coverage snapshot.
 
 Options:
-  --check   Fail when docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md is stale.
+  --check   Fail when docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md is stale.
   -h, --help
             Show this help.
 EOF
@@ -44,7 +44,7 @@ import subprocess
 import sys
 
 MODE = sys.argv[1]
-OUTPUT = pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md")
+OUTPUT = pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md")
 OUTPUT_PARENT = OUTPUT.parent
 
 ROOT_ENTRYPOINTS = {
@@ -63,7 +63,7 @@ REQUIRED_LOCAL_PATHS = {
     "scripts/knowledge/generate-llm-wiki-index.sh",
     "scripts/knowledge/generate-llm-wiki-coverage.sh",
     "docs/90.references/data/knowledge/README.md",
-    "docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md",
+    "docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md",
     "docs/00.agent-governance/agents/agents/doc-writer.md",
     "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
     ".claude/agents/doc-writer.md",
@@ -127,7 +127,7 @@ def git_ls_files() -> set[str]:
 def is_safe_candidate(path_text: str) -> bool:
     if path_text == str(OUTPUT):
         return False
-    if path_text == "docs/90.references/llm-wiki/llm-wiki-index.md":
+    if path_text == "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md":
         return False
     if any(path_text.startswith(prefix) for prefix in EXCLUDED_PREFIXES):
         return False
@@ -259,8 +259,6 @@ def render(paths: list[str]) -> str:
         "generated_by: scripts/knowledge/generate-llm-wiki-coverage.sh",
         "---",
         "",
-        "<!-- Target: docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md -->",
-        "",
         "# Reference: LLM Wiki Stage Category Coverage",
         "",
         "## Overview",
@@ -345,8 +343,8 @@ def render(paths: list[str]) -> str:
         "",
         "## Sources",
         "",
-        "- [LLM Wiki generated index](../../llm-wiki/llm-wiki-index.md) - full safe path index",
-        "- [LLM Wiki repository map](../../llm-wiki/repository-map.md) - curated canonical source map",
+        "- [LLM Wiki generated index](../../llm-wiki/ref-0082-llm-wiki-index.md) - full safe path index",
+        "- [LLM Wiki repository map](../../llm-wiki/ref-0083-repository-map.md) - curated canonical source map",
         "- [generate-llm-wiki-index.sh](../../../../scripts/knowledge/generate-llm-wiki-index.sh) - generated index source",
         "- [generate-llm-wiki-coverage.sh](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh) - this coverage snapshot generator",
         "- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - freshness gate",
@@ -362,7 +360,7 @@ def render(paths: list[str]) -> str:
         "- [Knowledge reference data](./README.md)",
         "- [Reference data](../README.md)",
         "- [LLM Wiki references](../../llm-wiki/README.md)",
-        "- [LLM Wiki maintenance guide](../../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)",
+        "- [LLM Wiki maintenance guide](../../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)",
     ])
     return "\n".join(lines) + "\n"
 

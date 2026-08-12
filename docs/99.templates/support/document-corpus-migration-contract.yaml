@@ -339,7 +339,7 @@ safe_diagnostics:
 waves:
   foundation:
     enforcement: blocking
-    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml
+    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
     scope_state: approved
     source_paths:
       - docs/00.agent-governance/memory/progress.md
@@ -372,8 +372,8 @@ waves:
       - docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md
       - docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md
       - docs/90.references/data/governance/document-corpus-lifecycle/README.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml
+      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
       - docs/99.templates/support/archive-retention-contract.md
       - docs/99.templates/support/corpus-migration-contract.md
       - docs/99.templates/support/document-corpus-migration-contract.yaml
@@ -382,8 +382,8 @@ waves:
   target-surface-convergence:
     baseline_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
     enforcement: blocking
-    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml
-    summary_path: docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md
+    manifest_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml
+    summary_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md
     scope_state: approved
     promotion_evidence:
       review_base_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
@@ -432,25 +432,25 @@ waves:
       - docs/05.operations/runbooks/09-tooling/k6.md
       - docs/05.operations/runbooks/09-tooling/locust.md
       - docs/05.operations/runbooks/09-tooling/performance-testing.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md
-      - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md
+      - docs/90.references/audits/ref-0019-readme.md
+      - docs/90.references/audits/ref-0021-automation-candidates.md
+      - docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md
+      - docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
+      - docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md
+      - docs/90.references/audits/ref-0026-implementation-overview.md
+      - docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md
+      - docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md
+      - docs/90.references/audits/ref-0031-security-framework-maturity.md
       - docs/90.references/data/governance/document-corpus-lifecycle/README.md
-      - docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md
-      - docs/90.references/llm-wiki/llm-wiki-index.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md
-      - docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md
+      - docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md
+      - docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md
+      - docs/90.references/research/ref-0039-readme.md
+      - docs/90.references/research/ref-0043-automation-pipeline-workflow.md
+      - docs/90.references/research/ref-0044-docker-compose-infrastructure.md
+      - docs/90.references/research/ref-0045-document-metadata-lifecycle.md
+      - docs/90.references/research/ref-0053-quality-ci-formatting.md
+      - docs/90.references/research/ref-0056-security-governance.md
+      - docs/90.references/research/ref-0058-workspace-baseline.md
       - docs/99.templates/support/README.md
       - docs/99.templates/support/archive-retention-contract.md
       - docs/99.templates/support/common-document-contract.md
@@ -465,8 +465,8 @@ waves:
     declared_outputs:
       - docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md
       - docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md
-      - docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml
+      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md
+      - docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml
       - docs/99.templates/templates/common/content-archive.template.md
       - scripts/validation/check-target-surface-contract.py
       - scripts/validation/target_surface_contract.py

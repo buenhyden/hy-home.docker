@@ -141,7 +141,7 @@ Task ledger. Adjacency alone is not authorization.
 - [Shared-memory contract](../../00.agent-governance/memory/README.md)
 - [Subagent protocol](../../00.agent-governance/subagent-protocol.md)
 - [Provider capability matrix](../../00.agent-governance/rules/provider-capability-matrix.md)
-- [Canonical agentic implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Canonical agentic implementation audit](../../90.references/audits/ref-0019-readme.md)
 - [Document metadata registry](../../99.templates/support/document-metadata-profiles.yaml)
 
 ### External Source Basis
@@ -667,6 +667,6 @@ substituted another model.
 - [Task checklists](../../00.agent-governance/rules/task-checklists.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
-- [Canonical audit implementation overview](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md)
-- [Provider harness and loop audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md)
-- [SDLC quality and CI audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md)
+- [Canonical audit implementation overview](../../90.references/audits/ref-0026-implementation-overview.md)
+- [Provider harness and loop audit](../../90.references/audits/ref-0028-provider-harness-loop-implementation.md)
+- [SDLC quality and CI audit](../../90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md)

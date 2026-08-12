@@ -68,11 +68,11 @@ must not be backdated into that catalog.
 - **Previous Specification**:
   ../122-agentic-research-pack-consolidation/spec.md
 - **Canonical Research Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/ref-0039-readme.md](../../90.references/research/ref-0039-readme.md)
 - **Canonical Audit Pack**:
-  [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+  [../../90.references/audits/ref-0019-readme.md](../../90.references/audits/ref-0019-readme.md)
 - **Overlapping Audit Pack**:
-  [../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md](../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
+  [../../90.references/audits/ref-0033-readme.md](../../90.references/audits/ref-0033-readme.md)
 - **Stage Authoring Matrix**:
   [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Documentation Protocol**:
@@ -486,9 +486,9 @@ Specs 124-127 and their plans stay `draft` pending separate approval.
 - Implementation plan
 - Task evidence
 - Previous research consolidation specification
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Canonical implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Overlapping implementation audit pack](../../90.references/audits/2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md)
+- [Canonical research pack](../../90.references/research/ref-0039-readme.md)
+- [Canonical implementation audit pack](../../90.references/audits/ref-0019-readme.md)
+- [Overlapping implementation audit pack](../../90.references/audits/ref-0033-readme.md)
 - [Research category](../../90.references/research/README.md)
 - [Audit category](../../90.references/audits/README.md)
 - [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

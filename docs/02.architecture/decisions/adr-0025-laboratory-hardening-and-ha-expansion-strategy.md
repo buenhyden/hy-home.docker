@@ -76,4 +76,4 @@ Laboratory tier는 운영자 생산성에 큰 영향을 주지만 권한이 강�
 - **Spec**: [../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md
-- **Related ADR**: [./adr-adr-adr-adr-0011-laboratory-services.md](./adr-0011-laboratory-services.md)
+- **Related ADR**: [./adr-adr-adr-adr-0011-laboratory-services.md](adr-0011-laboratory-services.md)

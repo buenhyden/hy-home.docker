@@ -30,7 +30,7 @@ This specification strengthens the `hy-home.docker` LLM Wiki from a static refer
 ## Contracts
 
 - **Config Contract**: `scripts/knowledge/generate-llm-wiki-index.sh` supports default write mode and `--check` freshness mode.
-- **Data / Interface Contract**: `docs/90.references/llm-wiki/llm-wiki-index.md` is a generated tracked repo-local Markdown path index.
+- **Data / Interface Contract**: `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md` is a generated tracked repo-local Markdown path index.
 - **Governance Contract**: `wiki-curator` is mirrored across `.claude/agents/` and `docs/00.agent-governance/agents/agents/`, and `check-repo-contracts.sh` enforces parity and freshness.
 
 ## Core Design

@@ -123,6 +123,6 @@ Graphify is advisory because of `surprising_cross_root_inferred_edges=3`. Theref
 - **Documentation Protocol**: [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Authoring Matrix**: [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **QA Scope**: [QA scope](../../../00.agent-governance/scopes/qa.md)
-- **Docs Index**: [Docs index](../../README.md)
+- **Docs Index**: [Docs index](../../../README.md)
 - **Archive Index**: [Archive index](../../../98.archive/README.md)
 - **Scripts Index**: [Scripts index](../../../../scripts/README.md)

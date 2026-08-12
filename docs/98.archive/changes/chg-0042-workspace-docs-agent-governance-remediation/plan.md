@@ -116,7 +116,7 @@ This repository aims to separate a Docker Compose-based home server and personal
 ## Related Documents
 
 - **Task**: [Workspace docs and agent governance remediation task](task.md)
-- **Docs index**: [Docs README](../../README.md)
+- **Docs index**: [Docs README](../../../README.md)
 - **Governance hub**: [Agent governance README](../../../00.agent-governance/README.md)
 - **Documentation protocol**: [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

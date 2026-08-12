@@ -36,6 +36,28 @@ later migration Tasks, not a current-use destination.
 schema_version: 1
 migration_id: mig-0001
 baseline_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
+post_baseline_records:
+- legacy_path: archive/Windows-Network-IP.md
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0095-windows-network-ip.md
+  artifact_id: ref-0095
+  action: archive
+  replacement: null
+  source_commit: 32c40e11747bc0bd03789c24861d2e5d60c0e999
+  reason: Archive the withdrawn root documentation tombstone under the sole Stage 98 archive at docs/98.archive/tombstones/05.operations/ref-0095-windows-network-ip.md; preserve its reviewed withdrawn/git-history provenance; no active replacement or inbound consumer exists.
+- legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md
+  stable_path: docs/90.references/research/ref-0084-github-actions-platform.md
+  artifact_id: ref-0084
+  action: move
+  replacement: null
+  source_commit: f2f8f8a441b5977d55e516ba59ea7865c06d6c55
+  reason: Move post-baseline active Stage 90 source to stable typed target docs/90.references/research/ref-0084-github-actions-platform.md; migrate 7 resolved inbound link(s) with it.
+- legacy_path: docs/90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md
+  stable_path: docs/90.references/research/ref-0085-verification-validation.md
+  artifact_id: ref-0085
+  action: move
+  replacement: null
+  source_commit: 9c927a0e187a4214358453f4826dc758a72611b5
+  reason: Move post-baseline active Stage 90 source to stable typed target docs/90.references/research/ref-0085-verification-validation.md; migrate 8 resolved inbound link(s) with it.
 records:
 - legacy_path: docs/01.requirements/001-gateway.md
   stable_path: docs/01.requirements/prd-001-gateway.md
@@ -5463,141 +5485,141 @@ records:
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Restore current capability Spec 0133 to Stage 03; an active Task or tracked validator/test still consumes its contract.
 - legacy_path: docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md
-  stable_path: docs/98.archive/changes/chg-0017-ai-governance-reorg/plan.md
-  artifact_id: plan-0017
+  stable_path: docs/98.archive/changes/chg-0143-ai-governance-reorg/plan.md
+  artifact_id: plan-0143
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0017-ai-governance-reorg/plan.md; migrate 3 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0143-ai-governance-reorg/plan.md; migrate 3 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md
-  stable_path: docs/98.archive/changes/chg-0018-standardizing-agent-governance/plan.md
-  artifact_id: plan-0018
+  stable_path: docs/98.archive/changes/chg-0144-standardizing-agent-governance/plan.md
+  artifact_id: plan-0144
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0018-standardizing-agent-governance/plan.md; migrate 3 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0144-standardizing-agent-governance/plan.md; migrate 3 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md
-  stable_path: docs/98.archive/changes/chg-0019-agent-governance-phase1-diagnostic/plan.md
-  artifact_id: plan-0019
+  stable_path: docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/plan.md
+  artifact_id: plan-0145
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0019-agent-governance-phase1-diagnostic/plan.md; migrate 3 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/plan.md; migrate 3 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md
-  stable_path: docs/98.archive/changes/chg-0020-agent-governance-phase2-alignment/plan.md
-  artifact_id: plan-0020
+  stable_path: docs/98.archive/changes/chg-0146-agent-governance-phase2-alignment/plan.md
+  artifact_id: plan-0146
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0020-agent-governance-phase2-alignment/plan.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0146-agent-governance-phase2-alignment/plan.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-05-30-standardizing-agent-governance.md
-  stable_path: docs/98.archive/changes/chg-0021-standardizing-agent-governance/task.md
-  artifact_id: task-0021-01
+  stable_path: docs/98.archive/changes/chg-0144-standardizing-agent-governance/task.md
+  artifact_id: task-0144-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0021-standardizing-agent-governance/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0144-standardizing-agent-governance/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md
-  stable_path: docs/98.archive/changes/chg-0022-agent-governance-phase1-diagnostic/task.md
-  artifact_id: task-0022-01
+  stable_path: docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/task.md
+  artifact_id: task-0145-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0022-agent-governance-phase1-diagnostic/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0145-agent-governance-phase1-diagnostic/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md
-  stable_path: docs/98.archive/changes/chg-0023-agent-governance-phase3-implementation/task.md
-  artifact_id: task-0023-01
+  stable_path: docs/98.archive/changes/chg-0147-agent-governance-phase3-implementation/task.md
+  artifact_id: task-0147-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0023-agent-governance-phase3-implementation/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0147-agent-governance-phase3-implementation/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md
-  stable_path: docs/98.archive/changes/chg-0024-agent-governance-phase3-stage01-02-continuation/task.md
-  artifact_id: task-0024-01
+  stable_path: docs/98.archive/changes/chg-0148-agent-governance-phase3-stage01-02-continuation/task.md
+  artifact_id: task-0148-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0024-agent-governance-phase3-stage01-02-continuation/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0148-agent-governance-phase3-stage01-02-continuation/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md
-  stable_path: docs/98.archive/changes/chg-0025-agent-governance-phase3-strategy-integration/task.md
-  artifact_id: task-0025-01
+  stable_path: docs/98.archive/changes/chg-0149-agent-governance-phase3-strategy-integration/task.md
+  artifact_id: task-0149-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0025-agent-governance-phase3-strategy-integration/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0149-agent-governance-phase3-strategy-integration/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md
-  stable_path: docs/98.archive/changes/chg-0026-agent-governance-phase4-closure/task.md
-  artifact_id: task-0026-01
+  stable_path: docs/98.archive/changes/chg-0150-agent-governance-phase4-closure/task.md
+  artifact_id: task-0150-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0026-agent-governance-phase4-closure/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0150-agent-governance-phase4-closure/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md
-  stable_path: docs/98.archive/changes/chg-0027-agent-governance-stage01-02-alignment/task.md
-  artifact_id: task-0027-01
+  stable_path: docs/98.archive/changes/chg-0151-agent-governance-stage01-02-alignment/task.md
+  artifact_id: task-0151-01
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0027-agent-governance-stage01-02-alignment/task.md; migrate 1 resolved inbound link(s) with it.
+  reason: Move baseline archived source to stable typed target docs/98.archive/changes/chg-0151-agent-governance-stage01-02-alignment/task.md; migrate 1 resolved inbound link(s) with it.
 - legacy_path: docs/98.archive/05.operations/guides/03-security/01.setup.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0028-01-setup.md
-  artifact_id: ref-0028
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0086-01-setup.md
+  artifact_id: ref-0086
   action: archive
   replacement: docs/05.operations/03-security/ops-0016-vault/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/03-security/vault.md, translated through its ledger row to active target docs/05.operations/03-security/ops-0016-vault/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0029-ksql-streaming.md
-  artifact_id: ref-0029
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0087-ksql-streaming.md
+  artifact_id: ref-0087
   action: archive
   replacement: docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/04-data/analytics/ksqldb.md, translated through its ledger row to active target docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0030-01-airflow-dag-dev.md
-  artifact_id: ref-0030
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0088-01-airflow-dag-dev.md
+  artifact_id: ref-0088
   action: archive
   replacement: docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0030-01-airflow-dag-dev.md; remove 1 resolved inbound archive link(s); redirect consumers to active replacement docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md.
 - legacy_path: docs/98.archive/05.operations/guides/07-workflow/airbyte.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0031-airbyte.md
-  artifact_id: ref-0031
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0089-airbyte.md
+  artifact_id: ref-0089
   action: archive
   replacement: docs/03.specs/spec-0008-workflow/spec.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0031-airbyte.md; remove 1 resolved inbound archive link(s); redirect consumers to active replacement docs/03.specs/spec-0008-workflow/spec.md.
 - legacy_path: docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0032-01-llm-inference.md
-  artifact_id: ref-0032
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0090-01-llm-inference.md
+  artifact_id: ref-0090
   action: archive
   replacement: docs/05.operations/08-ai/ops-0056-ollama/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/08-ai/ollama.md, translated through its ledger row to active target docs/05.operations/08-ai/ops-0056-ollama/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0033-local-llm-setup.md
-  artifact_id: ref-0033
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0091-local-llm-setup.md
+  artifact_id: ref-0091
   action: archive
   replacement: docs/05.operations/08-ai/ops-0056-ollama/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline source as typed provenance; both the baseline archive index and tombstone declare docs/05.operations/guides/08-ai/ollama.md, translated through its ledger row to active target docs/05.operations/08-ai/ops-0056-ollama/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0034-01-iac-automation.md
-  artifact_id: ref-0034
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0092-01-iac-automation.md
+  artifact_id: ref-0092
   action: archive
   replacement: docs/05.operations/09-tooling/ops-0069-terrakube/guide.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline source as typed provenance; the baseline archive index and tombstone declare both docs/05.operations/guides/09-tooling/terrakube.md and docs/05.operations/guides/09-tooling/terraform.md in that order. Preserve the primary declaration as active target docs/05.operations/09-tooling/ops-0069-terrakube/guide.md; merge the secondary declaration into active target docs/05.operations/09-tooling/ops-0068-terraform/guide.md; remove 1 resolved inbound archive link(s).
 - legacy_path: docs/98.archive/05.operations/policies/07-workflow/airbyte.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0035-airbyte.md
-  artifact_id: ref-0035
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0093-airbyte.md
+  artifact_id: ref-0093
   action: archive
   replacement: docs/03.specs/spec-0008-workflow/spec.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
   reason: Archive terminal baseline archived source as typed provenance at docs/98.archive/tombstones/05.operations/ref-0035-airbyte.md; remove 1 resolved inbound archive link(s); redirect consumers to active replacement docs/03.specs/spec-0008-workflow/spec.md.
 - legacy_path: docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md
-  stable_path: docs/98.archive/tombstones/05.operations/ref-0036-airbyte.md
-  artifact_id: ref-0036
+  stable_path: docs/98.archive/tombstones/05.operations/ref-0094-airbyte.md
+  artifact_id: ref-0094
   action: archive
   replacement: docs/03.specs/spec-0008-workflow/spec.md
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
@@ -5621,6 +5643,7 @@ records:
 | Task 6B — Operations 04–06 | Completed the frozen `124`-row slice as `92` exact Git moves and `32` README merges followed by exact index-backed source removal. | Every domain-first target is present, all `32` merge sources and all 04–06 role roots are absent, and no collision or emulated copy/delete was used. The corrected recursive immutable-source/current-target check proves every relevant current non-archive Operations navigation is included by the applicable consolidated domain README, including incident records reachable from `31/32` Task 6B source blobs; it also rejects Stage 98 navigation. Before removal the controller saved `/tmp/task6b-readme-merge-sources.AVDQun.tar` (32 entries; SHA-256 `e3c87154b9b59d281b3f746d0b993d66e4626b40989e86e135ead114ab204038`). | Initial RED `5` tests/`91` failures/`1` missing-target error then GREEN `5/5`; review round 1 RED `6` tests/`32` failures then GREEN `6/6`; post-remediation changed metadata `156/0`; alignment `341` docs / `2,103` links / `0` failures; both diff checks pass. Original full-gate evidence: metadata `238/238`; contracts `0`; traceability `46/0`; stable taxonomy `14/14`; manifest `23/23`; provider drift `0`. | `403486b7` |
 | Task 6C — Operations 07–09 | Completed the exact frozen `59`-row slice as `53` native Git moves and `6` README merges followed by exact index-backed source removal. The result contains `50` existing roles under `20` stable subjects; no role was invented. | All `59` recorded `source_commit:legacy_path` objects resolve to regular blobs; all `53` unique targets are present and all sources and 07–09 role roots are absent. The recursive immutable-source/current-target regression proves the six merge sources preserve the applicable `11`, `11`, and `28` stable role targets plus all five current Operations indexes, including incidents and excluding Stage 98. Before removal the controller saved `/tmp/task6c-readme-merge-sources.G1FQeJ.tar` (6 entries; SHA-256 `2fe5e2fe5e9a3a005c3e2fb5f39a70407c382dcb88333a2d66bc4adc9cf387b7`). | Initial RED `6` tests / `52` failures / `1` expected missing-target error; pre-removal `5/6`; migration GREEN `6/6`. Post-remediation changed metadata `82/0`; full metadata `238/238`; contracts `0`; traceability `46/0`; alignment `335` docs / `1,974` links / `0`; stable taxonomy `14/14`; manifest `23/23`; provider drift `0`; both diff checks pass. Independent review returned `CHANGES_REQUIRED C0/I1/M1`; round 1 restored nine generator-owned summary rows to immutable owner provenance and added a direct fail-closed regression (RED nine missing/nine unexpected pairs; GREEN `1/1`, Operations `7/7`). Scoped re-review is FINAL APPROVED (`C0/I0/M1`): the Important is addressed with no new Critical or Important finding. The display-label Minor remains deferred to Task 13. | `e9bfa311` |
 | Task 6D — Operations 10–12 and final root | Completed the exact frozen `37`-row boundary as `27` native Git moves, `9` README merges, and `1` root README rewrite. The result contains exactly `24` existing roles under eight stable subjects and publishes only the root, 13 domain, incidents, and releases indexes; no role or subject README was invented. | Every `source_commit:legacy_path` resolves to a regular blob; all `27` unique move targets are present and all move sources, nine merge sources, and three role roots are absent. Immutable-source preservation is GREEN for all nine merge sources with zero missing navigation. Before exact index removal the controller saved `/tmp/task6d-readme-merge-sources.XPHLTB.tar` (9 entries; SHA-256 `b94dfd94b836e202cba2e4afc671cd7cb3323fefc58fb1b64b58afbab4ba0641`). | Initial RED `10` tests / `31` failures / `1` error; immutable gate `3/3`; authoritative metadata `239/239`. Initial review was `CHANGES_REQUIRED C0/I1/M1`: three active policy scopes still published deleted role roots; the Stage 05-wide remediation RED also found one current runbook note. All four now use domain-first paths, and the new negative regression rejects generic parallel-root publications while leaving immutable provenance untouched. Remediation GREEN: focused `1/1`, Operations `12/12`, affected tests `3/3`, changed metadata `selected=66 violations=0`, alignment `326` docs / `1,832` links / `0`, Stage 05 parallel-root publications `0`, and diff hygiene pass. Promoted lifecycle retains `73` later-wave findings with exact Task 6D subset `0`. Scoped re-review is FINAL APPROVED (`C0/I0/M1`): original Important ADDRESSED, no new Critical or Important finding, display-label Minor deferred to Task 13. | `37f02628` |
+| Task 7 — Stage 90/98 and root archive | Completed the exact `169`-row slice as `75` moves, `38` archives, `40` rewrites, and `16` deletes. The bounded ledger repair preserves the `796` baseline rows, adds exactly three post-baseline rows, renumbers nine Operations tombstones to `ref-0086..0094`, and co-locates 11 Plan/Task rows under `chg-0143..0151`. Native execution used `106` initial Git moves plus `11` corrective packet moves; no move was emulated with copy/delete. | Every union row resolves `source_commit:legacy_path` to a regular blob; target and artifact identities are unique and profile-valid. Stage 90 has stable `ref-*` paths, Stage 98 is the sole archive, Windows is `ref-0095` with exact commit/blob provenance, and no tracked or filesystem root `archive/` remains. Immutable ref-0069 is relpath/byte/provenance bound at SHA-256 `4c061d2a4d9bb494db97318280d451f9cdcc7748bfcbbe021fb1436fe6398a67`; exact copies at unrelated candidate paths, unbound programmatic calls, and byte/target/consumer mutations fail closed. Strict `observed_at` validation and the five typed pack-index body envelopes are enforced. Round 2 rebinds the seven live Python consumers to exact ref-0068/ref-0074/ref-0021/ref-0031 targets while retaining immutable manifest row values and byte-pinning ref-0074 at SHA-256 `ccf940b06b8ebb4ff48638287cf38ca4c983e9da560f6114fe7e7308f24834c1`. | Initial independent review was `CHANGES_REQUIRED C0/I3/M0`; remediation round 1 received scoped APPROVED `C0/I0/M0`. Mandatory Python review was `CHANGES_REQUIRED C0/I1/M0`; remediation round 2 received Python scoped FINAL APPROVED `C0/I0/M0`. The original Python Important is addressed with no new Critical, Important, or Minor finding. Exact Round 2 RED was seven FileNotFound errors; GREEN is `7/7`, Task 7 focused `20/20` in `96.484s`, changed metadata `165/0`, security readiness fresh, syntax and both diff checks pass. Promoted retains exactly `47` later-wave findings with Task 7 subset zero; target-manifest `21`, successor-delta `60`, and broader Operations/security semantics remain later-wave debt and were not altered. | `FINAL APPROVED; COMMIT PENDING` |
 
 ## Related Documents
 

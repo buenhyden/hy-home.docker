@@ -52,7 +52,7 @@ docs/90.references/data/kubernetes/
 
 ## Current References
 
-- [docker-compose-to-k3s-migration.md](./docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
+- [docker-compose-to-k3s-migration.md](ref-0077-docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
 
 ## Reference Rules
 

@@ -185,7 +185,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
         ]
         paths.append(
             ROOT
-            / "docs/90.references/data/security/supply-chain-sample-service.md"
+            / "docs/90.references/data/security/ref-0079-supply-chain-sample-service.md"
         )
         for path in paths:
             with self.subTest(path=path):

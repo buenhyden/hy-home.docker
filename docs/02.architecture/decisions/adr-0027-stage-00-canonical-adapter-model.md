@@ -108,4 +108,4 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
 - **Architecture Description**: [Agent Governance Canonical Adapter Architecture Description](../descriptions/ad-0027-agent-governance-canonical-adapter.md)
 - **Current Plan**: Agent Governance Decision Items and Attachment-Gap Plan
 - **Current Task**: Agent Governance Missing Items Implementation Task
-- **Related ADR**: [ADR-0026: Standardize infra_net Compose Network](./adr-0026-standardize-infra-net.md)
+- **Related ADR**: [ADR-0026: Standardize infra_net Compose Network](adr-0026-standardize-infra-net.md)

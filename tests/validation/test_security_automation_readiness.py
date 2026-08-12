@@ -8,9 +8,13 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 GENERATOR = "scripts/validation/generate-security-automation-readiness.sh"
-AUDIT_PACK = (
+AUTOMATION_AUDIT = (
     ROOT
-    / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
+    / "docs/90.references/audits/ref-0021-automation-candidates.md"
+)
+SECURITY_AUDIT = (
+    ROOT
+    / "docs/90.references/audits/ref-0031-security-framework-maturity.md"
 )
 
 
@@ -73,9 +77,7 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
             )
 
     def test_canonical_security_leaf_preserves_the_three_signal_boundary(self) -> None:
-        security_audit = (AUDIT_PACK / "security-framework-maturity.md").read_text(
-            encoding="utf-8"
-        )
+        security_audit = SECURITY_AUDIT.read_text(encoding="utf-8")
         self.assertIn("satisfies only `SEC-AUTO-008`", security_audit)
         self.assertIn("broad dependency SCA (`SEC-AUTO-012`)", security_audit)
         self.assertIn(
@@ -84,15 +86,13 @@ class SecurityAutomationReadinessTests(unittest.TestCase):
         )
 
     def test_canonical_automation_leaf_routes_broad_gaps_to_spec_126(self) -> None:
-        automation_audit = (AUDIT_PACK / "automation-candidates.md").read_text(
-            encoding="utf-8"
-        )
+        automation_audit = AUTOMATION_AUDIT.read_text(encoding="utf-8")
         self.assertIn(
             "`SEC-AUTO-012` and `SEC-AUTO-013` remain `Gap`", automation_audit
         )
         self.assertIn(
-            "[draft Spec 126]"
-            "(../../../03.specs/126-security-supply-chain-remediation/spec.md)",
+            "`SEC-AUTO-012` and `SEC-AUTO-013` remain `Gap` and route to "
+            "draft Spec 126",
             automation_audit,
         )
 

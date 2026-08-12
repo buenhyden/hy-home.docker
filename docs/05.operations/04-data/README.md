@@ -50,9 +50,9 @@ evidence, rollback or recovery, and escalation boundaries.
 
 ## Related Documents
 
-- [Operations index](../README.md)
+- [Operations index](README.md)
 - [Data infrastructure](../../../infra/04-data/README.md)
-- [Guides index](../README.md)
-- [Policies index](../README.md)
-- [Runbooks index](../README.md)
+- [Guides index](README.md)
+- [Policies index](README.md)
+- [Runbooks index](README.md)
 - [Incident records](../incidents/README.md)

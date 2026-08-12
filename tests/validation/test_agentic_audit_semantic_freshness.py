@@ -143,11 +143,8 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             pathlib.Path(contract["audit_index"]),
             pathlib.Path(contract["overview"]),
             pathlib.Path(contract["task_evidence"]),
-            pathlib.Path(contract["canonical_pack"]) / "README.md",
-            pathlib.Path(
-                "docs/90.references/audits/"
-                "2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md"
-            ),
+            pathlib.Path(contract["canonical_pack"]) / "ref-0019-readme.md",
+            pathlib.Path(contract["canonical_pack"]) / "ref-0033-readme.md",
             CONTRACT,
         }
         required_paths.update(
@@ -226,7 +223,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
         ).read_text(encoding="utf-8")
         matrix = (
-            ROOT / "docs/90.references/data/governance/audit-implementation-matrix.md"
+            ROOT / "docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md"
         ).read_text(encoding="utf-8")
         return workflow, repo_contracts, generator, matrix
 
@@ -393,7 +390,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("audit index", "required heading")
 
     def test_non_active_canonical_readme_fails(self) -> None:
-        path = self.repo / self.contract["canonical_pack"] / "README.md"
+        path = self.repo / self.contract["canonical_pack"] / "ref-0019-readme.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: active", "status: superseded", 1), encoding="utf-8"
@@ -401,10 +398,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("canonical README", "status: active")
 
     def test_non_superseded_2026_07_07_readme_fails(self) -> None:
-        path = self.repo / (
-            "docs/90.references/audits/"
-            "2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md"
-        )
+        path = self.repo / self.contract["canonical_pack"] / "ref-0033-readme.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("status: superseded", "status: active", 1), encoding="utf-8"

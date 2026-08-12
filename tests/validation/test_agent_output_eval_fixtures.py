@@ -16,7 +16,7 @@ from unittest import mock
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE = ROOT / "scripts/validation/agent_output_eval.py"
 RUNNER = ROOT / "scripts/validation/run-agent-output-eval-fixtures.sh"
-CATALOG = ROOT / "docs/90.references/data/governance/agent-output-eval-fixtures.md"
+CATALOG = ROOT / "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md"
 CONTRACT = ROOT / "docs/00.agent-governance/contracts/agent-catalog.yaml"
 
 EXPECTED_FIXTURE_IDS = (

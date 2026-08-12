@@ -51,7 +51,7 @@ CONTRACT_RELATIVE_PATHS = MappingProxyType(
     }
 )
 RETIREMENT_LEDGER_PATH = pathlib.PurePosixPath(
-    "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+    "docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml"
 )
 CURRENT_MEMORY_PATH = "docs/00.agent-governance/memory/current.md"
 CURRENT_MEMORY_MAX_BYTES = 32 * 1024
@@ -2897,7 +2897,7 @@ def _validate_catalog_contract(
                 source,
             )
         expected_paths = {
-            "fixture_catalog_path": "docs/90.references/data/governance/agent-output-eval-fixtures.md",
+            "fixture_catalog_path": "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md",
             "scorer_path": "scripts/validation/agent_output_eval.py",
             "runner_path": "scripts/validation/run-agent-output-eval-fixtures.sh",
             "test_path": "tests/validation/test_agent_output_eval_fixtures.py",

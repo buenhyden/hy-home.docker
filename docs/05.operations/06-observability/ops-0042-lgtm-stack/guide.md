@@ -111,4 +111,4 @@ N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 �
 - [Alertmanager guide](../ops-0039-alertmanager/guide.md)
 - [Pushgateway guide](../ops-0046-pushgateway/guide.md)
 - [Pyroscope guide](../ops-0047-pyroscope/guide.md)
-- [Runbook index](../README.md)
+- [Runbook index](../../README.md)

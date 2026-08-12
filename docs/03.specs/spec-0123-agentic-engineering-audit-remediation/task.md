@@ -89,9 +89,9 @@ the predecessor drift. It narrowly extends the allowed set to
 - `docs/00.agent-governance/memory/current.md` (handoff refresh only)
 - Generated artifacts whose freshness contracts the above changes trip, limited
   to regeneration by their registered generators:
-  `docs/90.references/llm-wiki/llm-wiki-index.md`,
-  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`, and
-  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`
+  `docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md`,
+  `docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md`, and
+  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`
 - For T-ARPE-012 only, inbound-link repair in
   `docs/03.specs/122-agentic-research-pack-consolidation/spec.md`,
   `docs/03.specs/122-agentic-research-pack-consolidation/README.md`,
@@ -400,7 +400,7 @@ LLM Wiki regeneration, and once after the semantic inventory regeneration.
 
 ## Related Documents
 
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [Canonical research pack](../../90.references/research/ref-0039-readme.md)
 - [Research category README](../../90.references/research/README.md)
 - [Spec 123 audit remediation](spec.md)
 - [Predecessor convergence Task](../spec-0134-agent-governance-canonical-convergence/task.md)

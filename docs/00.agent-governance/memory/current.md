@@ -307,10 +307,10 @@ status: active
 
 ## Evidence links
 
-- [Canonical research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
-- [Verification and validation leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/verification-validation.md)
-- [GitHub Actions platform leaf](../../90.references/research/2026-07-05-agentic-research-pack-refresh/github-actions-platform.md)
-- [Scope application matrix](../../90.references/research/2026-07-05-agentic-research-pack-refresh/scope-application-matrix.md)
+- [Canonical research pack](../../90.references/research/ref-0039-readme.md)
+- [Verification and validation leaf](../../90.references/research/ref-0085-verification-validation.md)
+- [GitHub Actions platform leaf](../../90.references/research/ref-0084-github-actions-platform.md)
+- [Scope application matrix](../../90.references/research/ref-0054-scope-application-matrix.md)
 - [Predecessor extension record](../../03.specs/spec-0123-agentic-engineering-audit-remediation/task.md)
 
 ## Next handoff

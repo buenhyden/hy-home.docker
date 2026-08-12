@@ -21,12 +21,11 @@ DEFAULT_CONTRACT = pathlib.Path(
     "scripts/validation/agentic-audit-semantic-contract.json"
 )
 EXPECTED_AUDIT_INDEX = "docs/90.references/audits/README.md"
-EXPECTED_CANONICAL_PACK = (
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
-)
-EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/implementation-overview.md"
+EXPECTED_CANONICAL_PACK = "docs/90.references/audits"
+EXPECTED_CANONICAL_README = f"{EXPECTED_CANONICAL_PACK}/ref-0019-readme.md"
+EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/ref-0026-implementation-overview.md"
 EXPECTED_TASK_EVIDENCE = (
-    "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md"
+    "docs/98.archive/changes/chg-0089-agentic-engineering-audit-remediation/task.md"
 )
 EXPECTED_TOP_LEVEL_PATHS = {
     "audit_index": EXPECTED_AUDIT_INDEX,
@@ -35,8 +34,7 @@ EXPECTED_TOP_LEVEL_PATHS = {
     "task_evidence": EXPECTED_TASK_EVIDENCE,
 }
 SUPERSEDED_2026_07_07_README = pathlib.Path(
-    "docs/90.references/audits/"
-    "2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md"
+    "docs/90.references/audits/ref-0033-readme.md"
 )
 EXPECTED_ASSERTION_IDS = {
     "DML-01",
@@ -333,7 +331,7 @@ def _validate_tracked_contract_paths(
     errors: list[str] = []
     declared = [
         ("audit index", contract["audit_index"]),
-        ("canonical pack README", f"{contract['canonical_pack']}/README.md"),
+        ("canonical pack README", EXPECTED_CANONICAL_README),
         ("overview", contract["overview"]),
         ("task evidence", contract["task_evidence"]),
         ("2026-07-07 README", SUPERSEDED_2026_07_07_README.as_posix()),
@@ -374,7 +372,7 @@ def _validate_lifecycle(repo_root: pathlib.Path, contract: dict[str, Any]) -> li
             if heading not in index_lines:
                 errors.append(f"audit index: required heading is missing: {heading}")
 
-    canonical_readme = repo_root / contract["canonical_pack"] / "README.md"
+    canonical_readme = repo_root / EXPECTED_CANONICAL_README
     canonical_text = _read_required(canonical_readme, "canonical README", errors)
     if canonical_text is not None and _frontmatter_status(canonical_text) != "active":
         errors.append("canonical README: required frontmatter status: active")

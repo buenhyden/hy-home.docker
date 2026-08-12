@@ -99,6 +99,6 @@ This document records execution status and verification evidence for targeted do
 
 - **Parent Plan**: [Targeted documentation precision remediation plan](plan.md)
 - **Execution README**: [Execution stage README](../../../03.specs/README.md)
-- **Root README**: [Root README](../../../README.md)
+- **Root README**: [Root README](../../../../README.md)
 - **Documentation Protocol**: [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Authoring Matrix**: [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

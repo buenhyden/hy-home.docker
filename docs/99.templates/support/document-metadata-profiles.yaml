@@ -18,6 +18,7 @@ common:
       parent_ids,
       created,
       updated,
+      observed_at,
       supersedes,
       completed_at,
       reviewed_at,
@@ -34,6 +35,7 @@ common:
     - parent_ids
     - created
     - updated
+    - observed_at
     - supersedes
     - completed_at
     - reviewed_at
@@ -54,11 +56,14 @@ common:
     - content_sha256
     - snapshot_reason
   inventory_excludes:
-    - docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+    - docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
+  archive_source_prefixes:
+    - docs/
+    - archive/
   generated_outputs:
-    docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
-    docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
-    docs/90.references/data/governance/target-surface-delta-summary.md: scripts/validation/check-target-surface-delta-contract.py
+    docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md: scripts/validation/check-document-corpus-lifecycle.py
+    docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md: scripts/validation/check-target-surface-delta-contract.py
   template_placeholders:
     artifact_id: <artifact-id>
     parent_id: <parent-artifact-id>
@@ -1419,7 +1424,7 @@ profiles:
 
   reference:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, next_review_at]
+    optional: [observed_at, supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
@@ -1455,7 +1460,7 @@ profiles:
 
   audit:
     required: [status, artifact_id, artifact_type, parent_ids]
-    optional: [supersedes, reviewed_at, next_review_at]
+    optional: [observed_at, supersedes, reviewed_at, next_review_at]
     forbidden:
       [
         type,
@@ -1532,7 +1537,7 @@ profiles:
 
   generated:
     required: [generated_by]
-    optional: [status]
+    optional: [status, observed_at]
     forbidden:
       [
         artifact_id,

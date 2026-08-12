@@ -32,7 +32,7 @@ MIGRATION_CONTRACT = (
 )
 TARGET_SURFACE_MANIFEST = (
     ROOT
-    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+    / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
 )
 CORPUS_MIGRATION_HUMAN_CONTRACT = (
     ROOT / "docs/99.templates/support/corpus-migration-contract.md"
@@ -413,6 +413,20 @@ class ProfileSchemaTests(unittest.TestCase):
     def test_transitions_reject_unknown_statuses(self) -> None:
         self.mutate_and_load(lambda values: values["common"]["transitions"]["active"].append("retired"))
 
+    def test_archive_source_prefixes_are_exact_and_bounded(self) -> None:
+        profiles = metadata.load_profiles(PROFILES)
+        self.assertEqual(
+            ["docs/", "archive/"],
+            profiles["common"]["archive_source_prefixes"],
+        )
+        for mutate in (
+            lambda values: values["common"].pop("archive_source_prefixes"),
+            lambda values: values["common"]["archive_source_prefixes"].append("/"),
+            lambda values: values["common"]["archive_source_prefixes"].reverse(),
+        ):
+            with self.subTest(mutate=mutate):
+                self.mutate_and_load(mutate)
+
     def test_frontmatter_order_requires_exact_unique_typed_keys(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(
@@ -423,6 +437,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "parent_ids",
                 "created",
                 "updated",
+                "observed_at",
                 "supersedes",
                 "completed_at",
                 "reviewed_at",
@@ -510,11 +525,11 @@ class ProfileSchemaTests(unittest.TestCase):
         profiles = metadata.load_profiles(PROFILES)
         self.assertEqual(
             {
-                "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md":
+                "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
-                "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md":
+                "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md":
                     "scripts/validation/check-document-corpus-lifecycle.py",
-                "docs/90.references/data/governance/target-surface-delta-summary.md":
+                "docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md":
                     "scripts/validation/check-target-surface-delta-contract.py",
             },
             profiles["common"]["generated_outputs"],
@@ -549,6 +564,7 @@ class ProfileSchemaTests(unittest.TestCase):
                 "parent_ids",
                 "created",
                 "updated",
+                "observed_at",
                 "supersedes",
                 "completed_at",
                 "reviewed_at",
@@ -1669,7 +1685,7 @@ class ArtifactInferenceTests(unittest.TestCase):
     def test_registered_generated_output_overrides_only_its_exact_reference_path(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
         generated = pathlib.Path(
-            "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+            "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
         )
         adjacent = generated.with_name("other-summary.md")
 
@@ -2316,12 +2332,12 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("type-inappropriate-key", self.codes(record))
 
     def test_registered_generator_owner_satisfies_generated_profile_without_frontmatter(self) -> None:
-        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
         record = self.record(path, {}, metadata.infer_artifact_type(pathlib.Path(path), self.profiles))
         self.assertEqual([], self.codes(record))
 
     def test_registered_generated_owner_rejects_conflicting_frontmatter_owner(self) -> None:
-        path = "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md"
+        path = "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md"
         record = self.record(
             path,
             {"generated_by": "scripts/example.py"},
@@ -2343,6 +2359,45 @@ class MetadataValidationTests(unittest.TestCase):
             "policy",
         )
         self.assertIn("invalid-reviewed-at", self.codes(record))
+
+    def test_observed_at_requires_strict_iso_date_or_datetime(self) -> None:
+        cases = (
+            (
+                "reference",
+                "docs/90.references/research/ref-9998-example.md",
+                {
+                    "status": "active",
+                    "artifact_id": "ref-9998",
+                    "artifact_type": "reference",
+                    "parent_ids": [],
+                    "observed_at": "yesterday",
+                },
+            ),
+            (
+                "audit",
+                "docs/90.references/audits/ref-9997-example.md",
+                {
+                    "status": "active",
+                    "artifact_id": "ref-9997",
+                    "artifact_type": "audit",
+                    "parent_ids": [],
+                    "observed_at": "not-a-date",
+                },
+            ),
+            (
+                "generated",
+                "docs/90.references/data/example.md",
+                {
+                    "status": "active",
+                    "generated_by": "scripts/example.py",
+                    "observed_at": "2026-13-40",
+                },
+            ),
+        )
+        for artifact_type, path, values in cases:
+            with self.subTest(artifact_type=artifact_type):
+                record = self.record(path, values, artifact_type)
+                self.assertIn("invalid-observed-at", self.codes(record))
 
     def test_generator_owner_rejects_absolute_and_traversal_paths(self) -> None:
         for generated_by in ("/tmp/generator.py", "scripts/../generator.py", "scripts\\generator.py"):
@@ -2374,6 +2429,37 @@ class MetadataValidationTests(unittest.TestCase):
         self.assertIn("invalid-archived-at", codes)
         self.assertIn("invalid-archive-reason", codes)
         self.assertIn("invalid-current-replacement", codes)
+
+    def test_archive_accepts_only_safe_registered_legacy_source_roots(self) -> None:
+        accepted = self.archive_record(
+            {
+                "archive_disposition": "withdrawn",
+                "archived_from": "archive/Windows-Network-IP.md",
+            },
+            remove=("current_replacement",),
+        )
+        self.assertNotIn("invalid-archived-from", self.codes(accepted))
+
+        for archived_from in (
+            "archive/../Windows-Network-IP.md",
+            "/archive/Windows-Network-IP.md",
+            "archive\\Windows-Network-IP.md",
+            "archive/",
+        ):
+            with self.subTest(archived_from=archived_from):
+                rejected = self.archive_record(
+                    {
+                        "archive_disposition": "withdrawn",
+                        "archived_from": archived_from,
+                    },
+                    remove=("current_replacement",),
+                )
+                self.assertIn("invalid-archived-from", self.codes(rejected))
+
+        replacement = self.archive_record(
+            {"current_replacement": "archive/Windows-Network-IP.md"}
+        )
+        self.assertIn("invalid-current-replacement", self.codes(replacement))
 
     def test_stage98_archive_keeps_sdlc_profile_behavior(self) -> None:
         record = self.archive_record()
@@ -2862,13 +2948,12 @@ class ReadmeProfileTests(unittest.TestCase):
     def test_audit_readme_count_preserves_its_historical_baseline(self) -> None:
         historical_claim = "all 231 tracked READMEs"
         claims = {
-            "frontmatter-template-readme-implementation.md": 2,
-            "sdlc-document-contracts-implementation.md": 1,
+            "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md": 2,
+            "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md": 1,
         }
-        audit_pack = ROOT / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack"
-        for name, expected_occurrences in claims.items():
-            with self.subTest(path=name):
-                text = (audit_pack / name).read_text(encoding="utf-8")
+        for path, expected_occurrences in claims.items():
+            with self.subTest(path=path):
+                text = (ROOT / path).read_text(encoding="utf-8")
                 self.assertEqual(expected_occurrences, text.count(historical_claim))
 
 

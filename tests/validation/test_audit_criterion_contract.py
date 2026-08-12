@@ -17,6 +17,7 @@ from audit_criterion_contract import (  # noqa: E402
     AuditCriterionContractError,
     DEFAULT_PACK,
     EXPECTED_TOTAL,
+    REPORT_FILES,
     REPORT_PREFIX_COUNTS,
     split_row,
     validate_pack,
@@ -33,7 +34,7 @@ class AuditCriterionContractTests(unittest.TestCase):
         self.tempdir.cleanup()
 
     def _report(self, name: str = "sdlc-quality-formatting-implementation.md") -> pathlib.Path:
-        return self.pack / name
+        return self.pack / REPORT_FILES[name]
 
     def _rewrite_criterion(self, criterion_id: str, mutate) -> None:
         report = self._report()

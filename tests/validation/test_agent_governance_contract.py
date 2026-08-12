@@ -23,7 +23,7 @@ MODULE = ROOT / "scripts/validation/agent_governance_contract.py"
 CONTRACT_DIR = ROOT / "docs/00.agent-governance/contracts"
 RETIREMENT_LEDGER = (
     ROOT
-    / "docs/90.references/data/governance/agent-governance-retirement-ledger.yaml"
+    / "docs/90.references/data/governance/ref-0063-agent-governance-retirement-ledger.yaml"
 )
 CONTRACT_FILES = (
     "agent-governance-artifacts.yaml",
@@ -70,7 +70,7 @@ def copy_task2_harness_surfaces(root: pathlib.Path) -> None:
         "scripts/validation/run-local-qa-gates.sh",
         "scripts/validation/validate-harness.sh",
         "tests/validation/test_agent_output_eval_fixtures.py",
-        "docs/90.references/data/governance/agent-output-eval-fixtures.md",
+        "docs/90.references/data/governance/ref-0064-agent-output-eval-fixtures.md",
         "docs/99.templates/templates/sdlc/task.template.md",
     ):
         source = ROOT / relative_path

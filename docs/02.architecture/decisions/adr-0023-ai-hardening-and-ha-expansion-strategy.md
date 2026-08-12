@@ -79,4 +79,4 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/spec-0009-ai/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
-- **Related ADR**: [./adr-adr-adr-adr-0008-ollama-openwebui-local-ai.md](./adr-0008-ollama-openwebui-local-ai.md)
+- **Related ADR**: [./adr-adr-adr-adr-0008-ollama-openwebui-local-ai.md](adr-0008-ollama-openwebui-local-ai.md)

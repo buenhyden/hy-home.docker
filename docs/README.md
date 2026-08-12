@@ -212,8 +212,8 @@ bash scripts/validation/check-doc-traceability.sh
 | Spec | [03.specs/096-llm-wiki-agent-first-completion/spec.md](03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md) |
 | Plan | 04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md |
 | Task evidence | 04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md |
-| Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md) |
-| Generated index | [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/llm-wiki-index.md) |
+| Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/ref-0083-repository-map.md) |
+| Generated index | [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/ref-0082-llm-wiki-index.md) |
 | Operations guide | [05.operations/guides/00-workspace/llm-wiki-maintenance.md](./05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md) |
 
 ## Related Documents
@@ -226,8 +226,8 @@ bash scripts/validation/check-doc-traceability.sh
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
 - [90.references/llm-wiki/README.md](90.references/llm-wiki/README.md)
-- [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md)
-- [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/llm-wiki-index.md)
+- [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/ref-0083-repository-map.md)
+- [90.references/llm-wiki/llm-wiki-index.md](90.references/llm-wiki/ref-0082-llm-wiki-index.md)
 - [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)

@@ -256,13 +256,13 @@ review verdicts. It does not duplicate planned implementation.
 - [Spec 135](spec.md)
 - [Spec 133](../spec-0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../spec-0134-agent-governance-canonical-convergence/spec.md)
-- [Canonical implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)
 - [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)
 - [Archive and retention contract](../../99.templates/support/archive-retention-contract.md)
-- [Existing target-surface manifest](../../90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml)
+- [Existing target-surface manifest](../../90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml)
 - [Existing target-surface checker](../../../scripts/validation/check-target-surface-contract.py)
 
 ### Verified Baseline
@@ -388,9 +388,9 @@ claiming its outer SHA makes the dependency graph immutable.
 - Create `scripts/validation/check-target-surface-delta-contract.py`.
 - Create `tests/validation/test_target_surface_delta_contracts.py`.
 - Create
-  `docs/90.references/data/governance/target-surface-delta-manifest.yaml`.
+  `docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml`.
 - Create
-  `docs/90.references/data/governance/target-surface-delta-summary.md`.
+  `docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md`.
 - Modify `docs/90.references/data/governance/README.md`.
 - Modify `docs/99.templates/support/document-metadata-profiles.yaml`.
 - Modify `scripts/validation/check-repo-contracts.sh`.
@@ -677,7 +677,7 @@ paths only; links and metadata pass.
 
 - Modify generated-by-script `infra/tech-stack.versions.json`.
 - Modify generated
-  `docs/90.references/data/docker/tech-stack-version-provenance.md`.
+  `docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md`.
 - Modify `scripts/hardening/check-all-hardening.sh`.
 - Create `tests/validation/test_tech_stack_version_contract.py`.
 - Modify current target documentation containing the six stale values:
@@ -1259,10 +1259,10 @@ Gate satisfied: the final specification and quality/security reviews of
 - Create `scripts/validation/ci_gate_contract.py`.
 - Create `tests/validation/test_ci_gate_contract.py`.
 - Modify
-  `docs/90.references/data/governance/target-surface-delta-manifest.yaml`
+  `docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml`
   with exact new-path rows.
 - Regenerate
-  `docs/90.references/data/governance/target-surface-delta-summary.md`.
+  `docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md`.
 - Modify `tests/validation/test_target_surface_delta_contracts.py` for exact
   path count, ownership, consumer, and pending-review assertions.
 - Append actual RED/GREEN/review evidence to the Task ledger.
@@ -1378,8 +1378,8 @@ git add \
   scripts/validation/ci_gate_contract.py \
   tests/validation/test_ci_gate_contract.py \
   tests/validation/test_target_surface_delta_contracts.py \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
 git commit -m "feat(ci): add typed gate contract"
 ```
@@ -1679,8 +1679,8 @@ git add \
   tests/validation/test_ci_gate_adapters.py \
   tests/validation/test_github_workflow_contract.py \
   tests/validation/test_target_surface_delta_contracts.py \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
 git commit -m "feat(ci): add typed gate runner"
 ```
@@ -1876,7 +1876,7 @@ python3 -m compileall -q \
   tests/validation/test_ci_gate_runner.py \
   tests/validation/test_ci_gate_adapters.py
 git diff --exit-code 17bb5cdd -- .github/workflow-contract.yml .github/workflows/ci-quality.yml
-git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surface-delta-manifest.yaml docs/90.references/data/governance/target-surface-delta-summary.md
+git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
@@ -2090,7 +2090,7 @@ python3 -m compileall -q \
   tests/validation/test_ci_gate_runner.py \
   tests/validation/test_ci_gate_adapters.py
 git diff --exit-code 17bb5cdd -- .github/workflow-contract.yml .github/workflows/ci-quality.yml
-git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/target-surface-delta-manifest.yaml docs/90.references/data/governance/target-surface-delta-summary.md
+git diff --exit-code 17bb5cdd -- docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md
 python3 scripts/validation/check-target-surface-delta-contract.py --mode advisory
 python3 scripts/validation/check-document-metadata.py --mode check-changed
 bash scripts/validation/check-doc-traceability.sh
@@ -2274,8 +2274,8 @@ git diff --exit-code 483d3a47 -- \
 git diff --exit-code 17bb5cdd -- \
   .github/workflow-contract.yml \
   .github/workflows/ci-quality.yml \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md
 TASK_4_2U_DESIGN_SUBJECT='docs(plan): record reconciled phase-owned runner checkpoint'
 TASK_4_2U_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2U_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2U_DESIGN_COMMIT"
@@ -2466,8 +2466,8 @@ git diff --exit-code 483d3a47 -- \
 git diff --exit-code 17bb5cdd -- \
   .github/workflow-contract.yml \
   .github/workflows/ci-quality.yml \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md
 TASK_4_2V_DESIGN_SUBJECT='docs(plan): record recovery-owned runner checkpoint'
 TASK_4_2V_DESIGN_COMMIT="$(git log --format=%H --grep="^${TASK_4_2V_DESIGN_SUBJECT}$")"
 test -n "$TASK_4_2V_DESIGN_COMMIT"
@@ -2780,8 +2780,8 @@ git add \
   tests/validation/test_github_workflow_contract.py \
   tests/validation/test_agent_governance_ci_routing.py \
   tests/validation/test_target_surface_delta_contracts.py \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
 git commit -m "ci(governance): cut over to typed gate projections"
 ```
@@ -15456,8 +15456,8 @@ python3 scripts/validation/check-target-surface-delta-contract.py \
 
 ```bash
 git add \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
 git commit -m "docs(task): close typed CI gate recovery"
 ```
@@ -15493,9 +15493,9 @@ Expected completion evidence:
 **Files:**
 
 - Modify
-  `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`.
+  `docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml`.
 - Modify
-  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md`.
+  `docs/90.references/audits/ref-0019-readme.md`.
 - Modify affected rows only in:
   `implementation-overview.md`,
   `automation-candidates.md`,
@@ -15503,11 +15503,11 @@ Expected completion evidence:
   `sdlc-quality-formatting-implementation.md`, and
   `security-framework-maturity.md`.
 - Modify
-  `docs/90.references/data/governance/audit-implementation-matrix.md`
+  `docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md`
   only through
   `scripts/validation/generate-audit-implementation-matrix.sh`.
 - Modify
-  `docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md`
+  `docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md`
   only through the metadata checker report mode.
 - Modify `scripts/validation/check-repo-contracts.sh` and
   `tests/validation/test_agent_governance_ci_routing.py` only for the updated
@@ -15577,7 +15577,7 @@ python3 -m unittest \
 bash scripts/validation/generate-audit-implementation-matrix.sh
 python3 scripts/validation/check-document-metadata.py \
   --mode report \
-  --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md
+  --output docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md
 ```
 
 - [ ] Update only the applicable delta-manifest review/evidence rows and
@@ -15600,7 +15600,7 @@ python3 scripts/validation/check-agentic-audit-semantic-freshness.py
 bash scripts/validation/generate-audit-implementation-matrix.sh --check
 python3 scripts/validation/check-document-metadata.py \
   --mode report \
-  --output docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md \
+  --output docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md \
   --check
 bash scripts/validation/check-repo-contracts.sh
 bash scripts/validation/check-doc-traceability.sh
@@ -15620,19 +15620,19 @@ enforcement; all cross-links resolve.
 
 ```bash
 git add \
-  docs/90.references/data/governance/github-actions-control-plane-observation.yaml \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md \
-  docs/90.references/data/governance/audit-implementation-matrix.md \
-  docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md \
+  docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml \
+  docs/90.references/audits/ref-0019-readme.md \
+  docs/90.references/audits/ref-0026-implementation-overview.md \
+  docs/90.references/audits/ref-0021-automation-candidates.md \
+  docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md \
+  docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md \
+  docs/90.references/audits/ref-0031-security-framework-maturity.md \
+  docs/90.references/data/governance/ref-0065-audit-implementation-matrix.md \
+  docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md \
   scripts/validation/check-repo-contracts.sh \
   tests/validation/test_agent_governance_ci_routing.py \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
 git commit -m "docs(audit): reconcile target surface evidence"
 ```
@@ -15652,10 +15652,10 @@ git commit -m "docs(task): record audit reconciliation review"
 **Files:**
 
 - Modify
-  `docs/90.references/data/governance/target-surface-delta-manifest.yaml`
+  `docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml`
   to set `enforcement: blocking` only after Tasks 1–5 have pass/pass reviews.
 - Regenerate
-  `docs/90.references/data/governance/target-surface-delta-summary.md`.
+  `docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md`.
 - Inspect `scripts/validation/check-repo-contracts.sh` and
   `scripts/validation/run-local-qa-gates.sh` with the exact
   `check-target-surface-delta-contract.py --mode advisory` search. Replace each
@@ -15732,9 +15732,9 @@ git commit -m "docs(task): record controlled all-files qa disposition"
 
 ```bash
 rg -c '^  spec_verdict: pending$' \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml
 rg -c '^  quality_verdict: pending$' \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml
 ```
 
   Both counts must equal 158; any existing `pass` or `fail` before this unified
@@ -15742,7 +15742,7 @@ rg -c '^  quality_verdict: pending$' \
 
 ```bash
 if rg -n '^  (spec_verdict|quality_verdict): (pass|fail)$' \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml; then
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml; then
   exit 1
 fi
 ```
@@ -15755,9 +15755,9 @@ fi
 
 ```bash
 rg -c '^  spec_verdict: pass$' \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml
 rg -c '^  quality_verdict: pass$' \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml
 ```
 
   Both counts must equal 158, and exact searches for pending or failed review
@@ -15765,7 +15765,7 @@ rg -c '^  quality_verdict: pass$' \
 
 ```bash
 if rg -n '^  (spec_verdict|quality_verdict): (pending|fail)$' \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml; then
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml; then
   exit 1
 fi
 ```
@@ -15839,8 +15839,8 @@ and repository contracts are green.
 
 ```bash
 git add \
-  docs/90.references/data/governance/target-surface-delta-manifest.yaml \
-  docs/90.references/data/governance/target-surface-delta-summary.md \
+  docs/90.references/data/governance/ref-0073-target-surface-delta-manifest.yaml \
+  docs/90.references/data/governance/ref-0074-target-surface-delta-summary.md \
   scripts/validation/check-repo-contracts.sh \
   scripts/validation/run-local-qa-gates.sh \
   docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md
@@ -18984,7 +18984,7 @@ is not applicable because neither surface is mutated.
 - [Task ledger](task.md)
 - [Spec 133](../spec-0133-target-surface-contract-convergence/spec.md)
 - [Spec 134](../spec-0134-agent-governance-canonical-convergence/spec.md)
-- [Canonical audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Canonical audit](../../90.references/audits/ref-0019-readme.md)
 - [GitHub governance](../../00.agent-governance/rules/github-governance.md)
 - [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
 - [README profile contract](../../99.templates/support/readme-profile-contract.md)

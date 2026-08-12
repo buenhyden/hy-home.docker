@@ -47,31 +47,31 @@ Audit reference는 task evidence나 incident timeline을 대체하지 않습니�
 
 ```text
 audits/
-├── 2026-07-03-workspace-document-contract-audit-pack/ # Workspace document contract audit reports
-├── 2026-07-04-document-restructure-audit-contract-archive/ # Document restructure audit, archive, contract, and QA reports
-├── 2026-07-05-agentic-engineering-implementation-audit-pack/ # Agentic engineering implementation-status audit reports
-├── 2026-07-07-agentic-engineering-implementation-audit-pack-update/ # Superseded mapping-only audit history
+├── ref-0001-readme.md # Workspace document contract audit index
+├── ref-0019-readme.md # Current implementation-status audit index
+├── ref-0033-readme.md # Superseded mapping-only audit history
+├── ref-<id>-<slug>.md # Stable audit reference artifact
 └── README.md # This file
 ```
 
 ## Canonical Current Audit
 
-- [Agentic engineering implementation audit references](./2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
+- [Agentic engineering implementation audit references](ref-0019-readme.md)
 - Role: the sole current implementation-status audit.
 
 ## Dated Historical Snapshots
 
-- [Workspace document contract audit references](./2026-07-03-workspace-document-contract-audit-pack/README.md) — evidence as of 2026-07-03; not current corpus truth.
-- [Document restructure audit references](./2026-07-04-document-restructure-audit-contract-archive/README.md) — evidence as of 2026-07-04; not current corpus truth.
+- [Workspace document contract audit references](ref-0001-readme.md) — evidence as of 2026-07-03; not current corpus truth.
+- [Document restructure audit references](ref-0012-readme.md) — evidence as of 2026-07-04; not current corpus truth.
 
 ## Supersession Ledgers
 
-- [2026-07-07 implementation audit update mapping](./2026-07-07-agentic-engineering-implementation-audit-pack-update/README.md) — mapping-only history; never a current status, count, or recommendation source.
+- [2026-07-07 implementation audit update mapping](ref-0033-readme.md) — mapping-only history; never a current status, count, or recommendation source.
 
 ## Naming Rules
 
-- SDLC-linked audit packs live under `<date>-<sdlc_key>/`.
-- Pack-level report files use descriptive names such as `gap-register.md` or `implementation-overview.md`.
+- Audit artifacts use `ref-<id>-<slug>.md`; a pack index uses `ref-<id>-readme.md`.
+- Store the observation date in `observed_at`, not in the path. Preserve body timeline dates as historical evidence.
 - Do not use `part-*.md` prefixes for finalized report files.
 
 ## How to Work in This Area

@@ -50,7 +50,7 @@ docs/90.references/data/glossary/
 
 ## Current References
 
-- [stable-reference-terms.md](./stable-reference-terms.md) - shared terms for reference-stage boundaries
+- [stable-reference-terms.md](ref-0062-stable-reference-terms.md) - shared terms for reference-stage boundaries
 
 ## How to Work in This Area
 
@@ -63,7 +63,7 @@ docs/90.references/data/glossary/
 ## Related Documents
 
 - [90.references](../../README.md)
-- [stable reference terms](./stable-reference-terms.md)
+- [stable reference terms](ref-0062-stable-reference-terms.md)
 - [docs index](../../../README.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)

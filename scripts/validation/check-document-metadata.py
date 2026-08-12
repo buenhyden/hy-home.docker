@@ -458,25 +458,25 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/05.operations/runbooks/09-tooling/k6.md",
     "docs/05.operations/runbooks/09-tooling/locust.md",
     "docs/05.operations/runbooks/09-tooling/performance-testing.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
-    "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md",
+    "docs/90.references/audits/ref-0019-readme.md",
+    "docs/90.references/audits/ref-0021-automation-candidates.md",
+    "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
+    "docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md",
+    "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md",
+    "docs/90.references/audits/ref-0026-implementation-overview.md",
+    "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md",
+    "docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md",
+    "docs/90.references/audits/ref-0031-security-framework-maturity.md",
     "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
-    "docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md",
-    "docs/90.references/llm-wiki/llm-wiki-index.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md",
-    "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md",
+    "docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md",
+    "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
+    "docs/90.references/research/ref-0039-readme.md",
+    "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
+    "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
+    "docs/90.references/research/ref-0045-document-metadata-lifecycle.md",
+    "docs/90.references/research/ref-0053-quality-ci-formatting.md",
+    "docs/90.references/research/ref-0056-security-governance.md",
+    "docs/90.references/research/ref-0058-workspace-baseline.md",
     "docs/99.templates/support/README.md",
     "docs/99.templates/support/archive-retention-contract.md",
     "docs/99.templates/support/common-document-contract.md",
@@ -492,8 +492,8 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
 TARGET_SURFACE_DECLARED_OUTPUTS = (
     "docs/04.execution/plans/2026-07-18-target-surface-contract-convergence.md",
     "docs/04.execution/tasks/2026-07-18-target-surface-contract-convergence.md",
-    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md",
-    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml",
+    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",
+    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml",
     "docs/99.templates/templates/common/content-archive.template.md",
     "scripts/validation/check-target-surface-contract.py",
     "scripts/validation/target_surface_contract.py",
@@ -611,6 +611,7 @@ EXPECTED_FRONTMATTER_ORDER = (
     "parent_ids",
     "created",
     "updated",
+    "observed_at",
     "supersedes",
     "completed_at",
     "reviewed_at",
@@ -665,6 +666,7 @@ EXPECTED_ARCHIVE_CONDITIONS = {
         "forbidden_for": ["git-history"],
     },
 }
+EXPECTED_ARCHIVE_SOURCE_PREFIXES = ("docs/", "archive/")
 EXPECTED_DOCUMENT_FAMILIES = {
     "sdlc": (
         "prd",
@@ -800,35 +802,35 @@ APPROVED_MIGRATION_PATHS = frozenset(
         "docs/03.specs/123-agentic-engineering-audit-remediation/spec.md",
         "docs/04.execution/plans/2026-07-11-agentic-engineering-audit-remediation.md",
         "docs/04.execution/tasks/2026-07-11-agentic-engineering-audit-remediation.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/README.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/document-metadata-lifecycle.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-instructions-vibe-coding.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/agent-model-selection.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/security-governance.md",
-        "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/implementation-overview.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/harness-engineering-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/provider-harness-loop-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/workspace-rules-environment-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-document-contracts-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-template-readme-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/sdlc-quality-formatting-implementation.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/compose-infrastructure-operations-readiness.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md",
-        "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/agent-instructions-catalog-vibe-models.md",
+        "docs/90.references/research/ref-0039-readme.md",
+        "docs/90.references/research/ref-0045-document-metadata-lifecycle.md",
+        "docs/90.references/research/ref-0040-agent-instructions-vibe-coding.md",
+        "docs/90.references/research/ref-0058-workspace-baseline.md",
+        "docs/90.references/research/ref-0047-harness-engineering.md",
+        "docs/90.references/research/ref-0049-loop-engineering.md",
+        "docs/90.references/research/ref-0051-provider-implementation-comparison.md",
+        "docs/90.references/research/ref-0052-provider-model-landscape.md",
+        "docs/90.references/research/ref-0041-agent-model-selection.md",
+        "docs/90.references/research/ref-0042-ai-agent-catalogs.md",
+        "docs/90.references/research/ref-0057-spec-driven-sdlc.md",
+        "docs/90.references/research/ref-0055-sdlc-document-roles.md",
+        "docs/90.references/research/ref-0053-quality-ci-formatting.md",
+        "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
+        "docs/90.references/research/ref-0056-security-governance.md",
+        "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
+        "docs/90.references/audits/ref-0019-readme.md",
+        "docs/90.references/audits/ref-0026-implementation-overview.md",
+        "docs/90.references/audits/ref-0025-harness-engineering-implementation.md",
+        "docs/90.references/audits/ref-0027-loop-engineering-implementation.md",
+        "docs/90.references/audits/ref-0028-provider-harness-loop-implementation.md",
+        "docs/90.references/audits/ref-0032-workspace-rules-environment-implementation.md",
+        "docs/90.references/audits/ref-0029-sdlc-document-contracts-implementation.md",
+        "docs/90.references/audits/ref-0024-frontmatter-template-readme-implementation.md",
+        "docs/90.references/audits/ref-0030-sdlc-quality-formatting-implementation.md",
+        "docs/90.references/audits/ref-0021-automation-candidates.md",
+        "docs/90.references/audits/ref-0022-compose-infrastructure-operations-readiness.md",
+        "docs/90.references/audits/ref-0031-security-framework-maturity.md",
+        "docs/90.references/audits/ref-0020-agent-instructions-catalog-vibe-models.md",
         "docs/99.templates/templates/sdlc/prd.template.md",
         "docs/99.templates/templates/sdlc/ard.template.md",
         "docs/99.templates/templates/sdlc/adr.template.md",
@@ -2832,6 +2834,7 @@ def validate_record(
     temporal_fields = (
         "created",
         "updated",
+        "observed_at",
         "completed_at",
         "reviewed_at",
         "next_review_at",
@@ -2865,14 +2868,33 @@ def validate_record(
         )
 
     if record.artifact_type == "archive":
-        archive_path_fields = (
-            ("archived_from", "invalid-archived-from", "docs/"),
-            ("current_replacement", "invalid-current-replacement", "docs/"),
-        )
-        for key, code, prefix in archive_path_fields:
-            value = record.metadata.get(key)
-            if value is not None and not _safe_repo_path(value, prefix):
-                findings.append(_finding(record, code, f"{key} must be a safe canonical {prefix} repository path"))
+        archived_from = record.metadata.get("archived_from")
+        archive_source_prefixes = common.get("archive_source_prefixes", [])
+        if archived_from is not None and not (
+            isinstance(archive_source_prefixes, list)
+            and any(
+                _safe_repo_path(archived_from, prefix)
+                for prefix in archive_source_prefixes
+            )
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-archived-from",
+                    "archived_from must be a safe canonical path under a registered historical source root",
+                )
+            )
+        current_replacement = record.metadata.get("current_replacement")
+        if current_replacement is not None and not _safe_repo_path(
+            current_replacement, "docs/"
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "invalid-current-replacement",
+                    "current_replacement must be a safe canonical docs/ repository path",
+                )
+            )
         archive_reason = record.metadata.get("archive_reason")
         if archive_reason is not None and (not isinstance(archive_reason, str) or not archive_reason.strip()):
             findings.append(_finding(record, "invalid-archive-reason", "archive_reason must be a non-empty string"))
@@ -3275,8 +3297,8 @@ def load_migration_contract(
         "docs/04.execution/plans/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
         "docs/04.execution/tasks/2026-07-14-document-corpus-lifecycle-migration-foundation.md",
         "docs/90.references/data/governance/document-corpus-lifecycle/README.md",
-        "docs/90.references/data/governance/document-corpus-lifecycle/foundation-summary.md",
-        "docs/90.references/data/governance/document-corpus-lifecycle/foundation.yaml",
+        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0066-foundation-summary.md",
+        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml",
         "docs/99.templates/support/archive-retention-contract.md",
         "docs/99.templates/support/corpus-migration-contract.md",
         "docs/99.templates/support/document-corpus-migration-contract.yaml",
@@ -3353,11 +3375,11 @@ def load_migration_contract(
             "target-surface-convergence enforcement must be advisory or blocking"
         )
     if target_wave.get("manifest_path") != (
-        "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
     ):
         raise ProfileError("target-surface-convergence manifest_path must be exact")
     if target_wave.get("summary_path") != (
-        "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md"
+        "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md"
     ):
         raise ProfileError("target-surface-convergence summary_path must be exact")
     _exact_string_list(
@@ -4123,6 +4145,7 @@ def load_profiles(
         "globally_forbidden",
         "typed_keys",
         "inventory_excludes",
+        "archive_source_prefixes",
     )
     common_lists: dict[str, list[str]] = {}
     for key in common_list_names:
@@ -4132,6 +4155,10 @@ def load_profiles(
         if len(value) != len(set(value)):
             raise ProfileError(f"common.{key} must not contain duplicates")
         common_lists[key] = value
+    if tuple(common_lists["archive_source_prefixes"]) != EXPECTED_ARCHIVE_SOURCE_PREFIXES:
+        raise ProfileError(
+            "common.archive_source_prefixes must define the exact historical archive source roots"
+        )
     frontmatter_order = common.get("frontmatter_order")
     if not isinstance(frontmatter_order, list) or not all(
         isinstance(item, str) and item for item in frontmatter_order
@@ -5582,7 +5609,7 @@ def render_report(
         "generated_by: scripts/validation/check-document-metadata.py",
         "---",
         "",
-        "<!-- Target: docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md -->",
+        "<!-- Target: docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md -->",
         "",
         "# Reference: Frontmatter Semantic Inventory",
         "",

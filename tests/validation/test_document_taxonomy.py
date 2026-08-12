@@ -22,7 +22,7 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
     "docs/00.agent-governance/memory/progress.md",
     "docs/04.execution/",
     "docs/90.references/audits/",
-    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence-summary.md",
+    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0068-target-surface-convergence-summary.md",
     "docs/90.references/research/2026-07-05-agentic-research-pack-refresh/",
     "docs/98.archive/",
     "graphify-out/",

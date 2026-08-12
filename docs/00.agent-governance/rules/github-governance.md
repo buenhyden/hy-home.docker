@@ -12,7 +12,7 @@ Repo-local stricter rules always override this document; never weaken them on th
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
 - This is an agent behavior contract, not evidence of applied GitHub settings.
   The approved dated public snapshot is
-  `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`;
+  `docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml`;
   its control-plane verification and observed failure root cause are both
   `unverified`.
 - "No exceptions" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary.
@@ -240,7 +240,7 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `docs/00.agent-governance/memory/progress.md`
 - `.github/INDEX.md`
 - `.github/rulesets/main-protection.md`
-- `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`
+- `docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml`
 - `docs/05.operations/00-workspace/ops-<id>-release-management/runbook.md`
 
 ## References

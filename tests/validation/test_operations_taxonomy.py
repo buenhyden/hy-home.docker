@@ -11,14 +11,14 @@ ROOT = Path(__file__).resolve().parents[2]
 LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
 TARGET_SURFACE_MANIFEST = (
     ROOT
-    / "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml"
+    / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
 )
 TARGET_SURFACE_SUMMARY = TARGET_SURFACE_MANIFEST.with_name(
-    "target-surface-convergence-summary.md"
+    "ref-0068-target-surface-convergence-summary.md"
 )
 FRONTMATTER_SEMANTIC_INVENTORY = (
     ROOT
-    / "docs/90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/frontmatter-semantic-inventory.md"
+    / "docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md"
 )
 MIGRATED_DOMAINS = (
     "00-workspace",
@@ -268,7 +268,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
             for path in active_root.rglob("*.md")
         ] + [
             ROOT / "infra/04-data/lake-and-object/README.md",
-            ROOT / "docs/90.references/llm-wiki/llm-wiki-index.md",
+            ROOT / "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
         ]
         violations: list[str] = []
         for path in active_consumers:

@@ -43,19 +43,19 @@ status: active
 
 | Domain | Operations subjects |
 | --- | --- |
-| [00 Workspace](./00-workspace/README.md) | workspace-level setup, controls, release, and shared procedures |
-| [01 Gateway](./01-gateway/README.md) | edge routing, proxy, certificate, and access operations |
-| [02 Auth](./02-auth/README.md) | authentication and identity services |
-| [03 Security](./03-security/README.md) | security controls, scanning, and response procedures |
-| [04 Data](./04-data/README.md) | databases, storage, backup, and data services |
-| [05 Messaging](./05-messaging/README.md) | messaging and notification services |
-| [06 Observability](./06-observability/README.md) | monitoring, metrics, logs, and alerting |
-| [07 Workflow](./07-workflow/README.md) | workflow and automation services |
-| [08 AI](./08-ai/README.md) | AI services and model operations |
-| [09 Tooling](./09-tooling/README.md) | testing, registry, synchronization, and IaC tooling |
-| [10 Communication](./10-communication/README.md) | mail operations |
-| [11 Laboratory](./11-laboratory/README.md) | dashboard and laboratory support services |
-| [12 Infra Net](./12-infra-net/README.md) | infrastructure network standardization |
+| [00 Workspace](00-workspace/README.md) | workspace-level setup, controls, release, and shared procedures |
+| [01 Gateway](01-gateway/README.md) | edge routing, proxy, certificate, and access operations |
+| [02 Auth](02-auth/README.md) | authentication and identity services |
+| [03 Security](03-security/README.md) | security controls, scanning, and response procedures |
+| [04 Data](04-data/README.md) | databases, storage, backup, and data services |
+| [05 Messaging](05-messaging/README.md) | messaging and notification services |
+| [06 Observability](06-observability/README.md) | monitoring, metrics, logs, and alerting |
+| [07 Workflow](07-workflow/README.md) | workflow and automation services |
+| [08 AI](08-ai/README.md) | AI services and model operations |
+| [09 Tooling](09-tooling/README.md) | testing, registry, synchronization, and IaC tooling |
+| [10 Communication](10-communication/README.md) | mail operations |
+| [11 Laboratory](11-laboratory/README.md) | dashboard and laboratory support services |
+| [12 Infra Net](12-infra-net/README.md) | infrastructure network standardization |
 | [Incidents](./incidents/README.md) | incident packets and postmortems |
 | [릴리스](./releases/README.md) | executed release evidence |
 
@@ -92,7 +92,7 @@ status: active
 
 ## Related Documents
 
-- [Docs index](../README.md)
+- [Docs index](README.md)
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)
 - [Specs, Plans, and Tasks](../03.specs/README.md)

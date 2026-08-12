@@ -119,4 +119,4 @@ This plan cleans up only the documentation entrypoints that humans see first and
 - **Execution Task**: [../tasks/2026-05-18-docs-bounded-consistency-audit.md](task.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../../00.agent-governance/rules/stage-authoring-matrix.md)
-- **Root README**: [../../../README.md](../../../README.md)
+- **Root README**: [../../../README.md](../../../../README.md)

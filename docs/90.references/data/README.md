@@ -69,27 +69,27 @@ data/
 ## Current References
 
 - [docker/README.md](./docker/README.md) - Docker image/version drift, registry, and runtime reference rules
-- [docker/compose-profile-service-coverage.md](./docker/compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
-- [docker/image-version-interpretation.md](./docker/image-version-interpretation.md) - Docker image/version source interpretation rules
-- [docker/tech-stack-version-provenance.md](./docker/tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
+- [docker/compose-profile-service-coverage.md](docker/ref-0059-compose-profile-service-coverage.md) - generated Docker Compose profile/service coverage snapshot
+- [docker/image-version-interpretation.md](docker/ref-0060-image-version-interpretation.md) - Docker image/version source interpretation rules
+- [docker/tech-stack-version-provenance.md](docker/ref-0061-tech-stack-version-provenance.md) - generated tech-stack registry drift severity and source provenance snapshot
 - [glossary/README.md](./glossary/README.md) - stable reference terminology category
-- [glossary/stable-reference-terms.md](./glossary/stable-reference-terms.md) - shared terms for reference-stage boundaries
+- [glossary/stable-reference-terms.md](glossary/ref-0062-stable-reference-terms.md) - shared terms for reference-stage boundaries
 - [governance/README.md](./governance/README.md) - governance routing reference data category
-- [governance/agent-output-eval-fixtures.md](./governance/agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
-- [governance/audit-implementation-matrix.md](./governance/audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
+- [governance/agent-output-eval-fixtures.md](governance/ref-0064-agent-output-eval-fixtures.md) - agent-output eval fixture catalog and local advisory runner contract for docs, provider, and infra tasks
+- [governance/audit-implementation-matrix.md](governance/ref-0065-audit-implementation-matrix.md) - generated audit implementation matrix snapshot for report coverage, overview categories, candidate closure, generated evidence surfaces, and residual gap signals
 - [governance/document-corpus-lifecycle/README.md](./governance/document-corpus-lifecycle/README.md) - document-corpus lifecycle manifest and summary category
-- [governance/document-corpus-lifecycle/foundation.yaml](./governance/document-corpus-lifecycle/foundation.yaml) - reviewed blocking Foundation migration manifest
-- [governance/document-corpus-lifecycle/foundation-summary.md](./governance/document-corpus-lifecycle/foundation-summary.md) - generator-owned safe Foundation summary
-- [governance/gap-to-stage-routing.md](./governance/gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
-- [governance/provider-hook-parity-matrix.md](./governance/provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
+- [governance/document-corpus-lifecycle/foundation.yaml](governance/document-corpus-lifecycle/ref-0067-foundation.yaml) - reviewed blocking Foundation migration manifest
+- [governance/document-corpus-lifecycle/foundation-summary.md](governance/document-corpus-lifecycle/ref-0066-foundation-summary.md) - generator-owned safe Foundation summary
+- [governance/gap-to-stage-routing.md](governance/ref-0070-gap-to-stage-routing.md) - Stage 00 gap-to-stage routing advisory reference
+- [governance/provider-hook-parity-matrix.md](governance/ref-0072-provider-hook-parity-matrix.md) - generated provider hook parity matrix and Gemini behavioral reminder checklist
 - [hads/README.md](./hads/README.md) - HADS profile category
-- [hads/profile.md](./hads/profile.md) - HADS profile and validation contract
+- [hads/profile.md](hads/ref-0075-profile.md) - HADS profile and validation contract
 - [knowledge/README.md](./knowledge/README.md) - generated LLM Wiki coverage and knowledge-index data category
-- [knowledge/llm-wiki-stage-category-coverage.md](./knowledge/llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
+- [knowledge/llm-wiki-stage-category-coverage.md](knowledge/ref-0076-llm-wiki-stage-category-coverage.md) - generated LLM Wiki source-bucket/category coverage snapshot
 - [kubernetes/README.md](./kubernetes/README.md) - Kubernetes and k3s/k3d migration reference context
-- [kubernetes/docker-compose-to-k3s-migration.md](./kubernetes/docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
+- [kubernetes/docker-compose-to-k3s-migration.md](kubernetes/ref-0077-docker-compose-to-k3s-migration.md) - Docker Compose to k3s/k3d migration suitability snapshot
 - [security/README.md](./security/README.md) - generated security automation readiness data category
-- [security/security-automation-readiness.md](./security/security-automation-readiness.md) - generated security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage
+- [security/security-automation-readiness.md](security/ref-0078-security-automation-readiness.md) - generated security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage
 
 ## How to Work in This Area
 

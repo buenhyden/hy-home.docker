@@ -60,11 +60,11 @@ security/
 
 ## Current References
 
-- [security-automation-readiness.md](./security-automation-readiness.md) -
+- [security-automation-readiness.md](ref-0078-security-automation-readiness.md) -
   generated security automation readiness snapshot for vulnerability gate,
   SBOM, provenance/attestation, Scorecard, workflow security, secret scanning,
   Dependabot, and hardening coverage
-- [supply-chain-sample-service.md](./supply-chain-sample-service.md) -
+- [supply-chain-sample-service.md](ref-0079-supply-chain-sample-service.md) -
   generated pinned local sample-service supply-chain fixture and advisory
   boundary summary
 
@@ -85,8 +85,8 @@ security/
 ## Related Documents
 
 - [reference data index](../README.md)
-- [security automation readiness](./security-automation-readiness.md)
-- [sample-service supply-chain summary](./supply-chain-sample-service.md)
-- [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
-- [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)
+- [security automation readiness](ref-0078-security-automation-readiness.md)
+- [sample-service supply-chain summary](ref-0079-supply-chain-sample-service.md)
+- [security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md)
+- [security governance research](../../research/ref-0056-security-governance.md)
 - [reference template](../../../99.templates/templates/common/reference.template.md)

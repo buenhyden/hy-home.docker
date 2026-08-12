@@ -184,5 +184,5 @@ bash scripts/validation/check-doc-traceability.sh
 - **Upstream Audit Spec**: [workspace-audit-2026-05 spec](../spec-0090-workspace-audit-2026-05/spec.md)
 - **Plan**: 2026-05-28 workspace doc consistency plan
 - **Tasks**: 2026-05-28 workspace doc consistency tasks
-- **Templates**: [docs/99.templates/](../../99.templates/)
-- **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules/)
+- **Templates**: [docs/99.templates/](../../99.templates)
+- **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules)

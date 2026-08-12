@@ -11,7 +11,7 @@ Usage: bash scripts/knowledge/generate-llm-wiki-index.sh [--check]
 Generate the repo-local LLM Wiki path index.
 
 Options:
-  --check   Fail when docs/90.references/llm-wiki/llm-wiki-index.md is stale.
+  --check   Fail when docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md is stale.
   -h, --help
             Show this help.
 EOF
@@ -43,7 +43,7 @@ import subprocess
 import sys
 
 MODE = sys.argv[1]
-OUTPUT = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+OUTPUT = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
 OUTPUT_PARENT = OUTPUT.parent
 
 ROOT_ENTRYPOINTS = {
@@ -60,7 +60,7 @@ ROOT_ENTRYPOINTS = {
 
 REQUIRED_LOCAL_PATHS = {
     "scripts/knowledge/generate-llm-wiki-index.sh",
-    "docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md",
+    "docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md",
     "docs/00.agent-governance/agents/agents/doc-writer.md",
     "docs/00.agent-governance/agents/functions/knowledge-map-agent.md",
     ".claude/agents/doc-writer.md",
@@ -224,8 +224,6 @@ def render(paths: list[str]) -> str:
         "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
         "---",
         "",
-        "<!-- Target: docs/90.references/llm-wiki/llm-wiki-index.md -->",
-        "",
         "# Reference: LLM Wiki Generated Index",
         "",
         "## Overview",
@@ -294,7 +292,7 @@ def render(paths: list[str]) -> str:
         "## Sources",
         "",
         "- [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement",
-        "- [repository-map.md](./repository-map.md) - curated canonical source map",
+        "- [ref-0083-repository-map.md](./ref-0083-repository-map.md) - curated canonical source map",
         "- [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator",
         "- [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator",
         "",
@@ -307,8 +305,8 @@ def render(paths: list[str]) -> str:
         "## Related Documents",
         "",
         "- [LLM Wiki references](./README.md)",
-        "- [LLM Wiki repository map](./repository-map.md)",
-        "- [LLM Wiki maintenance guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)",
+        "- [LLM Wiki repository map](./ref-0083-repository-map.md)",
+        "- [LLM Wiki maintenance guide](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)",
         "- [Agent governance hub](../../00.agent-governance/README.md)",
     ])
     return "\n".join(lines) + "\n"

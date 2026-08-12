@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/security/security-automation-readiness.md"
+OUTPUT="docs/90.references/data/security/ref-0078-security-automation-readiness.md"
 
 usage() {
   cat <<'EOF'
@@ -136,7 +136,7 @@ has_tech_stack_provenance = all(
         "infra/tech-stack.versions.json",
         "infra/image-tag-policy.exceptions.json",
         "scripts/operations/generate-tech-stack-version-provenance.sh",
-        "docs/90.references/data/docker/tech-stack-version-provenance.md",
+        "docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md",
     )
 )
 
@@ -234,7 +234,7 @@ controls: list[Control] = [
             "infra/tech-stack.versions.json",
             "infra/image-tag-policy.exceptions.json",
             "scripts/operations/generate-tech-stack-version-provenance.sh",
-            "docs/90.references/data/docker/tech-stack-version-provenance.md",
+            "docs/90.references/data/docker/ref-0061-tech-stack-version-provenance.md",
         ),
         "Generated provenance describes tracked registry/Compose evidence, not SBOMs, signatures, or SLSA attestations." if has_tech_stack_provenance else "Regenerate or add the tech-stack provenance snapshot.",
     ),
@@ -322,7 +322,10 @@ if not has_scoped_ecosystem_gate:
             "Stage 03 security spec + Stage 04 plan",
         )
     )
-spec_126_route = "[Spec 126](../../../03.specs/126-security-supply-chain-remediation/spec.md)"
+spec_126_route = (
+    "Spec 126 archived provenance: "
+    "`docs/98.archive/tombstones/03.specs/spec-0126-security-supply-chain-remediation.md`"
+)
 if not has_sbom_generation:
     follow_up_rows.append(
         (
@@ -379,8 +382,6 @@ lines: list[str] = [
     "status: active",
     "generated_by: scripts/validation/generate-security-automation-readiness.sh",
     "---",
-    "",
-    "<!-- Target: docs/90.references/data/security/security-automation-readiness.md -->",
     "",
     "# Reference: Security Automation Readiness",
     "",
@@ -508,8 +509,8 @@ lines.extend(
         "- [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml) - local pre-commit and secret-scanning hook evidence.",
         "- [.github/dependabot.yml](../../../../.github/dependabot.yml) - dependency update automation evidence.",
         "- [.github/SECURITY.md](../../../../.github/SECURITY.md) - vulnerability reporting boundary.",
-        "- [Security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md) - framework coverage and gap baseline.",
-        "- [Security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md) - secure SDLC and supply-chain reference context.",
+        "- [Security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md) - framework coverage and gap baseline.",
+        "- [Security governance research](../../research/ref-0056-security-governance.md) - secure SDLC and supply-chain reference context.",
         "- [Repository contracts](../../../../scripts/validation/check-repo-contracts.sh) - repo-local governance and workflow contract checks.",
         "",
         "## Maintenance",
@@ -526,9 +527,9 @@ lines.extend(
         "",
         "- [security data index](./README.md)",
         "- [reference data index](../README.md)",
-        "- [security framework maturity audit](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)",
-        "- [automation candidates](../../audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)",
-        "- [security governance research](../../research/2026-07-05-agentic-research-pack-refresh/security-governance.md)",
+        "- [security framework maturity audit](../../audits/ref-0031-security-framework-maturity.md)",
+        "- [automation candidates](../../audits/ref-0021-automation-candidates.md)",
+        "- [security governance research](../../research/ref-0056-security-governance.md)",
         "",
     ]
 )

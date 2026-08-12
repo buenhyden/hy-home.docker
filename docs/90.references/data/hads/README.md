@@ -58,7 +58,7 @@ docs/90.references/data/hads/
 
 ## Current References
 
-- [profile.md](./profile.md) - HADS profile and validation contract
+- [profile.md](ref-0075-profile.md) - HADS profile and validation contract
 
 ## Reference Rules
 
@@ -84,6 +84,6 @@ docs/90.references/data/hads/
 ## Related Documents
 
 - [references index](../../README.md)
-- [HADS profile](./profile.md)
+- [HADS profile](ref-0075-profile.md)
 - [documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

@@ -7,7 +7,7 @@ itself.
 ## Observation Boundary
 
 - The dated public snapshot lives in
-  `docs/90.references/data/governance/github-actions-control-plane-observation.yaml`.
+  `docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml`.
 - Authenticated current ruleset, branch-protection, required-check, review,
   environment, and repository-setting readback is unavailable.
 - Control-plane verification is `unverified`; this proposal does not infer

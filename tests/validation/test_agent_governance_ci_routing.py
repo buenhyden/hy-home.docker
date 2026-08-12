@@ -126,7 +126,7 @@ TARGET_SURFACE_PATHS = (
     "scripts/validation/target_surface_contract.py",
     "secrets/SENSITIVE_ENV_VARS.md.example",
     "tests/validation/test_target_surface_contracts.py",
-    "docs/90.references/data/governance/document-corpus-lifecycle/target-surface-convergence.yaml",
+    "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml",
 )
 
 COUPLED_PATHS = (

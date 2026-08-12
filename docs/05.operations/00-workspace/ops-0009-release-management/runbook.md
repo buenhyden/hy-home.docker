@@ -212,7 +212,7 @@ updated: 2026-08-11
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Runbooks index](../README.md)
+- [Runbooks index](../../README.md)
 - [LLM Wiki maintenance runbook](../ops-0007-llm-wiki-maintenance/runbook.md)
 - [Execution plans](../../../03.specs/README.md)
 - [Execution tasks](../../../03.specs/README.md)

@@ -79,4 +79,4 @@ updated: 2026-08-10
 - **Spec**: [../03.specs/003-security/spec.md](../../03.specs/spec-0003-security/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md
-- **Related ADR**: [./adr-adr-adr-adr-0003-vault-as-secrets-manager.md](./adr-0003-vault-as-secrets-manager.md)
+- **Related ADR**: [./adr-adr-adr-adr-0003-vault-as-secrets-manager.md](adr-0003-vault-as-secrets-manager.md)

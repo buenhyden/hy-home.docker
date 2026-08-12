@@ -164,5 +164,5 @@ bash scripts/validation/check-doc-traceability.sh
 - **Predecessor Spec**: [workspace-doc-consistency-2026-05 spec](../spec-0091-workspace-doc-consistency-2026-05/spec.md)
 - **Plan**: 2026-05-29 workspace consistency 2026-05b plan
 - **Tasks**: 2026-05-29 workspace consistency 2026-05b tasks
-- **Templates**: [docs/99.templates/](../../99.templates/)
-- **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules/)
+- **Templates**: [docs/99.templates/](../../99.templates)
+- **Governance Rules**: [docs/00.agent-governance/rules/](../../00.agent-governance/rules)

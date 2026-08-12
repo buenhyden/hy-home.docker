@@ -118,5 +118,5 @@ memory/
 - [Task checklists](../rules/task-checklists.md)
 - [Current project memory](./current.md)
 - [Historical progress navigation](./progress.md)
-- [GitHub Actions control-plane observation](../../90.references/data/governance/github-actions-control-plane-observation.yaml)
+- [GitHub Actions control-plane observation](../../90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml)
 - [Memory template](../../99.templates/templates/governance/memory.template.md)

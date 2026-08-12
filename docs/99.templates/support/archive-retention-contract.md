@@ -82,6 +82,15 @@ The preservation classes are `git-history`, `immutable-snapshot`.
 resolve to that exact blob. The tombstone remains concise and never presents
 the removed body as current truth.
 
+`archived_from` normally names a safe canonical path beneath `docs/`. The only
+additional registered historical source root is the retired top-level
+`archive/` directory. An `archive/...` value is provenance only: it must be a
+canonical relative path with no traversal, backslash, absolute path, or URI
+form, and `archived_commit:archived_from` must resolve to the recorded regular
+blob. It never authorizes a live archive destination or a
+`current_replacement`; all current archive records remain beneath
+`docs/98.archive`, and replacements remain beneath `docs/`.
+
 For a Stage 98 archive record, a verified withdrawal has no replacement, so the
 `current_replacement` key and `## Current Replacement` section are absent.
 Sentinel text must not fabricate a replacement. The direction of `supersedes`,

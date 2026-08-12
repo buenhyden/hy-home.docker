@@ -59,9 +59,9 @@ llm-wiki/
 
 ## Current References
 
-- [llm-wiki-index.md](./llm-wiki-index.md) - generator가 갱신하는 repo-local path index
-- [repository-map.md](./repository-map.md) - LLM 에이전트가 먼저 읽어야 할 canonical tracked source map
-- [../data/knowledge/llm-wiki-stage-category-coverage.md](../data/knowledge/llm-wiki-stage-category-coverage.md) - Stage 90 data snapshot that groups safe tracked LLM Wiki paths by source bucket, category, and role
+- [llm-wiki-index.md](ref-0082-llm-wiki-index.md) - generator가 갱신하는 repo-local path index
+- [repository-map.md](ref-0083-repository-map.md) - LLM 에이전트가 먼저 읽어야 할 canonical tracked source map
+- [../data/knowledge/llm-wiki-stage-category-coverage.md](../data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md) - Stage 90 data snapshot that groups safe tracked LLM Wiki paths by source bucket, category, and role
 
 ## How to Work in This Area
 
@@ -76,8 +76,8 @@ llm-wiki/
 ## Related Documents
 
 - [LLM entrypoint](../../../llms.txt)
-- [generated index](./llm-wiki-index.md)
-- [generated coverage snapshot](../data/knowledge/llm-wiki-stage-category-coverage.md)
+- [generated index](ref-0082-llm-wiki-index.md)
+- [generated coverage snapshot](../data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md)
 - [maintenance guide](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)
 - [90.references](../README.md)
 - [docs index](../../README.md)

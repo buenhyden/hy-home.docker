@@ -60,7 +60,7 @@ knowledge/
 
 ## Current References
 
-- [llm-wiki-stage-category-coverage.md](./llm-wiki-stage-category-coverage.md) -
+- [llm-wiki-stage-category-coverage.md](ref-0076-llm-wiki-stage-category-coverage.md) -
   generated LLM Wiki stage/category coverage snapshot.
 
 ## How to Work in This Area
@@ -76,6 +76,6 @@ knowledge/
 
 - [reference data](../README.md)
 - [LLM Wiki references](../../llm-wiki/README.md)
-- [LLM Wiki generated index](../../llm-wiki/llm-wiki-index.md)
+- [LLM Wiki generated index](../../llm-wiki/ref-0082-llm-wiki-index.md)
 - [LLM Wiki coverage generator](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh)
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh)

@@ -170,7 +170,7 @@ a separately approved follow-up artifact.
 - **Infrastructure Spec**: Spec 125
 - **Supply-chain Spec**: Spec 126
 - **Deployment Spec**: Spec 127
-- **Audit matrix**: [Canonical implementation matrix](../../90.references/data/governance/audit-implementation-matrix.md)
+- **Audit matrix**: [Canonical implementation matrix](../../90.references/data/governance/ref-0065-audit-implementation-matrix.md)
 - **Docker Compose**: [Startup order](https://docs.docker.com/compose/how-tos/startup-order/)
 - **Syft**: [SBOM generator](https://github.com/anchore/syft)
 - **Grype**: [Vulnerability scanner](https://github.com/anchore/grype)

@@ -76,4 +76,4 @@ updated: 2026-08-10
 - **Spec**: [../03.specs/006-messaging/spec.md](../../03.specs/spec-0006-messaging/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md
-- **Related ADR**: [./adr-adr-adr-adr-0005-kafka-vs-rabbitmq-selection.md](./adr-0005-kafka-vs-rabbitmq-selection.md)
+- **Related ADR**: [./adr-adr-adr-adr-0005-kafka-vs-rabbitmq-selection.md](adr-0005-kafka-vs-rabbitmq-selection.md)

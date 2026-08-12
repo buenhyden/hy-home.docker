@@ -24,7 +24,7 @@ evidence.
 
 - [Canonical GitHub governance](../docs/00.agent-governance/rules/github-governance.md)
 - [Local main-protection proposal](./rulesets/main-protection.md)
-- [Dated GitHub Actions observation](../docs/90.references/data/governance/github-actions-control-plane-observation.yaml)
+- [Dated GitHub Actions observation](../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml)
 
 ## Verification
 

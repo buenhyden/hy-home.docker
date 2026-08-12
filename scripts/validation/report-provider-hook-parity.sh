@@ -4,7 +4,7 @@ set -euo pipefail
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
-OUTPUT="docs/90.references/data/governance/provider-hook-parity-matrix.md"
+OUTPUT="docs/90.references/data/governance/ref-0072-provider-hook-parity-matrix.md"
 
 usage() {
   cat <<'EOF'
@@ -263,8 +263,6 @@ lines = [
     "generated_by: scripts/validation/report-provider-hook-parity.sh",
     "---",
     "",
-    "<!-- Target: docs/90.references/data/governance/provider-hook-parity-matrix.md -->",
-    "",
     "# Reference: Provider Hook Parity Matrix",
     "",
     "## Overview",
@@ -395,7 +393,7 @@ lines.extend(
         "",
         "- **Governance data index**: [README.md](./README.md)",
         "- **Provider capability matrix**: [../../../00.agent-governance/rules/provider-capability-matrix.md](../../../00.agent-governance/rules/provider-capability-matrix.md)",
-        "- **Provider hook parity spec**: [../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md](../../../98.archive/03.specs/115-provider-hook-parity-matrix/spec.md)",
+        "- **Archived spec provenance**: `docs/98.archive/tombstones/03.specs/spec-0115-provider-hook-parity-matrix.md`",
     ]
 )
 

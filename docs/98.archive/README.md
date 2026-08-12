@@ -54,11 +54,13 @@ stage의 canonical artifact를 따릅니다.
 
 ## Current Inventory
 
-Task 5 기준 `changes/`에는 137개 change packet과 223개 typed document가
-있습니다. 이 가운데 86개 packet은 Plan/Task pair, 12개는 ledger가 승인한
-Plan-only disposition, 39개는 ledger가 승인한 Task-only disposition입니다.
-`tombstones/03.specs/`에는 28개 retired Spec tombstone이 있으며, 각 기록은
-원문 본문 대신 검증된 source path와 Git provenance만 보존합니다.
+Task 7 기준 `changes/`에는 146개 change packet과 234개 typed document가
+있습니다. 이 가운데 88개 packet은 Plan/Task pair, 14개는 ledger가 승인한
+Plan-only disposition, 44개는 ledger가 승인한 Task-only disposition입니다.
+`tombstones/`에는 38개 retired-document tombstone이 있습니다: `03.specs/` 28개,
+`05.operations/` 10개입니다. 각 기록은 원문 본문 대신 검증된 source path와
+Git provenance만 보존합니다. `migrations/`에는 authoritative `mig-0001` ledger
+한 건이 있습니다.
 
 각 물리 문서는 다음 profile 중 정확히 하나를 사용합니다.
 
@@ -69,8 +71,10 @@ Plan-only disposition, 39개는 ledger가 승인한 Task-only disposition입니�
 
 정확한 disposition과 source provenance는
 [mig-0001](migrations/mig-0001-sdlc-taxonomy-convergence.md)이 소유합니다.
-과거의 날짜 기반 실행·archive 경로는 routing target이 아니며 Git history와
-migration ledger로만 조회합니다.
+과거의 날짜 기반 실행·archive 경로와 repository-root `archive/` 경로는 routing
+target이 아니며 Git history와 migration ledger로만 조회합니다. 새 archive
+identity는 `chg-`, `mig-`, 또는 stage-appropriate tombstone identity를 사용하고,
+날짜는 `archived_at` 같은 typed provenance key에 둡니다.
 
 ## Non-Authoritative Historical Provenance Ledger
 

@@ -406,7 +406,7 @@ if rg -n '[가-힣]' \
   docs/03.specs docs/04.execution/plans docs/04.execution/tasks docs/90.references \
   --glob '*.md' \
   --glob '!**/README.md' \
-  --glob '!docs/90.references/llm-wiki/llm-wiki-index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
+  --glob '!docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md' >/tmp/check-repo-contracts-english-only-surfaces.txt; then
   fail "closed English-only doc surfaces contain Korean text"
   cat /tmp/check-repo-contracts-english-only-surfaces.txt >&2
 fi
@@ -954,7 +954,7 @@ required_index_links = (
     "./rulesets/main-protection.md",
     "../docs/00.agent-governance/rules/github-governance.md",
     "../scripts/validation/run-local-qa-gates.sh",
-    "../docs/90.references/data/governance/github-actions-control-plane-observation.yaml",
+    "../docs/90.references/data/governance/ref-0071-github-actions-control-plane-observation.yaml",
 )
 if github_readme.exists():
     failures.append(f"{github_readme}: GitHub navigation README is forbidden")
@@ -1674,7 +1674,7 @@ import yaml
 failures: list[str] = []
 repo_root = pathlib.Path(".").resolve()
 template_root = pathlib.Path("docs/99.templates")
-generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
 profiles = yaml.safe_load(
     pathlib.Path("docs/99.templates/support/document-metadata-profiles.yaml").read_text()
 )
@@ -2494,10 +2494,10 @@ required_files = [
     pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
     pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
-    pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md"),
-    pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
+    pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
+    pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md"),
     pathlib.Path("docs/90.references/data/knowledge/README.md"),
-    pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md"),
+    pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md"),
     pathlib.Path(".claude/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/agents/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/agents/functions/knowledge-map-agent.md"),
@@ -2514,8 +2514,8 @@ llms_path = pathlib.Path("llms.txt")
 if llms_path.is_file():
     text = llms_path.read_text(errors="ignore")
     required_literals = [
-        "docs/90.references/llm-wiki/llm-wiki-index.md",
-        "docs/90.references/llm-wiki/repository-map.md",
+        "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
+        "docs/90.references/llm-wiki/ref-0083-repository-map.md",
         "generated tracked repo-local path index",
         "tracked source files",
         "Runtime truth",
@@ -2535,7 +2535,7 @@ readme_checks = {
     pathlib.Path("README.md"): [
         "llms.txt",
         "docs/90.references/llm-wiki/",
-        "docs/90.references/llm-wiki/llm-wiki-index.md",
+        "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
     ],
     pathlib.Path("docs/README.md"): [
         "90.references/llm-wiki/",
@@ -2605,7 +2605,7 @@ for path in safety_files:
     ):
         failures.append(f"{path}: public wiki/site wording must be explicitly out of scope")
 
-map_path = pathlib.Path("docs/90.references/llm-wiki/repository-map.md")
+map_path = pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md")
 if map_path.is_file():
     text = map_path.read_text(errors="ignore")
     for literal in [
@@ -2620,7 +2620,7 @@ if map_path.is_file():
         if literal not in text:
             failures.append(f"{map_path}: missing repository map boundary literal: {literal}")
 
-index_path = pathlib.Path("docs/90.references/llm-wiki/llm-wiki-index.md")
+index_path = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md")
 if index_path.is_file():
     text = index_path.read_text(errors="ignore")
     for literal in [
@@ -2652,7 +2652,7 @@ if index_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{index_path}: generated index includes secret content path: {linked_path}")
 
-coverage_path = pathlib.Path("docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md")
+coverage_path = pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md")
 if coverage_path.is_file():
     text = coverage_path.read_text(errors="ignore")
     for literal in [

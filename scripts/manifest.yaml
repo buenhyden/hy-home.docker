@@ -342,10 +342,13 @@ files:
   lifecycle: transition
   mutation: none
   consumers:
+  - scripts/validation/check-agentic-audit-semantic-freshness.py
   - scripts/validation/generate-audit-implementation-matrix.sh
+  - scripts/validation/report-audit-pack-coverage.sh
   disposition: rewrite
   successor: scripts/validation/audit_criterion_contract.py
-  tests: []
+  tests:
+  - tests/validation/test_audit_criterion_contract.py
 - path: scripts/validation/check-agent-governance-contract.py
   kind: validator
   authority: .github/workflow-contract.yml

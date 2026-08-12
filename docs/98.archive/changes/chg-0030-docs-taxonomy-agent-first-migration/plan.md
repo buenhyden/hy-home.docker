@@ -77,4 +77,4 @@ The previous repository contract pinned legacy requirements, execution, and oper
 
 - **Spec**: [../../03.specs/093-docs-taxonomy-agent-first-migration/spec.md](../../../03.specs/spec-0093-docs-taxonomy-agent-first-migration/spec.md)
 - **Task Evidence**: [../tasks/2026-05-10-docs-taxonomy-agent-first-migration.md](task.md)
-- **Docs Index**: [../../README.md](../../README.md)
+- **Docs Index**: [../../README.md](../../../README.md)

@@ -47,13 +47,14 @@ status: active
 
 ```text
 research/
-├── README.md # This file
-└── 2026-07-05-agentic-research-pack-refresh/ # Harness, loop, provider, SDLC, QA, documentation, LLM Wiki, memory research pack
+├── ref-0039-readme.md # Canonical agentic engineering research index
+├── ref-<id>-<slug>.md # Stable source-backed research artifact
+└── README.md # This file
 ```
 
 ## Current References
 
-- [2026-07-05-agentic-research-pack-refresh/README.md](./2026-07-05-agentic-research-pack-refresh/README.md) - 현재 agentic engineering의 유일한 active canonical research pack입니다. current facts와 source-backed comparison은 이 pack에서 읽어야 합니다.
+- [ref-0039-readme.md](ref-0039-readme.md) - 현재 agentic engineering의 유일한 active canonical research pack입니다. current facts와 source-backed comparison은 이 pack에서 읽어야 합니다.
 
 ## Superseded Paths
 
@@ -61,25 +62,25 @@ research/
 
 | 제거된 경로 | Canonical destination |
 | --- | --- |
-| `2026-07-07-agentic-research-pack-update/README.md` | [canonical pack index](./2026-07-05-agentic-research-pack-refresh/README.md) |
-| `2026-07-07-agentic-research-pack-update/workspace-baseline.md` | [workspace baseline](./2026-07-05-agentic-research-pack-refresh/workspace-baseline.md), [spec-driven SDLC](./2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md), [document roles](./2026-07-05-agentic-research-pack-refresh/sdlc-document-roles.md), [quality](./2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md), [automation](./2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md), [Compose](./2026-07-05-agentic-research-pack-refresh/docker-compose-infrastructure.md), [security](./2026-07-05-agentic-research-pack-refresh/security-governance.md) |
-| `2026-07-07-agentic-research-pack-update/harness-engineering.md` | [harness engineering](./2026-07-05-agentic-research-pack-refresh/harness-engineering.md), [provider implementation](./2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md) |
-| `2026-07-07-agentic-research-pack-update/loop-engineering.md` | [loop engineering](./2026-07-05-agentic-research-pack-refresh/loop-engineering.md), [automation](./2026-07-05-agentic-research-pack-refresh/automation-pipeline-workflow.md), [quality](./2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md) |
-| `2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md` | [provider implementation](./2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md), [provider model landscape](./2026-07-05-agentic-research-pack-refresh/provider-model-landscape.md), [agent model selection](./2026-07-05-agentic-research-pack-refresh/agent-model-selection.md) |
-| `2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md` | [AI agent catalogs](./2026-07-05-agentic-research-pack-refresh/ai-agent-catalogs.md) |
+| `2026-07-07-agentic-research-pack-update/README.md` | [canonical pack index](ref-0039-readme.md) |
+| `2026-07-07-agentic-research-pack-update/workspace-baseline.md` | [workspace baseline](ref-0058-workspace-baseline.md), [spec-driven SDLC](ref-0057-spec-driven-sdlc.md), [document roles](ref-0055-sdlc-document-roles.md), [quality](ref-0053-quality-ci-formatting.md), [automation](ref-0043-automation-pipeline-workflow.md), [Compose](ref-0044-docker-compose-infrastructure.md), [security](ref-0056-security-governance.md) |
+| `2026-07-07-agentic-research-pack-update/harness-engineering.md` | [harness engineering](ref-0047-harness-engineering.md), [provider implementation](ref-0051-provider-implementation-comparison.md) |
+| `2026-07-07-agentic-research-pack-update/loop-engineering.md` | [loop engineering](ref-0049-loop-engineering.md), [automation](ref-0043-automation-pipeline-workflow.md), [quality](ref-0053-quality-ci-formatting.md) |
+| `2026-07-07-agentic-research-pack-update/provider-implementation-comparison.md` | [provider implementation](ref-0051-provider-implementation-comparison.md), [provider model landscape](ref-0052-provider-model-landscape.md), [agent model selection](ref-0041-agent-model-selection.md) |
+| `2026-07-07-agentic-research-pack-update/ai-agent-catalogs.md` | [AI agent catalogs](ref-0042-ai-agent-catalogs.md) |
 
 제거 근거와 이력은 Spec 122, 통합 Plan, 통합 Task, [확장 Task](../../03.specs/spec-0123-agentic-engineering-audit-remediation/task.md)에 남아 있습니다.
 
 ## Naming Rules
 
-- SDLC-linked research packs live under `<date>-<sdlc_key>/`.
-- Pack-level report files use descriptive names such as `workspace-baseline.md` or `quality-ci-formatting.md`.
+- Research artifacts use `ref-<id>-<slug>.md`; a pack index uses `ref-<id>-readme.md`.
+- Store the observation date in `observed_at`, not in the path. Preserve body timeline dates as historical evidence.
 - Do not use `part-*.md` prefixes for finalized report files.
 
 ## How to Work in This Area
 
 1. 새 research 문서가 active decision, policy, plan, runbook을 대체하지 않는지 확인합니다.
-2. agentic engineering의 current facts는 2026-07-05 canonical pack에서만 읽습니다. 제거된 2026-07-07 경로는 위 Superseded Paths 표로 라우팅합니다.
+2. agentic engineering의 current facts는 [ref-0039](ref-0039-readme.md)에서만 읽습니다. 제거된 경로는 위 Superseded Paths 표의 historical provenance로만 해석합니다.
 3. 새 non-README reference는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
 4. 새 non-README reference는 closed-surface contract에 맞춰 영어로 작성합니다.
 5. 외부 자료는 공식 vendor docs, 표준 기관 문서, 원 논문, 공식 repository를 우선합니다.

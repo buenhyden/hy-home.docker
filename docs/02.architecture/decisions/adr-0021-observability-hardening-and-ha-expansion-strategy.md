@@ -75,4 +75,4 @@ updated: 2026-08-10
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/spec-0007-observability/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **Tasks**: ../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md
-- **Related ADR**: [./adr-adr-adr-adr-0006-lgtm-stack-selection.md](./adr-0006-lgtm-stack-selection.md)
+- **Related ADR**: [./adr-adr-adr-adr-0006-lgtm-stack-selection.md](adr-0006-lgtm-stack-selection.md)

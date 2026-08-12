@@ -50,18 +50,18 @@ manifest와 safe summary로 제시해 source selection과 검토
 ```text
 document-corpus-lifecycle/
 ├── README.md                               # This routing index
-├── foundation.yaml                         # Reviewed blocking v1 manifest
-├── foundation-summary.md                   # Generator-owned Foundation summary
-├── target-surface-convergence.yaml          # Reviewed blocking v2 classification
-└── target-surface-convergence-summary.md    # Generator-owned target summary
+├── ref-0066-foundation-summary.md                 # Generator-owned Foundation summary
+├── ref-0067-foundation.yaml                       # Reviewed blocking v1 manifest
+├── ref-0068-target-surface-convergence-summary.md # Generator-owned target summary
+└── ref-0069-target-surface-convergence.yaml       # Reviewed blocking v2 classification
 ```
 
 ## How to Work in This Area
 
-1. `foundation.yaml`은 [corpus migration contract](../../../../99.templates/support/corpus-migration-contract.md)와 machine registry를 따라 검토합니다.
-2. `foundation-summary.md`는 lifecycle validator의 `generate-summary` mode로만 갱신하고 hand edit하지 않습니다.
-3. `target-surface-convergence.yaml`은 고정 baseline의 eight source roots와 exact direct source paths를 schema v2로 분류하며, 승인된 whole-branch review와 controlled-wrapper evidence에 따라 blocking/pass 상태를 유지합니다.
-4. `target-surface-convergence-summary.md`도 lifecycle validator의 `generate-summary` mode로만 갱신합니다.
+1. `ref-0067-foundation.yaml`은 [corpus migration contract](../../../../99.templates/support/corpus-migration-contract.md)와 machine registry를 따라 검토합니다.
+2. `ref-0066-foundation-summary.md`는 lifecycle validator의 `generate-summary` mode로만 갱신하고 hand edit하지 않습니다.
+3. `ref-0069-target-surface-convergence.yaml`은 고정 baseline의 eight source roots와 exact direct source paths를 schema v2로 분류하며, 승인된 whole-branch review와 controlled-wrapper evidence에 따라 blocking/pass 상태를 유지합니다.
+4. `ref-0068-target-surface-convergence-summary.md`도 lifecycle validator의 `generate-summary` mode로만 갱신합니다.
 5. manifest와 summary는 Stage 04 Task evidence 및 independent review와 함께 해석합니다.
 6. Foundation에서는 archive ledger나 snapshot manifest를 publish하지 않습니다. 해당 산출물은 Wave D의 별도 승인 범위입니다.
 7. 변경 후 wave별 `check-manifest`, `check-summary`, generated owner check mode, repository contracts를 실행합니다.

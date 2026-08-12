@@ -40,19 +40,19 @@ or scripts.
   promote the existing Stage 03 draft and implement a Stage 90
   reference-audit pack from the current research baseline.
 - **Research Pack**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md](../../90.references/research/ref-0039-readme.md)
 - **Workspace Baseline Reference**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/workspace-baseline.md](../../90.references/research/ref-0058-workspace-baseline.md)
 - **Harness Engineering Reference**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/harness-engineering.md](../../90.references/research/ref-0047-harness-engineering.md)
 - **Loop Engineering Reference**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/loop-engineering.md](../../90.references/research/ref-0049-loop-engineering.md)
 - **Provider Comparison Reference**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/provider-implementation-comparison.md](../../90.references/research/ref-0051-provider-implementation-comparison.md)
 - **Quality / CI / Formatting Reference**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/quality-ci-formatting.md](../../90.references/research/ref-0053-quality-ci-formatting.md)
 - **Spec-Driven SDLC Reference**:
-  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md)
+  [../../90.references/research/2026-07-05-agentic-research-pack-refresh/spec-driven-sdlc.md](../../90.references/research/ref-0057-spec-driven-sdlc.md)
 - **Stage 90 Contract**: [../../90.references/README.md](../../90.references/README.md)
 - **Execution Plan**:
   ../../04.execution/plans/2026-07-05-agentic-engineering-implementation-audit-pack.md
@@ -226,7 +226,7 @@ out of scope instead of modifying infra files.
 - [docs/03.specs README](../README.md)
 - implementation plan
 - task evidence
-- [research pack](../../90.references/research/2026-07-05-agentic-research-pack-refresh/README.md)
+- [research pack](../../90.references/research/ref-0039-readme.md)
 - [90.references](../../90.references/README.md)
 - [reference template](../../99.templates/templates/common/reference.template.md)
 - [README template](../../99.templates/templates/common/readme.template.md)

@@ -82,7 +82,7 @@ backup 책임 경계를 다룬다.
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Observability policy index](../README.md)
+- [Observability policy index](../../README.md)
 - [Prometheus policy](../ops-0045-prometheus/policy.md)
 - [Loki policy](../ops-0043-loki/policy.md)
 - [Tempo policy](../ops-0049-tempo/policy.md)
