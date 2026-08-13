@@ -6,7 +6,7 @@ parent_ids:
   - spec-0131
   - spec-0134
 created: 2026-08-07
-updated: 2026-08-11
+updated: 2026-08-13
 ---
 # SDLC Taxonomy and Agent Governance Convergence Specification
 
@@ -21,17 +21,22 @@ It replaces the earlier draft decisions in this file. In particular:
 - Operations remains Stage 05. It is not renumbered to Stage 04.
 - Stage 04 execution artifacts move into their owning Stage 03 capability.
 - Architecture Requirements Document is replaced by Architecture Description.
-- Operations is organized by domain and subject rather than by parallel
-  guides, policies, and runbooks roots.
+- Operations keeps current operational knowledge in a domain-classified
+  catalog and groups it by reviewed subject rather than by parallel guides,
+  policies, and runbooks roots.
 - Every date-based documentation path moves to a stable ID and slug. Dates are
   metadata, not path identity.
 - docs/98.archive becomes the single documentation archive.
 - Legacy, deprecated, dormant, duplicate, and one-time script surfaces do not
   remain in the completed repository.
 
-The user approved the written specification after four staged design reviews
-on 2026-08-09. The specification is active and its implementation is governed
-by the related Plan.
+The user approved the original written specification after four staged design
+reviews on 2026-08-09 and approved this revised design after six staged
+reviews on 2026-08-13. The revised design adds the Operations catalog
+container, role-and-purpose consolidation, four-digit internal requirement
+identities, stricter per-agent governance, and one-owner validator rules. The
+specification is active and its implementation is governed by the related
+Plan after that Plan is reconciled to this revision.
 
 ## Boundaries and Inputs
 
@@ -52,7 +57,8 @@ The convergence must:
 4. Give every policy topic one canonical typed owner.
 5. Replace ambiguous architecture-requirements terminology with externally
    recognized Architecture Description terminology.
-6. Make Operations discoverable by the system or service being operated.
+6. Make current Operations knowledge discoverable through one domain-classified
+   catalog while keeping incidents and releases as separate event records.
 7. Replace date-based paths with stable identifiers while preserving dates in
    frontmatter.
 8. Consolidate or delete duplicate, conflicting, legacy, deprecated, dormant,
@@ -60,6 +66,31 @@ The convergence must:
 9. Align local, hook, and CI validation around the same typed gate graph.
 10. Preserve the history of every move, merge, replacement, and deletion
     through Git provenance and a migration ledger.
+11. Review SDLC terms and every template role for necessity, semantic fit, and
+    one-owner enforcement before applying the rule to the corpus.
+12. Publish one coherent AI-agent governance system with typed per-agent
+    authority, scope, inputs, procedure, outputs, gates, and provider-specific
+    projections generated from the canonical owner.
+13. Review every Operations subject name and merge or delete role documents
+    and subjects that do not own a distinct operational purpose.
+
+## Convergence and Conflict Resolution
+
+The active typed owners in this specification supersede contradictory earlier
+documents, rules, validators, scripts, and generated projections. Resolution
+uses this order:
+
+1. identify the one canonical typed owner and the workspace purpose it serves;
+2. merge unique, still-valid semantics into that owner;
+3. update all active consumers and tests atomically;
+4. delete the conflicting, duplicate, obsolete, or compatibility predecessor;
+5. preserve only Git/migration provenance, never a live compatibility path.
+
+When correction and retention conflict, deletion of the superseded rule is the
+default after its valid semantics and consumers have moved. A passing legacy
+validator does not justify retaining contradictory rules. Validators for the
+same policy topic must share one implementation or be reduced to distinct,
+non-overlapping modes under one owner.
 
 ## Non-Goals
 
@@ -180,6 +211,9 @@ The final top-level documentation structure is:
     │   └── decisions/
     ├── 03.specs/
     ├── 05.operations/
+    │   ├── catalog/
+    │   ├── incidents/
+    │   └── releases/
     ├── 90.references/
     ├── 98.archive/
     └── 99.templates/
@@ -197,9 +231,9 @@ Stage 01 is flat:
 
     docs/01.requirements/
     ├── README.md
-    ├── prd-<id>-<slug>.md
-    ├── srs-<id>-<slug>.md
-    └── interface-<id>-<slug>.md
+    ├── prd-####-<slug>.md
+    ├── srs-####-<slug>.md
+    └── interface-####-<slug>.md
 
 PRD owns the problem, user value, scope, product requirements, and acceptance
 criteria.
@@ -214,9 +248,9 @@ expectations. Implemented schemas belong with the Spec under contracts.
 
 Internal requirement identifiers are:
 
-- PRD-001-R001 and PRD-001-AC001
-- SRS-001-R001
-- IFR-001-R001
+- PRD-0001-R0001 and PRD-0001-AC0001
+- SRS-0001-R0001
+- IFR-0001-R0001
 
 Unresolved product choices remain in Stage 01 and do not move into
 architecture.
@@ -228,9 +262,9 @@ Stage 02 is:
     docs/02.architecture/
     ├── README.md
     ├── descriptions/
-    │   └── ad-<id>-<slug>.md
+    │   └── ad-####-<slug>.md
     └── decisions/
-        └── adr-<id>-<slug>.md
+        └── adr-####-<slug>.md
 
 Architecture Description owns:
 
@@ -264,7 +298,7 @@ Each capability is a complete active work unit:
 
     docs/03.specs/
     ├── README.md
-    └── spec-<id>-<capability>/
+    └── spec-####-<capability>/
         ├── spec.md
         ├── plan.md
         ├── task.md
@@ -298,36 +332,42 @@ because an implementation task completed.
 ## Operations Contract
 
 Stage 05 remains Stage 05 and becomes the single integrated Operations root.
-The parallel guides, policies, and runbooks roots are removed.
+The parallel guides, policies, and runbooks roots are removed. Current
+operational knowledge is classified under one catalog container; incidents
+and releases are event records and therefore remain outside that catalog.
 
     docs/05.operations/
     ├── README.md
-    ├── 00-workspace/
-    ├── 01-gateway/
-    ├── 02-auth/
-    ├── 03-security/
-    ├── 04-data/
-    ├── 05-messaging/
-    ├── 06-observability/
-    ├── 07-workflow/
-    ├── 08-ai/
-    ├── 09-tooling/
-    ├── 10-communication/
-    ├── 11-laboratory/
-    ├── 12-infra-net/
+    ├── catalog/
+    │   ├── README.md
+    │   ├── 00-workspace/
+    │   ├── 01-gateway/
+    │   ├── 02-auth/
+    │   ├── 03-security/
+    │   ├── 04-data/
+    │   ├── 05-messaging/
+    │   ├── 06-observability/
+    │   ├── 07-workflow/
+    │   ├── 08-ai/
+    │   ├── 09-tooling/
+    │   ├── 10-communication/
+    │   ├── 11-laboratory/
+    │   └── 12-infra-net/
     ├── incidents/
     └── releases/
 
-Each domain directly contains stable operation subjects:
+`catalog/` is the canonical current Operations corpus, not a link collection
+or reference archive. Each domain directly contains reviewed stable operation
+subjects:
 
-    06-observability/
+    catalog/06-observability/
     ├── README.md
-    └── ops-<id>-prometheus/
+    └── ops-0045-prometheus/
         ├── guide.md
         ├── policy.md
         └── runbook.md
 
-Only required roles exist for a subject:
+Only required roles exist for a subject, and each role appears at most once:
 
 | Role | Sole responsibility |
 | :-- | :-- |
@@ -343,25 +383,62 @@ Handoff is conditional on real automation. Policy does not copy procedures.
 Runbook does not invent unimplemented design. A design gap routes back to the
 owning Requirement, Architecture Description, ADR, or Spec.
 
-Domain README files and the Stage 05 README are the only Operations indexes.
-Subject README files are not created. Empty or redundant domains may merge
-after content analysis, but the existing domain meaning is preserved unless
-the migration ledger records an approved consolidation.
+The Stage 05 README, catalog README, domain READMEs, incidents README, and
+releases README are the only Operations indexes. Subject README files are not
+created. Empty or redundant domains may merge after content analysis, but the
+existing domain meaning is preserved unless the migration ledger records an
+approved consolidation.
+
+Subject paths use this role-neutral form:
+
+    docs/05.operations/catalog/<domain>/ops-####-<operational-subject>/
+
+The slug names the managed object or independent operational capability. It
+does not contain `guide`, `policy`, `runbook`, `document`, or `manual`; a date,
+version, or state; a redundant domain name; repeated tokens; or generic
+`basics`/`setup` wording without an independent operational boundary.
+
+Two subjects merge only when all of these are true:
+
+1. they govern the same managed object or operational capability;
+2. they have the same operational owner and control boundary;
+3. they have materially the same trigger, verification result, and recovery
+   boundary; and
+4. neither owns an independent review cadence or execution-evidence boundary.
+
+The canonical subject is the one directly consumed by current implementation,
+automation, or Runbooks; otherwise the most complete role boundary wins, then
+the older stable ID. A new ID is created only when no existing subject can
+truthfully own the merged content. Cross-domain duplication has one owner in
+the domain that holds operational responsibility. Workspace-wide harness and
+repository operations belong only to `catalog/00-workspace/`.
+
+For every approved merge, unique valid semantics move to the correct Guide,
+Policy, or Runbook; duplicated prose, empty sections, and template residue are
+deleted; active consumers move atomically; and the predecessor subject or role
+file is removed. Similar names alone never authorize a merge, and no deprecated
+or redirect document remains.
 
 Incident and Release identities are stable:
 
-    incidents/inc-<id>-<slug>/incident.md
-    incidents/inc-<id>-<slug>/postmortem.md
-    releases/rel-<id>-<slug>/release.md
+    docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md
+    docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md
+    docs/05.operations/releases/rel-####-<slug>/release.md
+
+Incident and Postmortem records link affected catalog subjects through typed
+relationships such as `affected_ops_ids`; they are never stored under a single
+domain merely because one system was involved.
 
 ## Stable Identity and Date Contract
 
-Every new and existing documentation path uses a stable ID and slug. Date
-prefixes and year partition directories are prohibited.
+Every new and existing documentation path uses a stable ID and slug. Stable
+document identifiers use exactly four decimal digits. Date prefixes and year
+partition directories are prohibited except for the required Incident
+containment directory described below.
 
 Canonical identities include:
 
-- prd-001, srs-001, interface-001;
+- prd-0001, srs-0001, interface-0001;
 - ad-0001, adr-0001;
 - spec-0136;
 - ops-0001, guide-0001, policy-0001, runbook-0001;
@@ -376,11 +453,19 @@ The following path shapes are invalid:
 
 - YYYY-MM-DD-slug.md;
 - YYYY-MM-DD-slug/;
-- year/artifact partitions.
+- year/artifact partitions other than
+  `docs/05.operations/incidents/<year>/inc-####-<slug>/`.
 
 This applies to Stages 01, 02, 03, 05, 90, and 98, including every existing
 dated Plan, Task, research pack, audit record, release, incident, archive
-packet, and migration record.
+packet, and migration record. The Incident year is event containment metadata,
+not artifact identity; the stable Incident ID remains `inc-####`.
+
+Immutable provenance values are not canonical current paths. Fields such as
+`archived_from`, a predecessor ID, an original dated path, a source commit and
+blob, or a commit-pinned manifest value preserve their exact historical bytes.
+Validators must distinguish these values from live routes and may not rewrite
+them merely to satisfy current path syntax.
 
 Common frontmatter includes:
 
@@ -409,14 +494,10 @@ Dates use ISO 8601. Event timelines may include timestamps in their body; path
 identity never uses them.
 
 The validator enforces global artifact_id uniqueness, type-specific ID shape,
-path-to-ID agreement, and absence of dated documentation paths.
-
-This specification remains at its legacy path and uses the legacy colon-form
-identifier only for the design-review commit. During the Stage 03 identity
-migration it moves to docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md,
-its artifact_id becomes spec-0136, and its parent_ids migrate atomically. This
-avoids applying one isolated taxonomy change before its validators and inbound
-references exist.
+path-to-ID agreement, four-digit internal requirement and acceptance-criterion
+identities, and absence of dated documentation paths. Distinct artifact roles
+may reuse a numeric sequence only when their complete artifact IDs remain
+globally unique.
 
 ## Archive Contract
 
@@ -426,7 +507,7 @@ directory is removed after its tracked content is classified and migrated.
     docs/98.archive/
     ├── README.md
     ├── changes/
-    │   └── chg-<id>-<slug>/
+    │   └── chg-####-<slug>/
     │       ├── plan.md
     │       └── task.md
     ├── tombstones/
@@ -435,7 +516,7 @@ directory is removed after its tracked content is classified and migrated.
     │   ├── 03.specs/
     │   └── 05.operations/
     └── migrations/
-        └── mig-<id>-sdlc-taxonomy-convergence.md
+        └── mig-####-sdlc-taxonomy-convergence.md
 
 Change packets retain the completed Plan and Task body. Tombstones are concise
 provenance records and do not reproduce removed bodies.
@@ -467,7 +548,18 @@ The migration ledger records every moved, merged, replaced, and deleted path:
 - action;
 - replacement;
 - source_commit;
+- source_blob;
+- canonical role and owner;
+- unique semantics preserved by an approved merge;
+- duplicate or template-residue semantics removed;
+- affected active consumers;
+- verification evidence;
 - reason.
+
+An Operations merge is not executable until its ledger row names the canonical
+subject, target role files, and consumer migration. The ledger preserves
+historical identity and Git proof; it does not preserve a live compatibility
+copy of the removed body.
 
 ## Template Contract
 
@@ -495,6 +587,15 @@ Template selection, frontmatter, lifecycle, path, archive, and metadata
 profiles change atomically. A template rule is not promoted until positive and
 negative fixtures prove its path, headings, lifecycle, and frontmatter
 behavior.
+
+Each document role has exactly one canonical template. A generic template does
+not replace a role's required semantics. When two templates own the same role
+question, unique valid fields move to the canonical template and the duplicate
+is deleted. Existing documents do not justify weakening a template: the
+document's role is reviewed first, then it is corrected, moved, merged, or
+deleted. Guide Runbook Handoff, Runbook Automation Handoff, Incident
+Postmortem routing, and similar sibling sections appear only when the related
+artifact or implemented automation exists.
 
 ## Script Governance Contract
 
@@ -555,6 +656,40 @@ One-time migration utilities are not tracked. Their durable output is the
 migration ledger and validated corpus. __pycache__, temporary evidence, and
 generated intermediates do not remain in the final tree.
 
+## Validator Ownership Contract
+
+The repository does not converge on one policy monolith. It converges on one
+typed owner and one implementation for each validation topic:
+
+| Topic | Typed owner | Focused execution surface |
+| :-- | :-- | :-- |
+| Document identity, path, and frontmatter | Stage 99 metadata profiles and taxonomy library | `check-document-metadata.py` |
+| Lifecycle, archive, and migration provenance | Stage 98/99 lifecycle and archive contracts | `check-document-corpus-lifecycle.py` |
+| Links, lineage, and traceability | Shared document graph library | explicit modes of `check-document-links.py` |
+| Operations catalog and role duplication | Operations role/profile contract | `check-operations-catalog.py` |
+| Agent governance and provider parity | Stage 00 typed contracts | agent-governance validator and renderer |
+| Script ownership and mutation | `scripts/manifest.yaml` | `check-script-manifest.py` |
+| Gate selection and ordering | workflow contract registry | `run-ci-gate.py` |
+
+`scripts/lib/document_governance/` owns shared taxonomy, frontmatter, Git
+provenance, migration, link-graph, and finding primitives. CLIs import those
+libraries and never dynamically import one another. Metadata, lifecycle,
+links, and Operations checks retain distinct policy responsibilities even when
+they share parsing and evidence code.
+
+The Operations validator fails closed on catalog/domain/subject shapes,
+four-digit identities, role cardinality, forbidden role roots and subject
+READMEs, role-specific headings and fields, duplicated role content, duplicate
+subject candidates, Incident/Release topology, stale consumers, and migration
+source/target provenance. Similarity findings are review inputs only; deletion
+requires an approved typed migration disposition.
+
+`check-repo-contracts.sh` is decomposed by inventorying its rules, moving each
+still-valid rule to its typed owner and focused validator, migrating every
+consumer to registered gate IDs, proving the former detection behavior with
+positive and negative mutations, and deleting the Shell monolith with its last
+consumer. A legacy pass does not authorize retaining a conflicting rule.
+
 ## Validation and CI Contract
 
 The Pull Request required aggregate includes:
@@ -563,6 +698,7 @@ The Pull Request required aggregate includes:
 - metadata and stable path identity;
 - lifecycle and archive integrity;
 - cross-link and traceability;
+- Operations catalog topology and semantic-role integrity;
 - template conformance;
 - governance authority;
 - provider surface freshness;
@@ -577,6 +713,12 @@ Local and CI profiles use the same gate IDs and leaf implementations. The
 controlled all-files pre-commit wrapper is a formatter and hook safety layer;
 it is not represented as full repository validation.
 
+The typed contract selects a focused validator, and the workflow registry
+routes that same CLI and arguments to local, pre-commit, controlled-agent, and
+CI execution. CI-only weakening and local-only exceptions are prohibited.
+Transition allowances require an exact source commit, legacy path, successor,
+owner Task, and expiry condition; final convergence has zero allowances.
+
 Validation dependencies are reproducible and pinned. The current html5lib
 dependency failure is resolved through the approved validation environment,
 not by bypassing provider or governance checks.
@@ -586,24 +728,47 @@ generator defaults to non-mutating check behavior.
 
 ## Stage 00 Convergence
 
-Stage 00 is retained as the canonical AI-agent governance control plane and is
-reconciled in place:
+Stage 00 is retained as the sole canonical AI-agent governance control plane.
+`agent-catalog.yaml`, `governance-artifacts.yaml`, and
+`provider-models.yaml` own typed identities, artifacts, and provider/model
+facts; human rules and provider adapters point to them rather than copying
+their complete values.
 
-- typed path authority replaces conflicting prose ownership;
-- language policy is owned once by document role;
-- provider overlays point to typed model and capability contracts;
-- date and path rules point to the Stage 99 contract;
-- load order, lifecycle, workflow, and completion checklists are consolidated;
-- unused frontend, mobile, backend, product, entry, and meta scopes are removed
-  or converted to explicit conditional capability profiles;
-- provider model versions and function counts are regenerated from typed
-  sources;
-- workspace memory points to the active convergence Task during implementation
-  and to the durable Spec after completion.
+Each active agent has exactly one contract containing its stable identity,
+single responsibility, allowed and forbidden scopes, inputs and preconditions,
+procedure, outputs and handoff, mandatory gates, mutation boundary, escalation
+conditions, allowed functions/skills, provider routing, and canonical owner.
+Agent and function counts are outcomes of this review, not fixed targets.
 
-Workspace-wide rules apply to each agent through its declared role,
-permissions, mandatory reviewers, and provider adapter. Providers do not own
-independent SDLC variants.
+Agents with the same purpose, scope, inputs, outputs, and gates merge. A role
+that is only a procedure of another agent becomes a function or skill. A
+separate agent remains only when it owns an independent approval, security,
+review, or mutation boundary. A consumerless or unprojectable agent is reviewed
+for removal; deprecated agents do not remain after their valid behavior moves.
+
+Rules Engineer owns Stage 00 policy. Domain implementation and operations
+agents own their technical outputs. Doc Writer contributes structure and
+language but does not own another role's policy or design decision. Hook
+Developer owns deterministic provider/hook projection but not the source
+policy. Implementers never supply their own final independent approval.
+
+The provider surfaces `.claude/`, `.codex/`, `.gemini/`, and `.agents/` are
+thin generated or validated adapters. Their agent/function sets and provider
+models derive from Stage 00 typed contracts. They may adapt provider syntax and
+runtime mechanics but may not redefine SDLC, workflow, completion, role,
+language, template, or model policy. Drift fails closed.
+
+Stage 00 keeps one load order, one workflow, and one completion contract.
+Requirements, Architecture, Spec, Plan, Task, Operations, and Incident work
+select typed agents and reviewers through those contracts. Unused scopes and
+duplicated provider prose are removed rather than retained as compatibility
+policy.
+
+`memory/current.md` is a bounded verified handoff, not policy authority.
+Memory that conflicts with the current Spec, Task, typed contract, or live Git
+state is corrected or deleted. Dated external observations move to stable
+Stage 90 evidence, and notes already promoted to active rules are consolidated
+or removed.
 
 ## Migration Data Flow
 
@@ -613,7 +778,9 @@ The migration follows this dependency order:
       -> templates and validators
       -> Stage 01 and Stage 02 identities
       -> Stage 03 and Stage 04 co-location
-      -> Stage 05 subject-first organization
+      -> Operations catalog migration manifest
+      -> Stage 05 structural move under catalog
+      -> Stage 05 subject naming and semantic-role consolidation
       -> Stage 90 and Stage 98 stable identities
       -> scripts consolidation
       -> CI and local gate alignment
@@ -623,30 +790,39 @@ Every path move uses Git-aware rename where possible. All inbound references
 and the migration ledger change in the same logical commit. No redirect file is
 left behind.
 
+Operations structural movement and semantic consolidation are separate review
+units. The structural unit moves domains under `catalog/` without redesigning
+their bodies. The semantic units review subject names and roles by bounded
+domain groups: workspace/gateway/auth/security; data/messaging/observability;
+workflow/AI/tooling; communication/laboratory/infra-net; then
+incidents/releases/root indexes. Each group passes its own manifest, metadata,
+Operations, link, archive-consumer, provenance, diff, and independent-review
+gates before commit.
+
 If a migration unit cannot pass its scoped gates, no later unit consumes its
 new structure. Recovery uses a normal revert commit or a corrective commit;
 destructive history rewriting is not required.
 
 ## Logical Commit Boundaries
 
-The implementation uses these logical commits:
+The remaining implementation uses these logical commit boundaries after the
+already completed earlier convergence commits:
 
-1. Approve the SDLC taxonomy convergence specification.
-2. Establish canonical SDLC and authority contracts.
-3. Replace ARD with Architecture Description templates and profiles.
-4. Migrate Requirement and Architecture stable identities.
-5. Co-locate Spec, Plan, and Task artifacts.
-6. Reorganize Operations by domain and subject.
-7. Consolidate Archive and migrate stable identities.
-8. Add the script manifest and shared governance libraries.
-9. Consolidate document and generated-artifact validators.
-10. Remove duplicate, one-time, and compatibility tooling.
-11. Align local and remote policy gates.
-12. Repair references, indexes, memory, and the migration ledger.
-13. Complete governance-corpus regression verification.
+1. Approve this revised SDLC and Operations catalog design.
+2. Complete the shared document-validation libraries and focused link CLI.
+3. Normalize four-digit identities and Incident routing.
+4. Register the complete Operations catalog/subject migration manifest.
+5. Move Operations domains under `catalog/` without semantic rewriting.
+6. Converge Operations subject names and roles by each bounded domain group.
+7. Align Incident, Release, catalog, and root indexes and templates.
+8. Remove the policy monolith, duplicate validators, and one-time scripts.
+9. Align local, hook, controlled-agent, and CI gates.
+10. Repair current links, generated evidence, indexes, and governance Memory.
+11. Remove transition allowances and complete regression verification.
 
-A commit may split further if required to remain reviewable, but unrelated
-units are not combined.
+A domain group may split further if required to remain reviewable, but
+structural moves, semantic mergers, and unrelated policy changes are not
+combined.
 
 ## Interfaces and Data
 
@@ -662,6 +838,10 @@ change only through explicitly approved document and script paths.
   artifact IDs fail closed.
 - A path move without complete inbound-link and migration-ledger coverage does
   not proceed.
+- An Operations merge based only on textual similarity does not proceed; all
+  four ownership, trigger, evidence, and cadence criteria must be proven.
+- A role file is not deleted until its unique valid semantics have moved to a
+  canonical Guide, Policy, or Runbook and active consumers have followed it.
 - A deleted script without a successor or proven absence of consumers does not
   proceed.
 - A generator that mutates in check mode fails validation.
@@ -675,10 +855,16 @@ change only through explicitly approved document and script paths.
 ### Contract tests
 
 - Positive and negative fixtures for every document profile.
-- Stable ID uniqueness and path-to-frontmatter agreement.
-- Rejection of date-prefixed files and year partition directories.
+- Stable four-digit ID uniqueness, internal requirement identity width, and
+  path-to-frontmatter agreement.
+- Rejection of date-prefixed files and year partition directories except the
+  exact Incident containment route.
 - Architecture Description acceptance and ARD rejection.
-- Operations subject-folder role selection.
+- Operations catalog/domain/subject topology and role selection.
+- Operations role duplication and subject-merge candidate detection, with
+  mutation tests proving that similarity alone cannot authorize deletion.
+- AI-agent owner, scope, handoff, gate, provider projection, and duplicate-role
+  enforcement.
 - Archive provenance and active-link prohibition.
 - Script manifest coverage and consumer validation.
 
@@ -690,6 +876,9 @@ change only through explicitly approved document and script paths.
 - No active document points into Stage 98.
 - No Stage 04 path remains.
 - No parallel Operations role root remains.
+- Every active Operations domain is under `docs/05.operations/catalog/`.
+- No approved Operations predecessor or redundant role file retains an active
+  consumer after its canonical merge.
 - No root archive path remains.
 
 ### Gate tests
@@ -719,8 +908,12 @@ The work is complete only when:
 2. Stage 02 uses descriptions and Architecture Description exclusively.
 3. Stage 03 co-locates active Spec, Plan, and Task by capability.
 4. Stage 05 has no guides, policies, or runbooks parallel roots.
-5. Operations content is grouped by domain and stable operation subject.
-6. No documentation path uses a date prefix or year partition for identity.
+5. Current Operations content is grouped under
+   `docs/05.operations/catalog/<domain>/ops-####-<subject>/`; incidents and
+   releases are catalog siblings rather than domains.
+6. No documentation path uses a date prefix or a year partition for identity;
+   the sole year containment exception is
+   `docs/05.operations/incidents/<year>/inc-####-<slug>/`.
 7. Dates remain in typed frontmatter and event timelines where applicable.
 8. docs/98.archive is the only documentation archive.
 9. Active documents do not link to archived tombstones or change packets.
@@ -733,7 +926,15 @@ The work is complete only when:
 14. Typed validators have one rule owner and local/CI execution parity.
 15. The migration ledger accounts for every modified, merged, moved,
     replaced, and deleted legacy path.
-16. All required final gates pass without grandfathered migration debt.
+16. Every document identity uses a four-digit numeric component, including
+    existing PRDs and internal requirement/acceptance identities, and Incident
+    packets use the required year partition.
+17. Every Operations subject name and retained role file owns a distinct
+    reviewed operational purpose; approved duplicates are merged and removed.
+18. Every active agent has one typed owner, responsibility, scope, handoff,
+    gate, and provider projection, with duplicate or consumerless roles
+    consolidated or deleted.
+19. All required final gates pass without grandfathered migration debt.
 
 ## Related Documents
 
