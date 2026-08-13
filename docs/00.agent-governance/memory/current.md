@@ -10,9 +10,9 @@ status: active
 - Current task: `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md`
 - Task 10A four-digit identity and Incident year-routing convergence is
   complete and committed as `087771f4` after final general and Python approval.
-- Task 10B froze and validated the exact Operations catalog manifest. The user
-  approved its 77-row disposition map on 2026-08-13; Task 10C is now the next
-  structural-only boundary.
+- Task 10C structural Operations catalog migration is complete and committed as
+  `548154b878ae62b50fddc4b2b4aea7b1b78f9176` after final general and Python
+  approval. Task 10D domains 00–03 is the next semantic slice.
 
 ## Approved decisions
 
@@ -21,40 +21,40 @@ status: active
 - Incidents use `docs/05.operations/incidents/<year>/inc-####-<slug>/`.
 - Operations structural movement and semantic convergence remain separate. The
   approved Task 10B map authorizes only the Plan-bounded later tasks; Task 10C
-  performs structure without semantic merge, delete, or role rewrite.
+  changed structure without semantic merge, delete, or role rewrite.
 
 ## Active boundary
 
-- Task 10B is complete at the approval boundary. Task 10C is limited to the
-  approved structural `catalog/` topology and its structure-mode evidence.
-- Semantic merge, delete, and role-body rewrite remain reserved for Tasks
-  10D-10G even though the exact manifest is approved.
+- Task 10C is complete at the structural `catalog/` boundary. Task 10D is
+  limited to the approved semantic dispositions for domains `00-workspace`
+  through `03-security`.
+- Later-domain semantic changes remain reserved for Tasks 10E-10G.
 
 ## Verified state
 
-- Verified commit: `f9a010cc`
-- Verified at: `2026-08-13`
-- Task 10A identity `22/22`, metadata `243/243`, manifest `40/40`, and
-  Operations `12/12` pass; metadata contracts, both link modes, provider drift,
-  generator freshness, Ruff, and diff hygiene pass.
-- Task 10A final general and Python reviews are `APPROVED (C0/I0/M0)`.
-- Task 10B exact manifest/validator registration is committed as `f9a010cc`;
-  its user approval is recorded without any Operations corpus mutation.
+- Verified commit: `548154b878ae62b50fddc4b2b4aea7b1b78f9176`
+- Verified at: `2026-08-14`
+- Task 10C final general and Python re-reviews are both `APPROVED (C0/I0/M0)`;
+  all five unique Important findings are addressed.
+- Task 10C preserved 13 domains, 77 subject identities, and 192 role files under
+  the structural catalog boundary. Durable gate detail is recorded in the Task
+  and mig-0002 evidence.
 
 ## Blockers and unverified facts
 
-- Task 10B's exact semantic disposition map is approved and its verified
-  logical commit is `f9a010cc`.
+- No Task 10C review blocker remains. The approved mig-0002 semantic map remains
+  the exact authority for Task 10D.
 - Stable taxonomy retains six unchanged `ref-0054` publications owned by Task
   13; they are outside Task 10B.
 
 ## Evidence links
 
 - `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md`
-- `docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md`
+- `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
 - `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/plan.md`
 
 ## Next handoff
 
-- Begin Task 10C from the exact approved manifest and perform structural moves
-  only; do not start Tasks 10D-10G semantic convergence in the same boundary.
+- Begin Task 10D from the exact approved manifest and execute only the domains
+  `00-workspace` through `03-security` semantic slice. Do not combine Task 10E
+  or later-domain changes into this boundary.
