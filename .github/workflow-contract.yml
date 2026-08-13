@@ -475,6 +475,7 @@
         "leaf.repo-contracts-control-plane-regressions",
         "leaf.ci-precommit-regressions",
         "leaf.workflow-contract",
+        "leaf.operations-catalog-manifest",
         "leaf.repo-contracts"
       ]
     },
@@ -720,6 +721,26 @@
       ],
       "opaque": true,
       "suite_key": "docs-implementation-alignment"
+    },
+    {
+      "gate_id": "leaf.operations-catalog-manifest",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-operations-catalog.py",
+      "argv": [
+        "--mode",
+        "manifest"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "profiles": [
+        "ci",
+        "local-script-backed",
+        "local-harness",
+        "local-all-profiles"
+      ],
+      "opaque": true,
+      "suite_key": "operations-catalog-manifest"
     },
     {
       "gate_id": "leaf.docs-qa-gate-recommendations",
@@ -1485,7 +1506,8 @@
         "leaf.local-security-readiness-freshness",
         "leaf.local-audit-matrix-freshness",
         "leaf.local-llm-wiki-freshness",
-        "leaf.local-script-manifest"
+        "leaf.local-script-manifest",
+        "leaf.operations-catalog-manifest"
       ]
     },
     {

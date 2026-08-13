@@ -742,7 +742,9 @@ template_roles:
   guide:
     source: docs/99.templates/templates/operations/guide.template.md
     artifact_profile: guide
-    target_globs: [docs/05.operations/*/ops-*/guide.md]
+    target_globs:
+      - docs/05.operations/*/ops-*/guide.md
+      - docs/05.operations/catalog/*/ops-*/guide.md
     required_headings: ['## Usage', '## Common Checks', '## Related Documents']
     conditional_headings:
       ['## Overview', '## Audience and Prerequisites', '## Runbook Handoff', '## Troubleshooting']
@@ -750,7 +752,9 @@ template_roles:
   policy:
     source: docs/99.templates/templates/operations/policy.template.md
     artifact_profile: policy
-    target_globs: [docs/05.operations/*/ops-*/policy.md]
+    target_globs:
+      - docs/05.operations/*/ops-*/policy.md
+      - docs/05.operations/catalog/*/ops-*/policy.md
     required_headings:
       [
         '## Overview',
@@ -766,7 +770,9 @@ template_roles:
   runbook:
     source: docs/99.templates/templates/operations/runbook.template.md
     artifact_profile: runbook
-    target_globs: [docs/05.operations/*/ops-*/runbook.md]
+    target_globs:
+      - docs/05.operations/*/ops-*/runbook.md
+      - docs/05.operations/catalog/*/ops-*/runbook.md
     required_headings:
       [
         '## When to Use',
@@ -1257,7 +1263,9 @@ profiles:
     disposition: migration candidate
 
   guide:
-    path_globs: [docs/05.operations/*/ops-*/guide.md]
+    path_globs:
+      - docs/05.operations/*/ops-*/guide.md
+      - docs/05.operations/catalog/*/ops-*/guide.md
     id_pattern: 'guide-(?P<identity>[0-9]{4})'
     path_identity: inherited
     parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
@@ -1285,7 +1293,9 @@ profiles:
     disposition: migration candidate
 
   policy:
-    path_globs: [docs/05.operations/*/ops-*/policy.md]
+    path_globs:
+      - docs/05.operations/*/ops-*/policy.md
+      - docs/05.operations/catalog/*/ops-*/policy.md
     id_pattern: 'policy-(?P<identity>[0-9]{4})'
     path_identity: inherited
     parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'
@@ -1313,7 +1323,9 @@ profiles:
     disposition: migration candidate
 
   runbook:
-    path_globs: [docs/05.operations/*/ops-*/runbook.md]
+    path_globs:
+      - docs/05.operations/*/ops-*/runbook.md
+      - docs/05.operations/catalog/*/ops-*/runbook.md
     id_pattern: 'runbook-(?P<identity>[0-9]{4})'
     path_identity: inherited
     parent_id_pattern: 'ops-(?P<identity>[0-9]{4})-[a-z0-9-]+'

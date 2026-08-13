@@ -77,6 +77,30 @@ class DocumentLink:
     absolute: bool = False
     outside_repository: bool = False
 
+    @property
+    def decoded_target(self) -> str:
+        """Return the full percent-decoded destination, including query and fragment."""
+
+        return urllib.parse.unquote(self.raw_target)
+
+    @property
+    def is_directory_route(self) -> bool:
+        """Report whether the destination's path component denotes a directory."""
+
+        path_component = re.split(r"[?#]", self.decoded_target, maxsplit=1)[0]
+        return bool(path_component) and path_component.endswith("/")
+
+    @property
+    def has_unsafe_target(self) -> bool:
+        """Reject unsafe location flags and decoded controls across the full target."""
+
+        return (
+            self.absolute
+            or self.outside_repository
+            or "\\" in self.decoded_target
+            or any(ord(character) < 32 or ord(character) == 127 for character in self.decoded_target)
+        )
+
 
 @dataclasses.dataclass(frozen=True)
 class DocumentGraph:
@@ -217,6 +241,33 @@ def _normalized_target(
     return target, (fragment if separator and fragment else None), absolute, outside
 
 
+def parse_local_markdown_links(
+    source: pathlib.PurePosixPath,
+    text: str,
+) -> tuple[DocumentLink, ...]:
+    """Parse normalized local links from supplied Markdown without filesystem I/O."""
+
+    links: list[DocumentLink] = []
+    for line_no, line in _unfenced_lines(text):
+        for raw in _markdown_destinations(line):
+            resolved = _normalized_target(source, raw)
+            if resolved is None:
+                continue
+            target, fragment, absolute, outside = resolved
+            links.append(
+                DocumentLink(
+                    source,
+                    target,
+                    raw,
+                    fragment,
+                    line_no,
+                    absolute,
+                    outside,
+                )
+            )
+    return tuple(links)
+
+
 def _strict_relative_path(
     root: pathlib.Path,
     path: pathlib.Path,
@@ -315,23 +366,7 @@ def build_document_graph(
                 )
             )
         nodes.append(DocumentNode(relative, text, metadata, _headings(text)))
-        for line_no, line in _unfenced_lines(text):
-            for raw in _markdown_destinations(line):
-                resolved = _normalized_target(relative, raw)
-                if resolved is None:
-                    continue
-                target, fragment, absolute, outside = resolved
-                links.append(
-                    DocumentLink(
-                        relative,
-                        target,
-                        raw,
-                        fragment,
-                        line_no,
-                        absolute,
-                        outside,
-                    )
-                )
+        links.extend(parse_local_markdown_links(relative, text))
     return DocumentGraph(
         root,
         tuple(sorted(nodes, key=lambda item: item.path.as_posix())),

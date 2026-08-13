@@ -16,6 +16,11 @@ section() {
   echo "==> $1"
 }
 
+section "Operations catalog approval manifest"
+if ! python3 scripts/validation/check-operations-catalog.py --mode manifest; then
+  fail "Operations catalog approval manifest is invalid"
+fi
+
 section "Docs top-level structure"
 allowed_docs=(
   "00.agent-governance"

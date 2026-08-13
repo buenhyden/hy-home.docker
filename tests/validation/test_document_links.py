@@ -233,6 +233,71 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
 
 
 class DocumentGraphTests(unittest.TestCase):
+    def test_local_markdown_link_parser_is_immutable_and_normalizes_without_io(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        source = pathlib.PurePosixPath("docs/05.operations/README.md")
+        links = parse_local_markdown_links(
+            source,
+            """[angle](<catalog/>)
+[query](incidents/?view=all)
+[fragment](releases/#latest)
+[encoded](%63atalog/)
+[nested](incidents/(current)/../)
+`[inline](inline-fake/)`
+```markdown
+[fenced](fenced-fake/)
+```
+[external](https://example.com/reference/)
+[absolute](/docs/05.operations/catalog/)
+[outside](%2e%2e/%2e%2e/%2e%2e/escape/)
+[self](#top)
+[file](history.md)
+[query-control](catalog/?bad=%00)
+[fragment-control](catalog/#bad=%1F)
+""",
+        )
+
+        self.assertIsInstance(links, tuple)
+        self.assertEqual(
+            (
+                "docs/05.operations/catalog",
+                "docs/05.operations/incidents",
+                "docs/05.operations/releases",
+                "docs/05.operations/catalog",
+                "docs/05.operations/incidents",
+                "docs/05.operations/catalog",
+                "../escape",
+                "docs/05.operations/README.md",
+                "docs/05.operations/history.md",
+                "docs/05.operations/catalog",
+                "docs/05.operations/catalog",
+            ),
+            tuple(link.target.as_posix() for link in links),
+        )
+        self.assertEqual(
+            (False, False, False, False, False, True, False, False, False, False, False),
+            tuple(link.absolute for link in links),
+        )
+        self.assertEqual(
+            (False, False, False, False, False, False, True, False, False, False, False),
+            tuple(link.outside_repository for link in links),
+        )
+        self.assertEqual(
+            (True, True, True, True, True, True, True, False, False, True, True),
+            tuple(link.is_directory_route for link in links),
+        )
+        self.assertEqual(
+            (False, False, False, False, False, True, True, False, False, True, True),
+            tuple(link.has_unsafe_target for link in links),
+        )
+        self.assertIn("\x00", links[-2].decoded_target)
+        self.assertIn("\x1f", links[-1].decoded_target)
+        with self.assertRaises(dataclasses.FrozenInstanceError):
+            links[0].line = 99  # type: ignore[misc]
+
     def test_retired_role_root_implementation_selector_has_no_current_inputs(self) -> None:
         selected: list[str] = []
         operations = ROOT / "docs/05.operations"

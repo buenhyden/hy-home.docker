@@ -168,6 +168,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_four_digit_document_identity.py
+- path: scripts/lib/document_governance/operations_catalog.py
+  kind: library
+  authority: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-operations-catalog.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_operations_catalog.py
 - path: scripts/lib/document_governance/taxonomy.py
   kind: library
   authority: docs/99.templates/support/document-metadata-profiles.yaml
@@ -489,6 +500,18 @@ files:
   successor: null
   tests:
   - tests/validation/test_target_surface_delta_contracts.py
+- path: scripts/validation/check-operations-catalog.py
+  kind: validator
+  authority: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - .pre-commit-config.yaml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_operations_catalog.py
 - path: scripts/validation/check-quickwin-baseline.sh
   kind: validator
   authority: .github/workflow-contract.yml

@@ -37,6 +37,18 @@ Their target conditions are exact machine-contract values:
 | `regenerate` | `regenerate` -> `source-equals-target` |
 | `exempt` | `exempt` -> `source-equals-target` |
 
+### Operations Catalog Approval Overlay
+
+`mig-0002` is the sole exact Operations catalog convergence manifest. It pins
+77 source subject trees and 205 source file blobs at one immutable commit,
+separates structural catalog paths from semantic final paths, and records the
+four merge proofs plus per-file preservation, removal, and active-consumer
+evidence. Its `approval` mapping is exact: `status`, `approved_at`, and
+`approved_by`. `pending` requires both metadata values to be null and permits
+only manifest validation. Structural, executed-domain, and complete validation
+remain blocked until the user explicitly approves the displayed disposition
+table. The general corpus manifest cannot override this narrower approval gate.
+
 ## Manifest Shape and Evidence
 
 The top-level fields are `schema_version`, `wave`, `baseline_commit`, `generated_by`, `enforcement`, `entries`.

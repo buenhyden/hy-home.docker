@@ -116,7 +116,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
         self.assertEqual(16, len(ci.jobs))
-        self.assertEqual(80, len(contract.gate_registry.nodes))
+        self.assertEqual(81, len(contract.gate_registry.nodes))
         self.assertEqual(16, len(contract.gate_registry.job_roots))
         self.assertEqual(3, len(contract.gate_registry.profile_roots))
         self.assertEqual(
