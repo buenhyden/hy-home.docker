@@ -58,7 +58,7 @@ updated: 2026-08-11
 
    ```bash
    bash scripts/validation/check-repo-contracts.sh
-   bash scripts/validation/check-doc-traceability.sh
+   python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
 5. If Graphify output is needed for navigation, report its advisory health instead of treating it as source truth.
@@ -114,7 +114,7 @@ updated: 2026-08-11
 
 - `python3 scripts/knowledge/generate-llm-wiki.py --check` passes.
 - `bash scripts/validation/check-repo-contracts.sh` passes.
-- `bash scripts/validation/check-doc-traceability.sh` passes.
+- `python3 scripts/validation/check-document-links.py --mode traceability` passes.
 - LLM Wiki files contain no absolute filesystem links, filesystem URI links, public-site scope drift, or Graphify-as-authority wording.
 
 ## Rollback or Recovery

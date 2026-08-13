@@ -540,7 +540,7 @@ def _render_claude_settings(root: pathlib.Path) -> bytes:
                 "Bash(docker image ls:*)",
                 "Bash(bash scripts/validation/validate-docker-compose.sh:*)",
                 "Bash(bash scripts/hardening/check-all-hardening.sh:*)",
-                "Bash(bash scripts/validation/check-doc-traceability.sh:*)",
+                "Bash(python3 scripts/validation/check-document-links.py:*)",
                 "Bash(bash scripts/validation/check-repo-contracts.sh:*)",
                 "Bash(bash scripts/validation/check-quickwin-baseline.sh:*)",
                 "Bash(bash scripts/validation/check-template-security-baseline.sh:*)",

@@ -68,7 +68,7 @@ updated: 2026-08-11
 4. 재검증
    - `bash scripts/hardening/check-all-hardening.sh 04-data`
    - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ### Verification Steps
 

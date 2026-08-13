@@ -64,7 +64,7 @@ workspace governance bounded re-audit.
 - Before editing any target-stage document, load the mapped template from
   `docs/99.templates/`.
 - Keep fixes scoped to touched documents and parent README synchronization.
-- Use `check-repo-contracts.sh` and `check-doc-traceability.sh` as the
+- Use `check-repo-contracts.sh` and `check-document-links.py --mode traceability` as the
   completion gate for stage changes.
 - Record broad drift here or in a dedicated memory note only when validators or
   direct evidence show a current gap.
@@ -74,7 +74,7 @@ workspace governance bounded re-audit.
 ## Evidence
 
 - `bash scripts/validation/check-repo-contracts.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/validate-docker-compose.sh`
 - 2026-05-26 repository contract metrics:

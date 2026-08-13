@@ -114,7 +114,7 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
 
 ## Evidence
 

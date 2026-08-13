@@ -41,7 +41,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [Cassandra guide](guide.md), [Cassandra runbook](runbook.md), and [infra README](../../../../infra/04-data/nosql/cassandra/README.md) after compose changes.
 - Run `docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data config` before approving service-name, volume, profile, or secret documentation updates.
-- Run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
 

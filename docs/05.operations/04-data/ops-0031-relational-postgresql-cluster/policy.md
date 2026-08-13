@@ -45,7 +45,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [PostgreSQL cluster guide](guide.md), [PostgreSQL cluster runbook](runbook.md), and [infra README](../../../../infra/04-data/relational/postgresql-cluster/README.md) after compose changes.
 - Run `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config` before approving service-name, image, route, secret, port, or volume documentation updates.
-- Run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
 

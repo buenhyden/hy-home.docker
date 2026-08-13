@@ -106,7 +106,7 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
 
 ## Evidence
 

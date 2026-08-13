@@ -704,8 +704,11 @@
     {
       "gate_id": "leaf.docs-implementation-alignment",
       "kind": "leaf",
-      "entrypoint": "scripts/validation/check-doc-implementation-alignment.sh",
-      "argv": [],
+      "entrypoint": "scripts/validation/check-document-links.py",
+      "argv": [
+        "--mode",
+        "alignment"
+      ],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
@@ -742,8 +745,11 @@
     {
       "gate_id": "leaf.docs-traceability",
       "kind": "leaf",
-      "entrypoint": "scripts/validation/check-doc-traceability.sh",
-      "argv": [],
+      "entrypoint": "scripts/validation/check-document-links.py",
+      "argv": [
+        "--mode",
+        "traceability"
+      ],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,

@@ -67,7 +67,7 @@ N/A — 현재 승인된 예외 없음.
 
 - Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
 - Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
-- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
 
 ## Review Cadence
 

@@ -57,7 +57,7 @@ updated: 2026-08-11
    - metrics healthcheck가 exporter 컨테이너 내부 `http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics`를 확인하는지 점검한다.
 6. 기준선 검증 실행
    - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
 7. 카탈로그 확장 운영 기준 반영
    - 모델 승격 절차(실험 -> 운영)를 tasks/operations에 반영한다.
    - Open WebUI 모델 접근 권한 분리 기준을 반영한다.
@@ -75,7 +75,7 @@ updated: 2026-08-11
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Runbook Handoff
 

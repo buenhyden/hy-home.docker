@@ -68,7 +68,7 @@ updated: 2026-08-11
 
 - `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
 - `/api/v3/write_lp`, `INFLUXDB_DB_NAME`, port `8181` source references가 일치하는지 확인한다. Source-only validation cannot prove authorization.
-- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `python3 scripts/validation/check-document-links.py --mode alignment`
 - `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff

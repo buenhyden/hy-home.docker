@@ -71,7 +71,7 @@ CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
 bash scripts/knowledge/report-graphify-health.sh
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-quickwin-baseline.sh

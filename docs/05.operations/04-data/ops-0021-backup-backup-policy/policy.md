@@ -39,7 +39,7 @@ Backup exceptions require explicit owner approval and evidence showing why the d
 - Confirm the target service has a documented persistence boundary in `infra/04-data/**/README.md` or its paired operations documents.
 - Confirm backup evidence records the service, retention window, command or job class, and verification outcome without exposing secret values.
 - Run repository documentation checks after policy or link changes:
-  - `bash scripts/validation/check-doc-implementation-alignment.sh`
+  - `python3 scripts/validation/check-document-links.py --mode alignment`
   - `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence

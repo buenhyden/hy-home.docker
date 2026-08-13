@@ -109,6 +109,65 @@ files:
   disposition: rewrite
   successor: scripts/lib/document_governance/__init__.py
   tests: []
+- path: scripts/lib/document_governance/frontmatter.py
+  kind: library
+  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/links.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_links.py
+- path: scripts/lib/document_governance/git_provenance.py
+  kind: library
+  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  - scripts/lib/document_governance/metadata_validator.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_links.py
+- path: scripts/lib/document_governance/links.py
+  kind: library
+  authority: docs/00.agent-governance/rules/documentation-protocol.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/validation/check-document-links.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_links.py
+- path: scripts/lib/document_governance/metadata_contract.py
+  kind: library
+  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/validation/check-document-corpus-lifecycle.py
+  - scripts/validation/check-document-metadata.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_links.py
+- path: scripts/lib/document_governance/metadata_validator.py
+  kind: library
+  authority: docs/99.templates/support/document-metadata-profiles.yaml
+  lifecycle: active
+  mutation: check-write
+  consumers:
+  - scripts/lib/document_governance/metadata_contract.py
+  - scripts/validation/check-document-metadata.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_links.py
 - path: scripts/lib/document_governance/taxonomy.py
   kind: library
   authority: docs/99.templates/support/document-metadata-profiles.yaml
@@ -378,32 +437,6 @@ files:
   tests:
   - tests/validation/test_agentic_audit_semantic_freshness.py
   - tests/validation/test_github_workflow_contract.py
-- path: scripts/validation/check-doc-implementation-alignment.sh
-  kind: validator
-  authority: .github/workflow-contract.yml
-  lifecycle: transition
-  mutation: none
-  consumers:
-  - .github/workflow-contract.yml
-  - docs/05.operations/04-data/ops-0017-analytics-influxdb/guide.md
-  - docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md
-  disposition: merge
-  successor: scripts/validation/check-document-metadata.py
-  tests:
-  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
-  - tests/validation/test_target_surface_delta_contracts.py
-- path: scripts/validation/check-doc-traceability.sh
-  kind: validator
-  authority: .github/workflow-contract.yml
-  lifecycle: transition
-  mutation: none
-  consumers:
-  - .github/workflow-contract.yml
-  - docs/05.operations/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
-  disposition: merge
-  successor: scripts/validation/check-document-metadata.py
-  tests:
-  - tests/validation/test_github_workflow_contract.py
 - path: scripts/validation/check-document-corpus-lifecycle.py
   kind: validator
   authority: .github/workflow-contract.yml
@@ -418,6 +451,19 @@ files:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_document_corpus_lifecycle.py
   - tests/validation/test_document_metadata.py
+- path: scripts/validation/check-document-links.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - .pre-commit-config.yaml
+  - scripts/validation/recommend-qa-gates.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_document_links.py
 - path: scripts/validation/check-document-metadata.py
   kind: validator
   authority: .github/workflow-contract.yml

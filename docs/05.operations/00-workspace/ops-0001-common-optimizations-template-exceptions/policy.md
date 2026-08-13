@@ -50,7 +50,7 @@ updated: 2026-08-11
 
 - `bash scripts/validation/check-quickwin-baseline.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 - `bash scripts/validation/validate-docker-compose.sh`
 
 ## Review Cadence

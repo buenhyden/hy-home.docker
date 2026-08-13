@@ -58,7 +58,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 
    ```bash
    bash scripts/validation/check-repo-contracts.sh
-   bash scripts/validation/check-doc-implementation-alignment.sh
+   python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
 3. 증상별로 복구한다.
@@ -73,7 +73,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
    ```bash
    bash scripts/hardening/check-all-hardening.sh 09-tooling
    bash scripts/validation/check-template-security-baseline.sh
-   bash scripts/validation/check-doc-traceability.sh
+   python3 scripts/validation/check-document-links.py --mode traceability
    bash scripts/validation/check-repo-contracts.sh
    ```
 
@@ -101,7 +101,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: tooling 자동 변경 파이프라인 일시 중지에는 승인 필요.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `check-repo-contracts.sh`, `check-doc-implementation-alignment.sh`
+- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `check-repo-contracts.sh`, `check-document-links.py --mode alignment`
 
 ## Evidence
 

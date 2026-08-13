@@ -105,7 +105,7 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
 
 ## Evidence
 

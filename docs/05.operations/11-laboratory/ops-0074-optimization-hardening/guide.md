@@ -56,7 +56,7 @@ updated: 2026-08-11
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
    - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
 6. 카탈로그 확장 로드맵 반영
    - dashboard 만료 정책, dozzle 로그 제한, portainer 승인 정책, redisinsight 감사 정책, open-notebook data retention/direct-port review를 tasks/operations에 반영한다.
 
@@ -73,7 +73,7 @@ updated: 2026-08-11
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
 - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Runbook Handoff
 

@@ -71,7 +71,7 @@ ksql/
 
 ## Validation
 
-- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect ksqlDB.
+- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect ksqlDB.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting

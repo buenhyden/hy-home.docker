@@ -55,7 +55,7 @@ updated: 2026-08-11
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
 6. 카탈로그 확장 로드맵 반영
    - 도구별 확장 항목(terraform/terrakube/registry/sonarqube/k6/locust/syncthing)을 tasks/operations에 반영한다.
 
@@ -70,7 +70,7 @@ updated: 2026-08-11
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Runbook Handoff
 

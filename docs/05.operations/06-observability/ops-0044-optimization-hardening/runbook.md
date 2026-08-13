@@ -92,7 +92,7 @@ updated: 2026-08-11
    ```bash
    HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
    bash scripts/hardening/check-all-hardening.sh 06-observability
-   bash scripts/validation/check-doc-traceability.sh
+   python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
    이 런북은 route/middleware policy change, resource cap change, secret rotation, workflow gate redesign, or runtime security relaxation을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
@@ -101,7 +101,7 @@ updated: 2026-08-11
 
 - [ ] `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`가 통과한다.
 - [ ] `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패가 0건이다.
-- [ ] `bash scripts/validation/check-doc-traceability.sh`가 통과한다.
+- [ ] `python3 scripts/validation/check-document-links.py --mode traceability`가 통과한다.
 - [ ] Observability route middleware, health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks가 현재 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 

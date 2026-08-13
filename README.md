@@ -63,7 +63,7 @@ hy-home.docker/
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
-- [`.github/workflows/`](.github/workflows) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
+- [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
 - [`docs/90.references/data/docker/`](./docs/90.references/data/docker) - Docker image/version drift 기준과 참고 규칙
 - [`docs/03.specs/spec-0095-infra-secrets-docs-refresh/`](./docs/03.specs/spec-0095-infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
 
@@ -203,7 +203,7 @@ docker compose --profile core up -d
 | 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `bash scripts/validation/check-repo-contracts.sh` |
 | 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `bash scripts/validation/check-repo-contracts.sh` |
 | 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `bash scripts/validation/check-repo-contracts.sh` |
-| 실행 계획/작업 evidence 갱신 | [`docs/03.specs/README.md`](docs/03.specs/README.md) | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `bash scripts/validation/check-doc-traceability.sh` |
+| 실행 계획/작업 evidence 갱신 | [`docs/03.specs/README.md`](docs/03.specs/README.md) | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
 | 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `bash scripts/validation/check-repo-contracts.sh` |
 | 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `bash scripts/validation/check-repo-contracts.sh` |
 | 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `bash scripts/validation/check-repo-contracts.sh` |
@@ -225,7 +225,8 @@ docker compose --profile core up -d
 - `bash scripts/validation/run-local-qa-gates.sh` - 로컬에서 재현 가능한 script-backed QA/CI 게이트 묶음 실행
 - `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
-- `bash scripts/validation/check-doc-traceability.sh` - 문서 추적성 검사
+- `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
+- `python3 scripts/validation/check-document-links.py --mode alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사
 - `python3 scripts/knowledge/generate-llm-wiki.py --check` - LLM Wiki generated index and coverage freshness 검사
 - `bash scripts/validation/check-quickwin-baseline.sh` - QuickWin baseline 검사
 - `bash scripts/validation/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
@@ -236,7 +237,7 @@ docker compose --profile core up -d
 GitHub Actions에서는 다음 품질 게이트를 사용합니다.
 
 - `docs-traceability` - 문서 추적성 검사
-- `docs-implementation-alignment` - active docs와 tracked implementation surface 정렬 검사
+- `docs-implementation-alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사(stable gate ID 유지)
 - `repo-contracts` - docs taxonomy, GitHub workflow, script reference, image/version drift, runtime catalog 검사
 - `git-flow-contract` - PR 제목 Conventional Commits와 source branch prefix 검사
 - `compose-validation` - Docker Compose 구조 검사

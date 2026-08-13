@@ -110,7 +110,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
    python3 -m json.tool .claude/settings.json >/dev/null
    bash -n .claude/hooks/*.sh scripts/**/*.sh
    bash scripts/validation/check-repo-contracts.sh
-   bash scripts/validation/check-doc-traceability.sh
+   python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
 4. Run hook payload simulations.

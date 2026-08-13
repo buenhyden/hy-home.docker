@@ -37,7 +37,7 @@ Long retention or manual data cleanup requires owner approval and evidence showi
 
 - `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
 - Confirm `INFLUXDB_DB_NAME`, port `8181`, and `/api/v3/write_lp` agree across source and active docs without claiming token provisioning.
-- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `python3 scripts/validation/check-document-links.py --mode alignment`
 - `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence

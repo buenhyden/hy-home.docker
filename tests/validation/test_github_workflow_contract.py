@@ -381,7 +381,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "eval": "eval python3 scripts/validation/run-ci-gate.py",
             "source": "source scripts/validation/run-local-qa-gates.sh",
             "shell-c": "bash -c 'true'",
-            "direct-script": "bash scripts/validation/check-doc-traceability.sh",
+            "direct-script": (
+                "python3 scripts/validation/check-document-links.py --mode traceability"
+            ),
         }
         for label, program in mutations.items():
             with self.subTest(label=label), self.workflow_fixture() as root:

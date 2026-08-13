@@ -37,7 +37,7 @@ Offset replay, query termination, or datagen workloads that affect shared Kafka 
 
 - `test -f infra/04-data/analytics/ksql/docker-compose.yml`
 - `curl -fsS http://ksqldb-server:8088/info` when the service is running
-- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `python3 scripts/validation/check-document-links.py --mode alignment`
 - `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence

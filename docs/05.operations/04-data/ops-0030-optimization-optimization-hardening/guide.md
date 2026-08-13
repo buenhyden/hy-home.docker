@@ -55,7 +55,7 @@ updated: 2026-08-11
 6. 하드닝/추적성 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 04-data`
    - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ### Common Pitfalls
 
@@ -71,7 +71,7 @@ updated: 2026-08-11
 - `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
 - `bash scripts/hardening/check-all-hardening.sh 04-data`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Runbook Handoff
 

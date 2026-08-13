@@ -50,7 +50,7 @@ updated: 2026-08-11
 
    ```bash
    test -f infra/04-data/analytics/opensearch/docker-compose.yml
-   bash scripts/validation/check-doc-implementation-alignment.sh
+   python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
 2. Primary health를 HTTPS로 확인한다.

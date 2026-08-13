@@ -48,7 +48,7 @@ updated: 2026-08-11
 - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
 - `docker exec rabbitmq rabbitmq-diagnostics -q check_running`
 - `docker exec rabbitmq rabbitmqctl list_queues name messages consumers`
-- `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
 
 ## Review Cadence
 

@@ -48,7 +48,7 @@ updated: 2026-08-11
 - Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
 - Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
-- 문서 추적성 점검: `bash scripts/validation/check-doc-traceability.sh`
+- 문서 추적성 점검: `python3 scripts/validation/check-document-links.py --mode traceability`
 - 운영 갭 점검(예시):
   - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
 - 문서 추적성 점검:

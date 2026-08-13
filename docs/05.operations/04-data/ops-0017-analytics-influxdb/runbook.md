@@ -50,7 +50,7 @@ updated: 2026-08-11
 
    ```bash
    test -f infra/04-data/analytics/influxdb/docker-compose.yml
-   bash scripts/validation/check-doc-implementation-alignment.sh
+   python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
 2. Runtime container 상태를 확인한다.

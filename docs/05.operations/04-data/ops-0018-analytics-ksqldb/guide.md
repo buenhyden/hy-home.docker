@@ -69,7 +69,7 @@ updated: 2026-08-11
 ## Common Checks
 
 - `test -f infra/04-data/analytics/ksql/docker-compose.yml`
-- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `python3 scripts/validation/check-document-links.py --mode alignment`
 - `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff

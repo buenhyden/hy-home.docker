@@ -51,7 +51,7 @@ updated: 2026-08-11
 
 - `bash scripts/hardening/check-all-hardening.sh 04-data`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 - `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`
 
 ## Review Cadence

@@ -9,6 +9,7 @@ from dataclasses import dataclass
 import hashlib
 import os
 from pathlib import Path, PurePosixPath
+import re
 import subprocess
 import sys
 from typing import Any, Iterable, Mapping, Sequence
@@ -473,6 +474,64 @@ def _python_proves_use(text: str, target: str) -> bool:
     return False
 
 
+_MACHINE_REFERENCE_KEYS = frozenset(
+    {
+        "argv",
+        "command",
+        "commands",
+        "entry",
+        "entrypoint",
+        "implementation",
+        "path",
+        "required_evidence_paths",
+        "run",
+        "script",
+    }
+)
+
+
+class EvidenceTraversalError(ValueError):
+    """Raised when machine evidence is cyclic and cannot be bounded safely."""
+
+
+def _machine_config_proves_use(
+    document: object,
+    target: str,
+    parent: str = "",
+    _active: set[int] | None = None,
+) -> bool:
+    """Return whether a typed machine field names the exact target path."""
+
+    if isinstance(document, (dict, list)):
+        active = set() if _active is None else _active
+        identity = id(document)
+        if identity in active:
+            raise EvidenceTraversalError("cyclic machine evidence")
+        active.add(identity)
+        try:
+            if isinstance(document, dict):
+                for key, value in document.items():
+                    if _machine_config_proves_use(
+                        value, target, str(key), active
+                    ):
+                        return True
+            else:
+                for value in document:
+                    if _machine_config_proves_use(value, target, parent, active):
+                        return True
+            return False
+        finally:
+            active.remove(identity)
+    if parent not in _MACHINE_REFERENCE_KEYS or not isinstance(document, str):
+        return False
+    return bool(
+        re.search(
+            rf"(?<![A-Za-z0-9_./-]){re.escape(target)}(?![A-Za-z0-9_./-])",
+            document,
+        )
+    )
+
+
 def _reference_proves_use(reference: str, text: str, target: str, *, is_test: bool) -> bool:
     basename = PurePosixPath(target).name
     if reference.endswith(".py"):
@@ -485,31 +544,17 @@ def _reference_proves_use(reference: str, text: str, target: str, *, is_test: bo
     if is_test:
         return False
     if reference.endswith((".yaml", ".yml")):
-        return any(
-            (target in line or basename in line)
-            and __import__("re").search(
-                r'(?:command|implementation|run|script|entrypoint|argv|path)"?\s*:', line
-            )
-            for line in text.splitlines()
-        )
+        try:
+            value = yaml.safe_load(text)
+        except yaml.YAMLError:
+            return False
+        return _machine_config_proves_use(value, target)
     if reference.endswith(".json"):
         try:
             value = __import__("json").loads(text)
         except ValueError:
             return False
-        machine_keys = {
-            "argv", "command", "commands", "entrypoint", "implementation", "path",
-            "required_evidence_paths", "script",
-        }
-
-        def machine_reference(item: object, parent: str = "") -> bool:
-            if isinstance(item, dict):
-                return any(machine_reference(value, str(key)) for key, value in item.items())
-            if isinstance(item, list):
-                return any(machine_reference(value, parent) for value in item)
-            return parent in machine_keys and isinstance(item, str) and (target in item or basename in item)
-
-        return machine_reference(value)
+        return _machine_config_proves_use(value, target)
     if reference.endswith(".md"):
         in_fence = False
         for line in text.splitlines():
@@ -549,7 +594,20 @@ def _semantic_findings(repo_root: Path, document: object) -> list[Finding]:
                 except (OSError, UnicodeError):
                     findings.append(_finding(f"{field}-unreadable", path, f"cannot read {reference}"))
                     continue
-                if not _reference_proves_use(reference, text, path, is_test=field == "tests"):
+                try:
+                    proven = _reference_proves_use(
+                        reference, text, path, is_test=field == "tests"
+                    )
+                except EvidenceTraversalError:
+                    findings.append(
+                        _finding(
+                            f"{field}-invalid",
+                            path,
+                            f"{reference} contains cyclic machine evidence",
+                        )
+                    )
+                    continue
+                if not proven:
                     findings.append(
                         _finding(
                             f"{field}-unproven",

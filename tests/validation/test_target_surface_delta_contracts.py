@@ -147,7 +147,7 @@ TASK42_NEW_UPDATE_PATHS = frozenset(
 TASK42_MODE_UPDATE_PATHS = frozenset(
     {
         "scripts/security/generate-supply-chain-sample-service-summary.sh",
-        "scripts/validation/check-doc-implementation-alignment.sh",
+        "scripts/validation/check-document-links.py",
         "scripts/validation/check-document-corpus-lifecycle.py",
         "scripts/validation/check-document-metadata.py",
         "scripts/validation/check-supply-chain-policy.py",

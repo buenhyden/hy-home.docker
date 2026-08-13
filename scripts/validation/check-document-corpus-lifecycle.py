@@ -50,9 +50,20 @@ def _repository_root() -> pathlib.Path:
 
 
 ROOT = _repository_root()
+_REPOSITORY_DIRECTORY = str(ROOT)
+if _REPOSITORY_DIRECTORY not in sys.path:
+    sys.path.insert(0, _REPOSITORY_DIRECTORY)
+_VALIDATION_DIRECTORY = str(ROOT / "scripts/validation")
+if _VALIDATION_DIRECTORY not in sys.path:
+    sys.path.insert(0, _VALIDATION_DIRECTORY)
+
+from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+    resolve_git_provenance,
+)
+from scripts.lib.document_governance import metadata_contract  # noqa: E402
+
 DEFAULT_PROFILES = ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
 DEFAULT_CONTRACT = ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
-METADATA_SCRIPT = ROOT / "scripts/validation/check-document-metadata.py"
 TARGET_SURFACE_DELTA_SCRIPT = (
     ROOT / "scripts/validation/target_surface_delta_contract.py"
 )
@@ -119,18 +130,6 @@ ACTIVE_CONSUMER_EXCLUSIONS = (
 )
 
 
-def _load_metadata_module() -> Any:
-    spec = importlib.util.spec_from_file_location(
-        "document_metadata_for_corpus_lifecycle", METADATA_SCRIPT
-    )
-    if spec is None or spec.loader is None:
-        raise RuntimeError("metadata validator module is unavailable")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
 def _load_target_surface_delta_module() -> Any:
     spec = importlib.util.spec_from_file_location(
         "target_surface_delta_for_corpus_lifecycle",
@@ -157,11 +156,11 @@ class _CorpusSafetyError(Exception):
         self.code = code
 
 
-metadata: Any = None
+metadata: Any = metadata_contract
 target_surface_delta: Any = None
-Finding: Any = None
-Record: Any = None
-ProfileError: type[Exception] = _BootstrapProfileError
+Finding: Any = metadata.Finding
+Record: Any = metadata.Record
+ProfileError: type[Exception] = metadata.ProfileError
 
 _CORPUS_SNAPSHOT_ROOT: pathlib.Path | None = None
 _CORPUS_SNAPSHOT_BYTES: dict[str, bytes] = {}
@@ -171,11 +170,6 @@ def _ensure_metadata_loaded() -> Any:
     """Load repository-backed metadata only after CLI-shape validation."""
 
     global metadata, Finding, Record, ProfileError
-    if metadata is None:
-        metadata = _load_metadata_module()
-        Finding = metadata.Finding
-        Record = metadata.Record
-        ProfileError = metadata.ProfileError
     return metadata
 
 
@@ -1542,28 +1536,9 @@ def _read_regular_repo_bytes(
 def _baseline_regular_blob(root: pathlib.Path, commit: str, path: str) -> bool:
     """Return whether an exact baseline path is a regular Git blob entry."""
 
-    if not _safe_path(path):
-        return False
-    result = _run_git(root, ["ls-tree", "-z", commit, "--", path], text=False)
-    if result.returncode != 0 or not result.stdout:
-        return False
-    entries = [entry for entry in result.stdout.split(b"\0") if entry]
-    if len(entries) != 1 or b"\t" not in entries[0]:
-        return False
-    raw_header, raw_path = entries[0].split(b"\t", 1)
-    header = raw_header.split()
-    try:
-        entry_path = raw_path.decode("utf-8")
-        object_id = header[2].decode("ascii") if len(header) == 3 else ""
-    except UnicodeDecodeError:
-        return False
-    return (
-        len(header) == 3
-        and header[0] in {b"100644", b"100755"}
-        and header[1] == b"blob"
-        and entry_path == path
-        and bool(OBJECT_ID.fullmatch(object_id))
-        and _git_object_type(root, object_id) == "blob"
+    return bool(
+        _safe_path(path)
+        and resolve_git_provenance(path, commit, repo_root=root).is_regular_blob
     )
 
 
@@ -2241,11 +2216,10 @@ def _profile_required_fields(
 def _blob_at_commit_path(root: pathlib.Path, commit: str, path: str) -> str | None:
     """Resolve one verified regular blob identity without reading its payload."""
 
-    if not _safe_path(path) or not _baseline_regular_blob(root, commit, path):
+    if not _safe_path(path):
         return None
-    result = _run_git(root, ["rev-parse", f"{commit}:{path}"])
-    object_id = result.stdout.strip() if result.returncode == 0 else ""
-    return object_id if OBJECT_ID.fullmatch(object_id) else None
+    provenance = resolve_git_provenance(path, commit, repo_root=root)
+    return provenance.object_id if provenance.is_regular_blob else None
 
 
 def _canonical_current_snapshot(

@@ -72,7 +72,7 @@ opensearch/
 
 ## Validation
 
-- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect OpenSearch.
+- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
 - `docker-compose.cluster.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
 

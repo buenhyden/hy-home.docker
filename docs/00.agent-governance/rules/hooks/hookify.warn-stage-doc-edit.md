@@ -28,7 +28,7 @@ action: warn
 **After editing, verify:**
 
 ```bash
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/check-repo-contracts.sh
 ```
 

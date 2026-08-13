@@ -41,7 +41,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [Qdrant guide](guide.md), [Qdrant runbook](runbook.md), and [infra README](../../../../infra/04-data/specialized/qdrant/README.md) after compose changes.
 - Run `docker compose --profile data --profile ai config qdrant` before approving service-name, image, route, secret, healthcheck, or volume documentation updates.
-- Run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-repo-contracts.sh` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
 

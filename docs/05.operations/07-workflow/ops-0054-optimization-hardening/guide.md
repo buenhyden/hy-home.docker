@@ -57,7 +57,7 @@ updated: 2026-08-11
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`
-   - `bash scripts/validation/check-doc-traceability.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
 6. 카탈로그 확장 운영 기준 반영
    - Airflow DAG quality gate와 worker autoscale 기준을 정책 문서에 반영한다.
    - n8n workflow Git backup/Vault credential 기준을 정책 문서에 반영한다.
@@ -76,7 +76,7 @@ updated: 2026-08-11
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 ## Runbook Handoff
 

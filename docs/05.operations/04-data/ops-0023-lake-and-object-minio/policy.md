@@ -51,7 +51,7 @@ Exceptions require explicit owner or user approval and must record scope, affect
 
 - Run `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config` after changing compose-facing documentation.
 - Run `bash scripts/validation/check-repo-contracts.sh` after policy, guide, runbook, README, or link updates.
-- Run `bash scripts/validation/check-doc-implementation-alignment.sh` when the change is part of implementation-vs-doc drift remediation.
+- Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
 - Search updated docs for active/optional cluster confusion, direct secret values, unapproved public access claims, and direct host-port assumptions before committing.
 
 ## Review Cadence

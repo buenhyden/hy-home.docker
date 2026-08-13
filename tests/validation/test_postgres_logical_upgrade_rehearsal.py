@@ -8,6 +8,7 @@ import re
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import textwrap
 import time
@@ -21,7 +22,7 @@ COMPOSE = FIXTURE / "docker-compose.yml"
 SEED_SQL = FIXTURE / "sql/001_schema_and_seed.sql"
 ORACLE_SQL = FIXTURE / "sql/010_integrity_oracle.sql"
 PARTIAL_SQL = FIXTURE / "sql/020_negative_partial_state.sql"
-ALIGNMENT_CHECK = ROOT / "scripts/validation/check-doc-implementation-alignment.sh"
+ALIGNMENT_CHECK = ROOT / "scripts/validation/check-document-links.py"
 REPO_CONTRACTS = ROOT / "scripts/validation/check-repo-contracts.sh"
 IMAGE_IDENTITY_CHECKER = (
     ROOT / "scripts/validation/check-supply-chain-policy.py"
@@ -1058,17 +1059,15 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertIn("state IN ('open', 'paid')", text)
 
     def test_rehearsal_runbook_is_not_classified_as_an_infra_service(self) -> None:
-        text = ALIGNMENT_CHECK.read_text(encoding="utf-8")
-        self.assertEqual(
-            text.count('"postgresql-logical-upgrade-restore-rehearsal"'), 1
+        result = subprocess.run(
+            [sys.executable, str(ALIGNMENT_CHECK), "--mode", "alignment"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
         )
-        self.assertRegex(
-            text,
-            re.compile(
-                r"NON_SERVICE_STEMS\s*=\s*\{[\s\S]+?"
-                r'"postgresql-logical-upgrade-restore-rehearsal"[\s\S]+?\}',
-            ),
-        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertNotIn("postgresql-logical-upgrade-restore-rehearsal", result.stderr)
 
     def test_wrapper_is_in_the_exact_script_inventory(self) -> None:
         text = REPO_CONTRACTS.read_text(encoding="utf-8")

@@ -50,7 +50,7 @@ updated: 2026-08-11
 
    ```bash
    test -f infra/04-data/analytics/ksql/docker-compose.yml
-   bash scripts/validation/check-doc-implementation-alignment.sh
+   python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
 2. Server logs and readiness를 확인한다.

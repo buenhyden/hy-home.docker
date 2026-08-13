@@ -109,10 +109,18 @@ repos:
         stages: [pre-push]
 
       - id: check-doc-traceability
-        name: Doc traceability (execution <-> operations)
-        entry: ./scripts/validation/check-doc-traceability.sh
-        language: script
-        files: ^docs/(04\.execution|05\.operations)/
+        name: Document traceability
+        entry: python3 scripts/validation/check-document-links.py --mode traceability
+        language: system
+        files: ^docs/(03\.specs|05\.operations)/
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: check-doc-implementation-alignment
+        name: Document implementation alignment
+        entry: python3 scripts/validation/check-document-links.py --mode alignment
+        language: system
+        files: ^(README\.md|docs/.*\.md|infra/.*\.md)$
         pass_filenames: false
         stages: [pre-push]
 

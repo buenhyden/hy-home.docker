@@ -232,8 +232,8 @@ recommend_for_path() {
   case "$path" in
   docs/* | docs/** | README.md)
     add_gate "python3 scripts/knowledge/generate-llm-wiki.py --check" "documentation navigation and coverage may need LLM Wiki freshness"
-    add_gate "bash scripts/validation/check-doc-traceability.sh" "documentation links or execution/operations routing may have changed"
-    add_gate "bash scripts/validation/check-doc-implementation-alignment.sh" "active docs must match tracked implementation surfaces"
+    add_gate "python3 scripts/validation/check-document-links.py --mode traceability" "documentation links or Spec/Operations routing may have changed"
+    add_gate "python3 scripts/validation/check-document-links.py --mode alignment" "active docs must match tracked implementation surfaces"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "documentation contracts changed"
     ;;
   esac
@@ -251,7 +251,7 @@ recommend_for_path() {
     add_gate "bash scripts/validation/check-template-security-baseline.sh" "Compose security/template baseline may be affected"
     add_gate "bash scripts/validation/check-quickwin-baseline.sh" "QuickWin baseline controls may be affected"
     add_gate "bash scripts/operations/sync-tech-stack-versions.sh --check" "image/version registry may need drift validation"
-    add_gate "bash scripts/validation/check-doc-implementation-alignment.sh" "infra changes can stale active docs"
+    add_gate "python3 scripts/validation/check-document-links.py --mode alignment" "infra changes can stale active docs"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "infrastructure contracts changed"
     ;;
   esac

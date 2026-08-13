@@ -85,7 +85,7 @@ linked sources. It does not define new policy.
 
 | Surface          | Source                                                   | Role                                      | Required Validation                     | Evidence               |
 | ---------------- | -------------------------------------------------------- | ----------------------------------------- | --------------------------------------- | ---------------------- |
-| Operations index | `docs/05.operations/README.md`                           | Guides, policies, runbooks, incidents     | `check-doc-traceability.sh`             | PR Validation Evidence |
+| Operations index | `docs/05.operations/README.md`                           | Guides, policies, runbooks, incidents     | `check-document-links.py --mode traceability` | PR Validation Evidence |
 | Task form        | `docs/99.templates/templates/sdlc/task.template.md`      | Ordinary and harness execution evidence   | `check-repo-contracts.sh` template loop | co-located Task         |
 
 ## Related Documents
