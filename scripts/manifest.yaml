@@ -127,8 +127,8 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/check-document-corpus-lifecycle.py
   - scripts/lib/document_governance/metadata_validator.py
+  - scripts/validation/check-document-corpus-lifecycle.py
   disposition: retain
   successor: null
   tests:
@@ -148,7 +148,7 @@ files:
   kind: library
   authority: docs/99.templates/support/document-metadata-profiles.yaml
   lifecycle: active
-  mutation: check-write
+  mutation: none
   consumers:
   - scripts/validation/check-document-corpus-lifecycle.py
   - scripts/validation/check-document-metadata.py
@@ -174,7 +174,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/check-document-metadata.py
+  - scripts/lib/document_governance/metadata_validator.py
   disposition: retain
   successor: null
   tests:
@@ -827,7 +827,6 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/check-document-metadata.py
   - scripts/validation/recommend-qa-gates.sh
   disposition: retain
   successor: null

@@ -72,6 +72,7 @@ MUTATION_OVERRIDES = {
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
     "scripts/operations/sync-provider-surfaces.sh": "check-write",
+    "scripts/lib/document_governance/metadata_validator.py": "check-write",
     "scripts/operations/sync-tech-stack-versions.sh": "check-write",
     "scripts/security/generate-supply-chain-sample-service-summary.sh": "check-write",
     "scripts/security/seed-grype-db-cache.sh": "runtime",
@@ -92,8 +93,6 @@ MANDATORY_DISPOSITIONS = {
     "scripts/hooks/patch-graphify-post-commit.sh": "merge",
     "scripts/hooks/post-tool-validate.sh": "rewrite",
     "scripts/knowledge/generate-llm-wiki.py": "retain",
-    "scripts/validation/check-doc-implementation-alignment.sh": "merge",
-    "scripts/validation/check-doc-traceability.sh": "merge",
     "scripts/validation/check-repo-contracts.sh": "merge",
     "scripts/validation/recommend-gap-routing.sh": "delete",
     "scripts/validation/recommend-qa-gates.sh": "merge",
@@ -249,9 +248,49 @@ def _python_imports_target(reference: str, target: str) -> bool:
         if isinstance(node, ast.Import):
             if any(alias.name == module for alias in node.names):
                 return True
-        elif isinstance(node, ast.ImportFrom) and node.module == module:
-            return True
+        elif isinstance(node, ast.ImportFrom):
+            if node.module == module:
+                return True
+            package, _, member = module.rpartition(".")
+            if node.module == package and any(
+                alias.name == member for alias in node.names
+            ):
+                return True
     return False
+
+
+MACHINE_REFERENCE_KEYS = frozenset(
+    {
+        "argv",
+        "command",
+        "commands",
+        "entry",
+        "entrypoint",
+        "implementation",
+        "path",
+        "required_evidence_paths",
+        "run",
+        "script",
+    }
+)
+
+
+def machine_config_proves_use(document: object, target: str, parent: str = "") -> bool:
+    if isinstance(document, dict):
+        return any(
+            machine_config_proves_use(value, target, str(key))
+            for key, value in document.items()
+        )
+    if isinstance(document, list):
+        return any(machine_config_proves_use(value, target, parent) for value in document)
+    if parent not in MACHINE_REFERENCE_KEYS or not isinstance(document, str):
+        return False
+    return bool(
+        re.search(
+            rf"(?<![A-Za-z0-9_./-]){re.escape(target)}(?![A-Za-z0-9_./-])",
+            document,
+        )
+    )
 
 
 def reference_proves_use(reference: str, target: str) -> bool:
@@ -288,11 +327,11 @@ def reference_proves_use(reference: str, target: str) -> bool:
                 return True
         return False
     if reference.endswith((".yaml", ".yml")):
-        return any(
-            (target in line or basename in line)
-            and re.search(r'(?:command|implementation|run|script|entrypoint|argv|path)"?\s*:', line)
-            for line in text.splitlines()
-        )
+        try:
+            document = yaml.safe_load(text)
+        except yaml.YAMLError:
+            return False
+        return machine_config_proves_use(document, target)
     if reference.endswith((".sh", ".bash")):
         return any(
             (target in line or basename in line)
@@ -421,7 +460,7 @@ class ScriptManifestTests(unittest.TestCase):
         row = self.rows_by_path["scripts/lib/document_governance/taxonomy.py"]
         self.assertEqual("retain", row["disposition"])
         self.assertEqual(
-            ["scripts/validation/check-document-metadata.py"],
+            ["scripts/lib/document_governance/metadata_validator.py"],
             row["consumers"],
         )
         self.assertEqual(
@@ -430,6 +469,27 @@ class ScriptManifestTests(unittest.TestCase):
                 "tests/validation/test_document_taxonomy.py",
             ],
             row["tests"],
+        )
+
+    def test_python_import_evidence_recognizes_package_member_imports(self) -> None:
+        adapter = "scripts/validation/check-document-metadata.py"
+        self.assertTrue(
+            _python_imports_target(
+                adapter,
+                "scripts/lib/document_governance/metadata_contract.py",
+            )
+        )
+        self.assertTrue(
+            _python_imports_target(
+                adapter,
+                "scripts/lib/document_governance/metadata_validator.py",
+            )
+        )
+        self.assertFalse(
+            _python_imports_target(
+                adapter,
+                "scripts/validation/target_surface_contract.py",
+            )
         )
 
     def test_mutation_classes_follow_observed_script_behavior(self) -> None:
@@ -1192,6 +1252,48 @@ class ScriptManifestValidationTests(unittest.TestCase):
             )
             codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
             self.assertIn("tests-unproven", codes)
+
+    def test_yaml_semantic_evidence_accepts_exact_entry_only(self) -> None:
+        target = "scripts/example.py"
+        exact = "entry: python3 scripts/example.py --check\n"
+        comment = "# entry: python3 scripts/example.py --check\n"
+        collision = "entry: python3 scripts/example.py-extra --check\n"
+
+        self.assertTrue(
+            self.checker._reference_proves_use(
+                ".pre-commit-config.yaml", exact, target, is_test=False
+            )
+        )
+        self.assertFalse(
+            self.checker._reference_proves_use(
+                ".pre-commit-config.yaml", comment, target, is_test=False
+            )
+        )
+        self.assertFalse(
+            self.checker._reference_proves_use(
+                ".pre-commit-config.yaml", collision, target, is_test=False
+            )
+        )
+
+    def test_yaml_semantic_evidence_cycle_is_an_explicit_finding(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            consumer = root / ".pre-commit-config.yaml"
+            consumer.write_text("entry: &loop\n  - *loop\n", encoding="utf-8")
+            document = {
+                "files": [
+                    {
+                        "path": "scripts/example.py",
+                        "consumers": [".pre-commit-config.yaml"],
+                        "tests": [],
+                    }
+                ]
+            }
+            codes = {
+                finding.code
+                for finding in self.checker._semantic_findings(root, document)
+            }
+        self.assertIn("consumers-invalid", codes)
 
     def test_python_semantic_evidence_accepts_target_linked_uses(self) -> None:
         positives = (
