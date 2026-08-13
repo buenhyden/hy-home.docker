@@ -55,7 +55,7 @@ not applicable, record the skipped-check rationale in the task evidence.
 
 | Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Documentation-only stage docs                | `git diff --check`, `check-doc-implementation-alignment.sh`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, and LLM Wiki index regeneration via `scripts/knowledge/generate-llm-wiki-index.sh` when docs are added, removed, or renamed | Remote docs implementation-alignment, traceability, and repo contracts | Post-edit validation hook, task evidence, progress log                 | Domain tests, coverage, Docker runtime checks                        |
+| Documentation-only stage docs                | `git diff --check`, `check-doc-implementation-alignment.sh`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, and LLM Wiki regeneration via `scripts/knowledge/generate-llm-wiki.py --write` when docs are added, removed, or renamed | Remote docs implementation-alignment, traceability, and repo contracts | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
 | Archive/tombstone migration                  | Documentation checks plus `check-doc-implementation-alignment.sh`, stale active-reference scans for archived subjects, and `docs/98.archive` status/template checks                                                                               | Remote docs implementation-alignment, traceability, and repo contracts | Archive ledger update, tombstone metadata, task evidence, progress log | Domain tests, coverage, Docker runtime checks                        |
 | Governance or provider policy docs           | Documentation checks plus `sync-provider-surfaces.sh --check` when provider surfaces are affected                                                                                                       | Remote repo contracts and required checks                        | Provider sync check output and policy-gate evidence                    | Runtime tests unless behavior/config changed                         |
 | Provider adapter, hook, or validation script | Targeted script self-check, `run-local-qa-gates.sh` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Wrapper command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped wrapper rationale is explicit |
@@ -71,11 +71,10 @@ Some artifacts are generated from repository content and must be regenerated as
 part of QA before completion. Treat regeneration as a verification step, not an
 optional cleanup.
 
-- **LLM Wiki index**: when documents are added, removed, or renamed under indexed
-  scopes, regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` with
-  `bash scripts/knowledge/generate-llm-wiki-index.sh`. `check-repo-contracts.sh`
-  enforces freshness locally and in the `repo-contracts` CI job; a stale index is
-  a hard failure.
+- **LLM Wiki outputs**: when documents are added, removed, or renamed under
+  indexed scopes, regenerate both tracked outputs with
+  `python3 scripts/knowledge/generate-llm-wiki.py --write`. Use `--check` for
+  read-only freshness validation; a stale output is a hard failure.
 - **Knowledge graph**: refresh `graphify-out/` with one-shot `graphify update .`
   after code or doc changes when the CLI is available; report when it is skipped.
   Do not rely on a live `graphify watch` daemon during commits: `pre-commit`

@@ -61,7 +61,7 @@ updated: 2026-08-11
    ```bash
    bash scripts/validation/check-repo-contracts.sh
    bash scripts/validation/check-doc-traceability.sh
-   bash scripts/knowledge/generate-llm-wiki-index.sh --check
+   python3 scripts/knowledge/generate-llm-wiki.py --check
    ```
 
 4. Confirm Compose readiness without starting or stopping runtime services.

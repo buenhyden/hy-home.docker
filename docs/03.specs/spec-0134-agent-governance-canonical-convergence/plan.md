@@ -985,8 +985,7 @@ bash scripts/validation/run-agent-output-eval-fixtures.sh \
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh
 bash scripts/validation/check-repo-contracts.sh
-bash scripts/knowledge/generate-llm-wiki-index.sh --check
-bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+python3 scripts/knowledge/generate-llm-wiki.py --check
 bash scripts/validation/generate-security-automation-readiness.sh --check
 git diff --check
 ```

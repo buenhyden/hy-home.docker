@@ -41,7 +41,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 ## Definitions / Facts
 
 - **LLM Wiki**: Repo-local exploration reference made of root `llms.txt` and `docs/90.references/llm-wiki/`.
-- **Generated tracked repo-local index**: Path-only index refreshed by `scripts/knowledge/generate-llm-wiki-index.sh`.
+- **Generated tracked repo-local index**: Path-only index refreshed by `scripts/knowledge/generate-llm-wiki.py`.
 - **Tracked source files**: README files, governance docs, operations docs, Compose files, scripts, and registry JSON files tracked by Git.
 - **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/` documents that directly define current runtime configuration and validation criteria.
 - **Advisory graph context**: Supporting material such as `graphify-out/` output that may be used only as exploration hints and must not be promoted to canonical evidence.

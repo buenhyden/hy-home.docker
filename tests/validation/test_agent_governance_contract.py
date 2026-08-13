@@ -1825,8 +1825,7 @@ class Task3CatalogConvergenceTests(unittest.TestCase):
         "docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md",
         "scripts/README.md",
         "scripts/hooks/agent-event-hook.sh",
-        "scripts/knowledge/generate-llm-wiki-index.sh",
-        "scripts/knowledge/generate-llm-wiki-coverage.sh",
+        "scripts/knowledge/generate-llm-wiki.py",
     )
 
     def test_exact_role_categories_and_function_cardinality_are_canonical(self) -> None:
@@ -5347,19 +5346,15 @@ class Task8Stage00PolicyConvergenceTests(unittest.TestCase):
                 text = generated.read_text(encoding="utf-8")
                 for retired_path in retired_paths:
                     self.assertNotIn(retired_path, text)
-        for generator in (
-            "scripts/knowledge/generate-llm-wiki-index.sh",
-            "scripts/knowledge/generate-llm-wiki-coverage.sh",
-        ):
-            with self.subTest(generator=generator):
-                result = subprocess.run(
-                    ["bash", generator, "--check"],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        generator = "scripts/knowledge/generate-llm-wiki.py"
+        result = subprocess.run(
+            ["python3", generator, "--check"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_language_routing_has_one_document_role_owner(self) -> None:
         owner = self.GOVERNANCE / "rules/documentation-protocol.md"

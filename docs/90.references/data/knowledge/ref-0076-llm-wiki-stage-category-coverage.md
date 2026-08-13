@@ -1,6 +1,6 @@
 ---
 status: active
-generated_by: scripts/knowledge/generate-llm-wiki-coverage.sh
+generated_by: scripts/knowledge/generate-llm-wiki.py
 ---
 
 # Reference: LLM Wiki Stage Category Coverage
@@ -23,7 +23,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 - Counts by source bucket, LLM Wiki category, and path role.
 - Representative links for each category.
-- Deterministic freshness through `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check`.
+- Deterministic freshness through `python3 scripts/knowledge/generate-llm-wiki.py --check`.
 
 ### Out of Scope
 
@@ -33,21 +33,21 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Definitions / Facts
 
-- **Safe tracked source path**: a `git ls-files` path that passes the LLM Wiki allowlist and exclusion rules.
+- **Safe tracked source path**: a repository path that passes the LLM Wiki allowlist and exclusion rules.
 - **Source bucket**: the top-level repository surface or docs stage that owns a path.
 - **LLM Wiki category**: the navigation category used by the generated LLM Wiki index.
 - **Path role**: a lightweight type label derived from file name or suffix.
 
 ## Source Rules
 
-- This snapshot excludes itself and the generated LLM Wiki index from coverage counts.
+- This snapshot and the generated LLM Wiki index are excluded from coverage counts.
 - `secrets/README.md` is counted as policy context; secret content paths are excluded.
 - `graphify-out/`, `volumes/`, dependency trees, generated/minified artifacts, and lockfiles are excluded.
 - Use this file as coverage/navigation evidence only; read canonical source files for implementation truth.
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1234`
+- Safe tracked source paths: `1233`
 - Source buckets: `16`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -70,7 +70,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | `docs/README.md` | 1 | [docs/README.md](../../../README.md) |
 | `infra` | 250 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | `root` | 8 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
-| `scripts` | 44 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
+| `scripts` | 43 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | `secrets` | 1 | [secrets/README.md](../../../../secrets/README.md) |
 
 ## LLM Wiki Category Coverage
@@ -85,7 +85,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Operations docs | 208 | [docs/05.operations/00-workspace/README.md](../../../05.operations/00-workspace/README.md)<br>[docs/05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/00-workspace/ops-0002-developer-setup/guide.md](../../../05.operations/00-workspace/ops-0002-developer-setup/guide.md) |
 | Reference and template docs | 145 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/README.md](../../audits/README.md)<br>[docs/90.references/audits/ref-0001-readme.md](../../audits/ref-0001-readme.md) |
 | Infrastructure source | 250 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
-| Scripts and validators | 44 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
+| Scripts and validators | 43 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | GitHub workflow surface | 17 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/INDEX.md](../../../../.github/INDEX.md)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
 | Other tracked source | 274 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/changes/chg-0002-01-gateway-standardization/plan.md](../../../98.archive/changes/chg-0002-01-gateway-standardization/plan.md)<br>[docs/98.archive/changes/chg-0003-02-auth-standardization/plan.md](../../../98.archive/changes/chg-0003-02-auth-standardization/plan.md) |
@@ -98,7 +98,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Markdown reference | 837 |
 | YAML config | 114 |
 | folder index | 120 |
-| script | 58 |
+| script | 57 |
 | source path | 27 |
 | text entrypoint | 4 |
 
@@ -106,15 +106,14 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 - [LLM Wiki generated index](../../llm-wiki/ref-0082-llm-wiki-index.md) - full safe path index
 - [LLM Wiki repository map](../../llm-wiki/ref-0083-repository-map.md) - curated canonical source map
-- [generate-llm-wiki-index.sh](../../../../scripts/knowledge/generate-llm-wiki-index.sh) - generated index source
-- [generate-llm-wiki-coverage.sh](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh) - this coverage snapshot generator
-- [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - freshness gate
+- [generate-llm-wiki.py](../../../../scripts/knowledge/generate-llm-wiki.py) - deterministic two-output generator
+- [script manifest checker](../../../../scripts/validation/check-script-manifest.py) - aggregate generated-output freshness gate
 
 ## Maintenance
 
 - **Owner**: `doc-writer` using the `knowledge-map-agent` function.
 - **Review Cadence**: Review after root entrypoint, governance, operations, script inventory, infrastructure index, or LLM Wiki path changes.
-- **Update Trigger**: Run `bash scripts/knowledge/generate-llm-wiki-coverage.sh` after in-scope path changes and `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` during validation.
+- **Update Trigger**: Run `python3 scripts/knowledge/generate-llm-wiki.py --write` after in-scope path changes and `python3 scripts/knowledge/generate-llm-wiki.py --check` during validation.
 
 ## Related Documents
 

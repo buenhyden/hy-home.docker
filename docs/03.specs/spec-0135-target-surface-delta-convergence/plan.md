@@ -1102,8 +1102,8 @@ The local-only semantic leaves are exact:
 | `leaf.local-target-delta-contract` | `local-target-delta-contract` | `scripts/validation/check-target-surface-delta-contract.py` | `--mode`, `advisory` |
 | `leaf.local-security-readiness-freshness` | `local-security-readiness-freshness` | `scripts/validation/generate-security-automation-readiness.sh` | `--check` |
 | `leaf.local-audit-matrix-freshness` | `local-audit-matrix-freshness` | `scripts/validation/generate-audit-implementation-matrix.sh` | `--check` |
-| `leaf.local-llm-wiki-index-freshness` | `local-llm-wiki-index-freshness` | `scripts/knowledge/generate-llm-wiki-index.sh` | `--check` |
-| `leaf.local-llm-wiki-coverage-freshness` | `local-llm-wiki-coverage-freshness` | `scripts/knowledge/generate-llm-wiki-coverage.sh` | `--check` |
+| `leaf.local-llm-wiki-freshness` | `local-llm-wiki-freshness` | `scripts/knowledge/generate-llm-wiki.py` | `--check` |
+| `leaf.local-script-manifest` | `local-script-manifest` | `scripts/validation/check-script-manifest.py` | none |
 
 All local-only nodes use `cwd: "."`, `timeout_minutes: 10`, and
 `opaque: true`. Their `profiles` fields must equal the exact profile-root

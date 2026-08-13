@@ -117,7 +117,7 @@ The restructure program has four design components:
 - `scripts/validation/check-repo-contracts.sh`
 - `scripts/validation/check-doc-traceability.sh`
 - `scripts/validation/check-doc-implementation-alignment.sh`
-- `scripts/knowledge/generate-llm-wiki-index.sh`
+- `scripts/knowledge/generate-llm-wiki.py`
 
 ### Tech Stack
 
@@ -316,7 +316,7 @@ applicable:
 
 ```bash
 git diff --check
-bash scripts/knowledge/generate-llm-wiki-index.sh --check
+python3 scripts/knowledge/generate-llm-wiki.py --check
 bash scripts/operations/sync-provider-surfaces.sh --check
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh

@@ -67,8 +67,8 @@ llm-wiki/
 
 1. 루트 [`llms.txt`](../../../llms.txt)를 thin entrypoint로 유지하고, 상세 탐색 기준은 이 폴더에 둡니다.
 2. 새 reference를 추가할 때는 [reference.template.md](../../99.templates/templates/common/reference.template.md)의 필수 섹션을 따릅니다.
-3. `llm-wiki-index.md`는 `bash scripts/knowledge/generate-llm-wiki-index.sh`로 갱신하고 `--check`로 freshness를 확인합니다.
-4. coverage snapshot은 `bash scripts/knowledge/generate-llm-wiki-coverage.sh`로 갱신하고 `--check`로 freshness를 확인합니다.
+3. index와 coverage snapshot은 `python3 scripts/knowledge/generate-llm-wiki.py --write`로 함께 갱신합니다.
+4. `python3 scripts/knowledge/generate-llm-wiki.py --check`로 두 output의 freshness를 함께 확인합니다.
 5. active policy, runbook, task evidence, runtime truth를 복제하지 말고 해당 canonical 문서로 연결합니다.
 6. secret 값, credential, token, private key, shell history, raw log를 쓰지 않습니다.
 7. 변경 후 `bash scripts/validation/check-repo-contracts.sh`를 실행합니다.

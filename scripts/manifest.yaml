@@ -59,31 +59,34 @@ files:
   successor: scripts/hooks/post-tool-validate.sh
   tests:
   - tests/validation/test_provider_native_surfaces.py
-- path: scripts/knowledge/generate-llm-wiki-coverage.sh
+- path: scripts/knowledge/generate-llm-wiki.py
   kind: generator
   authority: .github/workflow-contract.yml
-  lifecycle: transition
+  lifecycle: active
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  - scripts/validation/check-repo-contracts.sh
-  disposition: merge
-  successor: scripts/validation/check-repo-contracts.sh
-  tests:
-  - tests/validation/test_agent_governance_contract.py
-- path: scripts/knowledge/generate-llm-wiki-index.sh
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: transition
-  mutation: check-write
-  consumers:
-  - .github/workflow-contract.yml
+  - README.md
+  - docs/00.agent-governance/scopes/qa.md
   - docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/policy.md
   - docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md
-  disposition: merge
-  successor: scripts/validation/check-repo-contracts.sh
+  - docs/05.operations/00-workspace/ops-0009-release-management/runbook.md
+  - docs/90.references/data/knowledge/README.md
+  - scripts/validation/check-repo-contracts.sh
+  - scripts/validation/generate-audit-implementation-matrix.sh
+  - scripts/validation/recommend-qa-gates.sh
+  disposition: retain
+  successor: null
   tests:
   - tests/validation/test_agent_governance_contract.py
+  - tests/validation/test_generate_llm_wiki.py
+  check_command:
+  - python3
+  - scripts/knowledge/generate-llm-wiki.py
+  - --check
+  outputs:
+  - docs/90.references/data/knowledge/ref-0076-llm-wiki-stage-category-coverage.md
+  - docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md
 - path: scripts/knowledge/report-graphify-health.sh
   kind: generator
   authority: .github/workflow-contract.yml
@@ -465,6 +468,18 @@ files:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_agentic_audit_semantic_freshness.py
   - tests/validation/test_document_metadata.py
+- path: scripts/validation/check-script-manifest.py
+  kind: validator
+  authority: scripts/manifest.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_script_manifest.py
 - path: scripts/validation/check-storybook-contract.sh
   kind: validator
   authority: .github/workflow-contract.yml

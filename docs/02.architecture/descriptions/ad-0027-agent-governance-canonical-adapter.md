@@ -108,7 +108,7 @@ The Stage 00 canonical adapter model is the architecture boundary between policy
   - `check-repo-contracts.sh` verifies repository documentation and adapter contracts.
   - `check-doc-traceability.sh` verifies selected cross-stage relationships.
   - `sync-provider-surfaces.sh` reports provider surface drift.
-  - `generate-llm-wiki-index.sh --check` verifies generated index freshness.
+  - `generate-llm-wiki.py --check` verifies both generated LLM Wiki outputs.
   - `report-graphify-health.sh` records whether graph context is clean or advisory.
 
 ## AI Agent Architecture Descriptions (If Applicable)

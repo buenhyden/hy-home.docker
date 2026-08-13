@@ -2490,9 +2490,8 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("llms.txt"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
-    pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
+    pathlib.Path("docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md"),
@@ -2501,9 +2500,7 @@ required_files = [
     pathlib.Path(".claude/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/agents/agents/doc-writer.md"),
     pathlib.Path("docs/00.agent-governance/agents/functions/knowledge-map-agent.md"),
-    pathlib.Path("docs/03.specs/096-llm-wiki-agent-first-completion/spec.md"),
-    pathlib.Path("docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md"),
-    pathlib.Path("docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md"),
+    pathlib.Path("docs/03.specs/spec-0096-llm-wiki-agent-first-completion/spec.md"),
 ]
 
 for path in required_files:
@@ -2535,7 +2532,7 @@ readme_checks = {
     pathlib.Path("README.md"): [
         "llms.txt",
         "docs/90.references/llm-wiki/",
-        "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
+        "docs/90.references/llm-wiki/ref-0083-repository-map.md",
     ],
     pathlib.Path("docs/README.md"): [
         "90.references/llm-wiki/",
@@ -2544,22 +2541,16 @@ readme_checks = {
     ],
     pathlib.Path("docs/90.references/README.md"): [
         "llm-wiki/README.md",
-        "llm-wiki/llm-wiki-index.md",
-    ],
-    pathlib.Path("docs/05.operations/guides/README.md"): [
-        "00-workspace/README.md",
-    ],
-    pathlib.Path("docs/05.operations/guides/00-workspace/README.md"): [
-        "llm-wiki-maintenance.md",
+        "llm-wiki/ref-0082-llm-wiki-index.md",
     ],
     pathlib.Path("scripts/README.md"): [
-        "generate-llm-wiki-index.sh",
-        "generate-llm-wiki-coverage.sh",
+        "generate-llm-wiki.py",
+        "check-script-manifest.py",
         "--check",
     ],
     pathlib.Path("docs/90.references/data/README.md"): [
         "knowledge/README.md",
-        "knowledge/llm-wiki-stage-category-coverage.md",
+        "knowledge/ref-0076-llm-wiki-stage-category-coverage.md",
     ],
 }
 for path, literals in readme_checks.items():
@@ -2574,7 +2565,7 @@ for path, literals in readme_checks.items():
 wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
-    pathlib.Path("docs/05.operations/guides/00-workspace/llm-wiki-maintenance.md"),
+    pathlib.Path("docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     *wiki_files,
 ]
 for path in safety_files:
@@ -2624,10 +2615,10 @@ index_path = pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.m
 if index_path.is_file():
     text = index_path.read_text(errors="ignore")
     for literal in [
-        "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
+        "generated_by: scripts/knowledge/generate-llm-wiki.py",
         "Generated tracked repo-local index",
         "## Generated Index",
-        "scripts/knowledge/generate-llm-wiki-index.sh --check",
+        "scripts/knowledge/generate-llm-wiki.py --check",
         "doc-writer",
         "knowledge-map-agent",
     ]:
@@ -2656,11 +2647,11 @@ coverage_path = pathlib.Path("docs/90.references/data/knowledge/ref-0076-llm-wik
 if coverage_path.is_file():
     text = coverage_path.read_text(errors="ignore")
     for literal in [
-        "generated_by: scripts/knowledge/generate-llm-wiki-coverage.sh",
+        "generated_by: scripts/knowledge/generate-llm-wiki.py",
         "## Source Bucket Coverage",
         "## LLM Wiki Category Coverage",
         "## Path Role Coverage",
-        "scripts/knowledge/generate-llm-wiki-coverage.sh --check",
+        "scripts/knowledge/generate-llm-wiki.py --check",
         "graphify-out/",
         "secrets/README.md",
     ]:
@@ -3551,8 +3542,7 @@ expected_implementations = {
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
     pathlib.Path("scripts/hooks/post-tool-validate.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("scripts/knowledge/generate-llm-wiki-coverage.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/rehearse-sample-service-delivery.sh"),

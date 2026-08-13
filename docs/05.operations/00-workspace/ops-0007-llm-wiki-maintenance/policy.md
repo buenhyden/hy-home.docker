@@ -15,7 +15,7 @@ updated: 2026-08-11
 
 ## Policy Scope
 
-이 가이드는 루트 `llms.txt`, `docs/90.references/llm-wiki/`, `scripts/knowledge/generate-llm-wiki-index.sh`, `doc-writer` 역할과 `knowledge-map-agent` 함수의 운영 절차를 다룬다.
+이 가이드는 루트 `llms.txt`, `docs/90.references/llm-wiki/`, `scripts/knowledge/generate-llm-wiki.py`, `doc-writer` 역할과 `knowledge-map-agent` 함수의 운영 절차를 다룬다.
 
 - **Systems**: `hy-home.docker` documentation and agent-governance surfaces
 - **Agents**: `doc-writer`, `workflow-supervisor`
@@ -34,7 +34,7 @@ updated: 2026-08-11
 
 ## Verification
 
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check`
+- `python3 scripts/knowledge/generate-llm-wiki.py --check`
 - `bash scripts/validation/check-repo-contracts.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 

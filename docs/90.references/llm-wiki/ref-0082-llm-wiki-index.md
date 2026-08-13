@@ -1,6 +1,6 @@
 ---
 status: active
-generated_by: scripts/knowledge/generate-llm-wiki-index.sh
+generated_by: scripts/knowledge/generate-llm-wiki.py
 ---
 
 # Reference: LLM Wiki Generated Index
@@ -25,7 +25,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 - Repo-relative path links for safe tracked source entrypoints.
 - Governance, runtime, documentation, infrastructure, script, and secret-handling policy surfaces.
-- Deterministic refresh through `bash scripts/knowledge/generate-llm-wiki-index.sh`.
+- Deterministic refresh through `python3 scripts/knowledge/generate-llm-wiki.py --write`.
 
 ### Out of Scope
 
@@ -37,7 +37,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 ## Definitions / Facts
 
 - **Generated tracked repo-local index**: a committed Markdown path index regenerated from safe repository paths.
-- **Tracked source boundary**: `git ls-files` is the primary path source; known in-progress LLM Wiki contract files are included only when present locally.
+- **Tracked source boundary**: `git ls-files` plus present, non-ignored Task-local generator paths is the path source.
 - **Runtime truth**: files that define actual behavior, such as Compose files, registry JSON files, scripts, and agent governance docs.
 - **Advisory graph context**: generated Graphify output that can assist navigation but does not replace tracked source files.
 
@@ -999,8 +999,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/hooks/agent-event-hook.sh](../../../scripts/hooks/agent-event-hook.sh) | script |
 | [scripts/hooks/patch-graphify-post-commit.sh](../../../scripts/hooks/patch-graphify-post-commit.sh) | script |
 | [scripts/hooks/post-tool-validate.sh](../../../scripts/hooks/post-tool-validate.sh) | script |
-| [scripts/knowledge/generate-llm-wiki-coverage.sh](../../../scripts/knowledge/generate-llm-wiki-coverage.sh) | script |
-| [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
+| [scripts/knowledge/generate-llm-wiki.py](../../../scripts/knowledge/generate-llm-wiki.py) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
 | [scripts/manifest.yaml](../../../scripts/manifest.yaml) | YAML config |
@@ -1350,14 +1349,14 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 - [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement
 - [ref-0083-repository-map.md](./ref-0083-repository-map.md) - curated canonical source map
-- [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator
-- [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator
+- [generate-llm-wiki.py](../../../scripts/knowledge/generate-llm-wiki.py) - deterministic two-output generator
+- [check-script-manifest.py](../../../scripts/validation/check-script-manifest.py) - aggregate generated-output freshness gate
 
 ## Maintenance
 
 - **Owner**: `doc-writer` using the `knowledge-map-agent` function
 - **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change
-- **Update Trigger**: Run `bash scripts/knowledge/generate-llm-wiki-index.sh` after in-scope path changes and `bash scripts/knowledge/generate-llm-wiki-index.sh --check` during validation
+- **Update Trigger**: Run `python3 scripts/knowledge/generate-llm-wiki.py --write` after in-scope path changes and `python3 scripts/knowledge/generate-llm-wiki.py --check` during validation
 
 ## Related Documents
 

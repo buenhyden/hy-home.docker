@@ -226,7 +226,7 @@ docker compose --profile core up -d
 - `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `bash scripts/validation/check-doc-traceability.sh` - 문서 추적성 검사
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` - LLM Wiki generated path index freshness 검사
+- `python3 scripts/knowledge/generate-llm-wiki.py --check` - LLM Wiki generated index and coverage freshness 검사
 - `bash scripts/validation/check-quickwin-baseline.sh` - QuickWin baseline 검사
 - `bash scripts/validation/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
 - `bash scripts/hardening/check-all-hardening.sh` - 계층별 하드닝 기준 검사

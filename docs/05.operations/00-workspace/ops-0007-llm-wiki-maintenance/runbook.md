@@ -31,7 +31,7 @@ updated: 2026-08-11
 ### When to Use
 
 - Root entrypoints, agent governance docs, operations docs, script inventory, infrastructure indexes, or LLM Wiki files changed.
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` reports stale generated output.
+- `python3 scripts/knowledge/generate-llm-wiki.py --check` reports stale generated output.
 - Repository contract validation fails in the LLM Wiki contract section.
 
 ## Procedure
@@ -45,13 +45,13 @@ updated: 2026-08-11
 2. Run the generator.
 
    ```bash
-   bash scripts/knowledge/generate-llm-wiki-index.sh
+   python3 scripts/knowledge/generate-llm-wiki.py --write
    ```
 
 3. Confirm the generated index is fresh.
 
    ```bash
-   bash scripts/knowledge/generate-llm-wiki-index.sh --check
+   python3 scripts/knowledge/generate-llm-wiki.py --check
    ```
 
 4. Run repository contracts after LLM Wiki changes.
@@ -112,7 +112,7 @@ updated: 2026-08-11
 
 ## Evidence
 
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes.
+- `python3 scripts/knowledge/generate-llm-wiki.py --check` passes.
 - `bash scripts/validation/check-repo-contracts.sh` passes.
 - `bash scripts/validation/check-doc-traceability.sh` passes.
 - LLM Wiki files contain no absolute filesystem links, filesystem URI links, public-site scope drift, or Graphify-as-authority wording.

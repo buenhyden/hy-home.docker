@@ -133,7 +133,7 @@ The audit pack has four workstreams:
 - `scripts/validation/check-doc-traceability.sh`
 - `scripts/validation/check-doc-implementation-alignment.sh`
 - `scripts/operations/sync-provider-surfaces.sh`
-- `scripts/knowledge/generate-llm-wiki-index.sh`
+- `scripts/knowledge/generate-llm-wiki.py`
 
 ### Tech Stack
 
@@ -203,7 +203,7 @@ new scripts:
   docs versus tracked implementation surfaces.
 - `bash scripts/operations/sync-provider-surfaces.sh --check` for generated
   provider mirror drift.
-- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` for generated
+- `python3 scripts/knowledge/generate-llm-wiki.py --check` for generated
   index freshness.
 
 New scripts are allowed only if the plan proves that existing validators cannot
@@ -273,7 +273,7 @@ The design/spec commit must pass:
 
 ```bash
 git diff --check
-bash scripts/knowledge/generate-llm-wiki-index.sh --check
+python3 scripts/knowledge/generate-llm-wiki.py --check
 bash scripts/operations/sync-provider-surfaces.sh --check
 bash scripts/validation/check-doc-traceability.sh
 bash scripts/validation/check-doc-implementation-alignment.sh

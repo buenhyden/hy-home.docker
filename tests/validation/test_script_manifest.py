@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import ast
-from collections import Counter, defaultdict
+from collections import defaultdict
+from copy import deepcopy
+import importlib.util
 import posixpath
 import re
 import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path, PurePosixPath
 
@@ -61,8 +65,7 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
 MUTATION_OVERRIDES = {
     "scripts/hooks/patch-graphify-post-commit.sh": "check-write",
     "scripts/hooks/post-tool-validate.sh": "check-write",
-    "scripts/knowledge/generate-llm-wiki-coverage.sh": "check-write",
-    "scripts/knowledge/generate-llm-wiki-index.sh": "check-write",
+    "scripts/knowledge/generate-llm-wiki.py": "check-write",
     "scripts/operations/gen-secrets.sh": "runtime",
     "scripts/operations/generate-compose-profile-service-coverage.sh": "check-write",
     "scripts/operations/generate-tech-stack-version-provenance.sh": "check-write",
@@ -88,8 +91,7 @@ MUTATION_OVERRIDES = {
 MANDATORY_DISPOSITIONS = {
     "scripts/hooks/patch-graphify-post-commit.sh": "merge",
     "scripts/hooks/post-tool-validate.sh": "rewrite",
-    "scripts/knowledge/generate-llm-wiki-coverage.sh": "merge",
-    "scripts/knowledge/generate-llm-wiki-index.sh": "merge",
+    "scripts/knowledge/generate-llm-wiki.py": "retain",
     "scripts/validation/check-doc-implementation-alignment.sh": "merge",
     "scripts/validation/check-doc-traceability.sh": "merge",
     "scripts/validation/check-repo-contracts.sh": "merge",
@@ -143,16 +145,26 @@ LINK_FORM_BASELINE_DECLARATIONS = {
 }
 
 
+def load_manifest_checker():
+    path = ROOT / "scripts/validation/check-script-manifest.py"
+    spec = importlib.util.spec_from_file_location("check_script_manifest", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def tracked_paths(pathspec: str) -> set[str]:
-    return set(
-        subprocess.run(
-            ["git", "ls-files", pathspec],
-            cwd=ROOT,
-            text=True,
-            check=True,
-            capture_output=True,
-        ).stdout.splitlines()
-    )
+    paths = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", pathspec],
+        cwd=ROOT,
+        text=True,
+        check=True,
+        capture_output=True,
+    ).stdout.splitlines()
+    return {path for path in paths if (ROOT / path).is_file()}
 
 
 def local_path(path: Path) -> str:
@@ -346,7 +358,14 @@ class ScriptManifestTests(unittest.TestCase):
         paths = [row["path"] for row in self.rows]
         self.assertEqual(paths, sorted(paths))
         for row in self.rows:
-            self.assertEqual(REQUIRED_FIELDS, set(row))
+            expected_fields = REQUIRED_FIELDS
+            if (
+                row["kind"] == "generator"
+                and row["mutation"] == "check-write"
+                and row["disposition"] == "retain"
+            ):
+                expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
+            self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
             self.assertIn(row["mutation"], MUTATIONS)
@@ -384,8 +403,10 @@ class ScriptManifestTests(unittest.TestCase):
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
                     self.assertTrue(is_runbook_authority(row["authority"]))
                     self.assertTrue(row["tests"])
-                if row["kind"] == "generator" and row["mutation"] == "check-write":
-                    self.assertIn(row["disposition"], {"merge", "rewrite"})
+                if row["kind"] == "generator" and row["mutation"] == "check-write" and row["disposition"] == "retain":
+                    self.assertIn("--check", row["check_command"])
+                    self.assertNotIn("--write", row["check_command"])
+                    self.assertTrue(row["outputs"])
 
     def test_manifest_inventory_is_not_a_consumer_of_other_scripts(self) -> None:
         offenders = [
@@ -416,8 +437,8 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(path=row["path"]):
                 expected = MUTATION_OVERRIDES.get(row["path"], "none")
                 self.assertEqual(expected, row["mutation"])
-                if row["kind"] == "generator" and row["mutation"] == "check-write":
-                    self.assertNotEqual("retain", row["disposition"])
+                if row["kind"] == "generator" and row["mutation"] == "check-write" and row["disposition"] == "retain":
+                    self.assertEqual(row["path"], row["check_command"][1])
 
     def test_plan_mandatory_dispositions_and_high_risk_operations(self) -> None:
         for path, disposition in MANDATORY_DISPOSITIONS.items():
@@ -655,6 +676,7 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIsNone(stable_target_type("docs/03.specs/spec-131-example/spec.md"))
         self.assertIsNone(stable_target_type("docs/05.operations/runbooks/example.md"))
 
+
     def test_tombstones_are_terminal_and_only_name_active_replacements(self) -> None:
         for row in self.ledger_rows:
             if row["action"] != "archive":
@@ -867,6 +889,370 @@ class ScriptManifestTests(unittest.TestCase):
             )
         ]
         self.assertEqual([], impossible)
+
+
+class ScriptManifestValidationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.checker = load_manifest_checker()
+        self.tracked = {
+            ".github/workflow-contract.yml",
+            "docs/authority.md",
+            "docs/consumer.md",
+            "docs/output.md",
+            "scripts/example.py",
+            "tests/validation/test_example.py",
+        }
+
+    def row(self, **updates: object) -> dict[str, object]:
+        row: dict[str, object] = {
+            "path": "scripts/example.py",
+            "kind": "validator",
+            "authority": "docs/authority.md",
+            "lifecycle": "active",
+            "mutation": "none",
+            "consumers": ["docs/consumer.md"],
+            "disposition": "retain",
+            "successor": None,
+            "tests": ["tests/validation/test_example.py"],
+        }
+        return {**row, **updates}
+
+    def codes(self, row: dict[str, object], tracked: set[str] | None = None) -> set[str]:
+        document = {"schema_version": 1, "files": [row]}
+        return {
+            finding.code
+            for finding in self.checker.validate_manifest_document(
+                document, self.tracked if tracked is None else tracked
+            )
+        }
+
+    def test_manifest_rejects_unreferenced_executable(self) -> None:
+        findings = self.checker.validate_manifest_document(
+            {
+                "schema_version": 1,
+                "files": [
+                    {
+                        "path": "scripts/example.sh",
+                        "kind": "validator",
+                        "authority": "docs/authority.md",
+                        "lifecycle": "active",
+                        "mutation": "none",
+                        "consumers": [],
+                        "disposition": "retain",
+                        "successor": None,
+                        "tests": ["tests/validation/test_example.py"],
+                    }
+                ],
+            },
+            {
+                "scripts/example.sh",
+                "docs/authority.md",
+                "tests/validation/test_example.py",
+            },
+        )
+        self.assertIn("consumer-missing", {finding.code for finding in findings})
+
+    def test_manifest_rejects_missing_and_invalid_authority(self) -> None:
+        self.assertIn("fields-missing", self.codes({key: value for key, value in self.row().items() if key != "authority"}))
+        self.assertIn("authority-invalid", self.codes(self.row(authority="")))
+        self.assertIn("authority-untracked", self.codes(self.row(authority="docs/unknown.md")))
+
+    def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
+        self.assertIn("disposition-invalid", self.codes(self.row(disposition="deprecated")))
+        self.assertIn("successor-invalid", self.codes(self.row(successor="scripts/next.py")))
+        self.assertIn("successor-missing", self.codes(self.row(disposition="merge", successor=None)))
+        self.assertIn(
+            "successor-untracked",
+            self.codes(self.row(disposition="merge", successor="scripts/next.py")),
+        )
+
+    def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(self) -> None:
+        self.assertIn("tests-missing", self.codes(self.row(tests=[])))
+        self.assertIn("mutation-invalid", self.codes(self.row(mutation="default-write")))
+
+    def test_manifest_rejects_invalid_generated_check_command(self) -> None:
+        generator = self.row(
+            kind="generator",
+            mutation="check-write",
+            authority=".github/workflow-contract.yml",
+        )
+        self.assertIn("generated-check-invalid", self.codes(generator))
+        adversarial = (
+            ["python3", "scripts/example.py", "--write"],
+            ["bash", "scripts/example.py", "--check"],
+            ["sh", "-c", "python3 scripts/example.py --check"],
+            ["python3", "-c", "pass", "scripts/example.py", "--check"],
+            ["python3", "-m", "scripts.example", "--check"],
+            ["python3", "scripts/example.py", "--check", "extra"],
+            ["python3", "scripts/validation/check-script-manifest.py", "scripts/example.py", "--check"],
+        )
+        for command in adversarial:
+            with self.subTest(command=command):
+                self.assertIn(
+                    "generated-check-invalid",
+                    self.codes(
+                        self.row(
+                            kind="generator",
+                            mutation="check-write",
+                            authority=".github/workflow-contract.yml",
+                            check_command=command,
+                            outputs=["docs/output.md"],
+                        )
+                    ),
+                )
+        self.assertNotIn(
+            "generated-check-invalid",
+            self.codes(
+                self.row(
+                    kind="generator",
+                    mutation="check-write",
+                    authority=".github/workflow-contract.yml",
+                    check_command=["python3", "scripts/example.py", "--check"],
+                    outputs=["docs/output.md"],
+                )
+            ),
+        )
+        self.assertIn(
+            "generated-output-untracked",
+            self.codes(
+                self.row(
+                    kind="generator",
+                    mutation="check-write",
+                    authority=".github/workflow-contract.yml",
+                    check_command=["python3", "scripts/example.py", "--check"],
+                    outputs=["docs/unknown-output.md"],
+                )
+            ),
+        )
+
+    def test_manifest_rejects_unknown_fields_and_untracked_paths(self) -> None:
+        self.assertIn("fields-unknown", self.codes(self.row(legacy=True)))
+        self.assertIn(
+            "path-untracked",
+            self.codes(self.row(path="scripts/unknown.py")),
+        )
+        self.assertIn(
+            "consumers-untracked",
+            self.codes(self.row(consumers=["docs/unknown.md"])),
+        )
+        self.assertIn(
+            "tests-untracked",
+            self.codes(self.row(tests=["tests/unknown.py"])),
+        )
+
+    def test_manifest_rejects_tests_outside_approved_roots(self) -> None:
+        tracked = {*self.tracked, "docs/test_example.py"}
+        self.assertIn(
+            "tests-location-invalid",
+            self.codes(self.row(tests=["docs/test_example.py"]), tracked),
+        )
+
+    def test_retained_runtime_rejects_unrelated_spec_authority(self) -> None:
+        self.assertIn(
+            "runtime-authority-invalid",
+            self.codes(
+                self.row(
+                    kind="operations",
+                    mutation="runtime",
+                    authority="docs/authority.md",
+                )
+            ),
+        )
+
+    def _generator_repo(self, root: Path, script: str) -> Path:
+        for relative in ("scripts", "docs", "tests"):
+            (root / relative).mkdir(parents=True, exist_ok=True)
+        (root / "scripts/example.py").write_text(script, encoding="utf-8")
+        (root / ".github").mkdir(parents=True, exist_ok=True)
+        (root / ".github/workflow-contract.yml").write_text(
+            'entrypoint: "scripts/example.py"\n', encoding="utf-8"
+        )
+        (root / "docs/authority.md").write_text("authority\n", encoding="utf-8")
+        (root / "docs/consumer.md").write_text(
+            "`scripts/example.py`\n`scripts/manifest.yaml`\n", encoding="utf-8"
+        )
+        (root / "docs/output.md").write_text("before\n", encoding="utf-8")
+        (root / "tests/validation").mkdir(parents=True, exist_ok=True)
+        (root / "tests/validation/test_example.py").write_text(
+            "import subprocess\nsubprocess.run(['python3', 'scripts/example.py', '--check'], check=False)\n",
+            encoding="utf-8",
+        )
+        manifest = {
+            "schema_version": 1,
+            "files": [
+                {
+                    **self.row(
+                        path="scripts/example.py",
+                        kind="generator",
+                        mutation="check-write",
+                        authority=".github/workflow-contract.yml",
+                        check_command=["python3", "scripts/example.py", "--check"],
+                        outputs=["docs/output.md"],
+                    )
+                },
+                {
+                    "path": "scripts/manifest.yaml",
+                    "kind": "contract",
+                    "authority": "docs/authority.md",
+                    "lifecycle": "active",
+                    "mutation": "none",
+                    "consumers": ["docs/consumer.md"],
+                    "disposition": "retain",
+                    "successor": None,
+                    "tests": [],
+                },
+            ],
+        }
+        manifest_path = root / "scripts/manifest.yaml"
+        manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+        subprocess.run(
+            ["git", "-c", "user.name=Task Test", "-c", "user.email=task@example.invalid", "commit", "-qm", "fixture"],
+            cwd=root,
+            check=True,
+        )
+        return manifest_path
+
+    def test_generated_checks_fail_closed_on_stale_missing_and_mutating_commands(self) -> None:
+        valid_script = "import argparse\nargparse.ArgumentParser().add_argument('--check', action='store_true')\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = self._generator_repo(root, valid_script)
+            self.assertEqual([], self.checker.check_generated(root, manifest_path))
+
+            (root / "scripts/example.py").write_text("raise SystemExit(9)\n", encoding="utf-8")
+            self.assertIn(
+                "generated-check-failed",
+                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+            )
+
+            (root / "scripts/example.py").write_text(
+                "from pathlib import Path\nPath('docs/output.md').write_text('mutated\\n')\n",
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "generated-check-mutated",
+                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+            )
+
+            for surface in ("docs", "tests", "infra"):
+                with self.subTest(ignored_surface=surface):
+                    subprocess.run(["git", "restore", "docs/output.md"], cwd=root, check=True)
+                    marker = f"{surface}/.ignored-mutation"
+                    (root / surface).mkdir(parents=True, exist_ok=True)
+                    (root / "scripts/example.py").write_text(
+                        f"from pathlib import Path\nPath('{marker}').write_text('mutated\\n')\n",
+                        encoding="utf-8",
+                    )
+                    (root / ".gitignore").write_text(f"{marker}\n", encoding="utf-8")
+                    self.assertIn(
+                        "generated-check-mutated",
+                        {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+                    )
+                    (root / marker).unlink()
+
+            subprocess.run(["git", "restore", "docs/output.md"], cwd=root, check=True)
+            document = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+            missing = deepcopy(document)
+            missing["files"][0]["check_command"] = [
+                "missing-task9-generator-command",
+                "scripts/example.py",
+                "--check",
+            ]
+            manifest_path.write_text(yaml.safe_dump(missing, sort_keys=False), encoding="utf-8")
+            self.assertIn(
+                "generated-check-invalid",
+                {finding.code for finding in self.checker.check_generated(root, manifest_path)},
+            )
+
+    def test_semantic_evidence_rejects_prose_comments_and_non_test_paths(self) -> None:
+        valid_script = "import argparse\nargparse.ArgumentParser().add_argument('--check', action='store_true')\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = self._generator_repo(root, valid_script)
+            (root / "docs/consumer.md").write_text(
+                "This prose merely mentions scripts/example.py.\n", encoding="utf-8"
+            )
+            (root / "tests/validation/test_example.py").write_text(
+                "# subprocess.run(['python3', 'scripts/example.py', '--check'])\n",
+                encoding="utf-8",
+            )
+            codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
+            self.assertIn("consumers-unproven", codes)
+            self.assertIn("tests-unproven", codes)
+            (root / "tests/validation/test_example.py").write_text(
+                '"""Prose only: scripts/example.py."""\n', encoding="utf-8"
+            )
+            codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
+            self.assertIn("tests-unproven", codes)
+            (root / "tests/validation/test_example.py").write_text(
+                "TARGET = 'scripts/example.py'\nprint('unrelated')\n",
+                encoding="utf-8",
+            )
+            codes = {finding.code for finding in self.checker.check_manifest(root, manifest_path)}
+            self.assertIn("tests-unproven", codes)
+
+    def test_python_semantic_evidence_accepts_target_linked_uses(self) -> None:
+        positives = (
+            "import scripts.example\n",
+            "import subprocess\nsubprocess.run(['python3', 'scripts/example.py', '--check'])\n",
+            "from scripts import example\nexample.validate_manifest_document({}, set())\n",
+            "import importlib.util\nfrom pathlib import Path\n"
+            "TARGET = Path('scripts/example.py')\n"
+            "importlib.util.spec_from_file_location('scripts.example', TARGET)\n",
+        )
+        for source in positives:
+            with self.subTest(source=source):
+                self.assertTrue(self.checker._python_proves_use(source, "scripts/example.py"))
+
+    def test_python_semantic_evidence_rejects_unrelated_calls_and_collisions(self) -> None:
+        negatives = (
+            "from unrelated import example\n",
+            "TARGET = 'scripts/example.py'\nlen(TARGET)\n",
+            "len('scripts/example.py')\n",
+            "import logging\nTARGET = 'scripts/example.py'\nlogging.info(TARGET)\n",
+            "import logging\nlogging.info('scripts/example.py')\n",
+            "from pathlib import Path\nTARGET = Path('scripts/example.py')\nTARGET.unrelated()\n",
+            "import subprocess\nsubprocess.run(['python3', 'other/scripts/example.py'])\n",
+            "import scripts.example_extra\n",
+        )
+        for source in negatives:
+            with self.subTest(source=source):
+                self.assertFalse(self.checker._python_proves_use(source, "scripts/example.py"))
+
+    def test_declared_paths_reject_symlinks_before_execution(self) -> None:
+        valid_script = "raise SystemExit('must not execute')\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = self._generator_repo(root, valid_script)
+            outside = root.parent / f"{root.name}-outside.py"
+            outside.write_text(valid_script, encoding="utf-8")
+            (root / "scripts/example.py").unlink()
+            (root / "scripts/example.py").symlink_to(outside)
+            try:
+                codes = {finding.code for finding in self.checker.check_generated(root, manifest_path)}
+                self.assertIn("declared-path-invalid", codes)
+                self.assertNotIn("generated-check-failed", codes)
+            finally:
+                outside.unlink(missing_ok=True)
+
+    def test_declared_output_symlink_outside_repo_is_never_followed(self) -> None:
+        valid_script = "raise SystemExit('must not execute')\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest_path = self._generator_repo(root, valid_script)
+            outside = root.parent / f"{root.name}-outside-output.md"
+            outside.write_text("outside\n", encoding="utf-8")
+            (root / "docs/output.md").unlink()
+            (root / "docs/output.md").symlink_to(outside)
+            try:
+                codes = {finding.code for finding in self.checker.check_generated(root, manifest_path)}
+                self.assertIn("declared-path-invalid", codes)
+                self.assertEqual("outside\n", outside.read_text(encoding="utf-8"))
+                self.assertNotIn("generated-check-failed", codes)
+            finally:
+                outside.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

@@ -134,8 +134,7 @@ add_lifecycle_gates() {
   add_gate "python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted" "promoted lifecycle manifests must remain valid"
   add_gate "bash scripts/validation/generate-security-automation-readiness.sh --check" "lifecycle workflow and validation inventory may affect security readiness evidence"
   add_gate "bash scripts/validation/generate-audit-implementation-matrix.sh --check" "lifecycle workflow and validation inventory may affect audit implementation evidence"
-  add_gate "bash scripts/knowledge/generate-llm-wiki-index.sh --check" "lifecycle documentation and generated data require navigation freshness"
-  add_gate "bash scripts/knowledge/generate-llm-wiki-coverage.sh --check" "lifecycle documentation and generated data require coverage freshness"
+  add_gate "python3 scripts/validation/check-script-manifest.py --check-generated" "lifecycle workflow and generated-output ownership require manifest freshness"
 }
 
 add_target_surface_gates() {
@@ -232,7 +231,7 @@ recommend_for_path() {
 
   case "$path" in
   docs/* | docs/** | README.md)
-    add_gate "bash scripts/knowledge/generate-llm-wiki-index.sh --check" "documentation navigation may need index freshness"
+    add_gate "python3 scripts/knowledge/generate-llm-wiki.py --check" "documentation navigation and coverage may need LLM Wiki freshness"
     add_gate "bash scripts/validation/check-doc-traceability.sh" "documentation links or execution/operations routing may have changed"
     add_gate "bash scripts/validation/check-doc-implementation-alignment.sh" "active docs must match tracked implementation surfaces"
     add_gate "bash scripts/validation/check-repo-contracts.sh" "documentation contracts changed"

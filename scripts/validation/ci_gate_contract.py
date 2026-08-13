@@ -194,8 +194,8 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.generated-freshness": (
         "leaf.local-security-readiness-freshness",
         "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-index-freshness",
-        "leaf.local-llm-wiki-coverage-freshness",
+        "leaf.local-llm-wiki-freshness",
+        "leaf.local-script-manifest",
     ),
     "local.compose-validation": ("leaf.compose-validation",),
     "local.compose-all-profiles-validation": (

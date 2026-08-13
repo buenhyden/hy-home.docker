@@ -988,9 +988,9 @@
       "suite_key": "local-document-corpus-promoted"
     },
     {
-      "gate_id": "leaf.local-llm-wiki-coverage-freshness",
+      "gate_id": "leaf.local-llm-wiki-freshness",
       "kind": "leaf",
-      "entrypoint": "scripts/knowledge/generate-llm-wiki-coverage.sh",
+      "entrypoint": "scripts/knowledge/generate-llm-wiki.py",
       "argv": [
         "--check"
       ],
@@ -1003,15 +1003,13 @@
         "local-all-profiles"
       ],
       "opaque": true,
-      "suite_key": "local-llm-wiki-coverage-freshness"
+      "suite_key": "local-llm-wiki-freshness"
     },
     {
-      "gate_id": "leaf.local-llm-wiki-index-freshness",
+      "gate_id": "leaf.local-script-manifest",
       "kind": "leaf",
-      "entrypoint": "scripts/knowledge/generate-llm-wiki-index.sh",
-      "argv": [
-        "--check"
-      ],
+      "entrypoint": "scripts/validation/check-script-manifest.py",
+      "argv": [],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
@@ -1021,7 +1019,7 @@
         "local-all-profiles"
       ],
       "opaque": true,
-      "suite_key": "local-llm-wiki-index-freshness"
+      "suite_key": "local-script-manifest"
     },
     {
       "gate_id": "leaf.local-provider-surface-drift",
@@ -1480,8 +1478,8 @@
       "children": [
         "leaf.local-security-readiness-freshness",
         "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-index-freshness",
-        "leaf.local-llm-wiki-coverage-freshness"
+        "leaf.local-llm-wiki-freshness",
+        "leaf.local-script-manifest"
       ]
     },
     {
