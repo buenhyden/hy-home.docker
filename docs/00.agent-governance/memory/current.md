@@ -32,17 +32,19 @@ status: active
 
 ## Verified state
 
-- Verified commit: `6f2703d8`
+- Verified commit: `f9a010cc`
 - Verified at: `2026-08-13`
 - Task 10A identity `22/22`, metadata `243/243`, manifest `40/40`, and
   Operations `12/12` pass; metadata contracts, both link modes, provider drift,
   generator freshness, Ruff, and diff hygiene pass.
 - Task 10A final general and Python reviews are `APPROVED (C0/I0/M0)`.
+- Task 10B exact manifest/validator registration is committed as `f9a010cc`;
+  its user approval is recorded without any Operations corpus mutation.
 
 ## Blockers and unverified facts
 
-- Task 10B's exact semantic disposition map is approved; the verified Task 10B
-  commit is recorded after the logical commit is created.
+- Task 10B's exact semantic disposition map is approved and its verified
+  logical commit is `f9a010cc`.
 - Stable taxonomy retains six unchanged `ref-0054` publications owned by Task
   13; they are outside Task 10B.
 

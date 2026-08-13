@@ -25,6 +25,7 @@ source document.
 
 - `migration_id`: `mig-0002`
 - `baseline_commit`: `6f2703d8d245cf4e3576bece0bf247dd516b2bf3`
+- `registration_commit`: `f9a010ccdc008a0265c5229631f918beaa484e1e`
 - `inventory`: `77` subjects, `66` Guides, `64` Policies, `62` Runbooks, and
   `13` domain READMEs (`205` files total)
 - `approval.status`: `approved`
