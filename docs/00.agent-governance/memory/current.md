@@ -8,48 +8,48 @@ status: active
 ## Current objective
 
 - Current task: `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md`
-- Task 8 Stage 00 policy/provider convergence is complete and committed. The
-  next planned execution unit is Task 9 script-manifest and generator
-  consolidation.
+- Task 9 script-manifest enforcement and LLM Wiki generator consolidation is
+  complete and committed as `707dc415` after final general and Python approval.
 
 ## Approved decisions
 
-- Task 8 implementation commit: `6bd7c62d` (`governance: reconcile SDLC
-  authority and provider projections`).
-- General final review: `APPROVED C0/I0/M0` after the sole report Minor was
-  corrected.
-- Python round 2 final review: `APPROVED C0/I0/M0`.
+- Task 9 replaces two shell wrappers with one default-check Python generator
+  and adds an executable manifest gate backed by machine authority.
+- Task 10 is the next approved implementation boundary.
 
 ## Active boundary
 
-- Task 8 implementation, two remediation rounds, generated provider/LLM Wiki
-  refreshes, and final review are closed at the recorded commit.
-- Runtime, Compose topology, remote resources, and secrets were unchanged.
+- Task 9 changes are limited to manifest/generator ownership, current
+  consumers, behavioral tests, generated outputs, and factual evidence.
+- Runtime and Compose topology were unchanged; no external resources or
+  sensitive runtime material were modified.
 
 ## Verified state
 
-- Verified commit: `6bd7c62dc0ba2480d6bb7a0f02f65b7698c20a2a`
-- Verified at: `2026-08-12T11:44:13+09:00`
-- Governance contracts pass with three contracts, fourteen agents,
-  twenty-four functions, three providers, and zero failures.
-- Governance, renderer, and native-provider suites pass at 162, 22, and 24
-  tests. Provider and both LLM Wiki freshness checks pass.
+- Verified commit: `707dc415`
+- Verified at: `2026-08-13T13:06:15+09:00`
+- Review-remediation rounds are `17/17`, `5/5`, and `3/3`; manifest and
+  generator suites are `37/37` and `6/6`, with CI `7/7`, workflow `39/39`
+  (eleven declared Wave A skips), and governance `162/162`.
+- Manifest validation, aggregate freshness, whole-repository bounded mutation
+  checks, exact 43-entry generator parity, compilation, Ruff, and diff hygiene
+  pass.
 
 ## Blockers and unverified facts
 
-- No Task 8 implementation or review blocker remains.
-- The Gemini CLI runtime observation remains unavailable locally; the typed
-  provider contract retains that unverified state.
+- No Task 9 blocker remains; final general and Python reviews are
+  `APPROVED (C0/I0/M0)`.
+- Repository-wide `check-repo-contracts.sh` retains pre-existing transitional
+  failures owned by later Spec 136 tasks; Task 9 focused gates are green.
 
 ## Evidence links
 
 - `docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md`
-- `.superpowers/sdd/2026-08-07-sdlc-taxonomy-convergence/task-8-report.md`
-- `docs/00.agent-governance/contracts/agent-governance-artifacts.yaml`
-- `docs/00.agent-governance/contracts/provider-models.yaml`
+- `.superpowers/sdd/2026-08-07-sdlc-taxonomy-convergence/task-9-report.md`
+- `scripts/manifest.yaml`
+- `.github/workflow-contract.yml`
 
 ## Next handoff
 
-- Begin Task 9 from the committed Task 8 authority baseline.
-- Preserve Task 8 final review and commit evidence while consolidating script
-  manifest enforcement and generator ownership.
+- Begin Plan Task 10 at the approved validator-consolidation boundary without
+  absorbing the Task 11 policy-monolith or Task 12 CI-alignment work.
