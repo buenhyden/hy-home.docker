@@ -13,7 +13,7 @@ one `ops-` subject folder. Roles remain separate and no missing role is added.
 
 ## Scope
 
-- Nginx profile-only routing, root-active Traefik routing, and gateway setup.
+- Nginx profile-only routing, root-active Traefik routing, and the edge-routing stack.
 - No runtime configuration, secret, or deployment mutation.
 
 ## Structure
@@ -21,7 +21,7 @@ one `ops-` subject folder. Roles remain separate and no missing role is added.
 | Subject | Available documents |
 | --- | --- |
 | [Nginx](ops-0011-nginx/guide.md) | [Guide](ops-0011-nginx/guide.md), [Policy](ops-0011-nginx/policy.md), [Runbook](ops-0011-nginx/runbook.md) |
-| [setup](ops-0012-setup/guide.md) | Guide |
+| [edge routing stack](ops-0012-edge-routing-stack/guide.md) | Guide |
 | [Traefik](ops-0013-traefik/guide.md) | [Guide](ops-0013-traefik/guide.md), [Policy](ops-0013-traefik/policy.md), [Runbook](ops-0013-traefik/runbook.md) |
 
 ## How to Work in This Area

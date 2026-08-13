@@ -4,11 +4,9 @@ artifact_id: guide-0012
 artifact_type: guide
 parent_ids: []
 created: 2026-07-06
-updated: 2026-08-11
+updated: 2026-08-14
 ---
-<!-- Target: docs/05.operations/catalog/01-gateway/ops-0012-setup/guide.md -->
-
-# 01.Setup Operations
+# Edge Routing Stack Operations
 
 ## Usage
 
@@ -16,7 +14,7 @@ updated: 2026-08-11
 
 이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 현재 root stack은 Traefik을 active include로 사용하고, Nginx는 profile-only leaf로 유지하므로 컨테이너 실행은 승인된 runtime context에서만 다룬다.
 
-### 01-gateway Setup Usage
+### Edge Routing Stack Usage
 
 > Step-by-step procedure for deploying and configuring the entry point infrastructure.
 

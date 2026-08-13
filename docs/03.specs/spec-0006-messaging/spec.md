@@ -5,7 +5,7 @@ artifact_type: spec
 parent_ids:
   - ad-0020
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 <!-- Target: docs/03.specs/spec-0006-messaging/spec.md -->
 
@@ -159,4 +159,4 @@ docker inspect --format '{{json .State.Health}}' rabbitmq
 - **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/guide.md)
 - **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/ops-0037-optimization-hardening/runbook.md)
-- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
+- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md)

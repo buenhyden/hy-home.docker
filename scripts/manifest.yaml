@@ -18,7 +18,7 @@ files:
   consumers:
   - .github/workflow-contract.yml
   - docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md
-  - docs/05.operations/catalog/01-gateway/ops-0012-setup/guide.md
+  - docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md
   disposition: retain
   successor: null
   tests:
@@ -95,7 +95,7 @@ files:
   consumers:
   - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md
   - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md
-  - docs/05.operations/catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md
+  - docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md
   disposition: retain
   successor: null
   tests:
@@ -218,7 +218,7 @@ files:
   lifecycle: transition
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/01-gateway/ops-0012-setup/guide.md
+  - docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md
   - scripts/validation/check-repo-contracts.sh
   disposition: rewrite
   successor: scripts/operations/gen-secrets.sh

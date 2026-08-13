@@ -1,71 +1,16 @@
 ---
 status: active
-artifact_id: runbook-0005
+artifact_id: runbook-0004
 artifact_type: runbook
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
-<!-- Target: docs/05.operations/catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md -->
-
-# Harness Agent First Engineering Validation Operations
-
-> Normalized as `docs/05.operations/catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md` during the 2026-05-10 operations taxonomy consolidation.
+# Harness / Agent-first Engineering Runbook
 
 ## Overview
 
 이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
-
-## Procedure
-
-### Checklist
-
-- [ ] 관련 policy, guide, runbook handoff를 확인한다.
-- [ ] 현재 상태와 변경 범위를 기록한다.
-
-### Harness / Agent-first Engineering Validation Procedure
-
-#### Purpose
-
-Root shim, governance, runtime mirror, Codex boundary, stage documentation, validation script drift를 안전하게 확인한다.
-
-#### Canonical References
-
-- [Specification](../../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
-- [Usage Guide](../ops-0004-harness-agent-first-engineering/guide.md)
-- [Operations Policy](../ops-0004-harness-agent-first-engineering/policy.md)
-- [Agent Governance Hub](../../../../00.agent-governance/README.md)
-- [Subagent Protocol](../../../../00.agent-governance/subagent-protocol.md)
-
-### Steps
-
-1. 이 runbook의 trigger와 checklist를 확인한다.
-2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
-3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
-4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
-
-### Verification Steps
-
-- [ ] 관련 validation script 또는 수동 확인을 실행한다.
-- [ ] 변경 결과가 policy, guide, runbook handoff와 충돌하지 않는지 확인한다.
-
-### Observability and Evidence Sources
-
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ## When to Use
 
@@ -75,7 +20,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 - New stage docs are added.
 - A harness or Agent-first audit is requested.
 
-### Procedure or Checklist
+## Procedure
 
 #### Checklist
 
@@ -155,7 +100,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - `scripts/knowledge/report-graphify-health.sh` status and contamination counts.
 - `scripts/validation/check-repo-contracts.sh` runtime agent/function catalog section.
 - Hook payload simulation output.
-- `docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md` task evidence.
+- The current co-located Task when a new implementation change is active.
 
 #### Safe Rollback or Recovery Procedure
 
@@ -197,3 +142,8 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 ## Related Documents
 
 - [Operations index](../../../README.md)
+- [Specification](../../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)
+- [Usage guide](guide.md)
+- [Operations policy](policy.md)
+- [Agent Governance Hub](../../../../00.agent-governance/README.md)
+- [Subagent Protocol](../../../../00.agent-governance/subagent-protocol.md)

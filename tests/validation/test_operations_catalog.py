@@ -23,11 +23,11 @@ from scripts.lib.document_governance.operations_catalog import (
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MANIFEST = (
-    ROOT
-    / "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md"
+    ROOT / "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md"
 )
 CLI = ROOT / "scripts/validation/check-operations-catalog.py"
 BASELINE = "6f2703d8d245cf4e3576bece0bf247dd516b2bf3"
+STRUCTURAL_BASELINE = "548154b878ae62b50fddc4b2b4aea7b1b78f9176"
 EXPECTED_DOMAINS = {
     "00-workspace",
     "01-gateway",
@@ -50,9 +50,7 @@ def finding_codes(findings: object) -> set[str]:
 
 
 def remove_markdown_section(text: str, heading: str) -> str:
-    pattern = re.compile(
-        rf"(?ms)^## {re.escape(heading)}\s*$.*?(?=^## |\Z)"
-    )
+    pattern = re.compile(rf"(?ms)^## {re.escape(heading)}\s*$.*?(?=^## |\Z)")
     mutated, count = pattern.subn("", text, count=1)
     if count != 1:
         raise AssertionError(f"missing section: {heading}")
@@ -89,6 +87,21 @@ def valid_subject_record(**overrides: object) -> OperationSubjectRecord:
 
 
 class OperationsCatalogManifestTests(unittest.TestCase):
+    def _canonical_path(
+        self, manifest, path: pathlib.PurePosixPath
+    ) -> pathlib.PurePosixPath:
+        for row in manifest.files:
+            if path in {row.legacy_path, row.catalog_path, row.final_path}:
+                return row.final_path or row.catalog_path
+        for subject in manifest.subjects:
+            if path in {
+                subject.legacy_subject_path,
+                subject.catalog_path,
+                subject.final_path,
+            }:
+                return subject.final_path
+        return path
+
     def _approved_manifest(self):
         manifest = load_operations_catalog_manifest(MANIFEST)
         return dataclasses.replace(
@@ -111,7 +124,29 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             target = root / row.final_path
             target.parent.mkdir(parents=True, exist_ok=True)
             if not target.exists():
-                shutil.copy2(ROOT / row.catalog_path, target)
+                source = ROOT / row.catalog_path
+                if not source.exists():
+                    source = ROOT / row.final_path
+                shutil.copy2(source, target)
+            text = target.read_text(encoding="utf-8")
+            for old, new in (
+                (row.legacy_path.as_posix(), row.final_path.as_posix()),
+                (row.catalog_path.as_posix(), row.final_path.as_posix()),
+                (row.legacy_path.parent.as_posix(), row.final_path.parent.as_posix()),
+                (row.catalog_path.parent.as_posix(), row.final_path.parent.as_posix()),
+                (row.legacy_path.parent.name, row.final_path.parent.name),
+                (row.catalog_path.parent.name, row.final_path.parent.name),
+            ):
+                text = text.replace(old, new)
+            if "ops-0009-release-management" in row.legacy_path.as_posix() and any(
+                semantic
+                in {"stale:stage-04-execution-route", "stale:stage-04-execution-routes"}
+                for semantic in row.removed_semantics
+            ):
+                text = text.replace("docs/04.execution", "docs/03.specs").replace(
+                    "Stage 04", "co-located Plan and Task"
+                )
+            target.write_text(text, encoding="utf-8")
         selected_rows = [
             row for row in manifest.files if row.legacy_path.parts[2] == domain
         ]
@@ -119,20 +154,13 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             for source_path, final_path in zip(
                 row.active_consumers, row.final_consumers, strict=True
             ):
-                target = root / final_path
+                resolved_final_path = self._canonical_path(manifest, final_path)
+                target = root / resolved_final_path
                 if target.exists():
                     continue
                 target.parent.mkdir(parents=True, exist_ok=True)
-                source = ROOT / source_path
-                if (
-                    source_path.parts[:2] == ("docs", "05.operations")
-                    and source_path.parts[2] in EXPECTED_DOMAINS
-                ):
-                    source = (
-                        ROOT
-                        / "docs/05.operations/catalog"
-                        / pathlib.Path(*source_path.parts[2:])
-                    )
+                resolved_source_path = self._canonical_path(manifest, source_path)
+                source = ROOT / resolved_source_path
                 shutil.copy2(source, target)
         for row in selected_rows:
             if row.final_path is None:
@@ -143,7 +171,7 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                 (row.legacy_path.parent.name, row.final_path.parent.name),
             )
             for final_path in row.final_consumers:
-                target = root / final_path
+                target = root / self._canonical_path(manifest, final_path)
                 text = target.read_text(encoding="utf-8")
                 for old, new in replacements:
                     text = text.replace(old, new)
@@ -155,7 +183,18 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         for row in manifest.files:
             target = root / row.catalog_path
             target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(ROOT / row.catalog_path, target)
+            target.write_bytes(
+                subprocess.run(
+                    [
+                        "git",
+                        "show",
+                        f"{STRUCTURAL_BASELINE}:{row.catalog_path.as_posix()}",
+                    ],
+                    cwd=ROOT,
+                    check=True,
+                    capture_output=True,
+                ).stdout
+            )
 
     def _complete_tree(self, root: pathlib.Path, manifest) -> None:
         for domain in sorted({row.catalog_domain for row in manifest.subjects}):
@@ -172,13 +211,13 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             "# Operations Catalog\n\n"
             + "".join(
                 f"- [{domain}]({domain}/)\n"
-                for domain in sorted(
-                    {row.catalog_domain for row in manifest.subjects}
-                )
+                for domain in sorted({row.catalog_domain for row in manifest.subjects})
             ),
             encoding="utf-8",
         )
-        incident_packet = operations_root / "incidents/2026/inc-0001-control-plane-outage"
+        incident_packet = (
+            operations_root / "incidents/2026/inc-0001-control-plane-outage"
+        )
         incident_packet.mkdir(parents=True)
         (operations_root / "incidents/README.md").write_text(
             "# Incidents\n",
@@ -268,8 +307,12 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         text = MANIFEST.read_text(encoding="utf-8")
         mutations = (
             text.replace("| `ops-0001` |", "| `ops-9999` |", 1),
-            text.replace("retain policy | Retain managed", "retain guide | Retain managed", 1),
-            text.replace("independent operational boundary.", "different rationale.", 1),
+            text.replace(
+                "retain policy | Retain managed", "retain guide | Retain managed", 1
+            ),
+            text.replace(
+                "independent operational boundary.", "different rationale.", 1
+            ),
         )
         self.assertEqual((), validate_operations_catalog_manifest(ROOT, manifest))
         for index, mutated in enumerate(mutations):
@@ -293,7 +336,9 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         files = list(manifest.files)
         files[index] = dataclasses.replace(
             row,
-            preserved_semantics=("text:baseline-body:fabricated semantic evidence that is not in source",),
+            preserved_semantics=(
+                "text:baseline-body:fabricated semantic evidence that is not in source",
+            ),
         )
         self.assertIn(
             "text-witness-source-mismatch",
@@ -307,9 +352,7 @@ class OperationsCatalogManifestTests(unittest.TestCase):
     def test_active_consumers_must_equal_derived_current_consumers(self) -> None:
         manifest = load_operations_catalog_manifest(MANIFEST)
         index = next(
-            index
-            for index, row in enumerate(manifest.files)
-            if row.active_consumers
+            index for index, row in enumerate(manifest.files) if row.active_consumers
         )
         row = manifest.files[index]
         for consumers in (
@@ -343,7 +386,9 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                 ),
             )
 
-    def test_structure_mode_rejects_any_role_body_addition_removal_or_rewrite(self) -> None:
+    def test_structure_mode_rejects_any_role_body_addition_removal_or_rewrite(
+        self,
+    ) -> None:
         manifest = self._approved_manifest()
         row = next(
             item
@@ -355,10 +400,15 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         mutations = {
             "addition": lambda text: text + "\nUnauthorized structural addition.\n",
             "removal": lambda text: text.replace("## Usage", "", 1),
-            "rewrite": lambda text: text.replace("## Usage", "## Structural Rewrite", 1),
+            "rewrite": lambda text: text.replace(
+                "## Usage", "## Structural Rewrite", 1
+            ),
         }
         for label, mutate in mutations.items():
-            with self.subTest(mutation=label), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(mutation=label),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 execution_root = pathlib.Path(directory)
                 self._structure_tree(execution_root, manifest)
                 target = execution_root / row.catalog_path
@@ -378,7 +428,9 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                     ),
                 )
 
-    def test_structure_semantic_normalization_rejects_unsafe_markdown_targets(self) -> None:
+    def test_structure_semantic_normalization_rejects_unsafe_markdown_targets(
+        self,
+    ) -> None:
         manifest = self._approved_manifest()
         row = next(
             item
@@ -394,7 +446,10 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             "../%00escape.md",
         )
         for unsafe_target in unsafe_targets:
-            with self.subTest(target=unsafe_target), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(target=unsafe_target),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 execution_root = pathlib.Path(directory)
                 self._structure_tree(execution_root, manifest)
                 target = execution_root / row.catalog_path
@@ -415,7 +470,9 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                     ),
                 )
 
-    def test_active_repository_has_no_legacy_operations_domain_publications(self) -> None:
+    def test_active_repository_has_no_legacy_operations_domain_publications(
+        self,
+    ) -> None:
         pattern = re.compile(
             r"docs/05\.operations/(?:"
             + "|".join(re.escape(domain) for domain in sorted(EXPECTED_DOMAINS))
@@ -453,6 +510,24 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                 findings.append(path_text)
         self.assertEqual([], sorted(findings))
 
+    def test_validator_source_witnesses_do_not_mask_new_legacy_publications(
+        self,
+    ) -> None:
+        pattern = re.compile(
+            r"docs/05\.operations/(?:"
+            + "|".join(re.escape(domain) for domain in sorted(EXPECTED_DOMAINS))
+            + r")(?:/|`|\*|$)"
+        )
+        validator = ROOT / "scripts/lib/document_governance/operations_catalog.py"
+        text = validator.read_text(encoding="utf-8")
+        self.assertIsNone(pattern.search(text))
+        self.assertIsNotNone(
+            pattern.search(
+                text
+                + '\nACTIVE_ROUTE = "docs/05.operations/00-workspace/new-publication.md"\n'
+            )
+        )
+
     def test_catalog_root_exists_with_exact_domain_set(self) -> None:
         catalog_root = ROOT / "docs/05.operations/catalog"
         self.assertTrue(catalog_root.is_dir())
@@ -475,7 +550,24 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                 self.assertTrue((operations_root / event_root).is_dir())
                 self.assertFalse((catalog_root / event_root).exists())
 
-    def test_file_consumers_include_current_scripts_tests_and_exclude_history(self) -> None:
+    def test_domains_00_03_match_approved_semantic_targets(self) -> None:
+        manifest = load_operations_catalog_manifest(MANIFEST)
+        findings = validate_operations_catalog_manifest(
+            ROOT,
+            manifest,
+            mode="executed",
+            domains=(
+                "00-workspace",
+                "01-gateway",
+                "02-auth",
+                "03-security",
+            ),
+        )
+        self.assertEqual([], list(findings))
+
+    def test_file_consumers_include_current_scripts_tests_and_exclude_history(
+        self,
+    ) -> None:
         manifest = load_operations_catalog_manifest(MANIFEST)
         declared = {
             consumer.as_posix()
@@ -571,15 +663,23 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             trigger_and_recovery_match=True,
             independent_evidence_boundary=False,
         )
-        unproved = dataclasses.replace(approved, current_ops_id="ops-0051", owner_match=False)
-        self.assertEqual((approved,), find_operations_merge_candidates((approved, unproved)))
+        unproved = dataclasses.replace(
+            approved, current_ops_id="ops-0051", owner_match=False
+        )
+        self.assertEqual(
+            (approved,), find_operations_merge_candidates((approved, unproved))
+        )
 
     def test_parser_rejects_unknown_and_duplicate_keys(self) -> None:
         text = MANIFEST.read_text(encoding="utf-8")
         mutations = (
             text.replace("schema_version: 1", "schema_version: 1\nunknown: true", 1),
-            text.replace("schema_version: 1", "schema_version: 1\nschema_version: 1", 1),
-            text.replace("  status: approved", "  status: approved\n  unknown: true", 1),
+            text.replace(
+                "schema_version: 1", "schema_version: 1\nschema_version: 1", 1
+            ),
+            text.replace(
+                "  status: approved", "  status: approved\n  unknown: true", 1
+            ),
         )
         for index, body in enumerate(mutations):
             with self.subTest(index=index), tempfile.TemporaryDirectory() as directory:
@@ -605,15 +705,27 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             ),
             "duplicate-subject-source": dataclasses.replace(
                 manifest,
-                subjects=(first, dataclasses.replace(second, legacy_subject_path=first.legacy_subject_path), *manifest.subjects[2:]),
+                subjects=(
+                    first,
+                    dataclasses.replace(
+                        second, legacy_subject_path=first.legacy_subject_path
+                    ),
+                    *manifest.subjects[2:],
+                ),
             ),
             "source-tree-mismatch": dataclasses.replace(
                 manifest,
-                subjects=(dataclasses.replace(first, source_tree="0" * 40), *manifest.subjects[1:]),
+                subjects=(
+                    dataclasses.replace(first, source_tree="0" * 40),
+                    *manifest.subjects[1:],
+                ),
             ),
             "source-blob-mismatch": dataclasses.replace(
                 manifest,
-                files=(dataclasses.replace(manifest.files[0], source_blob="0" * 40), *manifest.files[1:]),
+                files=(
+                    dataclasses.replace(manifest.files[0], source_blob="0" * 40),
+                    *manifest.files[1:],
+                ),
             ),
         }
         for expected, mutated in cases.items():
@@ -674,23 +786,88 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             },
         )
 
+    def test_manifest_rejects_unknown_removed_semantic_label(self) -> None:
+        manifest = load_operations_catalog_manifest(MANIFEST)
+        row_index = next(
+            index for index, row in enumerate(manifest.files) if row.removed_semantics
+        )
+        rows = list(manifest.files)
+        rows[row_index] = dataclasses.replace(
+            rows[row_index],
+            removed_semantics=("unknown:semantic-label",),
+        )
+        self.assertIn(
+            "removed-semantics-unknown",
+            finding_codes(
+                validate_operations_catalog_manifest(
+                    ROOT,
+                    dataclasses.replace(manifest, files=tuple(rows)),
+                )
+            ),
+        )
+
+    def test_remove_text_requires_typed_rule_and_rejects_structural_fragments(
+        self,
+    ) -> None:
+        manifest = load_operations_catalog_manifest(MANIFEST)
+        row_index = next(
+            index
+            for index, row in enumerate(manifest.files)
+            if row.legacy_path.as_posix().endswith("ops-0002-developer-setup/guide.md")
+        )
+        row = manifest.files[row_index]
+        fragments = (
+            "# Developer Setup Operations",
+            "## Common Checks\n\n- Step-by-step Instructions 의 검증 단계를 따른다.",
+            "docs/05.operations/00-workspace/ops-0002-developer-setup/guide.md",
+            "artifact_id: guide-0002",
+        )
+        self.assertFalse(
+            any(
+                semantic.startswith("remove-text:")
+                for item in manifest.files
+                for semantic in item.removed_semantics
+            )
+        )
+        for fragment in fragments:
+            with self.subTest(fragment=fragment):
+                rows = list(manifest.files)
+                rows[row_index] = dataclasses.replace(
+                    row,
+                    removed_semantics=(f"remove-text:approved:{fragment}",),
+                )
+                codes = finding_codes(
+                    validate_operations_catalog_manifest(
+                        ROOT,
+                        dataclasses.replace(manifest, files=tuple(rows)),
+                    )
+                )
+                self.assertIn("remove-text-fragment-invalid", codes)
+                self.assertIn("remove-text-rule-missing", codes)
+
     def test_retain_subject_allows_evidence_bounded_role_rewrite(self) -> None:
         manifest = load_operations_catalog_manifest(MANIFEST)
         rewritten = next(
             row
             for row in manifest.files
-            if row.legacy_path.as_posix().endswith("ops-0003-env-key-comparison/guide.md")
+            if row.legacy_path.as_posix().endswith(
+                "ops-0003-env-key-comparison/guide.md"
+            )
         )
         self.assertEqual("rewrite", rewritten.semantic_action)
         self.assertTrue(rewritten.preserved_semantics)
-        self.assertEqual(("contradiction:env-key-diff-count",), rewritten.removed_semantics)
+        self.assertEqual(
+            ("contradiction:env-key-diff-count",), rewritten.removed_semantics
+        )
 
     def test_section_preservation_tokens_are_body_sensitive(self) -> None:
         manifest = load_operations_catalog_manifest(MANIFEST)
         row = next(
             item
             for item in manifest.files
-            if item.legacy_path.as_posix().endswith("ops-0003-env-key-comparison/guide.md")
+            if item.legacy_path.as_posix().endswith(
+                "ops-0003-env-key-comparison/guide.md"
+            )
         )
         text = subprocess.run(
             ["git", "show", f"{BASELINE}:{row.legacy_path.as_posix()}"],
@@ -702,18 +879,28 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         matches = list(__import__("re").finditer(r"(?m)^#{1,6}\s+(.+?)\s*$", text))
         expected: set[str] = set()
         for index, match in enumerate(matches):
-            slug = __import__("re").sub(
-                r"[^a-z0-9]+", "-", match.group(1).lower()
-            ).strip("-")
+            slug = (
+                __import__("re")
+                .sub(r"[^a-z0-9]+", "-", match.group(1).lower())
+                .strip("-")
+            )
             section = text[
                 match.start() : (
-                    matches[index + 1].start() if index + 1 < len(matches) else len(text)
+                    matches[index + 1].start()
+                    if index + 1 < len(matches)
+                    else len(text)
                 )
             ].strip()
-            expected.add(f"section:{slug}:{hashlib.sha256(section.encode()).hexdigest()[:12]}")
+            expected.add(
+                f"section:{slug}:{hashlib.sha256(section.encode()).hexdigest()[:12]}"
+            )
         self.assertEqual(
             expected,
-            {token for token in row.preserved_semantics if token.startswith("section:")},
+            {
+                token
+                for token in row.preserved_semantics
+                if token.startswith("section:")
+            },
         )
         mutated = text.replace("## Overview", "## Overview\nmutated body", 1)
         self.assertNotEqual(
@@ -726,7 +913,9 @@ class OperationsCatalogManifestTests(unittest.TestCase):
         row = next(
             item
             for item in manifest.files
-            if item.legacy_path.as_posix().endswith("ops-0003-env-key-comparison/guide.md")
+            if item.legacy_path.as_posix().endswith(
+                "ops-0003-env-key-comparison/guide.md"
+            )
         )
         witness = next(
             item.split(":", 2)[2]
@@ -781,7 +970,10 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             "../%00escape.md",
         )
         for unsafe_target in unsafe_targets:
-            with self.subTest(target=unsafe_target), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(target=unsafe_target),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 execution_root = pathlib.Path(directory)
                 self._execution_tree(execution_root, manifest, "00-workspace")
                 self.assertEqual(
@@ -872,7 +1064,10 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             ),
         )
         for domain, suffix, deleted_heading in cases:
-            with self.subTest(suffix=suffix), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(suffix=suffix),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 execution_root = pathlib.Path(directory)
                 self._execution_tree(execution_root, manifest, domain)
                 row = next(
@@ -996,7 +1191,9 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             )
             predecessor = execution_root / subject.legacy_subject_path
             predecessor.parent.mkdir(parents=True, exist_ok=True)
-            predecessor.symlink_to(execution_root / subject.final_path, target_is_directory=True)
+            predecessor.symlink_to(
+                execution_root / subject.final_path, target_is_directory=True
+            )
             self.assertTrue(
                 {
                     "executed-predecessor-present",
@@ -1037,6 +1234,223 @@ class OperationsCatalogManifestTests(unittest.TestCase):
                         execution_root=execution_root,
                     )
                 ),
+            )
+
+    def test_executed_rejects_structural_catalog_predecessor(self) -> None:
+        manifest = self._approved_manifest()
+        domain = "00-workspace"
+        with tempfile.TemporaryDirectory() as directory:
+            execution_root = pathlib.Path(directory)
+            self._execution_tree(execution_root, manifest, domain)
+            subject = next(
+                row
+                for row in manifest.subjects
+                if row.catalog_domain == domain and row.semantic_action == "rename"
+            )
+            shutil.copytree(
+                execution_root / subject.final_path,
+                execution_root / subject.catalog_path,
+            )
+            self.assertIn(
+                "executed-predecessor-present",
+                finding_codes(
+                    validate_operations_catalog_manifest(
+                        ROOT,
+                        manifest,
+                        mode="executed",
+                        domains=(domain,),
+                        execution_root=execution_root,
+                    )
+                ),
+            )
+
+    def test_executed_requires_approved_removed_semantics_to_be_absent(self) -> None:
+        manifest = self._approved_manifest()
+        domain = "00-workspace"
+        with tempfile.TemporaryDirectory() as directory:
+            execution_root = pathlib.Path(directory)
+            self._execution_tree(execution_root, manifest, domain)
+            row = next(
+                item
+                for item in manifest.files
+                if item.legacy_path.as_posix().endswith(
+                    "ops-0004-harness-agent-first-engineering/guide.md"
+                )
+            )
+            target = execution_root / row.final_path
+            target.write_text(
+                target.read_text(encoding="utf-8")
+                + "\nN/A — 이 가이드에 대응하는 runbook이 없습니다.\n",
+                encoding="utf-8",
+            )
+            self.assertIn(
+                "removed-semantics-present",
+                finding_codes(
+                    validate_operations_catalog_manifest(
+                        ROOT,
+                        manifest,
+                        mode="executed",
+                        domains=(domain,),
+                        execution_root=execution_root,
+                    )
+                ),
+            )
+
+    def test_executed_rejects_non_removed_semantic_loss_and_paraphrase(self) -> None:
+        manifest = self._approved_manifest()
+        cases = (
+            (
+                "ops-0003-env-key-comparison/guide.md",
+                lambda text: re.sub(
+                    r"(?ms)^## 키 카테고리 현황\n.*?(?=^## |\Z)",
+                    "",
+                    text,
+                    count=1,
+                ),
+                "preserved-semantics-mismatch",
+            ),
+            (
+                "ops-0003-env-key-comparison/guide.md",
+                lambda text: text.replace(
+                    "- `.env.example`의 현재 tracked key 수는 322개다.\n",
+                    "",
+                    1,
+                ),
+                "preserved-semantics-mismatch",
+            ),
+            (
+                "ops-0002-developer-setup/guide.md",
+                lambda text: text.replace(
+                    "# Developer Environment Operations\n", "", 1
+                ),
+                "preserved-semantics-mismatch",
+            ),
+            (
+                "ops-0005-harness-agent-first-engineering-validation/runbook.md",
+                lambda text: text.replace(
+                    "- Command output from validation scripts.\n",
+                    "",
+                    1,
+                ),
+                "preserved-semantics-mismatch",
+            ),
+            (
+                "ops-0003-env-key-comparison/guide.md",
+                lambda text: (
+                    text + "\nThe local .env contains 325 keys and differs by three.\n"
+                ),
+                "removed-semantics-present",
+            ),
+        )
+        for suffix, mutate, expected_code in cases:
+            with (
+                self.subTest(suffix=suffix, expected_code=expected_code),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                execution_root = pathlib.Path(directory)
+                self._execution_tree(execution_root, manifest, "00-workspace")
+                row = next(
+                    item
+                    for item in manifest.files
+                    if item.legacy_path.as_posix().endswith(suffix)
+                )
+                target = execution_root / row.final_path
+                original = target.read_text(encoding="utf-8")
+                mutated = mutate(original)
+                self.assertNotEqual(original, mutated)
+                target.write_text(mutated, encoding="utf-8")
+                self.assertIn(
+                    expected_code,
+                    finding_codes(
+                        validate_operations_catalog_manifest(
+                            ROOT,
+                            manifest,
+                            mode="executed",
+                            domains=("00-workspace",),
+                            execution_root=execution_root,
+                        )
+                    ),
+                )
+
+    def test_executed_fails_closed_without_selected_slice_semantic_rules(
+        self,
+    ) -> None:
+        manifest = self._approved_manifest()
+        with tempfile.TemporaryDirectory() as directory:
+            execution_root = pathlib.Path(directory)
+            self._execution_tree(execution_root, manifest, "04-data")
+            self.assertIn(
+                "semantic-rewrite-rule-missing",
+                finding_codes(
+                    validate_operations_catalog_manifest(
+                        ROOT,
+                        manifest,
+                        mode="executed",
+                        domains=("04-data",),
+                        execution_root=execution_root,
+                    )
+                ),
+            )
+
+    def test_executed_remove_text_cannot_bypass_missing_semantic_rule(
+        self,
+    ) -> None:
+        manifest = self._approved_manifest()
+        rows = []
+        mutated_count = 0
+        expected_missing_rule_paths: set[str] = set()
+        for row in manifest.files:
+            if (
+                row.legacy_path.parts[2] != "04-data"
+                or row.semantic_action != "rewrite"
+            ):
+                rows.append(row)
+                continue
+            source = subprocess.run(
+                [
+                    "git",
+                    "show",
+                    f"{manifest.baseline_commit}:{row.legacy_path.as_posix()}",
+                ],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+            heading = re.search(r"(?m)^#\s+.+$", source)
+            self.assertIsNotNone(heading)
+            assert heading is not None
+            fragment = heading.group(0)
+            if len(fragment) < 24:
+                rows.append(row)
+                continue
+            mutated_count += 1
+            expected_missing_rule_paths.add(row.final_path.as_posix())
+            rows.append(
+                dataclasses.replace(
+                    row,
+                    removed_semantics=(f"remove-text:approved:{fragment}",),
+                )
+            )
+        self.assertEqual(40, mutated_count)
+        mutated = dataclasses.replace(manifest, files=tuple(rows))
+        with tempfile.TemporaryDirectory() as directory:
+            execution_root = pathlib.Path(directory)
+            self._execution_tree(execution_root, mutated, "04-data")
+            findings = validate_operations_catalog_manifest(
+                ROOT,
+                mutated,
+                mode="executed",
+                domains=("04-data",),
+                execution_root=execution_root,
+            )
+            actual_missing_rule_paths = {
+                finding.path
+                for finding in findings
+                if finding.code == "semantic-rewrite-rule-missing"
+            }
+            self.assertEqual(
+                set(), expected_missing_rule_paths - actual_missing_rule_paths
             )
 
     def test_complete_mode_accepts_full_typed_operations_tree(self) -> None:
@@ -1113,7 +1527,10 @@ class OperationsCatalogManifestTests(unittest.TestCase):
             ),
         )
         for index, old, new in mutations:
-            with self.subTest(index=index, replacement=new), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(index=index, replacement=new),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 execution_root = pathlib.Path(directory)
                 self._complete_tree(execution_root, manifest)
                 target = execution_root / index
@@ -1162,19 +1579,22 @@ are not direct root routes.
             )
             catalog_index = operations_root / "catalog/README.md"
             catalog_text = catalog_index.read_text(encoding="utf-8")
-            catalog_text = catalog_text.replace(
-                "[00-workspace](00-workspace/)",
-                "[Workspace](<./00-workspace/?view=all#workspace>)",
-            ).replace(
-                "[01-gateway](01-gateway/)",
-                "[Gateway](%30%31-gateway/#current)",
-            ).replace(
-                "[02-auth](02-auth/)",
-                "[Auth](02-auth/(history)/../)",
+            catalog_text = (
+                catalog_text.replace(
+                    "[00-workspace](00-workspace/)",
+                    "[Workspace](<./00-workspace/?view=all#workspace>)",
+                )
+                .replace(
+                    "[01-gateway](01-gateway/)",
+                    "[Gateway](%30%31-gateway/#current)",
+                )
+                .replace(
+                    "[02-auth](02-auth/)",
+                    "[Auth](02-auth/(history)/../)",
+                )
             )
             catalog_index.write_text(
-                catalog_text
-                + "\nHistorical context points to a deeper "
+                catalog_text + "\nHistorical context points to a deeper "
                 "[subject](00-workspace/ops-0001-common-optimizations-template-exceptions/).\n"
                 "[Same document](#operations-catalog) and [historical file](history.md).\n"
                 "`[Inline fake](99-inline/)`\n"
@@ -1263,19 +1683,45 @@ are not direct root routes.
                 ),
             )
 
-    def test_complete_mode_rejects_malformed_incident_and_release_contents(self) -> None:
+    def test_complete_mode_rejects_malformed_incident_and_release_contents(
+        self,
+    ) -> None:
         manifest = self._approved_manifest()
         mutations = (
-            ("docs/05.operations/incidents/incident-notes.md", "complete-incident-contents-invalid"),
-            ("docs/05.operations/incidents/current/inc-0002-bad-year/incident.md", "complete-incident-contents-invalid"),
-            ("docs/05.operations/incidents/2026/inc-2-bad-id/incident.md", "complete-incident-contents-invalid"),
-            ("docs/05.operations/incidents/2026/inc-0002-bad-role/timeline.md", "complete-incident-contents-invalid"),
-            ("docs/05.operations/releases/2026-08-13-release.md", "complete-release-contents-invalid"),
-            ("docs/05.operations/releases/release-0002-bad-id/release.md", "complete-release-contents-invalid"),
-            ("docs/05.operations/releases/rel-0002-bad-role/notes.md", "complete-release-contents-invalid"),
+            (
+                "docs/05.operations/incidents/incident-notes.md",
+                "complete-incident-contents-invalid",
+            ),
+            (
+                "docs/05.operations/incidents/current/inc-0002-bad-year/incident.md",
+                "complete-incident-contents-invalid",
+            ),
+            (
+                "docs/05.operations/incidents/2026/inc-2-bad-id/incident.md",
+                "complete-incident-contents-invalid",
+            ),
+            (
+                "docs/05.operations/incidents/2026/inc-0002-bad-role/timeline.md",
+                "complete-incident-contents-invalid",
+            ),
+            (
+                "docs/05.operations/releases/2026-08-13-release.md",
+                "complete-release-contents-invalid",
+            ),
+            (
+                "docs/05.operations/releases/release-0002-bad-id/release.md",
+                "complete-release-contents-invalid",
+            ),
+            (
+                "docs/05.operations/releases/rel-0002-bad-role/notes.md",
+                "complete-release-contents-invalid",
+            ),
         )
         for relative_path, expected_code in mutations:
-            with self.subTest(path=relative_path), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(path=relative_path),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 execution_root = pathlib.Path(directory)
                 self._complete_tree(execution_root, manifest)
                 target = execution_root / relative_path
@@ -1319,7 +1765,9 @@ are not direct root routes.
         with tempfile.TemporaryDirectory() as directory:
             execution_root = pathlib.Path(directory)
             self._complete_tree(execution_root, manifest)
-            extra = execution_root / "docs/05.operations/catalog/00-workspace/unregistered"
+            extra = (
+                execution_root / "docs/05.operations/catalog/00-workspace/unregistered"
+            )
             extra.mkdir()
             self.assertIn(
                 "complete-domain-contents-mismatch",
@@ -1362,7 +1810,6 @@ are not direct root routes.
                 ),
             )
 
-
     def test_validator_rejects_merge_cycles_and_self_merge(self) -> None:
         manifest = load_operations_catalog_manifest(MANIFEST)
         first, second = manifest.subjects[:2]
@@ -1373,13 +1820,17 @@ are not direct root routes.
             "trigger_and_recovery_match": True,
             "independent_evidence_boundary": False,
         }
-        self_merge = dataclasses.replace(first, merge_into=first.current_ops_id, **common)
+        self_merge = dataclasses.replace(
+            first, merge_into=first.current_ops_id, **common
+        )
         self.assertIn(
             "merge-self",
             finding_codes(
                 validate_operations_catalog_manifest(
                     ROOT,
-                    dataclasses.replace(manifest, subjects=(self_merge, *manifest.subjects[1:])),
+                    dataclasses.replace(
+                        manifest, subjects=(self_merge, *manifest.subjects[1:])
+                    ),
                 )
             ),
         )
@@ -1404,7 +1855,9 @@ are not direct root routes.
             finding_codes(
                 validate_operations_catalog_manifest(
                     ROOT,
-                    dataclasses.replace(manifest, subjects=(one, two, *manifest.subjects[2:])),
+                    dataclasses.replace(
+                        manifest, subjects=(one, two, *manifest.subjects[2:])
+                    ),
                 )
             ),
         )

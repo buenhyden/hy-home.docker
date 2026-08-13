@@ -4,17 +4,15 @@ artifact_id: guide-0002
 artifact_type: guide
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
-<!-- Target: docs/05.operations/catalog/00-workspace/ops-0002-developer-setup/guide.md -->
-
-# Developer Setup Operations
+# Developer Environment Operations
 
 ## Usage
 
 ### Overview
 
-이 문서는 `docs/05.operations/catalog/00-workspace/ops-0002-developer-setup/guide.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+이 문서는 `docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 ### Developer Environment Setup Usage
 

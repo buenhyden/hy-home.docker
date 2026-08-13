@@ -4,7 +4,7 @@ artifact_id: guide-0004
 artifact_type: guide
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 
 # Harness / Agent-first Engineering Usage Guide
@@ -72,9 +72,11 @@ How-to / audit guide.
 
 ## Runbook Handoff
 
-N/A — 이 가이드에 대응하는 runbook이 없습니다.
+반복 검증, evidence capture, rollback 또는 escalation 절차는
+[Harness / Agent-first Engineering Runbook](runbook.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
+- [Operations runbook](runbook.md)

@@ -378,12 +378,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/README.md](../../05.operations/README.md) | folder index |
 | [docs/05.operations/catalog/00-workspace/README.md](../../05.operations/catalog/00-workspace/README.md) | folder index |
 | [docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) | Markdown reference |
-| [docs/05.operations/catalog/00-workspace/ops-0002-developer-setup/guide.md](../../05.operations/catalog/00-workspace/ops-0002-developer-setup/guide.md) | Markdown reference |
+| [docs/05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md](../../05.operations/catalog/00-workspace/ops-0002-developer-environment/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md](../../05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md) | Markdown reference |
-| [docs/05.operations/catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md](../../05.operations/catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md) | Markdown reference |
-| [docs/05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md](../../05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md) | Markdown reference |
+| [docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md) | Markdown reference |
+| [docs/05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md](../../05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md](../../05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md](../../05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/runbook.md) | Markdown reference |
@@ -394,7 +394,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/01-gateway/ops-0011-nginx/guide.md](../../05.operations/catalog/01-gateway/ops-0011-nginx/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/01-gateway/ops-0011-nginx/policy.md](../../05.operations/catalog/01-gateway/ops-0011-nginx/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/01-gateway/ops-0011-nginx/runbook.md](../../05.operations/catalog/01-gateway/ops-0011-nginx/runbook.md) | Markdown reference |
-| [docs/05.operations/catalog/01-gateway/ops-0012-setup/guide.md](../../05.operations/catalog/01-gateway/ops-0012-setup/guide.md) | Markdown reference |
+| [docs/05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md](../../05.operations/catalog/01-gateway/ops-0012-edge-routing-stack/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md](../../05.operations/catalog/01-gateway/ops-0013-traefik/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md](../../05.operations/catalog/01-gateway/ops-0013-traefik/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md](../../05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md) | Markdown reference |
@@ -581,6 +581,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/guide.md](../../05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/guide.md) | Markdown reference |
 | [docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/policy.md](../../05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/policy.md) | Markdown reference |
 | [docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md](../../05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md) | Markdown reference |
+| [docs/05.operations/catalog/README.md](../../05.operations/catalog/README.md) | folder index |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
 | [docs/05.operations/releases/README.md](../../05.operations/releases/README.md) | folder index |
 

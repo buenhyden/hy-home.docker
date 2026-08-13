@@ -47,7 +47,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 
 ## Coverage Summary
 
-- Safe tracked source paths: `1232`
+- Safe tracked source paths: `1233`
 - Source buckets: `16`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -63,7 +63,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | `docs/01.requirements` | 26 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-0001-gateway.md](../../../01.requirements/prd-0001-gateway.md)<br>[docs/01.requirements/prd-0002-auth.md](../../../01.requirements/prd-0002-auth.md) |
 | `docs/02.architecture` | 53 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/README.md](../../../02.architecture/decisions/README.md)<br>[docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md) |
 | `docs/03.specs` | 39 | [docs/03.specs/README.md](../../../03.specs/README.md)<br>[docs/03.specs/spec-0001-gateway/spec.md](../../../03.specs/spec-0001-gateway/spec.md)<br>[docs/03.specs/spec-0002-auth/spec.md](../../../03.specs/spec-0002-auth/spec.md) |
-| `docs/05.operations` | 208 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md)<br>[docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) |
+| `docs/05.operations` | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md)<br>[docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) |
 | `docs/90.references` | 97 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/README.md](../../audits/README.md)<br>[docs/90.references/audits/ref-0001-readme.md](../../audits/ref-0001-readme.md) |
 | `docs/98.archive` | 275 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/changes/chg-0002-01-gateway-standardization/plan.md](../../../98.archive/changes/chg-0002-01-gateway-standardization/plan.md)<br>[docs/98.archive/changes/chg-0003-02-auth-standardization/plan.md](../../../98.archive/changes/chg-0003-02-auth-standardization/plan.md) |
 | `docs/99.templates` | 49 | [docs/99.templates/README.md](../../../99.templates/README.md)<br>[docs/99.templates/support/README.md](../../../99.templates/support/README.md)<br>[docs/99.templates/support/archive-retention-contract.md](../../../99.templates/support/archive-retention-contract.md) |
@@ -82,7 +82,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | Agent governance | 103 | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md)<br>[docs/00.agent-governance/agents/README.md](../../../00.agent-governance/agents/README.md)<br>[docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../../00.agent-governance/agents/agents/ci-cd-engineer.md) |
 | Runtime surfaces | 64 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md)<br>[.claude/agents/code-reviewer.md](../../../../.claude/agents/code-reviewer.md) |
 | Active stage docs | 118 | [docs/01.requirements/README.md](../../../01.requirements/README.md)<br>[docs/01.requirements/prd-0001-gateway.md](../../../01.requirements/prd-0001-gateway.md)<br>[docs/01.requirements/prd-0002-auth.md](../../../01.requirements/prd-0002-auth.md) |
-| Operations docs | 208 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md)<br>[docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) |
+| Operations docs | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/README.md](../../../05.operations/catalog/00-workspace/README.md)<br>[docs/05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/ops-0001-common-optimizations-template-exceptions/policy.md) |
 | Reference and template docs | 145 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/README.md](../../audits/README.md)<br>[docs/90.references/audits/ref-0001-readme.md](../../audits/ref-0001-readme.md) |
 | Infrastructure source | 250 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | Scripts and validators | 41 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
@@ -97,7 +97,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 | JSON registry | 74 |
 | Markdown reference | 838 |
 | YAML config | 114 |
-| folder index | 120 |
+| folder index | 121 |
 | script | 55 |
 | source path | 27 |
 | text entrypoint | 4 |

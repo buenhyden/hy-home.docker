@@ -4,7 +4,7 @@ artifact_id: guide-0010
 artifact_type: guide
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 
 <!-- Target: docs/05.operations/catalog/00-workspace/ops-0010-sensitive-env-vars-comparison/guide.md -->
@@ -60,23 +60,23 @@ updated: 2026-08-11
 ## Common Checks
 
 - `wc -l secrets/SENSITIVE_ENV_VARS.md.example` 결과와 아래 요약 표의 라인 수가 일치하는지 확인한다.
-- 카테고리 수(11)와 unique ID 수(106)가 변경되면 요약 표를 업데이트한다.
+- 현재 tracked example은 카테고리 11개와 unique ID 106개를 선언한다.
 - 새 서비스 추가 후 `<PREFIX>-<NNN>` ID 규칙을 유지하는지 확인한다.
 
 ## 감사 기준일
 
-2026-06-04
+2026-08-14
 
 ## 요약
 
 | 항목                      | 결과                   |
 | ------------------------- | ---------------------- |
 | Example 파일 라인 수      | 183                    |
-| 실제 파일 라인 수         | 184                    |
+| 실제 파일 라인 수         | not observed (local file absent) |
 | 카테고리 수 (example)     | 11                     |
 | 총 secret ID 수 (example) | 106 unique IDs         |
 | 실제 파일 취급 방식       | metadata-only (mode 600) |
-| 라인 수 동일 여부         | ✗ 1행 차이             |
+| 라인 수 동일 여부         | not evaluated          |
 
 > **참고**: 실제 `SENSITIVE_ENV_VARS.md`는 민감 정보 보호를 위해 mode 600이며, 값 비교는 수행하지 않는다. 라인 수와 ID count 기준으로 구조 일치를 추정한다.
 
@@ -95,7 +95,7 @@ updated: 2026-08-11
 | `COMM-`         | 공통 및 통신                     | 8            | ✓                     | ✓                  |
 | `OBS-`          | 모니터링 (Observability)         | 8            | ✓                     | ✓                  |
 | `SEC-`          | 보안 및 비밀 관리 (Vault)        | 2            | ✓                     | ✓                  |
-| **합계**        |                                  | **107**      |                       |                    |
+| **합계**        |                                  | **106**      |                       |                    |
 
 ## secrets/ 경로 패턴
 

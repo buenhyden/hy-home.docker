@@ -4,7 +4,7 @@ artifact_id: guide-0007
 artifact_type: guide
 parent_ids: []
 created: 2026-07-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 <!-- Target: docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md -->
 
@@ -14,7 +14,8 @@ updated: 2026-08-11
 
 ### Overview
 
-이 가이드는 `guides/00-workspace/llm-wiki-maintenance.md` 대상의 사용 맥락, 설정 확인 방법, 안전한 운영 진입점을 설명한다.
+이 가이드는 현재 LLM Wiki 유지보수 주제의 사용 맥락, 설정 확인 방법,
+안전한 운영 진입점을 설명한다.
 
 이 문서는 LLM Wiki를 언제 확인하거나 갱신해야 하는지 판단할 때 사용한다. 반복 실행 절차는 runbook으로 넘기고, 운영 통제 기준은 policy로 넘긴다.
 

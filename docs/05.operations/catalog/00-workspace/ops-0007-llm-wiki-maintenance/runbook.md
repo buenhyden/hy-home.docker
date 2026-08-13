@@ -4,14 +4,15 @@ artifact_id: runbook-0007
 artifact_type: runbook
 parent_ids: []
 created: 2026-07-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 
 # LLM Wiki Maintenance Runbook
 
 ## Overview
 
-이 런북은 `runbooks/00-workspace/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
+이 런북은 현재 LLM Wiki 유지보수 주제의 반복 실행 절차, 검증 evidence,
+실패 시 중단 기준을 정의한다.
 
 ## When to Use
 

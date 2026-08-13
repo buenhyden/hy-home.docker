@@ -6,9 +6,16 @@ from pathlib import Path, PurePosixPath
 
 import yaml
 
+from scripts.lib.document_governance.operations_catalog import (
+    load_operations_catalog_manifest,
+)
+
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER = ROOT / "docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md"
+OPERATIONS_MANIFEST = (
+    ROOT / "docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md"
+)
 TARGET_SURFACE_MANIFEST = (
     ROOT
     / "docs/90.references/data/governance/document-corpus-lifecycle/ref-0069-target-surface-convergence.yaml"
@@ -17,8 +24,7 @@ TARGET_SURFACE_SUMMARY = TARGET_SURFACE_MANIFEST.with_name(
     "ref-0068-target-surface-convergence-summary.md"
 )
 FRONTMATTER_SEMANTIC_INVENTORY = (
-    ROOT
-    / "docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md"
+    ROOT / "docs/90.references/audits/ref-0023-frontmatter-semantic-inventory.md"
 )
 MIGRATED_DOMAINS = (
     "00-workspace",
@@ -69,8 +75,18 @@ EXPECTED_SUBJECTS = (
     ("04-data", "nosql-mongodb", "0027", {"guide", "policy", "runbook"}),
     ("04-data", "operational-mng-db", "0028", {"guide", "policy", "runbook"}),
     ("04-data", "operational-supabase", "0029", {"guide", "policy", "runbook"}),
-    ("04-data", "optimization-optimization-hardening", "0030", {"guide", "policy", "runbook"}),
-    ("04-data", "relational-postgresql-cluster", "0031", {"guide", "policy", "runbook"}),
+    (
+        "04-data",
+        "optimization-optimization-hardening",
+        "0030",
+        {"guide", "policy", "runbook"},
+    ),
+    (
+        "04-data",
+        "relational-postgresql-cluster",
+        "0031",
+        {"guide", "policy", "runbook"},
+    ),
     (
         "04-data",
         "relational-postgresql-logical-upgrade-restore-rehearsal",
@@ -88,7 +104,12 @@ EXPECTED_SUBJECTS = (
     ("06-observability", "grafana", "0041", {"guide", "policy", "runbook"}),
     ("06-observability", "lgtm-stack", "0042", {"guide"}),
     ("06-observability", "loki", "0043", {"guide", "policy", "runbook"}),
-    ("06-observability", "optimization-hardening", "0044", {"guide", "policy", "runbook"}),
+    (
+        "06-observability",
+        "optimization-hardening",
+        "0044",
+        {"guide", "policy", "runbook"},
+    ),
     ("06-observability", "prometheus", "0045", {"guide", "policy", "runbook"}),
     ("06-observability", "pushgateway", "0046", {"guide", "policy", "runbook"}),
     ("06-observability", "pyroscope", "0047", {"guide", "policy", "runbook"}),
@@ -149,6 +170,23 @@ def ledger_records() -> list[dict[str, object]]:
     return yaml.safe_load(match.group(1))["records"]
 
 
+def current_operations_path(row) -> PurePosixPath:
+    if row.final_path is not None and (
+        row.final_path == row.catalog_path or not (ROOT / row.catalog_path).exists()
+    ):
+        return row.final_path
+    return row.catalog_path
+
+
+def current_operation_roles():
+    manifest = load_operations_catalog_manifest(OPERATIONS_MANIFEST)
+    return tuple(
+        (row, current_operations_path(row))
+        for row in manifest.files
+        if row.role != "domain-readme"
+    )
+
+
 def resolve_repo_path(source: Path, destination: str) -> Path | None:
     if destination.startswith(("#", "http://", "https://", "mailto:", "data:")):
         return None
@@ -170,19 +208,10 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 self.assertFalse((ROOT / "docs/05.operations" / role / domain).exists())
 
     def test_each_subject_has_only_ledger_declared_roles_at_its_ops_path(self):
-        expected_paths: set[Path] = set()
-        for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            subject_root = (
-                ROOT
-                / "docs/05.operations/catalog"
-                / domain
-                / f"ops-{identity}-{subject}"
-            )
-            for role in roles:
-                path = subject_root / f"{role}.md"
-                expected_paths.add(path)
-                with self.subTest(path=path):
-                    self.assertTrue(path.is_file())
+        expected_paths = {ROOT / path for _row, path in current_operation_roles()}
+        for path in sorted(expected_paths):
+            with self.subTest(path=path):
+                self.assertTrue(path.is_file())
 
         actual_paths = {
             path
@@ -194,48 +223,34 @@ class OperationsTaxonomyTests(unittest.TestCase):
         self.assertEqual(expected_paths, actual_paths)
 
     def test_subject_metadata_uses_role_identity_and_noninvented_parents(self):
-        for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            subject_root = (
-                ROOT
-                / "docs/05.operations/catalog"
-                / domain
-                / f"ops-{identity}-{subject}"
-            )
-            for role in roles:
-                path = subject_root / f"{role}.md"
-                if not path.is_file():
-                    continue
-                metadata = metadata_for(path)
-                with self.subTest(path=path):
-                    self.assertEqual(f"{role}-{identity}", metadata["artifact_id"])
-                    self.assertEqual(role, metadata["artifact_type"])
-                    self.assertEqual([], metadata["parent_ids"])
-                    self.assertRegex(str(metadata["created"]), r"^\d{4}-\d{2}-\d{2}$")
-                    self.assertRegex(str(metadata["updated"]), r"^\d{4}-\d{2}-\d{2}$")
-                    if int(identity) >= 50:
-                        self.assertEqual("2026-08-11", str(metadata["updated"]))
+        for row, current_path in current_operation_roles():
+            path = ROOT / current_path
+            identity = re.search(r"ops-([0-9]{4})-", current_path.as_posix())
+            self.assertIsNotNone(identity)
+            metadata = metadata_for(path)
+            with self.subTest(path=path):
+                self.assertEqual(
+                    f"{row.role}-{identity.group(1)}", metadata["artifact_id"]
+                )
+                self.assertEqual(row.role, metadata["artifact_type"])
+                self.assertEqual([], metadata["parent_ids"])
+                self.assertRegex(str(metadata["created"]), r"^\d{4}-\d{2}-\d{2}$")
+                self.assertRegex(str(metadata["updated"]), r"^\d{4}-\d{2}-\d{2}$")
+                if int(identity.group(1)) >= 50:
+                    self.assertEqual("2026-08-11", str(metadata["updated"]))
 
     def test_subject_links_resolve_without_legacy_role_roots(self):
         link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
         legacy_root = re.compile(r"docs/05\.operations/(guides|policies|runbooks)/")
         violations: list[str] = []
-        for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            subject_root = (
-                ROOT
-                / "docs/05.operations/catalog"
-                / domain
-                / f"ops-{identity}-{subject}"
-            )
-            for role in roles:
-                path = subject_root / f"{role}.md"
-                if not path.is_file():
-                    continue
-                for destination in link_pattern.findall(path.read_text()):
-                    resolved = resolve_repo_path(path, destination)
-                    if legacy_root.search(destination) or (
-                        resolved is not None and not resolved.exists()
-                    ):
-                        violations.append(f"{path.relative_to(ROOT)}: {destination}")
+        for _row, current_path in current_operation_roles():
+            path = ROOT / current_path
+            for destination in link_pattern.findall(path.read_text()):
+                resolved = resolve_repo_path(path, destination)
+                if legacy_root.search(destination) or (
+                    resolved is not None and not resolved.exists()
+                ):
+                    violations.append(f"{path.relative_to(ROOT)}: {destination}")
         self.assertEqual([], violations)
 
     def test_current_stage05_rejects_parallel_role_root_publications(self):
@@ -280,9 +295,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
             ROOT / "infra/11-laboratory",
         )
         active_consumers = [
-            path
-            for active_root in active_roots
-            for path in active_root.rglob("*.md")
+            path for active_root in active_roots for path in active_root.rglob("*.md")
         ] + [
             ROOT / "infra/04-data/lake-and-object/README.md",
             ROOT / "docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md",
@@ -315,9 +328,19 @@ class OperationsTaxonomyTests(unittest.TestCase):
             for row in ledger_records()
             if str(row["legacy_path"]).startswith(scoped_prefix)
         }
-        merge_rows_by_source = {
-            str(row["legacy_path"]): row for row in merge_rows
-        }
+        semantic_paths = {}
+        for semantic_row, current_path in current_operation_roles():
+            semantic_paths[semantic_row.legacy_path.as_posix()] = (
+                current_path.as_posix()
+            )
+            semantic_paths[semantic_row.catalog_path.as_posix()] = (
+                current_path.as_posix()
+            )
+            if semantic_row.final_path is not None:
+                semantic_paths[semantic_row.final_path.as_posix()] = (
+                    current_path.as_posix()
+                )
+        merge_rows_by_source = {str(row["legacy_path"]): row for row in merge_rows}
         link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
 
         preserved_navigation_indexes = {
@@ -367,24 +390,29 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 canonical = structural_path(
                     stable_paths.get(resolved_path, resolved_path)
                 )
-                if re.fullmatch(
-                    r"docs/05\.operations/catalog/"
-                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
-                    r"/ops-[^/]+/(guide|policy|runbook)\.md",
-                    canonical,
-                ) or re.fullmatch(
-                    r"docs/05\.operations/catalog/"
-                    r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
-                    r"/README\.md",
-                    canonical,
-                ) or (
-                    re.match(
-                        r"docs/05\.operations/"
-                        r"(?:(guides|policies|runbooks|catalog)/)?"
-                        r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
-                        source,
+                canonical = semantic_paths.get(canonical, canonical)
+                if (
+                    re.fullmatch(
+                        r"docs/05\.operations/catalog/"
+                        r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
+                        r"/ops-[^/]+/(guide|policy|runbook)\.md",
+                        canonical,
                     )
-                    and canonical in preserved_navigation_indexes
+                    or re.fullmatch(
+                        r"docs/05\.operations/catalog/"
+                        r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
+                        r"/README\.md",
+                        canonical,
+                    )
+                    or (
+                        re.match(
+                            r"docs/05\.operations/"
+                            r"(?:(guides|policies|runbooks|catalog)/)?"
+                            r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
+                            source,
+                        )
+                        and canonical in preserved_navigation_indexes
+                    )
                 ):
                     paths.add(canonical)
             return paths
@@ -452,7 +480,9 @@ class OperationsTaxonomyTests(unittest.TestCase):
             navigation: set[str] = set()
             for destination in link_pattern.findall(body):
                 resolved = resolve_repo_path(ROOT / source, destination)
-                if resolved is None or resolved.is_relative_to(ROOT / "docs/98.archive"):
+                if resolved is None or resolved.is_relative_to(
+                    ROOT / "docs/98.archive"
+                ):
                     continue
                 resolved_path = str(resolved.relative_to(ROOT))
                 canonical = structural_path(
@@ -525,7 +555,9 @@ class OperationsTaxonomyTests(unittest.TestCase):
 
     def test_operations_handoff_sections_remain_conditional(self):
         profiles = yaml.safe_load(
-            (ROOT / "docs/99.templates/support/document-metadata-profiles.yaml").read_text()
+            (
+                ROOT / "docs/99.templates/support/document-metadata-profiles.yaml"
+            ).read_text()
         )
         guide_role = profiles["template_roles"]["guide"]
         runbook_role = profiles["template_roles"]["runbook"]
@@ -571,7 +603,9 @@ class OperationsTaxonomyTests(unittest.TestCase):
                     if destination.startswith(("scripts/", "../../../../scripts/"))
                 ]
                 self.assertTrue(automation_targets)
-                self.assertTrue(all(path and path.is_file() for path in automation_targets))
+                self.assertTrue(
+                    all(path and path.is_file() for path in automation_targets)
+                )
 
     def test_task6c_immutable_target_surface_summary_rows_match_owner(self):
         source_pattern = re.compile(
@@ -602,8 +636,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
         relevant_rows = {
             row
             for row in summary_rows
-            if len(row) == 5
-            and (row[0] in owner_sources | stable_targets)
+            if len(row) == 5 and (row[0] in owner_sources | stable_targets)
         }
         expected_rows = {
             (

@@ -4,7 +4,7 @@ artifact_id: policy-0004
 artifact_type: policy
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 <!-- Target: docs/05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md -->
 
@@ -26,11 +26,11 @@ updated: 2026-08-11
 - `.codex/**`
 - `docs/00.agent-governance/**`
 - `docs/03.specs/**`
-- `docs/04.execution/plans/**`
-- `docs/04.execution/tasks/**`
-- `docs/05.operations/*/ops-*/guide.md`
-- `docs/05.operations/*/ops-*/policy.md`
-- `docs/05.operations/*/ops-*/runbook.md`
+- `docs/03.specs/spec-*/plan.md`
+- `docs/03.specs/spec-*/task.md`
+- `docs/05.operations/catalog/*/ops-*/guide.md`
+- `docs/05.operations/catalog/*/ops-*/policy.md`
+- `docs/05.operations/catalog/*/ops-*/runbook.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
 ## Controls

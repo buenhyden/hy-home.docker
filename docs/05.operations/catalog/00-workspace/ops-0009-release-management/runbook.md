@@ -4,7 +4,7 @@ artifact_id: runbook-0009
 artifact_type: runbook
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 <!-- Target: docs/05.operations/catalog/00-workspace/ops-0009-release-management/runbook.md -->
 
@@ -142,8 +142,8 @@ updated: 2026-08-11
     interrupted/partial exact owned pair를 위한 rescue-only 명령이며 성공 run
     후에는 실행하지 않는다. 이미 cleanup된 상태에서는 의도대로 class `60`을
     반환한다. Stateful impact는 즉시 Spec 125로 handoff한다. 이 런북은 완료된
-    sequence의 재실행을 승인하지 않는다. 재실행이 필요하면 새 Stage 04 승인과
-    실행 evidence 계약을 먼저 작성한다.
+    sequence의 재실행을 승인하지 않는다. 재실행이 필요하면 owning Spec에
+    co-located Plan과 Task 승인/evidence 계약을 먼저 작성한다.
 
 ### Steps
 
@@ -214,7 +214,6 @@ updated: 2026-08-11
 - [Operations index](../../../README.md)
 - [Runbooks index](../../../README.md)
 - [LLM Wiki maintenance runbook](../ops-0007-llm-wiki-maintenance/runbook.md)
-- [Execution plans](../../../../03.specs/README.md)
-- [Execution tasks](../../../../03.specs/README.md)
+- [Co-located Plans and Tasks](../../../../03.specs/README.md)
 - Deployment/release Task
 - Spec 127

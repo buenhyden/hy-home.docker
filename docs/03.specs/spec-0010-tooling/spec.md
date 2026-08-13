@@ -5,7 +5,7 @@ artifact_type: spec
 parent_ids:
   - ad-0024
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 <!-- Target: docs/03.specs/spec-0010-tooling/spec.md -->
 
@@ -134,4 +134,4 @@ bash scripts/validation/check-repo-contracts.sh
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/ops-0063-optimization-hardening/guide.md)
 - **Policy**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/ops-0063-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/ops-0063-optimization-hardening/runbook.md)
-- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
+- **Governance**: [Infrastructure optimization governance](../../05.operations/catalog/00-workspace/ops-0006-infrastructure-optimization-governance/policy.md)

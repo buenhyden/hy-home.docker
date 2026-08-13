@@ -5,7 +5,7 @@ artifact_type: spec
 parent_ids:
   - ad-0027
 created: 2026-07-05
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 <!-- Target: docs/03.specs/spec-0094-harness-agent-first-engineering/spec.md -->
 
@@ -222,6 +222,6 @@ bash scripts/hardening/check-all-hardening.sh
 - Task Evidence
 - [Guide](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/guide.md)
 - [Operations Policy](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/policy.md)
-- [Validation Runbook](../../05.operations/catalog/00-workspace/ops-0005-harness-agent-first-engineering-validation/runbook.md)
+- [Validation Runbook](../../05.operations/catalog/00-workspace/ops-0004-harness-agent-first-engineering/runbook.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)
 - [Documentation Protocol](../../00.agent-governance/rules/documentation-protocol.md)

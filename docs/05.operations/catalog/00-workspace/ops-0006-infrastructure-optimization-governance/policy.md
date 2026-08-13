@@ -4,11 +4,9 @@ artifact_id: policy-0006
 artifact_type: policy
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
-<!-- Target: docs/05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md -->
-
-# Infra Service Optimization & Expansion Policy
+# Infrastructure Optimization Governance Policy
 
 ## Overview
 

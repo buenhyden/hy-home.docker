@@ -4,7 +4,7 @@ artifact_id: guide-0003
 artifact_type: guide
 parent_ids: []
 created: 2026-06-04
-updated: 2026-08-11
+updated: 2026-08-14
 ---
 
 <!-- Target: docs/05.operations/catalog/00-workspace/ops-0003-env-key-comparison/guide.md -->
@@ -59,52 +59,51 @@ updated: 2026-08-11
 
 ## Common Checks
 
-- `.env.example`과 `.env`의 키 수가 동일한지 확인한다.
-- 아래 요약 표에서 "한쪽에만 존재" 항목이 없는지 확인한다.
-- 새 서비스 추가 후 `grep -c '=' .env.example` 결과를 이전 값과 비교한다.
+- `.env.example`의 현재 tracked key 수는 322개다.
+- local `.env`가 존재할 때만 값은 출력하지 않고 key 이름 집합을 비교한다.
+- local `.env`가 없으면 실제 key 수나 차이를 추정하지 않고 `not observed`로
+  기록한다.
 
 ## 감사 기준일
 
-2026-06-04
+2026-08-14
 
 ## 요약
 
 | 항목                    | 결과                                          |
 | ----------------------- | --------------------------------------------- |
 | `.env.example` 키 수    | 322                                           |
-| `.env` 키 수            | 325                                           |
-| 키셋 동일 여부          | ✗ 상이 (3개 차이)                             |
-| `.env.example`에만 존재 | 없음                                          |
-| `.env`에만 존재         | `INFLUXDB_BUCKET`, `INFLUXDB_ORG`, `INFLUXDB_USERNAME` |
-| 순서 차이               | `KAFKA_EXTERNAL_HOSTNAME`, `QDRANT_GRPC_PORT` |
+| `.env` 키 수            | not observed (local file absent)              |
+| 키셋 동일 여부          | not evaluated                                  |
+| `.env.example`에만 존재 | not evaluated                                  |
+| `.env`에만 존재         | not evaluated                                  |
+| 순서 차이               | not evaluated                                  |
 
 ## 상세 분석
 
 ### 순서 차이 (실질적 영향 없음)
 
-두 파일의 키셋은 동일하지만 다음 두 키의 위치가 다르다.
+local `.env`가 없는 상태에서는 순서 차이를 평가하지 않는다.
 
 | 키                        | `.env.example` 위치         | `.env` 위치          | 영향 |
 | ------------------------- | --------------------------- | -------------------- | ---- |
-| `KAFKA_EXTERNAL_HOSTNAME` | 169번째 키 (Kafka 섹션 내)  | 325번째 키 (파일 끝) | 없음 |
-| `QDRANT_GRPC_PORT`        | 278번째 키 (Qdrant 섹션 내) | 324번째 키 (파일 끝) | 없음 |
+| not observed | not evaluated | not evaluated | local `.env` 필요 |
 
 순서 차이는 Docker Compose 동작에 영향을 미치지 않는다. `.env`를 `.env.example` 순서와 동기화하려면 해당 키를 올바른 섹션으로 이동하면 된다.
 
 ### 누락 키
 
-없음.
+not evaluated.
 
 ### 추가 키 (`.env`에만 존재)
 
-없음.
+not evaluated.
 
 ### 순서 불일치 키
 
 | 키                        | 상태        | 비고                     |
 | ------------------------- | ----------- | ------------------------ |
-| `KAFKA_EXTERNAL_HOSTNAME` | 순서 불일치 | Kafka 섹션 내 위치 권장  |
-| `QDRANT_GRPC_PORT`        | 순서 불일치 | Qdrant 섹션 내 위치 권장 |
+| not observed | not evaluated | local `.env` 필요 |
 
 ## 키 카테고리 현황
 

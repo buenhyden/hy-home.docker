@@ -14,7 +14,7 @@ policy for controls, and runbook for ordered recovery or validation.
 
 ## Scope
 
-- Workspace setup, environment-key comparisons, harness validation, LLM Wiki
+- Developer environment, environment-key comparisons, harness engineering, LLM Wiki
   maintenance, onboarding, release-management procedure, and approved policy
   controls.
 - No secret values, deployment/runtime changes, or invented role documents.
@@ -24,11 +24,10 @@ policy for controls, and runbook for ordered recovery or validation.
 | Subject | Available documents |
 | --- | --- |
 | [common optimization exceptions](ops-0001-common-optimizations-template-exceptions/policy.md) | Policy |
-| [developer setup](ops-0002-developer-setup/guide.md) | Guide |
+| [developer environment](ops-0002-developer-environment/guide.md) | Guide |
 | [environment-key comparison](ops-0003-env-key-comparison/guide.md) | Guide |
-| [harness engineering](ops-0004-harness-agent-first-engineering/guide.md) | [Guide](ops-0004-harness-agent-first-engineering/guide.md), [Policy](ops-0004-harness-agent-first-engineering/policy.md) |
-| [harness validation](ops-0005-harness-agent-first-engineering-validation/runbook.md) | Runbook |
-| [service optimization catalog](ops-0006-infra-service-optimization-catalog/policy.md) | Policy |
+| [harness engineering](ops-0004-harness-agent-first-engineering/guide.md) | [Guide](ops-0004-harness-agent-first-engineering/guide.md), [Policy](ops-0004-harness-agent-first-engineering/policy.md), [Runbook](ops-0004-harness-agent-first-engineering/runbook.md) |
+| [infrastructure optimization governance](ops-0006-infrastructure-optimization-governance/policy.md) | Policy |
 | [LLM Wiki maintenance](ops-0007-llm-wiki-maintenance/guide.md) | [Guide](ops-0007-llm-wiki-maintenance/guide.md), [Policy](ops-0007-llm-wiki-maintenance/policy.md), [Runbook](ops-0007-llm-wiki-maintenance/runbook.md) |
 | [new-service onboarding](ops-0008-new-service-onboarding/guide.md) | Guide |
 | [release management](ops-0009-release-management/runbook.md) | Runbook |

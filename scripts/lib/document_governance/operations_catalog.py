@@ -12,6 +12,7 @@ import stat
 import subprocess
 import tarfile
 import types
+import unicodedata
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
 from typing import Literal
@@ -77,7 +78,14 @@ _FILE_FIELDS = frozenset(
     }
 )
 _TOP_FIELDS = frozenset(
-    {"schema_version", "migration_id", "baseline_commit", "subjects", "files", "approval"}
+    {
+        "schema_version",
+        "migration_id",
+        "baseline_commit",
+        "subjects",
+        "files",
+        "approval",
+    }
 )
 _APPROVAL_FIELDS = frozenset({"status", "approved_at", "approved_by"})
 _SUBJECT_ACTIONS = frozenset({"retain", "rename", "merge", "delete"})
@@ -99,6 +107,75 @@ _STRUCTURAL_DOMAINS = frozenset(
         "10-communication",
         "11-laboratory",
         "12-infra-net",
+    }
+)
+_KNOWN_REMOVED_SEMANTIC_LABELS = frozenset(
+    {
+        "contradiction:env-key-diff-count",
+        "contradiction:sensitive-env-var-count",
+        "duplicate:airflow-dag-validation-and-recovery-handoff",
+        "duplicate:hafe-overview-and-validator-list",
+        "stale:no-runbook-handoff",
+        "stale:parallel-guide-root",
+        "stale:parallel-policy-label",
+        "stale:parallel-role-labels",
+        "stale:parallel-runbook-root",
+        "stale:stage-04-execution-route",
+        "stale:stage-04-execution-routes",
+    }
+)
+_LEGACY_SUBJECT_SEMANTIC = re.compile(
+    r"^stale:legacy-subject-path:ops-[0-9]{4}-[a-z0-9][a-z0-9-]*$"
+)
+_IMMUTABLE_TOMBSTONE_FIXTURE = pathlib.PurePosixPath(
+    "tests/validation/test_script_manifest.py"
+)
+_IMMUTABLE_TOMBSTONE_BLOCK = re.compile(
+    r"(?ms)^KNOWN_TOMBSTONE_REPLACEMENTS = \{\n.*?^\}\n"
+)
+_TASK10D_LEGACY_PATHS: Mapping[str, pathlib.PurePosixPath] = types.MappingProxyType(
+    {
+        "workspace-index": pathlib.PurePosixPath(
+            "docs", "05.operations", "00-workspace", "README.md"
+        ),
+        "developer-environment": pathlib.PurePosixPath(
+            "docs",
+            "05.operations",
+            "00-workspace",
+            "ops-0002-developer-setup",
+            "guide.md",
+        ),
+        "harness-guide": pathlib.PurePosixPath(
+            "docs",
+            "05.operations",
+            "00-workspace",
+            "ops-0004-harness-agent-first-engineering",
+            "guide.md",
+        ),
+        "harness-validation": pathlib.PurePosixPath(
+            "docs",
+            "05.operations",
+            "00-workspace",
+            "ops-0005-harness-agent-first-engineering-validation",
+            "runbook.md",
+        ),
+        "infrastructure-governance": pathlib.PurePosixPath(
+            "docs",
+            "05.operations",
+            "00-workspace",
+            "ops-0006-infra-service-optimization-catalog",
+            "policy.md",
+        ),
+        "gateway-index": pathlib.PurePosixPath(
+            "docs", "05.operations", "01-gateway", "README.md"
+        ),
+        "edge-routing-stack": pathlib.PurePosixPath(
+            "docs",
+            "05.operations",
+            "01-gateway",
+            "ops-0012-setup",
+            "guide.md",
+        ),
     }
 )
 
@@ -176,7 +253,9 @@ class OperationsCatalogManifest:
 
 def _mapping(value: object, label: str, fields: frozenset[str]) -> Mapping[str, object]:
     if not isinstance(value, Mapping) or not all(isinstance(key, str) for key in value):
-        raise ManifestError("mapping-invalid", f"{label} must be a string-keyed mapping")
+        raise ManifestError(
+            "mapping-invalid", f"{label} must be a string-keyed mapping"
+        )
     actual = frozenset(value)
     if actual != fields:
         missing = sorted(fields - actual)
@@ -194,7 +273,9 @@ def _string(value: object, label: str) -> str:
     return value
 
 
-def _path(value: object, label: str, *, nullable: bool = False) -> pathlib.PurePosixPath | None:
+def _path(
+    value: object, label: str, *, nullable: bool = False
+) -> pathlib.PurePosixPath | None:
     if value is None and nullable:
         return None
     return pathlib.PurePosixPath(_string(value, label))
@@ -207,7 +288,9 @@ def _boolean(value: object, label: str) -> bool:
 
 
 def _string_tuple(value: object, label: str) -> tuple[str, ...]:
-    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item for item in value
+    ):
         raise ManifestError("list-invalid", f"{label} must be a string list")
     return tuple(value)
 
@@ -220,7 +303,9 @@ def _subject_record(value: object, index: int) -> OperationSubjectRecord:
     row = _mapping(value, f"subjects[{index}]", _SUBJECT_FIELDS)
     action = _string(row["semantic_action"], f"subjects[{index}].semantic_action")
     if action not in _SUBJECT_ACTIONS:
-        raise ManifestError("subject-action-invalid", f"subjects[{index}] invalid semantic_action")
+        raise ManifestError(
+            "subject-action-invalid", f"subjects[{index}] invalid semantic_action"
+        )
     merge_into = row["merge_into"]
     if merge_into is not None and not isinstance(merge_into, str):
         raise ManifestError("merge-target-invalid", f"subjects[{index}].merge_into")
@@ -237,9 +322,15 @@ def _subject_record(value: object, index: int) -> OperationSubjectRecord:
         semantic_action=action,  # type: ignore[arg-type]
         merge_into=merge_into,
         owner_match=_boolean(row["owner_match"], "owner_match"),
-        control_boundary_match=_boolean(row["control_boundary_match"], "control_boundary_match"),
-        trigger_and_recovery_match=_boolean(row["trigger_and_recovery_match"], "trigger_and_recovery_match"),
-        independent_evidence_boundary=_boolean(row["independent_evidence_boundary"], "independent_evidence_boundary"),
+        control_boundary_match=_boolean(
+            row["control_boundary_match"], "control_boundary_match"
+        ),
+        trigger_and_recovery_match=_boolean(
+            row["trigger_and_recovery_match"], "trigger_and_recovery_match"
+        ),
+        independent_evidence_boundary=_boolean(
+            row["independent_evidence_boundary"], "independent_evidence_boundary"
+        ),
         reason=_string(row["reason"], "reason"),
     )
 
@@ -249,7 +340,9 @@ def _file_record(value: object, index: int) -> OperationFileRecord:
     action = _string(row["semantic_action"], f"files[{index}].semantic_action")
     role = _string(row["role"], f"files[{index}].role")
     if action not in _FILE_ACTIONS:
-        raise ManifestError("file-action-invalid", f"files[{index}] invalid semantic_action")
+        raise ManifestError(
+            "file-action-invalid", f"files[{index}] invalid semantic_action"
+        )
     if role not in _FILE_ROLES:
         raise ManifestError("file-role-invalid", f"files[{index}] invalid role")
     return OperationFileRecord(
@@ -263,7 +356,9 @@ def _file_record(value: object, index: int) -> OperationFileRecord:
         canonical_role_owner=_path(
             row["canonical_role_owner"], "canonical_role_owner", nullable=True
         ),
-        preserved_semantics=_string_tuple(row["preserved_semantics"], "preserved_semantics"),
+        preserved_semantics=_string_tuple(
+            row["preserved_semantics"], "preserved_semantics"
+        ),
         removed_semantics=_string_tuple(row["removed_semantics"], "removed_semantics"),
         active_consumers=_path_tuple(row["active_consumers"], "active_consumers"),
         final_consumers=_path_tuple(row["final_consumers"], "final_consumers"),
@@ -279,7 +374,9 @@ def load_operations_catalog_manifest(path: pathlib.Path) -> OperationsCatalogMan
         raise ManifestError("manifest-unreadable", str(error)) from error
     blocks = list(_YAML_BLOCK.finditer(text))
     if len(blocks) != 1:
-        raise ManifestError("yaml-block-invalid", "manifest requires exactly one YAML block")
+        raise ManifestError(
+            "yaml-block-invalid", "manifest requires exactly one YAML block"
+        )
     try:
         document = safe_load_unique(blocks[0].group("body"))
     except Exception as error:
@@ -299,7 +396,9 @@ def load_operations_catalog_manifest(path: pathlib.Path) -> OperationsCatalogMan
         raise ManifestError("approval-status-invalid", "approval.status is invalid")
     for key in ("approved_at", "approved_by"):
         if approval[key] is not None and not isinstance(approval[key], str):
-            raise ManifestError("approval-field-invalid", f"approval.{key} must be string or null")
+            raise ManifestError(
+                "approval-field-invalid", f"approval.{key} must be string or null"
+            )
     approval_rows = tuple(
         (
             match.group("id"),
@@ -316,7 +415,9 @@ def load_operations_catalog_manifest(path: pathlib.Path) -> OperationsCatalogMan
         schema_version=1,
         migration_id="mig-0002",
         baseline_commit=_string(root["baseline_commit"], "baseline_commit"),
-        subjects=tuple(_subject_record(row, index) for index, row in enumerate(raw_subjects)),
+        subjects=tuple(
+            _subject_record(row, index) for index, row in enumerate(raw_subjects)
+        ),
         files=tuple(_file_record(row, index) for index, row in enumerate(raw_files)),
         approval=OperationsCatalogApproval(
             status=status,  # type: ignore[arg-type]
@@ -348,9 +449,7 @@ def _git(repo_root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str
 
 
 @functools.lru_cache(maxsize=None)
-def _baseline_objects(
-    repo_root: str, commit: str
-) -> Mapping[str, tuple[str, str]]:
+def _baseline_objects(repo_root: str, commit: str) -> Mapping[str, tuple[str, str]]:
     result = _git(
         pathlib.Path(repo_root),
         "ls-tree",
@@ -390,7 +489,9 @@ def _git_object(
 
 
 @functools.lru_cache(maxsize=None)
-def _baseline_inventory(repo_root: pathlib.Path, commit: str) -> tuple[set[str], set[str]]:
+def _baseline_inventory(
+    repo_root: pathlib.Path, commit: str
+) -> tuple[set[str], set[str]]:
     subjects: set[str] = set()
     files: set[str] = set()
     for path, (_object_id, kind) in _baseline_objects(
@@ -427,9 +528,7 @@ def _baseline_tracked_paths(repo_root: str, commit: str) -> frozenset[str]:
 
 
 @functools.lru_cache(maxsize=None)
-def _baseline_texts(
-    repo_root: str, commit: str
-) -> Mapping[str, str]:
+def _baseline_texts(repo_root: str, commit: str) -> Mapping[str, str]:
     result = subprocess.run(
         ["git", "archive", "--format=tar", commit, "--", "docs/05.operations"],
         cwd=repo_root,
@@ -529,7 +628,10 @@ def _grep_consumers(
 
 def _current_consumer(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
-    if value.startswith("graphify-out/") or value == "docs/00.agent-governance/memory/progress.md":
+    if (
+        value.startswith("graphify-out/")
+        or value == "docs/00.agent-governance/memory/progress.md"
+    ):
         return False
     if value.startswith("docs/98.archive/"):
         return False
@@ -557,7 +659,11 @@ def _derived_consumers(
             if other.role != "domain-readme"
         )
         if role_count == 1:
-            patterns.append(row.legacy_path.parent.name.split("-", 2)[0] + "-" + row.legacy_path.parent.name.split("-", 2)[1])
+            patterns.append(
+                row.legacy_path.parent.name.split("-", 2)[0]
+                + "-"
+                + row.legacy_path.parent.name.split("-", 2)[1]
+            )
     discovered = _grep_consumers(
         str(repo_root.resolve()), manifest.baseline_commit, tuple(patterns)
     )
@@ -567,7 +673,9 @@ def _derived_consumers(
             if other.legacy_path.parent != row.legacy_path.parent or other == row:
                 continue
             source = _source_text(
-                str(repo_root.resolve()), manifest.baseline_commit, other.legacy_path.as_posix()
+                str(repo_root.resolve()),
+                manifest.baseline_commit,
+                other.legacy_path.as_posix(),
             )
             if source is not None and row.legacy_path.name in source:
                 sibling_consumers.add(other.legacy_path)
@@ -602,14 +710,19 @@ def _final_consumer_path(
 def _expected_approval_rows(
     manifest: OperationsCatalogManifest,
 ) -> tuple[tuple[str, str, str, str, str, str], ...]:
-    files_by_subject: defaultdict[pathlib.PurePosixPath, list[OperationFileRecord]] = defaultdict(list)
+    files_by_subject: defaultdict[pathlib.PurePosixPath, list[OperationFileRecord]] = (
+        defaultdict(list)
+    )
     for row in manifest.files:
         if row.role != "domain-readme":
             files_by_subject[row.legacy_path.parent].append(row)
     role_order = {"guide": 0, "policy": 1, "runbook": 2}
     expected = []
     for subject in manifest.subjects:
-        files = sorted(files_by_subject[subject.legacy_subject_path], key=lambda row: role_order[row.role])
+        files = sorted(
+            files_by_subject[subject.legacy_subject_path],
+            key=lambda row: role_order[row.role],
+        )
         verb = "merge" if subject.semantic_action == "merge" else "retain"
         roles = f"{verb} " + ", ".join(row.role for row in files)
         if subject.semantic_action == "merge":
@@ -635,21 +748,67 @@ def validate_subject_disposition(
     findings: list[CatalogFinding] = []
     if row.semantic_action == "merge":
         if not row.owner_match:
-            findings.append(_finding("merge-owner-boundary-unproven", row.current_ops_id, "operational owner does not match"))
+            findings.append(
+                _finding(
+                    "merge-owner-boundary-unproven",
+                    row.current_ops_id,
+                    "operational owner does not match",
+                )
+            )
         if not row.control_boundary_match:
-            findings.append(_finding("merge-control-boundary-unproven", row.current_ops_id, "control boundary does not match"))
+            findings.append(
+                _finding(
+                    "merge-control-boundary-unproven",
+                    row.current_ops_id,
+                    "control boundary does not match",
+                )
+            )
         if not row.trigger_and_recovery_match:
-            findings.append(_finding("merge-trigger-recovery-unproven", row.current_ops_id, "trigger, verification, and recovery boundary do not match"))
+            findings.append(
+                _finding(
+                    "merge-trigger-recovery-unproven",
+                    row.current_ops_id,
+                    "trigger, verification, and recovery boundary do not match",
+                )
+            )
         if row.independent_evidence_boundary:
-            findings.append(_finding("merge-independent-evidence-boundary", row.current_ops_id, "subject owns independent review or evidence"))
+            findings.append(
+                _finding(
+                    "merge-independent-evidence-boundary",
+                    row.current_ops_id,
+                    "subject owns independent review or evidence",
+                )
+            )
         if row.merge_into is None:
-            findings.append(_finding("merge-target-missing", row.current_ops_id, "merge requires merge_into"))
+            findings.append(
+                _finding(
+                    "merge-target-missing",
+                    row.current_ops_id,
+                    "merge requires merge_into",
+                )
+            )
         elif row.merge_into == row.current_ops_id:
-            findings.append(_finding("merge-self", row.current_ops_id, "subject cannot merge into itself"))
+            findings.append(
+                _finding(
+                    "merge-self", row.current_ops_id, "subject cannot merge into itself"
+                )
+            )
         elif row.canonical_ops_id != row.merge_into:
-            findings.append(_finding("merge-target-mismatch", row.current_ops_id, "canonical ID must equal merge target"))
+            findings.append(
+                _finding(
+                    "merge-target-mismatch",
+                    row.current_ops_id,
+                    "canonical ID must equal merge target",
+                )
+            )
     elif row.merge_into is not None:
-        findings.append(_finding("merge-target-unexpected", row.current_ops_id, "non-merge action forbids merge_into"))
+        findings.append(
+            _finding(
+                "merge-target-unexpected",
+                row.current_ops_id,
+                "non-merge action forbids merge_into",
+            )
+        )
     return tuple(sorted(findings))
 
 
@@ -676,8 +835,35 @@ def _section_tokens(text: str) -> set[str]:
     for index, match in enumerate(matches):
         slug = re.sub(r"[^a-z0-9]+", "-", match.group(1).lower()).strip("-")
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        section = text[match.start():end].strip()
-        tokens.add(f"section:{slug}:{hashlib.sha256(section.encode()).hexdigest()[:12]}")
+        section = text[match.start() : end].strip()
+        tokens.add(
+            f"section:{slug}:{hashlib.sha256(section.encode()).hexdigest()[:12]}"
+        )
+    return tokens
+
+
+def _semantic_heading_identity(heading: str) -> str:
+    normalized = unicodedata.normalize("NFKC", heading).casefold()
+    identity = re.sub(r"[^\w]+", "-", normalized, flags=re.UNICODE).strip("-_")
+    if identity:
+        return identity.replace("_", "-")
+    return f"heading-{hashlib.sha256(normalized.encode()).hexdigest()[:12]}"
+
+
+def _semantic_section_tokens_exact(text: str) -> set[str]:
+    """Hash sections with Unicode-aware headings and duplicate ordinals."""
+
+    matches = list(re.finditer(r"(?m)^#{1,6}\s+(.+?)\s*$", text))
+    counts: Counter[str] = Counter()
+    tokens: set[str] = set()
+    for index, match in enumerate(matches):
+        identity = _semantic_heading_identity(match.group(1))
+        ordinal = counts[identity]
+        counts[identity] += 1
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        section = text[match.start() : end].strip()
+        digest = hashlib.sha256(section.encode()).hexdigest()[:12]
+        tokens.add(f"section:{identity}:{ordinal}:{digest}")
     return tokens
 
 
@@ -699,6 +885,12 @@ def _semantic_section_tokens(
         canonical_targets[file_row.catalog_path] = target
         if file_row.final_path is not None:
             canonical_targets[file_row.final_path] = target
+            canonical_targets[
+                pathlib.PurePosixPath("docs/05.operations")
+                / file_row.legacy_path.parts[2]
+                / file_row.final_path.parent.name
+                / file_row.final_path.name
+            ] = target
     for subject in manifest.subjects:
         canonical_targets[subject.legacy_subject_path] = subject.final_path
         canonical_targets[subject.catalog_path] = subject.final_path
@@ -757,7 +949,7 @@ def _semantic_section_tokens(
         replacements.items(), key=lambda item: len(item[0]), reverse=True
     ):
         normalized = normalized.replace(value, marker)
-    return _section_tokens(normalized), unsafe
+    return _semantic_section_tokens_exact(normalized), unsafe
 
 
 def _structural_body_normalization(
@@ -782,7 +974,9 @@ def _structural_body_normalization(
         ):
             target = pathlib.PurePosixPath("docs/05.operations", *parts[3:])
         identity = f"{target.as_posix()}#{link.fragment or ''}"
-        marker = f"<structural-link:{hashlib.sha256(identity.encode()).hexdigest()[:16]}>"
+        marker = (
+            f"<structural-link:{hashlib.sha256(identity.encode()).hexdigest()[:16]}>"
+        )
         normalized = normalized.replace(
             f"]({link.raw_target}",
             f"]({marker}",
@@ -810,9 +1004,455 @@ def _removed_text_fragments(row: OperationFileRecord) -> tuple[str, ...]:
     )
 
 
-def _has_symlink_component(
-    root: pathlib.Path, path: pathlib.PurePosixPath
+def _remove_text_fragment_is_structural(
+    fragment: str,
+    source_text: str | None,
 ) -> bool:
+    stripped = fragment.strip()
+    if not stripped or re.search(r"(?m)^#{1,6}\s+", stripped) is not None:
+        return True
+    if re.fullmatch(
+        r"(?:status|artifact_id|artifact_type|parent_ids|created|updated):(?:\s.*)?",
+        stripped,
+    ):
+        return True
+    path_candidate = stripped.strip("`<>")
+    if "\n" not in path_candidate and re.fullmatch(
+        r"(?:\.{1,2}/|/|[A-Za-z0-9_.-]+/)[^\s]+",
+        path_candidate,
+    ):
+        return True
+    if source_text is None:
+        return False
+    body = _body_text(source_text)
+    if stripped == body.strip():
+        return True
+    headings = list(re.finditer(r"(?m)^#{1,6}\s+.+?\s*$", body))
+    for index, heading in enumerate(headings):
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(body)
+        section = body[heading.start() : end].strip()
+        section_body = body[heading.end() : end].strip()
+        if stripped in {section, section_body}:
+            return True
+    return False
+
+
+def _semantic_rewrite_rule(
+    row: OperationFileRecord,
+    label: str,
+) -> Mapping[str, tuple[object, ...]] | None:
+    """Return exact Task 10D source rewrites and final semantic invariants."""
+
+    if label.startswith("stale:legacy-subject-path:"):
+        rename_rules: Mapping[pathlib.PurePosixPath, tuple[tuple[str, str], ...]] = {
+            _TASK10D_LEGACY_PATHS["developer-environment"]: (
+                ("# Developer Setup Operations", "# Developer Environment Operations"),
+            ),
+            _TASK10D_LEGACY_PATHS["infrastructure-governance"]: (
+                (
+                    "# Infra Service Optimization & Expansion Policy",
+                    "# Infrastructure Optimization Governance Policy",
+                ),
+            ),
+            _TASK10D_LEGACY_PATHS["edge-routing-stack"]: (
+                ("# 01.Setup Operations", "# Edge Routing Stack Operations"),
+                ("### 01-gateway Setup Usage", "### Edge Routing Stack Usage"),
+            ),
+        }
+        replacements = rename_rules.get(row.legacy_path)
+        if replacements is None:
+            return None
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (re.escape(label.rsplit(":", 1)[1]),),
+        }
+    if label == "contradiction:env-key-diff-count":
+        replacements = (
+            (
+                "- `.env.example`과 `.env`의 키 수가 동일한지 확인한다.\n"
+                '- 아래 요약 표에서 "한쪽에만 존재" 항목이 없는지 확인한다.\n'
+                "- 새 서비스 추가 후 `grep -c '=' .env.example` 결과를 이전 값과 비교한다.",
+                "- `.env.example`의 현재 tracked key 수는 322개다.\n"
+                "- local `.env`가 존재할 때만 값은 출력하지 않고 key 이름 집합을 비교한다.\n"
+                "- local `.env`가 없으면 실제 key 수나 차이를 추정하지 않고 `not observed`로\n"
+                "  기록한다.",
+            ),
+            ("## 감사 기준일\n\n2026-06-04", "## 감사 기준일\n\n2026-08-14"),
+            (
+                "| `.env` 키 수            | 325                                           |\n"
+                "| 키셋 동일 여부          | ✗ 상이 (3개 차이)                             |\n"
+                "| `.env.example`에만 존재 | 없음                                          |\n"
+                "| `.env`에만 존재         | `INFLUXDB_BUCKET`, `INFLUXDB_ORG`, `INFLUXDB_USERNAME` |\n"
+                "| 순서 차이               | `KAFKA_EXTERNAL_HOSTNAME`, `QDRANT_GRPC_PORT` |",
+                "| `.env` 키 수            | not observed (local file absent)              |\n"
+                "| 키셋 동일 여부          | not evaluated                                  |\n"
+                "| `.env.example`에만 존재 | not evaluated                                  |\n"
+                "| `.env`에만 존재         | not evaluated                                  |\n"
+                "| 순서 차이               | not evaluated                                  |",
+            ),
+            (
+                "두 파일의 키셋은 동일하지만 다음 두 키의 위치가 다르다.",
+                "local `.env`가 없는 상태에서는 순서 차이를 평가하지 않는다.",
+            ),
+            (
+                "| `KAFKA_EXTERNAL_HOSTNAME` | 169번째 키 (Kafka 섹션 내)  | 325번째 키 (파일 끝) | 없음 |\n"
+                "| `QDRANT_GRPC_PORT`        | 278번째 키 (Qdrant 섹션 내) | 324번째 키 (파일 끝) | 없음 |",
+                "| not observed | not evaluated | not evaluated | local `.env` 필요 |",
+            ),
+            ("### 누락 키\n\n없음.", "### 누락 키\n\nnot evaluated."),
+            (
+                "### 추가 키 (`.env`에만 존재)\n\n없음.",
+                "### 추가 키 (`.env`에만 존재)\n\nnot evaluated.",
+            ),
+            (
+                "| `KAFKA_EXTERNAL_HOSTNAME` | 순서 불일치 | Kafka 섹션 내 위치 권장  |\n"
+                "| `QDRANT_GRPC_PORT`        | 순서 불일치 | Qdrant 섹션 내 위치 권장 |",
+                "| not observed | not evaluated | local `.env` 필요 |",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": (
+                "- `.env.example`의 현재 tracked key 수는 322개다.",
+                "| `.env` 키 수            | not observed (local file absent)              |",
+                "## 키 카테고리 현황",
+            ),
+            "forbidden_target": (
+                r"(?im)^(?=[^\n]*(?:\.env(?!\.example)|local env))(?=[^\n]*\b325\b).*$",
+                r"(?i)(?:differs?|difference|차이|상이)[^\n]{0,30}(?:3|three|세)|(?:3|three|세)[^\n]{0,30}(?:differs?|difference|차이|상이)",
+            ),
+        }
+    if label == "contradiction:sensitive-env-var-count":
+        replacements = (
+            (
+                "- 카테고리 수(11)와 unique ID 수(106)가 변경되면 요약 표를 업데이트한다.",
+                "- 현재 tracked example은 카테고리 11개와 unique ID 106개를 선언한다.",
+            ),
+            ("## 감사 기준일\n\n2026-06-04", "## 감사 기준일\n\n2026-08-14"),
+            (
+                "| 실제 파일 라인 수         | 184                    |",
+                "| 실제 파일 라인 수         | not observed (local file absent) |",
+            ),
+            (
+                "| 라인 수 동일 여부         | ✗ 1행 차이             |",
+                "| 라인 수 동일 여부         | not evaluated          |",
+            ),
+            (
+                "| **합계**        |                                  | **107**      |                       |                    |",
+                "| **합계**        |                                  | **106**      |                       |                    |",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (
+                r"(?im)^(?=[^\n]*(?:실제 파일|actual file))(?=[^\n]*\b184\b).*$",
+                r"(?im)^\|\s*\*\*합계\*\*[^\n]*\*\*107\*\*",
+            ),
+        }
+    return _semantic_rewrite_rule_task10d_remaining(row, label)
+
+
+def _semantic_rewrite_rule_task10d_remaining(
+    row: OperationFileRecord,
+    label: str,
+) -> Mapping[str, tuple[object, ...]] | None:
+    path = row.legacy_path.as_posix()
+    if label == "stale:no-runbook-handoff":
+        replacements = (
+            (
+                "N/A — 이 가이드에 대응하는 runbook이 없습니다.",
+                "반복 검증, evidence capture, rollback 또는 escalation 절차는\n"
+                "[Harness / Agent-first Engineering Runbook](runbook.md)을 따른다.",
+            ),
+            (
+                "- [Operations policy](./policy.md)",
+                "- [Operations policy](policy.md)\n- [Operations runbook](runbook.md)",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (r"대응하는\s+runbook이\s+없",),
+        }
+    if label == "stale:stage-04-execution-routes":
+        replacements = (
+            (
+                "- `docs/04.execution/plans/**`\n"
+                "- `docs/04.execution/tasks/**`\n"
+                "- `docs/05.operations/*/ops-*/guide.md`\n"
+                "- `docs/05.operations/*/ops-*/policy.md`\n"
+                "- `docs/05.operations/*/ops-*/runbook.md`",
+                "- `docs/03.specs/spec-*/plan.md`\n"
+                "- `docs/03.specs/spec-*/task.md`\n"
+                "- `docs/05.operations/catalog/*/ops-*/guide.md`\n"
+                "- `docs/05.operations/catalog/*/ops-*/policy.md`\n"
+                "- `docs/05.operations/catalog/*/ops-*/runbook.md`",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (r"docs/04\.execution", r"Stage\s+04"),
+        }
+    if label == "duplicate:hafe-overview-and-validator-list":
+        duplicate = (
+            "## Procedure\n\n"
+            "### Checklist\n\n"
+            "- [ ] 관련 policy, guide, runbook handoff를 확인한다.\n"
+            "- [ ] 현재 상태와 변경 범위를 기록한다.\n\n"
+            "### Harness / Agent-first Engineering Validation Procedure\n\n"
+            "#### Purpose\n\n"
+            "Root shim, governance, runtime mirror, Codex boundary, stage documentation, validation script drift를 안전하게 확인한다.\n\n"
+            "#### Canonical References\n\n"
+            "- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)\n"
+            "- [Usage Guide](../ops-0004-harness-agent-first-engineering/guide.md)\n"
+            "- [Operations Policy](../ops-0004-harness-agent-first-engineering/policy.md)\n"
+            "- [Agent Governance Hub](../../../00.agent-governance/README.md)\n"
+            "- [Subagent Protocol](../../../00.agent-governance/subagent-protocol.md)\n\n"
+            "### Steps\n\n"
+            "1. 이 runbook의 trigger와 checklist를 확인한다.\n"
+            "2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.\n"
+            "3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.\n"
+            "4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.\n\n"
+            "### Verification Steps\n\n"
+            "- [ ] 관련 validation script 또는 수동 확인을 실행한다.\n"
+            "- [ ] 변경 결과가 policy, guide, runbook handoff와 충돌하지 않는지 확인한다.\n\n"
+            "### Observability and Evidence Sources\n\n"
+            "- **Signals**: command output, validation logs, service health status, documentation diff\n"
+            "- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치\n\n"
+            "### Safe Rollback or Recovery Procedure\n\n"
+            "- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.\n"
+            "- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.\n\n"
+            "### Agent Operations (If Applicable)\n\n"
+            "- **Prompt Rollback**: 적용하지 않음\n"
+            "- **Model Fallback**: 적용하지 않음\n"
+            "- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.\n"
+            "- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.\n"
+            "- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.\n\n"
+        )
+        replacements = (
+            (
+                "# Harness Agent First Engineering Validation Operations",
+                "# Harness / Agent-first Engineering Runbook",
+            ),
+            (
+                f"> Normalized as `{_TASK10D_LEGACY_PATHS['harness-validation'].as_posix()}` during the 2026-05-10 operations taxonomy consolidation.\n\n",
+                "",
+            ),
+            (duplicate, ""),
+            ("### Procedure or Checklist", "## Procedure"),
+            (
+                "- `docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md` task evidence.",
+                "- The current co-located Task when a new implementation change is active.",
+            ),
+            (
+                "- [Operations index](../../README.md)",
+                "- [Operations index](../../README.md)\n"
+                "- [Specification](../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)\n"
+                "- [Usage guide](../ops-0004-harness-agent-first-engineering/guide.md)\n"
+                "- [Operations policy](../ops-0004-harness-agent-first-engineering/policy.md)\n"
+                "- [Agent Governance Hub](../../../00.agent-governance/README.md)\n"
+                "- [Subagent Protocol](../../../00.agent-governance/subagent-protocol.md)",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": (
+                "# Harness / Agent-first Engineering Runbook",
+                "- Command output from validation scripts.",
+                "The current co-located Task when a new implementation change is active.",
+                "- [Specification](../../../../03.specs/spec-0094-harness-agent-first-engineering/spec.md)",
+            ),
+            "forbidden_target": (
+                r"Harness Agent First Engineering Validation Operations",
+                r"Harness / Agent-first Engineering Validation Procedure",
+            ),
+        }
+    if label == "stale:parallel-guide-root":
+        replacements = (
+            (
+                "이 가이드는 `guides/00-workspace/llm-wiki-maintenance.md` 대상의 사용 맥락, 설정 확인 방법, 안전한 운영 진입점을 설명한다.",
+                "이 가이드는 현재 LLM Wiki 유지보수 주제의 사용 맥락, 설정 확인 방법,\n"
+                "안전한 운영 진입점을 설명한다.",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (r"guides/00-workspace/",),
+        }
+    if label == "stale:parallel-runbook-root":
+        replacements = (
+            (
+                "이 런북은 `runbooks/00-workspace/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.",
+                "이 런북은 현재 LLM Wiki 유지보수 주제의 반복 실행 절차, 검증 evidence,\n"
+                "실패 시 중단 기준을 정의한다.",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": tuple(new for _old, new in replacements),
+            "forbidden_target": (r"runbooks/00-workspace/",),
+        }
+    if label == "stale:stage-04-execution-route" and "ops-0009" in path:
+        replacements = (
+            (
+                "sequence의 재실행을 승인하지 않는다. 재실행이 필요하면 새 Stage 04 승인과\n"
+                "    실행 evidence 계약을 먼저 작성한다.",
+                "sequence의 재실행을 승인하지 않는다. 재실행이 필요하면 owning Spec에\n"
+                "    co-located Plan과 Task 승인/evidence 계약을 먼저 작성한다.",
+            ),
+            (
+                "- [Execution plans](../../../03.specs/README.md)\n"
+                "- [Execution tasks](../../../03.specs/README.md)",
+                "- [Co-located Plans and Tasks](../../../03.specs/README.md)",
+            ),
+        )
+        return {
+            "source_replacements": replacements,
+            "required_target": (
+                "co-located Plan과 Task 승인/evidence 계약",
+                "- [Co-located Plans and Tasks](../../../../03.specs/README.md)",
+            ),
+            "forbidden_target": (r"docs/04\.execution", r"Stage\s+04"),
+        }
+    return None
+
+
+def _active_consumer_scan_text(
+    path: pathlib.PurePosixPath,
+    text: str,
+) -> str:
+    """Exclude only the named immutable Stage 98 replacement fixture block."""
+
+    if path != _IMMUTABLE_TOMBSTONE_FIXTURE:
+        return text
+    return _IMMUTABLE_TOMBSTONE_BLOCK.sub("", text, count=1)
+
+
+def _task10d_domain_readme_replacements(
+    row: OperationFileRecord,
+) -> tuple[tuple[str, str], ...]:
+    if row.legacy_path == _TASK10D_LEGACY_PATHS["workspace-index"]:
+        subject_route_replacements = (
+            (
+                "| [common optimization exceptions](./ops-0001-common-optimizations-template-exceptions/policy.md) | Policy |",
+                "| [common optimization exceptions](ops-0001-common-optimizations-template-exceptions/policy.md) | Policy |",
+            ),
+            (
+                "| [environment-key comparison](./ops-0003-env-key-comparison/guide.md) | Guide |",
+                "| [environment-key comparison](ops-0003-env-key-comparison/guide.md) | Guide |",
+            ),
+            (
+                "| [LLM Wiki maintenance](./ops-0007-llm-wiki-maintenance/guide.md) | [Guide](./ops-0007-llm-wiki-maintenance/guide.md), [Policy](./ops-0007-llm-wiki-maintenance/policy.md), [Runbook](./ops-0007-llm-wiki-maintenance/runbook.md) |",
+                "| [LLM Wiki maintenance](ops-0007-llm-wiki-maintenance/guide.md) | [Guide](ops-0007-llm-wiki-maintenance/guide.md), [Policy](ops-0007-llm-wiki-maintenance/policy.md), [Runbook](ops-0007-llm-wiki-maintenance/runbook.md) |",
+            ),
+            (
+                "| [new-service onboarding](./ops-0008-new-service-onboarding/guide.md) | Guide |",
+                "| [new-service onboarding](ops-0008-new-service-onboarding/guide.md) | Guide |",
+            ),
+            (
+                "| [release management](./ops-0009-release-management/runbook.md) | Runbook |",
+                "| [release management](ops-0009-release-management/runbook.md) | Runbook |",
+            ),
+            (
+                "| [sensitive environment comparison](./ops-0010-sensitive-env-vars-comparison/guide.md) | Guide |",
+                "| [sensitive environment comparison](ops-0010-sensitive-env-vars-comparison/guide.md) | Guide |",
+            ),
+        )
+        return (
+            (
+                "Workspace setup, environment-key comparisons, harness validation, LLM Wiki",
+                "Developer environment, environment-key comparisons, harness engineering, LLM Wiki",
+            ),
+            (
+                "| [developer setup](./ops-0002-developer-setup/guide.md) | Guide |",
+                "| [developer environment](ops-0002-developer-environment/guide.md) | Guide |",
+            ),
+            (
+                "| [harness engineering](./ops-0004-harness-agent-first-engineering/guide.md) | [Guide](./ops-0004-harness-agent-first-engineering/guide.md), [Policy](./ops-0004-harness-agent-first-engineering/policy.md) |\n"
+                "| [harness validation](./ops-0005-harness-agent-first-engineering-validation/runbook.md) | Runbook |",
+                "| [harness engineering](ops-0004-harness-agent-first-engineering/guide.md) | [Guide](ops-0004-harness-agent-first-engineering/guide.md), [Policy](ops-0004-harness-agent-first-engineering/policy.md), [Runbook](ops-0004-harness-agent-first-engineering/runbook.md) |",
+            ),
+            (
+                "| [service optimization catalog](./ops-0006-infra-service-optimization-catalog/policy.md) | Policy |",
+                "| [infrastructure optimization governance](ops-0006-infrastructure-optimization-governance/policy.md) | Policy |",
+            ),
+            *subject_route_replacements,
+        )
+    if row.legacy_path == _TASK10D_LEGACY_PATHS["gateway-index"]:
+        return (
+            (
+                "Nginx profile-only routing, root-active Traefik routing, and gateway setup.",
+                "Nginx profile-only routing, root-active Traefik routing, and the edge-routing stack.",
+            ),
+            (
+                "| [setup](./ops-0012-setup/guide.md) | Guide |",
+                "| [edge routing stack](ops-0012-edge-routing-stack/guide.md) | Guide |",
+            ),
+            (
+                "| [Nginx](./ops-0011-nginx/guide.md) | [Guide](./ops-0011-nginx/guide.md), [Policy](./ops-0011-nginx/policy.md), [Runbook](./ops-0011-nginx/runbook.md) |",
+                "| [Nginx](ops-0011-nginx/guide.md) | [Guide](ops-0011-nginx/guide.md), [Policy](ops-0011-nginx/policy.md), [Runbook](ops-0011-nginx/runbook.md) |",
+            ),
+            (
+                "| [Traefik](./ops-0013-traefik/guide.md) | [Guide](./ops-0013-traefik/guide.md), [Policy](./ops-0013-traefik/policy.md), [Runbook](./ops-0013-traefik/runbook.md) |",
+                "| [Traefik](ops-0013-traefik/guide.md) | [Guide](ops-0013-traefik/guide.md), [Policy](ops-0013-traefik/policy.md), [Runbook](ops-0013-traefik/runbook.md) |",
+            ),
+        )
+    return ()
+
+
+def _apply_semantic_rewrite_rules(
+    row: OperationFileRecord,
+    source_text: str,
+    target_text: str,
+) -> tuple[str, tuple[str, ...], tuple[str, ...], bool]:
+    replacements = list(_task10d_domain_readme_replacements(row))
+    required: list[str] = []
+    forbidden: list[str] = []
+    missing_rules: list[str] = []
+    valid = True
+    for label in row.removed_semantics:
+        rule = _semantic_rewrite_rule(row, label)
+        if rule is None:
+            missing_rules.append(label)
+            valid = False
+            continue
+        replacements.extend(rule.get("source_replacements", ()))
+        required.extend(str(item) for item in rule.get("required_target", ()))
+        forbidden.extend(str(item) for item in rule.get("forbidden_target", ()))
+    if row.legacy_path == _TASK10D_LEGACY_PATHS["harness-guide"]:
+        replacements.append(
+            (
+                "- [Operations index](../../README.md)",
+                "- [Operations index](../../README.md)",
+            )
+        )
+    if "updated: 2026-08-14" in target_text:
+        replacements.append(("updated: 2026-08-11", "updated: 2026-08-14"))
+    source_target_comment = f"<!-- Target: {row.legacy_path.as_posix()} -->"
+    final_target_comment = (
+        f"<!-- Target: {(row.final_path or row.catalog_path).as_posix()} -->"
+    )
+    if source_target_comment in source_text and final_target_comment in target_text:
+        replacements.append((source_target_comment, final_target_comment))
+    normalized = source_text
+    for old, new in replacements:
+        if normalized.count(old) != 1:
+            valid = False
+            continue
+        normalized = normalized.replace(old, new, 1)
+    if any(witness not in target_text for witness in required):
+        valid = False
+    remaining = tuple(
+        pattern for pattern in forbidden if re.search(pattern, target_text) is not None
+    )
+    return normalized, remaining, tuple(missing_rules), valid
+
+
+def _has_symlink_component(root: pathlib.Path, path: pathlib.PurePosixPath) -> bool:
     return any(
         root.joinpath(*path.parts[:index]).is_symlink()
         for index in range(1, len(path.parts) + 1)
@@ -827,58 +1467,172 @@ def _validate_subjects(
     findings: list[CatalogFinding] = []
     actual_sources = {row.legacy_subject_path.as_posix() for row in manifest.subjects}
     if actual_sources != expected_subjects:
-        findings.append(_finding("subject-inventory-mismatch", "subjects", f"missing={sorted(expected_subjects - actual_sources)} extra={sorted(actual_sources - expected_subjects)}"))
-    if list(actual_sources) and tuple(row.legacy_subject_path.as_posix() for row in manifest.subjects) != tuple(sorted(actual_sources)):
-        findings.append(_finding("subject-order-invalid", "subjects", "subjects must be ordered by legacy_subject_path"))
+        findings.append(
+            _finding(
+                "subject-inventory-mismatch",
+                "subjects",
+                f"missing={sorted(expected_subjects - actual_sources)} extra={sorted(actual_sources - expected_subjects)}",
+            )
+        )
+    if list(actual_sources) and tuple(
+        row.legacy_subject_path.as_posix() for row in manifest.subjects
+    ) != tuple(sorted(actual_sources)):
+        findings.append(
+            _finding(
+                "subject-order-invalid",
+                "subjects",
+                "subjects must be ordered by legacy_subject_path",
+            )
+        )
     for value in _duplicates(row.legacy_subject_path for row in manifest.subjects):
-        findings.append(_finding("duplicate-subject-source", value, "legacy subject source is duplicated"))
+        findings.append(
+            _finding(
+                "duplicate-subject-source", value, "legacy subject source is duplicated"
+            )
+        )
     for value in _duplicates(row.catalog_path for row in manifest.subjects):
-        findings.append(_finding("duplicate-subject-target", value, "structural catalog target is duplicated"))
+        findings.append(
+            _finding(
+                "duplicate-subject-target",
+                value,
+                "structural catalog target is duplicated",
+            )
+        )
     for value in _duplicates(row.current_ops_id for row in manifest.subjects):
-        findings.append(_finding("duplicate-subject-id", value, "current ops identity is duplicated"))
+        findings.append(
+            _finding(
+                "duplicate-subject-id", value, "current ops identity is duplicated"
+            )
+        )
 
     by_id = {row.current_ops_id: row for row in manifest.subjects}
     merge_edges: dict[str, str] = {}
-    final_owners: defaultdict[pathlib.PurePosixPath, list[OperationSubjectRecord]] = defaultdict(list)
+    final_owners: defaultdict[pathlib.PurePosixPath, list[OperationSubjectRecord]] = (
+        defaultdict(list)
+    )
     for row in manifest.subjects:
         label = row.legacy_subject_path
-        if not _safe_path(row.legacy_subject_path) or not _safe_path(row.catalog_path) or not _safe_path(row.final_path):
-            findings.append(_finding("unsafe-path", label, "subject path is not safe repository-relative POSIX"))
+        if (
+            not _safe_path(row.legacy_subject_path)
+            or not _safe_path(row.catalog_path)
+            or not _safe_path(row.final_path)
+        ):
+            findings.append(
+                _finding(
+                    "unsafe-path",
+                    label,
+                    "subject path is not safe repository-relative POSIX",
+                )
+            )
             continue
         parts = row.legacy_subject_path.parts
         match = _SUBJECT_NAME.fullmatch(row.legacy_subject_path.name)
-        if len(parts) != 4 or parts[:2] != ("docs", "05.operations") or _DOMAIN.fullmatch(parts[2]) is None or match is None:
-            findings.append(_finding("legacy-subject-path-invalid", label, "legacy subject path shape is invalid"))
+        if (
+            len(parts) != 4
+            or parts[:2] != ("docs", "05.operations")
+            or _DOMAIN.fullmatch(parts[2]) is None
+            or match is None
+        ):
+            findings.append(
+                _finding(
+                    "legacy-subject-path-invalid",
+                    label,
+                    "legacy subject path shape is invalid",
+                )
+            )
             continue
         identity = f"ops-{match.group('identity')}"
-        if row.current_ops_id != identity or _OPS_ID.fullmatch(row.current_ops_id) is None:
-            findings.append(_finding("current-ops-id-invalid", label, "current_ops_id does not match source path"))
-        if row.catalog_domain != parts[2] or _DOMAIN.fullmatch(row.catalog_domain) is None:
-            findings.append(_finding("catalog-domain-invalid", label, "catalog domain does not match source"))
-        expected_catalog = pathlib.PurePosixPath("docs/05.operations/catalog") / row.catalog_domain / row.legacy_subject_path.name
+        if (
+            row.current_ops_id != identity
+            or _OPS_ID.fullmatch(row.current_ops_id) is None
+        ):
+            findings.append(
+                _finding(
+                    "current-ops-id-invalid",
+                    label,
+                    "current_ops_id does not match source path",
+                )
+            )
+        if (
+            row.catalog_domain != parts[2]
+            or _DOMAIN.fullmatch(row.catalog_domain) is None
+        ):
+            findings.append(
+                _finding(
+                    "catalog-domain-invalid",
+                    label,
+                    "catalog domain does not match source",
+                )
+            )
+        expected_catalog = (
+            pathlib.PurePosixPath("docs/05.operations/catalog")
+            / row.catalog_domain
+            / row.legacy_subject_path.name
+        )
         if row.catalog_path != expected_catalog:
-            findings.append(_finding("catalog-path-invalid", label, f"expected {expected_catalog}"))
-        if _OPS_ID.fullmatch(row.canonical_ops_id) is None or _SLUG.fullmatch(row.canonical_slug) is None:
-            findings.append(_finding("canonical-identity-invalid", label, "canonical ID or slug is invalid"))
+            findings.append(
+                _finding("catalog-path-invalid", label, f"expected {expected_catalog}")
+            )
+        if (
+            _OPS_ID.fullmatch(row.canonical_ops_id) is None
+            or _SLUG.fullmatch(row.canonical_slug) is None
+        ):
+            findings.append(
+                _finding(
+                    "canonical-identity-invalid",
+                    label,
+                    "canonical ID or slug is invalid",
+                )
+            )
         tokens = row.canonical_slug.split("-")
         domain_slug = row.catalog_domain.split("-", 1)[1]
         if (
             _FORBIDDEN_SLUG_TOKENS.intersection(tokens)
-            or any(tokens[index] == tokens[index - 1] for index in range(1, len(tokens)))
+            or any(
+                tokens[index] == tokens[index - 1] for index in range(1, len(tokens))
+            )
             or row.canonical_slug == domain_slug
             or row.canonical_slug.endswith(("-basics", "-setup"))
             or row.canonical_slug in {"basics", "setup"}
         ):
-            findings.append(_finding("canonical-slug-invalid", label, row.canonical_slug))
-        expected_final = pathlib.PurePosixPath("docs/05.operations/catalog") / row.catalog_domain / f"{row.canonical_ops_id}-{row.canonical_slug}"
+            findings.append(
+                _finding("canonical-slug-invalid", label, row.canonical_slug)
+            )
+        expected_final = (
+            pathlib.PurePosixPath("docs/05.operations/catalog")
+            / row.catalog_domain
+            / f"{row.canonical_ops_id}-{row.canonical_slug}"
+        )
         if row.final_path != expected_final:
-            findings.append(_finding("final-path-invalid", label, f"expected {expected_final}"))
-        if row.semantic_action == "retain" and (row.canonical_ops_id != row.current_ops_id or row.final_path != row.catalog_path):
-            findings.append(_finding("retain-target-invalid", label, "retain must preserve identity and catalog path"))
-        if row.semantic_action == "rename" and (row.canonical_ops_id != row.current_ops_id or row.final_path == row.catalog_path):
-            findings.append(_finding("rename-target-invalid", label, "rename preserves ID and changes slug"))
+            findings.append(
+                _finding("final-path-invalid", label, f"expected {expected_final}")
+            )
+        if row.semantic_action == "retain" and (
+            row.canonical_ops_id != row.current_ops_id
+            or row.final_path != row.catalog_path
+        ):
+            findings.append(
+                _finding(
+                    "retain-target-invalid",
+                    label,
+                    "retain must preserve identity and catalog path",
+                )
+            )
+        if row.semantic_action == "rename" and (
+            row.canonical_ops_id != row.current_ops_id
+            or row.final_path == row.catalog_path
+        ):
+            findings.append(
+                _finding(
+                    "rename-target-invalid",
+                    label,
+                    "rename preserves ID and changes slug",
+                )
+            )
         if not row.reason.strip():
-            findings.append(_finding("reason-missing", label, "reason must be non-empty"))
+            findings.append(
+                _finding("reason-missing", label, "reason must be non-empty")
+            )
         findings.extend(validate_subject_disposition(row))
         if row.semantic_action == "merge" and row.merge_into is not None:
             merge_edges[row.current_ops_id] = row.merge_into
@@ -887,7 +1641,13 @@ def _validate_subjects(
         final_owners[row.final_path].append(row)
 
         if row.source_commit != manifest.baseline_commit:
-            findings.append(_finding("source-commit-mismatch", label, "subject source commit differs from baseline"))
+            findings.append(
+                _finding(
+                    "source-commit-mismatch",
+                    label,
+                    "subject source commit differs from baseline",
+                )
+            )
         object_id, kind = _git_object(
             str(repo_root.resolve()),
             row.source_commit,
@@ -899,22 +1659,40 @@ def _validate_subjects(
             or row.source_tree != object_id
             or kind != "tree"
         ):
-            findings.append(_finding("source-tree-mismatch", label, "source tree does not resolve exactly"))
+            findings.append(
+                _finding(
+                    "source-tree-mismatch",
+                    label,
+                    "source tree does not resolve exactly",
+                )
+            )
 
     for target, owners in final_owners.items():
         if len(owners) <= 1:
             continue
         canonical = [row for row in owners if row.semantic_action != "merge"]
         merged = [row for row in owners if row.semantic_action == "merge"]
-        if len(canonical) != 1 or any(row.merge_into != canonical[0].current_ops_id for row in merged):
-            findings.append(_finding("duplicate-final-subject-owner", target, "final subject ownership is ambiguous"))
+        if len(canonical) != 1 or any(
+            row.merge_into != canonical[0].current_ops_id for row in merged
+        ):
+            findings.append(
+                _finding(
+                    "duplicate-final-subject-owner",
+                    target,
+                    "final subject ownership is ambiguous",
+                )
+            )
 
     for origin in sorted(merge_edges):
         visited: set[str] = set()
         current = origin
         while current in merge_edges:
             if current in visited:
-                findings.append(_finding("merge-cycle", origin, "subject merge graph contains a cycle"))
+                findings.append(
+                    _finding(
+                        "merge-cycle", origin, "subject merge graph contains a cycle"
+                    )
+                )
                 break
             visited.add(current)
             current = merge_edges[current]
@@ -929,13 +1707,31 @@ def _validate_files(
     findings: list[CatalogFinding] = []
     actual_sources = {row.legacy_path.as_posix() for row in manifest.files}
     if actual_sources != expected_files:
-        findings.append(_finding("file-inventory-mismatch", "files", f"missing={sorted(expected_files - actual_sources)} extra={sorted(actual_sources - expected_files)}"))
-    if tuple(row.legacy_path.as_posix() for row in manifest.files) != tuple(sorted(actual_sources)):
-        findings.append(_finding("file-order-invalid", "files", "files must be ordered by legacy_path"))
+        findings.append(
+            _finding(
+                "file-inventory-mismatch",
+                "files",
+                f"missing={sorted(expected_files - actual_sources)} extra={sorted(actual_sources - expected_files)}",
+            )
+        )
+    if tuple(row.legacy_path.as_posix() for row in manifest.files) != tuple(
+        sorted(actual_sources)
+    ):
+        findings.append(
+            _finding(
+                "file-order-invalid", "files", "files must be ordered by legacy_path"
+            )
+        )
     for value in _duplicates(row.legacy_path for row in manifest.files):
-        findings.append(_finding("duplicate-file-source", value, "legacy file source is duplicated"))
+        findings.append(
+            _finding("duplicate-file-source", value, "legacy file source is duplicated")
+        )
     for value in _duplicates(row.catalog_path for row in manifest.files):
-        findings.append(_finding("duplicate-file-target", value, "structural file target is duplicated"))
+        findings.append(
+            _finding(
+                "duplicate-file-target", value, "structural file target is duplicated"
+            )
+        )
 
     subjects = {row.legacy_subject_path: row for row in manifest.subjects}
     for row in manifest.files:
@@ -951,50 +1747,156 @@ def _validate_files(
         if row.canonical_role_owner is not None:
             paths.append(row.canonical_role_owner)
         if any(not _safe_path(path) for path in paths):
-            findings.append(_finding("unsafe-path", label, "file path is not safe repository-relative POSIX"))
+            findings.append(
+                _finding(
+                    "unsafe-path",
+                    label,
+                    "file path is not safe repository-relative POSIX",
+                )
+            )
             continue
         is_readme = row.legacy_path.name == "README.md"
         expected_role = "domain-readme" if is_readme else row.legacy_path.stem
         if row.role != expected_role:
-            findings.append(_finding("file-role-path-mismatch", label, f"expected role {expected_role}"))
+            findings.append(
+                _finding(
+                    "file-role-path-mismatch", label, f"expected role {expected_role}"
+                )
+            )
         parts = row.legacy_path.parts
         if is_readme:
             if len(parts) != 4 or _DOMAIN.fullmatch(parts[2]) is None:
-                findings.append(_finding("domain-readme-path-invalid", label, "domain README path is invalid"))
-            expected_catalog = pathlib.PurePosixPath("docs/05.operations/catalog") / parts[2] / "README.md"
+                findings.append(
+                    _finding(
+                        "domain-readme-path-invalid",
+                        label,
+                        "domain README path is invalid",
+                    )
+                )
+            expected_catalog = (
+                pathlib.PurePosixPath("docs/05.operations/catalog")
+                / parts[2]
+                / "README.md"
+            )
             if row.canonical_role_owner is not None:
-                findings.append(_finding("domain-readme-owner-invalid", label, "domain README has no role owner"))
+                findings.append(
+                    _finding(
+                        "domain-readme-owner-invalid",
+                        label,
+                        "domain README has no role owner",
+                    )
+                )
         else:
             subject = subjects.get(row.legacy_path.parent)
             if subject is None:
-                findings.append(_finding("file-subject-missing", label, "file has no subject row"))
+                findings.append(
+                    _finding("file-subject-missing", label, "file has no subject row")
+                )
                 continue
             expected_catalog = subject.catalog_path / row.legacy_path.name
             expected_final = subject.final_path / row.legacy_path.name
-            if row.final_path != expected_final or row.canonical_role_owner != expected_final:
-                findings.append(_finding("file-final-owner-mismatch", label, f"expected {expected_final}"))
-            expected_action = "merge" if subject.semantic_action == "merge" else ("rewrite" if subject.semantic_action == "rename" else "retain")
+            if (
+                row.final_path != expected_final
+                or row.canonical_role_owner != expected_final
+            ):
+                findings.append(
+                    _finding(
+                        "file-final-owner-mismatch", label, f"expected {expected_final}"
+                    )
+                )
+            expected_action = (
+                "merge"
+                if subject.semantic_action == "merge"
+                else ("rewrite" if subject.semantic_action == "rename" else "retain")
+            )
             allowed_actions = (
                 {"retain", "rewrite", "delete"}
                 if subject.semantic_action == "retain"
                 else {expected_action}
             )
             if row.semantic_action not in allowed_actions:
-                findings.append(_finding("file-action-subject-mismatch", label, f"expected {expected_action}"))
+                findings.append(
+                    _finding(
+                        "file-action-subject-mismatch",
+                        label,
+                        f"expected {expected_action}",
+                    )
+                )
         if row.catalog_path != expected_catalog:
-            findings.append(_finding("file-catalog-path-invalid", label, f"expected {expected_catalog}"))
+            findings.append(
+                _finding(
+                    "file-catalog-path-invalid", label, f"expected {expected_catalog}"
+                )
+            )
         if row.semantic_action == "delete":
             if row.final_path is not None or row.canonical_role_owner is not None:
-                findings.append(_finding("delete-target-invalid", label, "delete forbids final owners"))
+                findings.append(
+                    _finding(
+                        "delete-target-invalid", label, "delete forbids final owners"
+                    )
+                )
         elif row.final_path is None:
-            findings.append(_finding("file-final-path-missing", label, "non-delete file requires final_path"))
-        if not row.preserved_semantics or tuple(sorted(set(row.preserved_semantics))) != row.preserved_semantics:
-            findings.append(_finding("preserved-semantics-invalid", label, "preserved_semantics must be non-empty, unique, and sorted"))
+            findings.append(
+                _finding(
+                    "file-final-path-missing",
+                    label,
+                    "non-delete file requires final_path",
+                )
+            )
+        if (
+            not row.preserved_semantics
+            or tuple(sorted(set(row.preserved_semantics))) != row.preserved_semantics
+        ):
+            findings.append(
+                _finding(
+                    "preserved-semantics-invalid",
+                    label,
+                    "preserved_semantics must be non-empty, unique, and sorted",
+                )
+            )
         if tuple(sorted(set(row.removed_semantics))) != row.removed_semantics:
-            findings.append(_finding("removed-semantics-invalid", label, "removed_semantics must be unique and sorted"))
+            findings.append(
+                _finding(
+                    "removed-semantics-invalid",
+                    label,
+                    "removed_semantics must be unique and sorted",
+                )
+            )
         source = _source_text(
             str(repo_root.resolve()), row.source_commit, row.legacy_path.as_posix()
         )
+        for semantic in row.removed_semantics:
+            if semantic.startswith("remove-text:") and semantic.count(":") >= 2:
+                fragment = semantic.split(":", 2)[2]
+                if _remove_text_fragment_is_structural(fragment, source):
+                    findings.append(
+                        _finding(
+                            "remove-text-fragment-invalid",
+                            label,
+                            "remove-text cannot remove a heading, full section, path-only value, or metadata",
+                        )
+                    )
+                if _semantic_rewrite_rule(row, semantic) is None:
+                    findings.append(
+                        _finding(
+                            "remove-text-rule-missing",
+                            label,
+                            "remove-text requires an exact disposition-bound semantic rewrite rule",
+                        )
+                    )
+                continue
+            if (
+                semantic in _KNOWN_REMOVED_SEMANTIC_LABELS
+                or _LEGACY_SUBJECT_SEMANTIC.fullmatch(semantic) is not None
+            ):
+                continue
+            findings.append(
+                _finding(
+                    "removed-semantics-unknown",
+                    label,
+                    f"unknown removed semantic label: {semantic}",
+                )
+            )
         declared_sections = {
             item for item in row.preserved_semantics if item.startswith("section:")
         }
@@ -1006,8 +1908,17 @@ def _validate_files(
                     "every pinned source section must be frozen exactly once",
                 )
             )
-        if tuple(sorted(set(row.active_consumers), key=lambda item: item.as_posix())) != row.active_consumers:
-            findings.append(_finding("active-consumers-invalid", label, "active_consumers must be safe, unique, and sorted"))
+        if (
+            tuple(sorted(set(row.active_consumers), key=lambda item: item.as_posix()))
+            != row.active_consumers
+        ):
+            findings.append(
+                _finding(
+                    "active-consumers-invalid",
+                    label,
+                    "active_consumers must be safe, unique, and sorted",
+                )
+            )
         expected_final_consumers = tuple(
             _final_consumer_path(manifest, consumer)
             for consumer in row.active_consumers
@@ -1027,29 +1938,71 @@ def _validate_files(
                 not item.startswith(("section:", "text:"))
                 for item in row.preserved_semantics
             ):
-                findings.append(_finding("merge-preserved-semantics-unproven", label, "merge requires complete section inventory and concrete text witness semantics"))
+                findings.append(
+                    _finding(
+                        "merge-preserved-semantics-unproven",
+                        label,
+                        "merge requires complete section inventory and concrete text witness semantics",
+                    )
+                )
             if not row.removed_semantics or any(
                 not item.startswith(("duplicate:", "template-residue:"))
                 for item in row.removed_semantics
             ):
-                findings.append(_finding("merge-removed-semantics-unproven", label, "merge requires concrete duplicate or template residue semantics"))
+                findings.append(
+                    _finding(
+                        "merge-removed-semantics-unproven",
+                        label,
+                        "merge requires concrete duplicate or template residue semantics",
+                    )
+                )
         if row.semantic_action == "rewrite" and not row.removed_semantics:
-            findings.append(_finding("rewrite-reason-missing", label, "rewrite requires exact removed stale or contradictory semantics"))
+            findings.append(
+                _finding(
+                    "rewrite-reason-missing",
+                    label,
+                    "rewrite requires exact removed stale or contradictory semantics",
+                )
+            )
         if row.semantic_action == "rewrite" and not any(
             item.startswith("text:") for item in row.preserved_semantics
         ):
-            findings.append(_finding("rewrite-preserved-semantics-unproven", label, "rewrite requires a concrete text witness"))
+            findings.append(
+                _finding(
+                    "rewrite-preserved-semantics-unproven",
+                    label,
+                    "rewrite requires a concrete text witness",
+                )
+            )
         for item in row.preserved_semantics:
             if not item.startswith("text:"):
                 continue
             witness = item.split(":", 2)[2] if item.count(":") >= 2 else ""
             if (
                 len(witness) < 24
-                or witness.startswith(("artifact_id:", "status:", "parent_ids:", "created:", "updated:", "#", "<!--"))
+                or witness.startswith(
+                    (
+                        "artifact_id:",
+                        "status:",
+                        "parent_ids:",
+                        "created:",
+                        "updated:",
+                        "#",
+                        "<!--",
+                    )
+                )
                 or "docs/05.operations/" in witness
-                or any(root in witness for root in ("guides/", "policies/", "runbooks/"))
+                or any(
+                    root in witness for root in ("guides/", "policies/", "runbooks/")
+                )
             ):
-                findings.append(_finding("text-witness-invalid", label, "text witness must preserve meaningful role body, not metadata or a stale path"))
+                findings.append(
+                    _finding(
+                        "text-witness-invalid",
+                        label,
+                        "text witness must preserve meaningful role body, not metadata or a stale path",
+                    )
+                )
             if source is None or witness not in _body_text(source):
                 findings.append(
                     _finding(
@@ -1072,7 +2025,13 @@ def _validate_files(
                     )
                 )
         if row.semantic_action == "delete" and not row.preserved_semantics:
-            findings.append(_finding("delete-preservation-unproven", label, "delete requires preserved semantics and canonical owner"))
+            findings.append(
+                _finding(
+                    "delete-preservation-unproven",
+                    label,
+                    "delete requires preserved semantics and canonical owner",
+                )
+            )
         for consumer in row.active_consumers:
             if consumer.parts[:2] == ("docs", "98.archive") or (
                 consumer.parts[:2] == ("docs", "90.references")
@@ -1092,7 +2051,9 @@ def _validate_files(
             if consumer.as_posix() not in _baseline_tracked_paths(
                 str(repo_root.resolve()), manifest.baseline_commit
             ):
-                findings.append(_finding("active-consumer-untracked", label, consumer.as_posix()))
+                findings.append(
+                    _finding("active-consumer-untracked", label, consumer.as_posix())
+                )
         expected_consumers = _derived_consumers(repo_root, manifest, row)
         if row.active_consumers != expected_consumers:
             findings.append(
@@ -1103,12 +2064,24 @@ def _validate_files(
                 )
             )
         if row.source_commit != manifest.baseline_commit:
-            findings.append(_finding("source-commit-mismatch", label, "file source commit differs from baseline"))
+            findings.append(
+                _finding(
+                    "source-commit-mismatch",
+                    label,
+                    "file source commit differs from baseline",
+                )
+            )
         object_id, kind = _git_object(
             str(repo_root.resolve()), row.source_commit, row.legacy_path.as_posix()
         )
         if kind != "blob" or object_id != row.source_blob:
-            findings.append(_finding("source-blob-mismatch", label, "source blob does not resolve exactly"))
+            findings.append(
+                _finding(
+                    "source-blob-mismatch",
+                    label,
+                    "source blob does not resolve exactly",
+                )
+            )
     return findings
 
 
@@ -1118,9 +2091,7 @@ def _is_real_directory(path: pathlib.Path) -> bool:
 
 def _is_real_file(path: pathlib.Path) -> bool:
     return (
-        path.is_file()
-        and not path.is_symlink()
-        and stat.S_ISREG(path.lstat().st_mode)
+        path.is_file() and not path.is_symlink() and stat.S_ISREG(path.lstat().st_mode)
     )
 
 
@@ -1158,11 +2129,7 @@ def _validate_complete_index_routes(
             )
         ]
     links = parse_local_markdown_links(relative_path, text)
-    invalid_routes = tuple(
-        link
-        for link in links
-        if link.has_unsafe_target
-    )
+    invalid_routes = tuple(link for link in links if link.has_unsafe_target)
     actual_routes = {
         link.target
         for link in links
@@ -1170,14 +2137,18 @@ def _validate_complete_index_routes(
         and not link.has_unsafe_target
         and link.target.parent == route_parent
     }
-    findings = [
-        _finding(
-            "complete-index-route-invalid",
-            relative_path,
-            "absolute, outside-repository, decoded C0/DEL, and backslash index routes are forbidden: "
-            f"{sorted(link.raw_target for link in invalid_routes)}",
-        )
-    ] if invalid_routes else []
+    findings = (
+        [
+            _finding(
+                "complete-index-route-invalid",
+                relative_path,
+                "absolute, outside-repository, decoded C0/DEL, and backslash index routes are forbidden: "
+                f"{sorted(link.raw_target for link in invalid_routes)}",
+            )
+        ]
+        if invalid_routes
+        else []
+    )
     if actual_routes != expected_routes:
         findings.append(
             _finding(
@@ -1370,9 +2341,7 @@ def _validate_complete_releases(final_root: pathlib.Path) -> list[CatalogFinding
             )
             continue
         packet_entries = {child.name for child in packet.iterdir()}
-        if packet_entries != {"release.md"} or not _is_real_file(
-            packet / "release.md"
-        ):
+        if packet_entries != {"release.md"} or not _is_real_file(packet / "release.md"):
             findings.append(
                 _finding(
                     "complete-release-contents-invalid",
@@ -1416,7 +2385,9 @@ def _validate_complete_topology(
                 )
             )
     root_index = operations_root / "README.md"
-    findings.extend(_validate_complete_index(root_index, operations_relative / "README.md"))
+    findings.extend(
+        _validate_complete_index(root_index, operations_relative / "README.md")
+    )
     findings.extend(
         _validate_complete_index_routes(
             root_index,
@@ -1450,16 +2421,34 @@ def validate_operations_catalog_manifest(
         return (_finding("mode-invalid", mode, "unknown validation mode"),)
     if mode == "executed":
         if not domains:
-            findings.append(_finding("domains-required", mode, "executed mode requires domains"))
+            findings.append(
+                _finding("domains-required", mode, "executed mode requires domains")
+            )
     elif domains:
-        findings.append(_finding("domains-unexpected", mode, "only executed mode accepts domains"))
+        findings.append(
+            _finding("domains-unexpected", mode, "only executed mode accepts domains")
+        )
 
-    verified = _git(root, "rev-parse", "--verify", f"{manifest.baseline_commit}^{{commit}}")
+    verified = _git(
+        root, "rev-parse", "--verify", f"{manifest.baseline_commit}^{{commit}}"
+    )
     baseline = verified.stdout.strip()
-    if verified.returncode != 0 or _OBJECT_ID.fullmatch(manifest.baseline_commit) is None or baseline != manifest.baseline_commit:
-        findings.append(_finding("baseline-commit-invalid", "manifest", "baseline commit does not resolve exactly"))
+    if (
+        verified.returncode != 0
+        or _OBJECT_ID.fullmatch(manifest.baseline_commit) is None
+        or baseline != manifest.baseline_commit
+    ):
+        findings.append(
+            _finding(
+                "baseline-commit-invalid",
+                "manifest",
+                "baseline commit does not resolve exactly",
+            )
+        )
         return tuple(sorted(findings))
-    expected_subjects, expected_files = _baseline_inventory(root, manifest.baseline_commit)
+    expected_subjects, expected_files = _baseline_inventory(
+        root, manifest.baseline_commit
+    )
     if manifest.approval_rows != _expected_approval_rows(manifest):
         findings.append(
             _finding(
@@ -1474,27 +2463,61 @@ def validate_operations_catalog_manifest(
     domain_names = {row.catalog_domain for row in manifest.subjects}
     for domain in domains:
         if domain not in domain_names:
-            findings.append(_finding("domain-unknown", domain, "domain is not in manifest"))
+            findings.append(
+                _finding("domain-unknown", domain, "domain is not in manifest")
+            )
 
     if manifest.approval.status == "pending":
-        if manifest.approval.approved_at is not None or manifest.approval.approved_by is not None:
-            findings.append(_finding("approval-pending-fields", "approval", "pending requires null approval metadata"))
+        if (
+            manifest.approval.approved_at is not None
+            or manifest.approval.approved_by is not None
+        ):
+            findings.append(
+                _finding(
+                    "approval-pending-fields",
+                    "approval",
+                    "pending requires null approval metadata",
+                )
+            )
         if mode != "manifest":
-            findings.append(_finding("approval-pending", mode, "semantic and structural execution require explicit approval"))
+            findings.append(
+                _finding(
+                    "approval-pending",
+                    mode,
+                    "semantic and structural execution require explicit approval",
+                )
+            )
     else:
         if not manifest.approval.approved_at or manifest.approval.approved_by != "user":
-            findings.append(_finding("approval-invalid", "approval", "approved requires date and approved_by: user"))
+            findings.append(
+                _finding(
+                    "approval-invalid",
+                    "approval",
+                    "approved requires date and approved_by: user",
+                )
+            )
 
-    if mode in {"structure", "executed", "complete"} and manifest.approval.status == "approved":
+    if (
+        mode in {"structure", "executed", "complete"}
+        and manifest.approval.status == "approved"
+    ):
         final_root = root if execution_root is None else execution_root
         selected = domain_names if mode != "executed" else set(domains)
         for subject in manifest.subjects:
             if subject.catalog_domain not in selected:
                 continue
-            expected = subject.catalog_path if mode == "structure" else subject.final_path
+            expected = (
+                subject.catalog_path if mode == "structure" else subject.final_path
+            )
             target = final_root / expected
             if not target.is_dir():
-                findings.append(_finding("executed-subject-missing", expected, "expected subject directory is absent"))
+                findings.append(
+                    _finding(
+                        "executed-subject-missing",
+                        expected,
+                        "expected subject directory is absent",
+                    )
+                )
             elif _has_symlink_component(final_root, expected):
                 findings.append(
                     _finding(
@@ -1504,15 +2527,19 @@ def validate_operations_catalog_manifest(
                     )
                 )
             if mode in {"executed", "complete"}:
-                predecessor = final_root / subject.legacy_subject_path
-                if predecessor.exists() or predecessor.is_symlink():
-                    findings.append(
-                        _finding(
-                            "executed-predecessor-present",
-                            subject.legacy_subject_path,
-                            "legacy predecessor must be absent after semantic execution",
+                predecessors = {subject.legacy_subject_path}
+                if subject.catalog_path != subject.final_path:
+                    predecessors.add(subject.catalog_path)
+                for predecessor_path in predecessors:
+                    predecessor = final_root / predecessor_path
+                    if predecessor.exists() or predecessor.is_symlink():
+                        findings.append(
+                            _finding(
+                                "executed-predecessor-present",
+                                predecessor_path,
+                                "legacy or structural predecessor must be absent after semantic execution",
+                            )
                         )
-                    )
         selected_files = (
             row
             for row in manifest.files
@@ -1524,7 +2551,13 @@ def validate_operations_catalog_manifest(
             expected_path = row.catalog_path if mode == "structure" else row.final_path
             target = final_root / expected_path
             if not target.is_file():
-                findings.append(_finding("executed-file-missing", expected_path, "expected final file is absent"))
+                findings.append(
+                    _finding(
+                        "executed-file-missing",
+                        expected_path,
+                        "expected final file is absent",
+                    )
+                )
                 continue
             if target.is_symlink() or not stat.S_ISREG(target.lstat().st_mode):
                 findings.append(
@@ -1538,7 +2571,13 @@ def validate_operations_catalog_manifest(
             try:
                 target_text = target.read_text(encoding="utf-8")
             except (OSError, UnicodeError):
-                findings.append(_finding("executed-file-unreadable", expected_path, "final file is not readable UTF-8"))
+                findings.append(
+                    _finding(
+                        "executed-file-unreadable",
+                        expected_path,
+                        "final file is not readable UTF-8",
+                    )
+                )
                 continue
             source_text = _source_text(
                 str(root.resolve()),
@@ -1578,8 +2617,18 @@ def validate_operations_catalog_manifest(
                 for item in row.preserved_semantics
                 if item.startswith("text:") and item.count(":") >= 2
             }
-            source_sections, source_link_invalid = _semantic_section_tokens(
+            (
+                rewritten_source,
+                remaining_semantics,
+                missing_rewrite_rules,
+                rewrite_valid,
+            ) = _apply_semantic_rewrite_rules(
+                row,
                 source_text or "",
+                target_text,
+            )
+            source_sections, source_link_invalid = _semantic_section_tokens(
+                rewritten_source,
                 row,
                 manifest,
                 row.legacy_path,
@@ -1601,17 +2650,39 @@ def validate_operations_catalog_manifest(
                 )
             sections_preserved = (
                 source_text is not None
+                and rewrite_valid
                 and not source_link_invalid
                 and not target_link_invalid
                 and source_sections <= target_sections
             )
             if not sections_preserved or (
                 row.semantic_action in {"rewrite", "merge"}
-                and not all(
-                    witness in target_text for witness in required_text
-                )
+                and not all(witness in target_text for witness in required_text)
             ):
-                findings.append(_finding("preserved-semantics-mismatch", row.final_path, "final body must account for every frozen source section and required text witness"))
+                findings.append(
+                    _finding(
+                        "preserved-semantics-mismatch",
+                        row.final_path,
+                        "final body must account for every frozen source section and required text witness",
+                    )
+                )
+            for missing_rule in missing_rewrite_rules:
+                findings.append(
+                    _finding(
+                        "semantic-rewrite-rule-missing",
+                        row.final_path,
+                        "selected execution has no exact semantic rewrite rule for "
+                        f"{missing_rule}",
+                    )
+                )
+            for remaining_semantic in remaining_semantics:
+                findings.append(
+                    _finding(
+                        "removed-semantics-present",
+                        row.final_path,
+                        f"approved removed semantic remains in final body: {remaining_semantic}",
+                    )
+                )
             for consumer_path, final_consumer_path in zip(
                 row.active_consumers, row.final_consumers, strict=False
             ):
@@ -1657,8 +2728,12 @@ def validate_operations_catalog_manifest(
                     row.final_path.parent.name != row.legacy_path.parent.name
                 ):
                     stale_values.add(row.legacy_path.parent.name)
+                consumer_scan_text = _active_consumer_scan_text(
+                    final_consumer_path,
+                    consumer_text,
+                )
                 if row.final_path != row.legacy_path and any(
-                    value in consumer_text for value in stale_values
+                    value in consumer_scan_text for value in stale_values
                 ):
                     findings.append(
                         _finding(
