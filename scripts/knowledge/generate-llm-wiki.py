@@ -200,7 +200,7 @@ def render_index(candidates: Sequence[Candidate]) -> str:
     lines.extend([
         "## Sources", "", "- [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement", "- [ref-0083-repository-map.md](./ref-0083-repository-map.md) - curated canonical source map", f"- [generate-llm-wiki.py](../../../{GENERATOR_PATH}) - deterministic two-output generator", "- [check-script-manifest.py](../../../scripts/validation/check-script-manifest.py) - aggregate generated-output freshness gate", "",
         "## Maintenance", "", "- **Owner**: `doc-writer` using the `knowledge-map-agent` function", "- **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change", f"- **Update Trigger**: Run `python3 {GENERATOR_PATH} --write` after in-scope path changes and `python3 {GENERATOR_PATH} --check` during validation", "",
-        "## Related Documents", "", "- [LLM Wiki references](./README.md)", "- [LLM Wiki repository map](./ref-0083-repository-map.md)", "- [LLM Wiki maintenance guide](../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)", "- [Agent governance hub](../../00.agent-governance/README.md)",
+        "## Related Documents", "", "- [LLM Wiki references](./README.md)", "- [LLM Wiki repository map](./ref-0083-repository-map.md)", "- [LLM Wiki maintenance guide](../../05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)", "- [Agent governance hub](../../00.agent-governance/README.md)",
     ])
     return "\n".join(lines) + "\n"
 
@@ -244,7 +244,7 @@ def render_coverage(candidates: Sequence[Candidate]) -> str:
     lines.extend([
         "", "## Sources", "", "- [LLM Wiki generated index](../../llm-wiki/ref-0082-llm-wiki-index.md) - full safe path index", "- [LLM Wiki repository map](../../llm-wiki/ref-0083-repository-map.md) - curated canonical source map", f"- [generate-llm-wiki.py](../../../../{GENERATOR_PATH}) - deterministic two-output generator", "- [script manifest checker](../../../../scripts/validation/check-script-manifest.py) - aggregate generated-output freshness gate", "",
         "## Maintenance", "", "- **Owner**: `doc-writer` using the `knowledge-map-agent` function.", "- **Review Cadence**: Review after root entrypoint, governance, operations, script inventory, infrastructure index, or LLM Wiki path changes.", f"- **Update Trigger**: Run `python3 {GENERATOR_PATH} --write` after in-scope path changes and `python3 {GENERATOR_PATH} --check` during validation.", "",
-        "## Related Documents", "", "- [Knowledge reference data](./README.md)", "- [Reference data](../README.md)", "- [LLM Wiki references](../../llm-wiki/README.md)", "- [LLM Wiki maintenance guide](../../../05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)",
+        "## Related Documents", "", "- [Knowledge reference data](./README.md)", "- [Reference data](../README.md)", "- [LLM Wiki references](../../llm-wiki/README.md)", "- [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md)",
     ])
     return "\n".join(lines) + "\n"
 

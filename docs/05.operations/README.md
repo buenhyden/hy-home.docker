@@ -12,7 +12,8 @@ status: active
 
 `docs/05.operations/`는 운영자가 서비스 사용 맥락, 통제 기준, 실행 절차를
 같은 stable subject identity 아래에서 찾는 canonical operations stage다. 최종
-탐색 구조는 domain-first이며, 역할별 병렬 인덱스를 발행하지 않는다.
+탐색 구조는 `catalog/` 아래의 domain-first이며, 역할별 병렬 인덱스를
+발행하지 않는다. Incident와 Release event record는 catalog 밖에 둔다.
 
 ## Audience
 
@@ -41,31 +42,20 @@ status: active
 
 ## Structure
 
-| Domain | Operations subjects |
+| Route | Purpose |
 | --- | --- |
-| [00 Workspace](./00-workspace/README.md) | workspace-level setup, controls, release, and shared procedures |
-| [01 Gateway](./01-gateway/README.md) | edge routing, proxy, certificate, and access operations |
-| [02 Auth](./02-auth/README.md) | authentication and identity services |
-| [03 Security](./03-security/README.md) | security controls, scanning, and response procedures |
-| [04 Data](./04-data/README.md) | databases, storage, backup, and data services |
-| [05 Messaging](./05-messaging/README.md) | messaging and notification services |
-| [06 Observability](./06-observability/README.md) | monitoring, metrics, logs, and alerting |
-| [07 Workflow](./07-workflow/README.md) | workflow and automation services |
-| [08 AI](./08-ai/README.md) | AI services and model operations |
-| [09 Tooling](./09-tooling/README.md) | testing, registry, synchronization, and IaC tooling |
-| [10 Communication](./10-communication/README.md) | mail operations |
-| [11 Laboratory](./11-laboratory/README.md) | dashboard and laboratory support services |
-| [12 Infra Net](./12-infra-net/README.md) | infrastructure network standardization |
+| [Catalog](./catalog/README.md) | domain별 current Operations subjects |
 | [Incidents](./incidents/README.md) | incident packets and postmortems |
 | [릴리스](./releases/README.md) | executed release evidence |
 
 각 domain `README.md`가 subject navigation을 소유하며, subject 폴더에는
 `README.md`를 만들지 않는다. subject의 기존 역할만
-`<domain>/ops-####-<subject>/{guide,policy,runbook}.md`에 둔다.
+`catalog/<domain>/ops-####-<subject>/{guide,policy,runbook}.md`에 둔다.
 
 ## How to Work in This Area
 
-1. 위 domain 인덱스에서 stable `ops-####-<subject>`를 찾는다.
+1. [Catalog](./catalog/README.md)의 domain 인덱스에서 stable
+   `ops-####-<subject>`를 찾는다.
 2. 정상 사용 맥락과 common checks는 `guide.md`에 둔다.
 3. 필수·금지 통제, 예외, 검토 주기는 `policy.md`에 둔다.
 4. 순서 있는 절차, 기대 증거, rollback 또는 recovery, escalation은
@@ -86,7 +76,7 @@ status: active
 - Guide는 절차를 복제하지 않고 필요할 때 sibling Runbook으로 handoff한다.
 - Policy는 명령 순서를 소유하지 않는다.
 - Runbook은 evidence, rollback/recovery, escalation 기준을 포함한다.
-- root와 domain README만 active Operations subject index를 발행한다.
+- root, catalog, domain README만 active Operations index를 발행한다.
 - archive, generated summary, migration ledger의 immutable provenance는 current
   path rewrite 대상으로 취급하지 않는다.
 

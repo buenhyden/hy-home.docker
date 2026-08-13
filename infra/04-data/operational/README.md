@@ -54,9 +54,9 @@ operational/
 
 ## Related Documents
 
-- **Guide**: [Operational Guides](../../../docs/05.operations/04-data/README.md)
-- **Policies**: [Operational Policies](../../../docs/05.operations/04-data/README.md)
-- **Runbooks**: [Operational Runbooks](../../../docs/05.operations/04-data/README.md)
+- **Guide**: [Operational Guides](../../../docs/05.operations/catalog/04-data/README.md)
+- **Policies**: [Operational Policies](../../../docs/05.operations/catalog/04-data/README.md)
+- **Runbooks**: [Operational Runbooks](../../../docs/05.operations/catalog/04-data/README.md)
 - **HA PostgreSQL Reference**: [Relational Data Tier](../relational/README.md)
 
 ---

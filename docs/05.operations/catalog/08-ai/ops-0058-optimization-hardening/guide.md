@@ -1,0 +1,88 @@
+---
+status: active
+artifact_id: guide-0058
+artifact_type: guide
+parent_ids: []
+created: 2026-05-17
+updated: 2026-08-11
+---
+<!-- Target: docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md -->
+
+# 08-AI Optimization Hardening Usage Guide
+
+## Usage
+
+### Overview
+
+이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다.
+
+### Usage Type
+
+`system-guide | how-to`
+
+### Target Audience
+
+- SRE / Platform Operator
+- DevOps Engineer
+- AI Platform Owner
+
+### Purpose
+
+- Ollama/Open WebUI 공개 경로를 gateway+SSO 정책에 정렬한다.
+- Ollama GPU 자원 보호를 위한 concurrency/queue 상한을 적용한다.
+- Open WebUI stateful 운영 일관성을 확보한다.
+- AI 하드닝 회귀를 script/CI로 조기 차단한다.
+- 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)을 운영 기준으로 반영한다.
+
+### Prerequisites
+
+- Docker / Docker Compose 실행 환경
+- `infra/08-ai` 수정 권한
+- Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
+
+### Step-by-step Instructions
+
+1. 정적 구성 점검
+   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+   - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+   - `infra/08-ai/*/docker-compose.yml` 파일은 `infra_net`과 root include context에 의존하므로 service-local 단독 `docker compose config` 대상으로 사용하지 않는다.
+2. Gateway/SSO 경계 정렬
+   - Ollama/Open WebUI 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+3. Ollama 리소스 보호 적용
+   - `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 확인/조정한다.
+4. Open WebUI stateful 일관성 확인
+   - Open WebUI가 `template-stateful-med`를 사용하도록 확인한다.
+5. Exporter 안정성 강화 확인
+   - `ollama-exporter`가 `ollama` `service_healthy`에 의존하는지 확인한다.
+   - metrics healthcheck가 exporter 컨테이너 내부 `http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics`를 확인하는지 점검한다.
+6. 기준선 검증 실행
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `python3 scripts/validation/check-document-links.py --mode traceability`
+7. 카탈로그 확장 운영 기준 반영
+   - 모델 승격 절차(실험 -> 운영)를 tasks/operations에 반영한다.
+   - Open WebUI 모델 접근 권한 분리 기준을 반영한다.
+   - 대화 로그 보존/마스킹 정책을 반영한다.
+
+### Common Pitfalls
+
+- middleware 체인을 일부 라우터에만 적용하는 실수
+- Ollama 상한 없이 고동시성 부하를 허용해 GPU OOM을 유발하는 실수
+- Open WebUI를 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
+- exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
+
+## Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+
+## Related Documents
+
+- [Operations index](../../../README.md)
+- [Operations policy](policy.md)
+- [Recovery runbook](runbook.md)

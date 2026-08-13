@@ -9408,6 +9408,88 @@ approval:
   semantic execution remains limited to the subsequent Plan tasks and must pass
   the corresponding `structure`, `executed`, or `complete` validation mode.
 
+## Structural Execution Evidence
+
+Task 10C executed the approved structure boundary on 2026-08-13. The manifest
+approval remains `approved`; no `legacy_*`, `source_*`, `final_path`,
+`semantic_action`, merge, or semantic-preservation field in the frozen YAML
+ledger changed.
+
+- RED: the three live-topology tests produced 14 assertion failures: one absent
+  `catalog/` root and all 13 legacy domain roots still present. The Incident and
+  Release sibling assertion already passed.
+- Move: exactly 13 native `git mv` commands moved `00-workspace` through
+  `12-infra-net` in numeric order beneath `docs/05.operations/catalog/`.
+- Structural inventory: 13 catalog domains, the same 77 subject IDs and
+  structural names, 192 role files, and zero Incident or Release roots beneath
+  `catalog/`.
+- Consumer boundary: the approved rows select 342 unique active/final consumer
+  routes. The structural rewrite updated 753 explicit legacy-prefix occurrences
+  across 271 non-test, non-generated current files; moved Markdown required 784
+  relative-link rebases across 205 files. Path-aware tests were migrated
+  separately, and the two registered LLM Wiki outputs were regenerated from
+  their canonical owner.
+- Immutable exclusions: `archived_from`, legacy/source paths and Git objects in
+  migration ledgers, completed Stage 98 evidence and tombstone provenance,
+  immutable Stage 90 manifests/summaries, and Stage 00 progress history were not
+  rewritten. Only the two manifest-declared current Stage 90 generated outputs
+  changed.
+- Initial GREEN: the three structural tests pass, structure mode reports
+  `subjects=77 files=205 approval=approved`, and alignment reports 335 documents,
+  2,349 links, and zero failures.
+- Final structural equivalence: complete Operations catalog validation passes
+  `37/37` in `305.262s`; Operations taxonomy passes `12/12`; traceability and
+  alignment each report 335 documents, 2,349 links, and zero failures. An exact
+  role-body comparison found all 192 current role files byte-identical to their
+  pinned predecessors after neutralizing only approved path and Markdown-link
+  destination rebases.
+- Metadata and owner gates: changed metadata reports `selected=251
+  violations=0`; metadata contracts report `violations=0`; the focused
+  script-manifest consumers pass `2/2`; both registered LLM Wiki outputs are
+  fresh. The single full metadata run reached `244/245`; its only failure was a
+  root README Release-link label changed during routing reduction. Restoring the
+  preserved label made the exact failure plus the three structural metadata
+  regressions pass `4/4`. Ruff, `py_compile`, and diff hygiene pass.
+- Review round 1: the initial general review reported `C0/I2/M0` for the catalog
+  Runbook authority classifier and immutable Stage 98 tombstone expectations.
+  The mandatory Python review reported `C0/I3/M0` for structure-body
+  preservation, unsafe semantic normalization, and the two active governance
+  publications. There was no overlap: five unique Important findings. RED reproduced the full
+  script-manifest suite at `40` tests / `10` failures and eight focused failures:
+  three structural body mutations, four unsafe Markdown targets, and the active
+  publication scan naming exactly `git-workflow.md` and
+  `github-governance.md`.
+- Remediation GREEN: runtime authority accepts only the canonical
+  `catalog/<domain>/ops-####-<slug>/runbook.md` leaf shape; the seven predecessor-era
+  target values across six affected tombstone rows retain immutable equality;
+  structure mode now compares
+  every pinned source body exactly after only the approved 13 domain-prefix and
+  safe link rebases; arbitrary addition, removal, and rewrite fail; absolute,
+  traversal, backslash, and encoded-control targets fail closed. The two active
+  Stage 00 publications use `catalog/00-workspace`. Focused remediation is `6/6`,
+  full script manifest is `41/41` in `31.970s`, full Operations catalog is
+  `40/40` in `378.385s`, and structure mode remains `77` subjects / `205` files /
+  `approved`.
+- Final remediation gates: Operations taxonomy `12/12`; traceability and
+  alignment each 335 documents / 2,349 links / zero failures; changed metadata
+  `253/0`; metadata contracts `0`; Ruff, `py_compile`, and all diff checks pass.
+  The independent general reviewer reran full metadata after the Release-label
+  restoration and reported `245/245` GREEN; remediation did not rerun that long
+  suite because no metadata behavior changed.
+- Round 1 partial re-review: general review reported all general findings
+  addressed (`C0/I0/M0`); Python re-review reported `C0/I1/M0` because
+  executed/complete `_semantic_section_tokens` still canonicalized unsafe
+  Markdown targets.
+- Round 2 RED/GREEN: the original executed fixture replaced its real relative
+  Operations README link with four unsafe variants. Absolute `/docs/...`
+  produced zero findings; traversal, backslash, and encoded-C0 destinations
+  produced only a generic preservation mismatch and no deterministic unsafe
+  finding. Shared semantic normalization now returns an unsafe-target flag,
+  emits `semantic-link-invalid`, and also fails preservation for unsafe source or
+  target links while retaining the valid relative approved rebase. Focused
+  final executed/complete semantic coverage passes `4/4` in `77.810s`; Ruff,
+  `py_compile`, and all diff checks pass.
+
 ## Related Documents
 
 - [Specification](../../03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md)

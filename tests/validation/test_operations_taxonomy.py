@@ -172,7 +172,12 @@ class OperationsTaxonomyTests(unittest.TestCase):
     def test_each_subject_has_only_ledger_declared_roles_at_its_ops_path(self):
         expected_paths: set[Path] = set()
         for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            subject_root = ROOT / "docs/05.operations" / domain / f"ops-{identity}-{subject}"
+            subject_root = (
+                ROOT
+                / "docs/05.operations/catalog"
+                / domain
+                / f"ops-{identity}-{subject}"
+            )
             for role in roles:
                 path = subject_root / f"{role}.md"
                 expected_paths.add(path)
@@ -182,13 +187,20 @@ class OperationsTaxonomyTests(unittest.TestCase):
         actual_paths = {
             path
             for domain in MIGRATED_DOMAINS
-            for path in (ROOT / "docs/05.operations" / domain).glob("ops-*/*.md")
+            for path in (ROOT / "docs/05.operations/catalog" / domain).glob(
+                "ops-*/*.md"
+            )
         }
         self.assertEqual(expected_paths, actual_paths)
 
     def test_subject_metadata_uses_role_identity_and_noninvented_parents(self):
         for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            subject_root = ROOT / "docs/05.operations" / domain / f"ops-{identity}-{subject}"
+            subject_root = (
+                ROOT
+                / "docs/05.operations/catalog"
+                / domain
+                / f"ops-{identity}-{subject}"
+            )
             for role in roles:
                 path = subject_root / f"{role}.md"
                 if not path.is_file():
@@ -208,7 +220,12 @@ class OperationsTaxonomyTests(unittest.TestCase):
         legacy_root = re.compile(r"docs/05\.operations/(guides|policies|runbooks)/")
         violations: list[str] = []
         for domain, subject, identity, roles in EXPECTED_SUBJECTS:
-            subject_root = ROOT / "docs/05.operations" / domain / f"ops-{identity}-{subject}"
+            subject_root = (
+                ROOT
+                / "docs/05.operations/catalog"
+                / domain
+                / f"ops-{identity}-{subject}"
+            )
             for role in roles:
                 path = subject_root / f"{role}.md"
                 if not path.is_file():
@@ -229,9 +246,9 @@ class OperationsTaxonomyTests(unittest.TestCase):
             with self.subTest(mutation=role):
                 self.assertRegex(f"docs/05.operations/{role}/**", parallel_root)
         for stable in (
-            "docs/05.operations/10-communication/ops-0070-mail/guide.md",
-            "docs/05.operations/10-communication/ops-0070-mail/policy.md",
-            "docs/05.operations/10-communication/ops-0070-mail/runbook.md",
+            "docs/05.operations/catalog/10-communication/ops-0070-mail/guide.md",
+            "docs/05.operations/catalog/10-communication/ops-0070-mail/policy.md",
+            "docs/05.operations/catalog/10-communication/ops-0070-mail/runbook.md",
         ):
             with self.subTest(stable=stable):
                 self.assertNotRegex(stable, parallel_root)
@@ -309,6 +326,14 @@ class OperationsTaxonomyTests(unittest.TestCase):
             "docs/05.operations/releases/README.md",
         }
 
+        def structural_path(path: str) -> str:
+            return re.sub(
+                r"^docs/05\.operations/"
+                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)(?=/)",
+                r"docs/05.operations/catalog/\1",
+                path,
+            )
+
         def linked_current_navigation_paths(
             source: str, body: str, seen: set[str] | None = None
         ) -> set[str]:
@@ -339,21 +364,23 @@ class OperationsTaxonomyTests(unittest.TestCase):
                             visited | {resolved_path},
                         )
                     )
-                canonical = stable_paths.get(resolved_path, resolved_path)
+                canonical = structural_path(
+                    stable_paths.get(resolved_path, resolved_path)
+                )
                 if re.fullmatch(
-                    r"docs/05\.operations/"
+                    r"docs/05\.operations/catalog/"
                     r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
                     r"/ops-[^/]+/(guide|policy|runbook)\.md",
                     canonical,
                 ) or re.fullmatch(
-                    r"docs/05\.operations/"
+                    r"docs/05\.operations/catalog/"
                     r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
                     r"/README\.md",
                     canonical,
                 ) or (
                     re.match(
                         r"docs/05\.operations/"
-                        r"(?:(guides|policies|runbooks)/)?"
+                        r"(?:(guides|policies|runbooks|catalog)/)?"
                         r"(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
                         source,
                     )
@@ -364,7 +391,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
 
         for row in merge_rows:
             source = str(row["legacy_path"])
-            target = str(row["stable_path"])
+            target = structural_path(str(row["stable_path"]))
             source_commit = str(row["source_commit"])
             result = subprocess.run(
                 ["git", "show", f"{source_commit}:{source}"],
@@ -385,7 +412,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
                     f"missing current navigation: {sorted(source_paths - target_paths)}",
                 )
                 if re.match(
-                    r"docs/05\.operations/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
+                    r"docs/05\.operations/catalog/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
                     target,
                 ):
                     archive_links = []
@@ -413,6 +440,14 @@ class OperationsTaxonomyTests(unittest.TestCase):
         }
         link_pattern = re.compile(r"!?\[[^\]\n]*\]\(([^\s)]+)")
 
+        def structural_path(path: str) -> str:
+            return re.sub(
+                r"^docs/05\.operations/"
+                r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)(?=/)",
+                r"docs/05.operations/catalog/\1",
+                path,
+            )
+
         def current_navigation(source: str, body: str) -> set[str]:
             navigation: set[str] = set()
             for destination in link_pattern.findall(body):
@@ -420,13 +455,15 @@ class OperationsTaxonomyTests(unittest.TestCase):
                 if resolved is None or resolved.is_relative_to(ROOT / "docs/98.archive"):
                     continue
                 resolved_path = str(resolved.relative_to(ROOT))
-                canonical = stable_paths.get(resolved_path, resolved_path)
+                canonical = structural_path(
+                    stable_paths.get(resolved_path, resolved_path)
+                )
                 if canonical in {
                     "docs/05.operations/README.md",
                     "docs/05.operations/incidents/README.md",
                     "docs/05.operations/releases/README.md",
                 } or re.fullmatch(
-                    r"docs/05\.operations/"
+                    r"docs/05\.operations/catalog/"
                     r"(00-workspace|01-gateway|02-auth|03-security|04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)"
                     r"/README\.md",
                     canonical,
@@ -434,7 +471,7 @@ class OperationsTaxonomyTests(unittest.TestCase):
                     navigation.add(canonical)
             return navigation
 
-        target = "docs/05.operations/README.md"
+        target = "docs/05.operations/catalog/README.md"
         target_navigation = current_navigation(target, (ROOT / target).read_text())
         for row in rows:
             source = str(row["legacy_path"])
@@ -458,9 +495,13 @@ class OperationsTaxonomyTests(unittest.TestCase):
 
         expected_indexes = {
             operations_root / "README.md",
+            operations_root / "catalog/README.md",
             operations_root / "incidents/README.md",
             operations_root / "releases/README.md",
-            *(operations_root / domain / "README.md" for domain in MIGRATED_DOMAINS),
+            *(
+                operations_root / "catalog" / domain / "README.md"
+                for domain in MIGRATED_DOMAINS
+            ),
         }
         self.assertEqual(expected_indexes, set(operations_root.rglob("README.md")))
 
@@ -469,10 +510,18 @@ class OperationsTaxonomyTests(unittest.TestCase):
             root_body,
             r"(?:\./|docs/05\.operations/)(guides|policies|runbooks)(?:/|\b)",
         )
-        for index in expected_indexes - {operations_root / "README.md"}:
+        for index in (
+            operations_root / "catalog/README.md",
+            operations_root / "incidents/README.md",
+            operations_root / "releases/README.md",
+        ):
             with self.subTest(index=index):
                 relative = index.relative_to(operations_root).as_posix()
                 self.assertIn(f"./{relative}", root_body)
+        catalog_body = (operations_root / "catalog/README.md").read_text()
+        for domain in MIGRATED_DOMAINS:
+            with self.subTest(domain=domain):
+                self.assertIn(f"./{domain}/README.md", catalog_body)
 
     def test_operations_handoff_sections_remain_conditional(self):
         profiles = yaml.safe_load(
@@ -495,7 +544,12 @@ class OperationsTaxonomyTests(unittest.TestCase):
         for domain, subject, identity, roles in EXPECTED_SUBJECTS:
             if int(identity) < 70 or "guide" not in roles:
                 continue
-            subject_root = ROOT / "docs/05.operations" / domain / f"ops-{identity}-{subject}"
+            subject_root = (
+                ROOT
+                / "docs/05.operations/catalog"
+                / domain
+                / f"ops-{identity}-{subject}"
+            )
             guide_path = subject_root / "guide.md"
             if not guide_path.is_file():
                 continue

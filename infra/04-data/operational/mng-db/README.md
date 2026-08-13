@@ -52,7 +52,7 @@ mng-db/
 | Labels | `hy-home.tier`, `traefik.enable` |
 | Secret refs | names: `mng_valkey_password`, `mng_postgres_password`, `service_postgres_password`, `n8n_db_password`, `keycloak_db_password`, `airflow_db_password`, `terrakube_db_password`, `sonarqube_db_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/mng_postgres_password`, `/run/secrets/service_postgres_password`, `/run/secrets/n8n_db_password`, `/run/secrets/keycloak_db_password`, `/run/secrets/airflow_db_password`, `/run/secrets/terrakube_db_password`, `/run/secrets/sonarqube_db_password` |
 | Healthcheck | Compose healthcheck declared for `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-exporter`; not declared for `mng-pg-init` |
-| Operations | [Guide](../../../../docs/05.operations/04-data/ops-0028-operational-mng-db/guide.md), [Policy](../../../../docs/05.operations/04-data/ops-0028-operational-mng-db/policy.md), [Runbook](../../../../docs/05.operations/04-data/ops-0028-operational-mng-db/runbook.md) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0028-operational-mng-db/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0028-operational-mng-db/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0028-operational-mng-db/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -96,9 +96,9 @@ mng-db/
 
 - **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
 - **Spec**: [spec.md](../../../../docs/03.specs/spec-0004-data/spec.md)
-- **Guide**: [mng-db.md](../../../../docs/05.operations/04-data/ops-0028-operational-mng-db/guide.md)
-- **Policy**: [mng-db.md](../../../../docs/05.operations/04-data/ops-0028-operational-mng-db/policy.md)
-- **Runbook**: [mng-db.md](../../../../docs/05.operations/04-data/ops-0028-operational-mng-db/runbook.md)
+- **Guide**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/ops-0028-operational-mng-db/guide.md)
+- **Policy**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/ops-0028-operational-mng-db/policy.md)
+- **Runbook**: [mng-db.md](../../../../docs/05.operations/catalog/04-data/ops-0028-operational-mng-db/runbook.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

@@ -83,6 +83,23 @@ DEFAULT_AGENT_GOVERNANCE_ARTIFACTS = (
 DEFAULT_MIGRATION_CONTRACT = (
     ROOT / "docs/99.templates/support/document-corpus-migration-contract.yaml"
 )
+OPERATIONS_CATALOG_DOMAINS = frozenset(
+    {
+        "00-workspace",
+        "01-gateway",
+        "02-auth",
+        "03-security",
+        "04-data",
+        "05-messaging",
+        "06-observability",
+        "07-workflow",
+        "08-ai",
+        "09-tooling",
+        "10-communication",
+        "11-laboratory",
+        "12-infra-net",
+    }
+)
 EXPECTED_ARCHIVE_DISPOSITIONS = (
     "superseded",
     "duplicate",
@@ -5576,6 +5593,29 @@ def _task5_moved_body_baseline(
     return _record_from_text(target, shown.stdout, profiles=profiles), shown.stdout
 
 
+def _operations_catalog_moved_body_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    profiles: dict[str, object],
+    base_ref: str | None,
+) -> tuple[Record | None, str | None]:
+    """Read the exact pre-catalog baseline for an approved structural domain move."""
+
+    prefix = "docs/05.operations/catalog/"
+    target_text = target.as_posix()
+    if not target_text.startswith(prefix):
+        return None, None
+    suffix = target_text.removeprefix(prefix)
+    domain, separator, remainder = suffix.partition("/")
+    if domain not in OPERATIONS_CATALOG_DOMAINS or not separator or not remainder:
+        return None, None
+    legacy_path = pathlib.Path("docs/05.operations") / suffix
+    legacy_text = _text_at_ref(root, legacy_path, base_ref)
+    if legacy_text is None:
+        return None, None
+    return _record_from_text(target, legacy_text, profiles=profiles), legacy_text
+
+
 def _relation_impact_findings(
     selected_paths: set[str],
     records_by_path: Mapping[str, Record],
@@ -6116,6 +6156,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 == _link_target_neutral_text(base_text)
             ):
                 link_only_changes.add(path_text)
+            if base_record is None or base_text is None:
+                moved_record, moved_text = _operations_catalog_moved_body_baseline(
+                    root,
+                    record.path,
+                    profiles,
+                    base.merge_base,
+                )
+                base_record = moved_record or base_record
+                base_text = moved_text or base_text
             if base_record is None or base_text is None:
                 moved_record, moved_text = _task5_moved_body_baseline(
                     root,

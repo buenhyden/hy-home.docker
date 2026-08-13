@@ -112,6 +112,6 @@ docker compose exec nginx nginx -t
 
 - **Plan**: ../../04.execution/plans/2026-03-26-01-gateway-standardization.md
 - **Tasks**: ../../04.execution/tasks/2026-03-26-01-gateway-tasks.md
-- **Guide**: [../../05.operations/guides/01-gateway/README.md](../../05.operations/01-gateway/README.md)
-- **Policy**: [../../05.operations/policies/01-gateway/README.md](../../05.operations/01-gateway/README.md)
-- **Runbook**: [../../05.operations/runbooks/01-gateway/README.md](../../05.operations/01-gateway/README.md)
+- **Guide**: [../../05.operations/guides/01-gateway/README.md](../../05.operations/catalog/01-gateway/README.md)
+- **Policy**: [../../05.operations/policies/01-gateway/README.md](../../05.operations/catalog/01-gateway/README.md)
+- **Runbook**: [../../05.operations/runbooks/01-gateway/README.md](../../05.operations/catalog/01-gateway/README.md)

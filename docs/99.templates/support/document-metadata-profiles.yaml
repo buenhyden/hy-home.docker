@@ -391,19 +391,20 @@ readme_profiles:
       - docs/03.specs/README.md
       - docs/03.specs/*/README.md
       - docs/05.operations/README.md
-      - docs/05.operations/00-workspace/README.md
-      - docs/05.operations/01-gateway/README.md
-      - docs/05.operations/02-auth/README.md
-      - docs/05.operations/03-security/README.md
-      - docs/05.operations/04-data/README.md
-      - docs/05.operations/05-messaging/README.md
-      - docs/05.operations/06-observability/README.md
-      - docs/05.operations/07-workflow/README.md
-      - docs/05.operations/08-ai/README.md
-      - docs/05.operations/09-tooling/README.md
-      - docs/05.operations/10-communication/README.md
-      - docs/05.operations/11-laboratory/README.md
-      - docs/05.operations/12-infra-net/README.md
+      - docs/05.operations/catalog/README.md
+      - docs/05.operations/catalog/00-workspace/README.md
+      - docs/05.operations/catalog/01-gateway/README.md
+      - docs/05.operations/catalog/02-auth/README.md
+      - docs/05.operations/catalog/03-security/README.md
+      - docs/05.operations/catalog/04-data/README.md
+      - docs/05.operations/catalog/05-messaging/README.md
+      - docs/05.operations/catalog/06-observability/README.md
+      - docs/05.operations/catalog/07-workflow/README.md
+      - docs/05.operations/catalog/08-ai/README.md
+      - docs/05.operations/catalog/09-tooling/README.md
+      - docs/05.operations/catalog/10-communication/README.md
+      - docs/05.operations/catalog/11-laboratory/README.md
+      - docs/05.operations/catalog/12-infra-net/README.md
       - docs/05.operations/incidents/README.md
       - docs/05.operations/releases/README.md
       - docs/90.references/README.md
@@ -743,7 +744,6 @@ template_roles:
     source: docs/99.templates/templates/operations/guide.template.md
     artifact_profile: guide
     target_globs:
-      - docs/05.operations/*/ops-*/guide.md
       - docs/05.operations/catalog/*/ops-*/guide.md
     required_headings: ['## Usage', '## Common Checks', '## Related Documents']
     conditional_headings:
@@ -753,7 +753,6 @@ template_roles:
     source: docs/99.templates/templates/operations/policy.template.md
     artifact_profile: policy
     target_globs:
-      - docs/05.operations/*/ops-*/policy.md
       - docs/05.operations/catalog/*/ops-*/policy.md
     required_headings:
       [
@@ -771,7 +770,6 @@ template_roles:
     source: docs/99.templates/templates/operations/runbook.template.md
     artifact_profile: runbook
     target_globs:
-      - docs/05.operations/*/ops-*/runbook.md
       - docs/05.operations/catalog/*/ops-*/runbook.md
     required_headings:
       [
@@ -1264,7 +1262,6 @@ profiles:
 
   guide:
     path_globs:
-      - docs/05.operations/*/ops-*/guide.md
       - docs/05.operations/catalog/*/ops-*/guide.md
     id_pattern: 'guide-(?P<identity>[0-9]{4})'
     path_identity: inherited
@@ -1294,7 +1291,6 @@ profiles:
 
   policy:
     path_globs:
-      - docs/05.operations/*/ops-*/policy.md
       - docs/05.operations/catalog/*/ops-*/policy.md
     id_pattern: 'policy-(?P<identity>[0-9]{4})'
     path_identity: inherited
@@ -1324,7 +1320,6 @@ profiles:
 
   runbook:
     path_globs:
-      - docs/05.operations/*/ops-*/runbook.md
       - docs/05.operations/catalog/*/ops-*/runbook.md
     id_pattern: 'runbook-(?P<identity>[0-9]{4})'
     path_identity: inherited

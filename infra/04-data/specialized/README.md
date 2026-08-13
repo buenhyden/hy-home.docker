@@ -47,6 +47,6 @@ specialized/
 
 - [infra/04-data/README.md](../README.md)
 - [docs/03.specs/004-data/README.md](../../../docs/03.specs/spec-0004-data/spec.md)
-- [Operations Guides](../../../docs/05.operations/04-data/README.md)
-- [Operations Policies](../../../docs/05.operations/04-data/README.md)
-- [Operations Runbooks](../../../docs/05.operations/04-data/README.md)
+- [Operations Guides](../../../docs/05.operations/catalog/04-data/README.md)
+- [Operations Policies](../../../docs/05.operations/catalog/04-data/README.md)
+- [Operations Runbooks](../../../docs/05.operations/catalog/04-data/README.md)

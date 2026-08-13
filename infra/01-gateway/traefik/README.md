@@ -59,7 +59,7 @@ traefik/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
 | Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password` |
 | Healthcheck | Compose healthcheck declared for `traefik` |
-| Operations | [Guide](../../../docs/05.operations/01-gateway/ops-0013-traefik/guide.md), [Policy](../../../docs/05.operations/01-gateway/ops-0013-traefik/policy.md), [Runbook](../../../docs/05.operations/01-gateway/ops-0013-traefik/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md), [Policy](../../../docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md), [Runbook](../../../docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with root profile validation and gateway hardening checks, then inspect service logs only when the Traefik runtime is already approved and running. |
 
@@ -134,7 +134,7 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 ## Related Documents
 
 - [01-gateway Root README](../README.md)
-- [Traefik Guide](../../../docs/05.operations/01-gateway/ops-0013-traefik/guide.md)
-- [Gateway Operations Policy](../../../docs/05.operations/01-gateway/ops-0013-traefik/policy.md)
-- [Traefik Runbook](../../../docs/05.operations/01-gateway/ops-0013-traefik/runbook.md)
+- [Traefik Guide](../../../docs/05.operations/catalog/01-gateway/ops-0013-traefik/guide.md)
+- [Gateway Operations Policy](../../../docs/05.operations/catalog/01-gateway/ops-0013-traefik/policy.md)
+- [Traefik Runbook](../../../docs/05.operations/catalog/01-gateway/ops-0013-traefik/runbook.md)
 - [Traefik Dashboard](https://dashboard.${DEFAULT_URL:-localhost}) (Internal)

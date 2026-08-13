@@ -68,7 +68,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 - Ollama model data uses the `${DEFAULT_AI_MODEL_DIR}/ollama` bind volume.
 - Open WebUI state data uses the `${DEFAULT_AI_MODEL_DIR}/open-webui` bind volume.
-- Conversation/RAG data retention policy is controlled by the operations policy document (`docs/05.operations/08-ai/ops-0058-optimization-hardening/policy.md`).
+- Conversation/RAG data retention policy is controlled by the operations policy document (`docs/05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md`).
 
 ## Interfaces & Data Structures
 
@@ -135,10 +135,10 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 - **Plan**: ../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/08-ai/ops-0058-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/08-ai/ops-0058-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/08-ai/ops-0058-optimization-hardening/runbook.md)
-- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
+- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/ops-0058-optimization-hardening/runbook.md)
+- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
 
 ## Merged Open WebUI Component Contract
 
@@ -226,6 +226,6 @@ docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-808
 
 - **Plan**: ../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md
 - **Tasks**: ../../04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md
-- **Guide**: [../../05.operations/guides/08-ai/open-webui.md](../../05.operations/08-ai/ops-0057-open-webui/guide.md)
-- **Policy**: [../../05.operations/policies/08-ai/open-webui.md](../../05.operations/08-ai/ops-0057-open-webui/policy.md)
-- **Runbook**: [../../05.operations/runbooks/08-ai/open-webui.md](../../05.operations/08-ai/ops-0057-open-webui/runbook.md)
+- **Guide**: [../../05.operations/guides/08-ai/open-webui.md](../../05.operations/catalog/08-ai/ops-0057-open-webui/guide.md)
+- **Policy**: [../../05.operations/policies/08-ai/open-webui.md](../../05.operations/catalog/08-ai/ops-0057-open-webui/policy.md)
+- **Runbook**: [../../05.operations/runbooks/08-ai/open-webui.md](../../05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md)

@@ -39,10 +39,10 @@ relational/
 
 ## How to Work in This Area
 
-1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../../docs/05.operations/04-data/README.md)를 참조합니다.
+1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../../docs/05.operations/catalog/04-data/README.md)를 참조합니다.
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
-3. 운영 정책은 [Relational Policies](../../../docs/05.operations/04-data/README.md)를 반드시 준수해야 합니다.
-4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/05.operations/04-data/README.md)를 따릅니다.
+3. 운영 정책은 [Relational Policies](../../../docs/05.operations/catalog/04-data/README.md)를 반드시 준수해야 합니다.
+4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/05.operations/catalog/04-data/README.md)를 따릅니다.
 
 ## Available Scripts
 
@@ -70,10 +70,10 @@ docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-clus
 
 ## Related Documents
 
-- **Guides**: [docs/05.operations/04-data/README.md](../../../docs/05.operations/04-data/README.md)
-- **Policies**: [docs/05.operations/04-data/README.md](../../../docs/05.operations/04-data/README.md)
-- **Runbooks**: [docs/05.operations/04-data/README.md](../../../docs/05.operations/04-data/README.md)
-- **Service Guide**: [postgresql-cluster guide](../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/guide.md)
+- **Guides**: [docs/05.operations/catalog/04-data/README.md](../../../docs/05.operations/catalog/04-data/README.md)
+- **Policies**: [docs/05.operations/catalog/04-data/README.md](../../../docs/05.operations/catalog/04-data/README.md)
+- **Runbooks**: [docs/05.operations/catalog/04-data/README.md](../../../docs/05.operations/catalog/04-data/README.md)
+- **Service Guide**: [postgresql-cluster guide](../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/guide.md)
 - **ARD**: [docs/02.architecture/descriptions/ad-0004-data-architecture.md](../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
 
 ---

@@ -39,7 +39,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, plus 7 more |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `redisinsight` |
-| Operations | [Guide](../../../docs/05.operations/11-laboratory/ops-0076-redisinsight/guide.md), [Policy](../../../docs/05.operations/11-laboratory/ops-0076-redisinsight/policy.md), [Runbook](../../../docs/05.operations/11-laboratory/ops-0076-redisinsight/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/guide.md), [Policy](../../../docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md), [Runbook](../../../docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
@@ -93,6 +93,6 @@ labels:
 
 ## Related Documents
 
-- **Guide**: [RedisInsight usage guide](../../../docs/05.operations/11-laboratory/ops-0076-redisinsight/guide.md)
-- **Policy**: [RedisInsight operations policy](../../../docs/05.operations/11-laboratory/ops-0076-redisinsight/policy.md)
-- **Runbook**: [RedisInsight recovery runbook](../../../docs/05.operations/11-laboratory/ops-0076-redisinsight/runbook.md)
+- **Guide**: [RedisInsight usage guide](../../../docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/guide.md)
+- **Policy**: [RedisInsight operations policy](../../../docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/policy.md)
+- **Runbook**: [RedisInsight recovery runbook](../../../docs/05.operations/catalog/11-laboratory/ops-0076-redisinsight/runbook.md)

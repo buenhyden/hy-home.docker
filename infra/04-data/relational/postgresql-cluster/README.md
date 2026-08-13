@@ -66,16 +66,16 @@ postgresql-cluster/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.haproxy-stats.rule`, `traefik.http.routers.haproxy-stats.entrypoints`, `traefik.http.routers.haproxy-stats.tls`, `traefik.http.services.haproxy-stats.loadbalancer.server.port`, `traefik.http.routers.haproxy-stats.middlewares` |
 | Secret refs | names: `pg_haproxy_stats_password`, `patroni_superuser_password`, `patroni_exporter_password`, `service_postgres_password`, `patroni_replication_password`; mounts: `/run/secrets/pg_haproxy_stats_password`, `/run/secrets/patroni_superuser_password`, `/run/secrets/patroni_exporter_password`, `/run/secrets/service_postgres_password`, `/run/secrets/patroni_replication_password` |
 | Healthcheck | Compose healthcheck declared for `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-0`, plus 5 more; not declared for `pg-cluster-init` |
-| Operations | [Guide](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/guide.md), [Policy](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/policy.md), [Runbook](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/runbook.md) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/guide.md)를 먼저 확인합니다.
+1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/guide.md)를 먼저 확인합니다.
 2. 루트 compose include 상태를 확인하고 `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config`로 렌더링합니다.
-3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/policy.md) 준수 여부를 확인합니다.
-4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/runbook.md)를 참조합니다.
+3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/policy.md) 준수 여부를 확인합니다.
+4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/runbook.md)를 참조합니다.
 
 ## Available Scripts
 
@@ -110,9 +110,9 @@ postgresql-cluster/
 
 ## Related Documents
 
-- **Guide**: [docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/guide.md](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/guide.md)
-- **Policy**: [docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/policy.md](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/policy.md)
-- **Runbook**: [docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/runbook.md](../../../../docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/runbook.md)
+- **Guide**: [docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/guide.md](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/guide.md)
+- **Policy**: [docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/policy.md](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/policy.md)
+- **Runbook**: [docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/runbook.md](../../../../docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/runbook.md)
 - **ARD**: [docs/02.architecture/descriptions/ad-0004-data-architecture.md](../../../../docs/02.architecture/descriptions/ad-0004-data-architecture.md)
 
 ---

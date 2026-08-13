@@ -347,8 +347,12 @@ def reference_proves_use(reference: str, target: str) -> bool:
 
 
 def is_runbook_authority(path: str) -> bool:
-    return path.startswith("docs/05.operations/runbooks/") or bool(
-        re.fullmatch(r"docs/05\.operations/[^/]+/ops-[^/]+/runbook\.md", path)
+    return bool(
+        re.fullmatch(
+            r"docs/05\.operations/catalog/[0-9]{2}-[a-z0-9-]+/"
+            r"ops-[0-9]{4}-[a-z0-9-]+/runbook\.md",
+            path,
+        )
     )
 
 
@@ -510,7 +514,7 @@ class ScriptManifestTests(unittest.TestCase):
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(
-            "docs/05.operations/04-data/ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
+            "docs/05.operations/catalog/04-data/ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
             postgres["authority"],
         )
         self.assertEqual(
@@ -535,7 +539,7 @@ class ScriptManifestTests(unittest.TestCase):
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
             "docs/05.operations/runbooks/03-security/vault.md",
-            "docs/05.operations/04-data/ops-0031-relational-postgresql-cluster/runbook.md",
+            "docs/05.operations/catalog/04-data/ops-0031-relational-postgresql-cluster/runbook.md",
         }
         migration_authority = "docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md"
         for row in self.rows:
@@ -554,6 +558,25 @@ class ScriptManifestTests(unittest.TestCase):
                 elif row["mutation"] == "runtime" and not is_runbook_authority(authority):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(migration_authority, authority)
+
+    def test_runbook_authority_accepts_only_canonical_catalog_leaf_shape(self) -> None:
+        self.assertTrue(
+            is_runbook_authority(
+                "docs/05.operations/catalog/04-data/"
+                "ops-0032-relational-postgresql-logical-upgrade-restore-rehearsal/runbook.md"
+            )
+        )
+        rejected = (
+            "docs/05.operations/04-data/ops-0032-example/runbook.md",
+            "docs/05.operations/runbooks/04-data/example.md",
+            "docs/05.operations/catalog/4-data/ops-0032-example/runbook.md",
+            "docs/05.operations/catalog/04-data/ops-032-example/runbook.md",
+            "docs/05.operations/catalog/04-data/ops-0032-example/guide.md",
+            "docs/05.operations/catalog/04-data/nested/ops-0032-example/runbook.md",
+        )
+        for path in rejected:
+            with self.subTest(path=path):
+                self.assertFalse(is_runbook_authority(path))
 
     def test_scripts_readme_preserves_invocation_warnings(self) -> None:
         text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")

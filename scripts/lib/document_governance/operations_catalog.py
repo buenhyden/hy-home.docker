@@ -84,6 +84,23 @@ _SUBJECT_ACTIONS = frozenset({"retain", "rename", "merge", "delete"})
 _FILE_ACTIONS = frozenset({"retain", "rewrite", "merge", "delete"})
 _FILE_ROLES = frozenset({"guide", "policy", "runbook", "domain-readme"})
 _MODES = frozenset({"manifest", "structure", "executed", "complete"})
+_STRUCTURAL_DOMAINS = frozenset(
+    {
+        "00-workspace",
+        "01-gateway",
+        "02-auth",
+        "03-security",
+        "04-data",
+        "05-messaging",
+        "06-observability",
+        "07-workflow",
+        "08-ai",
+        "09-tooling",
+        "10-communication",
+        "11-laboratory",
+        "12-infra-net",
+    }
+)
 
 
 class ManifestError(ValueError):
@@ -668,11 +685,38 @@ def _semantic_section_tokens(
     text: str,
     row: OperationFileRecord,
     manifest: OperationsCatalogManifest,
+    source_path: pathlib.PurePosixPath,
     removed_fragments: tuple[str, ...] = (),
-) -> set[str]:
+) -> tuple[set[str], bool]:
     normalized = text
+    unsafe = False
     for fragment in removed_fragments:
         normalized = normalized.replace(fragment, "")
+    canonical_targets: dict[pathlib.PurePosixPath, pathlib.PurePosixPath] = {}
+    for file_row in manifest.files:
+        target = file_row.final_path or file_row.catalog_path
+        canonical_targets[file_row.legacy_path] = target
+        canonical_targets[file_row.catalog_path] = target
+        if file_row.final_path is not None:
+            canonical_targets[file_row.final_path] = target
+    for subject in manifest.subjects:
+        canonical_targets[subject.legacy_subject_path] = subject.final_path
+        canonical_targets[subject.catalog_path] = subject.final_path
+        canonical_targets[subject.final_path] = subject.final_path
+    for link in parse_local_markdown_links(source_path, normalized):
+        if link.has_unsafe_target:
+            unsafe = True
+            continue
+        target = canonical_targets.get(link.target, link.target)
+        identity = f"{target.as_posix()}#{link.fragment or ''}"
+        marker = f"<link:{hashlib.sha256(identity.encode()).hexdigest()[:16]}>"
+        normalized = normalized.replace(
+            f"]({link.raw_target}",
+            f"]({marker}",
+        ).replace(
+            f"](<{link.raw_target}>",
+            f"](<{marker}>",
+        )
     replacements: dict[str, str] = {
         row.legacy_path.as_posix(): "<role-path>",
         row.catalog_path.as_posix(): "<role-path>",
@@ -703,11 +747,59 @@ def _semantic_section_tokens(
         if subject.legacy_subject_path.name != subject.final_path.name:
             replacements[subject.legacy_subject_path.name] = marker
             replacements[subject.final_path.name] = marker
+    for domain in sorted({subject.catalog_domain for subject in manifest.subjects}):
+        marker = f"<catalog-domain:{domain}>"
+        replacements[f"docs/05.operations/{domain}"] = marker
+        replacements[f"docs/05.operations/catalog/{domain}"] = marker
+        replacements[f"05.operations/{domain}"] = marker
+        replacements[f"05.operations/catalog/{domain}"] = marker
     for value, marker in sorted(
         replacements.items(), key=lambda item: len(item[0]), reverse=True
     ):
         normalized = normalized.replace(value, marker)
-    return _section_tokens(normalized)
+    return _section_tokens(normalized), unsafe
+
+
+def _structural_body_normalization(
+    text: str,
+    source_path: pathlib.PurePosixPath,
+    domains: frozenset[str],
+) -> tuple[str, bool]:
+    """Normalize only approved domain-prefix and safe Markdown link rebases."""
+
+    normalized = text
+    unsafe = False
+    for link in parse_local_markdown_links(source_path, text):
+        if link.has_unsafe_target:
+            unsafe = True
+            continue
+        target = link.target
+        parts = target.parts
+        if (
+            len(parts) >= 4
+            and parts[:3] == ("docs", "05.operations", "catalog")
+            and parts[3] in domains
+        ):
+            target = pathlib.PurePosixPath("docs/05.operations", *parts[3:])
+        identity = f"{target.as_posix()}#{link.fragment or ''}"
+        marker = f"<structural-link:{hashlib.sha256(identity.encode()).hexdigest()[:16]}>"
+        normalized = normalized.replace(
+            f"]({link.raw_target}",
+            f"]({marker}",
+        ).replace(
+            f"](<{link.raw_target}>",
+            f"](<{marker}>",
+        )
+    for domain in sorted(domains):
+        marker = f"<structural-domain:{domain}>"
+        for prefix in (
+            f"docs/05.operations/catalog/{domain}",
+            f"docs/05.operations/{domain}",
+            f"05.operations/catalog/{domain}",
+            f"05.operations/{domain}",
+        ):
+            normalized = normalized.replace(prefix, marker)
+    return normalized, unsafe
 
 
 def _removed_text_fragments(row: OperationFileRecord) -> tuple[str, ...]:
@@ -1443,31 +1535,75 @@ def validate_operations_catalog_manifest(
                     )
                 )
                 continue
-            if mode == "structure":
-                continue
             try:
                 target_text = target.read_text(encoding="utf-8")
             except (OSError, UnicodeError):
-                findings.append(_finding("executed-file-unreadable", row.final_path, "final file is not readable UTF-8"))
+                findings.append(_finding("executed-file-unreadable", expected_path, "final file is not readable UTF-8"))
+                continue
+            source_text = _source_text(
+                str(root.resolve()),
+                row.source_commit,
+                row.legacy_path.as_posix(),
+            )
+            if mode == "structure":
+                source_normalized, source_unsafe = _structural_body_normalization(
+                    source_text or "",
+                    row.legacy_path,
+                    _STRUCTURAL_DOMAINS,
+                )
+                target_normalized, target_unsafe = _structural_body_normalization(
+                    target_text,
+                    row.catalog_path,
+                    _STRUCTURAL_DOMAINS,
+                )
+                if source_unsafe or target_unsafe:
+                    findings.append(
+                        _finding(
+                            "structural-link-target-unsafe",
+                            row.catalog_path,
+                            "structural semantic normalization requires safe repository-local Markdown targets",
+                        )
+                    )
+                if source_text is None or source_normalized != target_normalized:
+                    findings.append(
+                        _finding(
+                            "structural-body-mismatch",
+                            row.catalog_path,
+                            "structural target must equal its pinned source after only approved domain-prefix and link rebases",
+                        )
+                    )
                 continue
             required_text = {
                 item.split(":", 2)[2]
                 for item in row.preserved_semantics
                 if item.startswith("text:") and item.count(":") >= 2
             }
-            source_text = _source_text(
-                str(root.resolve()),
-                row.source_commit,
-                row.legacy_path.as_posix(),
+            source_sections, source_link_invalid = _semantic_section_tokens(
+                source_text or "",
+                row,
+                manifest,
+                row.legacy_path,
+                _removed_text_fragments(row),
             )
-            sections_preserved = source_text is not None and (
-                _semantic_section_tokens(
-                    source_text,
-                    row,
-                    manifest,
-                    _removed_text_fragments(row),
+            target_sections, target_link_invalid = _semantic_section_tokens(
+                target_text,
+                row,
+                manifest,
+                row.final_path,
+            )
+            if source_link_invalid or target_link_invalid:
+                findings.append(
+                    _finding(
+                        "semantic-link-invalid",
+                        row.final_path,
+                        "semantic normalization requires safe repository-local Markdown targets",
+                    )
                 )
-                <= _semantic_section_tokens(target_text, row, manifest)
+            sections_preserved = (
+                source_text is not None
+                and not source_link_invalid
+                and not target_link_invalid
+                and source_sections <= target_sections
             )
             if not sections_preserved or (
                 row.semantic_action in {"rewrite", "merge"}

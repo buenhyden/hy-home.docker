@@ -1654,9 +1654,9 @@ class ArtifactInferenceTests(unittest.TestCase):
             "docs/03.specs/spec-0123-example/spec.md": "spec",
             "docs/03.specs/spec-0123-example/plan.md": "plan",
             "docs/03.specs/spec-0123-example/task.md": "task",
-            "docs/05.operations/00-workspace/ops-0001-example/guide.md": "guide",
-            "docs/05.operations/00-workspace/ops-0001-example/policy.md": "policy",
-            "docs/05.operations/00-workspace/ops-0001-example/runbook.md": "runbook",
+            "docs/05.operations/catalog/00-workspace/ops-0001-example/guide.md": "guide",
+            "docs/05.operations/catalog/00-workspace/ops-0001-example/policy.md": "policy",
+            "docs/05.operations/catalog/00-workspace/ops-0001-example/runbook.md": "runbook",
             "docs/05.operations/incidents/2026/inc-0001-example/incident.md": "incident",
             "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md": "postmortem",
             "docs/05.operations/releases/rel-0001-example/release.md": "release",
@@ -1913,9 +1913,9 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/03.specs/spec-0901-fixture/tests.md": ("spec", "tests"),
             "docs/03.specs/spec-0901-fixture/plan.md": ("plan", "plan"),
             "docs/03.specs/spec-0901-fixture/task.md": ("task", "task"),
-            "docs/05.operations/00-workspace/ops-0901-fixture/guide.md": ("guide", "guide"),
-            "docs/05.operations/00-workspace/ops-0901-fixture/policy.md": ("policy", "policy"),
-            "docs/05.operations/00-workspace/ops-0901-fixture/runbook.md": ("runbook", "runbook"),
+            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md": ("guide", "guide"),
+            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/policy.md": ("policy", "policy"),
+            "docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md": ("runbook", "runbook"),
             "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md": ("incident", "incident"),
             "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md": ("postmortem", "postmortem"),
             "docs/05.operations/releases/rel-0901-fixture/release.md": ("release", "release"),
@@ -3237,9 +3237,9 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/sdlc/spec.template.md": "docs/03.specs/spec-0901-fixture/spec.md",
             "docs/99.templates/templates/sdlc/plan.template.md": "docs/03.specs/spec-0901-fixture/plan.md",
             "docs/99.templates/templates/sdlc/task.template.md": "docs/03.specs/spec-0901-fixture/task.md",
-            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/00-workspace/ops-0901-fixture/guide.md",
-            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/00-workspace/ops-0901-fixture/policy.md",
-            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/00-workspace/ops-0901-fixture/runbook.md",
+            "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md",
+            "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/policy.md",
+            "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md",
             "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md",
             "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md",
             "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/rel-0901-fixture/release.md",
@@ -3284,7 +3284,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 "spec",
             ),
             "runbook": metadata.Record(
-                pathlib.Path("docs/05.operations/00-workspace/ops-0900-parent/runbook.md"),
+                pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0900-parent/runbook.md"),
                 {
                     "status": "active",
                     "artifact_id": "runbook-0900",
@@ -5016,7 +5016,7 @@ class TemplateBodyContractTests(unittest.TestCase):
             "rules-block": text.replace("## When to Use", "> Rules:\n\n## When to Use", 1),
             "target-comment": text.replace(
                 "# {{title}}",
-                "<!-- Target: docs/05.operations/00-workspace/ops-0901-fixture/runbook.md -->\n\n# {{title}}",
+                "<!-- Target: docs/05.operations/catalog/00-workspace/ops-0901-fixture/runbook.md -->\n\n# {{title}}",
                 1,
             ),
             "frontmatter-drift": text.replace(
@@ -6660,6 +6660,60 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("template-body-token-in-target", result.stdout)
 
+    def test_approved_operations_catalog_move_uses_legacy_body_baseline(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        legacy = root / "docs/05.operations/00-workspace/ops-0901-fixture/guide.md"
+        catalog = root / "docs/05.operations/catalog/00-workspace/ops-0901-fixture/guide.md"
+        metadata_values = {
+            "status": "active",
+            "artifact_id": "guide-0901",
+            "artifact_type": "guide",
+            "parent_ids": [],
+        }
+        body = body_with_headings(
+            "## Usage",
+            "## Common Checks",
+            "## Related Documents",
+        ) + "\n> Rules:\n"
+        with directory:
+            init_git(root)
+            write_doc(legacy, metadata_values, body)
+            commit_all(root, "legacy operations body baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            catalog.parent.mkdir(parents=True, exist_ok=True)
+            legacy.rename(catalog)
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("violations=0", result.stdout)
+
+    def test_unapproved_operations_catalog_domain_cannot_borrow_legacy_baseline(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        root = pathlib.Path(directory.name)
+        legacy = root / "docs/05.operations/99-unapproved/ops-0901-fixture/guide.md"
+        catalog = root / "docs/05.operations/catalog/99-unapproved/ops-0901-fixture/guide.md"
+        metadata_values = {
+            "status": "active",
+            "artifact_id": "guide-0901",
+            "artifact_type": "guide",
+            "parent_ids": [],
+        }
+        body = body_with_headings(
+            "## Usage",
+            "## Common Checks",
+            "## Related Documents",
+        ) + "\n> Rules:\n"
+        with directory:
+            init_git(root)
+            write_doc(legacy, metadata_values, body)
+            commit_all(root, "unapproved operations body baseline")
+            base = git(root, "rev-parse", "HEAD").stdout.strip()
+            catalog.parent.mkdir(parents=True, exist_ok=True)
+            legacy.rename(catalog)
+            result = self.run_explicit_base(root, base)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("template-instruction-in-target", result.stdout)
+
     def test_preserved_body_deficit_does_not_suppress_relation_impact(self) -> None:
         directory = tempfile.TemporaryDirectory()
         root = pathlib.Path(directory.name)
@@ -7271,10 +7325,11 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
     def test_operations_readme_profile_publishes_only_final_domain_indexes(self) -> None:
         expected = {
             "docs/05.operations/README.md",
+            "docs/05.operations/catalog/README.md",
             "docs/05.operations/incidents/README.md",
             "docs/05.operations/releases/README.md",
             *{
-                f"docs/05.operations/{domain}/README.md"
+                f"docs/05.operations/catalog/{domain}/README.md"
                 for domain in (
                     "00-workspace", "01-gateway", "02-auth", "03-security",
                     "04-data", "05-messaging", "06-observability", "07-workflow",
@@ -7301,7 +7356,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             "docs/05.operations/guides/README.md",
             "docs/05.operations/policies/README.md",
             "docs/05.operations/runbooks/README.md",
-            "docs/05.operations/10-communication/ops-0070-mail/README.md",
+            "docs/05.operations/catalog/10-communication/ops-0070-mail/README.md",
         ):
             with self.subTest(retired=retired):
                 self.assertEqual(

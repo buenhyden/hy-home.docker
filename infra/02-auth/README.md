@@ -42,10 +42,10 @@ The `02-auth` tier provides the security foundation for the `hy-home.docker` eco
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
 
-1. Read the [Auth Guides](../../docs/05.operations/02-auth/README.md) for bootstrap and integration steps.
+1. Read the [Auth Guides](../../docs/05.operations/catalog/02-auth/README.md) for bootstrap and integration steps.
 2. Review the `docker-compose.yml` in subdirectories for specific service configurations.
-3. Follow the [Operations Policy](../../docs/05.operations/02-auth/README.md) for user and realm management.
-4. Use the [Auth Runbook](../../docs/05.operations/02-auth/README.md) for maintenance and recovery tasks.
+3. Follow the [Operations Policy](../../docs/05.operations/catalog/02-auth/README.md) for user and realm management.
+4. Use the [Auth Runbook](../../docs/05.operations/catalog/02-auth/README.md) for maintenance and recovery tasks.
 
 5. Always read this README to understand the relationship between Keycloak and OAuth2 Proxy.
 6. Refer to `docs/03.specs/002-auth` (if exists) for detailed protocol flows.
@@ -98,4 +98,4 @@ docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/
 
 - [01-gateway](../01-gateway/README.md) - Handles ingress and ForwardAuth routing.
 - [04-data](../04-data/README.md) - Provides persistence and caching layers.
-- [docs/05.operations/02-auth](../../docs/05.operations/02-auth/README.md) - Conceptual and setup guides.
+- [docs/05.operations/catalog/02-auth](../../docs/05.operations/catalog/02-auth/README.md) - Conceptual and setup guides.

@@ -132,10 +132,10 @@ python3 scripts/validation/check-document-links.py --mode traceability
 - **Plan**: ../../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md
 - **Cross-Validation Plan**: ../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
 - **Tasks**: ../../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md
-- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/07-workflow/ops-0054-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/07-workflow/ops-0054-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/07-workflow/ops-0054-optimization-hardening/runbook.md)
-- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
+- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/guide.md)
+- **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md)
+- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/catalog/00-workspace/ops-0006-infra-service-optimization-catalog/policy.md)
 
 ## Merged Cross-Validation Agent Contract
 
@@ -304,7 +304,7 @@ This document defines the workflow cross-validation agent design that sequential
 - **Workflow Spec**: [./spec.md](spec.md)
 - **Implementation Plan**: ../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md
 - **Implementation Task**: ../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md
-- **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/07-workflow/ops-0054-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/07-workflow/ops-0054-optimization-hardening/runbook.md)
+- **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/policy.md)
+- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/ops-0054-optimization-hardening/runbook.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
 - **Subagent Protocol**: [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md)

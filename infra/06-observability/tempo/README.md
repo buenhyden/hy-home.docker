@@ -23,7 +23,7 @@ Tempo stores trace data in an S3-compatible backend (MinIO). It enables "TraceQL
 ### Out of Scope
 
 - Application-level instrumentation (handled by OpenTelemetry SDKs).
-- Long-term trace archival (governed by [Retention Policy](../../../docs/05.operations/06-observability/ops-0049-tempo/policy.md)).
+- Long-term trace archival (governed by [Retention Policy](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md)).
 
 ## Structure
 
@@ -80,9 +80,9 @@ tempo/
 
 ## Related Documents
 
-- [Usage guide](../../../docs/05.operations/06-observability/ops-0049-tempo/guide.md)
-- [Operations policy](../../../docs/05.operations/06-observability/ops-0049-tempo/policy.md)
-- [Recovery runbook](../../../docs/05.operations/06-observability/ops-0049-tempo/runbook.md)
+- [Usage guide](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md)
+- [Operations policy](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md)
+- [Recovery runbook](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md)
 
 ## Service Readiness
 
@@ -98,7 +98,7 @@ tempo/
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |
 | Secret refs | `minio_app_user_password` |
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
-| Operations | [Guide](../../../docs/05.operations/06-observability/ops-0049-tempo/guide.md), [Policy](../../../docs/05.operations/06-observability/ops-0049-tempo/policy.md), [Runbook](../../../docs/05.operations/06-observability/ops-0049-tempo/runbook.md) |
+| Operations | [Guide](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/guide.md), [Policy](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/policy.md), [Runbook](../../../docs/05.operations/catalog/06-observability/ops-0049-tempo/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
 

@@ -1764,7 +1764,7 @@ scoped_label_paths = {
         "docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md",
         "docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md",
         "docs/04.execution/tasks/2026-04-01-standardize-infra-net.md",
-        "docs/05.operations/12-infra-net/ops-0077-standardize-infra-net/runbook.md",
+        "docs/05.operations/catalog/12-infra-net/ops-0077-standardize-infra-net/runbook.md",
         "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
         "docs/05.operations/runbooks/04-data/analytics/ksqldb.md",
         "docs/05.operations/runbooks/04-data/analytics/opensearch.md",
@@ -1773,10 +1773,10 @@ scoped_label_paths = {
         "docs/05.operations/runbooks/04-data/relational.md",
         "docs/05.operations/runbooks/05-messaging/kafka.md",
         "docs/05.operations/runbooks/05-messaging/rabbitmq.md",
-        "docs/05.operations/08-ai/ops-0056-ollama/runbook.md",
-        "docs/05.operations/08-ai/ops-0057-open-webui/runbook.md",
-        "docs/05.operations/11-laboratory/ops-0071-dashboard/runbook.md",
-        "docs/05.operations/11-laboratory/ops-0072-dozzle/runbook.md",
+        "docs/05.operations/catalog/08-ai/ops-0056-ollama/runbook.md",
+        "docs/05.operations/catalog/08-ai/ops-0057-open-webui/runbook.md",
+        "docs/05.operations/catalog/11-laboratory/ops-0071-dashboard/runbook.md",
+        "docs/05.operations/catalog/11-laboratory/ops-0072-dozzle/runbook.md",
     ]
 }
 
@@ -2497,7 +2497,7 @@ failures: list[str] = []
 required_files = [
     pathlib.Path("llms.txt"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki.py"),
-    pathlib.Path("docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
+    pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0082-llm-wiki-index.md"),
     pathlib.Path("docs/90.references/llm-wiki/ref-0083-repository-map.md"),
@@ -2571,7 +2571,7 @@ for path, literals in readme_checks.items():
 wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
-    pathlib.Path("docs/05.operations/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
+    pathlib.Path("docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/guide.md"),
     *wiki_files,
 ]
 for path in safety_files:

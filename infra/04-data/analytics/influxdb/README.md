@@ -52,7 +52,7 @@ influxdb/
 | Secret refs | Root Compose declares `influxdb_api_token` and `influxdb_password` as repository metadata, but root declarations and metadata are not leaf server wiring; this leaf mounts neither secret and does not provision a server token |
 | Write API | `POST http://influxdb:8181/api/v3/write_lp?db=${INFLUXDB_DB_NAME}` requires an authorized operator/named token; token creation/provisioning and authenticated write acceptance require separate runtime approval and remain unverified |
 | Healthcheck | Probes `http://127.0.0.1:8181/` and accepts `200`, `204`, or `401` |
-| Operations | [Guide](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/guide.md), [Policy](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/policy.md), [Runbook](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/runbook.md) |
+| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
 
@@ -60,9 +60,9 @@ influxdb/
 
 공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/rules/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/rules/documentation-protocol.md)을 따른다.
 
-1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/guide.md)를 참조한다.
-2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/policy.md)을 따른다.
-3. 수집 장애 발생 시 [복구 런북](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/runbook.md)을 참조한다.
+1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/guide.md)를 참조한다.
+2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/policy.md)을 따른다.
+3. 수집 장애 발생 시 [복구 런북](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/runbook.md)을 참조한다.
 4. Root secret declarations are metadata only. Source-only validation cannot prove authorization; token creation/provisioning and authenticated write acceptance require separate runtime approval.
 
 5. 이 README를 읽고 InfluxDB 3 Core의 database/endpoint source contract와 token-provisioning 승인 경계를 파악한다.
@@ -81,9 +81,9 @@ influxdb/
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/04-data/analytics/influxdb.md](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/guide.md)
-- **Policy**: [docs/05.operations/04-data/ops-0017-analytics-influxdb/policy.md](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/policy.md)
-- **Runbook**: [docs/05.operations/04-data/ops-0017-analytics-influxdb/runbook.md](../../../../docs/05.operations/04-data/ops-0017-analytics-influxdb/runbook.md)
+- **System Guide**: [docs/05.operations/catalog/04-data/analytics/influxdb.md](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/guide.md)
+- **Policy**: [docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/policy.md](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/policy.md)
+- **Runbook**: [docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/runbook.md](../../../../docs/05.operations/catalog/04-data/ops-0017-analytics-influxdb/runbook.md)
 - **Official token administration**: [InfluxDB 3 Core token management](https://docs.influxdata.com/influxdb3/core/admin/tokens/)
 - **Monitoring**: `https://grafana.${DEFAULT_URL}`
 

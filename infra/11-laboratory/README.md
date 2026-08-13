@@ -92,9 +92,9 @@ Runtime start/stop은 root include 활성 상태와 운영자 승인 범위를 �
 - [Architecture Description](../../docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/adr-0011-laboratory-services.md)
 - [Technical Spec](../../docs/03.specs/spec-0012-laboratory/spec.md)
-- [Operations guide](../../docs/05.operations/11-laboratory/README.md)
-- [Operations policy](../../docs/05.operations/11-laboratory/README.md)
-- [Operations runbook](../../docs/05.operations/11-laboratory/README.md)
+- [Operations guide](../../docs/05.operations/catalog/11-laboratory/README.md)
+- [Operations policy](../../docs/05.operations/catalog/11-laboratory/README.md)
+- [Operations runbook](../../docs/05.operations/catalog/11-laboratory/README.md)
 
 ---
 
@@ -144,6 +144,6 @@ infra/11-laboratory/
 
 - [infra/README.md](../README.md)
 - [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [Laboratory guides](../../docs/05.operations/11-laboratory/README.md)
-- [Laboratory policies](../../docs/05.operations/11-laboratory/README.md)
-- [Laboratory runbooks](../../docs/05.operations/11-laboratory/README.md)
+- [Laboratory guides](../../docs/05.operations/catalog/11-laboratory/README.md)
+- [Laboratory policies](../../docs/05.operations/catalog/11-laboratory/README.md)
+- [Laboratory runbooks](../../docs/05.operations/catalog/11-laboratory/README.md)
