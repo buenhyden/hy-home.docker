@@ -6,7 +6,7 @@ parent_ids:
   - spec-0136
   - plan-0136
 created: 2026-08-09
-updated: 2026-08-12
+updated: 2026-08-13
 ---
 # Task: SDLC Taxonomy and Agent Governance Convergence
 
@@ -26,12 +26,23 @@ Convergence implementation plan.
   systems, secrets, or the Operations stage number.
 - Keep stable identifiers in documentation paths and preserve execution
   evidence through the planned migration.
+- Move current Operations domains beneath one `catalog/` boundary while
+  keeping `incidents/` and `releases/` as non-domain siblings.
+- Consolidate Operations subjects and role documents only from an approved,
+  Git-provenance-backed manifest that proves semantic preservation.
 
 ## Scope and Change Boundaries
 
 Allowed paths and exclusions are defined by the approved implementation plan.
 
 - Operations remains Stage 05.
+- Current Operations subjects converge under
+  `docs/05.operations/catalog/<domain>/ops-####-<subject>/`.
+- Incident packets use
+  `docs/05.operations/incidents/<year>/inc-####-<slug>/`; the year is event
+  containment, while the incident ID remains the stable identity.
+- Structural catalog moves and semantic subject/role consolidation are
+  separate logical changes.
 - No Runtime, remote action, secret, or compatibility-surface change is in
   scope.
 
@@ -39,7 +50,8 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 
 | Approval source | Protected surface | Boundary | Rollback or recovery | Redaction boundary |
 | :-- | :-- | :-- | :-- | :-- |
-| Approved implementation plan (corrected at `5d22b5f0`) and controller authorization through Task 9 | Documentation taxonomy, typed metadata, migration ledger, Stage 00 policy/provider adapters, script manifest, workflow contract registry, validation scripts, and generated Stage 90 outputs | Tasks 1–9. Task 9 is limited to fail-closed manifest enforcement, merged LLM Wiki generator ownership, current consumers/tests/docs, generated outputs, and factual evidence; immutable Stage 90/98 and completed historical command evidence remains unchanged; no Runtime, remote, secret, deployment, Compose, or GitHub Actions execution mutation | Git revert of the applicable logical commit; the two deleted shell wrappers remain recoverable from Task 9's parent commit; migration mappings retain historical provenance | Record only paths, commit IDs, bounded findings, and command outcomes; do not record credentials or remote/runtime state |
+| Approved implementation plan (corrected at `5d22b5f0`), controller authorization through Task 9, and the user-approved four-digit/Incident routing amendment | Documentation taxonomy, typed metadata, migration ledger, Stage 00 policy/provider adapters, script manifest, workflow contract registry, validation scripts, and generated Stage 90 outputs | Tasks 1–10A. Task 10A is limited to four-digit docs identities, the required Incident year containment route, atomic PRD moves/current relations, contract validators, and generated provider projections; immutable historical source evidence remains unchanged; no Runtime, remote, secret, deployment, Compose, or GitHub Actions execution mutation | Git revert of the applicable logical commit; deleted Task 9/10 scripts remain recoverable from their parent commits; migration mappings retain historical provenance | Record only paths, commit IDs, bounded findings, and command outcomes; do not record credentials or remote/runtime state |
+| User-approved revised Spec at `a626ae79` and the expanded canonical Plan | Operations `catalog/` topology; per-subject Guide/Policy/Runbook role boundaries; four-digit document/internal IDs; Incident year containment; per-agent Stage 00 authority; validator/script consolidation | Tasks 10–14. Task 10B freezes the exact Operations inventory and requires a second explicit approval of every semantic disposition before any subject merge/delete. Task 10C is structural only; Tasks 10D–10G are manifest-bounded semantic slices; Task 10H finalizes Operations contracts. Immutable Git provenance remains exact; no Runtime, remote, secret, deployment, Compose, or external control-plane mutation | Revert the applicable logical commit. Native moves retain Git history; `mig-0002` records source commit/blob and exact recovery target; semantic deletion occurs only after preservation assertions and independent review | Record paths, stable IDs, commit/blob IDs, dispositions, bounded findings, approvals, and command outcomes only; never record credentials, secrets, or private runtime state |
 
 ## Work Breakdown
 
@@ -56,10 +68,18 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 11. Task 8: Reconcile Stage 00 Rules and Provider Projections
 12. Task 9: Enforce the Script Manifest and Consolidate Generators
 13. Task 10: Consolidate Document Validators
-14. Task 11: Decompose the Repository Policy Monolith and Remove One-Time Tools
-15. Task 12: Align CI, Local, and Hook Gates
-16. Task 13: Repair Cross-Links, Indexes, Memory, and Generated Evidence
-17. Task 14: Remove Transition Contracts and Complete Regression Verification
+14. Task 10A: Normalize Four-Digit IDs and Incident Year Routing
+15. Task 10B: Freeze the Operations Catalog Manifest and Validator
+16. Task 10C: Move Operations Domains Under Catalog
+17. Task 10D: Converge Operations Subjects in Domains 00 Through 03
+18. Task 10E: Converge Operations Subjects in Domains 04 Through 06
+19. Task 10F: Converge Operations Subjects in Domains 07 Through 09
+20. Task 10G: Converge Operations Subjects in Domains 10 Through 12
+21. Task 10H: Align Operations Indexes, Incidents, Releases, and Templates
+22. Task 11: Decompose the Repository Policy Monolith and Remove One-Time Tools
+23. Task 12: Align CI, Local, and Hook Gates
+24. Task 13: Repair Cross-Links, Indexes, Memory, and Generated Evidence
+25. Task 14: Remove Transition Contracts and Complete Regression Verification
 
 ## Work Log
 
@@ -77,6 +97,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | Task 7 | Reconciled the exact `169`-row Stage 90/98/root-archive slice (`75` move, `38` archive, `40` rewrite, `16` delete); added the three-row post-baseline ledger extension; assigned stable `ref-*`, `chg-*`, `mig-*`, and tombstone identities; removed the empty root archive; normalized metadata and archive provenance; repaired current inbound and generator-owned links; and added hash-pinned promoted reconciliation plus negative mutation coverage. Review remediation binds reconciliation to the explicit canonical candidate path, validates `observed_at`, converts five renamed pack indexes to typed leaf contracts, and rebinds seven live Python regression consumers to the stable Stage 90 targets without translating immutable manifest rows. | FINAL general review APPROVED (`C0/I0/M0`) and final Python review APPROVED (`C0/I0/M0`); implementation committed as `57259e24775cbbc206ed1724e8357d578d797d62` (`docs: consolidate references and archive identities`). The mandatory Python review `CHANGES_REQUIRED C0/I1/M0` Important is addressed with no new Critical, Important, or Minor finding. Native Git moves only (`106` initial file moves plus `11` corrective packet moves), zero unresolved current Markdown links, full metadata `242/242`, Round 2 exact consumer regressions `7/7`, focused lifecycle `20/20`, affected immutable/promoted fixtures `16/16`, script manifest `23/23`, isolated Reference contract, archive/contract/alignment/check-changed/generated/provider gates pass. Promoted exits `1` on exactly `47` later-wave findings with Task 7 subset zero. |
 | Task 8 | Consolidated Stage 00 human policy ownership into one load order, one workflow authority, and one completion contract; aligned policy/contributor/provider-renderer ownership with typed authority; removed six scopes outside the exact eight-scope catalog; removed copied model/version prose from all registered active human projections; refreshed the observed local Claude CLI version; and rebased only live governance fixtures to stable co-located Task and Operations paths while retaining historical assertions. Review remediation added repository-wide fail-closed policy scans, typed renderer path ownership, stable co-located memory validation, and refreshed LLM Wiki/provider projections through their registered writers. | FINAL APPROVED (`C0/I0/M0`) and committed as `6bd7c62d` (`governance: reconcile SDLC authority and provider projections`). Initial focused RED/GREEN was `5` failures to `6/6`; round 1 RED/GREEN was `12` failures to `6/6`; round 2 RED/GREEN was `3` failures to `2/2`. Final governance `162/162`, renderer `22/22`, native-provider `24/24`, memory `4/4`, contract `0` failures, provider/LLM freshness, Ruff, and diff hygiene pass. |
 | Task 9 | Replaced the two default-write shell generators with one executable Python owner for both stable LLM Wiki outputs; made invocation default to check and write explicit; added a fail-closed executable manifest CLI with aggregate registered-generator checking; migrated current workflow, validator, operations, QA, README, and behavioral-test consumers; retained historical Stage 90/98 and completed Spec command evidence; and deleted both wrappers after current consumers moved. | FINAL general review APPROVED (`C0/I0/M0`) and final Python review APPROVED (`C0/I0/M0`); implementation committed as `707dc415` (`scripts: enforce manifest and unify LLM Wiki generation`). Initial RED was one missing-checker error with the prior 23 manifest tests green and one missing-generator failure. Review rounds added exact RED sets of `10`, `6`, and `7` failures before focused GREEN `17/17`, `5/5`, and `3/3`. Final suites are manifest `37/37`, generator `6/6`, CI gate contract `7/7`, workflow `39/39` (`11` declared Wave A skips), and agent governance `162/162`; the Scripts-and-validators category is exactly `43` (base `44`, minus two wrappers, plus one merged generator). Manifest/default/generated checks, deterministic generation, whole-repository ignored in-root mutation and external-symlink negatives, changed metadata `17/0`, compilation, Ruff, and diff hygiene pass. Repository-wide `check-repo-contracts.sh` remains non-green on pre-existing transitional Task 10–14 rules outside Task 9; its owned LLM Wiki consumer block was migrated to canonical paths. |
+| Revised Spec and Plan | Re-evaluated the approved SDLC, Spec-driven development, AI agent governance, Operations role taxonomy, identity width, Incident routing, validator ownership, script consolidation, and migration ordering against external primary sources and current tracked evidence. Updated the canonical Spec and Plan in place; retained the hybrid stage taxonomy, introduced the Operations `catalog/` boundary, separated structural moves from semantic consolidation, and added the `mig-0002` approval gate. | User approved every design section and the final written Spec. Revised Spec committed as `a626ae79`; Plan and Task execution detail updated on 2026-08-13. Task 10/10A worktree state is explicitly preserved and remains the next implementation boundary. |
 
 ## Verification Evidence
 
@@ -195,6 +216,7 @@ Allowed paths and exclusions are defined by the approved implementation plan.
 | `57259e24775cbbc206ed1724e8357d578d797d62` | Task 7 stable References and Archive identities plus review remediation | Exact `169`-row execution; Task 7 focused `20/20`; stale-path regressions `7/7`; metadata `242/242`; script manifest `23/23`; check-changed `165/0`; final general and Python reviews APPROVED (`C0/I0/M0`). |
 | `6bd7c62d` | Task 8 Stage 00 authority and generated provider projection convergence | Round 1 and round 2 remediation complete; governance `162/162`; renderer `22/22`; native-provider `24/24`; contract/provider/LLM freshness, memory, Ruff, and diff gates pass; final general and Python reviews APPROVED (`C0/I0/M0`). |
 | `707dc415` | Task 9 script-manifest enforcement and LLM Wiki generator consolidation | Manifest `37/37`; generator `6/6`; CI `7/7`; workflow `39/39` with `11` declared skips; governance `162/162`; manifest `66` rows; exact Scripts-and-validators parity `43`; changed metadata `17/0`; final general and Python reviews APPROVED (`C0/I0/M0`). |
+| `a626ae79` | Revised SDLC, Operations catalog, identity, validator, and AI-agent governance design | User-approved Spec revision; external primary-source findings and current tracked evidence are reconciled; `catalog/` topology, four-digit identities, Incident year containment, semantic merge criteria, one-owner validators, and logical migration boundaries are canonical. Plan/Task implementation detail follows in the next logical documentation commit. |
 
 ## Deferred and Blocked Items
 

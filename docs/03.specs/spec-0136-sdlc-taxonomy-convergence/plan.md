@@ -5,13 +5,11 @@ artifact_type: plan
 parent_ids:
   - spec-0136
 created: 2026-08-07
-updated: 2026-08-11
+updated: 2026-08-13
 ---
 # SDLC Taxonomy and Agent Governance Convergence Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking.
-
-## Overview
 
 **Goal:** Converge the documentation, agent-governance, archive, template,
 validator, CI, and script corpus onto the approved stable-ID SDLC taxonomy
@@ -27,20 +25,41 @@ installation, and transition allowances are removed in the final task.
 **Tech Stack:** Python 3.12+, Bash, PyYAML, html5lib, Git, unittest,
 GitHub Actions, Markdown, and repository-local typed YAML contracts.
 
-### Global Constraints
+## Global Constraints
 
 - Operations remains docs/05.operations; it is never renumbered.
+- Current Operations domains exist only under
+  `docs/05.operations/catalog/<domain>/`; `incidents/` and `releases/` are
+  siblings of `catalog/`, not domains.
+- Operations subjects use `ops-####-<managed-object-or-operational-capability>`.
+  Retain Guide, Policy, and Runbook only when each owns distinct role semantics;
+  similarity alone never authorizes a merge or deletion.
 - docs/02.architecture/requirements is replaced by descriptions and
   Architecture Description.
 - docs/04.execution is removed after Plan and Task migration.
-- Every documentation identity uses a stable type ID and slug; no date prefix
-  or year partition remains.
+- Every documentation identity uses a stable type ID with exactly four digits
+  and a slug; no date prefix or identity-bearing year partition remains. The
+  sole year containment exception is
+  `docs/05.operations/incidents/<year>/inc-####-<slug>/`.
+- Internal requirement and acceptance identifiers use four digits, including
+  `PRD-0001-R0001`, `PRD-0001-AC0001`, `SRS-0001-R0001`, and
+  `IFR-0001-R0001`.
 - Dates live in typed frontmatter. Event timelines may retain timestamps in
   body content.
 - docs/98.archive is the only documentation archive.
 - Active documents never link directly to Stage 98.
 - No redirect, legacy, deprecated, dormant, or compatibility file remains at
   completion.
+- When an earlier rule, term, template, validator, script, or provider
+  projection conflicts with the approved typed owner, preserve any unique
+  valid semantics in the owner, migrate consumers, and delete the predecessor.
+- Each AI agent has one typed canonical function/role contract; provider-local
+  surfaces are generated projections and do not copy independent policy.
+- Agent and function counts are review outcomes rather than fixed targets;
+  duplicate or consumerless roles are consolidated or deleted after their
+  valid behavior moves.
+- Review every SDLC term and template for a necessary, non-duplicated role
+  before corpus-wide enforcement.
 - One-time migration utilities remain under /tmp and are never committed.
 - Every generator defaults to check mode; repository mutation requires
   explicit --write.
@@ -59,6 +78,13 @@ GitHub Actions, Markdown, and repository-local typed YAML contracts.
 The approved specification is
 docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md. The starting commit for the
 implementation plan is e3e7615d.
+
+The revised design checkpoint is `a626ae79`. Tasks 1 through 9 are complete.
+Task 10 validator extraction and Task 10A four-digit identity work were already
+in progress when the revised Operations catalog design was approved. Preserve
+those worktree changes, complete and commit Task 10 before Task 10A, then
+execute the new Operations tasks below. Do not reset, re-create, or fold the
+two in-progress units together.
 
 Measured starting debt:
 
@@ -101,6 +127,9 @@ source, typed contracts, stage documents, and validators are authoritative.
 | Metadata CLI | scripts/validation/check-document-metadata.py |
 | Lifecycle CLI | scripts/validation/check-document-corpus-lifecycle.py |
 | Link CLI | scripts/validation/check-document-links.py |
+| Operations catalog authority | docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md |
+| Operations catalog CLI | scripts/validation/check-operations-catalog.py |
+| Operations catalog tests | tests/validation/test_operations_catalog.py |
 | Script inventory | scripts/manifest.yaml |
 | Gate graph | .github/workflow-contract.yml |
 | CI entrypoint | scripts/validation/run-ci-gate.py |
@@ -159,16 +188,20 @@ decision and records the evidence:
 | Architecture Description replaces ARD | Tasks 2 and 4 |
 | Spec, Plan, and Task co-location | Task 5 |
 | No parallel Operations role roots | Tasks 6A through 6D |
-| Operations grouped by domain and subject | Tasks 6A through 6D |
-| No date or year path identity | Tasks 4 through 7 and Task 14 |
+| Operations domains moved under catalog | Tasks 10B and 10C |
+| Operations subject naming and role-purpose consolidation | Tasks 10B and 10D through 10H |
+| Incidents and releases remain outside catalog | Tasks 10B, 10C, and 10H |
+| No date or year path identity, except Incident containment | Tasks 4 through 7, Task 10A, and Task 14 |
+| Four-digit document IDs and year-partitioned Incident packets | Task 10A |
+| Four-digit internal requirement and acceptance IDs | Task 10A |
 | Typed frontmatter dates | Tasks 2, 4 through 7 |
 | Stage 98 is the sole archive | Task 7 |
 | No active-to-archive links | Tasks 5, 7, 10, and 13 |
-| Stage 99 matches the taxonomy | Task 2 |
-| Stage 00 has one authority model | Tasks 2 and 8 |
+| Stage 99 matches the taxonomy | Tasks 2, 10A, 10B, and 10H |
+| Stage 00 has one authority model and reviewed per-agent contracts | Tasks 2, 8, 10A, and 14 |
 | Every script has owner, consumer, mutation, and test | Tasks 3 and 9 |
 | Duplicate and one-time scripts are absent | Tasks 9 and 11 |
-| Validator ownership and local/CI parity | Tasks 10 through 12 |
+| Validator ownership and local/CI parity | Tasks 10, 10B, 11, and 12 |
 | Complete migration ledger | Tasks 3 through 14 |
 | All final gates pass without grandfathered debt | Task 14 |
 
@@ -1142,10 +1175,18 @@ git commit -m "scripts: enforce manifest and unify LLM Wiki generation"
 - Produces: read_frontmatter(path), resolve_git_provenance(path, commit),
   build_document_graph(paths), and the CLI modes traceability and alignment.
 
-- [ ] **Step 1: Write equivalence and failure tests**
+**Resume checkpoint:** The shared modules, link CLI, and link tests already
+exist in the worktree; both old Shell validators are deleted; focused link
+tests and both modes passed before the design pause. Preserve that work. The
+remaining known blockers are the manifest behavioral-evidence fixture for a
+YAML `entry:` consumer and Ruff findings caused by the metadata import alias.
 
-Fixtures cover anchors, fenced examples, relative links, current-to-archive
-links, parent_ids, missing replacements, and immutable created dates.
+- [ ] **Step 1: Reconcile the existing Task 10 diff and rerun its focused RED/GREEN evidence**
+
+Confirm that the existing fixtures cover anchors, fenced examples, relative
+links, current-to-archive links, parent_ids, missing replacements, and
+immutable created dates. Do not recreate the files or overwrite the existing
+working implementation.
 
 - [ ] **Step 2: Verify tests fail before extraction**
 
@@ -1157,7 +1198,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_document_links.py
 
 Expected: FAIL because shared modules and new CLI do not exist.
 
-- [ ] **Step 3: Extract libraries and replace Shell validators**
+- [ ] **Step 3: Finish the library extraction and manifest registration**
 
 CLI behavior remains deterministic and non-mutating. Separate gate IDs call
 the same CLI with explicit modes. Lifecycle must import the shared module, not
@@ -1182,6 +1223,12 @@ FrontmatterRecord, Provenance, DocumentGraph, and LinkFinding are frozen
 dataclasses defined in their owning modules and compared directly in the
 fixtures from Step 1.
 
+Remove the unused `UniqueKeyLoader` import and expose
+`read_frontmatter_values` under one canonical name rather than an unused import
+alias. Extend the script-manifest semantic-evidence test so a registered YAML
+`entry:` that names the exact CLI is accepted, while a prose/comment-only
+basename remains rejected.
+
 - [ ] **Step 4: Verify all document gates**
 
 ~~~bash
@@ -1201,6 +1248,727 @@ Expected: PASS.
 ~~~bash
 git add scripts .github/workflow-contract.yml .pre-commit-config.yaml tests/validation
 git commit -m "scripts: consolidate document governance validators"
+~~~
+
+### Task 10A: Normalize Four-Digit IDs and Incident Year Routing
+
+**Files:**
+
+- Move: every `docs/01.requirements/prd-###-<slug>.md` to
+  `docs/01.requirements/prd-####-<slug>.md`
+- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
+- Modify: `docs/99.templates/support/template-selection.md`
+- Modify: Stage 00 authoring/function contracts and `docs/05.operations/incidents/README.md`
+- Modify: affected current frontmatter IDs, internal requirement and acceptance
+  IDs, parent/supersedes relations, links, `mig-0001`, and generated provider
+  projections
+- Test: `tests/validation/test_four_digit_document_identity.py`
+- Modify: metadata, taxonomy, Operations, and repository-contract tests that
+  enforce identity and Incident routing
+
+**Interfaces:**
+
+- Consumes: Task 10 shared parsing/path libraries and current Stage 99 profiles.
+- Produces: one four-digit numeric identity width for document artifacts and
+  internal requirement/acceptance identities.
+- Produces Incident packet paths only as
+  `docs/05.operations/incidents/<year>/inc-####-<slug>/` with fixed role files
+  `incident.md` and `postmortem.md`.
+
+- [ ] **Step 1: Repair the profile parser blocker with a focused RED fixture**
+
+Add a test that loads `document-metadata-profiles.yaml` with `yaml.safe_load`
+and asserts the exact Incident selector. Quote regex-like scalars inside YAML
+flow lists so `[0-9]` is data rather than YAML syntax.
+
+~~~python
+def test_profiles_parse_and_publish_exact_incident_selector(self):
+    document = yaml.safe_load(PROFILES.read_text(encoding="utf-8"))
+    selector = document["template_roles"]["incident"]["path_patterns"]
+    self.assertIn(
+        "docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/"
+        "inc-[0-9][0-9][0-9][0-9]-*/incident.md",
+        selector,
+    )
+~~~
+
+Run:
+
+~~~bash
+PYTHONPATH=. .venv/bin/python -m unittest \
+  tests.validation.test_four_digit_document_identity.FourDigitDocumentIdentityTests.test_profiles_parse_and_publish_exact_incident_selector -v
+~~~
+
+Expected: FAIL before the quoting repair and PASS afterward.
+
+- [ ] **Step 2: Add failing width, relation, and Incident-route tests**
+
+Tests reject every tracked docs path with a three-digit typed ID, reject an
+Incident packet without a four-digit year directory, accept the exact
+year/`inc-####` form, reject `PRD-001-R001`, and accept
+`PRD-0001-R0001`/`PRD-0001-AC0001`.
+
+~~~python
+def test_internal_requirement_ids_are_four_digits(self):
+    self.assertFalse(is_valid_requirement_id("PRD-001-R001"))
+    self.assertTrue(is_valid_requirement_id("PRD-0001-R0001"))
+    self.assertTrue(is_valid_requirement_id("PRD-0001-AC0001"))
+
+def test_incident_route_requires_year_and_four_digit_id(self):
+    self.assertTrue(is_valid_incident_path(
+        PurePosixPath(
+            "docs/05.operations/incidents/2026/"
+            "inc-0001-control-plane-outage/incident.md"
+        )
+    ))
+    self.assertFalse(is_valid_incident_path(
+        PurePosixPath(
+            "docs/05.operations/incidents/inc-001-control-plane-outage/"
+            "incident.md"
+        )
+    ))
+~~~
+
+- [ ] **Step 3: Finish native PRD moves and atomic identity migration**
+
+Reconcile the already-started Git index before issuing any new move. Move all
+25 current PRDs with Git exactly once, change artifact IDs to `prd-0001`
+through `prd-0025`, normalize internal requirement/acceptance IDs, and update
+every current identity relation and link in the same change. Immutable evidence
+retains its recorded legacy source values; the migration ledger records the
+corrected stable destinations.
+
+- [ ] **Step 4: Converge Incident contracts**
+
+Update the Stage 00 function owners, documentation protocol, Stage 05 Incident
+index, Stage 99 profiles and selection contract, repository validator, and
+generated provider projections. Uppercase `INC-###` and yearless `inc-*`
+routes are rejected as active publication shapes.
+
+- [ ] **Step 5: Verify metadata, taxonomy, links, providers, and diff hygiene**
+
+~~~bash
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-contracts
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+PYTHONPATH=. .venv/bin/python tests/validation/test_four_digit_document_identity.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_taxonomy.py
+bash scripts/operations/sync-provider-surfaces.sh --check
+git diff --check
+~~~
+
+- [ ] **Step 6: Commit**
+
+~~~bash
+git add docs scripts tests .agents .claude .gemini
+git commit -m "docs: normalize four-digit identities and incident routing"
+~~~
+
+### Task 10B: Freeze the Operations Catalog Manifest and Validator
+
+**Files:**
+
+- Create: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Create: `scripts/lib/document_governance/operations_catalog.py`
+- Create: `scripts/validation/check-operations-catalog.py`
+- Create: `tests/validation/test_operations_catalog.py`
+- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
+- Modify: `docs/99.templates/support/template-selection.md`
+- Modify: `docs/99.templates/support/corpus-migration-contract.md`
+- Modify: `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- Modify: `scripts/manifest.yaml`
+- Modify: `.github/workflow-contract.yml`
+- Modify: `.pre-commit-config.yaml`
+
+**Interfaces:**
+
+- Consumes: Task 10 shared frontmatter/Git/path helpers and the 77 current
+  subject directories containing 66 Guides, 64 Policies, and 62 Runbooks.
+- Produces: frozen `OperationSubjectRecord` and `OperationFileRecord`
+  dataclasses, `load_operations_catalog_manifest(path)`,
+  `validate_operations_catalog_manifest(root, manifest)`, and
+  `find_operations_merge_candidates(subjects)`.
+- Produces CLI modes `manifest`, `structure`, `executed`, and `complete`;
+  `executed` accepts an explicit comma-separated `--domains` slice and every
+  other mode rejects `--domains`.
+- Produces: a user-approved manifest with separate structural and semantic
+  dispositions. Later Tasks may execute only its exact records.
+
+- [ ] **Step 1: Write failing manifest topology and fail-closed tests**
+
+~~~python
+class OperationsCatalogManifestTests(unittest.TestCase):
+    def test_manifest_covers_exact_current_inventory(self):
+        manifest = load_operations_catalog_manifest(MANIFEST)
+        self.assertEqual(77, len(manifest.subjects))
+        self.assertEqual(
+            {"guide": 66, "policy": 64, "runbook": 62,
+             "domain-readme": 13},
+            Counter(row.role for row in manifest.files),
+        )
+
+    def test_similarity_cannot_authorize_merge(self):
+        row = valid_subject_record(
+            semantic_action="merge", merge_into="ops-0050"
+        )
+        row = replace(row, owner_match=False)
+        findings = validate_subject_disposition(row)
+        self.assertIn("merge-owner-boundary-unproven", finding_codes(findings))
+~~~
+
+Run:
+
+~~~bash
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py -v
+~~~
+
+Expected: FAIL because the manifest, library, and CLI do not exist.
+
+- [ ] **Step 2: Implement the typed manifest model and parser**
+
+~~~python
+@dataclass(frozen=True)
+class OperationSubjectRecord:
+    legacy_subject_path: PurePosixPath
+    source_commit: str
+    source_tree: str
+    current_ops_id: str
+    catalog_domain: str
+    catalog_path: PurePosixPath
+    canonical_ops_id: str
+    canonical_slug: str
+    final_path: PurePosixPath
+    semantic_action: Literal["retain", "rename", "merge", "delete"]
+    merge_into: str | None
+    owner_match: bool
+    control_boundary_match: bool
+    trigger_and_recovery_match: bool
+    independent_evidence_boundary: bool
+    reason: str
+
+@dataclass(frozen=True)
+class OperationFileRecord:
+    legacy_path: PurePosixPath
+    source_commit: str
+    source_blob: str
+    role: Literal["guide", "policy", "runbook", "domain-readme"]
+    catalog_path: PurePosixPath
+    final_path: PurePosixPath | None
+    semantic_action: Literal["retain", "rewrite", "merge", "delete"]
+    canonical_role_owner: PurePosixPath | None
+    preserved_semantics: tuple[str, ...]
+    removed_semantics: tuple[str, ...]
+    active_consumers: tuple[PurePosixPath, ...]
+~~~
+
+Reject unknown keys, unsafe paths, missing Git objects, non-blob sources,
+duplicate source/target/ID ownership, self-merges, merge cycles, and merge rows
+that do not prove all four Spec criteria.
+
+- [ ] **Step 3: Audit all subjects and write the frozen manifest**
+
+For each of the 77 subjects, read every current role body, frontmatter,
+incoming link, script/automation consumer, review date, trigger, validation,
+recovery, and owner. Record exact source commit/tree and per-file blob IDs.
+Name the final subject by managed object or independent operational capability;
+reject role words, dates, versions, states, repeated tokens, redundant domain
+names, and unsupported `basics`/`setup` suffixes.
+
+Build the machine block from the verified repository state; do not hand-enter
+or abbreviate the baseline commit:
+
+~~~python
+baseline_commit = subprocess.run(
+    ["git", "rev-parse", "HEAD"],
+    cwd=root,
+    check=True,
+    capture_output=True,
+    text=True,
+).stdout.strip()
+document = {
+    "schema_version": 1,
+    "migration_id": "mig-0002",
+    "baseline_commit": baseline_commit,
+    "subjects": subject_rows,
+    "files": file_rows,
+    "approval": {
+        "status": "pending",
+        "approved_at": None,
+        "approved_by": None,
+    },
+}
+~~~
+
+The parser requires all displayed keys. `pending` is a typed lifecycle state
+with defined transition semantics; no later Task may execute while it remains
+pending.
+
+- [ ] **Step 4: Obtain user approval for the exact subject map**
+
+Present a table containing each current `ops-####`, proposed domain/path,
+semantic action, canonical owner, roles retained/deleted, and reason. After
+explicit approval, set `approval.status: approved`, record the approval date
+and `user`, and rerun the manifest validator. Do not move or delete a corpus
+file in this Task.
+
+- [ ] **Step 5: Register and verify the focused validator**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode manifest
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+.venv/bin/python scripts/validation/check-script-manifest.py
+.venv/bin/python scripts/validation/check-github-workflow-contract.py
+git diff --check
+~~~
+
+Expected: PASS with 77 subjects, 205 current files, no unproved merge, and an
+approved manifest.
+
+- [ ] **Step 6: Independent review and commit**
+
+~~~bash
+git add docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md \
+  docs/99.templates/support docs/00.agent-governance/rules/stage-authoring-matrix.md \
+  scripts/lib/document_governance/operations_catalog.py \
+  scripts/validation/check-operations-catalog.py scripts/manifest.yaml \
+  .github/workflow-contract.yml .pre-commit-config.yaml \
+  tests/validation/test_operations_catalog.py
+git commit -m "docs: register operations catalog migration"
+~~~
+
+### Task 10C: Move Operations Domains Under Catalog
+
+**Files:**
+
+- Create: `docs/05.operations/catalog/README.md`
+- Move: `docs/05.operations/00-workspace/` through
+  `docs/05.operations/12-infra-net/` under `docs/05.operations/catalog/`
+- Modify: `docs/05.operations/README.md`
+- Modify: every active path consumer and generator owner selected by the
+  approved `mig-0002` structural map
+- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `tests/validation/test_operations_catalog.py`
+- Modify: path-aware tests that consume current Operations paths
+
+**Interfaces:**
+
+- Consumes: approved Task 10B `catalog_path` values.
+- Produces: all 13 domain roots and the same 77 subject names under `catalog/`;
+  subject bodies and semantic dispositions remain unchanged.
+
+- [ ] **Step 1: Add the structural RED tests**
+
+~~~python
+def test_all_domains_are_under_catalog(self):
+    self.assertEqual(
+        EXPECTED_DOMAINS,
+        {path.name for path in (ROOT / "docs/05.operations/catalog").iterdir()
+         if path.is_dir()},
+    )
+    for domain in EXPECTED_DOMAINS:
+        self.assertFalse((ROOT / "docs/05.operations" / domain).exists())
+
+def test_event_roots_are_not_catalog_domains(self):
+    self.assertFalse((ROOT / "docs/05.operations/catalog/incidents").exists())
+    self.assertFalse((ROOT / "docs/05.operations/catalog/releases").exists())
+~~~
+
+Run the two tests and verify they fail because `catalog/` is absent.
+
+- [ ] **Step 2: Execute only the approved structural Git moves**
+
+Create `docs/05.operations/catalog/`, then run native `git mv` once for each
+exact domain root in numeric order. Do not rename a subject, move role content,
+or remove a role file in this Task.
+
+~~~bash
+mkdir -p docs/05.operations/catalog
+git mv -- docs/05.operations/00-workspace docs/05.operations/catalog/00-workspace
+git mv -- docs/05.operations/01-gateway docs/05.operations/catalog/01-gateway
+git mv -- docs/05.operations/02-auth docs/05.operations/catalog/02-auth
+git mv -- docs/05.operations/03-security docs/05.operations/catalog/03-security
+git mv -- docs/05.operations/04-data docs/05.operations/catalog/04-data
+git mv -- docs/05.operations/05-messaging docs/05.operations/catalog/05-messaging
+git mv -- docs/05.operations/06-observability docs/05.operations/catalog/06-observability
+git mv -- docs/05.operations/07-workflow docs/05.operations/catalog/07-workflow
+git mv -- docs/05.operations/08-ai docs/05.operations/catalog/08-ai
+git mv -- docs/05.operations/09-tooling docs/05.operations/catalog/09-tooling
+git mv -- docs/05.operations/10-communication docs/05.operations/catalog/10-communication
+git mv -- docs/05.operations/11-laboratory docs/05.operations/catalog/11-laboratory
+git mv -- docs/05.operations/12-infra-net docs/05.operations/catalog/12-infra-net
+~~~
+
+- [ ] **Step 3: Migrate current consumers and indexes atomically**
+
+Update active Markdown destinations, typed selectors, script/test constants,
+CODEOWNERS/workflow path selectors, and generated-source owners from each exact
+legacy domain prefix to its catalog prefix. Do not rewrite immutable
+`archived_from`, source paths, commit-pinned manifests, or historical ledger
+values. Create the catalog README as a domain navigation index and reduce the
+root README to catalog/incidents/releases routing.
+
+- [ ] **Step 4: Verify structural equivalence**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode structure
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+git diff --check
+~~~
+
+Expected: 13 catalog domains, 77 unchanged subject IDs/names, 192 unchanged
+role files, zero current old-prefix consumers, and zero link failures.
+
+- [ ] **Step 5: Independent review and commit**
+
+~~~bash
+git add -A docs/05.operations docs/98.archive/migrations \
+  docs/00.agent-governance docs/99.templates scripts tests .github
+git commit -m "docs: move operations domains under catalog"
+~~~
+
+### Task 10D: Converge Operations Subjects in Domains 00 Through 03
+
+**Files:**
+
+- Modify/move/delete only approved records below
+  `docs/05.operations/catalog/{00-workspace,01-gateway,02-auth,03-security}/`
+- Modify: active consumers named by those manifest records
+- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `tests/validation/test_operations_catalog.py`
+
+**Interfaces:**
+
+- Consumes: approved Task 10B semantic rows for domains 00–03.
+- Produces: canonical subject names and role files for those four domains with
+  every predecessor absent and every unique valid semantic preserved.
+
+- [ ] **Step 1: Add an execution RED test for the exact domain slice**
+
+~~~python
+def test_domains_00_03_match_approved_semantic_targets(self):
+    records = manifest.subjects_for_domains(
+        {"00-workspace", "01-gateway", "02-auth", "03-security"}
+    )
+    findings = validate_executed_subject_records(ROOT, records)
+    self.assertEqual([], findings)
+~~~
+
+Run this method and verify it fails on every approved rename/merge/delete that
+has not executed.
+
+- [ ] **Step 2: Execute approved subject renames and mergers**
+
+Use native `git mv` for each `rename`. For a `merge`, first move each
+`preserved_semantics` item into its declared canonical Guide/Policy/Runbook,
+update active consumers, and run the per-row preservation assertion. Use
+`git rm` only for the exact predecessor role files after that assertion passes.
+Do not create missing Guide, Policy, or Runbook roles unless the approved row
+identifies unique source semantics for that role.
+
+- [ ] **Step 3: Normalize role bodies and domain indexes**
+
+Keep Guide limited to concepts/normal use/non-destructive checks, Policy to
+controls/exceptions/review, and Runbook to executable trigger-through-recovery
+steps. Remove duplicate headings and template residue listed in the manifest.
+Update the four domain READMEs to list only final canonical subjects.
+
+- [ ] **Step 4: Verify, review, and commit the slice**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode executed --domains 00-workspace,01-gateway,02-auth,03-security
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+git diff --check
+git add -A docs/05.operations/catalog/00-workspace \
+  docs/05.operations/catalog/01-gateway docs/05.operations/catalog/02-auth \
+  docs/05.operations/catalog/03-security docs/98.archive/migrations \
+  scripts tests
+git commit -m "docs: converge operations catalog domains 00 through 03"
+~~~
+
+### Task 10E: Converge Operations Subjects in Domains 04 Through 06
+
+**Files:**
+
+- Modify/move/delete only approved records below
+  `docs/05.operations/catalog/{04-data,05-messaging,06-observability}/`
+- Modify: active consumers named by those manifest records
+- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `tests/validation/test_operations_catalog.py`
+
+**Interfaces:**
+
+- Consumes: approved Task 10B semantic rows for domains 04–06.
+- Produces: canonical data, messaging, and observability subjects without
+  repeated category tokens or role words and with role semantics preserved.
+
+- [ ] **Step 1: Add and run the domain-slice RED test**
+
+~~~python
+def test_domains_04_06_match_approved_semantic_targets(self):
+    records = manifest.subjects_for_domains(
+        {"04-data", "05-messaging", "06-observability"}
+    )
+    self.assertEqual([], validate_executed_subject_records(ROOT, records))
+~~~
+
+Expected: FAIL on every unexecuted approved row, including any reviewed
+replacement for repeated tokens such as `backup-backup` or
+`optimization-optimization`.
+
+- [ ] **Step 2: Execute only approved renames and mergers**
+
+Use native `git mv` for each approved rename. For a merge, copy no complete
+body: move only manifest-listed unique paragraphs or steps into their declared
+role owner, update current consumers, prove the canonical target contains each
+preservation token, then use `git rm` on the exact predecessor. Preserve Git
+source commit/blob values in `mig-0002`.
+
+- [ ] **Step 3: Enforce role boundaries and domain ownership**
+
+Keep service-specific operations with their managed service. Keep an
+independent backup, retention, logical-upgrade, or storage-exhaustion subject
+only when the approved row proves a separate trigger, control owner,
+verification/recovery boundary, or review cadence. Update all three domain
+READMEs to final subjects only.
+
+- [ ] **Step 4: Run scoped and shared gates**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode executed --domains 04-data,05-messaging,06-observability
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+git diff --check
+~~~
+
+- [ ] **Step 5: Independent review and commit**
+
+~~~bash
+git add -A docs/05.operations/catalog/04-data \
+  docs/05.operations/catalog/05-messaging \
+  docs/05.operations/catalog/06-observability \
+  docs/98.archive/migrations scripts tests
+git commit -m "docs: converge operations catalog domains 04 through 06"
+~~~
+
+### Task 10F: Converge Operations Subjects in Domains 07 Through 09
+
+**Files:**
+
+- Modify/move/delete only approved records below
+  `docs/05.operations/catalog/{07-workflow,08-ai,09-tooling}/`
+- Modify: active consumers named by those manifest records
+- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `tests/validation/test_operations_catalog.py`
+
+**Interfaces:**
+
+- Consumes: approved Task 10B semantic rows for domains 07–09.
+- Produces: canonical workflow, AI, and tooling subjects with service and
+  independent-capability boundaries proven by the manifest.
+
+- [ ] **Step 1: Add and run the domain-slice RED test**
+
+~~~python
+def test_domains_07_09_match_approved_semantic_targets(self):
+    records = manifest.subjects_for_domains(
+        {"07-workflow", "08-ai", "09-tooling"}
+    )
+    self.assertEqual([], validate_executed_subject_records(ROOT, records))
+~~~
+
+Expected: FAIL on every unexecuted row. The test must report Airflow/DAG,
+optimization, and IaC naming decisions by exact `ops-####`, not by fuzzy name.
+
+- [ ] **Step 2: Execute approved subject dispositions**
+
+Use native `git mv` for renames. Merge `airflow-dag-basics` or
+`dag-deployment` into Airflow only if their approved rows prove no independent
+owner, trigger, evidence, or cadence. Keep GPU recovery, performance testing,
+Terraform, or Terrakube separate only when their manifest rows prove an
+independent operational boundary. Move unique semantics to their declared role
+owners before exact `git rm`.
+
+- [ ] **Step 3: Repair current automation and script consumers**
+
+Update Runbook consumers, script manifest authorities, generator inputs,
+workflow selectors, infrastructure navigation, and current docs to final
+paths. Preserve immutable Stage 90/98 path evidence. Update the three domain
+READMEs to final subjects only.
+
+- [ ] **Step 4: Run scoped and shared gates**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode executed --domains 07-workflow,08-ai,09-tooling
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+.venv/bin/python scripts/validation/check-script-manifest.py
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+git diff --check
+~~~
+
+- [ ] **Step 5: Independent review and commit**
+
+~~~bash
+git add -A docs/05.operations/catalog/07-workflow \
+  docs/05.operations/catalog/08-ai docs/05.operations/catalog/09-tooling \
+  docs/98.archive/migrations scripts tests infra .github
+git commit -m "docs: converge operations catalog domains 07 through 09"
+~~~
+
+### Task 10G: Converge Operations Subjects in Domains 10 Through 12
+
+**Files:**
+
+- Modify/move/delete only approved records below
+  `docs/05.operations/catalog/{10-communication,11-laboratory,12-infra-net}/`
+- Modify: active consumers named by those manifest records
+- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `tests/validation/test_operations_catalog.py`
+
+**Interfaces:**
+
+- Consumes: approved Task 10B semantic rows for domains 10–12.
+- Produces: canonical communication, laboratory, and infrastructure-network
+  subjects with no generic optimization bucket lacking an independent owner.
+
+- [ ] **Step 1: Add and run the domain-slice RED test**
+
+~~~python
+def test_domains_10_12_match_approved_semantic_targets(self):
+    records = manifest.subjects_for_domains(
+        {"10-communication", "11-laboratory", "12-infra-net"}
+    )
+    self.assertEqual([], validate_executed_subject_records(ROOT, records))
+~~~
+
+Expected: FAIL for every approved rename, merge, or role deletion that has not
+executed.
+
+- [ ] **Step 2: Execute approved subject and role dispositions**
+
+Use native `git mv` for exact renames. Keep each laboratory service subject
+only when it owns distinct controls or procedures. Merge a generic hardening
+subject into service Policies/Runbooks only when the manifest identifies every
+target role and preservation token. Keep `standardize-infra-net` only if the
+approved name remains a managed operational capability; otherwise execute its
+approved canonical rename.
+
+- [ ] **Step 3: Repair consumers and domain indexes**
+
+Update infrastructure READMEs, script/Runbook authorities, current links, and
+the three domain indexes. No current path may point to a predecessor; immutable
+provenance retains its source path and blob.
+
+- [ ] **Step 4: Run scoped and shared gates**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode executed --domains 10-communication,11-laboratory,12-infra-net
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+git diff --check
+~~~
+
+- [ ] **Step 5: Independent review and commit**
+
+~~~bash
+git add -A docs/05.operations/catalog/10-communication \
+  docs/05.operations/catalog/11-laboratory \
+  docs/05.operations/catalog/12-infra-net \
+  docs/98.archive/migrations scripts tests infra
+git commit -m "docs: converge operations catalog domains 10 through 12"
+~~~
+
+### Task 10H: Align Operations Indexes, Incidents, Releases, and Templates
+
+**Files:**
+
+- Modify: `docs/05.operations/README.md`
+- Modify: `docs/05.operations/catalog/README.md`
+- Modify: every `docs/05.operations/catalog/<domain>/README.md`
+- Modify: `docs/05.operations/incidents/README.md`
+- Modify: `docs/05.operations/releases/README.md`
+- Modify: `docs/99.templates/templates/operations/incident.template.md`
+- Modify: `docs/99.templates/templates/operations/postmortem.template.md`
+- Modify: `docs/99.templates/templates/operations/release.template.md`
+- Modify: `docs/99.templates/support/document-metadata-profiles.yaml`
+- Modify: `docs/99.templates/support/template-selection.md`
+- Modify: Stage 00 Operations function and authoring contracts
+- Modify: `docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md`
+- Modify: `tests/validation/test_operations_catalog.py`
+- Modify: `tests/validation/test_document_metadata.py`
+
+**Interfaces:**
+
+- Consumes: final catalog paths and roles from Tasks 10C–10G.
+- Produces: the sole permitted Operations indexes, exact Incident/Release
+  routes, conditional sibling sections, and completed `mig-0002` evidence.
+
+- [ ] **Step 1: Add final topology and template RED tests**
+
+~~~python
+def test_operations_root_has_only_catalog_and_event_roots(self):
+    directories = {
+        path.name for path in (ROOT / "docs/05.operations").iterdir()
+        if path.is_dir()
+    }
+    self.assertEqual({"catalog", "incidents", "releases"}, directories)
+
+def test_incident_template_uses_typed_catalog_relations(self):
+    body = INCIDENT_TEMPLATE.read_text(encoding="utf-8")
+    self.assertIn("affected_ops_ids", body)
+    self.assertNotIn("docs/05.operations/<domain>", body)
+~~~
+
+Also assert that only the Stage 05, catalog, domain, incidents, and releases
+READMEs exist; no subject README is permitted.
+
+- [ ] **Step 2: Rewrite indexes from final current inventory**
+
+Generate no invented subjects. The root README routes to catalog, incidents,
+and releases; the catalog README routes to 13 domains; each domain README lists
+only its current `ops-####` subjects and retained roles. Remove predecessor
+labels and links while preserving immutable migration provenance.
+
+- [ ] **Step 3: Align Incident, Postmortem, and Release contracts**
+
+Require `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md`, an
+optional sibling `postmortem.md`, and
+`docs/05.operations/releases/rel-####-<slug>/release.md`. Incident templates
+carry typed `affected_ops_ids`; Postmortem remains a strict Incident child;
+Release remains executed-event evidence. Conditional Runbook/Postmortem/
+automation handoffs render only when their real target exists.
+
+- [ ] **Step 4: Complete Operations verification**
+
+~~~bash
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode complete
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-contracts
+.venv/bin/python scripts/validation/check-document-links.py --mode traceability
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_document_metadata.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_taxonomy.py
+git diff --check
+~~~
+
+Expected: 13 domains under catalog, no other domain root, no subject README,
+no unexecuted `mig-0002` row, zero stale consumers, and zero link failures.
+
+- [ ] **Step 5: Independent review and commit**
+
+~~~bash
+git add docs/05.operations docs/00.agent-governance docs/99.templates \
+  docs/98.archive/migrations scripts tests
+git commit -m "docs: align operations events indexes and templates"
 ~~~
 
 ### Task 11: Decompose the Repository Policy Monolith and Remove One-Time Tools
@@ -1306,6 +2074,7 @@ git commit -m "scripts: remove duplicate and one-time policy tooling"
 - Modify: tests/validation/test_ci_gate_runner.py
 - Modify: tests/validation/test_agent_governance_ci_routing.py
 - Modify: tests/validation/test_github_workflow_contract.py
+- Modify: tests/validation/test_operations_catalog.py
 
 **Interfaces:**
 
@@ -1359,9 +2128,10 @@ Expected: FAIL on current parity and lifecycle workflow routing.
 - [ ] **Step 3: Register required aggregates**
 
 The PR aggregate includes document contract, metadata, stable paths, lifecycle,
-archive, links, traceability, templates, governance, provider freshness,
-generated freshness, and script manifest. Pull Request uses base SHA; push
-uses before SHA. Scheduled reporting reuses the same leaves.
+archive, links, traceability, Operations catalog integrity, templates,
+governance, provider freshness, generated freshness, and script manifest. Pull
+Request uses base SHA; push uses before SHA. Scheduled reporting reuses the
+same leaves.
 
 - [ ] **Step 4: Verify typed execution**
 
@@ -1372,6 +2142,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_contract.py
 PYTHONPATH=. .venv/bin/python tests/validation/test_ci_gate_runner.py
 PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_ci_routing.py
 PYTHONPATH=. .venv/bin/python tests/validation/test_github_workflow_contract.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_operations_catalog.py
 ~~~
 
 Expected: PASS.
@@ -1394,6 +2165,7 @@ git commit -m "ci: align local and remote document governance gates"
 - Modify: .github/INDEX.md and CODEOWNERS when paths changed
 - Regenerate: every output registered in scripts/manifest.yaml
 - Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Modify: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
 - Modify: tests that assert old canonical paths
 
 **Interfaces:**
@@ -1450,8 +2222,12 @@ git commit -m "docs: repair navigation memory and generated evidence"
 - Modify: docs/99.templates/support/document-corpus-migration-contract.yaml
 - Modify: docs/99.templates/support/corpus-migration-contract.md
 - Modify: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md
+- Modify: docs/98.archive/migrations/mig-0002-operations-catalog-convergence.md
 - Modify: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/spec.md
 - Modify: docs/03.specs/spec-0136-sdlc-taxonomy-convergence/task.md
+- Modify: docs/00.agent-governance/contracts/agent-catalog.yaml only if the
+  final typed audit finds a duplicate or consumerless active role
+- Modify: tests/validation/test_agent_governance_contract.py
 - Modify: scripts/manifest.yaml
 - Modify: tests/validation affected by transition removal
 
@@ -1488,20 +2264,38 @@ class CompletedMigrationContractTests(unittest.TestCase):
 Mark every mig-0001 row complete, remove old-root allowances, and make the
 target profiles the only accepted paths. Do not remove the historical ledger.
 
-- [ ] **Step 3: Run the full required validation set**
+- [ ] **Step 3: Revalidate the per-agent governance outcome**
+
+Load every active `agent-catalog.yaml` agent and function and prove stable
+identity, one primary responsibility, bounded scope, typed inputs/process/
+outputs, gates, mutation authority, escalation, consumer, and provider
+projection. Assert that every function has exactly one owner and every active
+agent has at least one current consumer/projection. The current reviewed
+outcome is 14 agents and 24 functions; those counts are evidence, not a target.
+If a negative mutation proves a duplicate or consumerless role, move its unique
+behavior to the canonical owner, regenerate projections, and delete the
+redundant typed and generated entries in the same change.
+
+- [ ] **Step 4: Run the full required validation set**
 
 ~~~bash
-python3 scripts/validation/check-document-metadata.py --mode check-contracts
-python3 scripts/validation/check-document-metadata.py --mode check-active
-python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
-python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
-python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-archive
-python3 scripts/validation/check-document-links.py --mode traceability
-python3 scripts/validation/check-document-links.py --mode alignment
-python3 scripts/validation/check-script-manifest.py
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-contracts
+.venv/bin/python scripts/validation/check-document-metadata.py --mode check-active
+.venv/bin/python scripts/validation/check-document-corpus-lifecycle.py --mode check-contract
+.venv/bin/python scripts/validation/check-document-corpus-lifecycle.py --mode check-promoted
+.venv/bin/python scripts/validation/check-document-corpus-lifecycle.py --mode check-archive
+.venv/bin/python scripts/validation/check-document-links.py --mode traceability
+.venv/bin/python scripts/validation/check-document-links.py --mode alignment
+.venv/bin/python scripts/validation/check-operations-catalog.py --mode complete
+.venv/bin/python scripts/validation/check-script-manifest.py
+.venv/bin/python scripts/validation/check-agent-governance-contract.py --mode contract
+.venv/bin/python scripts/validation/check-agent-governance-contract.py --mode repository --section all
 bash scripts/operations/sync-provider-surfaces.sh --check
-python3 scripts/validation/check-github-workflow-contract.py
-python3 scripts/validation/run-ci-gate.py --profile local-script-backed
+.venv/bin/python scripts/validation/check-github-workflow-contract.py
+.venv/bin/python scripts/validation/run-ci-gate.py --profile local-script-backed
+PYTHONPATH=. .venv/bin/python tests/validation/test_agent_governance_contract.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_surface_renderer.py
+PYTHONPATH=. .venv/bin/python tests/validation/test_provider_native_surfaces.py
 PYTHONPATH=. .venv/bin/python -m unittest discover -s tests/validation -p 'test_*.py'
 git diff --check
 git status --short
@@ -1510,14 +2304,14 @@ git status --short
 Expected: every validator and test PASS. git status shows only the intended
 Task 14 evidence changes before commit.
 
-- [ ] **Step 4: Write back and archive execution evidence**
+- [ ] **Step 5: Write back and archive execution evidence**
 
 Update spec.md to current implemented behavior. Complete task.md with command
 outputs and Commit IDs. Move plan.md and task.md together to
 docs/98.archive/changes/chg-0001-sdlc-taxonomy-convergence/. No active document
 links directly to the archived packet.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ~~~bash
 git add docs scripts tests
@@ -1537,16 +2331,22 @@ test ! -e docs/02.architecture/requirements
 test ! -e docs/05.operations/guides
 test ! -e docs/05.operations/policies
 test ! -e docs/05.operations/runbooks
+test -d docs/05.operations/catalog
+test ! -e docs/05.operations/00-workspace
+test ! -e docs/05.operations/12-infra-net
+test -d docs/05.operations/incidents
+test -d docs/05.operations/releases
 test ! -e archive
 ~~~
 
-All six commands must return zero.
+All commands must return zero.
 
 The final path scan must return no tracked documentation identity containing a
-YYYY-MM-DD prefix or a four-digit year directory. The final script manifest
-must exactly equal git ls-files scripts. Graphify regeneration is last and is
-advisory when its health report identifies ignored-volume or unrelated-root
-contamination.
+YYYY-MM-DD prefix or a four-digit year directory except the exact
+`docs/05.operations/incidents/<year>/inc-####-<slug>/` containment route. The
+final script manifest must exactly equal `git ls-files scripts`. Graphify
+regeneration is last and is advisory when its health report identifies
+ignored-volume or unrelated-root contamination.
 
 ## Risks and Rollback
 
@@ -1555,6 +2355,8 @@ contamination.
 | Link explosion from bulk moves | Commit mapping first; move one bounded unit; run link gate | Correct links or revert the logical commit |
 | Target profiles hide old paths | Explicit bounded migration manifest and final no-transition test | Restore prior profile commit |
 | Full Specs remain in tombstone role | Per-Spec mig-0001 disposition and active-consumer check | Restore current Spec before re-running archive task |
+| Similar Operations names are incorrectly merged | Require all four typed merge criteria, per-file preservation tokens, user approval, and a negative similarity-only mutation | Revert the bounded domain commit and correct the approved mig-0002 rows |
+| Structure and content changes become unreviewable | Commit the catalog move before any semantic subject change; use four bounded domain-group commits | Revert only the affected logical commit |
 | Operations roles lose unique content | Move roles before deduplication; diff each subject | Restore content from previous commit |
 | Script deletion breaks a hidden consumer | Manifest consumers, rg scan, tests, and gate graph | Restore file and consumer record in corrective commit |
 | Generator changes working tree in check mode | Mutation test around every generator | Revert generator commit |
