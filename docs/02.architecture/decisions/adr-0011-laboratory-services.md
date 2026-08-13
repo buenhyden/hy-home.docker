@@ -51,6 +51,6 @@ Existing alternatives, rationale, or rejected options in this ADR remain the alt
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-012-laboratory.md](../../01.requirements/prd-012-laboratory.md)
+- **PRD**: [../../01.requirements/prd-0012-laboratory.md](../../01.requirements/prd-0012-laboratory.md)
 - **Architecture Description**: [../descriptions/ad-0011-laboratory-architecture.md](../descriptions/ad-0011-laboratory-architecture.md)
 - **Spec**: [../../03.specs/012-laboratory/spec.md](../../03.specs/spec-0012-laboratory/spec.md)

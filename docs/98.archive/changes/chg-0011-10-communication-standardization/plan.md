@@ -23,7 +23,7 @@ Standardize the documentation system for the `10-communication` tier according t
 
 ### Documentation Layer
 
-#### [NEW] [011-communication.md](../../../01.requirements/prd-011-communication.md)
+#### [NEW] [011-communication.md](../../../01.requirements/prd-0011-communication.md)
 
 #### [NEW] [0010-communication-architecture.md](../../../02.architecture/descriptions/ad-0010-communication-architecture.md)
 
@@ -82,7 +82,7 @@ The existing proposed changes, documentation layer, infrastructure layer, or roa
 
 ## Related Documents
 
-- [Communication PRD](../../../01.requirements/prd-011-communication.md)
+- [Communication PRD](../../../01.requirements/prd-0011-communication.md)
 - [Communication Architecture Description](../../../02.architecture/descriptions/ad-0010-communication-architecture.md)
 - [Communication ADR](../../../02.architecture/decisions/adr-0010-communication-services.md)
 - [Communication spec](../../../03.specs/spec-0011-communication/spec.md)

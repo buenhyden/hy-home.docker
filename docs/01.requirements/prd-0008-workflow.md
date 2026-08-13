@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-008
+artifact_id: prd-0008
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Workflow Tier (07-workflow) Product Requirements
 
@@ -34,17 +34,17 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: Python 기반의 복잡한 DAG 정의 지원 (Airflow).
-- **REQ-PRD-FUN-02**: 분산 처리를 위한 워커 스케일링 지원 (CeleryExecutor).
-- **REQ-PRD-FUN-03**: GUI 기반의 로우코드 자동화 및 400개 이상의 외부 노드 연동 지원 (n8n).
-- **REQ-PRD-FUN-04**: 워크플로 실행 상태 및 로그의 실시간 모니터링 제공.
-- **REQ-PRD-FUN-05**: 에이전트가 API를 통해 워크플로를 제어할 수 있는 인터페이스 제공.
+- **PRD-0008-R0001**: Python 기반의 복잡한 DAG 정의 지원 (Airflow).
+- **PRD-0008-R0002**: 분산 처리를 위한 워커 스케일링 지원 (CeleryExecutor).
+- **PRD-0008-R0003**: GUI 기반의 로우코드 자동화 및 400개 이상의 외부 노드 연동 지원 (n8n).
+- **PRD-0008-R0004**: 워크플로 실행 상태 및 로그의 실시간 모니터링 제공.
+- **PRD-0008-R0005**: 에이전트가 API를 통해 워크플로를 제어할 수 있는 인터페이스 제공.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 모든 핵심 데이터 파이프라인의 Airflow 마이그레이션 완료 (100%).
-- **REQ-PRD-MET-02**: n8n을 통한 새로운 연동 구축 시간 50% 단축.
-- **REQ-PRD-MET-03**: 태스크 실패 시 알림 처리율 100%.
+- **PRD-0008-AC0001**: 모든 핵심 데이터 파이프라인의 Airflow 마이그레이션 완료 (100%).
+- **PRD-0008-AC0002**: n8n을 통한 새로운 연동 구축 시간 50% 단축.
+- **PRD-0008-AC0003**: 태스크 실패 시 알림 처리율 100%.
 
 ## Scope and Non-goals
 

@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-013
+artifact_id: prd-0013
 artifact_type: prd
 parent_ids: []
 created: 2026-03-27
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Open WebUI Product Requirements
 
@@ -34,15 +34,15 @@ Interacting with local LLMs often requires CLI knowledge or fragmented tools. Us
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: Support multi-model selection from the Ollama backend.
-- **REQ-PRD-FUN-02**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
-- **REQ-PRD-FUN-03**: Support persistent chat history and document metadata storage.
-- **REQ-PRD-FUN-04**: Integration with Traefik for SSL termination and SSO middleware.
+- **PRD-0013-R0001**: Support multi-model selection from the Ollama backend.
+- **PRD-0013-R0002**: Provide a RAG engine integrating with Qdrant for document indexing and retrieval.
+- **PRD-0013-R0003**: Support persistent chat history and document metadata storage.
+- **PRD-0013-R0004**: Integration with Traefik for SSL termination and SSO middleware.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: Successful connection to Ollama and Qdrant services within the local network.
-- **REQ-PRD-MET-02**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
+- **PRD-0013-AC0001**: Successful connection to Ollama and Qdrant services within the local network.
+- **PRD-0013-AC0002**: Document indexing latency under 5 seconds for standard PDF files (using CUDA acceleration).
 
 ## Scope and Non-goals
 

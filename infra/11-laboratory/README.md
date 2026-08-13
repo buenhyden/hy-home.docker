@@ -88,7 +88,7 @@ Runtime start/stop은 root include 활성 상태와 운영자 승인 범위를 �
 
 ### Related Documents
 
-- [PRD](../../docs/01.requirements/prd-012-laboratory.md)
+- [PRD](../../docs/01.requirements/prd-0012-laboratory.md)
 - [Architecture Description](../../docs/02.architecture/descriptions/ad-0011-laboratory-architecture.md)
 - [ADR](../../docs/02.architecture/decisions/adr-0011-laboratory-services.md)
 - [Technical Spec](../../docs/03.specs/spec-0012-laboratory/spec.md)

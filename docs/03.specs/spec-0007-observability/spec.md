@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for the
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-018-observability-optimization-hardening.md](../../01.requirements/prd-018-observability-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0018-observability-optimization-hardening.md](../../01.requirements/prd-0018-observability-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0006-lgtm-stack-selection.md](../../02.architecture/decisions/adr-0006-lgtm-stack-selection.md)
@@ -116,7 +116,7 @@ observability_gateway_contract:
 HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 06-observability
 bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 Service-local `docker compose -f infra/06-observability/docker-compose.yml config` requires the root network and Docker Secret context, or a local validation overlay that declares `infra_net`, `k3d-hyhome`, and the referenced secret files.

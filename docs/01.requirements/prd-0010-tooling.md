@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-010
+artifact_id: prd-0010
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Tooling Tier (09-tooling) Product Requirements
 
@@ -34,17 +34,17 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: Terraform 실행 및 상태 관리를 위한 중앙 집중식 IaC 오케스트레이션 지원 (Terrakube).
-- **REQ-PRD-FUN-02**: 다중 언어 정적 코드 분석 및 품질 게이트 적용 지원 (SonarQube).
-- **REQ-PRD-FUN-03**: Python 기반의 시나리오 정의 및 분산 부하 생성 지원 (Locust).
-- **REQ-PRD-FUN-04**: 내부 서비스 배포를 위한 단일 노드 사설 이미지 레지스트리 제공.
-- **REQ-PRD-FUN-05**: P2P 공유를 통한 장치 간 파일 동기화 기능 제공 (Syncthing).
+- **PRD-0010-R0001**: Terraform 실행 및 상태 관리를 위한 중앙 집중식 IaC 오케스트레이션 지원 (Terrakube).
+- **PRD-0010-R0002**: 다중 언어 정적 코드 분석 및 품질 게이트 적용 지원 (SonarQube).
+- **PRD-0010-R0003**: Python 기반의 시나리오 정의 및 분산 부하 생성 지원 (Locust).
+- **PRD-0010-R0004**: 내부 서비스 배포를 위한 단일 노드 사설 이미지 레지스트리 제공.
+- **PRD-0010-R0005**: P2P 공유를 통한 장치 간 파일 동기화 기능 제공 (Syncthing).
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 모든 인프라 변경의 IaC 수용률 100%.
-- **REQ-PRD-MET-02**: 주요 서비스 코드의 테크니컬 데트(Technical Debt) 비율 5% 미만 유지.
-- **REQ-PRD-MET-03**: 신규 환경 구축 시간 70% 이상 단축.
+- **PRD-0010-AC0001**: 모든 인프라 변경의 IaC 수용률 100%.
+- **PRD-0010-AC0002**: 주요 서비스 코드의 테크니컬 데트(Technical Debt) 비율 5% 미만 유지.
+- **PRD-0010-AC0003**: 신규 환경 구축 시간 70% 이상 단축.
 
 ## Scope and Non-goals
 

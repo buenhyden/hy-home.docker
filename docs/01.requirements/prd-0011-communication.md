@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-011
+artifact_id: prd-0011
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Communication Tier (10-communication) Product Requirements
 
@@ -34,17 +34,17 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: 개발용 SMTP 트랩 서비스 제공 (MailHog).
-- **REQ-PRD-FUN-02**: 운영용 고성능 IMAP/SMTP/JMAP 메일 서버 제공 (Stalwart).
-- **REQ-PRD-FUN-03**: 메일 전송 데이터의 실시간 UI 모니터링 및 검색 지원.
-- **REQ-PRD-FUN-04**: TLS 암호화를 통한 보안 통신 보장.
-- **REQ-PRD-FUN-05**: 시스템 SSO(Keycloak) 기반의 관리 UI 접근 제어.
+- **PRD-0011-R0001**: 개발용 SMTP 트랩 서비스 제공 (MailHog).
+- **PRD-0011-R0002**: 운영용 고성능 IMAP/SMTP/JMAP 메일 서버 제공 (Stalwart).
+- **PRD-0011-R0003**: 메일 전송 데이터의 실시간 UI 모니터링 및 검색 지원.
+- **PRD-0011-R0004**: TLS 암호화를 통한 보안 통신 보장.
+- **PRD-0011-R0005**: 시스템 SSO(Keycloak) 기반의 관리 UI 접근 제어.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
-- **REQ-PRD-MET-02**: optional mail compose가 valid `infra_net` 주소, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
-- **REQ-PRD-MET-03**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
+- **PRD-0011-AC0001**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
+- **PRD-0011-AC0002**: optional mail compose가 valid `infra_net` 주소, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
+- **PRD-0011-AC0003**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
 
 ## Scope and Non-goals
 

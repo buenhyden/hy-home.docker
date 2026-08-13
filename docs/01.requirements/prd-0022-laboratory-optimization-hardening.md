@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-022
+artifact_id: prd-0022
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 11-Laboratory Optimization & Hardening Product Requirements
 
@@ -38,22 +38,22 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 
 ## Requirements
 
-- **REQ-PRD-LAB-FUN-01**: 모든 Laboratory 라우터는 `gateway-standard-chain@file` + SSO 체인을 적용해야 한다.
-- **REQ-PRD-LAB-FUN-02**: 모든 Laboratory 라우터는 서비스별 IP allowlist middleware를 적용해야 한다.
-- **REQ-PRD-LAB-FUN-03**: dashboard는 direct host `ports` 노출을 제거하고 Traefik 경유 노출만 허용해야 한다.
-- **REQ-PRD-LAB-FUN-04**: `infra/11-laboratory` compose는 root `infra_net` context에 합류하는 static IP network block을 유지해야 한다.
-- **REQ-PRD-LAB-FUN-05**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
-- **REQ-PRD-LAB-FUN-06**: `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-LAB-FUN-07**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **REQ-PRD-LAB-FUN-08**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
-- **REQ-PRD-LAB-FUN-09**: open-notebook UI route는 gateway+allowlist+large-body+SSO 경계를 적용하고, Docker Secret 기반 credential 주입을 유지해야 한다.
+- **PRD-0022-R0001**: 모든 Laboratory 라우터는 `gateway-standard-chain@file` + SSO 체인을 적용해야 한다.
+- **PRD-0022-R0002**: 모든 Laboratory 라우터는 서비스별 IP allowlist middleware를 적용해야 한다.
+- **PRD-0022-R0003**: dashboard는 direct host `ports` 노출을 제거하고 Traefik 경유 노출만 허용해야 한다.
+- **PRD-0022-R0004**: `infra/11-laboratory` compose는 root `infra_net` context에 합류하는 static IP network block을 유지해야 한다.
+- **PRD-0022-R0005**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
+- **PRD-0022-R0006**: `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` job을 제공해야 한다.
+- **PRD-0022-R0007**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **PRD-0022-R0008**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
+- **PRD-0022-R0009**: open-notebook UI route는 gateway+allowlist+large-body+SSO 경계를 적용하고, Docker Secret 기반 credential 주입을 유지해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-LAB-MET-01**: `bash scripts/hardening/check-all-hardening.sh 11-laboratory` 실패 0건.
-- **REQ-PRD-LAB-MET-02**: root `admin` profile compose 정적 검증과 optional service hardening checks가 통과.
-- **REQ-PRD-LAB-MET-03**: PRD~Runbook optimization 문서 간 양방향 링크 정합성 확보.
-- **REQ-PRD-LAB-MET-04**: 카탈로그 `11-laboratory` 항목이 Plan/Tasks/Operations에 반영.
+- **PRD-0022-AC0001**: `bash scripts/hardening/check-all-hardening.sh 11-laboratory` 실패 0건.
+- **PRD-0022-AC0002**: root `admin` profile compose 정적 검증과 optional service hardening checks가 통과.
+- **PRD-0022-AC0003**: PRD~Runbook optimization 문서 간 양방향 링크 정합성 확보.
+- **PRD-0022-AC0004**: 카탈로그 `11-laboratory` 항목이 Plan/Tasks/Operations에 반영.
 
 ## Scope and Non-goals
 

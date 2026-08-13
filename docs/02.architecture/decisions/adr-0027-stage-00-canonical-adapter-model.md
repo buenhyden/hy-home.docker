@@ -104,7 +104,7 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
 
 ## Related Documents
 
-- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/prd-024-agent-governance-standardization.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/prd-0024-agent-governance-standardization.md)
 - **Architecture Description**: [Agent Governance Canonical Adapter Architecture Description](../descriptions/ad-0027-agent-governance-canonical-adapter.md)
 - **Current Plan**: Agent Governance Decision Items and Attachment-Gap Plan
 - **Current Task**: Agent Governance Missing Items Implementation Task

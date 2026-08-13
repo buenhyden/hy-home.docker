@@ -3,7 +3,7 @@ status: archived
 artifact_id: spec-0125
 artifact_type: archive
 parent_ids:
-  - prd-025
+  - prd-0025
   - ad-0028
   - adr-0028
   - spec-0123

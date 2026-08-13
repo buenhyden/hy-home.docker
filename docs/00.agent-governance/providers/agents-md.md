@@ -97,7 +97,7 @@ behavioral and must not be described as native interception.
 
 ## Related Documents
 
-- `../../01.requirements/prd-024-agent-governance-standardization.md`
+- `../../01.requirements/prd-0024-agent-governance-standardization.md`
 - `../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
 - `../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
 - `docs/00.agent-governance/rules/github-governance.md`

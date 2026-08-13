@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-005
+artifact_id: prd-0005
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Analytics Tier (04-data/analytics) Product Requirements
 
@@ -37,17 +37,17 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: 시계열 데이터(TSDB)를 위한 전용 쓰기 및 조회 인터페이스 제공.
-- **REQ-PRD-FUN-02**: SQL 문법을 이용한 실시간 스트림 처리 엔진(Stream Processing) 구축.
-- **REQ-PRD-FUN-03**: 전문 검색(Full-text Search) 및 로그 수집 파이프라인 연동.
-- **REQ-PRD-FUN-04**: 대규모 읽기 최적화 및 조인 성능을 보장하는 분석용 데이터웨어하우스 구축.
+- **PRD-0005-R0001**: 시계열 데이터(TSDB)를 위한 전용 쓰기 및 조회 인터페이스 제공.
+- **PRD-0005-R0002**: SQL 문법을 이용한 실시간 스트림 처리 엔진(Stream Processing) 구축.
+- **PRD-0005-R0003**: 전문 검색(Full-text Search) 및 로그 수집 파이프라인 연동.
+- **PRD-0005-R0004**: 대규모 읽기 최적화 및 조인 성능을 보장하는 분석용 데이터웨어하우스 구축.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: InfluxDB 3 Core 단일 compose, database 이름, port `8181`, `/api/v3/write_lp` endpoint/schema, current healthcheck가 문서와 정적 source에서 일치해야 한다. Token provisioning과 authenticated write acceptance는 별도 runtime 승인 전까지 검증된 것으로 간주하지 않는다.
-- **REQ-PRD-MET-02**: ksqlDB compose는 Kafka/Schema Registry/Connect 의존성을 명시하고 `data`/`ksql` profile 경계를 유지해야 한다.
-- **REQ-PRD-MET-03**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, optional cluster variant, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
-- **REQ-PRD-MET-04**: live 성능 수치(P95, indexing latency, large join runtime)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.
+- **PRD-0005-AC0001**: InfluxDB 3 Core 단일 compose, database 이름, port `8181`, `/api/v3/write_lp` endpoint/schema, current healthcheck가 문서와 정적 source에서 일치해야 한다. Token provisioning과 authenticated write acceptance는 별도 runtime 승인 전까지 검증된 것으로 간주하지 않는다.
+- **PRD-0005-AC0002**: ksqlDB compose는 Kafka/Schema Registry/Connect 의존성을 명시하고 `data`/`ksql` profile 경계를 유지해야 한다.
+- **PRD-0005-AC0003**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, optional cluster variant, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
+- **PRD-0005-AC0004**: live 성능 수치(P95, indexing latency, large join runtime)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.
 
 ## Scope and Non-goals
 

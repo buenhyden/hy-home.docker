@@ -97,7 +97,7 @@ change, not directory-name symmetry.
 
 - Spec 130: Template Contract System Canonicalization
 - Spec 129: Document Contract Canonicalization
-- [Agent Governance PRD](../../01.requirements/prd-024-agent-governance-standardization.md)
+- [Agent Governance PRD](../../01.requirements/prd-0024-agent-governance-standardization.md)
 - [Agent Governance Architecture Description](../../02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md)
 - [Stage 00 adapter ADR](../../02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md)
 - [Canonical implementation audit](../../90.references/audits/ref-0019-readme.md)

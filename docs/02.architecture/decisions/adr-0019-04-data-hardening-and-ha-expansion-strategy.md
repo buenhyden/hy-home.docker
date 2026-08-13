@@ -71,7 +71,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-016-data-optimization-hardening.md](../../01.requirements/prd-016-data-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0016-data-optimization-hardening.md](../../01.requirements/prd-0016-data-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md](../descriptions/ad-0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../../03.specs/spec-0004-data/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md

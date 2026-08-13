@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for `in
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-014-auth-optimization-hardening.md](../../01.requirements/prd-014-auth-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0014-auth-optimization-hardening.md](../../01.requirements/prd-0014-auth-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0014-auth-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md](../../02.architecture/decisions/adr-0002-keycloak-oauth2-proxy-choice.md)
@@ -108,7 +108,7 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 ## Success Criteria & Verification Plan

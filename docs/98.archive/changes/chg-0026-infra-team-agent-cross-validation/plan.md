@@ -100,6 +100,6 @@ Existing cross-validation documents were located under `docs/superpowers/specs` 
 - **Spec**: [../03.specs/008-workflow/agent-design.md](../../../03.specs/spec-0008-workflow/spec.md)
 - **Task**: [Infra team agent cross-validation task](task.md)
 - **Workflow Parent Spec**: [../03.specs/008-workflow/spec.md](../../../03.specs/spec-0008-workflow/spec.md)
-- **PRD Context**: [../01.requirements/prd-019-workflow-optimization-hardening.md](../../../01.requirements/prd-019-workflow-optimization-hardening.md)
+- **PRD Context**: [../01.requirements/prd-0019-workflow-optimization-hardening.md](../../../01.requirements/prd-0019-workflow-optimization-hardening.md)
 - **ARD Context**: [../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0022-workflow-optimization-hardening-architecture.md)
 - **Documentation Protocol**: [../00.agent-governance/rules/documentation-protocol.md](../../../00.agent-governance/rules/documentation-protocol.md)

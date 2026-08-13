@@ -10,6 +10,11 @@ import re
 
 _YEAR_PART_PATTERN = re.compile(r"[0-9]{4}")
 _DATE_PREFIX_PATTERN = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}-")
+_INCIDENT_YEAR_PATTERN = re.compile(r"[0-9]{4}")
+_INCIDENT_PACKET_PATTERN = re.compile(r"inc-[0-9]{4}-[a-z0-9][a-z0-9-]*")
+_INTERNAL_REQUIREMENT_ID_PATTERN = re.compile(
+    r"(?:PRD-[0-9]{4}-(?:R|AC)[0-9]{4}|(?:SRS|IFR)-[0-9]{4}-R[0-9]{4})"
+)
 
 
 @dataclass(frozen=True)
@@ -19,6 +24,25 @@ class TaxonomyFinding:
     code: str
     path: str
     message: str
+
+
+def is_valid_internal_requirement_id(value: str) -> bool:
+    """Return whether ``value`` uses the canonical typed internal ID shape."""
+
+    return _INTERNAL_REQUIREMENT_ID_PATTERN.fullmatch(value) is not None
+
+
+def is_valid_incident_path(path: PurePosixPath) -> bool:
+    """Return whether ``path`` is one fixed-role file in a canonical packet."""
+
+    parts = path.parts
+    return (
+        len(parts) == 6
+        and parts[:3] == ("docs", "05.operations", "incidents")
+        and _INCIDENT_YEAR_PATTERN.fullmatch(parts[3]) is not None
+        and _INCIDENT_PACKET_PATTERN.fullmatch(parts[4]) is not None
+        and parts[5] in {"incident.md", "postmortem.md"}
+    )
 
 
 def classify_path(
@@ -116,6 +140,25 @@ def validate_stable_identity(
         findings.append(
             TaxonomyFinding("path-id-mismatch", str(path), artifact_id)
         )
-    for part in find_dated_identity_parts(path):
+    incident_role = artifact_type in {"incident", "postmortem"}
+    role_filename_valid = (
+        artifact_type == "incident" and path.name == "incident.md"
+    ) or (
+        artifact_type == "postmortem" and path.name == "postmortem.md"
+    )
+    valid_incident_route = (
+        incident_role and role_filename_valid and is_valid_incident_path(path)
+    )
+    if incident_role and not valid_incident_route:
+        findings.append(
+            TaxonomyFinding(
+                "incident-path-invalid",
+                str(path),
+                "incident and postmortem files require docs/05.operations/incidents/"
+                "<year>/inc-####-<slug>/<role>.md",
+            )
+        )
+    dated_parts = () if valid_incident_route else find_dated_identity_parts(path)
+    for part in dated_parts:
         findings.append(TaxonomyFinding("dated-path-identity", str(path), part))
     return findings

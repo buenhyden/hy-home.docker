@@ -380,7 +380,10 @@ class OperationsTaxonomyTests(unittest.TestCase):
             target_paths.discard(target)
             with self.subTest(source=source):
                 self.assertTrue(source_paths)
-                self.assertTrue(source_paths.issubset(target_paths))
+                self.assertTrue(
+                    source_paths.issubset(target_paths),
+                    f"missing current navigation: {sorted(source_paths - target_paths)}",
+                )
                 if re.match(
                     r"docs/05\.operations/(04-data|05-messaging|06-observability|07-workflow|08-ai|09-tooling|10-communication|11-laboratory|12-infra-net)/",
                     target,

@@ -89,7 +89,7 @@ This document tracks the `08-ai` optimization and hardening execution tasks. It 
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-020-ai-optimization-hardening.md](../../../01.requirements/prd-020-ai-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0020-ai-optimization-hardening.md](../../../01.requirements/prd-0020-ai-optimization-hardening.md)
 - **ARD**: [../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-08-ai-optimization-hardening-plan.md](plan.md)

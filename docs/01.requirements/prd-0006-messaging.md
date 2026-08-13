@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-006
+artifact_id: prd-0006
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Messaging Tier (05-messaging) Product Requirements
 
@@ -35,16 +35,16 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: Apache Kafka (KRaft mode)를 제공한다. `infra/05-messaging/kafka/docker-compose.yml`은 3 broker full compose이며, root `docker-compose.yml`은 dev compose(`docker-compose.dev.yml`)를 include해 단일 broker로 렌더링한다.
-- **REQ-PRD-FUN-02**: RabbitMQ를 통한 표준 AMQP 0-9-1 프로토콜 지원.
-- **REQ-PRD-FUN-03**: Avro/JSON 스키마 관리를 위한 Schema Registry 제공.
-- **REQ-PRD-FUN-04**: 웹 기반 관리 UI(Kafbat, RabbitMQ Management) 제공.
-- **REQ-PRD-FUN-05**: Kafka REST Proxy와 Kafka Exporter를 통해 운영 API와 지표 수집 경계를 제공한다.
+- **PRD-0006-R0001**: Apache Kafka (KRaft mode)를 제공한다. `infra/05-messaging/kafka/docker-compose.yml`은 3 broker full compose이며, root `docker-compose.yml`은 dev compose(`docker-compose.dev.yml`)를 include해 단일 broker로 렌더링한다.
+- **PRD-0006-R0002**: RabbitMQ를 통한 표준 AMQP 0-9-1 프로토콜 지원.
+- **PRD-0006-R0003**: Avro/JSON 스키마 관리를 위한 Schema Registry 제공.
+- **PRD-0006-R0004**: 웹 기반 관리 UI(Kafbat, RabbitMQ Management) 제공.
+- **PRD-0006-R0005**: Kafka REST Proxy와 Kafka Exporter를 통해 운영 API와 지표 수집 경계를 제공한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`가 root-included 메시징 구성에서 실패 0건으로 통과한다.
-- **REQ-PRD-MET-02**: `bash scripts/hardening/check-all-hardening.sh 05-messaging`가 이미지 핀, 라우터 middleware, SSO, 경로 기준선 회귀를 차단한다.
+- **PRD-0006-AC0001**: `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`가 root-included 메시징 구성에서 실패 0건으로 통과한다.
+- **PRD-0006-AC0002**: `bash scripts/hardening/check-all-hardening.sh 05-messaging`가 이미지 핀, 라우터 middleware, SSO, 경로 기준선 회귀를 차단한다.
 
 ## Scope and Non-goals
 

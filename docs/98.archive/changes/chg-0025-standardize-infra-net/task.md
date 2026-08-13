@@ -23,7 +23,7 @@ This document is the task area for applying the `infra_net` network to all infra
 
 - **Parent Spec**: [../../03.specs/098-standardize-infra-net/spec.md](../../../03.specs/spec-0098-standardize-infra-net/spec.md)
 - **Parent Plan**: [../plans/2026-04-01-standardize-infra-net.md](plan.md)
-- **Parent PRD**: [../../01.requirements/prd-023-standardize-infra-net.md](../../../01.requirements/prd-023-standardize-infra-net.md)
+- **Parent PRD**: [../../01.requirements/prd-0023-standardize-infra-net.md](../../../01.requirements/prd-0023-standardize-infra-net.md)
 
 ## Working Rules
 
@@ -77,4 +77,4 @@ This document is the task area for applying the `infra_net` network to all infra
 - **ARD**: [../../02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../../02.architecture/descriptions/ad-0026-standardize-infra-net.md)
 - **ADR**: [../../02.architecture/decisions/adr-0026-standardize-infra-net.md](../../../02.architecture/decisions/adr-0026-standardize-infra-net.md)
 - **Operation**: [../../05.operations/policies/12-infra-net/standardize-infra-net.md](../../../05.operations/policies/12-infra-net/standardize-infra-net.md)
-- **PRD**: [../../01.requirements/prd-023-standardize-infra-net.md](../../../01.requirements/prd-023-standardize-infra-net.md)
+- **PRD**: [../../01.requirements/prd-0023-standardize-infra-net.md](../../../01.requirements/prd-0023-standardize-infra-net.md)

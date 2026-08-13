@@ -97,7 +97,7 @@ This document is the optimization/hardening implementation plan for `infra/03-se
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-015-security-optimization-hardening.md](../../../01.requirements/prd-015-security-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0015-security-optimization-hardening.md](../../../01.requirements/prd-0015-security-optimization-hardening.md)
 - **ARD**: [../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/adr-0018-vault-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/003-security/spec.md](../../../03.specs/spec-0003-security/spec.md)

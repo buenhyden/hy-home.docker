@@ -253,31 +253,31 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [docs/01.requirements/README.md](../../01.requirements/README.md) | folder index |
-| [docs/01.requirements/prd-001-gateway.md](../../01.requirements/prd-001-gateway.md) | Markdown reference |
-| [docs/01.requirements/prd-002-auth.md](../../01.requirements/prd-002-auth.md) | Markdown reference |
-| [docs/01.requirements/prd-003-security.md](../../01.requirements/prd-003-security.md) | Markdown reference |
-| [docs/01.requirements/prd-004-data.md](../../01.requirements/prd-004-data.md) | Markdown reference |
-| [docs/01.requirements/prd-005-data-analytics.md](../../01.requirements/prd-005-data-analytics.md) | Markdown reference |
-| [docs/01.requirements/prd-006-messaging.md](../../01.requirements/prd-006-messaging.md) | Markdown reference |
-| [docs/01.requirements/prd-007-observability.md](../../01.requirements/prd-007-observability.md) | Markdown reference |
-| [docs/01.requirements/prd-008-workflow.md](../../01.requirements/prd-008-workflow.md) | Markdown reference |
-| [docs/01.requirements/prd-009-ai.md](../../01.requirements/prd-009-ai.md) | Markdown reference |
-| [docs/01.requirements/prd-010-tooling.md](../../01.requirements/prd-010-tooling.md) | Markdown reference |
-| [docs/01.requirements/prd-011-communication.md](../../01.requirements/prd-011-communication.md) | Markdown reference |
-| [docs/01.requirements/prd-012-laboratory.md](../../01.requirements/prd-012-laboratory.md) | Markdown reference |
-| [docs/01.requirements/prd-013-ai-open-webui.md](../../01.requirements/prd-013-ai-open-webui.md) | Markdown reference |
-| [docs/01.requirements/prd-014-auth-optimization-hardening.md](../../01.requirements/prd-014-auth-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-015-security-optimization-hardening.md](../../01.requirements/prd-015-security-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-016-data-optimization-hardening.md](../../01.requirements/prd-016-data-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-017-messaging-optimization-hardening.md](../../01.requirements/prd-017-messaging-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-018-observability-optimization-hardening.md](../../01.requirements/prd-018-observability-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-019-workflow-optimization-hardening.md](../../01.requirements/prd-019-workflow-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-020-ai-optimization-hardening.md](../../01.requirements/prd-020-ai-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-021-tooling-optimization-hardening.md](../../01.requirements/prd-021-tooling-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-022-laboratory-optimization-hardening.md](../../01.requirements/prd-022-laboratory-optimization-hardening.md) | Markdown reference |
-| [docs/01.requirements/prd-023-standardize-infra-net.md](../../01.requirements/prd-023-standardize-infra-net.md) | Markdown reference |
-| [docs/01.requirements/prd-024-agent-governance-standardization.md](../../01.requirements/prd-024-agent-governance-standardization.md) | Markdown reference |
-| [docs/01.requirements/prd-025-operational-readiness-closure.md](../../01.requirements/prd-025-operational-readiness-closure.md) | Markdown reference |
+| [docs/01.requirements/prd-0001-gateway.md](../../01.requirements/prd-0001-gateway.md) | Markdown reference |
+| [docs/01.requirements/prd-0002-auth.md](../../01.requirements/prd-0002-auth.md) | Markdown reference |
+| [docs/01.requirements/prd-0003-security.md](../../01.requirements/prd-0003-security.md) | Markdown reference |
+| [docs/01.requirements/prd-0004-data.md](../../01.requirements/prd-0004-data.md) | Markdown reference |
+| [docs/01.requirements/prd-0005-data-analytics.md](../../01.requirements/prd-0005-data-analytics.md) | Markdown reference |
+| [docs/01.requirements/prd-0006-messaging.md](../../01.requirements/prd-0006-messaging.md) | Markdown reference |
+| [docs/01.requirements/prd-0007-observability.md](../../01.requirements/prd-0007-observability.md) | Markdown reference |
+| [docs/01.requirements/prd-0008-workflow.md](../../01.requirements/prd-0008-workflow.md) | Markdown reference |
+| [docs/01.requirements/prd-0009-ai.md](../../01.requirements/prd-0009-ai.md) | Markdown reference |
+| [docs/01.requirements/prd-0010-tooling.md](../../01.requirements/prd-0010-tooling.md) | Markdown reference |
+| [docs/01.requirements/prd-0011-communication.md](../../01.requirements/prd-0011-communication.md) | Markdown reference |
+| [docs/01.requirements/prd-0012-laboratory.md](../../01.requirements/prd-0012-laboratory.md) | Markdown reference |
+| [docs/01.requirements/prd-0013-ai-open-webui.md](../../01.requirements/prd-0013-ai-open-webui.md) | Markdown reference |
+| [docs/01.requirements/prd-0014-auth-optimization-hardening.md](../../01.requirements/prd-0014-auth-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0015-security-optimization-hardening.md](../../01.requirements/prd-0015-security-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0016-data-optimization-hardening.md](../../01.requirements/prd-0016-data-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0017-messaging-optimization-hardening.md](../../01.requirements/prd-0017-messaging-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0018-observability-optimization-hardening.md](../../01.requirements/prd-0018-observability-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0019-workflow-optimization-hardening.md](../../01.requirements/prd-0019-workflow-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0020-ai-optimization-hardening.md](../../01.requirements/prd-0020-ai-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0021-tooling-optimization-hardening.md](../../01.requirements/prd-0021-tooling-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0022-laboratory-optimization-hardening.md](../../01.requirements/prd-0022-laboratory-optimization-hardening.md) | Markdown reference |
+| [docs/01.requirements/prd-0023-standardize-infra-net.md](../../01.requirements/prd-0023-standardize-infra-net.md) | Markdown reference |
+| [docs/01.requirements/prd-0024-agent-governance-standardization.md](../../01.requirements/prd-0024-agent-governance-standardization.md) | Markdown reference |
+| [docs/01.requirements/prd-0025-operational-readiness-closure.md](../../01.requirements/prd-0025-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/README.md](../../02.architecture/README.md) | folder index |
 | [docs/02.architecture/decisions/README.md](../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md) | Markdown reference |
@@ -1016,8 +1016,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/security/seed-grype-db-cache.sh](../../../scripts/security/seed-grype-db-cache.sh) | script |
 | [scripts/security/verify-sample-service-supply-chain.sh](../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
-| [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
-| [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |

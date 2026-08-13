@@ -70,7 +70,7 @@ This document is the detailed implementation plan for standardizing documentatio
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-007-observability.md](../../../01.requirements/prd-007-observability.md)
+- **PRD**: [../../01.requirements/prd-0007-observability.md](../../../01.requirements/prd-0007-observability.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0006-observability-architecture.md](../../../02.architecture/descriptions/ad-0006-observability-architecture.md)
 - **Spec**: [../../03.specs/007-observability/spec.md](../../../03.specs/spec-0007-observability/spec.md)
 - **ADR**: [../../02.architecture/decisions/adr-0006-lgtm-stack-selection.md](../../../02.architecture/decisions/adr-0006-lgtm-stack-selection.md)

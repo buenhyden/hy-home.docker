@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-025
+artifact_id: prd-0025
 artifact_type: prd
 parent_ids: []
 created: 2026-07-19
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Operational Readiness Closure Product Requirements
 
@@ -59,49 +59,49 @@ runtime readiness, recoverability, artifact trust, deployability를 증명하지
 
 ### Functional requirements
 
-- **REQ-ORC-001**: 시스템은 격리된 Compose project에서 정확히 승인된 `core`
+- **PRD-0025-R0001**: 시스템은 격리된 Compose project에서 정확히 승인된 `core`
   service set을 시작하고 observed health/readiness, timeout, failure recovery,
   teardown 결과를 기록해야 한다.
-- **REQ-ORC-002**: runtime rehearsal은 synthetic secret과 전용 임시 network,
+- **PRD-0025-R0002**: runtime rehearsal은 synthetic secret과 전용 임시 network,
   volume, project identity를 사용하고 다른 Docker project를 변경하지 않아야
   한다.
-- **REQ-ORC-003**: 시스템은 synthetic PostgreSQL state에 대해 logical backup,
+- **PRD-0025-R0003**: 시스템은 synthetic PostgreSQL state에 대해 logical backup,
   restore, representative major-version upgrade, integrity comparison, rollback
   decision을 검증해야 한다.
-- **REQ-ORC-004**: `examples/sample-web-service` image에 대해 digest-bound SBOM,
+- **PRD-0025-R0004**: `examples/sample-web-service` image에 대해 digest-bound SBOM,
   vulnerability policy verdict, provenance statement, signature verification을
   생성하고 tamper 또는 identity mismatch를 거부해야 한다.
-- **REQ-ORC-005**: 공급망 도구는 호스트 전역 설치 없이 version과 container
+- **PRD-0025-R0005**: 공급망 도구는 호스트 전역 설치 없이 version과 container
   image digest가 고정된 wrapper를 통해 실행해야 한다.
-- **REQ-ORC-006**: OpenSSF Scorecard 실제 저장소 평가는 read-only advisory로
+- **PRD-0025-R0006**: OpenSSF Scorecard 실제 저장소 평가는 read-only advisory로
   실행하고, CI 차단 판정은 versioned local policy와 deterministic fixture로
   수행해야 한다.
-- **REQ-ORC-007**: sample service deployment rehearsal은 verified digest를
+- **PRD-0025-R0007**: sample service deployment rehearsal은 verified digest를
   baseline과 canary로 분리하고 health gate 통과 후에만 local stable target으로
   promotion해야 한다.
-- **REQ-ORC-008**: canary 또는 promotion 후 failure 발생 시 이전 verified
+- **PRD-0025-R0008**: canary 또는 promotion 후 failure 발생 시 이전 verified
   digest로 rollback하고 post-rollback health를 검증해야 한다.
-- **REQ-ORC-009**: 각 실행 Wave는 승인된 Spec, prospective Plan, active Task,
+- **PRD-0025-R0009**: 각 실행 Wave는 승인된 Spec, prospective Plan, active Task,
   targeted validation, independent review, logical commit을 가져야 한다.
-- **REQ-ORC-010**: raw runtime output은 ignored repo-support staging에만 일시
+- **PRD-0025-R0010**: raw runtime output은 ignored repo-support staging에만 일시
   보관하고, 장기 evidence에는 non-secret command/result summary, immutable
   identifiers, checksums, exit status만 승격해야 한다.
 
 ### Non-functional requirements
 
-- **REQ-ORC-NFR-001 — Isolation**: 모든 runtime resource는 task-scoped identity와
+- **PRD-0025-R0011 — Isolation**: 모든 runtime resource는 task-scoped identity와
   labels로 식별되어야 하며 cleanup은 그 resource에만 적용되어야 한다.
-- **REQ-ORC-NFR-002 — Security**: secret value, private key, token, raw auth log,
+- **PRD-0025-R0012 — Security**: secret value, private key, token, raw auth log,
   production data는 tracked docs와 `_workspace`에 저장되어서는 안 된다.
-- **REQ-ORC-NFR-003 — Determinism**: network-independent gates는 pinned inputs와
+- **PRD-0025-R0013 — Determinism**: network-independent gates는 pinned inputs와
   fixtures로 동일 pass/fail 결과를 재현해야 한다.
-- **REQ-ORC-NFR-004 — Fail closed**: target ambiguity, digest mismatch, integrity
+- **PRD-0025-R0014 — Fail closed**: target ambiguity, digest mismatch, integrity
   mismatch, missing cleanup, unapproved scope expansion은 성공 또는 skip으로
   처리해서는 안 된다.
-- **REQ-ORC-NFR-005 — Traceability**: PRD, Architecture Description, ADR, Specs 124-127, Plans, Tasks,
+- **PRD-0025-R0015 — Traceability**: PRD, Architecture Description, ADR, Specs 124-127, Plans, Tasks,
   validation evidence 사이에 stable artifact ID 기반 추적성이 유지되어야
   한다.
-- **REQ-ORC-NFR-006 — Honest lifecycle**: 로컬 범위가 완료되어도 remote 또는
+- **PRD-0025-R0016 — Honest lifecycle**: 로컬 범위가 완료되어도 remote 또는
   live acceptance criteria가 남아 있으면 해당 Spec을 완료로 표시해서는 안
   된다.
 
@@ -113,20 +113,20 @@ implementation matrix, 사용자 승인된 2026-07-19 설계 경계다. 외부 g
 
 다음 조건이 모두 확인되면 이 PRD의 로컬 구현 목표를 충족한다.
 
-- **VAL-ORC-001**: approved `core` service set이 isolated project에서 ready 또는
+- **PRD-0025-AC0001**: approved `core` service set이 isolated project에서 ready 또는
   명확한 bounded failure로 수렴하고 teardown 결과가 검증된다.
-- **VAL-ORC-002**: synthetic PostgreSQL fixture의 backup, restore, logical
+- **PRD-0025-AC0002**: synthetic PostgreSQL fixture의 backup, restore, logical
   upgrade 후 schema, row count, digest, constraints, representative query가
   일치한다.
-- **VAL-ORC-003**: sample service의 SBOM, scan verdict, provenance, signature가
+- **PRD-0025-AC0003**: sample service의 SBOM, scan verdict, provenance, signature가
   동일 image digest에 결합되고 tampered fixture가 거부된다.
-- **VAL-ORC-004**: local canary와 promotion이 required gates를 소비하고 injected
+- **PRD-0025-AC0004**: local canary와 promotion이 required gates를 소비하고 injected
   failure 후 이전 digest rollback과 health recovery가 확인된다.
-- **VAL-ORC-005**: Scorecard remote read-only 결과가 advisory로 기록되고
+- **PRD-0025-AC0005**: Scorecard remote read-only 결과가 advisory로 기록되고
   network-independent policy fixture가 CI decision을 결정한다.
-- **VAL-ORC-006**: metadata, lifecycle, traceability, implementation alignment,
+- **PRD-0025-AC0006**: metadata, lifecycle, traceability, implementation alignment,
   repository contract, targeted tests, controlled all-files QA가 통과한다.
-- **VAL-ORC-007**: Task evidence에는 명령, 종료 코드, tool/image identity,
+- **PRD-0025-AC0007**: Task evidence에는 명령, 종료 코드, tool/image identity,
   artifact digest, result summary, review, commit, deferred remote work가
   기록되고 secret/raw log는 포함되지 않는다.
 

@@ -24,9 +24,9 @@ Protocol for maintaining documentation consistency and governance traceability.
   commands, identifiers, paths, evidence labels, and quoted upstream terms in
   their original form.
 - PRD files under `docs/01.requirements/` use the canonical
-  `prd-<id>-<slug>.md` filename form.
+  `prd-####-<slug>.md` filename form.
 - Spec folders under `docs/03.specs/` use the canonical
-  `spec-<id>-<capability>/` directory form; Spec, Plan, and Task live together
+  `spec-####-<capability>/` directory form; Spec, Plan, and Task live together
   as `spec.md`, `plan.md`, and `task.md`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
 - Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). Tombstones live only under `docs/98.archive` and are not active artifacts.
@@ -153,34 +153,34 @@ not restate the enums, thresholds, field conditions, or validation algorithm.
 | Stage/Folder                                                           | Document Type                        | Template                                                              |
 | ---------------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
 | `docs/01.requirements/`                                                | PRD                                  | `docs/99.templates/templates/sdlc/prd.template.md`                    |
-| `docs/02.architecture/descriptions/ad-<id>-<slug>.md`                  | Architecture Description             | `docs/99.templates/templates/sdlc/architecture-description.template.md` |
+| `docs/02.architecture/descriptions/ad-####-<slug>.md`                  | Architecture Description             | `docs/99.templates/templates/sdlc/architecture-description.template.md` |
 | `docs/02.architecture/decisions/`                                      | ADR                                  | `docs/99.templates/templates/sdlc/adr.template.md`                    |
 | `docs/03.specs/`                                                       | Spec                                 | `docs/99.templates/templates/sdlc/spec.template.md`                   |
-| `docs/03.specs/spec-<id>-<capability>/api-spec.md`                             | API Spec                             | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
-| `docs/03.specs/spec-<id>-<capability>/agent-design.md`                         | Agent Design                         | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
-| `docs/03.specs/spec-<id>-<capability>/data-model.md`                           | Data Model                           | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
-| `docs/03.specs/spec-<id>-<capability>/service.md`                              | Service Scaffold                     | `docs/99.templates/templates/spec-contracts/service.template.md`      |
-| `docs/03.specs/spec-<id>-<capability>/tests.md`                                | Test Contract                        | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
-| `docs/03.specs/spec-<id>-<capability>/contracts/openapi.yaml`                  | OpenAPI Contract                     | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
-| `docs/03.specs/spec-<id>-<capability>/contracts/schema.graphql`                | GraphQL Contract                     | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
-| `docs/03.specs/spec-<id>-<capability>/contracts/service.proto`                 | Protobuf Contract                    | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
-| `docs/01.requirements/srs-<id>-<slug>.md`                              | SRS                                  | `docs/99.templates/templates/sdlc/srs.template.md`                    |
-| `docs/01.requirements/interface-<id>-<slug>.md`                        | Interface Requirement                | `docs/99.templates/templates/sdlc/interface-requirement.template.md`  |
-| `docs/03.specs/spec-<id>-<slug>/plan.md`                               | Plan                                 | `docs/99.templates/templates/sdlc/plan.template.md`                   |
-| `docs/03.specs/spec-<id>-<slug>/task.md`                               | Task                                 | `docs/99.templates/templates/sdlc/task.template.md`                   |
-| `docs/05.operations/<domain>/ops-<id>-<subject>/guide.md`              | Operations Guide                     | `docs/99.templates/templates/operations/guide.template.md`            |
-| `docs/05.operations/<domain>/ops-<id>-<subject>/policy.md`             | Operations Policy                    | `docs/99.templates/templates/operations/policy.template.md`           |
-| `docs/05.operations/<domain>/ops-<id>-<subject>/runbook.md`            | Operations Runbook                   | `docs/99.templates/templates/operations/runbook.template.md`          |
-| `docs/05.operations/incidents/inc-<id>-<slug>/incident.md`            | Incident                             | `docs/99.templates/templates/operations/incident.template.md`         |
-| `docs/05.operations/incidents/inc-<id>-<slug>/postmortem.md`           | Postmortem                           | `docs/99.templates/templates/operations/postmortem.template.md`       |
-| `docs/05.operations/releases/rel-<id>-<slug>/release.md`               | Release                              | `docs/99.templates/templates/operations/release.template.md`          |
+| `docs/03.specs/spec-####-<capability>/api-spec.md`                             | API Spec                             | `docs/99.templates/templates/spec-contracts/api-spec.template.md`     |
+| `docs/03.specs/spec-####-<capability>/agent-design.md`                         | Agent Design                         | `docs/99.templates/templates/spec-contracts/agent-design.template.md` |
+| `docs/03.specs/spec-####-<capability>/data-model.md`                           | Data Model                           | `docs/99.templates/templates/spec-contracts/data-model.template.md`   |
+| `docs/03.specs/spec-####-<capability>/service.md`                              | Service Scaffold                     | `docs/99.templates/templates/spec-contracts/service.template.md`      |
+| `docs/03.specs/spec-####-<capability>/tests.md`                                | Test Contract                        | `docs/99.templates/templates/spec-contracts/tests.template.md`        |
+| `docs/03.specs/spec-####-<capability>/contracts/openapi.yaml`                  | OpenAPI Contract                     | `docs/99.templates/templates/spec-contracts/openapi.template.yaml`    |
+| `docs/03.specs/spec-####-<capability>/contracts/schema.graphql`                | GraphQL Contract                     | `docs/99.templates/templates/spec-contracts/schema.template.graphql`  |
+| `docs/03.specs/spec-####-<capability>/contracts/service.proto`                 | Protobuf Contract                    | `docs/99.templates/templates/spec-contracts/service.template.proto`   |
+| `docs/01.requirements/srs-####-<slug>.md`                              | SRS                                  | `docs/99.templates/templates/sdlc/srs.template.md`                    |
+| `docs/01.requirements/interface-####-<slug>.md`                        | Interface Requirement                | `docs/99.templates/templates/sdlc/interface-requirement.template.md`  |
+| `docs/03.specs/spec-####-<slug>/plan.md`                               | Plan                                 | `docs/99.templates/templates/sdlc/plan.template.md`                   |
+| `docs/03.specs/spec-####-<slug>/task.md`                               | Task                                 | `docs/99.templates/templates/sdlc/task.template.md`                   |
+| `docs/05.operations/<domain>/ops-####-<subject>/guide.md`              | Operations Guide                     | `docs/99.templates/templates/operations/guide.template.md`            |
+| `docs/05.operations/<domain>/ops-####-<subject>/policy.md`             | Operations Policy                    | `docs/99.templates/templates/operations/policy.template.md`           |
+| `docs/05.operations/<domain>/ops-####-<subject>/runbook.md`            | Operations Runbook                   | `docs/99.templates/templates/operations/runbook.template.md`          |
+| `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md`     | Incident                             | `docs/99.templates/templates/operations/incident.template.md`         |
+| `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`   | Postmortem                           | `docs/99.templates/templates/operations/postmortem.template.md`       |
+| `docs/05.operations/releases/rel-####-<slug>/release.md`               | Release                              | `docs/99.templates/templates/operations/release.template.md`          |
 | `docs/00.agent-governance/memory/<note>.md`                            | Governance Memory Note               | `docs/99.templates/templates/governance/memory.template.md`           |
 | `docs/00.agent-governance/memory/progress.md`                          | Historical Agent Progress Navigation | `docs/99.templates/templates/governance/progress.template.md`         |
 | `docs/90.references/`                                                  | Reference                            | `docs/99.templates/templates/common/reference.template.md`            |
 | `docs/98.archive/`                                                     | Archive Tombstone                    | `docs/99.templates/templates/common/archive.template.md`              |
 | `README.md` (per folder)                                               | README                               | `docs/99.templates/templates/common/readme.template.md`               |
 
-For optional supporting contracts under `docs/03.specs/spec-<id>-<capability>/`, keep
+For optional supporting contracts under `docs/03.specs/spec-####-<capability>/`, keep
 Markdown support files in the feature directory and machine-readable contracts
 under `contracts/`. Parent Markdown Spec or API Spec documents own the
 cross-links for YAML, GraphQL, and Proto files.
@@ -276,9 +276,10 @@ run `check-changed` with an explicit safe base, and regenerate/check the
 canonical frontmatter semantic inventory. The full inventory remains advisory;
 the pre-push hook enforces only the safely selected changed/new set.
 For Stage 01-05 implementation reconciliation, also run
-`bash scripts/validation/check-doc-implementation-alignment.sh`; it verifies
-tracked implementation paths, removed template names, archive index-only links,
-and Stage 05 service document coverage against `infra/**`.
+`python3 scripts/validation/check-document-links.py --mode alignment`; it
+verifies repository-local link targets and anchors, removed template names,
+and archive index-only links. The retired role-root Operations selector is not
+carried forward because the subject-first Stage 05 tree gives it no inputs.
 
 When legacy active-stage content is discovered in a non-stage `docs/*` path:
 
@@ -307,12 +308,12 @@ or evidence across stages.
 | Gap Type                                                                                                 | Canonical Owner               | Routing Rule                                                                                                                                                                                     |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Governance, provider behavior, agent execution rule, approval boundary, or memory contract               | `docs/00.agent-governance/`   | Update the rule/provider/memory surface only when the policy change is approved; otherwise record a memory note or task gap.                                                                     |
-| User value, scope, acceptance criteria, or product intent                                                | `docs/01.requirements/`       | Create or update the stable `prd-<id>-<slug>.md` PRD. Link downstream architecture/spec work instead of embedding design details.                                                               |
+| User value, scope, acceptance criteria, or product intent                                                | `docs/01.requirements/`       | Create or update the stable `prd-####-<slug>.md` PRD. Link downstream architecture/spec work instead of embedding design details.                                                               |
 | Architecture shape, major technical decision, quality attribute, or tradeoff                             | `docs/02.architecture/`       | Use an Architecture Description for enduring architecture and an ADR for a decision record. Link requirement/spec evidence.                                                                      |
-| Interface, data model, service contract, agent contract, or verification contract                        | `docs/03.specs/`              | Update the stable `spec-<id>-<capability>/` folder and optional support contract files.                                                                                                           |
-| Work sequencing, approval gates, rollback strategy, or implementation backlog                            | owning Spec folder            | Create or update `docs/03.specs/spec-<id>-<capability>/plan.md`; keep actual results in its sibling Task.                                                                                          |
-| Completed work evidence, validation output, deviation, or implementation disposition                     | owning Spec folder            | Record evidence in `docs/03.specs/spec-<id>-<capability>/task.md`.                                                                                                                                |
-| Operator usage, operational control, recovery procedure, incident, or postmortem                         | `docs/05.operations/`         | Route Guide, Policy, and Runbook roles together under `docs/05.operations/<domain>/ops-<id>-<subject>/`; use stable Incident paths for event evidence.                                             |
+| Interface, data model, service contract, agent contract, or verification contract                        | `docs/03.specs/`              | Update the stable `spec-####-<capability>/` folder and optional support contract files.                                                                                                           |
+| Work sequencing, approval gates, rollback strategy, or implementation backlog                            | owning Spec folder            | Create or update `docs/03.specs/spec-####-<capability>/plan.md`; keep actual results in its sibling Task.                                                                                          |
+| Completed work evidence, validation output, deviation, or implementation disposition                     | owning Spec folder            | Record evidence in `docs/03.specs/spec-####-<capability>/task.md`.                                                                                                                                |
+| Operator usage, operational control, recovery procedure, incident, or postmortem                         | `docs/05.operations/`         | Route Guide, Policy, and Runbook roles together under `docs/05.operations/<domain>/ops-####-<subject>/`; use stable Incident paths for event evidence.                                             |
 | Source-backed research, audit snapshot, data reference, learning note, or LLM navigation                 | `docs/90.references/`         | Keep it evidence-only. Do not make it active policy, plan, task evidence, or runtime truth.                                                                                                      |
 | Obsolete or implementation-conflicting document that must leave the active chain                         | `docs/98.archive/`            | Classify through the Stage 99 migration owner, create a validated provenance tombstone, update only the applicable transitional or generated ledger, and remove active current-truth references. |
 | Template, frontmatter, lifecycle, migration, archive, retention, or authoring contract                   | `docs/99.templates/`          | Put reusable human rules in their named `support/` owner, machine semantics in the registries, and copyable document shapes in `templates/`.                                                     |
@@ -380,22 +381,22 @@ Every non-README leaf document under `docs/05.operations/` MUST satisfy its
 stable domain/subject purpose-profile contract. Profile compliance is machine-verified by
 `check-repo-contracts.sh` (section "Operations purpose profile contract").
 
-- `<domain>/ops-<id>-<slug>/guide.md` requires `## Usage` and
+- `<domain>/ops-####-<slug>/guide.md` requires `## Usage` and
   `## Common Checks`. `## Runbook Handoff` is conditional on a sibling Runbook.
   Forbidden in guides: `## Policy Scope`, `## Controls`, `## Exceptions`,
   `## Review Cadence`, `### When to Use`, `#### Procedure`.
-- `<domain>/ops-<id>-<slug>/policy.md` requires `## Policy Scope`, `## Controls`, `## Verification`,
+- `<domain>/ops-####-<slug>/policy.md` requires `## Policy Scope`, `## Controls`, `## Verification`,
   `## Review Cadence`. Forbidden in policies: `## Usage`, `## Runbook Handoff`,
   `### When to Use`, `#### Procedure`.
-- `<domain>/ops-<id>-<slug>/runbook.md` requires `## When to Use`, `## Procedure`, `## Evidence`,
+- `<domain>/ops-####-<slug>/runbook.md` requires `## When to Use`, `## Procedure`, `## Evidence`,
   `## Escalation`. `## Automation Handoff` is conditional on a real automation
   artifact and a verifiable link to it. Forbidden in runbooks: `## Usage`,
   `## Policy Scope`, `## Controls`, `## Exceptions`, `## Review Cadence`.
-- `incidents/inc-<id>-<slug>/incident.md` documents use
+- `incidents/<year>/inc-####-<slug>/incident.md` documents use
   `incident.template.md` (active incident record).
-- `incidents/inc-<id>-<slug>/postmortem.md` documents use
+- `incidents/<year>/inc-####-<slug>/postmortem.md` documents use
   `postmortem.template.md` (post-incident review).
-- `releases/rel-<id>-<slug>/release.md` documents use the registry `release`
+- `releases/rel-####-<slug>/release.md` documents use the registry `release`
   profile and `release.template.md`; create one only from evidence for an
   actual release event. A changelog or readiness runbook is not a Release
   record, and deployment runtime remains separately owned.

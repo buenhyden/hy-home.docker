@@ -15,9 +15,13 @@ updated: <updated-at>
 
 ## System Behavior
 
+<!-- Requirement IDs use SRS-####-R#### and are unique within this SRS. -->
+
 {{system_behavior}}
 
 ## Quality Requirements
+
+<!-- Continue the same SRS-####-R#### sequence without gaps or duplicates. -->
 
 {{quality_requirements}}
 

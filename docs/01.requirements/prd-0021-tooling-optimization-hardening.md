@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-021
+artifact_id: prd-0021
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 09-Tooling Optimization & Hardening Product Requirements
 
@@ -39,19 +39,19 @@ Tooling tier를 "기본적으로 안전하고, 운영 감사가 가능하며, �
 
 ## Requirements
 
-- **REQ-PRD-TLG-FUN-01**: SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
-- **REQ-PRD-TLG-FUN-02**: tooling compose는 `infra_net` external 경계 선언을 명시해야 한다.
-- **REQ-PRD-TLG-FUN-03**: locust-worker는 healthcheck를 제공해야 하며, k6 volume 참조 drift를 제거해야 한다.
-- **REQ-PRD-TLG-FUN-04**: `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-TLG-FUN-05**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **REQ-PRD-TLG-FUN-06**: 카탈로그 기준으로 terraform 승인/백업/drift, terrakube 권한/감사로그, registry 서명/스캔 차단, sonarqube 품질게이트 재정의, k6 회귀 baseline, locust 분산 토폴로지/정리 루틴, syncthing ACL/암호화/충돌 정책을 작업 로드맵에 반영해야 한다.
+- **PRD-0021-R0001**: SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
+- **PRD-0021-R0002**: tooling compose는 `infra_net` external 경계 선언을 명시해야 한다.
+- **PRD-0021-R0003**: locust-worker는 healthcheck를 제공해야 하며, k6 volume 참조 drift를 제거해야 한다.
+- **PRD-0021-R0004**: `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **PRD-0021-R0005**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **PRD-0021-R0006**: 카탈로그 기준으로 terraform 승인/백업/drift, terrakube 권한/감사로그, registry 서명/스캔 차단, sonarqube 품질게이트 재정의, k6 회귀 baseline, locust 분산 토폴로지/정리 루틴, syncthing ACL/암호화/충돌 정책을 작업 로드맵에 반영해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-TLG-MET-01**: `bash scripts/hardening/check-all-hardening.sh 09-tooling` 실패 0건.
-- **REQ-PRD-TLG-MET-02**: tooling hardening check와 optional root-context compose 검증 경계가 문서화되고 실패 0건을 유지한다.
-- **REQ-PRD-TLG-MET-03**: tooling optimization-hardening 문서 간 양방향 링크 정합성 확보.
-- **REQ-PRD-TLG-MET-04**: 카탈로그 09-tooling 확장 항목이 Plan/Tasks/Operations에 반영.
+- **PRD-0021-AC0001**: `bash scripts/hardening/check-all-hardening.sh 09-tooling` 실패 0건.
+- **PRD-0021-AC0002**: tooling hardening check와 optional root-context compose 검증 경계가 문서화되고 실패 0건을 유지한다.
+- **PRD-0021-AC0003**: tooling optimization-hardening 문서 간 양방향 링크 정합성 확보.
+- **PRD-0021-AC0004**: 카탈로그 09-tooling 확장 항목이 Plan/Tasks/Operations에 반영.
 
 ## Scope and Non-goals
 

@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-012
+artifact_id: prd-0012
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Laboratory Tier (11-laboratory) Product Requirements
 
@@ -35,15 +35,15 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
-- **REQ-PRD-FUN-02**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
-- **REQ-PRD-FUN-03**: Portainer를 통해 각 서비스의 CPU/Memory 사용량을 실시간으로 확인 가능해야 한다.
-- **REQ-PRD-FUN-04**: root-active Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
+- **PRD-0012-R0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
+- **PRD-0012-R0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
+- **PRD-0012-R0003**: Portainer를 통해 각 서비스의 CPU/Memory 사용량을 실시간으로 확인 가능해야 한다.
+- **PRD-0012-R0004**: root-active Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.
-- **REQ-PRD-MET-02**: Portainer, RedisInsight, Dozzle, Homer, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
+- **PRD-0012-AC0001**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.
+- **PRD-0012-AC0002**: Portainer, RedisInsight, Dozzle, Homer, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
 
 ## Scope and Non-goals
 

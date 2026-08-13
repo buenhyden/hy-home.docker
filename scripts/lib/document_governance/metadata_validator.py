@@ -1291,7 +1291,8 @@ def _safe_target_glob(value: object) -> bool:
         return False
     if any(part in {"", ".", ".."} for part in pure.parts):
         return False
-    if any(marker in value for marker in "?[]{}"):
+    without_digit_classes = value.replace("[0-9]", "")
+    if any(marker in without_digit_classes for marker in "?[]{}"):
         return False
     return all("***" not in part and ("**" not in part or part == "**") for part in pure.parts)
 
@@ -1325,9 +1326,36 @@ def _target_glob_specificity(pattern: str) -> tuple[int, int, int]:
     return literal_characters, -wildcard_count, len(parts)
 
 
-def _segment_glob_intersection_witness(left: str, right: str) -> str | None:
-    """Return one non-empty segment matched by both supported `*` globs."""
+def _segment_glob_tokens(pattern: str) -> tuple[str | frozenset[str], ...]:
+    """Tokenize the bounded segment grammar accepted by `_safe_target_glob`."""
 
+    tokens: list[str | frozenset[str]] = []
+    index = 0
+    while index < len(pattern):
+        if pattern.startswith("[0-9]", index):
+            tokens.append(frozenset("0123456789"))
+            index += len("[0-9]")
+        else:
+            tokens.append(pattern[index])
+            index += 1
+    return tuple(tokens)
+
+
+def _glob_token_witness(
+    left: str | frozenset[str],
+    right: str | frozenset[str],
+) -> str | None:
+    left_values = left if isinstance(left, frozenset) else frozenset({left})
+    right_values = right if isinstance(right, frozenset) else frozenset({right})
+    common = sorted(left_values & right_values)
+    return common[0] if common else None
+
+
+def _segment_glob_intersection_witness(left: str, right: str) -> str | None:
+    """Return one non-empty segment matched by both bounded target globs."""
+
+    left_tokens = _segment_glob_tokens(left)
+    right_tokens = _segment_glob_tokens(right)
     queue = collections.deque([(0, 0, "")])
     visited: set[tuple[int, int, bool]] = set()
     while queue:
@@ -1336,28 +1364,36 @@ def _segment_glob_intersection_witness(left: str, right: str) -> str | None:
         if state in visited:
             continue
         visited.add(state)
-        if left_index == len(left) and right_index == len(right):
+        if left_index == len(left_tokens) and right_index == len(right_tokens):
             if witness:
                 return witness
             continue
 
-        left_star = left_index < len(left) and left[left_index] == "*"
-        right_star = right_index < len(right) and right[right_index] == "*"
+        left_star = left_index < len(left_tokens) and left_tokens[left_index] == "*"
+        right_star = right_index < len(right_tokens) and right_tokens[right_index] == "*"
         if left_star:
             queue.append((left_index + 1, right_index, witness))
         if right_star:
             queue.append((left_index, right_index + 1, witness))
 
-        if left_index >= len(left) or right_index >= len(right):
+        if left_index >= len(left_tokens) or right_index >= len(right_tokens):
             continue
         if left_star and right_star:
             queue.append((left_index, right_index, witness + "x"))
         elif left_star:
-            queue.append((left_index, right_index + 1, witness + right[right_index]))
+            right_token = right_tokens[right_index]
+            sample = "0" if isinstance(right_token, frozenset) else right_token
+            queue.append((left_index, right_index + 1, witness + sample))
         elif right_star:
-            queue.append((left_index + 1, right_index, witness + left[left_index]))
-        elif left[left_index] == right[right_index]:
-            queue.append((left_index + 1, right_index + 1, witness + left[left_index]))
+            left_token = left_tokens[left_index]
+            sample = "0" if isinstance(left_token, frozenset) else left_token
+            queue.append((left_index + 1, right_index, witness + sample))
+        elif (
+            sample := _glob_token_witness(
+                left_tokens[left_index], right_tokens[right_index]
+            )
+        ) is not None:
+            queue.append((left_index + 1, right_index + 1, witness + sample))
     return None
 
 
@@ -3394,8 +3430,8 @@ def load_migration_contract(
             raise ProfileError(f"{wave_name} must remain an unapproved advisory wave")
 
     if loaded.get("planned_partitions") != {
-        "docs/04.execution/plans": "docs/03.specs/spec-<id>-<capability>/plan.md",
-        "docs/04.execution/tasks": "docs/03.specs/spec-<id>-<capability>/task.md",
+        "docs/04.execution/plans": "docs/03.specs/spec-####-<capability>/plan.md",
+        "docs/04.execution/tasks": "docs/03.specs/spec-####-<capability>/task.md",
     }:
         raise ProfileError("planned_partitions must define the canonical stable target routes")
     return loaded
@@ -4602,12 +4638,233 @@ def _fenced_yaml_string_arrays(text: str) -> list[tuple[tuple[str, ...], list[st
     return arrays
 
 
+_PRD_PATH = re.compile(r"docs/01\.requirements/prd-(?P<number>[0-9]{4})-[a-z0-9-]+\.md")
+_SRS_PATH = re.compile(r"docs/01\.requirements/srs-(?P<number>[0-9]{4})-[a-z0-9-]+\.md")
+_IFR_PATH = re.compile(r"docs/01\.requirements/interface-(?P<number>[0-9]{4})-[a-z0-9-]+\.md")
+_LEVEL_TWO_SECTION = re.compile(
+    r"(?ms)^## (?P<name>[^\n]+)\n(?P<body>.*?)(?=^## |\Z)"
+)
+_REQUIREMENT_LIST_PREFIX = r"[ \t]*(?:(?:[-*+]\s+)|(?:[0-9]+[.)]\s+))"
+_REQUIREMENT_BOLD_ITEM = re.compile(
+    rf"^{_REQUIREMENT_LIST_PREFIX}\*\*(?P<label>[^*]+)\*\*:"
+)
+_REQUIREMENT_LIST_ITEM = re.compile(rf"^{_REQUIREMENT_LIST_PREFIX}\S")
+_REQUIREMENT_TABLE_ITEM = re.compile(r"^\s*\|\s*(?P<label>[^|]+?)\s*\|")
+_REQUIREMENT_INTERNAL_TOKEN = re.compile(
+    r"(?<![A-Z0-9-])(?P<identity>"
+    r"(?:PRD|SRS|IFR)-[A-Z0-9]+-[A-Z]+[A-Z0-9]+"
+    r"|(?:REQ|VAL|FR|NFR)-[A-Z0-9]+(?:-[A-Z0-9]+)+"
+    r")(?![A-Z0-9-])",
+    re.IGNORECASE,
+)
+_REQUIREMENT_CANONICAL_INTERNAL = re.compile(
+    r"(?P<owner>(?P<prefix>PRD|SRS|IFR)-[0-9]{4})-"
+    r"(?P<kind>R|AC)[0-9]{4}"
+)
+_REQUIREMENT_INTERNAL_CONTRACTS = (
+    (
+        _PRD_PATH,
+        "PRD",
+        {
+            "Requirements": "R",
+            "Non-functional Requirements": "R",
+            "Acceptance and Verification": "AC",
+        },
+        ("R", "AC"),
+    ),
+    (
+        _SRS_PATH,
+        "SRS",
+        {"System Behavior": "R", "Quality Requirements": "R"},
+        ("R",),
+    ),
+    (
+        _IFR_PATH,
+        "IFR",
+        {
+            "Information Semantics": "R",
+            "Constraints and Compatibility": "R",
+            "Failure Expectations": "R",
+        },
+        ("R",),
+    ),
+)
+
+
+def validate_prd_internal_id_contract(
+    path: pathlib.Path,
+    text: str,
+) -> list[Finding]:
+    """Validate current PRD requirement/acceptance IDs against their owner."""
+
+    if _PRD_PATH.fullmatch(path.as_posix()) is None:
+        return []
+    return validate_requirement_internal_id_contract(path, text)
+
+
+def validate_requirement_internal_id_contract(
+    path: pathlib.Path,
+    text: str,
+) -> list[Finding]:
+    """Validate typed requirement IDs and references across Stage 01 roles."""
+
+    path_text = path.as_posix()
+    selected: tuple[
+        re.Pattern[str], str, Mapping[str, str], Sequence[str]
+    ] | None = None
+    match: re.Match[str] | None = None
+    for candidate in _REQUIREMENT_INTERNAL_CONTRACTS:
+        candidate_match = candidate[0].fullmatch(path_text)
+        if candidate_match is not None:
+            selected = candidate
+            match = candidate_match
+            break
+    if selected is None or match is None:
+        return []
+    _, prefix, section_kinds, required_kinds = selected
+    owner = f"{prefix}-{match.group('number')}"
+    counters = {kind: 0 for kind in required_kinds}
+    declared_counts: collections.Counter[str] = collections.Counter()
+    findings: list[Finding] = []
+    for section in _LEVEL_TWO_SECTION.finditer(text):
+        section_name = section.group("name")
+        kind = section_kinds.get(section_name)
+        if kind is None:
+            continue
+        for line_number, line in enumerate(section.group("body").splitlines(), start=1):
+            identity: str | None = None
+            bold = _REQUIREMENT_BOLD_ITEM.match(line)
+            if bold is not None:
+                identity = bold.group("label").split(" —", 1)[0].strip()
+            else:
+                table = _REQUIREMENT_TABLE_ITEM.match(line)
+                if table is not None:
+                    candidate = table.group("label").strip()
+                    if candidate != "ID" and re.fullmatch(r"-+", candidate) is None:
+                        identity = candidate
+                elif _REQUIREMENT_LIST_ITEM.match(line):
+                    findings.append(
+                        Finding(
+                            path_text,
+                            "internal-id-missing",
+                            f"{section_name} item {line_number} requires a typed ID",
+                        )
+                    )
+                    continue
+            if identity is None:
+                continue
+            declared_counts[identity] += 1
+            if declared_counts[identity] > 1:
+                findings.append(
+                    Finding(
+                        path_text,
+                        "internal-id-duplicate",
+                        f"{section_name} item {line_number} repeats a typed ID",
+                    )
+                )
+            counters[kind] += 1
+            expected = f"{owner}-{kind}{counters[kind]:04d}"
+            if identity != expected:
+                findings.append(
+                    Finding(
+                        path_text,
+                        "internal-id-invalid",
+                        f"{section_name} item {line_number} must use {expected}",
+                    )
+                )
+    token_counts = collections.Counter(
+        token.group("identity")
+        for token in _REQUIREMENT_INTERNAL_TOKEN.finditer(text)
+    )
+    for identity in sorted(token_counts):
+        canonical = _REQUIREMENT_CANONICAL_INTERNAL.fullmatch(identity)
+        if identity.upper().startswith(("REQ-", "VAL-", "FR-", "NFR-")):
+            findings.append(
+                Finding(
+                    path_text,
+                    "internal-id-legacy",
+                    "current requirement document contains a retired internal-ID namespace",
+                )
+            )
+            continue
+        allowed_kind = canonical is not None and (
+            prefix == "PRD" or canonical.group("kind") == "R"
+        )
+        if (
+            canonical is None
+            or canonical.group("owner") != owner
+            or not allowed_kind
+        ):
+            findings.append(
+                Finding(
+                    path_text,
+                    "internal-id-invalid",
+                    "current requirement document contains a malformed or foreign internal ID",
+                )
+            )
+            continue
+        if declared_counts[identity] != 1:
+            findings.append(
+                Finding(
+                    path_text,
+                    "internal-id-extra",
+                    "typed requirement IDs require exactly one canonical declaration",
+                )
+            )
+    for kind in required_kinds:
+        label = "acceptance" if kind == "AC" else "requirement"
+        if counters[kind] == 0:
+            findings.append(
+                Finding(
+                    path_text,
+                    "internal-id-missing",
+                    f"current requirement document must declare at least one typed {label} ID",
+                )
+            )
+    return sorted(set(findings))
+
+
 def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object]) -> list[Finding]:
     """Validate tracked repository surfaces backed by the canonical registry."""
 
     _require_git_worktree(root)
     findings: list[Finding] = []
     tracked_markdown = _tracked_repository_markdown(root)
+
+    for path in tracked_markdown:
+        if not any(
+            pattern.fullmatch(path.as_posix())
+            for pattern, _, _, _ in _REQUIREMENT_INTERNAL_CONTRACTS
+        ):
+            continue
+        source = root / path
+        current = root
+        symlink_component = False
+        for part in path.parts:
+            current /= part
+            if current.is_symlink():
+                symlink_component = True
+                break
+        if symlink_component:
+            findings.append(
+                Finding(
+                    path.as_posix(),
+                    "requirement-source-symlink",
+                    "typed requirement sources may not use symlink components",
+                )
+            )
+            continue
+        try:
+            status = source.lstat()
+            if not stat.S_ISREG(status.st_mode):
+                raise OSError("typed requirement source is not a regular file")
+            text = source.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            findings.append(
+                Finding(path.as_posix(), "requirement-source-unreadable", str(error))
+            )
+        else:
+            findings.extend(validate_requirement_internal_id_contract(path, text))
 
     if any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES) or _normalized_target_path(
         "_workspace/README.md"
@@ -4781,7 +5038,7 @@ def validate_repository_contracts(root: pathlib.Path, profiles: dict[str, object
     else:
         release_source = release_sources[0]
         release_name = pathlib.PurePosixPath(release_source).name
-        release_route = "docs/05.operations/releases/rel-<id>-<slug>/release.md"
+        release_route = "docs/05.operations/releases/rel-####-<slug>/release.md"
         route_contracts = {
             "docs/99.templates/support/template-selection.md": (release_route, release_name),
             "docs/00.agent-governance/rules/stage-authoring-matrix.md": (release_route, release_source),

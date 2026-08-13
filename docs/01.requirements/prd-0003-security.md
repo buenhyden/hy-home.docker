@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-003
+artifact_id: prd-0003
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Security Tier (03-security) Product Requirements
 
@@ -42,18 +42,18 @@ updated: 2026-08-10
 
 | ID    | Requirement           | Priority                                           |
 | ----- | --------------------- | -------------------------------------------------- |
-| FR-01 | Raft Storage          | 현재 단일 노드 Raft 통합 스토리지를 사용하고, HA 확장은 별도 전환 절차로 준비. |
-| FR-02 | Forward Proxy Support | Traefik을 통한 Vault UI/API 외부 노출 및 SSL 적용. |
-| FR-03 | Unseal Protocols      | 수동 Unseal 절차 및 정책 수립.                     |
-| FR-04 | Audit Logging         | 모든 요청에 대한 Audit 로그 활성화 및 보관.        |
+| PRD-0003-R0001 | Raft Storage          | 현재 단일 노드 Raft 통합 스토리지를 사용하고, HA 확장은 별도 전환 절차로 준비. |
+| PRD-0003-R0002 | Forward Proxy Support | Traefik을 통한 Vault UI/API 외부 노출 및 SSL 적용. |
+| PRD-0003-R0003 | Unseal Protocols      | 수동 Unseal 절차 및 정책 수립.                     |
+| PRD-0003-R0004 | Audit Logging         | 모든 요청에 대한 Audit 로그 활성화 및 보관.        |
 
 ## Non-functional Requirements
 
 | ID     | Requirement  | Description                                                            |
 | ------ | ------------ | ---------------------------------------------------------------------- |
-| NFR-01 | Availability | 단일 노드 Vault 장애 시 영향을 명확히 감지하고, 향후 Raft quorum 확장을 위한 운영 절차를 유지. |
-| NFR-02 | Reliability  | 비밀 정보 암호화 알고리즘의 최신성 유지 (AES-256-GCM).                 |
-| NFR-03 | Performance  | 비밀 정보 조회 레이턴시 최소화 (Local API 캐싱).                       |
+| PRD-0003-R0005 | Availability | 단일 노드 Vault 장애 시 영향을 명확히 감지하고, 향후 Raft quorum 확장을 위한 운영 절차를 유지. |
+| PRD-0003-R0006 | Reliability  | 비밀 정보 암호화 알고리즘의 최신성 유지 (AES-256-GCM).                 |
+| PRD-0003-R0007 | Performance  | 비밀 정보 조회 레이턴시 최소화 (Local API 캐싱).                       |
 
 ## Scope and Non-goals
 
@@ -63,9 +63,9 @@ updated: 2026-08-10
 
 ## Acceptance and Verification
 
-- 현재 Vault/Agent compose와 문서가 root `security`/`core` profile 검증 및 hardening gate로 관리됨.
-- 서비스 컨테이너가 직접 비밀 정보를 알지 못해도 Vault Agent를 통해 주입받아 성공적으로 구동됨.
-- 감사 로그/원격 audit 고도화는 정책 승인 후 단계적으로 전환됨.
+- **PRD-0003-AC0001**: 현재 Vault/Agent compose와 문서가 root `security`/`core` profile 검증 및 hardening gate로 관리됨.
+- **PRD-0003-AC0002**: 서비스 컨테이너가 직접 비밀 정보를 알지 못해도 Vault Agent를 통해 주입받아 성공적으로 구동됨.
+- **PRD-0003-AC0003**: 감사 로그/원격 audit 고도화는 정책 승인 후 단계적으로 전환됨.
 
 ## Risks and Dependencies
 

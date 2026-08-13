@@ -19,13 +19,19 @@ updated: <updated-at>
 
 ## Information Semantics
 
+<!-- Requirement IDs use IFR-####-R#### and are unique within this document. -->
+
 {{information_semantics}}
 
 ## Constraints and Compatibility
 
+<!-- Continue the same IFR-####-R#### sequence without gaps or duplicates. -->
+
 {{constraints_and_compatibility}}
 
 ## Failure Expectations
+
+<!-- Continue the same IFR-####-R#### sequence without gaps or duplicates. -->
 
 {{failure_expectations}}
 

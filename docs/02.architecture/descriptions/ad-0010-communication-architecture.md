@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0010
 artifact_type: architecture-description
 parent_ids:
-  - prd-011
+  - prd-0011
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -85,7 +85,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [011-communication.md](../../01.requirements/prd-011-communication.md)
+- **PRD**: [011-communication.md](../../01.requirements/prd-0011-communication.md)
 - **Spec**: [011-communication/spec.md](../../03.specs/spec-0011-communication/spec.md)
 - **Plan**: 2026-03-26-10-communication-standardization.md
 - **ADR**: [0010-communication-services.md](../decisions/adr-0010-communication-services.md)

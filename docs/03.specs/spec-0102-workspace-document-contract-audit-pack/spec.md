@@ -130,8 +130,8 @@ The audit pack has four workstreams:
 - `docs/99.templates/support/template-selection.md`
 - `docs/00.agent-governance/rules/stage-authoring-matrix.md`
 - `scripts/validation/check-repo-contracts.sh`
-- `scripts/validation/check-doc-traceability.sh`
-- `scripts/validation/check-doc-implementation-alignment.sh`
+- `scripts/validation/check-document-links.py --mode traceability`
+- `scripts/validation/check-document-links.py --mode alignment`
 - `scripts/operations/sync-provider-surfaces.sh`
 - `scripts/knowledge/generate-llm-wiki.py`
 
@@ -197,9 +197,9 @@ new scripts:
 
 - `rg` and `git ls-files` for inventory.
 - `bash scripts/validation/check-repo-contracts.sh` for contract coverage.
-- `bash scripts/validation/check-doc-traceability.sh` for plan/operations
+- `python3 scripts/validation/check-document-links.py --mode traceability` for plan/operations
   traceability.
-- `bash scripts/validation/check-doc-implementation-alignment.sh` for active
+- `python3 scripts/validation/check-document-links.py --mode alignment` for active
   docs versus tracked implementation surfaces.
 - `bash scripts/operations/sync-provider-surfaces.sh --check` for generated
   provider mirror drift.
@@ -275,8 +275,8 @@ The design/spec commit must pass:
 git diff --check
 python3 scripts/knowledge/generate-llm-wiki.py --check
 bash scripts/operations/sync-provider-surfaces.sh --check
-bash scripts/validation/check-doc-traceability.sh
-bash scripts/validation/check-doc-implementation-alignment.sh
+python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode alignment
 bash -n scripts/validation/check-repo-contracts.sh
 ```
 

@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-007
+artifact_id: prd-0007
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Observability Tier Product Requirements
 
@@ -35,16 +35,16 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: Prometheus를 통해 실시간 시계열 메트릭을 수집하고 저장해야 한다.
-- **REQ-PRD-FUN-02**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(MinIO)에 영구 보관해야 한다.
-- **REQ-PRD-FUN-03**: Tempo를 통해 서비스 간 분산 트레이싱 정보를 수집해야 한다.
-- **REQ-PRD-FUN-04**: Grafana Alloy를 단일 수집기(Unified Collector)로 사용하여 OTLP 데이터를 처리해야 한다.
-- **REQ-PRD-FUN-05**: Keycloak OIDC 연동을 통해 Grafana 대시보드 접근 권한을 관리해야 한다.
+- **PRD-0007-R0001**: Prometheus를 통해 실시간 시계열 메트릭을 수집하고 저장해야 한다.
+- **PRD-0007-R0002**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(MinIO)에 영구 보관해야 한다.
+- **PRD-0007-R0003**: Tempo를 통해 서비스 간 분산 트레이싱 정보를 수집해야 한다.
+- **PRD-0007-R0004**: Grafana Alloy를 단일 수집기(Unified Collector)로 사용하여 OTLP 데이터를 처리해야 한다.
+- **PRD-0007-R0005**: Keycloak OIDC 연동을 통해 Grafana 대시보드 접근 권한을 관리해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.
-- **REQ-PRD-MET-02**: Alertmanager Slack/SMTP 통지는 설정과 secret mount가 렌더링되어야 하며, 실제 60초 이내 도달 시간은 별도 runtime rehearsal evidence로만 완료 처리한다.
+- **PRD-0007-AC0001**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.
+- **PRD-0007-AC0002**: Alertmanager Slack/SMTP 통지는 설정과 secret mount가 렌더링되어야 하며, 실제 60초 이내 도달 시간은 별도 runtime rehearsal evidence로만 완료 처리한다.
 
 ## Scope and Non-goals
 

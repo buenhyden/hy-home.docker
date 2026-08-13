@@ -46,20 +46,21 @@ service names, environment variables는 원형을 유지합니다.
 ```text
 05.operations/incidents/
 ├── YYYY/
-│   └── INC-###-incident-title/
-│       ├── INC-###-incident-title.md
+│   └── inc-####-incident-title/
+│       ├── incident.md
 │       └── postmortem.md
 └── README.md
 ```
 
 > **현황 (2026-05-28)**: 기록된 사고가 없어 `YYYY/` 연도 폴더가 존재하지 않는다.
-> 첫 사고 발생 시 `incidents/2026/INC-###-incident-title/` 폴더를 생성하고,
+> 첫 사고 발생 시 `incidents/2026/inc-####-incident-title/` 폴더를 생성하고,
 > 사고 기록과 사후 분석을 같은 incident packet 안에 저장한다.
 
 ## How to Work in This Area
 
-1. 새 사고는 `YYYY/INC-###-incident-title/` incident packet 폴더를 만든 뒤 시작합니다.
-2. 사고 기록은 [incident template](../../99.templates/templates/operations/incident.template.md)을 복사해 `INC-###-incident-title.md`로 작성합니다.
+1. 새 사고는 `docs/05.operations/incidents/<year>/inc-####-<slug>/` incident
+   packet 폴더를 만든 뒤 시작합니다.
+2. 사고 기록은 [incident template](../../99.templates/templates/operations/incident.template.md)을 복사해 `incident.md`로 작성합니다.
 3. 사후 분석은 [postmortem template](../../99.templates/templates/operations/postmortem.template.md)을 복사해 같은 폴더의 `postmortem.md`로 작성합니다.
 4. Incident와 Postmortem pair는 같은 Incident ID, severity, primary service metadata를 사용합니다.
 5. 사고 대응 절차는 이 폴더에 직접 쓰지 말고 관련 runbook으로 연결합니다.

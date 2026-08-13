@@ -115,8 +115,8 @@ The restructure program has four design components:
 - `docs/00.agent-governance/rules/documentation-protocol.md`
 - `docs/99.templates/support/*.md`
 - `scripts/validation/check-repo-contracts.sh`
-- `scripts/validation/check-doc-traceability.sh`
-- `scripts/validation/check-doc-implementation-alignment.sh`
+- `scripts/validation/check-document-links.py --mode traceability`
+- `scripts/validation/check-document-links.py --mode alignment`
 - `scripts/knowledge/generate-llm-wiki.py`
 
 ### Tech Stack
@@ -318,8 +318,8 @@ applicable:
 git diff --check
 python3 scripts/knowledge/generate-llm-wiki.py --check
 bash scripts/operations/sync-provider-surfaces.sh --check
-bash scripts/validation/check-doc-traceability.sh
-bash scripts/validation/check-doc-implementation-alignment.sh
+python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode alignment
 bash -n scripts/validation/check-repo-contracts.sh
 bash scripts/validation/check-repo-contracts.sh
 ```

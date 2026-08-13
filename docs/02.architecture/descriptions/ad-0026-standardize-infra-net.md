@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0026
 artifact_type: architecture-description
 parent_ids:
-  - prd-023
+  - prd-0023
 created: 2026-04-01
 updated: 2026-08-10
 ---
@@ -82,7 +82,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [infra_net product requirements](../../01.requirements/prd-023-standardize-infra-net.md)
+- **PRD**: [infra_net product requirements](../../01.requirements/prd-0023-standardize-infra-net.md)
 - **ADR**: [infra_net standardization decision](../decisions/adr-0026-standardize-infra-net.md)
 - **Spec**: [infra_net technical specification](../../03.specs/spec-0098-standardize-infra-net/spec.md)
 - **Plan**: infra_net implementation plan

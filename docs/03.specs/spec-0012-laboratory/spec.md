@@ -31,7 +31,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-022-laboratory-optimization-hardening.md](../../01.requirements/prd-022-laboratory-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0022-laboratory-optimization-hardening.md](../../01.requirements/prd-0022-laboratory-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0011-laboratory-services.md](../../02.architecture/decisions/adr-0011-laboratory-services.md)
@@ -118,7 +118,7 @@ laboratory_hardening_controls:
 - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `bash scripts/validation/check-doc-traceability.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
 
 Service-local standalone compose rendering is not readiness evidence for these
 leaves because the compose files depend on the root `infra_net`, secret, and

@@ -522,5 +522,5 @@ waves:
     declared_outputs: []
 
 planned_partitions:
-  docs/04.execution/plans: docs/03.specs/spec-<id>-<capability>/plan.md
-  docs/04.execution/tasks: docs/03.specs/spec-<id>-<capability>/task.md
+  docs/04.execution/plans: docs/03.specs/spec-####-<capability>/plan.md
+  docs/04.execution/tasks: docs/03.specs/spec-####-<capability>/task.md

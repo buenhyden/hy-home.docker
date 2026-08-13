@@ -71,7 +71,7 @@ linked sources. It does not define new policy.
 | Surface               | Source                                        | Role                                      | Required Validation       | Evidence      |
 | --------------------- | --------------------------------------------- | ----------------------------------------- | ------------------------- | ------------- |
 | Current handoff       | `docs/00.agent-governance/memory/current.md`  | Bounded active task and verified state    | Current-memory contract   | co-located Task |
-| Execution evidence    | `docs/03.specs/spec-<id>-<slug>/task.md`       | Progress, verification, and final evidence | Traceability validation   | self          |
+| Execution evidence    | `docs/03.specs/spec-####-<slug>/task.md`       | Progress, verification, and final evidence | Traceability validation   | self          |
 | Historical navigation | `docs/00.agent-governance/memory/progress.md` | Append-preserved earlier work navigation  | Repository contract       | Git history   |
 
 ## PR / Review

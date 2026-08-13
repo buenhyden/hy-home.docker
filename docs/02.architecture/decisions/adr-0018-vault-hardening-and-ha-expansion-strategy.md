@@ -74,7 +74,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-015-security-optimization-hardening.md](../../01.requirements/prd-015-security-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0015-security-optimization-hardening.md](../../01.requirements/prd-0015-security-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../descriptions/ad-0018-security-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/003-security/spec.md](../../03.specs/spec-0003-security/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md

@@ -79,4 +79,4 @@ Existing task bullets and verification notes in this document remain the task li
 ## Related Documents
 
 - **Plan**: [2026-03-26-09-tooling-standardization.md](../chg-0010-09-tooling-standardization/plan.md)
-- **PRD**: [010-tooling.md](../../../01.requirements/prd-010-tooling.md)
+- **PRD**: [010-tooling.md](../../../01.requirements/prd-0010-tooling.md)

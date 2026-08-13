@@ -68,7 +68,7 @@ To establish a communication standard between infrastructure services and reduce
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-023-standardize-infra-net.md](../../../01.requirements/prd-023-standardize-infra-net.md)
+- **PRD**: [../../01.requirements/prd-0023-standardize-infra-net.md](../../../01.requirements/prd-0023-standardize-infra-net.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../../02.architecture/descriptions/ad-0026-standardize-infra-net.md)
 - **Spec**: [../../03.specs/098-standardize-infra-net/spec.md](../../../03.specs/spec-0098-standardize-infra-net/spec.md)
 - **ADR**: [../../02.architecture/decisions/adr-0026-standardize-infra-net.md](../../../02.architecture/decisions/adr-0026-standardize-infra-net.md)

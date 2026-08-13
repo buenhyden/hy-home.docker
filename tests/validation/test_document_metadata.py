@@ -50,6 +50,14 @@ sys.modules[spec.name] = metadata
 spec.loader.exec_module(metadata)
 
 
+class SharedFrontmatterExtractionTests(unittest.TestCase):
+    def test_metadata_checker_uses_the_shared_frontmatter_parser(self) -> None:
+        from scripts.lib.document_governance import frontmatter
+
+        self.assertIs(frontmatter.read_frontmatter_values, metadata.parse_frontmatter)
+        self.assertIs(frontmatter.parse_frontmatter_text, metadata._parse_frontmatter_text)
+
+
 def write_doc(path: pathlib.Path, frontmatter: dict[str, object] | None, body: str = "# Fixture\n") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if frontmatter is None:
@@ -1138,9 +1146,13 @@ class ProfileSchemaTests(unittest.TestCase):
         contract = metadata.load_migration_contract(MIGRATION_CONTRACT)
         sentinel = "TOKEN-DO-NOT-PRINT"
         with (
-            mock.patch.object(metadata, "load_migration_contract", return_value=contract),
             mock.patch.object(
-                metadata,
+                metadata._validator,
+                "load_migration_contract",
+                return_value=contract,
+            ),
+            mock.patch.object(
+                metadata._validator,
                 "_safe_load_unique",
                 side_effect=yaml.YAMLError(sentinel),
             ),
@@ -1634,7 +1646,7 @@ class ProfileSchemaTests(unittest.TestCase):
 class ArtifactInferenceTests(unittest.TestCase):
     def test_supported_paths_infer_explicit_profiles(self) -> None:
         cases = {
-            "docs/01.requirements/prd-123-example.md": "prd",
+            "docs/01.requirements/prd-0123-example.md": "prd",
             "docs/01.requirements/srs-123-example.md": "srs",
             "docs/01.requirements/interface-123-example.md": "interface-requirement",
             "docs/02.architecture/descriptions/ad-0123-example.md": "architecture-description",
@@ -1645,8 +1657,8 @@ class ArtifactInferenceTests(unittest.TestCase):
             "docs/05.operations/00-workspace/ops-0001-example/guide.md": "guide",
             "docs/05.operations/00-workspace/ops-0001-example/policy.md": "policy",
             "docs/05.operations/00-workspace/ops-0001-example/runbook.md": "runbook",
-            "docs/05.operations/incidents/inc-0001-example/incident.md": "incident",
-            "docs/05.operations/incidents/inc-0001-example/postmortem.md": "postmortem",
+            "docs/05.operations/incidents/2026/inc-0001-example/incident.md": "incident",
+            "docs/05.operations/incidents/2026/inc-0001-example/postmortem.md": "postmortem",
             "docs/05.operations/releases/rel-0001-example/release.md": "release",
             "docs/90.references/research/example.md": "reference",
             "docs/90.references/audits/example.md": "audit",
@@ -1889,7 +1901,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
 
     def test_registered_targets_have_one_exact_role(self) -> None:
         cases = {
-            "docs/01.requirements/prd-901-fixture.md": ("prd", "prd"),
+            "docs/01.requirements/prd-0901-fixture.md": ("prd", "prd"),
             "docs/02.architecture/descriptions/ad-0901-fixture.md": ("architecture-description", "architecture-description"),
             "docs/02.architecture/decisions/adr-0901-fixture.md": ("adr", "adr"),
             "docs/03.specs/spec-0901-fixture/spec.md": ("spec", "spec"),
@@ -1904,8 +1916,8 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "docs/05.operations/00-workspace/ops-0901-fixture/guide.md": ("guide", "guide"),
             "docs/05.operations/00-workspace/ops-0901-fixture/policy.md": ("policy", "policy"),
             "docs/05.operations/00-workspace/ops-0901-fixture/runbook.md": ("runbook", "runbook"),
-            "docs/05.operations/incidents/inc-0901-fixture/incident.md": ("incident", "incident"),
-            "docs/05.operations/incidents/inc-0901-fixture/postmortem.md": ("postmortem", "postmortem"),
+            "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md": ("incident", "incident"),
+            "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md": ("postmortem", "postmortem"),
             "docs/05.operations/releases/rel-0901-fixture/release.md": ("release", "release"),
             "docs/90.references/research/fixture.md": ("reference", "reference"),
             "docs/90.references/audits/fixture.md": ("audit", "audit"),
@@ -3217,9 +3229,9 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_typed_leaf_templates_instantiate_valid_targets(self) -> None:
         targets = {
-            "docs/99.templates/templates/sdlc/prd.template.md": "docs/01.requirements/prd-901-fixture.md",
-            "docs/99.templates/templates/sdlc/srs.template.md": "docs/01.requirements/srs-901-fixture.md",
-            "docs/99.templates/templates/sdlc/interface-requirement.template.md": "docs/01.requirements/interface-901-fixture.md",
+            "docs/99.templates/templates/sdlc/prd.template.md": "docs/01.requirements/prd-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/srs.template.md": "docs/01.requirements/srs-0901-fixture.md",
+            "docs/99.templates/templates/sdlc/interface-requirement.template.md": "docs/01.requirements/interface-0901-fixture.md",
             "docs/99.templates/templates/sdlc/architecture-description.template.md": "docs/02.architecture/descriptions/ad-0901-fixture.md",
             "docs/99.templates/templates/sdlc/adr.template.md": "docs/02.architecture/decisions/adr-0901-fixture.md",
             "docs/99.templates/templates/sdlc/spec.template.md": "docs/03.specs/spec-0901-fixture/spec.md",
@@ -3228,8 +3240,8 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/operations/guide.template.md": "docs/05.operations/00-workspace/ops-0901-fixture/guide.md",
             "docs/99.templates/templates/operations/policy.template.md": "docs/05.operations/00-workspace/ops-0901-fixture/policy.md",
             "docs/99.templates/templates/operations/runbook.template.md": "docs/05.operations/00-workspace/ops-0901-fixture/runbook.md",
-            "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/inc-0901-fixture/incident.md",
-            "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/inc-0901-fixture/postmortem.md",
+            "docs/99.templates/templates/operations/incident.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/incident.md",
+            "docs/99.templates/templates/operations/postmortem.template.md": "docs/05.operations/incidents/2026/inc-0901-fixture/postmortem.md",
             "docs/99.templates/templates/operations/release.template.md": "docs/05.operations/releases/rel-0901-fixture/release.md",
             "docs/99.templates/templates/common/reference.template.md": "docs/90.references/research/fixture.md",
             "docs/99.templates/templates/common/audit.template.md": "docs/90.references/audits/fixture.md",
@@ -3242,10 +3254,10 @@ class TemplateMetadataTests(unittest.TestCase):
         }
         parents = {
             "prd": metadata.Record(
-                pathlib.Path("docs/01.requirements/prd-900-parent.md"),
+                pathlib.Path("docs/01.requirements/prd-0900-parent.md"),
                 {
                     "status": "active",
-                    "artifact_id": "prd-900",
+                    "artifact_id": "prd-0900",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -3257,7 +3269,7 @@ class TemplateMetadataTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0900",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-900"],
+                    "parent_ids": ["prd-0900"],
                 },
                 "architecture-description",
             ),
@@ -3284,7 +3296,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 "runbook",
             ),
             "incident": metadata.Record(
-                pathlib.Path("docs/05.operations/incidents/inc-0900-parent/incident.md"),
+                pathlib.Path("docs/05.operations/incidents/2026/inc-0900-parent/incident.md"),
                 {
                     "status": "active",
                     "artifact_id": "inc-0900",
@@ -3330,9 +3342,9 @@ class TemplateMetadataTests(unittest.TestCase):
             if role["source"] in targets
         }
         stable_ids = {
-            "prd": "prd-901",
-            "srs": "srs-901",
-            "interface-requirement": "interface-901",
+            "prd": "prd-0901",
+            "srs": "srs-0901",
+            "interface-requirement": "interface-0901",
             "architecture-description": "ad-0901",
             "adr": "adr-0901",
             "spec": "spec-0901",
@@ -3414,7 +3426,7 @@ class TemplateMetadataTests(unittest.TestCase):
         templates = (ROOT / "docs/99.templates/templates/README.md").read_text(encoding="utf-8")
         template_root = (ROOT / "docs/99.templates/README.md").read_text(encoding="utf-8")
 
-        route = "docs/05.operations/releases/rel-<id>-<slug>/release.md"
+        route = "docs/05.operations/releases/rel-####-<slug>/release.md"
         source = "docs/99.templates/templates/operations/release.template.md"
         self.assertIn(f"| Release | `{route}`", selection)
         self.assertIn(route, matrix)
@@ -5472,7 +5484,7 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 self.assertIn(f"template-source-missing-type: {source}", result.stdout)
 
     def test_release_selection_stage_00_and_stage_05_routes_fail_closed(self) -> None:
-        route = "docs/05.operations/releases/rel-<id>-<slug>/release.md"
+        route = "docs/05.operations/releases/rel-####-<slug>/release.md"
         release_source = "docs/99.templates/templates/operations/release.template.md"
         route_files = (
             "docs/99.templates/support/template-selection.md",
@@ -5834,12 +5846,12 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
 
     def test_workspace_cannot_become_a_docs_inventory_prefix(self) -> None:
         profiles = metadata.load_profiles(PROFILES)
-        original = metadata.TARGET_MARKDOWN_PREFIXES
+        original = metadata._validator.TARGET_MARKDOWN_PREFIXES
         try:
-            metadata.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
+            metadata._validator.TARGET_MARKDOWN_PREFIXES = (*original, "_workspace/")
             findings = metadata.validate_repository_contracts(ROOT, profiles)
         finally:
-            metadata.TARGET_MARKDOWN_PREFIXES = original
+            metadata._validator.TARGET_MARKDOWN_PREFIXES = original
         self.assertIn(
             "workspace-inventory-coupling",
             {finding.code for finding in findings},
@@ -6074,10 +6086,10 @@ class ChangedPathGitTests(unittest.TestCase):
 
     def write_parent_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
         write_doc(
-            root / "docs/01.requirements/prd-123-parent.md",
+            root / "docs/01.requirements/prd-0123-parent.md",
             {
                 "status": "active",
-                "artifact_id": "prd-123",
+                "artifact_id": "prd-0123",
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
@@ -6090,7 +6102,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "status": "active",
                 "artifact_id": "ad-0123",
                 "artifact_type": "architecture-description",
-                "parent_ids": ["prd-123"],
+                "parent_ids": ["prd-0123"],
             },
             ARCHITECTURE_DESCRIPTION_TARGET_BODY,
         )
@@ -6109,10 +6121,10 @@ class ChangedPathGitTests(unittest.TestCase):
 
     def write_supersedes_relation_fixture(self, root: pathlib.Path) -> pathlib.Path:
         write_doc(
-            root / "docs/01.requirements/prd-123-root.md",
+            root / "docs/01.requirements/prd-0123-root.md",
             {
                 "status": "active",
-                "artifact_id": "prd-123",
+                "artifact_id": "prd-0123",
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
@@ -6123,7 +6135,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "status": "active",
                 "artifact_id": "ad-0123",
                 "artifact_type": "architecture-description",
-                "parent_ids": ["prd-123"],
+                "parent_ids": ["prd-0123"],
             },
             ARCHITECTURE_DESCRIPTION_TARGET_BODY,
         )
@@ -6153,10 +6165,10 @@ class ChangedPathGitTests(unittest.TestCase):
 
     def write_identity_change_supersedes_fixture(self, root: pathlib.Path) -> pathlib.Path:
         write_doc(
-            root / "docs/01.requirements/prd-123-identity-root.md",
+            root / "docs/01.requirements/prd-0123-identity-root.md",
             {
                 "status": "active",
-                "artifact_id": "prd-123",
+                "artifact_id": "prd-0123",
                 "artifact_type": "prd",
                 "parent_ids": [],
             },
@@ -6167,7 +6179,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "status": "active",
                 "artifact_id": "ad-0123",
                 "artifact_type": "architecture-description",
-                "parent_ids": ["prd-123"],
+                "parent_ids": ["prd-0123"],
             },
             ARCHITECTURE_DESCRIPTION_TARGET_BODY,
         )
@@ -6219,7 +6231,7 @@ class ChangedPathGitTests(unittest.TestCase):
                 "status": "active",
                 "artifact_id": "ad-0124",
                 "artifact_type": "architecture-description",
-                "parent_ids": ["prd-123"],
+                "parent_ids": ["prd-0123"],
             }
             body = ARCHITECTURE_DESCRIPTION_TARGET_BODY
         else:
@@ -6525,7 +6537,7 @@ class ChangedPathGitTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-123"],
+                    "parent_ids": ["prd-0123"],
                 },
                 ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
@@ -6551,10 +6563,10 @@ class ChangedPathGitTests(unittest.TestCase):
 
 
 class ChangedBodyDeficitGitTests(unittest.TestCase):
-    PATH = "docs/01.requirements/prd-901-body-deficit.md"
+    PATH = "docs/01.requirements/prd-0901-body-deficit.md"
     METADATA = {
         "status": "draft",
-        "artifact_id": "prd-901",
+        "artifact_id": "prd-0901",
         "artifact_type": "prd",
         "parent_ids": [],
         "created": "2026-08-07",
@@ -6666,17 +6678,17 @@ class ChangedBodyDeficitGitTests(unittest.TestCase):
                     "status": "draft",
                     "artifact_id": "spec-0901",
                     "artifact_type": "spec",
-                    "parent_ids": ["prd-901"],
+                    "parent_ids": ["prd-0901"],
                 },
                 SPEC_TARGET_BODY,
             )
             commit_all(root, "body and relation baseline")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
-            renamed_parent = root / "docs/01.requirements/prd-902-body-deficit.md"
+            renamed_parent = root / "docs/01.requirements/prd-0902-body-deficit.md"
             parent.rename(renamed_parent)
             write_doc(
                 renamed_parent,
-                {**self.METADATA, "artifact_id": "prd-902"},
+                {**self.METADATA, "artifact_id": "prd-0902"},
                 PRD_TARGET_BODY + "\n{{existing_token}}\n",
             )
             result = self.run_explicit_base(root, base)
@@ -6744,7 +6756,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/01.requirements/prd-124-requirement.md",
+                root / "docs/01.requirements/prd-0124-requirement.md",
                 {"status": "active", "artifact_id": "prd:124-requirement", "artifact_type": "prd", "parent_ids": []},
                 PRD_TARGET_BODY,
             )
@@ -6829,7 +6841,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
     def test_committed_valid_parent_chain_passes_and_is_selected(self) -> None:
         directory, root = self.new_repo()
         with directory:
-            write_doc(root / "docs/01.requirements/prd-124-requirement.md", {"status": "active", "artifact_id": "prd-124", "artifact_type": "prd", "parent_ids": []}, PRD_TARGET_BODY)
+            write_doc(root / "docs/01.requirements/prd-0124-requirement.md", {"status": "active", "artifact_id": "prd-0124", "artifact_type": "prd", "parent_ids": []}, PRD_TARGET_BODY)
             commit_all(root, "architecture parent requirement")
             base = git(root, "rev-parse", "HEAD").stdout.strip()
             write_doc(
@@ -6838,7 +6850,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
                 body_with_headings("## Overview and Context", "## Stakeholders and Concerns", "## Boundaries and Constraints", "## Quality Attributes", "## Architecture Views", "## Data and Infrastructure", "## Decision and Requirement Traceability", "## Related Documents"),
             )
@@ -6862,10 +6874,10 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/01.requirements/prd-124-parent.md",
+                root / "docs/01.requirements/prd-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd-124",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -6878,7 +6890,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
                 ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
@@ -6909,10 +6921,10 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/01.requirements/prd-124-identity-parent.md",
+                root / "docs/01.requirements/prd-0124-identity-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd-124",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -6925,7 +6937,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
                 ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
@@ -6947,7 +6959,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0125",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
                 ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
@@ -6965,10 +6977,10 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/01.requirements/prd-124-requirement.md",
+                root / "docs/01.requirements/prd-0124-requirement.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd-124",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -6979,7 +6991,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
             )
             target = root / "docs/03.specs/spec-0124-identity-target/spec.md"
@@ -7039,10 +7051,10 @@ class ChangedModeRolloutTests(unittest.TestCase):
         with directory:
             base = git(root, "rev-parse", "HEAD").stdout.strip()
             write_doc(
-                root / "docs/01.requirements/prd-124-parent.md",
+                root / "docs/01.requirements/prd-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd-124",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -7054,7 +7066,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
                 ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
@@ -7076,10 +7088,10 @@ class ChangedModeRolloutTests(unittest.TestCase):
         directory, root = self.new_repo()
         with directory:
             write_doc(
-                root / "docs/01.requirements/prd-124-parent.md",
+                root / "docs/01.requirements/prd-0124-parent.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd-124",
+                    "artifact_id": "prd-0124",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -7091,7 +7103,7 @@ class ChangedModeRolloutTests(unittest.TestCase):
                     "status": "active",
                     "artifact_id": "ad-0124",
                     "artifact_type": "architecture-description",
-                    "parent_ids": ["prd-124"],
+                    "parent_ids": ["prd-0124"],
                 },
                 ARCHITECTURE_DESCRIPTION_TARGET_BODY,
             )
@@ -7339,10 +7351,10 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             root = pathlib.Path(directory)
             init_git(root)
             write_doc(
-                root / "docs/01.requirements/prd-001-alpha.md",
+                root / "docs/01.requirements/prd-0001-alpha.md",
                 {
                     "status": "active",
-                    "artifact_id": "prd-002",
+                    "artifact_id": "prd-0002",
                     "artifact_type": "prd",
                     "parent_ids": [],
                 },
@@ -7368,7 +7380,7 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             root = pathlib.Path(directory)
             init_git(root)
             write_doc(
-                root / "docs/01.requirements/prd-001-alpha.md",
+                root / "docs/01.requirements/prd-0001-alpha.md",
                 {
                     "status": "active",
                     "artifact_id": "prd:001-alpha",
@@ -7526,10 +7538,10 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
             ROOT / "docs/99.templates/support/template-selection.md"
         ).read_text(encoding="utf-8")
         expected_rows = (
-            "| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-<id>-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |",
-            "| Archive change Task (`change-task`) | `docs/98.archive/changes/chg-<id>-<slug>/task.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive change Plan (`change-plan`) | `docs/98.archive/changes/chg-####-<slug>/plan.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive change Task (`change-task`) | `docs/98.archive/changes/chg-####-<slug>/task.md` | [archive.template.md](../templates/common/archive.template.md) |",
             "| Archive tombstone (`tombstone`) | `docs/98.archive/tombstones/{01.requirements,02.architecture,03.specs,05.operations}/<stable-id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
-            "| Archive migration (`migration`) | `docs/98.archive/migrations/mig-<id>-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
+            "| Archive migration (`migration`) | `docs/98.archive/migrations/mig-####-<slug>.md` | [archive.template.md](../templates/common/archive.template.md) |",
         )
         for row in expected_rows:
             self.assertEqual(1, selection.count(row), row)
@@ -7544,10 +7556,10 @@ class Task2StableTaxonomyFixtures(unittest.TestCase):
         ledger, after = remainder.split(end_marker, 1)
         active = before + after
         for literal in (
-            "changes/chg-<id>-<slug>/plan.md",
-            "changes/chg-<id>-<slug>/task.md",
+            "changes/chg-####-<slug>/plan.md",
+            "changes/chg-####-<slug>/task.md",
             "tombstones/<stage>/<stable-id>-<slug>.md",
-            "migrations/mig-<id>-<slug>.md",
+            "migrations/mig-####-<slug>.md",
         ):
             self.assertIn(literal, active)
         for retired in (

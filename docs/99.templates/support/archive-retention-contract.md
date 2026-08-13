@@ -32,8 +32,8 @@ Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `conten
 
 Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
 
-The retained `plan.md` has `plan-<id>` identity inherited from its
-`changes/chg-<id>-<slug>/` packet directory.
+The retained `plan.md` has `plan-####` identity inherited from its
+`changes/chg-####-<slug>/` packet directory.
 
 ### `change-task`
 
@@ -43,8 +43,8 @@ Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `conten
 
 Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
 
-The retained `task.md` has `task-<id>-<sequence>` identity inherited from its
-`changes/chg-<id>-<slug>/` packet directory.
+The retained `task.md` has `task-####-<sequence>` identity inherited from its
+`changes/chg-####-<slug>/` packet directory.
 
 ### `tombstone`
 
@@ -65,8 +65,8 @@ Optional: `layer`, `supersedes`, `current_replacement`, `snapshot_path`, `conten
 
 Forbidden: `reviewed_at`, `next_review_at`, `type`, `document_type`, `template_type`, `owner`, `links`, `generated_by`.
 
-Migration records use direct `mig-<id>` identity at
-`migrations/mig-<id>-<slug>.md`.
+Migration records use direct `mig-####` identity at
+`migrations/mig-####-<slug>.md`.
 
 Within the SDLC optional field set, `current_replacement` is required for
 `superseded`, `duplicate`, and `conflict`; forbidden for `withdrawn`; and
@@ -133,8 +133,8 @@ editing an existing leaf does not count as a new addition.
 
 Stage 01 through Stage 03 use stable domains or bounded contexts. Legacy
 Stage 04 roots migrate to stable capability-owned paths:
-`docs/04.execution/plans` -> `docs/03.specs/spec-<id>-<capability>/plan.md` and
-`docs/04.execution/tasks` -> `docs/03.specs/spec-<id>-<capability>/task.md`.
+`docs/04.execution/plans` -> `docs/03.specs/spec-####-<capability>/plan.md` and
+`docs/04.execution/tasks` -> `docs/03.specs/spec-####-<capability>/task.md`.
 No dated Stage 04 path is an archive partition target.
 Moves preserve artifact identity and historical evidence. Wave C owns the
 actual Stage 04 partition; this Foundation contract does not move leaves.

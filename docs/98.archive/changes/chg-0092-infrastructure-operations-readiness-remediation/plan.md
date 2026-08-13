@@ -69,7 +69,7 @@ control.
 
 Inputs:
 
-- [PRD 025](../../../01.requirements/prd-025-operational-readiness-closure.md)
+- [PRD 025](../../../01.requirements/prd-0025-operational-readiness-closure.md)
 - [Architecture Description 0028](../../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
 - [ADR 0028](../../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - [Spec 125](../../tombstones/03.specs/spec-0125-infrastructure-operations-readiness-remediation.md)
@@ -305,7 +305,7 @@ database state is ambiguous, stop and escalate rather than deleting evidence.
 
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../../01.requirements/prd-025-operational-readiness-closure.md)
+- **PRD**: [Operational readiness closure](../../../01.requirements/prd-0025-operational-readiness-closure.md)
 - **ARD**: [Operational readiness closure architecture](../../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - **Spec**: [Spec 125](../../tombstones/03.specs/spec-0125-infrastructure-operations-readiness-remediation.md)

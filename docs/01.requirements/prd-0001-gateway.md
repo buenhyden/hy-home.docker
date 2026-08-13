@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-001
+artifact_id: prd-0001
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Gateway Tier (01-gateway) Product Requirements
 
@@ -36,15 +36,15 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: HTTP(80) 트래픽을 HTTPS(443)로 강제 리다이렉트해야 함.
-- **REQ-PRD-FUN-02**: Docker Provider를 통해 컨테이너 생성을 감지하고 라우트를 자동 생성해야 함.
-- **REQ-PRD-FUN-03**: TLS 1.2/1.3 및 최신 Cipher Suite를 지원하여 통신 보안을 보장해야 함.
-- **REQ-PRD-FUN-04**: OAuth2 Proxy와 연동하여 특정 경로에 대한 인증(SSO) 미들웨어를 제공해야 함.
+- **PRD-0001-R0001**: HTTP(80) 트래픽을 HTTPS(443)로 강제 리다이렉트해야 함.
+- **PRD-0001-R0002**: Docker Provider를 통해 컨테이너 생성을 감지하고 라우트를 자동 생성해야 함.
+- **PRD-0001-R0003**: TLS 1.2/1.3 및 최신 Cipher Suite를 지원하여 통신 보안을 보장해야 함.
+- **PRD-0001-R0004**: OAuth2 Proxy와 연동하여 특정 경로에 대한 인증(SSO) 미들웨어를 제공해야 함.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 모든 외부 노출 서비스는 100% TLS를 통해 접근되어야 함.
-- **REQ-PRD-MET-02**: 신규 컨테이너 배포 시 별도의 설정 파일 수정 없이 60초 이내에 라우팅이 활성화되어야 함.
+- **PRD-0001-AC0001**: 모든 외부 노출 서비스는 100% TLS를 통해 접근되어야 함.
+- **PRD-0001-AC0002**: 신규 컨테이너 배포 시 별도의 설정 파일 수정 없이 60초 이내에 라우팅이 활성화되어야 함.
 
 ## Scope and Non-goals
 

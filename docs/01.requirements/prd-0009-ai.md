@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-009
+artifact_id: prd-0009
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # AI Infrastructure Tier (08-ai) Product Requirements
 
@@ -36,16 +36,16 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: NVIDIA Container Toolkit을 통한 하드웨어 가속(GPU) 추론 지원.
-- **REQ-PRD-FUN-02**: Ollama를 통한 다양한 오픈소스 모델(Llama3, Mistral, Qwen 등) 서빙 및 관리.
-- **REQ-PRD-FUN-03**: Open WebUI를 통한 사용자 친화적인 채팅 브라우저 인터페이스 제공.
-- **REQ-PRD-FUN-04**: 내부 문서 검색을 위한 RAG 파이프라인 및 Embedding 모델 지원.
-- **REQ-PRD-FUN-05**: 멀티유저 지원 및 Keycloak 기반의 SSO 연동.
+- **PRD-0009-R0001**: NVIDIA Container Toolkit을 통한 하드웨어 가속(GPU) 추론 지원.
+- **PRD-0009-R0002**: Ollama를 통한 다양한 오픈소스 모델(Llama3, Mistral, Qwen 등) 서빙 및 관리.
+- **PRD-0009-R0003**: Open WebUI를 통한 사용자 친화적인 채팅 브라우저 인터페이스 제공.
+- **PRD-0009-R0004**: 내부 문서 검색을 위한 RAG 파이프라인 및 Embedding 모델 지원.
+- **PRD-0009-R0005**: 멀티유저 지원 및 Keycloak 기반의 SSO 연동.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 로컬 모델 추론 지연시간(TTFT)이 1초 이내(Llama-3-8B 기준).
-- **REQ-PRD-MET-02**: 모든 데이터(프롬프트, 문서)가 외부 네트워크로 유출되지 않고 내부망 내에서 처리됨.
+- **PRD-0009-AC0001**: 로컬 모델 추론 지연시간(TTFT)이 1초 이내(Llama-3-8B 기준).
+- **PRD-0009-AC0002**: 모든 데이터(프롬프트, 문서)가 외부 네트워크로 유출되지 않고 내부망 내에서 처리됨.
 
 ## Scope and Non-goals
 

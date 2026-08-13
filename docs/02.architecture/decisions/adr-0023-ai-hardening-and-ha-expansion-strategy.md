@@ -74,7 +74,7 @@ AI tier는 GPU/모델 리소스와 사용자 대화 경로를 동시에 다루�
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-020-ai-optimization-hardening.md](../../01.requirements/prd-020-ai-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0020-ai-optimization-hardening.md](../../01.requirements/prd-0020-ai-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../descriptions/ad-0023-ai-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../03.specs/spec-0009-ai/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md

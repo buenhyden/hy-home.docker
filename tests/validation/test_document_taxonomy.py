@@ -29,31 +29,31 @@ LEGACY_PATH_EVIDENCE_ALLOWLIST = (
 )
 
 AD_TO_PRD = {
-    "ad-0001": "prd-001",
-    "ad-0002": "prd-002",
-    "ad-0003": "prd-003",
-    "ad-0004": "prd-004",
-    "ad-0005": "prd-006",
-    "ad-0006": "prd-007",
-    "ad-0007": "prd-008",
-    "ad-0008": "prd-009",
-    "ad-0009": "prd-010",
-    "ad-0010": "prd-011",
-    "ad-0011": "prd-012",
-    "ad-0012": "prd-005",
-    "ad-0013": "prd-013",
-    "ad-0014": "prd-014",
-    "ad-0018": "prd-015",
-    "ad-0019": "prd-016",
-    "ad-0020": "prd-017",
-    "ad-0021": "prd-018",
-    "ad-0022": "prd-019",
-    "ad-0023": "prd-020",
-    "ad-0024": "prd-021",
-    "ad-0025": "prd-022",
-    "ad-0026": "prd-023",
-    "ad-0027": "prd-024",
-    "ad-0028": "prd-025",
+    "ad-0001": "prd-0001",
+    "ad-0002": "prd-0002",
+    "ad-0003": "prd-0003",
+    "ad-0004": "prd-0004",
+    "ad-0005": "prd-0006",
+    "ad-0006": "prd-0007",
+    "ad-0007": "prd-0008",
+    "ad-0008": "prd-0009",
+    "ad-0009": "prd-0010",
+    "ad-0010": "prd-0011",
+    "ad-0011": "prd-0012",
+    "ad-0012": "prd-0005",
+    "ad-0013": "prd-0013",
+    "ad-0014": "prd-0014",
+    "ad-0018": "prd-0015",
+    "ad-0019": "prd-0016",
+    "ad-0020": "prd-0017",
+    "ad-0021": "prd-0018",
+    "ad-0022": "prd-0019",
+    "ad-0023": "prd-0020",
+    "ad-0024": "prd-0021",
+    "ad-0025": "prd-0022",
+    "ad-0026": "prd-0023",
+    "ad-0027": "prd-0024",
+    "ad-0028": "prd-0025",
 }
 
 ADR_TO_AD = {
@@ -148,13 +148,13 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         paths = tracked_paths("docs/01.requirements/prd-*.md")
         self.assertEqual(25, len(paths))
         self.assertEqual(
-            {f"prd-{number:03d}" for number in range(1, 26)},
+            {f"prd-{number:04d}" for number in range(1, 26)},
             {metadata_for(path)["artifact_id"] for path in paths},
         )
         for path in paths:
             with self.subTest(path=path):
                 match = re.fullmatch(
-                    r"docs/01\.requirements/(?P<id>prd-[0-9]{3})-[a-z0-9-]+\.md",
+                    r"docs/01\.requirements/(?P<id>prd-[0-9]{4})-[a-z0-9-]+\.md",
                     path,
                 )
                 self.assertIsNotNone(match)

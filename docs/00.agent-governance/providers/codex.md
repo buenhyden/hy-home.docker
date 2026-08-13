@@ -129,7 +129,7 @@ reviewed Git-visible, non-ignored repository paths in co-located Task evidence.
 - `.codex/README.md`
 - `.codex/hooks.json`
 - `.claude/CLAUDE.md`
-- `docs/01.requirements/prd-024-agent-governance-standardization.md`
+- `docs/01.requirements/prd-0024-agent-governance-standardization.md`
 - `docs/02.architecture/descriptions/ad-0027-agent-governance-canonical-adapter.md`
 - `docs/02.architecture/decisions/adr-0027-stage-00-canonical-adapter-model.md`
 - `docs/00.agent-governance/agents/`

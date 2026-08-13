@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-015
+artifact_id: prd-0015
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 03-Security (Vault) Optimization & Hardening Product Requirements
 
@@ -37,19 +37,19 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: Vault Agent 템플릿은 placeholder 경로를 금지하고 서비스별 정규 경로(`secret/data/hy-home/...`)를 사용해야 한다.
-- **REQ-PRD-FUN-02**: `vault-agent`는 PID 기반 프로세스 헬스체크를 제공해야 한다.
-- **REQ-PRD-FUN-03**: Vault Agent 렌더 출력은 지속 볼륨(`/vault/out`)에 기록되어야 한다.
-- **REQ-PRD-FUN-04**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`infrastructure-hardening`)를 제공해야 한다.
-- **REQ-PRD-FUN-05**: auto-unseal/원격 audit 적재는 즉시 구현 대신 정책/아키텍처/런북에 단계적 전환 절차를 명시해야 한다.
+- **PRD-0015-R0001**: Vault Agent 템플릿은 placeholder 경로를 금지하고 서비스별 정규 경로(`secret/data/hy-home/...`)를 사용해야 한다.
+- **PRD-0015-R0002**: `vault-agent`는 PID 기반 프로세스 헬스체크를 제공해야 한다.
+- **PRD-0015-R0003**: Vault Agent 렌더 출력은 지속 볼륨(`/vault/out`)에 기록되어야 한다.
+- **PRD-0015-R0004**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`infrastructure-hardening`)를 제공해야 한다.
+- **PRD-0015-R0005**: auto-unseal/원격 audit 적재는 즉시 구현 대신 정책/아키텍처/런북에 단계적 전환 절차를 명시해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: `bash scripts/hardening/check-all-hardening.sh 03-security`가 로컬/CI에서 성공한다.
-- **REQ-PRD-MET-01B**: `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 성공한다.
-- **REQ-PRD-MET-02**: `.ctmpl` 파일에서 `secret/data/example` 검출이 0건이다.
-- **REQ-PRD-MET-03**: `vault-agent` 헬스 상태를 컨테이너 healthcheck로 확인할 수 있다.
-- **REQ-PRD-MET-04**: Stage 01~05 문서와 README 인덱스가 상호 링크로 동기화되어 있다.
+- **PRD-0015-AC0001**: `bash scripts/hardening/check-all-hardening.sh 03-security`가 로컬/CI에서 성공한다.
+- **PRD-0015-AC0002**: `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 성공한다.
+- **PRD-0015-AC0003**: `.ctmpl` 파일에서 `secret/data/example` 검출이 0건이다.
+- **PRD-0015-AC0004**: `vault-agent` 헬스 상태를 컨테이너 healthcheck로 확인할 수 있다.
+- **PRD-0015-AC0005**: Stage 01~05 문서와 README 인덱스가 상호 링크로 동기화되어 있다.
 
 ## Scope and Non-goals
 

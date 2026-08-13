@@ -688,8 +688,8 @@ def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
 
 failures: list[str] = []
 incidents_root = pathlib.Path("docs/05.operations/incidents")
-year_re = re.compile(r"^20[0-9]{2}$")
-packet_re = re.compile(r"^INC-[0-9]{3}-[a-z0-9][a-z0-9-]*$")
+year_re = re.compile(r"^[0-9]{4}$")
+packet_re = re.compile(r"^inc-[0-9]{4}-[a-z0-9][a-z0-9-]*$")
 
 if not incidents_root.is_dir():
     failures.append(f"missing incidents root: {incidents_root}")
@@ -703,18 +703,18 @@ if incidents_root.exists():
             continue
         for packet in sorted(child.iterdir()):
             if not packet.is_dir() or not packet_re.match(packet.name):
-                failures.append(f"{packet}: incident year folders may contain only INC-###-<title> packet folders")
+                failures.append(f"{packet}: incident year folders may contain only inc-####-<slug> packet folders")
                 continue
-            expected_incident = packet / f"{packet.name}.md"
+            expected_incident = packet / "incident.md"
             expected_postmortem = packet / "postmortem.md"
             markdown_files = sorted(path for path in packet.glob("*.md"))
             allowed_files = {expected_incident, expected_postmortem}
             for path in markdown_files:
                 if path not in allowed_files:
                     failures.append(
-                        f"{path}: incident packet markdown files must be {expected_incident.name} or postmortem.md"
+                        f"{path}: incident packet markdown files must be incident.md or postmortem.md"
                     )
-            if markdown_files and not expected_incident.is_file():
+            if not expected_incident.is_file():
                 failures.append(f"{packet}: incident packet is missing {expected_incident.name}")
             if expected_postmortem.is_file() and not expected_incident.is_file():
                 failures.append(f"{expected_postmortem}: postmortem requires paired incident file {expected_incident.name}")
@@ -724,22 +724,23 @@ if incidents_root.exists():
 
 literal_requirements = {
     pathlib.Path("docs/05.operations/incidents/README.md"): [
-        "YYYY/INC-###-incident-title/",
+        "YYYY/inc-####-incident-title/",
+        "incident.md",
         "postmortem.md",
     ],
     pathlib.Path("docs/99.templates/support/template-selection.md"): [
-        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/INC-###-<incident-title>.md",
-        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/documentation-protocol.md"): [
-        "docs/05.operations/incidents/YYYY/INC-###-<title>/postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
     pathlib.Path(".claude/skills/ops-runbook-agent/SKILL.md"): [
-        "incidents/YYYY/INC-###-<incident-title>/",
+        "incidents/<year>/inc-####-<slug>/",
         "Filename: `postmortem.md`",
     ],
     pathlib.Path(".claude/skills/incident-response/SKILL.md"): [
-        "docs/05.operations/incidents/YYYY/INC-###-<incident-title>/postmortem.md",
+        "docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md",
     ],
 }
 for path, literals in literal_requirements.items():
@@ -3519,9 +3520,8 @@ expected_implementations = {
     pathlib.Path("scripts/validation/compose-core-readiness.lib.sh"),
     pathlib.Path("scripts/validation/run-compose-core-readiness.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
-    pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
+    pathlib.Path("scripts/validation/check-document-links.py"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),
-    pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
     pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"),

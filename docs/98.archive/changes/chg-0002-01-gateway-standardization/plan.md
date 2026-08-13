@@ -68,7 +68,7 @@ The current Gateway tier (`infra/01-gateway`) functionality and architecture are
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-001-gateway.md](../../../01.requirements/prd-001-gateway.md)
+- **PRD**: [../../01.requirements/prd-0001-gateway.md](../../../01.requirements/prd-0001-gateway.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0001-gateway-architecture.md](../../../02.architecture/descriptions/ad-0001-gateway-architecture.md)
 - **ADR**: [../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/adr-0001-traefik-nginx-hybrid.md)
 - **Spec**: [../../03.specs/001-gateway/spec.md](../../../03.specs/spec-0001-gateway/spec.md)

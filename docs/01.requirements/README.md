@@ -31,16 +31,16 @@ PRD는 문제와 이해관계자, 요구사항, 수용·검증 의도, 범위와
 
 ```text
 docs/01.requirements/
-├── prd-001-gateway.md
-├── prd-002-auth.md
+├── prd-0001-gateway.md
+├── prd-0002-auth.md
 ├── ...
-├── prd-024-agent-governance-standardization.md
-├── prd-025-operational-readiness-closure.md
+├── prd-0024-agent-governance-standardization.md
+├── prd-0025-operational-readiness-closure.md
 └── README.md
 ```
 
-파일명은 `prd-<3-digit-id>-<slug>.md`이고 frontmatter의 `artifact_id`는
-동일한 `prd-<id>`를 사용한다. 날짜는 경로가 아니라 `created`와 `updated`
+파일명은 `prd-####-<slug>.md`이고 frontmatter의 `artifact_id`는
+동일한 `prd-####`를 사용한다. 날짜는 경로가 아니라 `created`와 `updated`
 metadata에 둔다.
 
 ## How to Work in This Area
@@ -72,5 +72,5 @@ Agent는 기존 PRD를 제자리에서 수정하고 병렬·호환 문서를 만
 - [Architecture Decisions](../02.architecture/decisions/README.md)
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
-- [Agent Governance Standardization PRD](./prd-024-agent-governance-standardization.md)
-- [Operational Readiness Closure PRD](./prd-025-operational-readiness-closure.md)
+- [Agent Governance Standardization PRD](./prd-0024-agent-governance-standardization.md)
+- [Operational Readiness Closure PRD](./prd-0025-operational-readiness-closure.md)

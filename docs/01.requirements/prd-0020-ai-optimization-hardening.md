@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-020
+artifact_id: prd-0020
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 08-AI Optimization & Hardening Product Requirements
 
@@ -39,20 +39,20 @@ AI 계층을 "기본적으로 안전하고, 리소스 폭주에 강하며, 운�
 
 ## Requirements
 
-- **REQ-PRD-AI-FUN-01**: Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
-- **REQ-PRD-AI-FUN-02**: Ollama는 동시성/모델 로딩/큐 상한(`OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`)을 명시해야 한다.
-- **REQ-PRD-AI-FUN-03**: Open WebUI는 stateful 템플릿 계약을 사용해야 한다.
-- **REQ-PRD-AI-FUN-04**: `ollama-exporter`는 health 기반 dependency와 metrics healthcheck를 제공해야 한다.
-- **REQ-PRD-AI-FUN-05**: `scripts/hardening/check-all-hardening.sh 08-ai`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-AI-FUN-06**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **REQ-PRD-AI-FUN-07**: 카탈로그 기준으로 모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책을 Plan/Tasks/Operations에 반영해야 한다.
+- **PRD-0020-R0001**: Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
+- **PRD-0020-R0002**: Ollama는 동시성/모델 로딩/큐 상한(`OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`)을 명시해야 한다.
+- **PRD-0020-R0003**: Open WebUI는 stateful 템플릿 계약을 사용해야 한다.
+- **PRD-0020-R0004**: `ollama-exporter`는 health 기반 dependency와 metrics healthcheck를 제공해야 한다.
+- **PRD-0020-R0005**: `scripts/hardening/check-all-hardening.sh 08-ai`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **PRD-0020-R0006**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **PRD-0020-R0007**: 카탈로그 기준으로 모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책을 Plan/Tasks/Operations에 반영해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-AI-MET-01**: `bash scripts/hardening/check-all-hardening.sh 08-ai` 실패 0건.
-- **REQ-PRD-AI-MET-02**: AI compose 정적 검증 통과.
-- **REQ-PRD-AI-MET-03**: AI optimization-hardening 문서 간 양방향 링크 정합성 확보.
-- **REQ-PRD-AI-MET-04**: 카탈로그 08-ai 확장 항목이 Plan/Tasks/Operations에 반영.
+- **PRD-0020-AC0001**: `bash scripts/hardening/check-all-hardening.sh 08-ai` 실패 0건.
+- **PRD-0020-AC0002**: AI compose 정적 검증 통과.
+- **PRD-0020-AC0003**: AI optimization-hardening 문서 간 양방향 링크 정합성 확보.
+- **PRD-0020-AC0004**: 카탈로그 08-ai 확장 항목이 Plan/Tasks/Operations에 반영.
 
 ## Scope and Non-goals
 

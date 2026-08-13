@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-004
+artifact_id: prd-0004
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Data Tier (04-data) Product Requirements
 
@@ -35,16 +35,16 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: 모든 핵심 DB(PostgreSQL, Valkey)는 클러스터 구성을 통한 고가용성(HA)을 보장해야 한다.
-- **REQ-PRD-FUN-02**: 데이터 트래픽은 `infra_net` 내부로 격리되어 외부 접근이 차단되어야 한다.
-- **REQ-PRD-FUN-03**: 비밀번호 및 민감 정보는 Docker Secrets 또는 Vault를 통해 주입되어야 한다.
-- **REQ-PRD-FUN-04**: 모든 데이터는 `${DEFAULT_DATA_DIR}` 하위에 영구적으로 보관되어야 한다.
+- **PRD-0004-R0001**: 모든 핵심 DB(PostgreSQL, Valkey)는 클러스터 구성을 통한 고가용성(HA)을 보장해야 한다.
+- **PRD-0004-R0002**: 데이터 트래픽은 `infra_net` 내부로 격리되어 외부 접근이 차단되어야 한다.
+- **PRD-0004-R0003**: 비밀번호 및 민감 정보는 Docker Secrets 또는 Vault를 통해 주입되어야 한다.
+- **PRD-0004-R0004**: 모든 데이터는 `${DEFAULT_DATA_DIR}` 하위에 영구적으로 보관되어야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: PostgreSQL Primary 장애 시 30초 이내에 자동 Failover가 완료되어야 한다.
-- **REQ-PRD-MET-02**: 모든 데이터 서비스에 대한 메트릭이 Prometheus를 통해 100% 수집되어야 한다.
-- **REQ-PRD-MET-03**: 백업 본을 통한 복구 시 데이터 무결성이 99.99% 보장되어야 한다.
+- **PRD-0004-AC0001**: PostgreSQL Primary 장애 시 30초 이내에 자동 Failover가 완료되어야 한다.
+- **PRD-0004-AC0002**: 모든 데이터 서비스에 대한 메트릭이 Prometheus를 통해 100% 수집되어야 한다.
+- **PRD-0004-AC0003**: 백업 본을 통한 복구 시 데이터 무결성이 99.99% 보장되어야 한다.
 
 ## Scope and Non-goals
 

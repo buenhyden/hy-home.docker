@@ -98,7 +98,7 @@ This document is the optimization/hardening implementation plan for `infra/05-me
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-017-messaging-optimization-hardening.md](../../../01.requirements/prd-017-messaging-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0017-messaging-optimization-hardening.md](../../../01.requirements/prd-0017-messaging-optimization-hardening.md)
 - **ARD**: [../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/adr-0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../../../03.specs/spec-0006-messaging/spec.md)

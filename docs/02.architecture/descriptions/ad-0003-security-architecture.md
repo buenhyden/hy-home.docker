@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0003
 artifact_type: architecture-description
 parent_ids:
-  - prd-003
+  - prd-0003
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -123,7 +123,7 @@ The existing constraints, component architecture, and reliability sections descr
 
 ## Related Documents
 
-- [Security PRD](../../01.requirements/prd-003-security.md)
+- [Security PRD](../../01.requirements/prd-0003-security.md)
 - [Vault ADR](../decisions/adr-0003-vault-as-secrets-manager.md)
 - [Security spec](../../03.specs/spec-0003-security/spec.md)
 - Security standardization plan

@@ -60,180 +60,180 @@ post_baseline_records:
   reason: Move post-baseline active Stage 90 source to stable typed target docs/90.references/research/ref-0085-verification-validation.md; migrate 8 resolved inbound link(s) with it.
 records:
 - legacy_path: docs/01.requirements/001-gateway.md
-  stable_path: docs/01.requirements/prd-001-gateway.md
-  artifact_id: prd-001
+  stable_path: docs/01.requirements/prd-0001-gateway.md
+  artifact_id: prd-0001
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-001-gateway.md; migrate 7 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0001-gateway.md; migrate 7 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/002-auth.md
-  stable_path: docs/01.requirements/prd-002-auth.md
-  artifact_id: prd-002
+  stable_path: docs/01.requirements/prd-0002-auth.md
+  artifact_id: prd-0002
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-002-auth.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0002-auth.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/003-security.md
-  stable_path: docs/01.requirements/prd-003-security.md
-  artifact_id: prd-003
+  stable_path: docs/01.requirements/prd-0003-security.md
+  artifact_id: prd-0003
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-003-security.md; migrate 7 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0003-security.md; migrate 7 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/004-data.md
-  stable_path: docs/01.requirements/prd-004-data.md
-  artifact_id: prd-004
+  stable_path: docs/01.requirements/prd-0004-data.md
+  artifact_id: prd-0004
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-004-data.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0004-data.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/005-data-analytics.md
-  stable_path: docs/01.requirements/prd-005-data-analytics.md
-  artifact_id: prd-005
+  stable_path: docs/01.requirements/prd-0005-data-analytics.md
+  artifact_id: prd-0005
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-005-data-analytics.md; migrate 5 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0005-data-analytics.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/006-messaging.md
-  stable_path: docs/01.requirements/prd-006-messaging.md
-  artifact_id: prd-006
+  stable_path: docs/01.requirements/prd-0006-messaging.md
+  artifact_id: prd-0006
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-006-messaging.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0006-messaging.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/007-observability.md
-  stable_path: docs/01.requirements/prd-007-observability.md
-  artifact_id: prd-007
+  stable_path: docs/01.requirements/prd-0007-observability.md
+  artifact_id: prd-0007
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-007-observability.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0007-observability.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/008-workflow.md
-  stable_path: docs/01.requirements/prd-008-workflow.md
-  artifact_id: prd-008
+  stable_path: docs/01.requirements/prd-0008-workflow.md
+  artifact_id: prd-0008
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-008-workflow.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0008-workflow.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/009-ai.md
-  stable_path: docs/01.requirements/prd-009-ai.md
-  artifact_id: prd-009
+  stable_path: docs/01.requirements/prd-0009-ai.md
+  artifact_id: prd-0009
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-009-ai.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0009-ai.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/010-tooling.md
-  stable_path: docs/01.requirements/prd-010-tooling.md
-  artifact_id: prd-010
+  stable_path: docs/01.requirements/prd-0010-tooling.md
+  artifact_id: prd-0010
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-010-tooling.md; migrate 5 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0010-tooling.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/011-communication.md
-  stable_path: docs/01.requirements/prd-011-communication.md
-  artifact_id: prd-011
+  stable_path: docs/01.requirements/prd-0011-communication.md
+  artifact_id: prd-0011
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-011-communication.md; migrate 8 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0011-communication.md; migrate 8 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/012-laboratory.md
-  stable_path: docs/01.requirements/prd-012-laboratory.md
-  artifact_id: prd-012
+  stable_path: docs/01.requirements/prd-0012-laboratory.md
+  artifact_id: prd-0012
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-012-laboratory.md; migrate 4 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0012-laboratory.md; migrate 4 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/013-ai-open-webui.md
-  stable_path: docs/01.requirements/prd-013-ai-open-webui.md
-  artifact_id: prd-013
+  stable_path: docs/01.requirements/prd-0013-ai-open-webui.md
+  artifact_id: prd-0013
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-013-ai-open-webui.md; migrate 5 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0013-ai-open-webui.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/014-auth-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-014-auth-optimization-hardening.md
-  artifact_id: prd-014
+  stable_path: docs/01.requirements/prd-0014-auth-optimization-hardening.md
+  artifact_id: prd-0014
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-014-auth-optimization-hardening.md; migrate 5 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0014-auth-optimization-hardening.md; migrate 5 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/015-security-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-015-security-optimization-hardening.md
-  artifact_id: prd-015
+  stable_path: docs/01.requirements/prd-0015-security-optimization-hardening.md
+  artifact_id: prd-0015
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-015-security-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0015-security-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/016-data-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-016-data-optimization-hardening.md
-  artifact_id: prd-016
+  stable_path: docs/01.requirements/prd-0016-data-optimization-hardening.md
+  artifact_id: prd-0016
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-016-data-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0016-data-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/017-messaging-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-017-messaging-optimization-hardening.md
-  artifact_id: prd-017
+  stable_path: docs/01.requirements/prd-0017-messaging-optimization-hardening.md
+  artifact_id: prd-0017
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-017-messaging-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0017-messaging-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/018-observability-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-018-observability-optimization-hardening.md
-  artifact_id: prd-018
+  stable_path: docs/01.requirements/prd-0018-observability-optimization-hardening.md
+  artifact_id: prd-0018
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-018-observability-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0018-observability-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/019-workflow-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-019-workflow-optimization-hardening.md
-  artifact_id: prd-019
+  stable_path: docs/01.requirements/prd-0019-workflow-optimization-hardening.md
+  artifact_id: prd-0019
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-019-workflow-optimization-hardening.md; migrate 8 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0019-workflow-optimization-hardening.md; migrate 8 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/020-ai-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-020-ai-optimization-hardening.md
-  artifact_id: prd-020
+  stable_path: docs/01.requirements/prd-0020-ai-optimization-hardening.md
+  artifact_id: prd-0020
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-020-ai-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0020-ai-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/021-tooling-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-021-tooling-optimization-hardening.md
-  artifact_id: prd-021
+  stable_path: docs/01.requirements/prd-0021-tooling-optimization-hardening.md
+  artifact_id: prd-0021
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-021-tooling-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0021-tooling-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/022-laboratory-optimization-hardening.md
-  stable_path: docs/01.requirements/prd-022-laboratory-optimization-hardening.md
-  artifact_id: prd-022
+  stable_path: docs/01.requirements/prd-0022-laboratory-optimization-hardening.md
+  artifact_id: prd-0022
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-022-laboratory-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0022-laboratory-optimization-hardening.md; migrate 6 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/023-standardize-infra-net.md
-  stable_path: docs/01.requirements/prd-023-standardize-infra-net.md
-  artifact_id: prd-023
+  stable_path: docs/01.requirements/prd-0023-standardize-infra-net.md
+  artifact_id: prd-0023
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-023-standardize-infra-net.md; migrate 7 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0023-standardize-infra-net.md; migrate 7 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/024-agent-governance-standardization.md
-  stable_path: docs/01.requirements/prd-024-agent-governance-standardization.md
-  artifact_id: prd-024
+  stable_path: docs/01.requirements/prd-0024-agent-governance-standardization.md
+  artifact_id: prd-0024
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-024-agent-governance-standardization.md; migrate 14 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0024-agent-governance-standardization.md; migrate 14 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/025-operational-readiness-closure.md
-  stable_path: docs/01.requirements/prd-025-operational-readiness-closure.md
-  artifact_id: prd-025
+  stable_path: docs/01.requirements/prd-0025-operational-readiness-closure.md
+  artifact_id: prd-0025
   action: move
   replacement: null
   source_commit: 232effd9a5e00907bdbe30efc6665023fb2d07f4
-  reason: Move baseline active source to stable typed target docs/01.requirements/prd-025-operational-readiness-closure.md; migrate 26 resolved inbound link(s) with it.
+  reason: Move baseline active source to stable typed target docs/01.requirements/prd-0025-operational-readiness-closure.md; migrate 26 resolved inbound link(s) with it.
 - legacy_path: docs/01.requirements/README.md
   stable_path: docs/01.requirements/README.md
   artifact_id: null
@@ -5644,6 +5644,8 @@ records:
 | Task 6C — Operations 07–09 | Completed the exact frozen `59`-row slice as `53` native Git moves and `6` README merges followed by exact index-backed source removal. The result contains `50` existing roles under `20` stable subjects; no role was invented. | All `59` recorded `source_commit:legacy_path` objects resolve to regular blobs; all `53` unique targets are present and all sources and 07–09 role roots are absent. The recursive immutable-source/current-target regression proves the six merge sources preserve the applicable `11`, `11`, and `28` stable role targets plus all five current Operations indexes, including incidents and excluding Stage 98. Before removal the controller saved `/tmp/task6c-readme-merge-sources.G1FQeJ.tar` (6 entries; SHA-256 `2fe5e2fe5e9a3a005c3e2fb5f39a70407c382dcb88333a2d66bc4adc9cf387b7`). | Initial RED `6` tests / `52` failures / `1` expected missing-target error; pre-removal `5/6`; migration GREEN `6/6`. Post-remediation changed metadata `82/0`; full metadata `238/238`; contracts `0`; traceability `46/0`; alignment `335` docs / `1,974` links / `0`; stable taxonomy `14/14`; manifest `23/23`; provider drift `0`; both diff checks pass. Independent review returned `CHANGES_REQUIRED C0/I1/M1`; round 1 restored nine generator-owned summary rows to immutable owner provenance and added a direct fail-closed regression (RED nine missing/nine unexpected pairs; GREEN `1/1`, Operations `7/7`). Scoped re-review is FINAL APPROVED (`C0/I0/M1`): the Important is addressed with no new Critical or Important finding. The display-label Minor remains deferred to Task 13. | `e9bfa311` |
 | Task 6D — Operations 10–12 and final root | Completed the exact frozen `37`-row boundary as `27` native Git moves, `9` README merges, and `1` root README rewrite. The result contains exactly `24` existing roles under eight stable subjects and publishes only the root, 13 domain, incidents, and releases indexes; no role or subject README was invented. | Every `source_commit:legacy_path` resolves to a regular blob; all `27` unique move targets are present and all move sources, nine merge sources, and three role roots are absent. Immutable-source preservation is GREEN for all nine merge sources with zero missing navigation. Before exact index removal the controller saved `/tmp/task6d-readme-merge-sources.XPHLTB.tar` (9 entries; SHA-256 `b94dfd94b836e202cba2e4afc671cd7cb3323fefc58fb1b64b58afbab4ba0641`). | Initial RED `10` tests / `31` failures / `1` error; immutable gate `3/3`; authoritative metadata `239/239`. Initial review was `CHANGES_REQUIRED C0/I1/M1`: three active policy scopes still published deleted role roots; the Stage 05-wide remediation RED also found one current runbook note. All four now use domain-first paths, and the new negative regression rejects generic parallel-root publications while leaving immutable provenance untouched. Remediation GREEN: focused `1/1`, Operations `12/12`, affected tests `3/3`, changed metadata `selected=66 violations=0`, alignment `326` docs / `1,832` links / `0`, Stage 05 parallel-root publications `0`, and diff hygiene pass. Promoted lifecycle retains `73` later-wave findings with exact Task 6D subset `0`. Scoped re-review is FINAL APPROVED (`C0/I0/M1`): original Important ADDRESSED, no new Critical or Important finding, display-label Minor deferred to Task 13. | `37f02628` |
 | Task 7 — Stage 90/98 and root archive | Completed the exact `169`-row slice as `75` moves, `38` archives, `40` rewrites, and `16` deletes. The bounded ledger repair preserves the `796` baseline rows, adds exactly three post-baseline rows, renumbers nine Operations tombstones to `ref-0086..0094`, and co-locates 11 Plan/Task rows under `chg-0143..0151`. Native execution used `106` initial Git moves plus `11` corrective packet moves; no move was emulated with copy/delete. | Every union row resolves `source_commit:legacy_path` to a regular blob; target and artifact identities are unique and profile-valid. Stage 90 has stable `ref-*` paths, Stage 98 is the sole archive, Windows is `ref-0095` with exact commit/blob provenance, and no tracked or filesystem root `archive/` remains. Immutable ref-0069 is relpath/byte/provenance bound at SHA-256 `4c061d2a4d9bb494db97318280d451f9cdcc7748bfcbbe021fb1436fe6398a67`; exact copies at unrelated candidate paths, unbound programmatic calls, and byte/target/consumer mutations fail closed. Strict `observed_at` validation and the five typed pack-index body envelopes are enforced. Round 2 rebinds the seven live Python consumers to exact ref-0068/ref-0074/ref-0021/ref-0031 targets while retaining immutable manifest row values and byte-pinning ref-0074 at SHA-256 `ccf940b06b8ebb4ff48638287cf38ca4c983e9da560f6114fe7e7308f24834c1`. | Initial independent review was `CHANGES_REQUIRED C0/I3/M0`; remediation round 1 received scoped APPROVED `C0/I0/M0`. Mandatory Python review was `CHANGES_REQUIRED C0/I1/M0`; remediation round 2 received final Python APPROVED `C0/I0/M0`. Final general review is APPROVED `C0/I0/M0`. The original Python Important is addressed with no new Critical, Important, or Minor finding. Exact Round 2 RED was seven FileNotFound errors; GREEN is `7/7`, Task 7 focused `20/20` in `96.484s`, changed metadata `165/0`, security readiness fresh, syntax and both diff checks pass. Promoted retains exactly `47` later-wave findings with Task 7 subset zero; target-manifest `21`, successor-delta `60`, and broader Operations/security semantics remain later-wave debt and were not altered. | `57259e24775cbbc206ed1724e8357d578d797d62` |
+| Task 10 — document validator consolidation | Deleted `scripts/validation/check-doc-traceability.sh` and `scripts/validation/check-doc-implementation-alignment.sh` after moving their current link, archive-boundary, removed-template, and traceability behavior to explicit modes of `scripts/validation/check-document-links.py`. The legacy role-root Operations implementation selector is retired because its `guides/`, `policies/`, and `runbooks/` roots select zero documents in the current subject-first Stage 05 tree. | Source commit `f9e66e3884e972018029a0be69846a3dce4e5982`; traceability blob `040c3a712d2796bb964331ceb9e86d7b880376ec`; implementation-alignment blob `4ef60e3d909fde15d7e5950a717b585567f44162`. Each deletion is exactly recoverable with `git show <blob>` or `git show f9e66e3884e972018029a0be69846a3dce4e5982:<path>`. Focused regression preserves active behavior and proves the retired selector has no current inputs. | Current active consumers use `check-document-links.py --mode traceability` or `--mode alignment`; completed Task/history evidence retains old command text. | `3421922d` |
+| Task 10A — four-digit identities and Incident year routing | Corrected the 25 Stage 01 PRD ledger destinations and artifact IDs to `prd-0001` through `prd-0025`, executed the corresponding current native renames, normalized 152 requirement and 82 acceptance identities, and published the exact `docs/05.operations/incidents/<year>/inc-####-<slug>/` packet contract. | The Task 4 source commit and original `legacy_path` values remain unchanged, so every historical PRD is recoverable with `git show 232effd9a5e00907bdbe30efc6665023fb2d07f4:<legacy_path>`. The corrected destination is recorded in each existing row; current links and relations move atomically with the PRDs. Immutable Stage 90 manifests retain their bytes and provenance. | Current Stage 00/05/99 contracts, provider projections, repository validators, and registered current LLM Wiki outputs publish the corrected four-digit identities. Focused identity `22/22`, full metadata `243/243`, manifest `40/40`, Operations `12/12`, contracts/link/provider/generator gates pass; final general and Python reviews are APPROVED (`C0/I0/M0`). The unchanged `ref-0054` retired-route display residual remains assigned to Task 13. | pending Task 10A logical commit |
 
 ## Related Documents
 

@@ -68,7 +68,7 @@ Existing alternatives, rationale, or rejected options in this ADR remain the alt
 
 ## Related Documents
 
-- [Tooling PRD](../../01.requirements/prd-010-tooling.md)
+- [Tooling PRD](../../01.requirements/prd-0010-tooling.md)
 - [Tooling Architecture Description](../descriptions/ad-0009-tooling-architecture.md)
 - [Tooling spec](../../03.specs/spec-0010-tooling/spec.md)
 - Tooling standardization plan

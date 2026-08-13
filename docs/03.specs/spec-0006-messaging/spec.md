@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for the
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-017-messaging-optimization-hardening.md](../../01.requirements/prd-017-messaging-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0017-messaging-optimization-hardening.md](../../01.requirements/prd-0017-messaging-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0020-messaging-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md](../../02.architecture/decisions/adr-0005-kafka-vs-rabbitmq-selection.md)
@@ -122,7 +122,7 @@ HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-
 docker compose --env-file .env.example --profile messaging config --services
 bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 Service-local compose validation boundary:

@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0013
 artifact_type: architecture-description
 parent_ids:
-  - prd-013
+  - prd-0013
 created: 2026-03-27
 updated: 2026-08-10
 ---
@@ -96,7 +96,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-013-ai-open-webui.md](../../01.requirements/prd-013-ai-open-webui.md)
+- **PRD**: [../../01.requirements/prd-0013-ai-open-webui.md](../../01.requirements/prd-0013-ai-open-webui.md)
 - **Spec**: [../../03.specs/009-ai/open-webui.md](../../03.specs/spec-0009-ai/spec.md)
 - **Plan**: ../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md
 - **ADR**: [../decisions/adr-0016-open-webui-implementation.md](../decisions/adr-0016-open-webui-implementation.md)

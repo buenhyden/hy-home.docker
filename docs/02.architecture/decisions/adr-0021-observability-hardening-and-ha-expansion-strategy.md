@@ -70,7 +70,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-018-observability-optimization-hardening.md](../../01.requirements/prd-018-observability-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0018-observability-optimization-hardening.md](../../01.requirements/prd-0018-observability-optimization-hardening.md)
 - **Architecture Description**: [../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md](../descriptions/ad-0021-observability-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/spec-0007-observability/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md

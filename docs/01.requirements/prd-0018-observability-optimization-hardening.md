@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-018
+artifact_id: prd-0018
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 06-Observability Optimization & Hardening Product Requirements
 
@@ -38,20 +38,20 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-OBS-FUN-01**: 외부 노출 관측성 라우터는 `gateway-standard-chain@file`를 기본 적용해야 한다.
-- **REQ-PRD-OBS-FUN-02**: 관리 UI/API 라우터는 `sso-errors@file,sso-auth@file` 체인을 강제해야 한다.
-- **REQ-PRD-OBS-FUN-03**: Alloy/Grafana의 Loki/Tempo 의존성은 `service_healthy` 기준을 사용해야 한다.
-- **REQ-PRD-OBS-FUN-04**: cAdvisor는 healthcheck를 제공해야 한다.
-- **REQ-PRD-OBS-FUN-05**: Loki/Tempo 커스텀 이미지와 entrypoint는 비루트 실행 및 secret 존재 검증을 포함해야 한다.
-- **REQ-PRD-OBS-FUN-06**: `scripts/hardening/check-all-hardening.sh 06-observability`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-OBS-FUN-07**: PRD/Architecture Description/ADR/Spec/Plan/Task와 Guide/Policy/Runbook 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
+- **PRD-0018-R0001**: 외부 노출 관측성 라우터는 `gateway-standard-chain@file`를 기본 적용해야 한다.
+- **PRD-0018-R0002**: 관리 UI/API 라우터는 `sso-errors@file,sso-auth@file` 체인을 강제해야 한다.
+- **PRD-0018-R0003**: Alloy/Grafana의 Loki/Tempo 의존성은 `service_healthy` 기준을 사용해야 한다.
+- **PRD-0018-R0004**: cAdvisor는 healthcheck를 제공해야 한다.
+- **PRD-0018-R0005**: Loki/Tempo 커스텀 이미지와 entrypoint는 비루트 실행 및 secret 존재 검증을 포함해야 한다.
+- **PRD-0018-R0006**: `scripts/hardening/check-all-hardening.sh 06-observability`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **PRD-0018-R0007**: PRD/Architecture Description/ADR/Spec/Plan/Task와 Guide/Policy/Runbook 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-OBS-MET-01**: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패 0건.
-- **REQ-PRD-OBS-MET-02**: root compose profile 검증 또는 service-local validation overlay를 포함한 observability compose 정적 검증 통과.
-- **REQ-PRD-OBS-MET-03**: 관측성 공개 라우터 middleware 계약 100% 충족.
-- **REQ-PRD-OBS-MET-04**: 06-observability optimization-hardening 문서 세트의 양방향 링크 정합성 확보.
+- **PRD-0018-AC0001**: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패 0건.
+- **PRD-0018-AC0002**: root compose profile 검증 또는 service-local validation overlay를 포함한 observability compose 정적 검증 통과.
+- **PRD-0018-AC0003**: 관측성 공개 라우터 middleware 계약 100% 충족.
+- **PRD-0018-AC0004**: 06-observability optimization-hardening 문서 세트의 양방향 링크 정합성 확보.
 
 ## Scope and Non-goals
 

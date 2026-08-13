@@ -24,9 +24,9 @@ stage의 canonical artifact를 따릅니다.
 
 ### In Scope
 
-- `changes/chg-<id>-<slug>/plan.md`와 `task.md`로 보존하는 완료 change evidence
+- `changes/chg-####-<slug>/plan.md`와 `task.md`로 보존하는 완료 change evidence
 - `tombstones/<stage>/<stable-id>-<slug>.md`의 concise provenance record
-- `migrations/mig-<id>-<slug>.md`의 승인된 source-to-target disposition ledger
+- `migrations/mig-####-<slug>.md`의 승인된 source-to-target disposition ledger
 - 검증된 Git provenance, preservation metadata, replacement relation
 
 ### Out of Scope
@@ -41,14 +41,14 @@ stage의 canonical artifact를 따릅니다.
 ```text
 98.archive/
 ├── changes/
-│   └── chg-<id>-<slug>/
+│   └── chg-####-<slug>/
 │       ├── plan.md
 │       └── task.md
 ├── tombstones/
 │   └── <stage>/
 │       └── <stable-id>-<slug>.md
 ├── migrations/
-│   └── mig-<id>-<slug>.md
+│   └── mig-####-<slug>.md
 └── README.md
 ```
 
@@ -64,10 +64,10 @@ Git provenance만 보존합니다. `migrations/`에는 authoritative `mig-0001` 
 
 각 물리 문서는 다음 profile 중 정확히 하나를 사용합니다.
 
-- `change-plan`: `changes/chg-<id>-<slug>/plan.md`
-- `change-task`: `changes/chg-<id>-<slug>/task.md`
+- `change-plan`: `changes/chg-####-<slug>/plan.md`
+- `change-task`: `changes/chg-####-<slug>/task.md`
 - `tombstone`: `tombstones/<stage>/<stable-id>-<slug>.md`
-- `migration`: `migrations/mig-<id>-<slug>.md`
+- `migration`: `migrations/mig-####-<slug>.md`
 
 정확한 disposition과 source provenance는
 [mig-0001](migrations/mig-0001-sdlc-taxonomy-convergence.md)이 소유합니다.
@@ -88,7 +88,7 @@ location is recorded here only as provenance and is not routing.
 ## How to Work in This Area
 
 1. 승인된 migration row와 source Git object를 먼저 검증합니다.
-2. Change evidence는 ledger가 지정한 동일 `chg-<id>` packet에 배치합니다.
+2. Change evidence는 ledger가 지정한 동일 `chg-####` packet에 배치합니다.
 3. Tombstone에는 retired body를 복제하지 않고 typed provenance만 기록합니다.
 4. Active consumer를 canonical active target으로 이동한 뒤 archive record를 만듭니다.
 5. Lifecycle, metadata, active-to-archive link gate를 모두 통과시킵니다.

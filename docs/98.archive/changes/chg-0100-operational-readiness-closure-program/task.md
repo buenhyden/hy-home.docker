@@ -45,7 +45,7 @@ base was `758aa0d2`; the lifecycle closure comparison base is
 ## Inputs
 
 - [Operational readiness closure Plan](plan.md)
-- [PRD 025](../../../01.requirements/prd-025-operational-readiness-closure.md)
+- [PRD 025](../../../01.requirements/prd-0025-operational-readiness-closure.md)
 - [Architecture Description 0028](../../../02.architecture/descriptions/ad-0028-operational-readiness-closure.md)
 - [ADR 0028](../../../02.architecture/decisions/adr-0028-local-isolated-readiness-evidence.md)
 - Specs [124](../../tombstones/03.specs/spec-0124-compose-runtime-readiness-remediation.md),

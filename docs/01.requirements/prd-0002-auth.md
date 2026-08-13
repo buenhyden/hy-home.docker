@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-002
+artifact_id: prd-0002
 artifact_type: prd
 parent_ids: []
 created: 2026-03-26
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 02-Auth Product Requirements
 
@@ -38,16 +38,16 @@ Internal services within the `hy-home.docker` environment often lack built-in au
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: The system must provide an OIDC/SAML compliant IAM provider (Keycloak).
-- **REQ-PRD-FUN-02**: The system must implement a ForwardAuth gateway (OAuth2 Proxy) to intercept and verify requests.
-- **REQ-PRD-FUN-03**: User sessions must be persistent and managed in a high-performance cache (Valkey).
-- **REQ-PRD-FUN-04**: Identity data must be durable and stored in a managed database (PostgreSQL).
-- **REQ-PRD-FUN-05**: Support for group-based access control (RBAC) via OIDC claims.
+- **PRD-0002-R0001**: The system must provide an OIDC/SAML compliant IAM provider (Keycloak).
+- **PRD-0002-R0002**: The system must implement a ForwardAuth gateway (OAuth2 Proxy) to intercept and verify requests.
+- **PRD-0002-R0003**: User sessions must be persistent and managed in a high-performance cache (Valkey).
+- **PRD-0002-R0004**: Identity data must be durable and stored in a managed database (PostgreSQL).
+- **PRD-0002-R0005**: Support for group-based access control (RBAC) via OIDC claims.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 100% of internal web-based services are protected by SSO.
-- **REQ-PRD-MET-02**: Authentication latency (ForwardAuth check) is less than 50ms on average.
+- **PRD-0002-AC0001**: 100% of internal web-based services are protected by SSO.
+- **PRD-0002-AC0002**: Authentication latency (ForwardAuth check) is less than 50ms on average.
 
 ## Scope and Non-goals
 

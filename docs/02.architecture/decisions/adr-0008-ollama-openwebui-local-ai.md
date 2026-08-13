@@ -61,6 +61,6 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [009-ai.md](../../01.requirements/prd-009-ai.md)
+- **PRD**: [009-ai.md](../../01.requirements/prd-0009-ai.md)
 - **Architecture Description**: [0008-ai-architecture.md](../descriptions/ad-0008-ai-architecture.md)
 - **Spec**: [009-ai/spec.md](../../03.specs/spec-0009-ai/spec.md)

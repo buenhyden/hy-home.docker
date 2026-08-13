@@ -24,7 +24,7 @@ layer: agentic
 선택, lifecycle, 승인, 이관 및 검증 규칙은 support 문서를 따른다.
 
 새 Guide, Policy, Runbook은 역할별 병렬 root가 아니라
-`docs/05.operations/<domain>/ops-<id>-<subject>/`에 함께 둔다. 기존 역할이
+`docs/05.operations/<domain>/ops-####-<subject>/`에 함께 둔다. 기존 역할이
 없는 subject에 새 문서를 만들려면 별도 승인과 inventory 근거가 필요하다.
 
 ## Structure

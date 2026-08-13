@@ -43,29 +43,29 @@ status: active
 
 | Domain | Operations subjects |
 | --- | --- |
-| [00 Workspace](00-workspace/README.md) | workspace-level setup, controls, release, and shared procedures |
-| [01 Gateway](01-gateway/README.md) | edge routing, proxy, certificate, and access operations |
-| [02 Auth](02-auth/README.md) | authentication and identity services |
-| [03 Security](03-security/README.md) | security controls, scanning, and response procedures |
-| [04 Data](04-data/README.md) | databases, storage, backup, and data services |
-| [05 Messaging](05-messaging/README.md) | messaging and notification services |
-| [06 Observability](06-observability/README.md) | monitoring, metrics, logs, and alerting |
-| [07 Workflow](07-workflow/README.md) | workflow and automation services |
-| [08 AI](08-ai/README.md) | AI services and model operations |
-| [09 Tooling](09-tooling/README.md) | testing, registry, synchronization, and IaC tooling |
-| [10 Communication](10-communication/README.md) | mail operations |
-| [11 Laboratory](11-laboratory/README.md) | dashboard and laboratory support services |
-| [12 Infra Net](12-infra-net/README.md) | infrastructure network standardization |
+| [00 Workspace](./00-workspace/README.md) | workspace-level setup, controls, release, and shared procedures |
+| [01 Gateway](./01-gateway/README.md) | edge routing, proxy, certificate, and access operations |
+| [02 Auth](./02-auth/README.md) | authentication and identity services |
+| [03 Security](./03-security/README.md) | security controls, scanning, and response procedures |
+| [04 Data](./04-data/README.md) | databases, storage, backup, and data services |
+| [05 Messaging](./05-messaging/README.md) | messaging and notification services |
+| [06 Observability](./06-observability/README.md) | monitoring, metrics, logs, and alerting |
+| [07 Workflow](./07-workflow/README.md) | workflow and automation services |
+| [08 AI](./08-ai/README.md) | AI services and model operations |
+| [09 Tooling](./09-tooling/README.md) | testing, registry, synchronization, and IaC tooling |
+| [10 Communication](./10-communication/README.md) | mail operations |
+| [11 Laboratory](./11-laboratory/README.md) | dashboard and laboratory support services |
+| [12 Infra Net](./12-infra-net/README.md) | infrastructure network standardization |
 | [Incidents](./incidents/README.md) | incident packets and postmortems |
 | [릴리스](./releases/README.md) | executed release evidence |
 
 각 domain `README.md`가 subject navigation을 소유하며, subject 폴더에는
 `README.md`를 만들지 않는다. subject의 기존 역할만
-`<domain>/ops-<id>-<subject>/{guide,policy,runbook}.md`에 둔다.
+`<domain>/ops-####-<subject>/{guide,policy,runbook}.md`에 둔다.
 
 ## How to Work in This Area
 
-1. 위 domain 인덱스에서 stable `ops-<id>-<subject>`를 찾는다.
+1. 위 domain 인덱스에서 stable `ops-####-<subject>`를 찾는다.
 2. 정상 사용 맥락과 common checks는 `guide.md`에 둔다.
 3. 필수·금지 통제, 예외, 검토 주기는 `policy.md`에 둔다.
 4. 순서 있는 절차, 기대 증거, rollback 또는 recovery, escalation은
@@ -75,8 +75,8 @@ status: active
    자동화 artifact와 검증 가능한 link가 있을 때만 작성한다.
 6. 모든 subject가 세 역할을 모두 가질 필요는 없다. frozen inventory에
    존재하거나 별도 승인된 역할만 추가한다.
-7. 사고는 `incidents/inc-<id>-<slug>/`, 실제 릴리스는
-   `releases/rel-<id>-<slug>/` 아래에 기록한다.
+7. 사고는 `incidents/<year>/inc-####-<slug>/`, 실제 릴리스는
+   `releases/rel-####-<slug>/` 아래에 기록한다.
 8. 문서를 추가, 이동, 삭제하면 owning domain `README.md`와 관련 inbound
    link를 함께 갱신한다.
 

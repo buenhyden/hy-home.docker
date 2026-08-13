@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0024
 artifact_type: architecture-description
 parent_ids:
-  - prd-021
+  - prd-0021
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -114,7 +114,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-021-tooling-optimization-hardening.md](../../01.requirements/prd-021-tooling-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0021-tooling-optimization-hardening.md](../../01.requirements/prd-0021-tooling-optimization-hardening.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](../../03.specs/spec-0010-tooling/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/adr-0024-tooling-hardening-and-ha-expansion-strategy.md)

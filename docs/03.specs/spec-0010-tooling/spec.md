@@ -29,7 +29,7 @@ This document is the optimization/hardening technical specification for the `inf
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-021-tooling-optimization-hardening.md](../../01.requirements/prd-021-tooling-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0021-tooling-optimization-hardening.md](../../01.requirements/prd-0021-tooling-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0024-tooling-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0009-tooling-services.md](../../02.architecture/decisions/adr-0009-tooling-services.md)
@@ -109,7 +109,7 @@ tooling_hardening_controls:
 ```bash
 bash scripts/hardening/check-all-hardening.sh 09-tooling
 bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 bash scripts/validation/check-repo-contracts.sh
 ```
 

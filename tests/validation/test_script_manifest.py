@@ -354,14 +354,14 @@ def is_runbook_authority(path: str) -> bool:
 
 def stable_target_type(path: str) -> str | None:
     patterns = (
-        (r"docs/01\.requirements/prd-[0-9]{3}-[^/]+\.md", "prd"),
+        (r"docs/01\.requirements/prd-[0-9]{4}-[^/]+\.md", "prd"),
         (r"docs/02\.architecture/descriptions/ad-[0-9]{4}-[^/]+\.md", "ad"),
         (r"docs/02\.architecture/decisions/adr-[0-9]{4}-[^/]+\.md", "adr"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/spec\.md", "spec"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/plan\.md", "plan"),
         (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/task\.md", "task"),
         (r"docs/05\.operations/(?:[0-9]{2}-[^/]+)/(?:ops-[0-9]{4}-[^/]+)/(?:guide|policy|runbook)\.md", "ops-role"),
-        (r"docs/05\.operations/incidents/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md", "event"),
+        (r"docs/05\.operations/incidents/[0-9]{4}/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md", "event"),
         (r"docs/05\.operations/releases/rel-[0-9]{4}-[^/]+/release\.md", "release"),
         (r"docs/90\.references/.*/ref-[0-9]{4}-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)", "reference"),
         (r"docs/98\.archive/changes/chg-[0-9]{4}-[^/]+/(?:plan|task)\.md", "change"),
@@ -654,7 +654,7 @@ class ScriptManifestTests(unittest.TestCase):
 
     def test_ledger_artifact_ids_match_target_profile_identities(self) -> None:
         direct_profiles = {
-            "prd": (r".*/prd-([0-9]{3})-[^/]+\.md", "prd"),
+            "prd": (r".*/prd-([0-9]{4})-[^/]+\.md", "prd"),
             "ad": (r".*/ad-([0-9]{4})-[^/]+\.md", "ad"),
             "adr": (r".*/adr-([0-9]{4})-[^/]+\.md", "adr"),
             "spec": (r".*/spec-([0-9]{4})-[^/]+/spec\.md", "spec"),

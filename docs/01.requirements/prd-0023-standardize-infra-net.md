@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-023
+artifact_id: prd-0023
 artifact_type: prd
 parent_ids: []
 created: 2026-04-01
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Standardize infra_net Network Product Requirements
 
@@ -33,14 +33,14 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: `docker-compose.yml`에 포함된 모든 활성 서비스는 `infra_net` 네트워크를 사용해야 함.
-- **REQ-PRD-FUN-02**: `infra_net`의 서브넷은 반드시 `172.19.0.0/16`으로 정의되어야 함.
-- **REQ-PRD-FUN-03**: 기존에 정의된 `k3d-hyhome` 네트워크 설정은 수정하거나 삭제하지 않고 유지함.
+- **PRD-0023-R0001**: `docker-compose.yml`에 포함된 모든 활성 서비스는 `infra_net` 네트워크를 사용해야 함.
+- **PRD-0023-R0002**: `infra_net`의 서브넷은 반드시 `172.19.0.0/16`으로 정의되어야 함.
+- **PRD-0023-R0003**: 기존에 정의된 `k3d-hyhome` 네트워크 설정은 수정하거나 삭제하지 않고 유지함.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: 모든 서비스가 `docker-compose config` 실행 시 `infra_net`을 포함하고 있음.
-- **REQ-PRD-MET-02**: `infra_net` 네트워크의 IPAM 설정이 `172.19.0.0/16` 대역을 가리킴.
+- **PRD-0023-AC0001**: 모든 서비스가 `docker-compose config` 실행 시 `infra_net`을 포함하고 있음.
+- **PRD-0023-AC0002**: `infra_net` 네트워크의 IPAM 설정이 `172.19.0.0/16` 대역을 가리킴.
 
 ## Scope and Non-goals
 

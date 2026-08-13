@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0021
 artifact_type: architecture-description
 parent_ids:
-  - prd-018
+  - prd-0018
 created: 2026-03-28
 updated: 2026-08-10
 ---
@@ -104,7 +104,7 @@ updated: 2026-08-10
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-018-observability-optimization-hardening.md](../../01.requirements/prd-018-observability-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0018-observability-optimization-hardening.md](../../01.requirements/prd-0018-observability-optimization-hardening.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../03.specs/spec-0007-observability/spec.md)
 - **Plan**: ../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md
 - **ADR**: [../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md)

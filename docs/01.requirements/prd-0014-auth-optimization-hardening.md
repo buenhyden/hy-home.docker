@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-014
+artifact_id: prd-0014
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 02-Auth Optimization & Hardening Product Requirements
 
@@ -36,17 +36,17 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-FUN-01**: OAuth2 Proxy 시크릿 주입은 엔트리포인트 스크립트 기반으로 표준화해야 한다.
-- **REQ-PRD-FUN-02**: OAuth2 Proxy 컨테이너는 비루트(non-root) 실행을 기본값으로 해야 한다.
-- **REQ-PRD-FUN-03**: Keycloak, root-active OAuth2 Proxy dev leaf, local/full OAuth2 Proxy leaf의 하드닝 정적 검증 스크립트를 제공하고 CI 필수 게이트로 적용해야 한다.
-- **REQ-PRD-FUN-04**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
-- **REQ-PRD-FUN-05**: OIDC 장애 시 degraded-mode 운영 판단 및 복구 절차를 문서화해야 한다.
+- **PRD-0014-R0001**: OAuth2 Proxy 시크릿 주입은 엔트리포인트 스크립트 기반으로 표준화해야 한다.
+- **PRD-0014-R0002**: OAuth2 Proxy 컨테이너는 비루트(non-root) 실행을 기본값으로 해야 한다.
+- **PRD-0014-R0003**: Keycloak, root-active OAuth2 Proxy dev leaf, local/full OAuth2 Proxy leaf의 하드닝 정적 검증 스크립트를 제공하고 CI 필수 게이트로 적용해야 한다.
+- **PRD-0014-R0004**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
+- **PRD-0014-R0005**: OIDC 장애 시 degraded-mode 운영 판단 및 복구 절차를 문서화해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MET-01**: `bash scripts/hardening/check-all-hardening.sh 02-auth`와 `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 모두 성공한다.
-- **REQ-PRD-MET-02**: `docs/04.execution/plans`, `docs/05.operations`, `docs/05.operations` 추적성 검증이 성공한다.
-- **REQ-PRD-MET-03**: 인증 경로 주요 장애 유형(세션 루프, OIDC 연결 실패, 설정 회귀)에 대한 실행 가능한 런북이 최신 상태다.
+- **PRD-0014-AC0001**: `bash scripts/hardening/check-all-hardening.sh 02-auth`와 `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`가 로컬/CI에서 모두 성공한다.
+- **PRD-0014-AC0002**: `docs/04.execution/plans`, `docs/05.operations`, `docs/05.operations` 추적성 검증이 성공한다.
+- **PRD-0014-AC0003**: 인증 경로 주요 장애 유형(세션 루프, OIDC 연결 실패, 설정 회귀)에 대한 실행 가능한 런북이 최신 상태다.
 
 ## Scope and Non-goals
 

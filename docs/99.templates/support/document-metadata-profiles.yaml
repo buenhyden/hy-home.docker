@@ -251,7 +251,7 @@ archive_profiles:
       - docs/98.archive/tombstones/05.operations/*.md
     template: docs/99.templates/templates/common/archive.template.md
     artifact_type: archive
-    id_pattern: '(?:(?:prd|srs|interface)-[0-9]{3}|(?:ad|adr|spec|ops|guide|policy|runbook|inc|postmortem|rel|ref)-[0-9]{4})'
+    id_pattern: '(?:(?:prd|srs|interface|ad|adr|spec|ops|guide|policy|runbook|inc|postmortem|rel|ref)-[0-9]{4})'
     path_identity: direct
     parent_id_pattern: null
     artifact_id_identity_pattern: null
@@ -781,7 +781,7 @@ template_roles:
   incident:
     source: docs/99.templates/templates/operations/incident.template.md
     artifact_profile: incident
-    target_globs: [docs/05.operations/incidents/inc-*/incident.md]
+    target_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/incident.md']
     required_headings:
       [
         '## Overview',
@@ -797,7 +797,7 @@ template_roles:
   postmortem:
     source: docs/99.templates/templates/operations/postmortem.template.md
     artifact_profile: postmortem
-    target_globs: [docs/05.operations/incidents/inc-*/postmortem.md]
+    target_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/postmortem.md']
     required_headings:
       [
         '## Overview',
@@ -1038,7 +1038,7 @@ template_roles:
 profiles:
   prd:
     path_globs: [docs/01.requirements/prd-*.md]
-    id_pattern: 'prd-[0-9]{3}'
+    id_pattern: 'prd-[0-9]{4}'
     path_identity: direct
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
@@ -1065,7 +1065,7 @@ profiles:
 
   srs:
     path_globs: [docs/01.requirements/srs-*.md]
-    id_pattern: 'srs-[0-9]{3}'
+    id_pattern: 'srs-[0-9]{4}'
     path_identity: direct
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
@@ -1092,7 +1092,7 @@ profiles:
 
   interface-requirement:
     path_globs: [docs/01.requirements/interface-*.md]
-    id_pattern: 'interface-[0-9]{3}'
+    id_pattern: 'interface-[0-9]{4}'
     path_identity: direct
     required: [status, artifact_id, artifact_type, parent_ids, created, updated]
     optional: [supersedes]
@@ -1341,7 +1341,7 @@ profiles:
     disposition: migration candidate
 
   incident:
-    path_globs: [docs/05.operations/incidents/inc-*/incident.md]
+    path_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/incident.md']
     id_pattern: 'inc-[0-9]{4}'
     path_identity: direct
     required: [status, artifact_id, artifact_type, parent_ids, created, updated, occurred_at]
@@ -1368,7 +1368,7 @@ profiles:
     disposition: migration candidate
 
   postmortem:
-    path_globs: [docs/05.operations/incidents/inc-*/postmortem.md]
+    path_globs: ['docs/05.operations/incidents/[0-9][0-9][0-9][0-9]/inc-[0-9][0-9][0-9][0-9]-*/postmortem.md']
     id_pattern: 'postmortem-(?P<identity>[0-9]{4})'
     path_identity: inherited
     parent_id_pattern: 'inc-(?P<identity>[0-9]{4})-[a-z0-9-]+'

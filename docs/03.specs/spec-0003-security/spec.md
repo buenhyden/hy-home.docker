@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for `in
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-015-security-optimization-hardening.md](../../01.requirements/prd-015-security-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0015-security-optimization-hardening.md](../../01.requirements/prd-0015-security-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0018-security-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md](../../02.architecture/decisions/adr-0003-vault-as-secrets-manager.md)
@@ -96,7 +96,7 @@ HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 03-security
 bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 Runtime verification where the environment allows:

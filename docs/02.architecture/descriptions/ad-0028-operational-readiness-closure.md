@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0028
 artifact_type: architecture-description
 parent_ids:
-  - prd-025
+  - prd-0025
 created: 2026-07-19
 updated: 2026-08-10
 ---
@@ -157,11 +157,11 @@ silently replace deterministic gates.
 
 | PRD requirement set | Architecture owner | Decision/spec consumer |
 | --- | --- | --- |
-| `REQ-ORC-001`–`002` | Isolated Compose runtime boundary | ADR 0028, Spec 124 |
-| `REQ-ORC-003` | Representative state and recovery boundary | ADR 0028, Spec 125 |
-| `REQ-ORC-004`–`006` | Digest-bound supply-chain boundary | ADR 0028, Spec 126 |
-| `REQ-ORC-007`–`008` | Local delivery and rollback boundary | ADR 0028, Spec 127 |
-| `REQ-ORC-009`–`010` | SDLC and evidence-promotion boundary | Specs 124-127 and Stage 04 |
+| `PRD-0025-R0001`–`PRD-0025-R0002` | Isolated Compose runtime boundary | ADR 0028, Spec 124 |
+| `PRD-0025-R0003` | Representative state and recovery boundary | ADR 0028, Spec 125 |
+| `PRD-0025-R0004`–`PRD-0025-R0006` | Digest-bound supply-chain boundary | ADR 0028, Spec 126 |
+| `PRD-0025-R0007`–`PRD-0025-R0008` | Local delivery and rollback boundary | ADR 0028, Spec 127 |
+| `PRD-0025-R0009`–`PRD-0025-R0010` | SDLC and evidence-promotion boundary | Specs 124-127 and Stage 04 |
 
 ADR 0028 records the selected local-isolated strategy. Specs own detailed
 interfaces, failure modes, and acceptance criteria. Plans own prospective
@@ -184,7 +184,7 @@ commands and sequencing. Tasks alone own actual results.
 
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/prd-025-operational-readiness-closure.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/prd-0025-operational-readiness-closure.md)
 - **ADR**: [ADR-0028 local-isolated readiness evidence](../decisions/adr-0028-local-isolated-readiness-evidence.md)
 - **Compose Spec**: Spec 124
 - **Infrastructure Spec**: Spec 125

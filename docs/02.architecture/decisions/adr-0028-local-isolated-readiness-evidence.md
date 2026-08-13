@@ -164,7 +164,7 @@ a separately approved follow-up artifact.
 
 ## Related Documents
 
-- **PRD**: [Operational readiness closure](../../01.requirements/prd-025-operational-readiness-closure.md)
+- **PRD**: [Operational readiness closure](../../01.requirements/prd-0025-operational-readiness-closure.md)
 - **Architecture Description**: [Operational readiness closure architecture](../descriptions/ad-0028-operational-readiness-closure.md)
 - **Compose Spec**: Spec 124
 - **Infrastructure Spec**: Spec 125

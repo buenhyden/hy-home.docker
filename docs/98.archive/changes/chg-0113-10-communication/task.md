@@ -74,7 +74,7 @@ Existing task bullets and verification notes in this document remain the task li
 ## Related Documents
 
 - **Plan**: [2026-03-26-10-communication-standardization.md](../chg-0011-10-communication-standardization/plan.md)
-- **PRD**: [011-communication.md](../../../01.requirements/prd-011-communication.md)
+- **PRD**: [011-communication.md](../../../01.requirements/prd-0011-communication.md)
 - **ARD**: [0010-communication-architecture.md](../../../02.architecture/descriptions/ad-0010-communication-architecture.md)
 - **ADR**: [0010-communication-services.md](../../../02.architecture/decisions/adr-0010-communication-services.md)
 - **Spec**: [011-communication/spec.md](../../../03.specs/spec-0011-communication/spec.md)

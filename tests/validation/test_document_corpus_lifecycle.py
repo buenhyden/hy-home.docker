@@ -57,6 +57,17 @@ lifecycle = load_script(SCRIPT, "document_corpus_lifecycle")
 metadata = load_script(METADATA_SCRIPT, "document_metadata_for_lifecycle_tests")
 
 
+class SharedProvenanceExtractionTests(unittest.TestCase):
+    def test_lifecycle_uses_shared_git_provenance_without_file_loading_metadata(self) -> None:
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("scripts.lib.document_governance.git_provenance", source)
+        self.assertNotIn("METADATA_SCRIPT", source)
+        self.assertNotIn(
+            'spec_from_file_location(\n        "document_metadata',
+            source,
+        )
+
+
 def task7_ledger_payload() -> dict[str, object]:
     text = TASK7_LEDGER.read_text(encoding="utf-8")
     yaml_text = text.split("```yaml\n", 1)[1].split("```", 1)[0]
@@ -86,12 +97,12 @@ def task7_rows(payload: dict[str, object]) -> list[dict[str, object]]:
 
 def is_typed_task7_target(target: str) -> bool:
     patterns = (
-        r"docs/01\.requirements/prd-[0-9]{3}-[^/]+\.md",
+        r"docs/01\.requirements/prd-[0-9]{4}-[^/]+\.md",
         r"docs/02\.architecture/descriptions/ad-[0-9]{4}-[^/]+\.md",
         r"docs/02\.architecture/decisions/adr-[0-9]{4}-[^/]+\.md",
         r"docs/03\.specs/spec-[0-9]{4}-[^/]+/(?:spec|plan|task)\.md",
         r"docs/05\.operations/[0-9]{2}-[^/]+/ops-[0-9]{4}-[^/]+/(?:guide|policy|runbook)\.md",
-        r"docs/05\.operations/incidents/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md",
+        r"docs/05\.operations/incidents/[0-9]{4}/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md",
         r"docs/05\.operations/releases/rel-[0-9]{4}-[^/]+/release\.md",
         r"docs/90\.references/(?:.+/)?(?:ref|audit)-[0-9]{4}-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)",
         r"docs/98\.archive/changes/chg-[0-9]{4}-[^/]+/(?:plan|task)\.md",
@@ -438,7 +449,12 @@ class Task7CorpusConvergenceTests(unittest.TestCase):
 
     def test_current_links_resolve_without_active_archive_consumers(self) -> None:
         result = subprocess.run(
-            ["bash", "scripts/validation/check-doc-implementation-alignment.sh"],
+            [
+                sys.executable,
+                "scripts/validation/check-document-links.py",
+                "--mode",
+                "alignment",
+            ],
             cwd=ROOT,
             text=True,
             capture_output=True,

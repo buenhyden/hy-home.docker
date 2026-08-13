@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-024
+artifact_id: prd-0024
 artifact_type: prd
 parent_ids: []
 created: 2026-06-01
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # Agent Governance Standardization Product Requirements
 
@@ -40,29 +40,29 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 
 ## Requirements
 
-- **REQ-AGG-FUN-01**: Stage 00은 agent catalog, function catalog, workflow rules, provider overlays, memory/progress rules의 canonical source of truth여야 한다.
-- **REQ-AGG-FUN-02**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
-- **REQ-AGG-FUN-03**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
-- **REQ-AGG-FUN-04**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
-- **REQ-AGG-FUN-05**: HADS mandatory profile은 `docs/90.references/data/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
-- **REQ-AGG-FUN-06**: Docker/Compose best-practice guidance는 hard validator와 manual review boundary를 구분해야 한다.
-- **REQ-AGG-FUN-07**: QA/CI/CD evidence는 docs-only, policy-only, behavior change, runtime change를 구분해 최소 검증 명령과 skipped-check rationale을 기록해야 한다.
-- **REQ-AGG-FUN-08**: Node/npm/rtk 기반 automation은 `/home/hy/.local/bin` toolchain 존재를 활용할 수 있으나, non-interactive agent PATH 차이를 명시적으로 처리해야 한다.
+- **PRD-0024-R0001**: Stage 00은 agent catalog, function catalog, workflow rules, provider overlays, memory/progress rules의 canonical source of truth여야 한다.
+- **PRD-0024-R0002**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
+- **PRD-0024-R0003**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
+- **PRD-0024-R0004**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
+- **PRD-0024-R0005**: HADS mandatory profile은 `docs/90.references/data/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
+- **PRD-0024-R0006**: Docker/Compose best-practice guidance는 hard validator와 manual review boundary를 구분해야 한다.
+- **PRD-0024-R0007**: QA/CI/CD evidence는 docs-only, policy-only, behavior change, runtime change를 구분해 최소 검증 명령과 skipped-check rationale을 기록해야 한다.
+- **PRD-0024-R0008**: Node/npm/rtk 기반 automation은 `/home/hy/.local/bin` toolchain 존재를 활용할 수 있으나, non-interactive agent PATH 차이를 명시적으로 처리해야 한다.
 
 ## Non-functional Requirements
 
-- **REQ-AGG-NFR-01**: Governance text must remain deterministic, concise, and free of contradictory provider-specific policy forks.
-- **REQ-AGG-NFR-02**: Stage 00 governance files must remain English-only; human-facing stage execution evidence may use Korean where appropriate.
-- **REQ-AGG-NFR-03**: Repository checks must be able to detect adapter drift, template drift, unsupported statuses, and traceability gaps.
-- **REQ-AGG-NFR-04**: Graphify may support navigation, but completion claims must be corroborated by tracked docs and validation scripts when graph health is advisory.
-- **REQ-AGG-NFR-05**: Documentation changes must remove or archive historical content when it conflicts with current tracked implementation truth.
+- **PRD-0024-R0009**: Governance text must remain deterministic, concise, and free of contradictory provider-specific policy forks.
+- **PRD-0024-R0010**: Stage 00 governance files must remain English-only; human-facing stage execution evidence may use Korean where appropriate.
+- **PRD-0024-R0011**: Repository checks must be able to detect adapter drift, template drift, unsupported statuses, and traceability gaps.
+- **PRD-0024-R0012**: Graphify may support navigation, but completion claims must be corroborated by tracked docs and validation scripts when graph health is advisory.
+- **PRD-0024-R0013**: Documentation changes must remove or archive historical content when it conflicts with current tracked implementation truth.
 
 ## Acceptance and Verification
 
-- **REQ-AGG-MET-01**: Agent governance PRD, Architecture Description, ADR, Phase 1 diagnostic, and Phase 2 alignment plan are cross-linked.
-- **REQ-AGG-MET-02**: `check-repo-contracts.sh`, `check-doc-traceability.sh`, provider surface sync, LLM Wiki freshness, and diff hygiene pass after changes.
-- **REQ-AGG-MET-03**: No Docker runtime, secrets, deployment state, remote GitHub settings, or user-global Codex settings are changed during governance documentation alignment.
-- **REQ-AGG-MET-04**: Future implementation work can identify whether a proposed governance change belongs in Stage 00 policy, provider adapter mechanics, Stage 04 evidence, or advisory memory.
+- **PRD-0024-AC0001**: Agent governance PRD, Architecture Description, ADR, Phase 1 diagnostic, and Phase 2 alignment plan are cross-linked.
+- **PRD-0024-AC0002**: `check-repo-contracts.sh`, `check-document-links.py --mode traceability`, provider surface sync, LLM Wiki freshness, and diff hygiene pass after changes.
+- **PRD-0024-AC0003**: No Docker runtime, secrets, deployment state, remote GitHub settings, or user-global Codex settings are changed during governance documentation alignment.
+- **PRD-0024-AC0004**: Future implementation work can identify whether a proposed governance change belongs in Stage 00 policy, provider adapter mechanics, Stage 04 evidence, or advisory memory.
 
 ## Scope and Non-goals
 

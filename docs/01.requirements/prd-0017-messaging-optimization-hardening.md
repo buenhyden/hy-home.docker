@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-017
+artifact_id: prd-0017
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 05-Messaging Optimization & Hardening Product Requirements
 
@@ -38,19 +38,19 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-MSG-FUN-01**: Kafka/RabbitMQ 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
-- **REQ-PRD-MSG-FUN-02**: Kafka UI(`kafka-ui` router)와 RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
-- **REQ-PRD-MSG-FUN-03**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
-- **REQ-PRD-MSG-FUN-04**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
-- **REQ-PRD-MSG-FUN-05**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
-- **REQ-PRD-MSG-FUN-06**: Stage 01-05 문서 체계에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
+- **PRD-0017-R0001**: Kafka/RabbitMQ 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
+- **PRD-0017-R0002**: Kafka UI(`kafka-ui` router)와 RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
+- **PRD-0017-R0003**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
+- **PRD-0017-R0004**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
+- **PRD-0017-R0005**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
+- **PRD-0017-R0006**: Stage 01-05 문서 체계에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-MSG-MET-01**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` 실패 0건
-- **REQ-PRD-MSG-MET-02**: root-included Kafka/RabbitMQ compose 정적 검증 명령 통과 및 service-local compose context boundary 기록
-- **REQ-PRD-MSG-MET-03**: 메시징 노출 라우터의 middleware 계약 충족
-- **REQ-PRD-MSG-MET-04**: 05-messaging optimization-hardening 문서의 양방향 링크 정합성 확보
+- **PRD-0017-AC0001**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` 실패 0건
+- **PRD-0017-AC0002**: root-included Kafka/RabbitMQ compose 정적 검증 명령 통과 및 service-local compose context boundary 기록
+- **PRD-0017-AC0003**: 메시징 노출 라우터의 middleware 계약 충족
+- **PRD-0017-AC0004**: 05-messaging optimization-hardening 문서의 양방향 링크 정합성 확보
 
 ## Scope and Non-goals
 

@@ -97,7 +97,7 @@ This document is the optimization/hardening implementation plan for `infra/06-ob
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-018-observability-optimization-hardening.md](../../../01.requirements/prd-018-observability-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0018-observability-optimization-hardening.md](../../../01.requirements/prd-0018-observability-optimization-hardening.md)
 - **ARD**: [../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0021-observability-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/adr-0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../../../03.specs/spec-0007-observability/spec.md)

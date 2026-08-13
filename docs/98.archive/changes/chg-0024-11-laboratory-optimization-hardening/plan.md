@@ -90,7 +90,7 @@ This document is the optimization/hardening implementation plan for `infra/11-la
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-022-laboratory-optimization-hardening.md](../../../01.requirements/prd-022-laboratory-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0022-laboratory-optimization-hardening.md](../../../01.requirements/prd-0022-laboratory-optimization-hardening.md)
 - **ARD**: [../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0025-laboratory-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/adr-0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../../../03.specs/spec-0012-laboratory/spec.md)

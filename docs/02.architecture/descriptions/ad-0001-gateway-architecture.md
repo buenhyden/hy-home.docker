@@ -3,7 +3,7 @@ status: active
 artifact_id: ad-0001
 artifact_type: architecture-description
 parent_ids:
-  - prd-001
+  - prd-0001
 created: 2026-03-26
 updated: 2026-08-10
 ---
@@ -85,7 +85,7 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-001-gateway.md](../../01.requirements/prd-001-gateway.md)
+- **PRD**: [../../01.requirements/prd-0001-gateway.md](../../01.requirements/prd-0001-gateway.md)
 - **Spec**: [../../03.specs/001-gateway/spec.md](../../03.specs/spec-0001-gateway/spec.md)
 - **Plan**: ../../04.execution/plans/2026-03-26-01-gateway-standardization.md
 - **ADR**: [../decisions/adr-0001-traefik-nginx-hybrid.md](../decisions/adr-0001-traefik-nginx-hybrid.md)

@@ -71,4 +71,4 @@ GitHub-specific enforcement rules (branch protection, required checks, CODEOWNER
 
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/quality-standards.md`
-- `docs/05.operations/00-workspace/ops-<id>-release-management/runbook.md`
+- `docs/05.operations/00-workspace/ops-####-release-management/runbook.md`

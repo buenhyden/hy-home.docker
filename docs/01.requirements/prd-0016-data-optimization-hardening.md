@@ -1,10 +1,10 @@
 ---
 status: active
-artifact_id: prd-016
+artifact_id: prd-0016
 artifact_type: prd
 parent_ids: []
 created: 2026-03-28
-updated: 2026-08-10
+updated: 2026-08-13
 ---
 # 04-Data Optimization & Hardening Product Requirements
 
@@ -37,19 +37,19 @@ updated: 2026-08-10
 
 ## Requirements
 
-- **REQ-PRD-DATA-FUN-01**: `supabase` 핵심 서비스(`studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `analytics`, `db`, `vector`, `supavisor`)에 healthcheck 계약을 적용해야 한다.
-- **REQ-PRD-DATA-FUN-02**: `valkey-cluster-exporter`는 `service_valkey_password` 시크릿 계약을 사용해야 한다.
-- **REQ-PRD-DATA-FUN-03**: `seaweedfs` compose의 malformed expose 토큰(`]`)을 제거해야 한다.
-- **REQ-PRD-DATA-FUN-04**: `ksql`의 tier 라벨은 `data`로 정규화해야 한다.
-- **REQ-PRD-DATA-FUN-05**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-all-hardening.sh 04-data`)와 CI job(`infrastructure-hardening`)을 제공해야 한다.
-- **REQ-PRD-DATA-FUN-06**: Stage 01-05 문서 체계에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
+- **PRD-0016-R0001**: `supabase` 핵심 서비스(`studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `analytics`, `db`, `vector`, `supavisor`)에 healthcheck 계약을 적용해야 한다.
+- **PRD-0016-R0002**: `valkey-cluster-exporter`는 `service_valkey_password` 시크릿 계약을 사용해야 한다.
+- **PRD-0016-R0003**: `seaweedfs` compose의 malformed expose 토큰(`]`)을 제거해야 한다.
+- **PRD-0016-R0004**: `ksql`의 tier 라벨은 `data`로 정규화해야 한다.
+- **PRD-0016-R0005**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-all-hardening.sh 04-data`)와 CI job(`infrastructure-hardening`)을 제공해야 한다.
+- **PRD-0016-R0006**: Stage 01-05 문서 체계에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
 
 ## Acceptance and Verification
 
-- **REQ-PRD-DATA-MET-01**: `bash scripts/hardening/check-all-hardening.sh 04-data`가 실패 0건으로 통과한다.
-- **REQ-PRD-DATA-MET-02**: `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`가 오류 없이 통과한다.
-- **REQ-PRD-DATA-MET-03**: `valkey-cluster` exporter 시크릿 경로가 단일 계약으로 정합화된다.
-- **REQ-PRD-DATA-MET-04**: 04-data Spec/Plan/Tasks/Guide/Ops/Runbook 문서가 상호 추적 링크를 포함한다.
+- **PRD-0016-AC0001**: `bash scripts/hardening/check-all-hardening.sh 04-data`가 실패 0건으로 통과한다.
+- **PRD-0016-AC0002**: `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`가 오류 없이 통과한다.
+- **PRD-0016-AC0003**: `valkey-cluster` exporter 시크릿 경로가 단일 계약으로 정합화된다.
+- **PRD-0016-AC0004**: 04-data Spec/Plan/Tasks/Guide/Ops/Runbook 문서가 상호 추적 링크를 포함한다.
 
 ## Scope and Non-goals
 

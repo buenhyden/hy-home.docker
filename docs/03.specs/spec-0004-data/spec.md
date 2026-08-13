@@ -22,7 +22,7 @@ This document defines the optimization/hardening implementation contract for the
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-016-data-optimization-hardening.md](../../01.requirements/prd-016-data-optimization-hardening.md)
+- **PRD**: [../../01.requirements/prd-0016-data-optimization-hardening.md](../../01.requirements/prd-0016-data-optimization-hardening.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md](../../02.architecture/descriptions/ad-0019-data-optimization-hardening-architecture.md)
 - **Related ADRs**:
   - [../../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md](../../02.architecture/decisions/adr-0004-postgresql-ha-patroni.md)
@@ -39,7 +39,7 @@ This document defines the optimization/hardening implementation contract for the
   - The `seaweedfs` expose definition allows only valid port tokens.
 - **Governance Contract**:
   - Enforce `scripts/hardening/check-all-hardening.sh 04-data` through the CI `infrastructure-hardening` job.
-  - Compose the operating gate together with `scripts/validation/check-template-security-baseline.sh` and `scripts/validation/check-doc-traceability.sh`.
+  - Compose the operating gate together with `scripts/validation/check-template-security-baseline.sh` and `scripts/validation/check-document-links.py --mode traceability`.
 
 ## Core Design
 
@@ -112,7 +112,7 @@ docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml con
 docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config
 bash scripts/hardening/check-all-hardening.sh 04-data
 bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-doc-traceability.sh
+python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
 Runtime verification where the environment allows:

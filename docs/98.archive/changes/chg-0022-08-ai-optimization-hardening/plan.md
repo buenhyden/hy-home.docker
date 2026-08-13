@@ -91,7 +91,7 @@ This document is the optimization/hardening implementation plan for `infra/08-ai
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/prd-020-ai-optimization-hardening.md](../../../01.requirements/prd-020-ai-optimization-hardening.md)
+- **PRD**: [../01.requirements/prd-0020-ai-optimization-hardening.md](../../../01.requirements/prd-0020-ai-optimization-hardening.md)
 - **ARD**: [../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md](../../../02.architecture/descriptions/ad-0023-ai-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/adr-0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/009-ai/spec.md](../../../03.specs/spec-0009-ai/spec.md)

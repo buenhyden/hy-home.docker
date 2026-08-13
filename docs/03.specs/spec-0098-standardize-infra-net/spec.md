@@ -27,7 +27,7 @@ This document defines detailed instructions for applying the `infra_net` network
 
 ## Related Inputs
 
-- **PRD**: [../../01.requirements/prd-023-standardize-infra-net.md](../../01.requirements/prd-023-standardize-infra-net.md)
+- **PRD**: [../../01.requirements/prd-0023-standardize-infra-net.md](../../01.requirements/prd-0023-standardize-infra-net.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0026-standardize-infra-net.md](../../02.architecture/descriptions/ad-0026-standardize-infra-net.md)
 - **Related ADRs**: [../../02.architecture/decisions/adr-0026-standardize-infra-net.md](../../02.architecture/decisions/adr-0026-standardize-infra-net.md)
 

@@ -58,7 +58,7 @@ This work consolidates fragmented information about `11-laboratory` services (Ho
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/prd-012-laboratory.md](../../../01.requirements/prd-012-laboratory.md)
+- **PRD**: [../../01.requirements/prd-0012-laboratory.md](../../../01.requirements/prd-0012-laboratory.md)
 - **ARD**: [../../02.architecture/descriptions/ad-0011-laboratory-architecture.md](../../../02.architecture/descriptions/ad-0011-laboratory-architecture.md)
 - **Spec**: [../../03.specs/012-laboratory/spec.md](../../../03.specs/spec-0012-laboratory/spec.md)
 - **ADR**: [../../02.architecture/decisions/adr-0011-laboratory-services.md](../../../02.architecture/decisions/adr-0011-laboratory-services.md)
