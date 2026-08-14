@@ -768,6 +768,42 @@ records the observed `selected`/`violations` counts before staging.
   unchanged C0/I0/M0 requirement, which leaves Spec 137 pre-deletion gate 6 with
   two answers.
 
+- Plan fix-8 outcome, recorded 2026-08-15. Committed as `31adf3c4`; metadata,
+  traceability, and the repository contract passed. Python/security returned
+  `Approved; C0/I0/M4`, the second security approval. Specification returned
+  `Needs fixes; C0/I2/M6`.
+
+  Both controller-introduced defects from fix-7 are closed. The withdrawal the
+  fix-7 disposition table promised is now performed, verified by both reviewers,
+  and the table records honestly that fix-7 did not perform it. The split was
+  redrawn at assertion granularity, and both reviewers confirm every retained
+  liveness control now has a gate-blocking assertion at a site where it can
+  fire. The Python/security reviewer traced sub-case 3's injection point through
+  the helper's `create_or_reuse_ref` from the absent lookup to `commit-tree` to
+  the CAS and confirmed a child is genuinely spawned there, so termination and
+  synchronous reap are observable.
+
+  Sub-cases 4 and 6 were promoted to fully gate-blocking rather than demoted,
+  which is direct evidence that the scope reduction did not weaken controls.
+
+  The two remaining specification findings are both undefined-status defects of
+  the class fix-8 exists to eliminate: R2's enumeration and the RED scoping list
+  give opposite determinations for one assertion, and the demotion criterion's
+  namespace qualifier appears in three places and not a fourth, with neither
+  reading selecting the placements the Plan makes.
+
+  Controller verification changed this round. The prior round's failure came
+  from checking that promised deletions occurred without checking that surviving
+  text agreed with the promises. This round the controller verified the
+  previously unedited region directly, confirmed the deleted non-blocking
+  language, confirmed the untouched absolutes at their original wording, and
+  confirmed each sub-case placement before committing. The fix-8 author also
+  caught one of its own cross-reference promises failing verification during
+  drafting and replaced it with the claim the Plan actually makes.
+
+  Important-finding trend: fix-2 four, fix-3 eight, fix-4 six, fix-5 two,
+  fix-6 five, fix-7 five unique, fix-8 two.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
