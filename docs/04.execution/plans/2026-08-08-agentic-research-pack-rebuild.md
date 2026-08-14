@@ -80,19 +80,19 @@ subagent-driven specification/quality review.
 
 ### Pinned baseline
 
-| Input | Baseline state |
-| --- | --- |
-| Branch base | `78b60974164ff5427ba8c64aaf3ecde4a7faf41a` |
-| Written design commit | `3182daa8` |
-| Original active Spec 137 commit | `35318255` |
-| V&V/Gate 9 Spec amendment | `90eca714`, `76808636`, and `af37969b`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`; final independent specification and documentation reviews Approved C0/I0/M0 |
-| Old pack | 20 regular files: README plus 19 leaves |
-| LLM Wiki index | Fresh at design time |
-| LLM Wiki coverage | Stale at design time |
-| Security readiness snapshot | Stale and semantically unreliable because its generator misses typed workflow-registry resolution |
-| Repository contract | Blocked by missing `html5lib` in the current validation environment |
-| Document implementation alignment | 184 pre-existing archive-direct-link findings; Spec 137 introduces zero |
-| Graphify | Advisory and stale; built from `f8a72211` |
+| Input                             | Baseline state                                                                                                                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Branch base                       | `78b60974164ff5427ba8c64aaf3ecde4a7faf41a`                                                                                                                                                                                |
+| Written design commit             | `3182daa8`                                                                                                                                                                                                                |
+| Original active Spec 137 commit   | `35318255`                                                                                                                                                                                                                |
+| V&V/Gate 9 Spec amendment         | `90eca714`, `76808636`, and `af37969b`; aggregate range `b77abacb610c853db3e9fef2bdef8cc7855c62a2..af37969b26f7e96d684fa0fdf8a0ee2418a4ac23`; final independent specification and documentation reviews Approved C0/I0/M0 |
+| Old pack                          | 20 regular files: README plus 19 leaves                                                                                                                                                                                   |
+| LLM Wiki index                    | Fresh at design time                                                                                                                                                                                                      |
+| LLM Wiki coverage                 | Stale at design time                                                                                                                                                                                                      |
+| Security readiness snapshot       | Stale and semantically unreliable because its generator misses typed workflow-registry resolution                                                                                                                         |
+| Repository contract               | Blocked by missing `html5lib` in the current validation environment                                                                                                                                                       |
+| Document implementation alignment | 184 pre-existing archive-direct-link findings; Spec 137 introduces zero                                                                                                                                                   |
+| Graphify                          | Advisory and stale; built from `f8a72211`                                                                                                                                                                                 |
 
 Every invocation of `scripts/validation/check-repo-contracts.sh` after Task 1
 uses the isolated interpreter provisioned at
@@ -194,21 +194,21 @@ result.
 
 ### File map
 
-| Responsibility | Files |
-| --- | --- |
-| Execution evidence | Create `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`; modify `docs/04.execution/tasks/README.md` |
-| Foundation | Create `workspace-baseline.md`, `scope-application-matrix.md` in the new pack |
-| Agentic core | Create `harness-engineering.md`, `loop-engineering.md`, `provider-implementation-comparison.md` |
-| Agent instructions/models/memory | Create `agent-instructions-vibe-coding.md`, `provider-model-landscape.md`, `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md` |
-| SDLC contracts | Create `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md` |
-| Documentation systems | Create `documentation-architecture.md`, `llm-wiki-system.md` |
-| Delivery quality | Create `automation-pipeline-workflow.md`, `quality-ci-formatting.md` |
-| Verification and validation | Create `verification-validation.md`; update the pack README and supporting owner-leaf cross-links; update Spec/Task routing evidence and generated LLM Wiki navigation |
-| Infrastructure/security | Create `docker-compose-infrastructure.md`, `security-governance.md` |
-| Human routing | Create new pack `README.md`; modify `docs/90.references/research/README.md` and other active clickable consumers discovered by the stale-path inventory |
-| Machine routing | Regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` and `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md` |
-| Retiring pack | Delete exactly the twenty files under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` after Task 11 gates pass |
-| Final evidence | Modify the Task and `docs/00.agent-governance/memory/current.md`; update a durable memory note only when the memory contract selects one |
+| Responsibility                   | Files                                                                                                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Execution evidence               | Create `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`; modify `docs/04.execution/tasks/README.md`                                               |
+| Foundation                       | Create `workspace-baseline.md`, `scope-application-matrix.md` in the new pack                                                                                          |
+| Agentic core                     | Create `harness-engineering.md`, `loop-engineering.md`, `provider-implementation-comparison.md`                                                                        |
+| Agent instructions/models/memory | Create `agent-instructions-vibe-coding.md`, `provider-model-landscape.md`, `agent-model-selection.md`, `ai-agent-catalogs.md`, `memory-hierarchy.md`                   |
+| SDLC contracts                   | Create `spec-driven-sdlc.md`, `sdlc-document-roles.md`, `document-metadata-lifecycle.md`                                                                               |
+| Documentation systems            | Create `documentation-architecture.md`, `llm-wiki-system.md`                                                                                                           |
+| Delivery quality                 | Create `automation-pipeline-workflow.md`, `quality-ci-formatting.md`                                                                                                   |
+| Verification and validation      | Create `verification-validation.md`; update the pack README and supporting owner-leaf cross-links; update Spec/Task routing evidence and generated LLM Wiki navigation |
+| Infrastructure/security          | Create `docker-compose-infrastructure.md`, `security-governance.md`                                                                                                    |
+| Human routing                    | Create new pack `README.md`; modify `docs/90.references/research/README.md` and other active clickable consumers discovered by the stale-path inventory                |
+| Machine routing                  | Regenerate `docs/90.references/llm-wiki/llm-wiki-index.md` and `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`                                 |
+| Retiring pack                    | Delete exactly the twenty files under `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/` after Task 11 gates pass                                 |
+| Final evidence                   | Modify the Task and `docs/00.agent-governance/memory/current.md`; update a durable memory note only when the memory contract selects one                               |
 
 ## Goals and Non-goals
 
@@ -2038,6 +2038,7 @@ Task 12, remote actions, and push remain closed throughout Step 0d.
 
    The final command must list only the Task, and the diff must contain no
    implementation or generated-output change.
+
 3. Commit that one-file evidence closure with exact subject
    `docs(task): record gate 9 recovery approval`. Dispatch two fresh,
    independent committed-unit reviews over that exact Task-only range: one
@@ -2197,18 +2198,18 @@ remain exit 2 and diagnostics remain on stderr.
 Use these stable fail-closed error classes in new coverage while preserving
 the existing evidence-schema errors:
 
-| Error | Required trigger |
-| --- | --- |
-| `LIVE_HEAD_REQUIRED` | a package-consuming mode omits `--require-live-head`, `--live-reviewed-head`, or `--reviewed-code-head`, or supplies a non-full/non-commit OID; reject with exit 2 before projection or shell |
-| `AMBIGUOUS_GIT_HISTORY` | replace refs, grafts, shallow history, replacement-aware resolution, or another non-immutable commit interpretation is present |
-| `UNTRUSTED_PACKAGE_HEAD` | package `HEAD`, supplied live reviewed `HEAD`, and current live `HEAD` are not the same exact full commit OID |
-| `REVIEWED_CODE_DRIFT` | helper/generator live blob OIDs differ from the reviewed Step 0d code commit, that commit is not an unambiguous ancestor, or a bound tracked code path is dirty in the real index/worktree |
-| `PROJECTED_INDEX_SCOPE_DRIFT` | scratch/index ownership, initial tree, real-index alias, or package-HEAD binding cannot be proved |
-| `PROJECTED_DELETION_DRIFT` | old-path cardinality/set or exact twenty-`D`/zero-outside status differs |
-| `GENERATOR_STDOUT_DRIFT` | stdout is empty/noisy/noncanonical or differs from the package attachment or tracked live reviewed `HEAD` output |
-| `SCRATCH_SCOPE_DRIFT` | a pinned scratch ancestor or registered child is substituted or cannot be re-proved |
-| `SCRATCH_CLEANUP_FAILURE` | proved direct-child cleanup cannot complete without recursive or unproved deletion |
-| `PACKAGE_SEMANTIC_DRIFT` | a resealed attachment, manifest, patch, or other package semantic differs from the freshly derived result |
+| Error                         | Required trigger                                                                                                                                                                              |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `LIVE_HEAD_REQUIRED`          | a package-consuming mode omits `--require-live-head`, `--live-reviewed-head`, or `--reviewed-code-head`, or supplies a non-full/non-commit OID; reject with exit 2 before projection or shell |
+| `AMBIGUOUS_GIT_HISTORY`       | replace refs, grafts, shallow history, replacement-aware resolution, or another non-immutable commit interpretation is present                                                                |
+| `UNTRUSTED_PACKAGE_HEAD`      | package `HEAD`, supplied live reviewed `HEAD`, and current live `HEAD` are not the same exact full commit OID                                                                                 |
+| `REVIEWED_CODE_DRIFT`         | helper/generator live blob OIDs differ from the reviewed Step 0d code commit, that commit is not an unambiguous ancestor, or a bound tracked code path is dirty in the real index/worktree    |
+| `PROJECTED_INDEX_SCOPE_DRIFT` | scratch/index ownership, initial tree, real-index alias, or package-HEAD binding cannot be proved                                                                                             |
+| `PROJECTED_DELETION_DRIFT`    | old-path cardinality/set or exact twenty-`D`/zero-outside status differs                                                                                                                      |
+| `GENERATOR_STDOUT_DRIFT`      | stdout is empty/noisy/noncanonical or differs from the package attachment or tracked live reviewed `HEAD` output                                                                              |
+| `SCRATCH_SCOPE_DRIFT`         | a pinned scratch ancestor or registered child is substituted or cannot be re-proved                                                                                                           |
+| `SCRATCH_CLEANUP_FAILURE`     | proved direct-child cleanup cannot complete without recursive or unproved deletion                                                                                                            |
+| `PACKAGE_SEMANTIC_DRIFT`      | a resealed attachment, manifest, patch, or other package semantic differs from the freshly derived result                                                                                     |
 
 Implement in small TDD slices:
 
@@ -2401,7 +2402,10 @@ production or test change, amend and independently review this Plan-only
 contract. Commit only this Plan with exact subject
 `docs(plan): define gate 9 bundle publication linearization`; both a
 specification reviewer and a Python/security reviewer must return C0/I0/M0
-over that one-file range. The Task owns the actual review receipts. Package
+over that one-file range. That commit and its review pair are the superseded
+initial gate: the range is immutable, its review produced the `--bundle`
+finding recorded below, and the operative gate is now the fix-3 gate stated at
+the end of this subsection. The Task owns the actual review receipts. Package
 construction, package or ref consumption, Phase A, evidence-ref publication,
 deletion, lifecycle mutation, Task 12, remote actions, and push remain closed.
 
@@ -2411,15 +2415,35 @@ Plan from clean `1cd723fa1458e464e6e7d257f799f5803e1dee28`, commit it with
 exact subject `docs(plan): bind gate 9 bundle receipt identity`, and review its
 one-file fix range. That fix-1 specification review is Approved C0/I0/M0; its
 Python/security review is Needs fixes C0/I1/M0 because a FIFO substituted
-after raw snapshot can block the subsequent Git ref enumeration.
+after raw snapshot can block the subsequent Git ref enumeration. That verdict
+is recorded as returned; direct measurement has since shown that the command
+it names is not the one that blocks, which is why the fix-2 control derived
+from it missed. The measured hazard surface is recorded normatively in the
+discovery contract below.
 
 Correct only this Plan again from clean
-`bb1794cde08ecc846b460a37f7201c29f237982e`. Commit exact subject
+`bb1794cde08ecc846b460a37f7201c29f237982e`, with exact subject
 `docs(plan): bound gate 9 ref discovery latency`. Both fix-2 independent
-re-reviews are `Not Run` until that one-file commit is dispatched; do not
-predict their verdicts. Neither Plan fix consumes a Step 0e implementation
-round. Do not begin round 4 or edit the Task/helper/tests until both fix-2
-re-reviews return C0/I0/M0.
+re-reviews are complete and both failed: the specification re-review returned
+Needs fixes C0/I1/M4 and the Python/security re-review returned Needs fixes
+C0/I3/M3. Both found that the fix-2 bound was scoped to `git for-each-ref`,
+which does not block, while the calls that do block remained on the generic
+unbounded runner; the Python/security re-review additionally found that
+mandated RED method 4 asserted a timeout that cannot occur and that the
+create-only CAS can leave a stale `<ref>.lock` behind.
+
+Correct only this Plan a third time from clean
+`0b9bd01b548e615dcdfa5e893acbaa07cd3550be`. Commit exact subject
+`docs(plan): retarget gate 9 hazard bounds to execution funnels`. Both fix-3
+independent re-reviews are `Not Run` until that one-file commit is dispatched;
+do not predict their verdicts. One fresh independent specification reviewer
+and one fresh independent Python/security reviewer must each return C0/I0/M0
+over that one-file range before recovery round 4 may begin. No Plan-only fix
+consumes a Step 0e implementation round, so the implementation count remains
+three of five. Do not begin recovery round 4 or edit the Task, helper, or
+tests until both fix-3 re-reviews return C0/I0/M0. Package construction,
+Phase A, evidence-ref publication, real-index staging, deletion, lifecycle
+mutation, Task 12, remote actions, and push all remain closed.
 
 After the Plan-only gate passes, recovery round 4 uses a fresh more-capable
 implementer and modifies exactly these three files within the existing
@@ -2432,8 +2456,8 @@ six-file ceiling:
    concurrency, transport-ordering, dangling-loose-symref, canonical-ref, and
    stable-identity regressions.
 3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
-   for the actual immutable Plan correction/fix-1/fix-2 commit ranges and all
-   three independent review/re-review pairs, the round-3 implementation
+   for the actual immutable Plan correction/fix-1/fix-2/fix-3 commit ranges and
+   all four independent review/re-review pairs, the round-3 implementation
    findings, and round-4 RED/GREEN/full evidence with the new implementation
    reviews left `Not Run` until dispatch. No separate Task-only prerequisite
    is needed; the round-4 implementation commit records only reviews that
@@ -2446,6 +2470,34 @@ implementation scope. Use exact commit subject
 its reviewers find an issue, round 5 both keep the fresh more-capable
 implementer rule. A finding after round 5 trips the existing breaker; it does
 not create round 6.
+
+**Hazard-class boundary — what these controls are for:**
+
+Reviewer-identity binding is the security boundary of Gate 9. Step 4 states
+it: the controller's observed spawn result, the frozen assignment attestation
+echoed by both reviewers, and the content-addressed create-only evidence ref
+are what prevent a reviewer role from being claimed by self-asserted receipt
+text. The controls in this subsection that resist filesystem substitution —
+nonblocking no-follow opens, descriptor identity checks, bounded execution
+funnels, and lock handling — are an availability and robustness obligation,
+not a security boundary.
+
+The reason is capability. A principal able to substitute a special file inside
+`.git` or at a same-UID temporary path already holds strictly easier total
+bypass: it can rewrite the helper that performs the checks, shadow `git` on
+the inherited `PATH`, or write the evidence ref, its objects, and the Task
+binding directly. Treating substitution as a security boundary therefore
+produces an unbounded and unclosable obligation, because every round can name
+one more window between two syscalls and no POSIX primitive closes that class
+— a limit this Plan already concedes below.
+
+This reclassification deletes no control. Every substitution control stated
+here stays, and is kept for its real purpose: a gate that hangs or wedges on a
+stray leftover file is an availability defect with no adversary involved at
+all. What changes is the standard a control in this class is held to. It is
+complete when the gate reaches a fail-closed verdict within a stated bound and
+leaves no unreaped child or unrecoverable residue, not when substitution is
+proved impossible.
 
 The round-4 implementation must apply this publication contract:
 
@@ -2537,24 +2589,92 @@ raw discovery contract:
   its sole terminal LF. A FIFO, socket, device,
   directory, symlink, oversized file, unstable identity/size, partial read, or
   extra byte is `FOREIGN_REF`; discovery must never block waiting for a writer.
-- Route every `git for-each-ref` subprocess whose selector is the Gate 9
-  evidence namespace or one exact Gate 9 evidence ref through one dedicated
-  bounded query helper. This includes the packed/direct view in both complete
-  union snapshots and every exact direct-ref query used by attempt derivation,
-  create/reuse race handling, marker resolution, leaf replay stability, and
-  repository invariant capture/proof. No such call may use the generic
-  unbounded Git runner.
-- Start that trusted Git command with stdin closed, captured stdout/stderr, and
-  a separate process session; allow exactly 2.0 seconds for completion. On
-  timeout, send termination to the child process group, allow 0.5 seconds,
-  then send kill if still live and synchronously reap it. Do not retry. A
-  timeout, termination/kill/reap fault, nonzero exit, any stderr byte, output
-  over 4 KiB, malformed or incomplete four-field
-  `refname/objectname/objecttype/symref` NUL record, or unexpected extra row is
-  `FOREIGN_REF`. Use one explicit trailing-NUL format for both prefix and exact
-  selectors rather than line-splitting ref names. Timeout cleanup may not
-  mutate a ref, object, victim path, branch, index, or worktree.
-- Merge the byte-sorted raw loose names with the `for-each-ref` names, then
+- Record the measured Git behavior normatively, so no later round re-derives a
+  control scoped to the wrong command. On the Git in this environment,
+  `git for-each-ref` against one exact Gate 9 evidence ref does not block on a
+  FIFO, symlink-to-FIFO, symlink loop, directory, dangling symlink, or
+  symlink-to-device leaf. It exits zero with empty stdout and empty stderr and
+  omits the entry silently, which satisfies a nonzero-exit-or-stderr guard and
+  falls straight through to the exact-ref fallback that does block. The calls
+  measured to block are `git symbolic-ref`, `git update-ref --no-deref`, the
+  index-reading `git diff [--cached] --quiet` and `git status --porcelain`, the
+  `O_RDONLY|O_NOFOLLOW` control-file open, the descriptor-relative bundle open,
+  and every whole-file `read_bytes`-class read. A bound attached to
+  `for-each-ref` by name therefore bounds nothing, and a silently omitted leaf
+  must be caught by raw/union disagreement rather than by a timeout.
+- Attach the bound to the execution funnels rather than to an enumerated
+  command list. Exactly three funnels carry the obligation; no Gate 9 call
+  site may reach a subprocess, a descriptor open, or a whole-file read outside
+  them, and every call site must reach its hazard through one of them:
+  1. every Gate 9 subprocess invocation, whatever the program or arguments,
+     including the generic Git runner, the repository-root probe, and the
+     sealed-manifest generator execution;
+  2. every descriptor-opening read of a path an outside actor could influence,
+     explicitly including the control-file reader for every `--attestation`,
+     `--*-report`, `--*-receipt`, `--*-closure`, `--drift-proof`, and
+     `--terminal-report` argument, and the descriptor-relative bundle reader;
+  3. every `Path.read_bytes()`-class whole-file read reached in the Gate 9
+     flow, including `--task`, `--spec`, `--plan`, the fixed tracked Task path,
+     and the Git common-directory grafts probe.
+- Give each funnel the same bound, stated as a property of the funnel: stdin
+  closed, captured or size-bounded output, a separate process session for
+  anything that spawns, exactly 2.0 seconds for completion, then termination
+  to the child process group, 0.5 seconds of grace, kill if still live, and a
+  synchronous reap. Do not retry. Funnel 2 and funnel 3 opens use `O_NONBLOCK`
+  so a special file cannot park the process inside `open`, and their reads are
+  bounded by size and by the same 2.0-second budget. Bound-expiry cleanup may
+  not mutate a ref, object, victim path, branch, index, or worktree. The
+  2.0-second budget is a fail-closed liveness cap, not a performance budget.
+- Map a funnel fault to the fail-closed code of the site that used the funnel,
+  not to one global code. For any query, CAS, or read whose selector, argument,
+  or lock target is the Gate 9 evidence namespace or one exact Gate 9 evidence
+  ref, the code is `FOREIGN_REF`. For the bundle reader it is
+  `BUNDLE_READ_FAILURE`; for the control-file reader it is
+  `CONTROL_FILE_DRIFT`; for the before/after repository invariant capture and
+  proof it is `PROJECTED_INDEX_SCOPE_DRIFT`, which wins over `FOREIGN_REF` on
+  the drift-evidence path so the operator diagnosis names the failing
+  invariant.
+- Preserve the existing `FOREIGN_REF` conditions that remain correct for
+  evidence-ref queries: nonzero exit, any stderr byte, output over 4 KiB, a
+  malformed or incomplete four-field `refname/objectname/objecttype/symref`
+  NUL record, or an unexpected extra row. Use one explicit trailing-NUL format
+  for both prefix and exact selectors rather than line-splitting ref names.
+  The 4 KiB ceiling is the fail-closed cap for a namespace that admits at most
+  two canonical attempt leaves, and the stderr rule deliberately classifies a
+  benign Git advisory as foreign; run these queries with isolated
+  configuration so stderr stays deterministic.
+- Guard the index before it is read, not after. The regular-file guard on the
+  repository index path must run before the first Git invocation that reads
+  the index, so a substituted non-regular index is rejected by the guard
+  instead of blocking that first `git diff --cached --quiet` or
+  `git status --porcelain`. The clean-real-index and Task-only worktree
+  assertions therefore run after that guard, never before it. A dangling
+  symlink index, which makes `git status` exit zero with empty output, must
+  also be rejected by the guard rather than surfacing later as an emptied
+  worktree path set under an unrelated code.
+- Specify recovery from a stale evidence-ref lock. `git update-ref --no-deref`
+  creates `<ref>.lock` before the read that can block, so a run stopped by the
+  funnel bound can leave a zero-byte orphan lock inside the evidence
+  namespace. Diagnose that state distinctly as `STALE_REF_LOCK`;
+  `FOREIGN_REF` stays reserved for a genuinely foreign ref. Raw loose
+  enumeration must classify a `<canonical-leaf>.lock` sibling as this distinct
+  state instead of rejecting it as a name not admitted by
+  `EVIDENCE_REF_PATTERN`. The lock may be cleared exactly once and
+  non-recursively, by a descriptor-relative `O_NOFOLLOW` unlink of exactly
+  that path, and only when all of the following hold: it is a regular file of
+  exactly zero bytes; its name is one admitted canonical leaf name plus the
+  `.lock` suffix inside the fixed namespace; the corresponding ref leaf is
+  absent or is an admitted canonical direct commit ref; the lock is
+  attributable by recorded attempt ordinal to this gate's own prior terminated
+  attempt; this run has synchronously reaped every child it spawned; and the
+  lock's age exceeds the 2.0-second bound plus the 0.5-second grace. Clearing
+  touches nothing else — no ref, object, branch, index, worktree, or sibling
+  entry. A lock failing any one of these conditions is ambiguous, stays
+  fail-closed as `FOREIGN_REF`, and receives no clearance attempt.
+- Within each complete namespace snapshot, take the raw loose enumeration
+  first and the `for-each-ref` packed/direct view second, so the ordering the
+  regressions rely on is fixed by this contract rather than by test prose.
+  Merge the byte-sorted raw loose names with the `for-each-ref` names, then
   prove every union member is one direct commit ref with the exact same OID in
   two complete namespace snapshots surrounding validation. Bind raw loose
   file identity/bytes where present and reject any name, kind, OID, target, or
@@ -2593,15 +2713,30 @@ Write RED first with these exact focused methods:
    snapshots without changing the victim or creating an outside ref. The FIFO
    case runs with a bounded join/timeout and proves discovery returns
    `FOREIGN_REF` without blocking or opening the FIFO again.
-4. `test_evidence_ref_git_query_timeout_is_bounded_reaped_and_fail_closed`
-   first proves a regular raw/direct snapshot succeeds. It then substitutes a
-   FIFO after that raw snapshot and before `for-each-ref`, requires
-   `FOREIGN_REF` within the 2.0-second query bound plus termination grace,
-   proves the child process is gone and no second indefinite FIFO open or
-   query retry occurred, and compares the victim, outside-ref namespace, and
-   Git object inventory byte-for-byte with their before snapshots. Separate
-   injected nonzero-exit and stderr-with-zero-exit cases must also fail
-   `FOREIGN_REF` without retry or state change.
+4. `test_evidence_ref_hazard_funnels_are_bounded_reaped_and_fail_closed`
+   first proves a regular raw/direct snapshot succeeds, then pins the measured
+   baseline: with a FIFO at the canonical leaf, `for-each-ref` against that
+   exact ref exits zero with empty stdout and empty stderr far inside the
+   bound, so the omitted leaf is caught by raw/union disagreement and not by a
+   timeout. The test must not assert a timeout, a termination grace, or a
+   reaped child for that call. It then injects at the sites measured to block
+   and asserts what each of them actually produces. A FIFO at the canonical
+   leaf must make the exact-ref fallback and the create-only no-deref CAS
+   expire the 2.0-second funnel bound, terminate the child process group, kill
+   after the 0.5-second grace, reap synchronously, and fail `FOREIGN_REF`. A
+   FIFO at a control-file argument must fail `CONTROL_FILE_DRIFT` without
+   parking in `open`. A FIFO at `--task`, `--spec`, or `--plan` must fail
+   through funnel 3 without an unbounded read. A non-regular repository index
+   must be rejected by the index guard before the first index-reading Git
+   invocation runs. The CAS case must additionally prove that the terminated
+   attempt leaves at most a zero-byte `<ref>.lock`, that it is diagnosed
+   `STALE_REF_LOCK` rather than `FOREIGN_REF`, that a lock failing any single
+   clearance condition stays fail-closed with no clearance attempt, and that a
+   clearable lock is removed without touching any other entry. Every case
+   compares the victim, outside-ref namespace, and Git object inventory
+   byte-for-byte with their before snapshots. Separate injected nonzero-exit
+   and stderr-with-zero-exit cases must also fail `FOREIGN_REF` without retry
+   or state change.
 
 Run the four methods as tests-only RED, implement the minimum correction, and
 run them as GREEN before the remaining twenty existing exact Step 0e methods
@@ -2614,7 +2749,7 @@ python3 -m unittest \
   tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_atomic_bundle_publication_linearizes_at_final_post_fsync_pair \
   tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_all_external_bundle_consumers_reject_post_publication_transport_drift_before_authority \
   tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_evidence_ref_discovery_finds_dangling_loose_symbolic_refs_and_stays_stable \
-  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_evidence_ref_git_query_timeout_is_bounded_reaped_and_fail_closed \
+  tests.validation.test_agentic_research_gate9_evidence.AgenticResearchGate9EvidenceTests.test_evidence_ref_hazard_funnels_are_bounded_reaped_and_fail_closed \
   -v
 ```
 
@@ -2767,6 +2902,7 @@ Task-only closure is not part of this six-file implementation commit.
   No argument, `--check`, `--stdout`, help, exit statuses, stdout/stderr, and
   generated bytes retain their reviewed behavior when no internal variables
   are set.
+
 - The helper creates a fresh memfd for each generator with
   `MFD_CLOEXEC|MFD_ALLOW_SEALING`. Its canonical NUL record sequence is
   `schema=agentic-research-llm-wiki-manifest/v1`,
@@ -2889,20 +3025,21 @@ Task-only closure is not part of this six-file implementation commit.
 Use these additional stable fail-closed codes while preserving all unaffected
 existing state-machine and evidence-schema codes:
 
-| Error | Required trigger |
-| --- | --- |
-| `PROJECTED_TREE_SCOPE_DRIFT` | raw tree record, object format/type, ancestor count, sibling identity, `mktree` reread, or initial/projected root binding is invalid |
-| `PROJECTED_DELETION_DRIFT` | retiring subtree cardinality/set or raw/name-status/binary diff is not exact twenty `D` and zero outside path |
-| `GENERATOR_MANIFEST_REQUIRED` | the three internal environment variables are partial or internal mode is requested outside sole `--stdout` |
-| `GENERATOR_MANIFEST_INVALID` | memfd schema, digest, seals, type/nlink, object format/OIDs, count, NUL termination, or path tuple is malformed |
-| `GENERATOR_MANIFEST_OVERSIZE` | memfd bytes exceed 8 MiB or declared and observed size differ |
-| `GENERATOR_MANIFEST_OFFSET` | the inherited memfd is not positioned at offset zero before its single read |
-| `BUNDLE_CREATE_FAILURE` | literal `/tmp` open, random direct-child validation/collision budget, complete write, fsync/chmod, same-FD readback, parent fsync, or the final post-fsync paired FD/direct-child validation fails before its linearization point |
-| `BUNDLE_READ_FAILURE` | a supplied bundle is outside literal `/tmp`, not an exclusive `0444` regular file, changes during the one bounded transport-first read, or cannot reach exact EOF |
-| `BUNDLE_SIZE_DRIFT` | a bundle is empty, exceeds 32 MiB, or its declared and observed byte count differs |
-| `BUNDLE_SCHEMA_DRIFT` | outer keys, path set/order, logical mode, base64, inner schema, checksums, byte counts, or package ID differ |
-| `BUNDLE_TRANSPORT_DRIFT` | observed external canonical bytes/path/bundle hash/package hash differ from the controller-captured expected arguments, or the reconstructed tuple differs across attestation, receipt, closure, evidence, bundle, or ref replay |
-| `CONTROL_FILE_DRIFT` | an attestation/report/receipt/closure/terminal/drift input is not a stable regular nlink-one file, exceeds 4 MiB, changes during its one read, or is reopened |
+| Error                         | Required trigger                                                                                                                                                                                                                  |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PROJECTED_TREE_SCOPE_DRIFT`  | raw tree record, object format/type, ancestor count, sibling identity, `mktree` reread, or initial/projected root binding is invalid                                                                                              |
+| `PROJECTED_DELETION_DRIFT`    | retiring subtree cardinality/set or raw/name-status/binary diff is not exact twenty `D` and zero outside path                                                                                                                     |
+| `GENERATOR_MANIFEST_REQUIRED` | the three internal environment variables are partial or internal mode is requested outside sole `--stdout`                                                                                                                        |
+| `GENERATOR_MANIFEST_INVALID`  | memfd schema, digest, seals, type/nlink, object format/OIDs, count, NUL termination, or path tuple is malformed                                                                                                                   |
+| `GENERATOR_MANIFEST_OVERSIZE` | memfd bytes exceed 8 MiB or declared and observed size differ                                                                                                                                                                     |
+| `GENERATOR_MANIFEST_OFFSET`   | the inherited memfd is not positioned at offset zero before its single read                                                                                                                                                       |
+| `BUNDLE_CREATE_FAILURE`       | literal `/tmp` open, random direct-child validation/collision budget, complete write, fsync/chmod, same-FD readback, parent fsync, or the final post-fsync paired FD/direct-child validation fails before its linearization point |
+| `BUNDLE_READ_FAILURE`         | a supplied bundle is outside literal `/tmp`, not an exclusive `0444` regular file, changes during the one bounded transport-first read, or cannot reach exact EOF                                                                 |
+| `BUNDLE_SIZE_DRIFT`           | a bundle is empty, exceeds 32 MiB, or its declared and observed byte count differs                                                                                                                                                |
+| `BUNDLE_SCHEMA_DRIFT`         | outer keys, path set/order, logical mode, base64, inner schema, checksums, byte counts, or package ID differ                                                                                                                      |
+| `BUNDLE_TRANSPORT_DRIFT`      | observed external canonical bytes/path/bundle hash/package hash differ from the controller-captured expected arguments, or the reconstructed tuple differs across attestation, receipt, closure, evidence, bundle, or ref replay  |
+| `CONTROL_FILE_DRIFT`          | an attestation/report/receipt/closure/terminal/drift input is not a stable regular nlink-one file, exceeds 4 MiB, changes during its one read, or is reopened                                                                     |
+| `STALE_REF_LOCK`              | a zero-byte `<canonical-leaf>.lock` orphan attributable to this gate's own prior bound-terminated attempt is observed at an admitted evidence-leaf path inside the fixed namespace                                                |
 
 Implement in these TDD slices; every RED must fail for the missing Step 0e
 contract, not fixture setup or a repository mutation:
@@ -3190,9 +3327,13 @@ CHECKPOINT -> BUILT -> ASSIGNED -> PACKAGE_REVIEWED -> TASK_BACKFILLED
                        -> CLOSURE_REVIEWED -> REF_PUBLISHED -> AUTHORIZED
 ```
 
-`REJECTED`, `INVALIDATED`, `FOREIGN_REF`, and `BLOCKED` are fail-closed
-states. A package becomes a consumed attempt only at `ASSIGNED`, after the
-trusted controller attestation is frozen. A build that fails or drifts before
+`REJECTED`, `INVALIDATED`, `FOREIGN_REF`, `STALE_REF_LOCK`, and `BLOCKED` are
+fail-closed states. `STALE_REF_LOCK` is the one recoverable member: it names
+an orphan zero-byte evidence-ref lock left by this gate's own bound-terminated
+attempt, and it may be cleared only under the exact conditions stated in
+Step 0e. An ambiguous lock is not that state and fails closed as
+`FOREIGN_REF`. A package becomes a consumed attempt only at `ASSIGNED`, after
+the trusted controller attestation is frozen. A build that fails or drifts before
 `ASSIGNED` is discarded as an unassigned construction failure and cannot
 produce review authority; its bundle remains retained but has no authority.
 Except for an untrusted `FOREIGN_REF` collision,
@@ -3848,27 +3989,27 @@ progress and is clean after each commit.
 
 ## Risks and Rollback
 
-| Risk | Control | Rollback |
-| --- | --- | --- |
-| Old prose copied with stale facts | Claim ledger and current-source remeasurement | Revert the affected leaf commit and re-author from the source/evidence rows |
-| Mutable provider source changes mid-task | Access timestamps and per-unit review | Reopen source, correct only affected claims, rerun review |
-| Unavailable/paywalled source | `UNVERIFIED` boundary | Remove unsupported conclusion; retain historical pointer only |
-| Scope or requirement omission | Closed 36-row and 14-row matrices | Stop pack routing until missing row has a reviewed destination |
-| V&V source status or workspace count is copied past its evidence | Reopen current official IEEE 1012-2024, ISO/IEC/IEEE 12207:2026, NASA, NIST, and GitHub primary routes; remeasure owner commands; preserve paywall and runtime/remote limits | Mark the affected claim `UNVERIFIED`, revert the V&V unit if needed, and repeat both independent reviews before Gate 9 |
-| Parent research router retains the pre-amendment leaf count | Treat the immutable 17-path `139ced00` commit as historical evidence; require the separately reviewed two-path parent-README/Task fix, exact two-line assertions, and final 18-path unique-scope self-review | Targeted revert of the two-path fix only; keep `139ced00` unchanged, retain 1,339/1,338 generated bytes, and keep Step 0e and Gate 9 closed until a corrected fix is reviewed |
-| Broken historical link after deletion | Whole tracked-text scan and zero clickable exceptions | Restore old pack from deletion parent and repair routes |
-| Generated coverage remains stale | Canonical write then byte-exact checks | Revert generated outputs and diagnose generator before deletion |
-| Fresh LLM navigation re-emits the retiring pack while both packs coexist | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths | Revert the route-switch unit, keep both packs, and do not enter deletion review |
-| Mutable metadata exceptions retain paths scheduled for deletion | Remove the exact sixteen exceptions; separately preserve and verify the seven commit-pinned baseline selectors and promoted evidence | Revert the route-switch unit, keep both packs, and restore the reviewed baseline/exception boundary |
-| Deletion makes promoted baseline result targets disappear | Commit only the independently reviewed twenty-file deletion first; then use its real SHA to encode seven retiring rows and the historical Spec 133 row as reviewed delete results, close the six-row advisory-delta predecessor, and regenerate both summaries canonically | Revert the deletion commit if the post-delete lifecycle unit cannot reach target-manifest/summary PASS; otherwise revert only the lifecycle-evidence commit and re-review its bounded package |
-| Security generator false gaps | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails |
-| Repository contracts cannot load | Fail-closed deletion gate | Continue non-destructive authoring only; do not delete until environment gate passes |
-| Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes | Step 0e reviewed Task prerequisite; replace/graft/shallow rejection; exact bundle/live-reviewed-HEAD and reviewed-code binding before shell; fresh pathless raw-tree projection plus a new sealed manifest per generator in every public authority mode; exact twenty-`D` proof; and proved-live-HEAD byte comparison | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0e five-round recovery loop |
-| Gate 9 tree, anonymous-memory manifest, or bundle transport is substituted or malformed | Raw NUL-safe tree validation with sibling preservation and exactly four rebuilt ancestors; required descriptor seals/type/nlink/size/digest/offset checks; explicit final-post-fsync FD/direct-child publication linearization; controller-captured expected bundle/package hashes plus literal path; and transport-first bounded once-read verification in every external-bundle consumer | Reject any pre/during-linearization substitution without a receipt; treat a later namespace mutation as external post-publication drift and reject any canonical but non-identical tuple as `BUNDLE_TRANSPORT_DRIFT` before authority; retain a published bundle, leave unreachable objects to ordinary Git GC, and never invoke helper cleanup, prune, or extraction |
-| Gate 9 package becomes stale or Task review evidence becomes self-referential | Canonical JSON/base64 bundle builder, one marker-only backfill, same-reviewer closures, both package and bundle hashes, create-only content-addressed evidence ref, in-memory ref-only replay, and Step 0e implementation/closure C0/I0/M0 reviews | Invalidate the attempt without staging; preserve the old pack and retained bundle; use the one fresh correction attempt or return to user-approved Plan work |
-| Gate 9 evidence ref collides, becomes unreachable, hides as a dangling loose symbolic ref, or is replaced by a blocking special file | Raw descriptor-relative loose-namespace discovery with nonblocking no-follow leaf opens; each evidence-ref Git query bounded at 2.0 seconds with terminate/kill/reap and no retry; exact canonical direct-commit patterns; stable two-snapshot OID identity; create-only no-deref CAS; exact ref/tree/checksum verification; in-memory reconstruction of bundle bytes; and retention through Task 12/branch handoff | Stop as `FOREIGN_REF` or `BLOCKED` without blocking, leaking a child, overwriting, or following the entry; never infer an empty namespace or authorization from `for-each-ref` alone or a retained `/tmp` bundle |
-| Subagent ownership conflict | One implementer per unit and exact file ownership | Interrupt conflicting agent; preserve reviewed predecessor commit |
-| Secret/runtime/remote boundary crossed | Read-only tracked evidence and explicit exclusions | Stop immediately; exclude value/output; seek new authority if required |
+| Risk                                                                                                                                 | Control                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Rollback                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Old prose copied with stale facts                                                                                                    | Claim ledger and current-source remeasurement                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Revert the affected leaf commit and re-author from the source/evidence rows                                                                                                                                                                                                                                                                                           |
+| Mutable provider source changes mid-task                                                                                             | Access timestamps and per-unit review                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Reopen source, correct only affected claims, rerun review                                                                                                                                                                                                                                                                                                             |
+| Unavailable/paywalled source                                                                                                         | `UNVERIFIED` boundary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Remove unsupported conclusion; retain historical pointer only                                                                                                                                                                                                                                                                                                         |
+| Scope or requirement omission                                                                                                        | Closed 36-row and 14-row matrices                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Stop pack routing until missing row has a reviewed destination                                                                                                                                                                                                                                                                                                        |
+| V&V source status or workspace count is copied past its evidence                                                                     | Reopen current official IEEE 1012-2024, ISO/IEC/IEEE 12207:2026, NASA, NIST, and GitHub primary routes; remeasure owner commands; preserve paywall and runtime/remote limits                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Mark the affected claim `UNVERIFIED`, revert the V&V unit if needed, and repeat both independent reviews before Gate 9                                                                                                                                                                                                                                                |
+| Parent research router retains the pre-amendment leaf count                                                                          | Treat the immutable 17-path `139ced00` commit as historical evidence; require the separately reviewed two-path parent-README/Task fix, exact two-line assertions, and final 18-path unique-scope self-review                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Targeted revert of the two-path fix only; keep `139ced00` unchanged, retain 1,339/1,338 generated bytes, and keep Step 0e and Gate 9 closed until a corrected fix is reviewed                                                                                                                                                                                         |
+| Broken historical link after deletion                                                                                                | Whole tracked-text scan and zero clickable exceptions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Restore old pack from deletion parent and repair routes                                                                                                                                                                                                                                                                                                               |
+| Generated coverage remains stale                                                                                                     | Canonical write then byte-exact checks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Revert generated outputs and diagnose generator before deletion                                                                                                                                                                                                                                                                                                       |
+| Fresh LLM navigation re-emits the retiring pack while both packs coexist                                                             | Focused RED/GREEN exact-prefix test in both LLM Wiki generators; retain new-pack and similarly named Stage 04 paths                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Revert the route-switch unit, keep both packs, and do not enter deletion review                                                                                                                                                                                                                                                                                       |
+| Mutable metadata exceptions retain paths scheduled for deletion                                                                      | Remove the exact sixteen exceptions; separately preserve and verify the seven commit-pinned baseline selectors and promoted evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Revert the route-switch unit, keep both packs, and restore the reviewed baseline/exception boundary                                                                                                                                                                                                                                                                   |
+| Deletion makes promoted baseline result targets disappear                                                                            | Commit only the independently reviewed twenty-file deletion first; then use its real SHA to encode seven retiring rows and the historical Spec 133 row as reviewed delete results, close the six-row advisory-delta predecessor, and regenerate both summaries canonically                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Revert the deletion commit if the post-delete lifecycle unit cannot reach target-manifest/summary PASS; otherwise revert only the lifecycle-evidence commit and re-review its bounded package                                                                                                                                                                         |
+| Security generator false gaps                                                                                                        | Before separate approval, do not regenerate and derive direct tracked evidence; after approval, require focused RED/GREEN tests and canonical write/check                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Before approval, preserve the stale predecessor; after approval, revert the isolated repair commit and keep both packs when tests, generated diff, or review fails                                                                                                                                                                                                    |
+| Repository contracts cannot load                                                                                                     | Fail-closed deletion gate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Continue non-destructive authoring only; do not delete until environment gate passes                                                                                                                                                                                                                                                                                  |
+| Gate 9 verifier accepts resealed attachments or executes package-controlled/historical shell bytes                                   | Step 0e reviewed Task prerequisite; replace/graft/shallow rejection; exact bundle/live-reviewed-HEAD and reviewed-code binding before shell; fresh pathless raw-tree projection plus a new sealed manifest per generator in every public authority mode; exact twenty-`D` proof; and proved-live-HEAD byte comparison                                                                                                                                                                                                                                                                                                                                                                                                                          | Reject before generator-object read/shell, preserve the zero-execution marker and all repository invariants, stop before Phase A, and use only the independently bounded Step 0e five-round recovery loop                                                                                                                                                             |
+| Gate 9 tree, anonymous-memory manifest, or bundle transport is substituted or malformed                                              | Raw NUL-safe tree validation with sibling preservation and exactly four rebuilt ancestors; required descriptor seals/type/nlink/size/digest/offset checks; explicit final-post-fsync FD/direct-child publication linearization; controller-captured expected bundle/package hashes plus literal path; and transport-first bounded once-read verification in every external-bundle consumer                                                                                                                                                                                                                                                                                                                                                     | Reject any pre/during-linearization substitution without a receipt; treat a later namespace mutation as external post-publication drift and reject any canonical but non-identical tuple as `BUNDLE_TRANSPORT_DRIFT` before authority; retain a published bundle, leave unreachable objects to ordinary Git GC, and never invoke helper cleanup, prune, or extraction |
+| Gate 9 package becomes stale or Task review evidence becomes self-referential                                                        | Canonical JSON/base64 bundle builder, one marker-only backfill, same-reviewer closures, both package and bundle hashes, create-only content-addressed evidence ref, in-memory ref-only replay, and Step 0e implementation/closure C0/I0/M0 reviews                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Invalidate the attempt without staging; preserve the old pack and retained bundle; use the one fresh correction attempt or return to user-approved Plan work                                                                                                                                                                                                          |
+| Gate 9 evidence ref collides, becomes unreachable, hides as a dangling loose symbolic ref, or is replaced by a blocking special file | Raw descriptor-relative loose-namespace discovery with nonblocking no-follow leaf opens; a 2.0-second bound with separate process session, terminate/kill/reap and no retry on all three Gate 9 execution funnels — every subprocess, every descriptor-opening read of an outside-influenceable path, and every whole-file read — rather than on one named command; index regular-file guard before the first index-reading Git call; exact canonical direct-commit patterns; stable two-snapshot OID identity; create-only no-deref CAS; distinct `STALE_REF_LOCK` diagnosis with conditional bounded clearance; exact ref/tree/checksum verification; in-memory reconstruction of bundle bytes; and retention through Task 12/branch handoff | Stop as `FOREIGN_REF`, `STALE_REF_LOCK`, or `BLOCKED` within the 2.0-second funnel bound plus the 0.5-second termination grace rather than indefinitely, without leaving an unreaped child, overwriting, or following the entry; never infer an empty namespace or authorization from `for-each-ref` alone or a retained `/tmp` bundle                                |
+| Subagent ownership conflict                                                                                                          | One implementer per unit and exact file ownership                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Interrupt conflicting agent; preserve reviewed predecessor commit                                                                                                                                                                                                                                                                                                     |
+| Secret/runtime/remote boundary crossed                                                                                               | Read-only tracked evidence and explicit exclusions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Stop immediately; exclude value/output; seek new authority if required                                                                                                                                                                                                                                                                                                |
 
 The deletion commit is recoverable from its parent with targeted Git history.
 Destructive reset, broad checkout, and filesystem removal outside the exact old
@@ -3876,21 +4017,21 @@ pack are forbidden.
 
 ## Approval Gates
 
-| Gate | Required evidence | Blocks |
-| --- | --- | --- |
-| Spec and Plan amendment active | Spec 137 amendments `90eca714`, `76808636`, `af37969b` plus two final amended-Spec reviews C0/I0/M0; this exact Plan-amendment commit plus two independent reviews C0/I0/M0 | Any Task backfill, V&V authoring, Gate 9 recovery, or deletion execution |
-| Ledger ready | Task tables, old blobs, baseline results reviewed | Leaf authoring |
-| Unit review | Specification and quality reviews C0/I0 over committed `BASE..HEAD` | Next task |
-| Pack complete | 20 leaves/21 files, 36/36 requirements, 14/14 scopes, source/claim completeness | Human route switch and Gate 9 |
-| Verification and validation unit reviewed | Task-only amendment evidence; immutable 17-path initial commit `139ced00` and both initial receipts; reviewed Plan correction/fix chain; separately reviewed two-path parent-router/Task fix; exact final 18-path unique scope; parent router states 20 leaves/21 files and still links only the pack README; exact nine-H2 REQ-36 leaf; current primary-source/status/paywall boundaries; remeasured owner table; all 14 scopes; README/cross-links/Stage 03 status; unchanged 1,339/1,338 generated cardinalities; explicit Step 8 Task-only evidence closure; and both external closure-integrity receipts binding its exact commit/range at C0/I0/M0 | Task 10 finalization, Phase A, and Gate 9 |
-| Security generator repair approved | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix | Task 10 mutations, machine route switch, and old-pack deletion |
-| LLM retiring-path projection reviewed | Focused exact-prefix RED/GREEN contract and reviewed Plan correction | Task 10 LLM generator mutation and old-pack deletion |
-| Metadata exception retirement reviewed | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence | Task 10 route-switch commit and old-pack deletion |
-| Gate 9 evidence contract reviewed | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite; exact six-file ceiling; raw pathless tree objects; fresh sealed manifests; final-post-fsync bundle-publication linearization; controller-captured literal path plus expected bundle/package hashes required for every external source; transport-first once-read comparison; nonblocking raw dangling-loose-symref/special-file discovery; bounded terminate/kill/reap for every related `for-each-ref`; stable direct-ref snapshots; in-memory Task/evidence/ref replay; append-only named object writes; no cleanup/extraction; fresh projection in every authority mode; the preserved five-round breaker with round 4 assigned to a fresh more-capable implementer; and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion |
-| Lifecycle result mapping reviewed | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding | Lifecycle-evidence commit and Task 12 |
-| Route switch safe | Zero clickable old routes, reviewed allowlist, fresh LLM outputs | Old-pack deletion |
-| Deletion safe | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live bundle plus full in-memory evidence-ref replay | `git rm` |
-| Branch complete | Final exact-range validation and reviews C0/I0 | Task completion and finishing handoff |
+| Gate                                      | Required evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Blocks                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Spec and Plan amendment active            | Spec 137 amendments `90eca714`, `76808636`, `af37969b` plus two final amended-Spec reviews C0/I0/M0; this exact Plan-amendment commit plus two independent reviews C0/I0/M0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Any Task backfill, V&V authoring, Gate 9 recovery, or deletion execution |
+| Ledger ready                              | Task tables, old blobs, baseline results reviewed                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Leaf authoring                                                           |
+| Unit review                               | Specification and quality reviews C0/I0 over committed `BASE..HEAD`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Next task                                                                |
+| Pack complete                             | 20 leaves/21 files, 36/36 requirements, 14/14 scopes, source/claim completeness                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Human route switch and Gate 9                                            |
+| Verification and validation unit reviewed | Task-only amendment evidence; immutable 17-path initial commit `139ced00` and both initial receipts; reviewed Plan correction/fix chain; separately reviewed two-path parent-router/Task fix; exact final 18-path unique scope; parent router states 20 leaves/21 files and still links only the pack README; exact nine-H2 REQ-36 leaf; current primary-source/status/paywall boundaries; remeasured owner table; all 14 scopes; README/cross-links/Stage 03 status; unchanged 1,339/1,338 generated cardinalities; explicit Step 8 Task-only evidence closure; and both external closure-integrity receipts binding its exact commit/range at C0/I0/M0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Task 10 finalization, Phase A, and Gate 9                                |
+| Security generator repair approved        | Explicit user approval plus focused RED/GREEN test plan for the typed-registry fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Task 10 mutations, machine route switch, and old-pack deletion           |
+| LLM retiring-path projection reviewed     | Focused exact-prefix RED/GREEN contract and reviewed Plan correction                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Task 10 LLM generator mutation and old-pack deletion                     |
+| Metadata exception retirement reviewed    | Exact sixteen mutable-exception removals, zero new-pack exceptions, and unchanged seven-row pinned baseline evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Task 10 route-switch commit and old-pack deletion                        |
+| Gate 9 evidence contract reviewed         | Step 0c finite schemas/state machine plus the separately approved Step 0e recovery: reviewed Task-only blocker/approval prerequisite; exact six-file ceiling; raw pathless tree objects; fresh sealed manifests; final-post-fsync bundle-publication linearization; controller-captured literal path plus expected bundle/package hashes required for every external source; transport-first once-read comparison; nonblocking raw dangling-loose-symref/special-file discovery; a 2.0-second bound with separate process session and terminate/kill/reap on every Gate 9 subprocess, outside-influenceable descriptor open, and whole-file read; index regular-file guard before the first index-reading Git call; distinct `STALE_REF_LOCK` diagnosis with conditional bounded clearance; stable direct-ref snapshots; in-memory Task/evidence/ref replay; append-only named object writes; no cleanup/extraction; fresh projection in every authority mode; the preserved five-round breaker with round 4 assigned to a fresh more-capable implementer; and fresh implementation plus closure-integrity specification/Python-security reviews at C0/I0/M0 | Phase A, any new Gate 9 attempt, and old-pack deletion                   |
+| Lifecycle result mapping reviewed         | The deletion commit exists and has two C0/I0 reviews; the post-delete package contains six exact delta rows, eight evidenced delete results with real rollback SHAs, canonical summaries, target-surface manifest/summary PASS, and no target-surface promoted finding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Lifecycle-evidence commit and Task 12                                    |
+| Route switch safe                         | Zero clickable old routes, reviewed allowlist, fresh LLM outputs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Old-pack deletion                                                        |
+| Deletion safe                             | All nine Spec 137 pre-deletion gates, including repository contract PASS and `verify-authorized` over the live bundle plus full in-memory evidence-ref replay                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `git rm`                                                                 |
+| Branch complete                           | Final exact-range validation and reviews C0/I0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Task completion and finishing handoff                                    |
 
 ## Completion Criteria
 
@@ -3915,7 +4056,9 @@ pack are forbidden.
   publication linearization, controller-trusted expected receipt hashes,
   transport-first rejection of a fully canonical but non-identical
   post-publication tuple, nonblocking raw discovery of dangling loose symbolic
-  or special-file evidence refs, bounded and fully reaped related Git queries,
+  or special-file evidence refs, bounded and fully reaped Gate 9 execution
+  funnels covering every subprocess, outside-influenceable descriptor open, and
+  whole-file read, with a distinct recoverable stale-ref-lock state,
   stable canonical direct-ref identity, and both implementation and
   closure-integrity review pairs at C0/I0/M0 before Phase A or Gate 9 runs.
 - The old twenty files are deleted in their own reviewed, recoverable commit.
