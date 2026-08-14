@@ -287,6 +287,9 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | Generated route | Path-set comparison of the regenerated index against `HEAD` | 1,064 to 1,067 paths; exactly three additions and zero removals |
 | 2026-08-14 | Generated route | Both generators re-run, then `--check` re-run | Both PASS, fresh; coverage safe tracked source paths moved 1,338 to 1,341 |
 
+| 2026-08-14 | Document-family split | Role-row census of the regrouped `Complete role contract` | Two subsections holding exactly six SDLC lifecycle roles and six operations roles; all twelve original rows present, none dropped or reworded |
+| 2026-08-14 | Document-family split | Changed-document metadata for the affected leaf | `violations=0` |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
