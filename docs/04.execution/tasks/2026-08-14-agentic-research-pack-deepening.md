@@ -612,6 +612,39 @@ records the observed `selected`/`violations` counts before staging.
   and RED method reachability are contract-text defects that do not touch the
   Spec boundary.
 
+- Plan fix-4 outcome, recorded 2026-08-14. Committed as `a6613da9` with the
+  Plan's declared subject; changed-document metadata, traceability, and the
+  repository contract all passed. Both independent re-reviews then returned
+  `Needs fixes`: specification `C0/I4/M5`, Python/security `C0/I2/M5`. Receipts
+  are in the rebuild Task.
+
+  What this round settled. The Python/security reviewer verified the no-mutation
+  claim exhaustively and upheld the central design: the lock-residue path is
+  read-only end to end, the Spec 137 architecture boundary is respected and
+  correctly cited so a later round cannot re-derive clearance, the Plan's own
+  static scan banning the `unlink` token independently forecloses it, the index
+  guard anchor provably precedes all six `git diff` calls in
+  `authority_preflight`, the CAS sub-case boundary sits where claimed, and the
+  declared indistinguishability of lock origins introduces no hazard beyond a
+  denial that already requires total-bypass capability. The specification
+  reviewer independently confirmed the Spec boundary check and found the
+  no-clearance semantics consistent in all four locations.
+
+  This is the first round in which the structural judgement passed. The
+  remaining defects are text-consistency and measured-behaviour mismatches.
+
+  Where the two reviewers diverged. The Python/security reviewer accepted every
+  RED sub-case as injecting at a reachable site; the specification reviewer
+  measured that two of them assert an outcome that does not occur, because a
+  blocked `git update-ref --no-deref` exits on `SIGTERM` within a second and git
+  then removes its own lock. Both readings hold: injection reachability and
+  assertion firing are separate properties, and the specification reviewer
+  examined the second.
+
+  Important-finding trend across the Plan-only gate: fix-2 four, fix-3 eight,
+  fix-4 six. The fix-3 increase came from a self-clearing design that added a
+  new destructive operation; removing that design reversed the trend.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
