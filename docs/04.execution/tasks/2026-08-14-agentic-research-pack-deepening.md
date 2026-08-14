@@ -452,13 +452,33 @@ records the observed `selected`/`violations` counts before staging.
   | -------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
   | Correction     | `1cd723fa` | Found insufficient: `--bundle` alone cannot bind a later consumer to the controller-captured build receipt                                  |
   | fix-1          | `bb1794cd` | Specification Approved C0/I0/M0; Python/security Needs fixes C0/I1/M0 on a FIFO substituted after raw snapshot blocking Git ref enumeration |
-  | fix-2          | `0b9bd01b` | Both independent re-reviews dispatched on 2026-08-14; verdicts recorded in this Task when returned                                          |
+  | fix-2          | `0b9bd01b` | Both independent re-reviews returned on 2026-08-14: specification `Needs fixes C0/I1/M4`, Python/security `Needs fixes C0/I3/M3`            |
 
   Plan-only fixes do not consume an implementation round. The Plan forbids
   beginning round 4, or editing the Task, helper, or tests, until both fix-2
   re-reviews return C0/I0/M0. Package construction, Phase A, evidence-ref
   publication, real-index staging, deletion, pinned lifecycle reconciliation,
   Task 12, remote actions, and push all remain closed.
+
+  This Task dispatched the two fix-2 re-reviews and records their verdicts as
+  routing evidence. It takes no action on them, because the Plan is outside
+  this Task's allowed paths.
+
+  Both reviewers reached the same root defect independently: the latency bound
+  fix-2 introduced is scoped by name to `git for-each-ref`, leaving other
+  blocking calls on the generic unbounded runner.
+
+  | Finding         | Reviewer        | Substance                                                                                                                                                                                                                                                                                                                                                                                                     |
+  | --------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | I1              | Both            | The bound covers `for-each-ref` only. The Python/security reviewer measured that `for-each-ref` does not block on special-file substitution at all; it skips silently. The blocking call is the `git symbolic-ref --quiet` fallback, reached exactly when `for-each-ref` returns empty, which is exactly the substituted-FIFO case. The hazard named in fix-1 is therefore untouched by fix-1 and fix-2 alike |
+  | I2              | Python/security | The create-only CAS `git update-ref --no-deref` is excluded from the bound and creates `<ref>.lock` before the blocking read, so terminating a blocked run leaves a stale lock that the Plan's own raw enumeration must reject as `FOREIGN_REF` permanently                                                                                                                                                   |
+  | I3              | Python/security | Mandated RED test 4 cannot pass as written: injecting a FIFO ahead of `for-each-ref` produces no timeout and no child to reap, so its bound, grace, and reap assertions are vacuous while the run hangs in the unbounded `symbolic-ref`                                                                                                                                                                       |
+  | I1, second half | Specification   | The risk row edited by this same diff promises the helper stops "without blocking", a property the corrected contract does not deliver                                                                                                                                                                                                                                                                        |
+
+  Consequence: fix-2 does not pass the Plan-only gate and recovery round 4 stays
+  closed. The implementation count remains three of five. A fix-3 would need to
+  re-target the correction at the calls that actually block, rather than extend
+  the existing name-scoped bound.
 
 ### Deferral destination
 
