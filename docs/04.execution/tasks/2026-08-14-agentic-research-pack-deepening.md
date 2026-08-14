@@ -265,6 +265,10 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | G2a Harness and loop | Top-level heading comparison against BASE `2ca5f4b8` | Section order preserved in all four leaves, including the pre-existing `Common Construction Matrix` |
 | 2026-08-14 | G2a Harness and loop | Personal-path and identifier scan | 0 matches across the four owned leaves |
 
+| 2026-08-14 | G2b Model and memory | Changed-document metadata against `1e61643c` | `selected=4 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | G2b Model and memory | Frontmatter and section census | All four leaves keep `status: draft`, carry `reviewed_at: 2026-08-14`, and retain nine top-level sections |
+| 2026-08-14 | G2b Model and memory | External catalog re-pin | `agency-agents` default-branch SHA re-verified unchanged since the 2026-08-08 pin via `git ls-remote` rather than a re-clone |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
