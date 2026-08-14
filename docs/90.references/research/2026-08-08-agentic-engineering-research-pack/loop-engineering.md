@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:loop-engineering
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-08
+reviewed_at: 2026-08-14
 review_cycle: on-source-change
 ---
 
@@ -56,17 +56,17 @@ policy and authorizes no execution.
 
 ### Loop anatomy
 
-| Element | Required question | Failure when absent |
-| --- | --- | --- |
-| Trigger/input | What current observation starts this attempt? | Work begins from stale or ambiguous state. |
-| Owner | Who may act and at what permission level? | Responsibility and authority become implicit. |
-| Action | What bounded operation is allowed? | The loop expands scope or changes unrelated state. |
-| Feedback | What result can alter the next decision? | Retries repeat without diagnosis. |
-| Exit gate | What observable condition means success? | Completion becomes subjective. |
-| Attempt ceiling | How many attempts may occur? | A hook or agent can loop indefinitely. |
-| Failure route | Narrow, stop, return, or escalate to whom? | Failure is suppressed or silently bypassed. |
-| Independent review | Who checks the result without owning the implementation? | Self-review is mistaken for final approval. |
-| Evidence | Which sanitized fields survive the run? | Secrets/raw logs leak or no durable proof remains. |
+| Element            | Required question                                        | Failure when absent                                |
+| ------------------ | -------------------------------------------------------- | -------------------------------------------------- |
+| Trigger/input      | What current observation starts this attempt?            | Work begins from stale or ambiguous state.         |
+| Owner              | Who may act and at what permission level?                | Responsibility and authority become implicit.      |
+| Action             | What bounded operation is allowed?                       | The loop expands scope or changes unrelated state. |
+| Feedback           | What result can alter the next decision?                 | Retries repeat without diagnosis.                  |
+| Exit gate          | What observable condition means success?                 | Completion becomes subjective.                     |
+| Attempt ceiling    | How many attempts may occur?                             | A hook or agent can loop indefinitely.             |
+| Failure route      | Narrow, stop, return, or escalate to whom?               | Failure is suppressed or silently bypassed.        |
+| Independent review | Who checks the result without owning the implementation? | Self-review is mistaken for final approval.        |
+| Evidence           | Which sanitized fields survive the run?                  | Secrets/raw logs leak or no durable proof remains. |
 
 ### Canonical lifecycle and typed loops
 
@@ -74,12 +74,12 @@ The ordered lifecycle has eight states:
 `discover -> design/plan -> approval -> implement -> validate -> independent-review -> evidence -> handoff`.
 `harness_loops` references those states; it is not a second lifecycle.
 
-| Event ID | States | Owner / reviewer | Permission | Attempts | Stop condition | Failure route | Depth |
-| --- | --- | --- | --- | ---: | --- | --- | --- |
-| `context-bootstrap` | `discover` | `workflow-supervisor` / `rules-engineer` | `read-only` | 1 | `bootstrap-contract-pass` | `escalate` | `repository-enforced` |
-| `bounded-implementation-loop` | `implement`, `validate` | `qa-engineer` / `code-reviewer` | `workspace-write` | 2 | `focused-checks-pass` | `narrow_then_escalate` | `repository-enforced` |
-| `independent-review-loop` | `implement`, `independent-review` | `code-reviewer` / `eval-engineer` | `read-only` | 2 | `critical_and_important_zero` | `escalate` | `repository-enforced` |
-| `approved-all-files-gate` | `validate`, `evidence` | `qa-engineer` / `code-reviewer` | `workspace-write` | 1 | `controlled-wrapper-pass` | `record_and_stop` | `repository-enforced` |
+| Event ID                      | States                            | Owner / reviewer                         | Permission        | Attempts | Stop condition                | Failure route          | Depth                 |
+| ----------------------------- | --------------------------------- | ---------------------------------------- | ----------------- | -------: | ----------------------------- | ---------------------- | --------------------- |
+| `context-bootstrap`           | `discover`                        | `workflow-supervisor` / `rules-engineer` | `read-only`       |        1 | `bootstrap-contract-pass`     | `escalate`             | `repository-enforced` |
+| `bounded-implementation-loop` | `implement`, `validate`           | `qa-engineer` / `code-reviewer`          | `workspace-write` |        2 | `focused-checks-pass`         | `narrow_then_escalate` | `repository-enforced` |
+| `independent-review-loop`     | `implement`, `independent-review` | `code-reviewer` / `eval-engineer`        | `read-only`       |        2 | `critical_and_important_zero` | `escalate`             | `repository-enforced` |
+| `approved-all-files-gate`     | `validate`, `evidence`            | `qa-engineer` / `code-reviewer`          | `workspace-write` |        1 | `controlled-wrapper-pass`     | `record_and_stop`      | `repository-enforced` |
 
 All four loops require the same evidence keys: `command`, `result`, `rollback`,
 and `skipped_checks`. They prohibit auth files, credentials, raw logs, secret
@@ -97,18 +97,97 @@ and modeling error. The current interpretation keeps the useful ten-pattern
 taxonomy but does not subtract the four typed controls from it: the two views
 overlap and have no one-to-one mapping.
 
-| Pattern | Feedback signal | Exit/evidence owner | Typed relation and current state |
-| --- | --- | --- | --- |
-| Reason/action | Latest tool observation or clarification | Task implementer; inspected source/diff | Provider loop; constrained by typed bootstrap/implementation controls, hidden reasoning excluded. |
-| Validation/format/lint | Focused check result | QA; exact command/result/skip | Closest to `bounded-implementation-loop`; locally executable. |
-| CI gate | Remote job/check state | CI/CD owner; remote run evidence | No separate typed retry object; tracked workflow definition is not remote proof. |
-| Evaluation/regression | Fixture score and threshold | Eval owner; 11 fixtures/16 regressions | Invoked by QA/harness gates; synthetic-only, no live model benchmark. |
-| Memory/context | Verified milestone, decision, or stale finding | Lifecycle owner; canonical artifact | Bootstrap/evidence relationship; Memory remains advisory. |
-| Plan/task/review | Exact diff plus reviewer verdict | Controller/reviewer; Stage 04 evidence | Closest to independent-review loop; SDD adds its own reviewed plan bounds. |
-| Security/approval | Explicit decision on protected action | User/security/owner; redacted approval evidence | Approval state controls action; native permission mode never broadens authority. |
-| Automation/pipeline | Stage result and propagated failure | Pipeline owner; immutable input/result | No separate typed retry object; idempotence and external authority remain explicit. |
-| Incident/postmortem | Service symptom, recovery state, prevention action | Incident commander/owner; Stage 05 evidence | Applicable only to real incidents; no live service evidence in this Task. |
-| Human pause/resume | Approve/reject/narrow decision plus refreshed state | Named human; decision and postcondition | Provider checkpoint semantics vary; stale state requires a new decision. |
+| Pattern                | Feedback signal                                     | Exit/evidence owner                             | Typed relation and current state                                                                  |
+| ---------------------- | --------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Reason/action          | Latest tool observation or clarification            | Task implementer; inspected source/diff         | Provider loop; constrained by typed bootstrap/implementation controls, hidden reasoning excluded. |
+| Validation/format/lint | Focused check result                                | QA; exact command/result/skip                   | Closest to `bounded-implementation-loop`; locally executable.                                     |
+| CI gate                | Remote job/check state                              | CI/CD owner; remote run evidence                | No separate typed retry object; tracked workflow definition is not remote proof.                  |
+| Evaluation/regression  | Fixture score and threshold                         | Eval owner; 11 fixtures/16 regressions          | Invoked by QA/harness gates; synthetic-only, no live model benchmark.                             |
+| Memory/context         | Verified milestone, decision, or stale finding      | Lifecycle owner; canonical artifact             | Bootstrap/evidence relationship; Memory remains advisory.                                         |
+| Plan/task/review       | Exact diff plus reviewer verdict                    | Controller/reviewer; Stage 04 evidence          | Closest to independent-review loop; SDD adds its own reviewed plan bounds.                        |
+| Security/approval      | Explicit decision on protected action               | User/security/owner; redacted approval evidence | Approval state controls action; native permission mode never broadens authority.                  |
+| Automation/pipeline    | Stage result and propagated failure                 | Pipeline owner; immutable input/result          | No separate typed retry object; idempotence and external authority remain explicit.               |
+| Incident/postmortem    | Service symptom, recovery state, prevention action  | Incident commander/owner; Stage 05 evidence     | Applicable only to real incidents; no live service evidence in this Task.                         |
+| Human pause/resume     | Approve/reject/narrow decision plus refreshed state | Named human; decision and postcondition         | Provider checkpoint semantics vary; stale state requires a new decision.                          |
+
+### External loop-primitive taxonomy versus the four typed loops
+
+A 2026 source-code study of 13 open-source coding-agent scaffolds at pinned
+commits (arXiv 2604.03515, retrieved 2026-08-14) identifies five composable
+control-loop primitives — ReAct, generate-test-repair, plan-execute,
+multi-attempt retry, and tree search — and finds 11 of 13 scaffolds combine
+more than one primitive rather than relying on a single loop. Mapped against
+this workspace's four typed loops:
+
+| Typed loop                    | Nearest external primitive                                 | Fit                                                                                                                                                                                                   |
+| ----------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `context-bootstrap`           | None of the five (a pre-loop discovery gate)               | Not a control-loop primitive in that taxonomy; it precedes one.                                                                                                                                       |
+| `bounded-implementation-loop` | Multi-attempt retry, with elements of generate-test-repair | Partial: the 2-attempt ceiling matches "multi-attempt retry," but the loop does not itself run a test-repair cycle — `focused-checks-pass` is an external validator call, not an in-loop repair step. |
+| `independent-review-loop`     | Generate-test-repair (review-as-verification variant)      | Partial: `critical_and_important_zero` is a review-verdict gate, not a code-execution test.                                                                                                           |
+| `approved-all-files-gate`     | None of the five (a terminal one-shot gate)                | Not iterative; `max_attempts: 1` makes it a checkpoint, not a loop.                                                                                                                                   |
+
+No typed loop corresponds to **plan-execute** or **tree search**. This is a
+named gap, not a defect: `workflow_states` supplies a `design/plan` state and
+`approval` gate around the four loops, so planning exists at the lifecycle
+level, but no typed loop re-plans and re-attempts with backtracking the way a
+tree-search or plan-execute primitive would. The observation that would close
+this gap is a Stage 00 decision on whether backtracking/replanning behavior
+should become a fifth typed loop or stay an untyped, agent-discretion pattern
+under `independent-review-loop`'s `escalate` route.
+
+A companion 2026 study of 20,574 real-world coding-agent sessions across
+1,639 repositories (arXiv 2605.29442, retrieved 2026-08-14) found 90.50% of
+misalignment episodes cost effort/trust rather than causing system damage,
+yet 91.49% still required explicit user correction, across seven recurring
+failure categories including how agents bound their own actions and report
+progress. This corroborates, from an external and much larger sample, the
+same three failure shapes this pack's typed-loop model exists to prevent:
+unbounded action (addressed here by `max_attempts` and `permission_profile`),
+unverified self-reporting (addressed by requiring `command`/`result` evidence
+fields), and silent scope drift (addressed by `narrow_then_escalate` on
+`bounded-implementation-loop`). None of this workspace's typed-loop evidence
+was drawn from that external session corpus; the correspondence is
+structural, not a shared dataset.
+
+### Unbounded loop risk in this workspace
+
+Three concrete places where this workspace's tracked construction could run
+without an enforced ceiling, verified by reading the executing code rather
+than the contract prose:
+
+1. **`max_attempts` is a contract field, not a counted runtime value.**
+   `contracts/provider-models.yaml` `harness_loops` declares
+   `max_attempts: 2` for `bounded-implementation-loop` and
+   `independent-review-loop`, but no script in `scripts/hooks/` or
+   `scripts/validation/` reads or increments an attempt counter against that
+   field. The ceiling is a documented behavioral expectation for the agent
+   and its reviewer to self-observe, not a tool-enforced stop. An agent (or a
+   provider auto-retry) that ignores the contract has no local mechanism that
+   would block a third attempt.
+2. **`PreToolUse` can repeat the same advisory guidance indefinitely.**
+   Because the repository dispatcher treats `PreToolUse` as advisory only
+   (see [harness-engineering.md](./harness-engineering.md)), a session that
+   keeps triggering the same changed-path pattern (for example repeatedly
+   editing a target-stage doc without fixing the template violation) receives
+   the same reminder text on every call with no escalation, count, or
+   eventual block — the loop's "failure route" for that specific trigger is
+   undefined below the `Stop` gate.
+3. **The Stop gate's retry bound is a provider-payload interpretation, not a
+   repository counter.** `template_stop_gate` and `logical_commit_stop_gate`
+   in `scripts/hooks/agent-event-hook.sh` decide `continue: false` only when
+   the _provider_ reports `stop_hook_active: true` in its payload (Codex
+   branch) or via the Claude-native blocking response; the repository itself
+   keeps no count of how many times Stop has already fired in this session.
+   If a provider's payload shape changed to omit `stop_hook_active`, or if
+   Gemini's `AfterAgent` `deny-retry` mode (recorded in
+   `contracts/provider-models.yaml`, not previously described in this pack)
+   never signals a terminal retry, the bash-level loop has no independent
+   ceiling of its own.
+
+None of these is a defect in what is documented — the contract is explicit
+that these are behavioral/self-observed bounds — but they are the concrete
+answer to "where can a loop here run unbounded," which this pack's earlier
+revision did not enumerate.
 
 ### Semantic-event feedback depth
 
@@ -117,15 +196,15 @@ this baseline, 20 of 21 cells are `configured-not-executed`; the Codex
 `session-end` cell is `unsupported`. The predecessor claim that all 21 were
 configured is therefore corrected.
 
-| Semantic event | Claude local | Codex local | Repository mode / finding |
-| --- | --- | --- | --- |
-| `session-start` | `SessionStart` | `SessionStart` | Advisory context; configured, not execution proof. |
-| `pre-tool` | `PreToolUse` | `PreToolUse` | Provider can block; repository dispatcher is advisory. |
-| `post-tool` | `PostToolUse` | `PostToolUse` | Runs shared changed-file validation routing when fired. |
-| `pre-compaction` | `PreCompact` | `PreCompact` | Advisory; no `PostCompact` local binding. |
-| `user-prompt-intake` | `UserPromptSubmit` | `UserPromptSubmit` | Provider can block; local repository mode is advisory. |
-| `stop` | `Stop` | `Stop` | Claude `blocking`; Codex `retry`; shared target-doc and uncommitted-work gates. |
-| `session-end` | `SessionEnd` | No local binding | Contract says Codex unsupported, but current official Codex docs support a main-thread advisory `SessionEnd`; local gap. |
+| Semantic event       | Claude local       | Codex local        | Repository mode / finding                                                                                                |
+| -------------------- | ------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `session-start`      | `SessionStart`     | `SessionStart`     | Advisory context; configured, not execution proof.                                                                       |
+| `pre-tool`           | `PreToolUse`       | `PreToolUse`       | Provider can block; repository dispatcher is advisory.                                                                   |
+| `post-tool`          | `PostToolUse`      | `PostToolUse`      | Runs shared changed-file validation routing when fired.                                                                  |
+| `pre-compaction`     | `PreCompact`       | `PreCompact`       | Advisory; no `PostCompact` local binding.                                                                                |
+| `user-prompt-intake` | `UserPromptSubmit` | `UserPromptSubmit` | Provider can block; local repository mode is advisory.                                                                   |
+| `stop`               | `Stop`             | `Stop`             | Claude `blocking`; Codex `retry`; shared target-doc and uncommitted-work gates.                                          |
+| `session-end`        | `SessionEnd`       | No local binding   | Contract says Codex unsupported, but current official Codex docs support a main-thread advisory `SessionEnd`; local gap. |
 
 Claude wires all seven tracked semantic events. Codex wires six. Current
 official documentation enumerates 31 Claude event names and 11 Codex event
@@ -150,47 +229,80 @@ syntax, Compose, governance, and traceability checks by changed path. Hook
 configuration and dispatcher tests demonstrate local construction, but this
 Task did not execute a native Claude or Codex session to prove firing.
 
+A third Stop-equivalent mode exists in the tracked contract but was not
+previously recorded here: `contracts/provider-models.yaml`'s `stop`
+semantic-event row lists Gemini's native binding as `AfterAgent` with
+`repository_hook_mode: deny-retry` and `provider_can_block: true`.
+`providers/gemini.md` §6 explains the mechanism directly: `AfterAgent` "may
+deny a response and force a retry; it maps to the shared Stop gate as
+`deny-retry`, not as an irreversible session stop." This is a third distinct
+retry shape alongside Claude's single blocking response and Codex's
+two-strike `stop_hook_active` escalation — three providers, three different
+native retry primitives, one shared Python decision function
+(`template_stop_gate`/`logical_commit_stop_gate`) translating into each.
+Official Claude documentation retrieved 2026-08-14 adds a schema detail not
+previously recorded: Claude's `Stop` hook accepts _either_ an exit-code-2
+block _or_ a JSON `continue: false` + `stopReason` response — two independent
+mechanisms for the same blocking outcome, both consumed by this repository's
+shared dispatcher output.
+
+The two Hookify rules scoped to `event: stop`
+(`require-logical-commits-before-stop`, `warn-docker-infra-stop` — see
+[harness-engineering.md](./harness-engineering.md) for the full catalog) name
+the same completion behavior already hard-coded in
+`logical_commit_stop_gate`. They add no additional retry ceiling or stop
+condition of their own; they exist as human-readable policy text with no
+verified runtime execution path in this worktree.
+
 ## Scope Implications
 
 The status and owner basis comes from the
 [scope application matrix](./scope-application-matrix.md); every row below is
 the loop-specific implication.
 
-| Scope | Loop implication | Disposition / exit route |
-| --- | --- | --- |
-| `agentic` | Owns lifecycle, typed retry/stop controls, provider translation, and handoff. | Implemented as contracts; provider execution unverified. |
-| `architecture` | Design/review loops return unresolved trade-offs to ARD/ADR/Spec. | Partial; human/system architect route, no typed agent. |
-| `backend` | Build/test/deploy feedback applies after a backend is specified. | Not Applicable now; stop until product/Spec surface exists. |
-| `common` | Diff hygiene and independent correctness review close cross-layer loops. | Partial; use `code-reviewer`; no direct all-files pre-commit. |
-| `docs` | Template, metadata, link, source, and review feedback closes document work. | Implemented locally; route switch and pack review pending. |
-| `entry` | Gateway validation and incident feedback require infra ownership and runtime evidence. | Partial; escalate through infra/ops; edge state unverified. |
-| `frontend` | UI build, accessibility, browser, and regression loops bind only to an actual surface. | Partial; current Storybook fixture is QA-owned. |
-| `infra` | Compose preflight, drift, rollout, rollback, and postcheck form controlled loops. | Definitions exist; live loops were not run. |
-| `meta` | Metadata and generator freshness provide deterministic documentation feedback. | Partial; route through docs; typed meta agent missing. |
-| `mobile` | Device/build/signing/store feedback requires a mobile surface. | Not Applicable; no tracked source or runtime. |
-| `ops` | Monitoring, incident, recovery, postmortem, and follow-up loops need live evidence. | Partial; no service or incident proof collected. |
-| `product` | Human decisions close priority, risk, cost, and acceptance feedback. | Partial; human approval precedes implementation. |
-| `qa` | Owns focused validation, fixture/regression scoring, aggregate gates, and evidence. | Extensive local implementation; remote and live-model state unverified. |
-| `security` | Protected actions pause for approval; findings return to the owning implementation loop. | Partial; redacted evidence only; secret/runtime state excluded. |
+| Scope          | Loop implication                                                                         | Disposition / exit route                                                |
+| -------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `agentic`      | Owns lifecycle, typed retry/stop controls, provider translation, and handoff.            | Implemented as contracts; provider execution unverified.                |
+| `architecture` | Design/review loops return unresolved trade-offs to ARD/ADR/Spec.                        | Partial; human/system architect route, no typed agent.                  |
+| `backend`      | Build/test/deploy feedback applies after a backend is specified.                         | Not Applicable now; stop until product/Spec surface exists.             |
+| `common`       | Diff hygiene and independent correctness review close cross-layer loops.                 | Partial; use `code-reviewer`; no direct all-files pre-commit.           |
+| `docs`         | Template, metadata, link, source, and review feedback closes document work.              | Implemented locally; route switch and pack review pending.              |
+| `entry`        | Gateway validation and incident feedback require infra ownership and runtime evidence.   | Partial; escalate through infra/ops; edge state unverified.             |
+| `frontend`     | UI build, accessibility, browser, and regression loops bind only to an actual surface.   | Partial; current Storybook fixture is QA-owned.                         |
+| `infra`        | Compose preflight, drift, rollout, rollback, and postcheck form controlled loops.        | Definitions exist; live loops were not run.                             |
+| `meta`         | Metadata and generator freshness provide deterministic documentation feedback.           | Partial; route through docs; typed meta agent missing.                  |
+| `mobile`       | Device/build/signing/store feedback requires a mobile surface.                           | Not Applicable; no tracked source or runtime.                           |
+| `ops`          | Monitoring, incident, recovery, postmortem, and follow-up loops need live evidence.      | Partial; no service or incident proof collected.                        |
+| `product`      | Human decisions close priority, risk, cost, and acceptance feedback.                     | Partial; human approval precedes implementation.                        |
+| `qa`           | Owns focused validation, fixture/regression scoring, aggregate gates, and evidence.      | Extensive local implementation; remote and live-model state unverified. |
+| `security`     | Protected actions pause for approval; findings return to the owning implementation loop. | Partial; redacted evidence only; secret/runtime state excluded.         |
 
 ## Sources
 
-External pages were directly retrieved at
-`2026-08-08T15:48:51+09:00`, returned HTTP 200 without redirect, and expose no
-stable revision. They are mutable primary observations, not permanent runtime
-guarantees.
+External pages were retrieved 2026-08-08 (initial) and 2026-08-14
+(re-verification plus new sources); all returned HTTP 200 without redirect
+and expose no stable revision, so they are mutable primary observations, not
+permanent runtime guarantees. The two arXiv papers are external mutable
+primary sources with a fixed preprint identifier but no confirmed pinned
+version in this retrieval; treat exact figures as subject to revision on a
+future arXiv version.
 
 | Source | Class | Verification |
 | --- | --- | --- |
-| [Claude hooks](https://code.claude.com/docs/en/hooks) | External mutable, primary | Verified event lifecycle, decisions, Stop, subagent, compaction, and session events. |
-| [Claude subagents](https://code.claude.com/docs/en/sub-agents) | External mutable, primary | Verified isolated delegated contexts, turns, tools, permissions, model/effort, and hooks. |
-| [Codex hooks](https://learn.chatgpt.com/docs/hooks) | External mutable, primary | Verified 11-event table, Stop decisions, `stop_hook_active`, and main-thread advisory `SessionEnd`. |
-| [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | External mutable, primary | Verified orchestration, thread control, parent sandbox/permission inheritance, and agent fields. |
-| [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml) | Tracked mutable | Complete eight-state, four-loop, seven-event, 21-cell derivation at Task 3 BASE. |
-| [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml) | Tracked mutable | Verified evaluation owner, 11 fixtures, 16 regressions, scorer, runner, and tests. |
-| [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) | Tracked mutable | Verified human routing view and exact four typed loop rules. |
-| [Shared dispatcher](../../../../scripts/hooks/agent-event-hook.sh) | Tracked executable | Read directly; demonstrates constructed decisions, not native firing. |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Tracked stale/advisory | Read first; built from `f8a72211`; every lead corroborated. |
+| [Claude hooks](https://code.claude.com/docs/en/hooks) | External mutable, primary | Re-verified 2026-08-14: Stop schema accepts exit-2 or `continue:false`+`stopReason`; full event/decision breakdown. |
+| [Claude subagents](https://code.claude.com/docs/en/sub-agents) | External mutable, primary | Verified 2026-08-08: isolated contexts, turns, tools, permissions, model/effort, hooks. |
+| [Codex hooks](https://learn.chatgpt.com/docs/hooks) | External mutable, primary | Re-verified 2026-08-14: 11-event table, `stop_hook_active`, main-thread `SessionEnd`. |
+| [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | External mutable, primary | Verified 2026-08-08: orchestration, thread control, sandbox/permission inheritance. |
+| [Inside the Scaffold (arXiv 2604.03515)](https://arxiv.org/abs/2604.03515) | External mutable, primary paper | New 2026-08-14: 13 scaffolds, 5 loop primitives, 11/13 combine multiple primitives. |
+| [How Coding Agents Fail Their Users (arXiv 2605.29442)](https://arxiv.org/abs/2605.29442) | External mutable, primary paper | New 2026-08-14: 20,574 sessions/1,639 repos, seven failure categories, 90.50%/91.49% figures. |
+| [Provider/model contract](../../../00.agent-governance/contracts/provider-models.yaml) | Workspace tracked | Re-read 2026-08-14: eight-state, four-loop, seven-event, 21-cell derivation, including Gemini `deny-retry` Stop mode. |
+| [Agent catalog](../../../00.agent-governance/contracts/agent-catalog.yaml) | Workspace tracked | Re-read 2026-08-14: `evaluation.fixture_count`/`regression_count` typed fields (11/16), scorer, runner, tests. |
+| [Subagent protocol](../../../00.agent-governance/subagent-protocol.md) | Workspace tracked | Verified human routing view and exact four typed loop rules. |
+| [Provider capability matrix](../../../00.agent-governance/rules/provider-capability-matrix.md) | Workspace tracked | Re-read 2026-08-14: three-provider Stop-mode row (`blocking`/`retry`/`deny-retry`). |
+| [`providers/gemini.md`](../../../00.agent-governance/providers/gemini.md) | Workspace tracked | Read 2026-08-14: `AfterAgent` deny-retry mechanism description. |
+| [Shared dispatcher](../../../../scripts/hooks/agent-event-hook.sh) | Workspace tracked, executable | Read directly 2026-08-14: no attempt-counter code path against `max_attempts`. |
+| [Hookify catalog](../../../00.agent-governance/rules/hooks/) | Workspace tracked | Counted 2026-08-14: 2 of 19 rules scoped to `event: stop`; no runtime binding found. |
+| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Workspace tracked, stale | Read first; built from `f8a72211`; every lead corroborated. |
 
 ## Maintenance
 

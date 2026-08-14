@@ -258,6 +258,13 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | G4 Delivery and quality | `UNVERIFIED` marker census across the three owned leaves | 15 in quality, 12 in verification and validation, 6 in automation |
 | 2026-08-14 | G4 Delivery and quality | External source retrieval | Six new sources cited; `iso.org` refused retrieval with HTTP 403 for a second dated attempt; an FDA source failed both routes and was dropped rather than cited unseen |
 
+| 2026-08-14 | Validation environment | `pip install --target "$(python3 -m site --user-site)" html5lib` after PEP 668 blocked a plain user install | `html5lib` 1.1 importable from the default interpreter without `--break-system-packages` |
+| 2026-08-14 | Validation environment | `check-repo-contracts.sh` on the default interpreter | `failures=0`, PASS; the Stop-gate path now reaches the same result as the prepared interpreter |
+
+| 2026-08-14 | G2a Harness and loop | Changed-document metadata against `88f4b2e2` | `selected=4 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | G2a Harness and loop | Top-level heading comparison against BASE `2ca5f4b8` | Section order preserved in all four leaves, including the pre-existing `Common Construction Matrix` |
+| 2026-08-14 | G2a Harness and loop | Personal-path and identifier scan | 0 matches across the four owned leaves |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
