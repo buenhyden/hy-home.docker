@@ -87,11 +87,16 @@ branch `docs/agentic-research-pack-deepening`.
 - `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`, for the
   Plan-only Gate 9 correction the user approved on 2026-08-14, one file per
   commit and no other Plan
+- `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`, for
+  review receipts only. The Plan assigns receipt ownership to that Task, and the
+  user directed on 2026-08-14 that Spec, Plan, and Task be inspected and
+  reconciled. No other content in that ledger is touched.
 
 ### Forbidden paths
 
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`
-- `docs/03.specs/` and every Plan other than the Gate 9 rebuild Plan
+- `docs/03.specs/`, every Plan other than the Gate 9 rebuild Plan, and every
+  part of the rebuild Task other than its review-receipt rows
 - `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`
 - `llms.txt`, all LLM Wiki generators, and every other generated artifact
 - `infra/`, `secrets/`, any credential-bearing surface
@@ -563,6 +568,49 @@ records the observed `selected`/`violations` counts before staging.
   simultaneously the ability to bypass the gate. The proportionate control is a
   role-assignment constraint at capability provisioning, not another filesystem
   race defence.
+
+- Plan fix-3 outcome and the Spec boundary conflict it exposed, recorded
+  2026-08-14. The user directed that Spec, Plan, and Task be inspected and
+  reconciled before continuing.
+
+  fix-3 was committed as `b6e2219f` with the Plan's declared subject and passed
+  changed-document metadata, traceability, and the repository contract. Both
+  independent re-reviews then returned `Needs fixes; C0/I4/M4`. Their receipts
+  are recorded in the rebuild Task, which the Plan designates as receipt owner.
+
+  The Python/security reviewer's agent terminated on a session limit after
+  writing its review. The artifact is complete: 340 lines, every review question
+  answered in a closing checklist, and a terminal verdict line. Its final
+  message indicated an intent to cross-check the Plan's claims against helper
+  source, so that corroboration step is unperformed and is not claimed here.
+
+  Two findings were independently reached by both reviewers: the respecified RED
+  method still cannot fire on the CAS and lock-residue path, and the funnel
+  definition does not cover what its own closure claim asserts.
+
+  The Spec conflict. Spec 137 section `Gate 9 evidence architecture boundary`
+  records a user-approved boundary dated 2026-08-09 stating that package
+  construction may append Git objects but may not delete objects, mutate a
+  branch, index, or worktree, or clean up unreachable objects, and that a
+  separately reviewed create-only evidence-ref publication is the only permitted
+  Gate 9 ref mutation. The Spec assigns the Plan ownership of executable schemas
+  only within that boundary.
+
+  The `STALE_REF_LOCK` clearance introduced by fix-3 unlinks a `.lock` file
+  inside `.git`. The Python/security reviewer identified this as a new
+  destructive operation on its own merits. Read against the Spec it is also
+  outside the approved architecture boundary, so it cannot be repaired by
+  refining its clearance conditions. Either the design drops the unlink, or the
+  Spec boundary changes, and the Spec boundary is user-approved.
+
+  Consequent direction for a fix-4: treat an orphan lock as a fail-closed
+  terminal state that reports what a human must clear, rather than as a state
+  the gate clears itself. That removes the destructive operation, removes the
+  ownership-attribution problem the reviewer raised, and stays inside the
+  approved Spec boundary. The remaining findings on funnel definition, terminate
+  and reap vocabulary for non-spawning funnels, the index-guard worked example,
+  and RED method reachability are contract-text defects that do not touch the
+  Spec boundary.
 
 ### Deferral destination
 
