@@ -2404,7 +2404,7 @@ contract. Commit only this Plan with exact subject
 specification reviewer and a Python/security reviewer must return C0/I0/M0
 over that one-file range. That commit and its review pair are the superseded
 initial gate: the range is immutable, its review produced the `--bundle`
-finding recorded below, and the operative gate is now the fix-5 gate stated at
+finding recorded below, and the operative gate is now the fix-6 gate stated at
 the end of this subsection. The Task owns the actual review receipts. Package
 construction, package or ref consumption, Phase A, evidence-ref publication,
 deletion, lifecycle mutation, Task 12, remote actions, and push remain closed.
@@ -2467,13 +2467,34 @@ false premise about this contract's own convention.
 Correct only this Plan a fifth time from clean
 `a6613da90cd9b8e2c5a21ae420065b3af28dbcfb`. Commit exact subject
 `docs(plan): correct gate 9 deadline and terminal status`. Both fix-5
+independent re-reviews are complete and they split. The Python/security
+re-review returned Approved C0/I0/M6 — the first approval any correction in
+this gate has earned — after verifying the no-mutation property, the
+`setitimer`-before-`open` mechanism, the exit-1 convention, and the
+size-independent lock predicate against the primitives and the helper source
+rather than against this Plan's prose. The specification re-review returned
+Needs fixes C0/I2/M5, closing five of the six fix-4 defects: the unfirable
+`SIGKILL` assertion, the unbuildable lock-residue fixture, the four-location
+zero-byte inconsistency, the deadline that could not bound its own `open`, and
+the exit status mandated on a false premise. Structure, Spec 137 boundary
+compliance, round accounting, and the entire security dimension are settled by
+that pair, and no later correction may reopen or weaken them. The two
+remaining Important findings sit wholly inside the `for-each-ref` baseline
+passage: an absolute "never reaches `for-each-ref` through the gate" claim that
+this Plan's own sub-case 2 falsifies, and a retargeted raw/union disagreement
+instantiation that direct measurement shows cannot reach the omission branch it
+is assigned to.
+
+Correct only this Plan a sixth time from clean
+`a17281a85531c1a9986d35f9f063ed6bd4f1bfc5`. Commit exact subject
+`docs(plan): reconcile gate 9 omission claims`. Both fix-6
 independent re-reviews are `Not Run` until that one-file commit is dispatched;
 do not predict their verdicts. One fresh independent specification reviewer and
 one fresh independent Python/security reviewer must each return C0/I0/M0 over
 that one-file range before recovery round 4 may begin. No Plan-only fix
 consumes a Step 0e implementation round, so the implementation count remains
 three of five. Do not begin recovery round 4 or edit the Task, helper, or tests
-until both fix-5 re-reviews return C0/I0/M0. Package construction, package or
+until both fix-6 re-reviews return C0/I0/M0. Package construction, package or
 ref consumption, Phase A, evidence-ref publication, real-index staging,
 deletion, lifecycle mutation, Task 12, remote actions, and push all remain
 closed.
@@ -2504,6 +2525,23 @@ exit status off the value reserved for `LIVE_HEAD_REQUIRED`. The read-only,
 no-clearance design and its Spec 137 justification are unchanged and remain
 closed to re-derivation.
 
+Fix-6 moves no boundary, deletes no control, and reopens nothing the fix-5
+Python/security approval rested on: the no-mutation property, the
+`setitimer`-before-`open` mechanism, the exit-1 convention, the
+size-independent lock predicate, and the fixture's test-side creation boundary
+are all carried forward unchanged. It corrects two statements this Plan's own
+other clauses contradict. It bounds the `for-each-ref` omission claim to the
+snapshot phase it is true of, so it no longer contradicts sub-case 2's
+mid-flight injection, which this Plan itself requires to reach the exact-ref
+fallback. And it settles the raw/union disagreement rule's reachability
+question that fix-4 and fix-5 each answered with an instantiation that cannot
+occur: rather than naming a third construction, it records the one measured
+condition under which the two views actually disagree by omission — a leaf
+unlinked between the raw walk and the `for-each-ref` of the same snapshot —
+and routes the two previously misassigned cases to the clauses they really
+land in. The remaining edits are text corrections to the same passage and to
+mandated RED method 4.
+
 After the Plan-only gate passes, recovery round 4 uses a fresh more-capable
 implementer and modifies exactly these three files within the existing
 six-file ceiling:
@@ -2515,8 +2553,8 @@ six-file ceiling:
    concurrency, transport-ordering, dangling-loose-symref, canonical-ref, and
    stable-identity regressions.
 3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
-   for the actual immutable Plan correction/fix-1/fix-2/fix-3/fix-4/fix-5
-   commit ranges and all six independent review/re-review pairs, the round-3
+   for the actual immutable Plan correction/fix-1/fix-2/fix-3/fix-4/fix-5/fix-6
+   commit ranges and all seven independent review/re-review pairs, the round-3
    implementation
    findings, and round-4 RED/GREEN/full evidence with the new implementation
    reviews left `Not Run` until dispatch. No separate Task-only prerequisite
@@ -2671,12 +2709,18 @@ raw discovery contract:
   `O_RDONLY|O_NOFOLLOW` control-file open, the descriptor-relative bundle open,
   and every whole-file `read_bytes`-class read. A bound attached to
   `for-each-ref` by name therefore bounds nothing, and no silently omitted leaf
-  is ever caught by a timeout. Under this contract's own ordering none of those
-  omitted leaf types reaches `for-each-ref` through the gate at all: every one
-  of them is non-regular, symbolic, or otherwise inadmissible, and raw loose
-  enumeration rejects it as `FOREIGN_REF` before any Git query is issued. The
-  raw/union disagreement rule below is therefore not what catches them; it
-  governs only the residual one-sided cases the raw walk admits.
+  is ever caught by a timeout. Scope that to the phase it is true of, because
+  this Plan's own ordering makes the unscoped form false. A leaf of one of
+  those omitted types that is already present when the raw loose enumeration
+  runs never reaches `for-each-ref` through the gate: it is non-regular,
+  symbolic, or otherwise inadmissible, and the raw walk rejects it as
+  `FOREIGN_REF` before any Git query is issued. A leaf substituted after the
+  raw walk has already admitted the name is a different case and is reached:
+  the second snapshot's `for-each-ref` and the exact-ref fallback's
+  `for-each-ref` both observe it, silently omit it, and fall through to `git
+symbolic-ref`, which is the path mandated RED method 4 sub-case 2 requires.
+  Either way the raw/union disagreement rule below is not what catches these
+  types; it governs only the residual one-sided membership cases stated there.
 - Attach the bound to the execution funnels rather than to an enumerated
   command list. Exactly three funnels carry the obligation; no Gate 9 call
   site may reach a subprocess, a descriptor-opening read of an
@@ -2700,8 +2744,12 @@ raw discovery contract:
   the exclusive-create `os.open` were measured non-blocking under the
   substitutions prepared for them; and the bundle writer's `/tmp`
   `O_DIRECTORY` open, against which no substitution was prepared, is excluded
-  by that same `O_CREAT|O_EXCL` and directory-open reasoning rather than by a
-  measurement. The bundle writer's `/tmp` directory open, its
+  by reasoning rather than by a measurement, and the reasoning is stated here
+  rather than left to the reader: `O_DIRECTORY` fails `ENOTDIR` against
+  anything that is not a directory, so a substituted FIFO, socket, or device
+  node at that path cannot be opened at all, let alone parked in, and a
+  substituted directory is not a parking hazard. The bundle writer's `/tmp`
+  directory open, its
   exclusive create, the anonymous `memfd` descriptor, and the
   worktree-registry directory open and `scandir` traversal are therefore named
   here as out of funnel scope rather than routed through a funnel described as
@@ -2727,10 +2775,27 @@ raw discovery contract:
   nothing.
 - Name the deadline mechanism rather than implying it, and require one that can
   actually bound the call the deadline exists for. The mechanism is
-  `signal.setitimer(ITIMER_REAL, ...)` armed in the main thread **before** the
+  `signal.setitimer(ITIMER_REAL, ...)` armed **before** the
   `open()` call, with a handler that raises, and disarmed in a `finally`. It
   must be armed before the open because a park inside `open` is the residual
-  hazard this deadline exists for. `poll()` cannot serve that purpose: it needs
+  hazard this deadline exists for. State the delivery invariant this mechanism
+  actually needs, rather than the arming thread: `ITIMER_REAL` delivers
+  `SIGALRM` to the process, and the kernel may hand it to any thread that is
+  not blocking it, so arming from the main thread does not by itself guarantee
+  that the parked call is the one interrupted. The gate must therefore be
+  entered as its own single-threaded process, and if any round ever gives it a
+  thread, that thread must `pthread_sigmask(SIG_BLOCK, {SIGALRM})` so delivery
+  can only land on the thread that performs the guarded open. Method 3's
+  bounded join/timeout is a property of the test-side driver, not of the gate
+  process, and does not license running the gate off a worker thread. Close the
+  two windows around the guarded region as well: the raising handler's
+  exception must be caught at the funnel boundary and mapped to that site's
+  fail-closed code even when it arrives after the guarded call has returned and
+  before the disarm, so a late alarm cannot surface as an unmapped traceback;
+  and the descriptor must be closed from a slot written before the syscall, so
+  an alarm that arrives between `open()` returning in C and the Python binding
+  completing still leaves the `finally` something to close.
+  `poll()` cannot serve that purpose: it needs
   a descriptor, so it cannot be entered until `open()` has already returned,
   and for the only file type that survives the `fstat` check — a regular file —
   it reports ready immediately and bounds nothing that `O_NONBLOCK` and the
@@ -2816,8 +2881,8 @@ raw discovery contract:
   it distinctly as `STALE_REF_LOCK`; `FOREIGN_REF` stays reserved for a
   genuinely foreign ref. Raw loose enumeration must classify any
   `<canonical-leaf>.lock` sibling inside the fixed namespace as this distinct
-  state, whatever its byte size, instead of rejecting it as a name not admitted
-  by `EVIDENCE_REF_PATTERN`.
+  state, whatever its byte size and whatever its observed file type, instead of
+  rejecting it as a name not admitted by `EVIDENCE_REF_PATTERN`.
 - `STALE_REF_LOCK` is a terminal fail-closed state that performs no filesystem
   mutation of any kind. The gate does not unlink, truncate, rename, open for
   writing, or otherwise touch the lock, its siblings, its directory, the
@@ -2859,12 +2924,22 @@ raw discovery contract:
   collided onto it: the helper has two nonzero statuses precisely so a
   controller or wrapper can tell omitted live-HEAD bindings apart from every
   other fail-closed outcome, and a lock file sitting in the evidence namespace
-  is not that cause. Any ambiguity — an unreadable `.lock` sibling, a
-  non-regular one, a `.lock`
+  is not that cause. The empty-stdout half is an ordering requirement, not only
+  a formatting one: the after repository-invariant capture must complete before
+  any stdout emission in every mode, including publish mode, so a residue
+  observed in that capture can never follow a canonical JSON payload onto
+  stdout and hand an exit-status-blind consumer a success-shaped result under a
+  terminal code. Any ambiguity — an unreadable `.lock` sibling, a `.lock`
   whose leaf name is not admitted, or a residue the walk cannot classify —
   also fails closed rather than being resolved in the gate's favour; where the
   name is not an admitted canonical leaf plus `.lock`, the existing
-  `FOREIGN_REF` rejection stands.
+  `FOREIGN_REF` rejection stands. Resolve the one state that would otherwise
+  carry two candidate codes: a non-regular `.lock` sibling whose leaf name
+  **is** an admitted canonical leaf is `STALE_REF_LOCK`, not `FOREIGN_REF`,
+  which is what the diagnosis bullet's mandate to report "its observed file
+  type" already presumes. That costs nothing, because the diagnosis is an
+  `fstatat` and the gate never opens the lock, so a non-regular residue is
+  reported without being entered.
 - Recovery is an operator action outside the gate, followed by a fresh run.
   The next run is not a continuation and inherits nothing from the terminated
   one.
@@ -2879,10 +2954,7 @@ raw discovery contract:
   normatively rather than leaving it implied, because the claim above rests on
   it: where both views observe the same name they must agree on the OID and on
   the direct-commit kind, and any disagreement is `FOREIGN_REF`; a name the
-  raw loose walk admits that `for-each-ref` omits is `FOREIGN_REF`, which is
-  the case a regular, canonically named leaf whose recorded OID names a missing
-  or non-commit object lands in — the omitted leaf types measured above never
-  reach this rule, because raw loose enumeration rejects them first; and a name
+  raw loose walk admits that `for-each-ref` omits is `FOREIGN_REF`; and a name
   `for-each-ref` reports
   with no corresponding loose file is admitted only as a packed direct commit
   ref, which is the one legitimate one-sided membership. Reuse this strict
@@ -2891,6 +2963,31 @@ raw discovery contract:
   symbolic refs cannot be treated as an empty namespace or disappear from
   drift evidence. Exact ref resolution, leaf replay, create-only no-deref CAS,
   and post-read OID revalidation retain their existing checks.
+- Record which condition actually reaches the omission clause, and route the
+  candidates that do not to the clauses they land in. Two rounds each named an
+  instantiation that measurement then showed unreachable, so settle it here
+  rather than naming a third. The fix-5 specification review measured on
+  `git version 2.43.0` that a regular, canonically named leaf whose recorded
+  OID names a missing object makes `git for-each-ref` exit 128 with a `fatal:`
+  line on stderr and empty stdout, under both the exact-ref and the
+  namespace-pattern selector, and that a leaf whose OID names a blob or a tree
+  is instead reported with that object type at exit 0. This round re-ran both
+  on the same Git version and observed the same results. Neither is an
+  omission: the missing-object case is caught by the preserved nonzero-exit and
+  any-stderr-byte conditions above before a union is ever formed, and the
+  non-commit case is caught by the kind-agreement clause, because
+  `for-each-ref` reports the name rather than dropping it. The condition that
+  does reach the omission clause was measured this round on the same Git: a
+  regular, canonically named leaf holding a valid commit OID that the raw walk
+  has already admitted, and that is unlinked before the `for-each-ref` of the
+  same snapshot runs, is dropped with exit 0, empty stdout, and empty stderr.
+  No preserved guard fires on that, so the omission clause is the only control
+  that rejects it. That concurrent-unlink race is therefore the instantiation
+  to write down and the one a regression must construct — the same mid-flight
+  injection technique this Plan already mandates between the two namespace
+  snapshots, applied to a deletion rather than a substitution. The clause is
+  reachable and load-bearing, not defence in depth, and no round may retire it
+  as vacuous.
 
 Write RED first with these exact focused methods:
 
@@ -2920,16 +3017,31 @@ Write RED first with these exact focused methods:
    noncanonical/direct-object leaf, and substitution between the two namespace
    snapshots without changing the victim or creating an outside ref. The FIFO
    case runs with a bounded join/timeout and proves discovery returns
-   `FOREIGN_REF` without blocking or opening the FIFO again.
+   `FOREIGN_REF` without blocking or opening the FIFO again. It also covers the
+   raw/union omission clause with the one condition measured to reach it: a
+   regular, canonically named leaf holding a valid commit OID, admitted by the
+   raw loose walk and then unlinked before the `for-each-ref` of that same
+   snapshot runs, using that snapshot's `for-each-ref` invocation as the
+   observable boundary — the same hooking technique the between-snapshots case
+   already uses. That invocation exits zero with empty stdout and empty stderr,
+   so no preserved nonzero-exit or stderr guard can fire, and the case must
+   fail `FOREIGN_REF` out of the omission clause specifically, with the victim,
+   outside-ref namespace, and object inventory unchanged. Do not substitute a
+   missing-object or non-commit-OID leaf for this case: measurement places
+   those in the nonzero-exit guard and the kind-agreement clause respectively,
+   so neither would exercise the clause under test.
 4. `test_evidence_ref_hazard_funnels_are_bounded_reaped_and_fail_closed`
    first proves a regular raw/direct snapshot succeeds, then pins the measured
    baseline with a direct out-of-gate `git for-each-ref` invocation in the
    fixture: with a FIFO at the canonical leaf, that invocation exits zero with
    empty stdout and empty stderr far inside the bound. That is a recorded
-   environment fact, not a gate outcome — through the gate such a leaf never
-   reaches `for-each-ref` at all, because raw loose enumeration rejects it
-   first. The test must not assert a timeout, a termination grace, or a reaped
-   child for that call, and must not assert that the omitted leaf is caught by
+   environment fact, not a gate outcome — a leaf of that type already present
+   when the raw loose enumeration runs never reaches `for-each-ref` through the
+   gate, because the raw walk rejects it first. A leaf substituted after the
+   raw walk has admitted the name is reached, and that is sub-case 2's path,
+   not this baseline's. The test must not assert a timeout, a termination
+   grace, or a reaped child for that call, and must not assert that the
+   omitted leaf is caught by
    raw/union disagreement. Each remaining sub-case must state either its own
    mid-flight injection point, which must be one this Plan's own ordering
    actually reaches, or — where this Plan's own sequences cannot produce the
@@ -2955,7 +3067,21 @@ Write RED first with these exact focused methods:
       `git update-ref --no-deref` exits on `SIGTERM` well inside one second, so
       the conditional kill normally never runs and asserting it would fail for
       a reason unrelated to the missing Step 0e contract. Assert the escalation
-      only in a sub-case that first proves its child survived `SIGTERM`.
+      only in a sub-case that first proves its child survived `SIGTERM`. Record
+      the consequence rather than leaving it silent: funnel 1 still requires the
+      0.5-second grace, the conditional kill, and the synchronous reap, and
+      these four methods leave that escalation branch unexercised. Making it
+      mandatory first requires establishing that a `SIGTERM`-surviving child is
+      reachable through this gate's own subprocess funnel, which is an open
+      reachability question of exactly the class that sank two earlier fixes;
+      round 4 must not invent a fixture for it on assumption. Name the
+      observation point for the process-group claim rather than leaving it to
+      the implementer: the fixture records the helper's descendant PIDs and
+      their process-group ID before the bound expires, then requires every
+      recorded PID gone and `os.killpg(pgid, 0)` to raise `ESRCH` after bound
+      plus grace. Where a sub-case's fixture cannot observe that group, it
+      asserts only the child absence and synchronous reap it can observe and
+      does not assert group targeting at all.
    3. **Create-only CAS.** To reach `update-ref --no-deref`, exact ref
       resolution must first report the ref absent, so inject the FIFO after
       that lookup returns absent and before the CAS runs, using the
@@ -2975,7 +3101,10 @@ Write RED first with these exact focused methods:
       inside the fixed evidence namespace, with no FIFO and no blocked child
       anywhere in the fixture. Run it in two variants — one zero-byte and one
       holding a full-width OID plus its terminal LF — to prove the
-      classification does not depend on byte size. A fresh run must diagnose
+      classification does not depend on byte size. De-chaining removed this
+      sub-case's inherited helper mode, so name it: run each variant in
+      `build-package`, which reaches `derive_attempt` and therefore the strict
+      namespace snapshot that classifies the residue. A fresh run must diagnose
       each as `STALE_REF_LOCK` rather than `FOREIGN_REF`, exit 1 with
       stderr-only diagnostics naming the literal lock path, and terminate.
       Assert that the
