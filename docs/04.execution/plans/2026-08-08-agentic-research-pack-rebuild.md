@@ -2404,7 +2404,7 @@ contract. Commit only this Plan with exact subject
 specification reviewer and a Python/security reviewer must return C0/I0/M0
 over that one-file range. That commit and its review pair are the superseded
 initial gate: the range is immutable, its review produced the `--bundle`
-finding recorded below, and the operative gate is now the fix-6 gate stated at
+finding recorded below, and the operative gate is now the fix-7 gate stated at
 the end of this subsection. The Task owns the actual review receipts. Package
 construction, package or ref consumption, Phase A, evidence-ref publication,
 deletion, lifecycle mutation, Task 12, remote actions, and push remain closed.
@@ -2487,14 +2487,34 @@ is assigned to.
 
 Correct only this Plan a sixth time from clean
 `a17281a85531c1a9986d35f9f063ed6bd4f1bfc5`. Commit exact subject
-`docs(plan): reconcile gate 9 omission claims`. Both fix-6
-independent re-reviews are `Not Run` until that one-file commit is dispatched;
-do not predict their verdicts. One fresh independent specification reviewer and
-one fresh independent Python/security reviewer must each return C0/I0/M0 over
-that one-file range before recovery round 4 may begin. No Plan-only fix
-consumes a Step 0e implementation round, so the implementation count remains
-three of five. Do not begin recovery round 4 or edit the Task, helper, or tests
-until both fix-6 re-reviews return C0/I0/M0. Package construction, package or
+`docs(plan): reconcile gate 9 omission claims`. Both fix-6 independent
+re-reviews are complete and both failed: the specification re-review returned
+Needs fixes C0/I2/M5 and the Python/security re-review returned Needs fixes
+C0/I3/M4. Both confirmed that fix-6 paid its principal debt — the
+concurrent-unlink instantiation of the raw/union omission clause is reachable,
+and each reviewer reproduced it independently on `git version 2.43.0` — and the
+Python/security re-review re-derived all five properties its fix-5 approval
+rested on as intact. Their five remaining Important findings are dispositioned
+by the fix-7 scope reduction below rather than repaired one by one.
+
+Correct only this Plan a seventh time. Commit exact subject
+`docs(plan): scope gate 9 to liveness and reviewer identity`. Fix-7 is not a
+seventh repair of the same material; it is a scope reduction, which the user
+approved on 2026-08-14 (Asia/Seoul). Six Plan-only corrections each closed
+their named defects while introducing roughly one new defect of the same class,
+and the Important-finding count ran four, eight, six, two, five — it reversed
+rather than converged, and the hardest failures were corrections repairing a
+defect a previous correction had introduced. Fix-7 therefore removes the class
+of obligation that produced those findings from this gate's passing
+requirements: it separates liveness from adversarial proof and keeps only
+liveness in the gate. Both fix-7 independent re-reviews are `Not Run` until
+that one-file commit is dispatched; do not predict their verdicts. One fresh
+independent specification reviewer and one fresh independent Python/security
+reviewer must each return C0/I0/M0 over that one-file range before recovery
+round 4 may begin. No Plan-only fix consumes a Step 0e implementation round, so
+the implementation count remains three of five. Do not begin recovery round 4
+or edit the Task, helper, or tests until both fix-7 re-reviews return C0/I0/M0.
+Package construction, package or
 ref consumption, Phase A, evidence-ref publication, real-index staging,
 deletion, lifecycle mutation, Task 12, remote actions, and push all remain
 closed.
@@ -2542,6 +2562,20 @@ and routes the two previously misassigned cases to the clauses they really
 land in. The remaining edits are text corrections to the same passage and to
 mandated RED method 4.
 
+Fix-7 moves no boundary and removes no implemented control. It changes what
+this gate requires for passage, not what the helper does. It separates the
+liveness obligations — the bounded funnels, the deadline mechanism, termination
+and reaping, the no-follow and regular-file checks, the index-guard ordering,
+the fail-closed terminal states, and the no-mutation property — from the
+obligation to prove a named adversarial substitution produces a named code, and
+keeps only the first kind in the gate's passing requirements. The second kind
+becomes a non-blocking robustness backlog with named items, stated in the
+hazard-class boundary below together with this gate's restated pass condition
+and the disposition of every outstanding fix-6 Important finding. Fix-7 also
+withdraws the two claims fix-6 introduced that its own re-reviewers measured to
+be unsatisfiable or self-contradictory, and replaces each with the honest
+residual rather than with a third attempt at the same claim.
+
 After the Plan-only gate passes, recovery round 4 uses a fresh more-capable
 implementer and modifies exactly these three files within the existing
 six-file ceiling:
@@ -2553,8 +2587,9 @@ six-file ceiling:
    concurrency, transport-ordering, dangling-loose-symref, canonical-ref, and
    stable-identity regressions.
 3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
-   for the actual immutable Plan correction/fix-1/fix-2/fix-3/fix-4/fix-5/fix-6
-   commit ranges and all seven independent review/re-review pairs, the round-3
+   for the actual immutable Plan
+   correction/fix-1/fix-2/fix-3/fix-4/fix-5/fix-6/fix-7
+   commit ranges and all eight independent review/re-review pairs, the round-3
    implementation
    findings, and round-4 RED/GREEN/full evidence with the new implementation
    reviews left `Not Run` until dispatch. No separate Task-only prerequisite
@@ -2606,6 +2641,138 @@ all. What changes is the standard a control in this class is held to. It is
 complete when the gate reaches a fail-closed verdict within a stated bound and
 leaves no unreaped child or unrecoverable residue, not when substitution is
 proved impossible.
+
+**Fix-7 pass condition — what this gate requires for passage:**
+
+Gate 9 passes when the Spec 137 pre-deletion gates are satisfied and the
+reviewer-identity attestation holds. Spec 137 requires, before deletion: every
+old file and every unique material claim mapped; every retained or corrected
+claim resolved to a reviewed new destination; every omission carrying a reason
+and preserved provenance; zero clickable old-pack references across tracked
+text outside the retiring directory; all thirty-six requirements and all
+fourteen scopes complete; independent reviews with zero unresolved Critical or
+Important findings; changed-document metadata and traceability passing,
+implementation alignment with no attributable finding and no increase over its
+pinned 184-finding predecessor, and the whole repository contract passing; the
+named LLM Wiki and security-readiness freshness checks passing with the
+commit-pinned target-surface manifest and summary unchanged; and the Task
+recording the before/after file manifest, deletion diff, recovery commit, and
+reviewer verdict. Spec 137 requires filesystem-substitution resistance nowhere;
+its Gate 9 clauses bound the evidence architecture — no scratch-directory,
+temporary-index, or linked-worktree projection, pathless content-addressed
+projection, sealed `memfd` manifests, one atomically published read-only
+bundle, and no mutation beyond appended objects and the create-only evidence-ref
+publication — and grant this Plan the executable schemas within that boundary.
+The substitution-proof obligations are this Plan's own addition, not a Spec
+requirement.
+
+To the Spec list this Plan adds exactly one further passing condition, the
+reviewer-identity attestation stated in Step 4, because that is the trust
+boundary this gate actually names: the controller's observed spawn result, the
+frozen assignment attestation echoed by both reviewers, and the
+content-addressed create-only evidence ref together prevent a reviewer role
+from being claimed by self-asserted receipt text. That principal can emit text
+only.
+
+Everything else the executable contract states is one of two kinds. Kept as
+passing requirements, each with the one sentence that justifies it, because
+each protects the gate from failing to reach a verdict even with no adversary
+present:
+
+- the three bounded execution funnels and their deadline mechanism, including
+  the `setitimer` armed before `open` — an unbounded gate is a hung gate, and a
+  stray leftover file causes that with no adversary at all;
+- funnel 1's termination, 0.5-second grace, conditional kill, and synchronous
+  reap — a gate that exits leaving a live or unreaped child has not finished;
+- `O_NOFOLLOW`, `O_NONBLOCK`, the `fstat`-before-read regular-file type checks,
+  and the index regular-file guard running before the first index-reading Git
+  invocation — each prevents a park or an unbounded read that would otherwise
+  hang the gate at a site it must pass through;
+- fail-closed terminal states on anything unexpected, including
+  `STALE_REF_LOCK` and `FOREIGN_REF` — a state the gate cannot classify must
+  never resolve in the gate's favour;
+- the entire no-mutation property, which Spec 137 requires directly and on
+  which the fix-5 Python/security approval rested.
+
+Moved out of the passing requirements and into the non-blocking robustness
+backlog below:
+
+- every obligation to _prove_ that a specific adversarial substitution produces
+  a specific code;
+- the RED sub-cases that inject FIFOs, symlinks, devices, or planted locks and
+  assert exact outcomes;
+- the raw/union omission classification claims, which three consecutive rounds
+  failed to state consistently;
+- the descriptor-slot requirement fix-6 introduced, which both fix-6 reviewers
+  measured to be unsatisfiable.
+
+State the reason for the split rather than leaving it to be inferred. An
+obligation to prove behaviour under an adversary who already holds total bypass
+is unbounded: this Plan itself names that adversary a concurrent same-UID
+actor, and such a principal can rewrite the helper that performs the checks,
+shadow `git` on the inherited `PATH`, or write the evidence ref, its objects,
+and the Task binding directly, so each proof closes one window out of an
+unbounded set while strictly easier total-bypass paths stay open. This Plan
+already concedes that no POSIX primitive closes that class. Six Plan-only
+rounds of iteration produced no convergence on it.
+
+This reclassification changes what the gate requires, not what the helper does.
+No implemented control is removed: every substitution control stated in this
+subsection remains mandatory in the executable contract, and the robustness
+backlog is a real backlog with named items rather than a discard. A review
+finding that names only a robustness-backlog item is recorded against that item
+and does not block passage.
+
+**Robustness backlog — named, owned by no round yet, and non-blocking:**
+
+- **R1 — omission-clause classification.** Which window a substituted or
+  concurrently removed leaf lands in, and which clause catches it, is unsettled.
+  Recorded observations, attributed to the reviews that produced them: the fix-5
+  and fix-6 specification reviews measured on `git version 2.43.0` that a
+  regular, canonically named leaf whose recorded OID names a missing object
+  makes `git for-each-ref` exit 128 with a `fatal:` line on stderr and empty
+  stdout under both selectors, and that a leaf whose OID names a blob or a tree
+  is reported with that object type at exit 0; the fix-6 Python/security review
+  added that the missing-object result is contingent on the mandated four-field
+  format. Both fix-6 re-reviews then found the fix-6 scoping still contradicted
+  this Plan's own snapshot ordering. Whichever round takes this item must
+  reconcile the scoped claim, the snapshot ordering, and the omission clause in
+  one statement; until then no round may assert any direction as settled.
+- **R2 — adversarial RED sub-cases.** Method 3's injection coverage and method 4
+  sub-cases 1 through 4, plus the FIFO half of sub-case 5, remain specified
+  below as the description of how to build them. They are not passing
+  requirements. The controls they exercise stay mandatory regardless.
+- **R3 — the descriptor bind window.** An alarm landing between the C-level
+  `open()` returning and the Python bind leaves one read-only `O_CLOEXEC`
+  descriptor unclosed until the fail-closed process exits. This is accepted as a
+  CPython/POSIX residue of the same class as the uninterruptible driver sleep
+  already conceded below. A round that takes this item may close it by
+  reconciling the open descriptor set at the funnel boundary, or by blocking
+  `SIGALRM` across the return-and-bind with an immediate monotonic-deadline
+  recheck after unblocking, and must state the residual cost of the choice it
+  makes. No round may record the window as closed while it is not.
+- **R4 — funnel-1 `SIGKILL` escalation coverage.** The 0.5-second grace, the
+  conditional kill, and the synchronous reap stay mandatory in the executable
+  contract. The escalation branch is unexercised by the four mandated methods.
+  This is a named, accepted coverage gap, not an unknown: the fix-6
+  Python/security review showed that the fixture's own generator-script writer
+  and `git` wrapper already reach a `SIGTERM`-surviving child through funnel 1.
+  A round that takes this item asserts grace expiry, `SIGKILL` delivered only to
+  the group this gate created, child absence, and synchronous reap, reusing the
+  process-group observation point already specified below.
+
+**Disposition of the five outstanding fix-6 Important findings:**
+
+No finding is dropped by this reclassification. Each is recorded here with
+where it now lives.
+
+| Finding                                                                                                            | Disposition                                                                                                                                               |
+| :----------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Specification I1 — scoped omission claim contradicts sub-case 2 and the new omission clause                        | Closed by removal from the gate's passing requirements. The contradictory sentences are deleted below; the classification obligation moves to R1.         |
+| Python/security I1 — the same passage contradicts the snapshot ordering and misdirects sub-case 2's fixture        | Closed by removal from the gate's passing requirements, by the same deletion. Sub-case 2 is an R2 backlog item; R1 owns the reconciliation.               |
+| Specification I2 — the descriptor-slot mandate cannot be satisfied                                                 | Closed by removal of the mandate. The residual is stated honestly below; closing it is R3.                                                                |
+| Python/security I2 — measurement shows CPython cannot satisfy the pre-syscall slot                                 | Closed by removal of the same mandate, on that measurement, attributed to that review. R3 owns any achievable mechanism.                                  |
+| Python/security I3 — the `SIGKILL` escalation branch ships mandatory and untested on a refuted reachability ground | Still open, and now stated as such. The false "open reachability question" ground is withdrawn below; the control stays mandatory and the gap becomes R4. |
 
 The round-4 implementation must apply this publication contract:
 
@@ -2714,13 +2881,16 @@ raw discovery contract:
   those omitted types that is already present when the raw loose enumeration
   runs never reaches `for-each-ref` through the gate: it is non-regular,
   symbolic, or otherwise inadmissible, and the raw walk rejects it as
-  `FOREIGN_REF` before any Git query is issued. A leaf substituted after the
-  raw walk has already admitted the name is a different case and is reached:
-  the second snapshot's `for-each-ref` and the exact-ref fallback's
-  `for-each-ref` both observe it, silently omit it, and fall through to `git
-symbolic-ref`, which is the path mandated RED method 4 sub-case 2 requires.
-  Either way the raw/union disagreement rule below is not what catches these
-  types; it governs only the residual one-sided membership cases stated there.
+  `FOREIGN_REF` before any Git query is issued. What becomes of a leaf
+  substituted _after_ the raw walk has already admitted the name — which
+  `for-each-ref` invocation observes it, and which clause catches it — is not a
+  passing requirement of this gate. Three consecutive rounds stated it
+  inconsistently, and both fix-6 re-reviews found the fix-6 statement still
+  contradicted this Plan's own snapshot ordering. That classification is
+  robustness-backlog item R1; no round may assert any direction as settled
+  until it is reconciled there, and the unsettled classification is not licence
+  to weaken the raw/union disagreement rule below, which stays normative
+  exactly as stated there.
 - Attach the bound to the execution funnels rather than to an enumerated
   command list. Exactly three funnels carry the obligation; no Gate 9 call
   site may reach a subprocess, a descriptor-opening read of an
@@ -2791,10 +2961,16 @@ symbolic-ref`, which is the path mandated RED method 4 sub-case 2 requires.
   two windows around the guarded region as well: the raising handler's
   exception must be caught at the funnel boundary and mapped to that site's
   fail-closed code even when it arrives after the guarded call has returned and
-  before the disarm, so a late alarm cannot surface as an unmapped traceback;
-  and the descriptor must be closed from a slot written before the syscall, so
-  an alarm that arrives between `open()` returning in C and the Python binding
-  completing still leaves the `finally` something to close.
+  before the disarm, so a late alarm cannot surface as an unmapped traceback.
+  Close the descriptor with the ordinary sentinel-slot-plus-`finally` idiom and
+  state the residual honestly instead of mandating a construction that cannot
+  produce the property it is stated to produce: the fix-6 Python/security
+  review measured on CPython 3.12.3 that an alarm arriving between `open()`
+  returning in C and the Python bind leaves the pre-written slot still holding
+  its sentinel, so one read-only `O_CLOEXEC` descriptor stays unclosed until
+  the fail-closed process exits. That residue is accepted, is
+  robustness-backlog item R3, and is not a passing requirement of this gate; no
+  round may record the window as closed while it is not.
   `poll()` cannot serve that purpose: it needs
   a descriptor, so it cannot be entered until `open()` has already returned,
   and for the only file type that survives the `fstat` check — a regular file —
@@ -2963,33 +3139,32 @@ symbolic-ref`, which is the path mandated RED method 4 sub-case 2 requires.
   symbolic refs cannot be treated as an empty namespace or disappear from
   drift evidence. Exact ref resolution, leaf replay, create-only no-deref CAS,
   and post-read OID revalidation retain their existing checks.
-- Record which condition actually reaches the omission clause, and route the
-  candidates that do not to the clauses they land in. Two rounds each named an
-  instantiation that measurement then showed unreachable, so settle it here
-  rather than naming a third. The fix-5 specification review measured on
-  `git version 2.43.0` that a regular, canonically named leaf whose recorded
-  OID names a missing object makes `git for-each-ref` exit 128 with a `fatal:`
-  line on stderr and empty stdout, under both the exact-ref and the
-  namespace-pattern selector, and that a leaf whose OID names a blob or a tree
-  is instead reported with that object type at exit 0. This round re-ran both
-  on the same Git version and observed the same results. Neither is an
-  omission: the missing-object case is caught by the preserved nonzero-exit and
-  any-stderr-byte conditions above before a union is ever formed, and the
-  non-commit case is caught by the kind-agreement clause, because
-  `for-each-ref` reports the name rather than dropping it. The condition that
-  does reach the omission clause was measured this round on the same Git: a
-  regular, canonically named leaf holding a valid commit OID that the raw walk
-  has already admitted, and that is unlinked before the `for-each-ref` of the
-  same snapshot runs, is dropped with exit 0, empty stdout, and empty stderr.
-  No preserved guard fires on that, so the omission clause is the only control
-  that rejects it. That concurrent-unlink race is therefore the instantiation
-  to write down and the one a regression must construct — the same mid-flight
-  injection technique this Plan already mandates between the two namespace
-  snapshots, applied to a deletion rather than a substitution. The clause is
-  reachable and load-bearing, not defence in depth, and no round may retire it
-  as vacuous.
+- Keep the omission clause normative and do not retire it as vacuous. Its
+  reachability was contested across three rounds; the fix-6 specification and
+  Python/security re-reviews each measured independently on
+  `git version 2.43.0` that a regular, canonically named leaf holding a valid
+  commit OID that the raw walk has already admitted, and that is unlinked
+  before the `for-each-ref` of the same snapshot runs, is dropped with exit 0,
+  empty stdout, and empty stderr, so no preserved guard fires on it. Those are
+  recorded observations of those reviews. Classifying every other candidate
+  condition against this clause, and mandating a regression that constructs
+  one, are robustness-backlog items R1 and R2 rather than passing requirements:
+  the clause's job in this contract is to fail closed on a one-sided raw/union
+  membership the contract does not otherwise admit, and it does that whatever
+  produced the membership.
 
-Write RED first with these exact focused methods:
+Write RED first with these exact focused methods. Fix-7 scopes which of them
+round 4 must satisfy for passage. Gate-blocking RED is methods 1 and 2, method
+3's non-injection coverage, method 4's opening proof that a regular raw/direct
+snapshot succeeds, and sub-case 5's index-guard ordering assertion. The
+sub-cases that inject a FIFO, a symlink, a device, a mid-flight substitution or
+unlink, or a planted lock and then assert an exact outcome — method 3's
+injection coverage and method 4 sub-cases 1 through 4 plus the FIFO half of
+sub-case 5 — are robustness-backlog items R1 and R2. Their text below remains
+the specification of how to build them, round 4 may implement them, and a
+finding filed only against one of them does not block passage. This scoping
+removes no control: everything those sub-cases exercise stays mandatory in the
+executable contract above.
 
 1. Rename
    `test_atomic_bundle_writer_rejects_late_directory_entry_substitution` to
@@ -3037,9 +3212,10 @@ Write RED first with these exact focused methods:
    empty stdout and empty stderr far inside the bound. That is a recorded
    environment fact, not a gate outcome — a leaf of that type already present
    when the raw loose enumeration runs never reaches `for-each-ref` through the
-   gate, because the raw walk rejects it first. A leaf substituted after the
-   raw walk has admitted the name is reached, and that is sub-case 2's path,
-   not this baseline's. The test must not assert a timeout, a termination
+   gate, because the raw walk rejects it first. Where a leaf substituted after
+   the raw walk has admitted the name is observed, and which clause catches it,
+   is the classification fix-7 moved to robustness-backlog item R1; do not
+   restate it here as settled. The test must not assert a timeout, a termination
    grace, or a reaped child for that call, and must not assert that the
    omitted leaf is caught by
    raw/union disagreement. Each remaining sub-case must state either its own
