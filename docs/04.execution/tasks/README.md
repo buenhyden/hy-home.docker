@@ -170,6 +170,7 @@ docs/04.execution/tasks/
 ├── 2026-07-26-agent-governance-canonical-convergence.md # Active agent-governance canonical convergence evidence ledger
 ├── 2026-08-08-agentic-research-pack-rebuild.md # Active source-backed agentic research pack rebuild evidence ledger
 ├── 2026-08-11-agentic-research-pack-source-refresh.md # Active in-place source refresh evidence ledger for the canonical pack
+├── 2026-08-14-agentic-research-pack-deepening.md # Active in-place analytical deepening evidence ledger for the canonical pack
 ├── 2026-07-06-security-automation-readiness-snapshot.md # Completed security automation readiness snapshot evidence
 ├── 2026-07-06-audit-implementation-matrix-snapshot.md # Completed audit implementation matrix snapshot evidence
 ├── 2026-07-06-sdlc-document-contract-corpus-normalization.md # Completed SDLC document contract corpus normalization evidence
@@ -277,6 +278,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agent Governance Canonical Convergence Task (active)**: [2026-07-26-agent-governance-canonical-convergence.md](./2026-07-26-agent-governance-canonical-convergence.md)
 - **Agentic Engineering Research Pack Rebuild Task (active)**: [2026-08-08-agentic-research-pack-rebuild.md](./2026-08-08-agentic-research-pack-rebuild.md)
 - **Agentic Engineering Research Pack Source Refresh Task (active)**: [2026-08-11-agentic-research-pack-source-refresh.md](./2026-08-11-agentic-research-pack-source-refresh.md)
+- **Agentic Engineering Research Pack Deepening Task (active)**: [2026-08-14-agentic-research-pack-deepening.md](./2026-08-14-agentic-research-pack-deepening.md)
 - **Audit Implementation Matrix Snapshot Task**: [2026-07-06-audit-implementation-matrix-snapshot.md](./2026-07-06-audit-implementation-matrix-snapshot.md)
 - **SDLC Document Contract Corpus Normalization Task**: [2026-07-06-sdlc-document-contract-corpus-normalization.md](./2026-07-06-sdlc-document-contract-corpus-normalization.md)
 - **Workspace Support Surface Contract Task**: [2026-07-05-workspace-support-surface-contract.md](./2026-07-05-workspace-support-surface-contract.md)
