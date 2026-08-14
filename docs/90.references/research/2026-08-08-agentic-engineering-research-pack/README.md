@@ -124,22 +124,22 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 [Verification and validation](./verification-validation.md)을 cross-cutting route로
 함께 사용하며, 이것은 열다섯 번째 scope를 만들지 않습니다.
 
-| Scope          | First pack route                                            | Adoption boundary                                                           |
-| -------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `agentic`      | [Agentic Engineering](#agentic-engineering)                 | catalog, harness, loop, instruction, model, memory의 primary analysis scope |
-| `architecture` | [SDLC and Documentation](#sdlc-and-documentation)           | enum-only scope이며 현재 concrete catalog adoption을 추론하지 않음          |
-| `backend`      | [Foundation](#foundation)                                   | explicit no-current-profile disposition; backend runtime을 추론하지 않음    |
-| `common`       | [Agentic Engineering](#agentic-engineering)                 | shared policies/functions와 provider projection을 구분                      |
-| `docs`         | [SDLC and Documentation](#sdlc-and-documentation)           | lifecycle owner와 reader-mode map을 구분                                    |
-| `entry`        | [Infrastructure and Security](#infrastructure-and-security) | entry boundary와 runtime evidence를 구분                                    |
-| `frontend`     | [Delivery and Quality](#delivery-and-quality)               | explicit no-current-profile disposition; UI implementation을 추론하지 않음  |
-| `infra`        | [Infrastructure and Security](#infrastructure-and-security) | Compose/configured state와 live state를 구분                                |
-| `meta`         | [SDLC and Documentation](#sdlc-and-documentation)           | metadata/discovery layer이며 generated freshness를 추론하지 않음            |
-| `mobile`       | [Foundation](#foundation)                                   | explicit no-current-profile disposition; mobile adoption을 추론하지 않음    |
-| `ops`          | [Infrastructure and Security](#infrastructure-and-security) | operations contract, config, runtime evidence를 분리                        |
-| `product`      | [SDLC and Documentation](#sdlc-and-documentation)           | requirement/decision ownership은 active lifecycle stage에 유지              |
-| `qa`           | [Delivery and Quality](#delivery-and-quality)               | configured, selected, executed, passed, enforced 상태를 분리                |
-| `security`     | [Infrastructure and Security](#infrastructure-and-security) | secret values와 formal conformance를 이 pack에서 주장하지 않음              |
+| Scope          | First pack route                                            | Adoption boundary                                                                   |
+| -------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `agentic`      | [Agentic Engineering](#agentic-engineering)                 | catalog, harness, loop, instruction, model, memory의 primary analysis scope         |
+| `architecture` | [SDLC and Documentation](#sdlc-and-documentation)           | enum 안이지만 agent record 없이 function 2개만 보유; 두 owner 모두 타 scope 소속    |
+| `backend`      | [Foundation](#foundation)                                   | enum 밖이며 tracked surface도 없음; backend runtime을 추론하지 않음                 |
+| `common`       | [Agentic Engineering](#agentic-engineering)                 | shared policies/functions와 provider projection을 구분                              |
+| `docs`         | [SDLC and Documentation](#sdlc-and-documentation)           | lifecycle owner와 reader-mode map을 구분                                            |
+| `entry`        | [Infrastructure and Security](#infrastructure-and-security) | entry boundary와 runtime evidence를 구분                                            |
+| `frontend`     | [Delivery and Quality](#delivery-and-quality)               | enum 밖이지만 tracked Storybook surface 존재; 일반 product frontend는 추론하지 않음 |
+| `infra`        | [Infrastructure and Security](#infrastructure-and-security) | Compose/configured state와 live state를 구분                                        |
+| `meta`         | [SDLC and Documentation](#sdlc-and-documentation)           | metadata/discovery layer이며 generated freshness를 추론하지 않음                    |
+| `mobile`       | [Foundation](#foundation)                                   | enum 밖이며 tracked surface도 없음; mobile adoption을 추론하지 않음                 |
+| `ops`          | [Infrastructure and Security](#infrastructure-and-security) | operations contract, config, runtime evidence를 분리                                |
+| `product`      | [SDLC and Documentation](#sdlc-and-documentation)           | requirement/decision ownership은 active lifecycle stage에 유지                      |
+| `qa`           | [Delivery and Quality](#delivery-and-quality)               | configured, selected, executed, passed, enforced 상태를 분리                        |
+| `security`     | [Infrastructure and Security](#infrastructure-and-security) | secret values와 formal conformance를 이 pack에서 주장하지 않음                      |
 
 ## Current State and Gaps
 
@@ -149,9 +149,14 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   evidence로 유지되고, REQ-36과 21/20/36 current contract는 Task 9a가 별도
   logical unit으로 구현합니다. REQ-34 route/generated cleanup의 원래 20-file
   결과는 Task 10, REQ-35 final review와 handoff는 Task 12가 소유합니다.
-- 14개 normative scope는 모두 disposition을 가집니다. `architecture`는
-  enum-only이고 `backend`, `docs`, `entry`, `frontend`, `meta`, `mobile`은
-  catalog enum 밖의 명시적 scope입니다.
+- 14개 normative scope는 모두 disposition을 가집니다. 2026-08-14 재도출은
+  reachability를 3분류가 아닌 4분류로 정정했습니다. `agentic`, `common`, `docs`,
+  `infra`, `ops`, `qa`, `security`는 enum 안에서 agent와 function record를 모두
+  가지고, `architecture`는 enum 안이지만 agent 없이 function 2개만 가지며,
+  `entry`, `frontend`, `meta`, `product`는 enum 밖이되 tracked subject surface가
+  존재하고, `backend`와 `mobile`만 enum 밖이면서 tracked surface가 없습니다.
+  정확한 근거와 per-scope 수치는 [scope matrix](./scope-application-matrix.md)가
+  소유합니다.
 - provider runtime acceptance와 entitlement, remote GitHub enforcement,
   deployment/live Compose 상태는 검증되지 않았습니다. delivery promotion,
   typed memory lifecycle, catalog reachability, backup/SLO/port ownership에도
@@ -207,9 +212,15 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   old-pack 삭제 gate는 Task 11이 소유합니다.
 - 2026-08-11에 별도 source-refresh Task가 20개 leaf를 in-place로 재검증했습니다.
   pack의 21-file/20-leaf 구성, 14-scope 축, 36개 requirement destination은 바뀌지
-  않았습니다. 갱신된 leaf는 `reviewed_at: 2026-08-11`을 가지며, 변경 없이 재검증만
-  통과한 leaf는 `2026-08-08`을 유지합니다. 두 날짜 모두 현재 유효한 검토 상태이고,
-  refresh evidence는 [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)가
+  않았습니다. refresh evidence는 [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)가
+  소유합니다.
+- 2026-08-14에 별도 deepening Task가 20개 leaf 전체를 in-place로 심화했습니다.
+  외부 source를 다시 조사하고 각 scope의 tracked evidence를 leaf 산문에서
+  상속하지 않고 직접 재도출했습니다. pack의 21-file/20-leaf 구성, 14-scope 축,
+  36개 requirement destination, leaf `status: draft`는 모두 그대로입니다.
+  20개 leaf 전부가 `reviewed_at: 2026-08-14`를 가지며, deepening evidence와
+  재도출 과정에서 확인된 correction은
+  [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)가
   소유합니다.
 
 ## Related Documents
@@ -219,5 +230,6 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
 - [Implementation Plan](../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Execution Task](../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
 - [Source refresh Task](../../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)
+- [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)
 - [Stage authoring matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)
 - [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
