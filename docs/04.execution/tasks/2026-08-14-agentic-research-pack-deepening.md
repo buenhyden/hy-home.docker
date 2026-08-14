@@ -677,6 +677,53 @@ records the observed `selected`/`violations` counts before staging.
   and the security dimension are now all settled; what remains is internal
   consistency of two statements.
 
+- Plan fix-6 outcome and the convergence reversal, recorded 2026-08-14.
+  Committed as `a108d697`; metadata, traceability, and the repository contract
+  passed. Specification re-review returned `Needs fixes; C0/I2/M5`;
+  Python/security returned `Needs fixes; C0/I3/M4`, a regression from the
+  approval fix-5 had earned.
+
+  What fix-6 achieved. The reachability question it was sent to answer resolved
+  in its favour. Both reviewers independently reproduced the git 2.43.0
+  measurements and confirmed the concurrent-unlink instantiation is genuinely
+  reachable and correctly routed. All five properties the fix-5 security approval
+  rested on were verified intact.
+
+  Why the round still failed. Both reviewers independently reached the same I1:
+  the scoped omission claim contradicts sub-case 2's post-both-snapshots
+  injection point and contradicts the omission bullet fix-6 itself added. This is
+  the third consecutive round in which this one claim has failed. The reviewers'
+  measurements indicate the claim is not merely mis-scoped but false, because a
+  substitution landing inside a snapshot is caught by the omission clause.
+
+  Both also found an unsatisfiable mandate that fix-6 introduced while repairing
+  a Minor: closing a descriptor from a slot written before the syscall cannot be
+  done, because the descriptor does not exist until `os.open()` returns. The
+  Python/security reviewer measured the mandated idiom leaking in 21,299 of
+  1,183,187 iterations with zero landing in the assumed state. Its security
+  consequence is nil; the defect is that an unsatisfiable requirement entered an
+  evidence contract.
+
+  Two further signals. The reviewers reached opposite verdicts on whether the
+  unfixed `SIGKILL` Minor was a sound judgement or an unjustified gap, with the
+  Python/security reviewer naming two existing test mechanisms that produce the
+  needed child without assumption. And a Minor records that the missing-object
+  `exit 128` measurement fix-5 and fix-6 both relied on is format-dependent,
+  returning exit 0 with the refname printed under a different `--format`.
+
+  Convergence trend across the Plan-only gate, by total Important findings:
+  fix-2 four, fix-3 eight, fix-4 six, fix-5 two, fix-6 five. The trend reversed.
+  The observable pattern across all six rounds is that each correction closes its
+  named defects and introduces approximately one new defect of the same class,
+  and that the corrections which failed hardest were those repairing a defect a
+  previous correction had introduced.
+
+  This matches the prediction recorded in the gate redesign review: a defence
+  whose own specification concedes impossibility under POSIX cannot terminate by
+  iteration. Six Plan-only rounds have now been consumed without opening
+  recovery round 4, and Plan-only rounds do not consume implementation rounds, so
+  the loop has no breaker of its own.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
