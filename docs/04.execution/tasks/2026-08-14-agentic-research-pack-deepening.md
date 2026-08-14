@@ -254,6 +254,10 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | G5 Infrastructure and security | `scripts/validation/validate-docker-compose.sh` executed by the cluster agent | Default mode PASS at `services_total=5`; `--preflight` FAILED on four missing bind-mount directories and two missing external networks |
 | 2026-08-14 | G5 Infrastructure and security | `scripts/validation/generate-security-automation-readiness.sh` re-executed read-only by the cluster agent | Readiness re-derived at current HEAD rather than inherited |
 
+| 2026-08-14 | G4 Delivery and quality | Changed-document metadata against `8c3f0fce` | `selected=3 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | G4 Delivery and quality | `UNVERIFIED` marker census across the three owned leaves | 15 in quality, 12 in verification and validation, 6 in automation |
+| 2026-08-14 | G4 Delivery and quality | External source retrieval | Six new sources cited; `iso.org` refused retrieval with HTTP 403 for a second dated attempt; an FDA source failed both routes and was dropped rather than cited unseen |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
