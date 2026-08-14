@@ -129,6 +129,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/execution-stage-legacy-debt.md](../../00.agent-governance/memory/execution-stage-legacy-debt.md) | Markdown reference |
 | [docs/00.agent-governance/memory/governance-memory-usage-contract.md](../../00.agent-governance/memory/governance-memory-usage-contract.md) | Markdown reference |
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
+| [docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md](../../00.agent-governance/memory/ignored-sdd-scratch-deletion.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
 | [docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md](../../00.agent-governance/memory/stage-docs-lifecycle-audit.md) | Markdown reference |
 | [docs/00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md) | Markdown reference |
@@ -628,6 +629,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-07-28-target-surface-delta-convergence.md](../../04.execution/tasks/2026-07-28-target-surface-delta-convergence.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-08-07-agentic-research-pack-extension.md](../../04.execution/tasks/2026-08-07-agentic-research-pack-extension.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md](../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md](../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md](../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

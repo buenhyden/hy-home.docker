@@ -69,7 +69,7 @@ branch `docs/agentic-research-pack-deepening`.
   pack. Its deletion gate remains owned by Task 11 and is executed in that
   ledger, not here.
 - Modifying Spec 137, its Plan, Task 10b, Task 11, or the 2026-08-11 refresh Task.
-- Regenerating LLM Wiki output or editing LLM Wiki generators.
+- Editing LLM Wiki generators, or hand-editing any generated artifact.
 - Runtime, remote, push, pull request, or merge actions.
 
 ## Scope and Change Boundaries
@@ -81,13 +81,16 @@ branch `docs/agentic-research-pack-deepening`.
 - `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
 - `docs/04.execution/tasks/README.md` (task index row)
 - `docs/00.agent-governance/memory/current.md` (bounded handoff refresh)
+- `docs/90.references/llm-wiki/llm-wiki-index.md` and
+  `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`,
+  through their generators only, never by hand
 
 ### Forbidden paths
 
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`
 - `docs/03.specs/`, `docs/04.execution/plans/`
 - `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`
-- `docs/90.references/llm-wiki/`, `llms.txt`, and their generators
+- `llms.txt`, all LLM Wiki generators, and every other generated artifact
 - `infra/`, `secrets/`, any credential-bearing surface
 
 ### Compose impact
@@ -278,6 +281,12 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | G1 Foundation | Governance contract validator run by the cluster agent | `PASS contracts=3 agents=14 functions=24 providers=3 failures=0` and `PASS mode=repository failures=0` |
 | 2026-08-14 | G1 Foundation | Governance test suite run by the cluster agent | 159 tests, `OK` |
 
+| 2026-08-14 | Index reconciliation | Changed-document metadata against `4f37f0c1` | `selected=4 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | Generated route | `generate-llm-wiki-index.sh --check` before regeneration | FAIL, stale |
+| 2026-08-14 | Generated route | `generate-llm-wiki-coverage.sh --check` before regeneration | FAIL, stale |
+| 2026-08-14 | Generated route | Path-set comparison of the regenerated index against `HEAD` | 1,064 to 1,067 paths; exactly three additions and zero removals |
+| 2026-08-14 | Generated route | Both generators re-run, then `--check` re-run | Both PASS, fresh; coverage safe tracked source paths moved 1,338 to 1,341 |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
@@ -381,6 +390,22 @@ records the observed `selected`/`violations` counts before staging.
 
 - Leaf `status` promotion from `draft` to `active` is deferred. Deepening changes
   leaf content, not the pack's publication state.
+
+- The generated LLM Wiki index was already stale before this Task began. Of the
+  three paths the regeneration adds, only
+  `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md` belongs
+  to this Task. The other two,
+  `docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md` and
+  `docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md`, were created
+  by earlier work that did not refresh the generated route.
+
+  The generators rebuild the whole index, so a partial refresh limited to this
+  Task's own path is not available. This Task therefore corrects the pre-existing
+  omission as an unavoidable consequence of running the generator, records it
+  here rather than presenting it as its own change, and hand-edits nothing. The
+  original Task boundary that excluded generated artifacts was wrong for a Task
+  that adds a tracked document, and it was corrected in place rather than
+  worked around.
 
 ### Blocked items
 
