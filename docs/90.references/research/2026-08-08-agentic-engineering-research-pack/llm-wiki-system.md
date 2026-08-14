@@ -265,6 +265,16 @@ the current committed outputs and the Stage 04 Task ledger's Task 9a PASS
 entry, but did not itself execute either `--check` command; a task authorized
 to run the generators still owes the next live confirmation.
 
+One cited path has a known expiry. The maintenance policy is cited at
+`docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`, which is
+correct on this branch. The unmerged `codex/sdlc-taxonomy-convergence` branch
+consolidates that subject's guide, policy, and runbook into a single
+`docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/`
+directory with the role carried by the file name. Re-resolve this link, and any
+generated route that indexes it, when that convergence merges. See the
+operations path convergence entry in
+[SDLC document roles](./sdlc-document-roles.md) for the full mapping.
+
 ## Related Documents
 
 - [Verification and validation](./verification-validation.md)
