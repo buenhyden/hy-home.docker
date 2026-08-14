@@ -249,6 +249,11 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | Validation environment | `python3 -m venv --system-site-packages /tmp/agentic-research-validation-venv` then `pip install -r scripts/requirements.txt` | `html5lib` 1.1, `PyYAML`, and `markdown-it-py` importable                                            |
 | 2026-08-14 | Ledger creation        | `check-repo-contracts.sh` with the prepared interpreter on `PATH`                                                             | `failures=0`, PASS: repository Docker/docs contracts are synchronized                                |
 
+| 2026-08-14 | G5 Infrastructure and security | Changed-document metadata against `c68985be` | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | G5 Infrastructure and security | Secret-pattern scan of both owned leaves | 0 matches in each file |
+| 2026-08-14 | G5 Infrastructure and security | `scripts/validation/validate-docker-compose.sh` executed by the cluster agent | Default mode PASS at `services_total=5`; `--preflight` FAILED on four missing bind-mount directories and two missing external networks |
+| 2026-08-14 | G5 Infrastructure and security | `scripts/validation/generate-security-automation-readiness.sh` re-executed read-only by the cluster agent | Readiness re-derived at current HEAD rather than inherited |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results

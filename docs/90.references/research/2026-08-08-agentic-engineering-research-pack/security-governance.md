@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:security-governance
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-11
+reviewed_at: 2026-08-14
 review_cycle: on-source-change
 ---
 
@@ -160,6 +160,51 @@ reproduces. This reference does not certify the readiness snapshot as a
 vulnerability assessment or security certification, and it does not observe
 whether Task 10 as a whole has been separately closed.
 
+### Re-verification at current HEAD (2026-08-14)
+
+This leaf's 2026-08-11 re-verification cited commit `5580931`. At today's HEAD
+`ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` (no `.github/workflow-contract.yml`,
+`.github/workflows/**`, or readiness-generator change occurred between the two
+commits per `git log --oneline 5580931..HEAD -- .github scripts/validation/generate-security-automation-readiness.sh`
+returning zero commits touching those paths for this generator), the readiness
+generator was re-executed directly rather than re-read from the prior
+snapshot: `bash scripts/validation/generate-security-automation-readiness.sh
+--check` again exits 0 (`PASS: ... snapshot is fresh`), and `--dry-run`
+reports the identical 11 Implemented / 1 Partially Implemented
+(`SEC-AUTO-007`, branch protection) / 1 Gap (`SEC-AUTO-012`, broad dependency
+SCA) split over 7 workflows, 37 scripts, `.pre-commit-config.yaml`, and 54
+reachable typed gates. Separately, a direct re-scan of every `uses:` line
+across `.github/workflows/*.yml` (Python regex over 7 files, not `rg`, to
+avoid a local shell-alias artifact) finds exactly 17 `uses:` invocations
+referencing 8 distinct actions, each pinned to a full 40-character commit SHA:
+`actions/checkout` (4), `actions/setup-python` (4), `actions/setup-node` (3),
+`actions/first-interaction` (2), `astral-sh/setup-uv` (1),
+`github/codeql-action/upload-sarif` (1), `actions/labeler` (1), and
+`actions/stale` (1). Cross-referencing `.github/workflow-contract.yml`'s
+`actions` registry confirms the same 8 action identities and the same SHA for
+each (for example `actions/checkout` at `3d3c42e5aac5ba805825da76410c181273ba90b1`);
+the registry's own `consumers` arrays list 12 file-level pairs because several
+actions are invoked more than once within a single workflow file (e.g.
+`actions/setup-python` has 2 registered consumer files but 4 literal `uses:`
+occurrences). This is a second, independently derived confirmation of the
+17/8 action-pin claim, not a restatement of it, and it still does not observe
+whether GitHub's hosted runs, branch protection, or ruleset enforcement
+matches the tracked declaration — that remains `UNVERIFIED` under
+`SEC-AUTO-007`.
+
+`.github/CODEOWNERS` and `.github/rulesets/main-protection.md` were also read
+directly today. CODEOWNERS assigns a single owner (`@buenhyden`) across `*`
+and explicit high-value paths (`infra/**`, `scripts/**`, `secrets/**`,
+`docs/00.agent-governance/**`, and the provider-adapter directories);
+`main-protection.md` states its own observation boundary explicitly —
+"Authenticated current ruleset, branch-protection, required-check, review,
+environment, and repository-setting readback is unavailable... this proposal
+does not infer applied remote state from tracked files or public workflow
+metadata" — and lists the sixteen CI Quality Gates job names it proposes as
+required checks. Both files are consistent with `SEC-AUTO-007`'s classification:
+local, tracked branch-protection *intent* exists; live GitHub enforcement of
+that intent is not observable from this workspace and is not asserted here.
+
 ### Secure SDLC and supply-chain interpretation
 
 NIST SSDF 1.1 supplies high-level practices to prepare the organization,
@@ -180,6 +225,85 @@ The OpenSSF repository is mutable. Its `main` ref was resolved at retrieval to
 `40c1e35996730d4fdcbdb2e6a23917a2467e29b7`, and the immutable commit page was
 verified. Conclusions use that exact revision, not mutable `main` as fixed
 evidence.
+
+### Image signing and build-provenance mechanisms versus current state
+
+The brief axis for this leaf names "container image signing and provenance"
+explicitly; the predecessor leaf named the tool capability
+(digest-pinned cosign) but not the verification mechanism. Two official
+mechanisms apply, re-derived today from Sigstore and SLSA primary
+documentation rather than repeated from a prior leaf:
+
+- **cosign signature verification** (`docs.sigstore.dev/cosign/verifying/verify/`,
+  retrieved 2026-08-14) checks three things: the cryptographic signature over
+  the artifact digest; for keyless signing, that the signing certificate's
+  identity and issuer match an expected value, anchored to Sigstore's Fulcio
+  CA and transparency log as the trust root (for key-based signing, the trust
+  root is whatever public key or KMS reference the operator supplies); and
+  that the signed payload's embedded digest matches the container actually
+  being verified. A passing `cosign verify` proves the artifact matches the
+  signed digest and who signed it — it does **not** prove the artifact is
+  vulnerability-free, that the signer is trustworthy beyond identity, or
+  anything about code quality.
+- **SLSA v1.2 build provenance** (`slsa.dev/spec/v1.2/build-provenance`,
+  retrieved 2026-08-14) is a distinct, complementary mechanism: an in-toto
+  attestation predicate (`https://slsa.dev/provenance/v1`) with a
+  `buildDefinition` (`buildType`, `externalParameters`, `internalParameters`,
+  `resolvedDependencies` — the declared build inputs) and `runDetails`
+  (`builder.id`, the sole determiner of SLSA Build level; `builder.version`;
+  `metadata` timestamps; `byproducts`). A consumer verifies provenance by
+  checking `builder.id` against an accepted signer-builder pair, checking
+  `externalParameters` against expected values, and verifying
+  `resolvedDependencies` digests — this proves the artifact was built by a
+  named, trusted platform from named, digest-pinned inputs; it does not by
+  itself prove the artifact is signed, unless the builder also produces a
+  signature over the provenance.
+
+Both mechanisms are distinct from, and strictly stronger than, this
+repository's current tracked evidence. The re-derived facts above (image
+declaration parity: 20 `declared-pinned` plus 4 registered floating
+exceptions; zero literal `:latest` tags; one untagged-but-registered image)
+establish only that a Compose file names a specific tag or digest reference —
+not that a signature was verified against a trust root, and not that a
+build-provenance attestation was checked against a `builder.id`. The
+`verify-sample-service-supply-chain.sh` script (`infra/supply-chain.cosign-offline-signing-config.json`,
+`infra/supply-chain.cosign-offline-trusted-root.json`) demonstrates the
+mechanism is understood and locally exercisable — its `--fixture-only` mode
+pins exact `alpine:3.21` and `nginxinc/nginx-unprivileged` build/runtime
+materials by repo digest and target-descriptor digest — but this remains a
+sample-service rehearsal, not evidence that any of the 47 tracked infra
+Compose variants' 137 image declarations carry a verified signature or a
+checked SLSA provenance attestation. That gap is unchanged from the
+predecessor's classification (`SBOM/scan/sign/Scorecard capability`:
+Partially Implemented, local and sample-scoped).
+
+### CI/CD pipeline risk mapping (OWASP Top 10 CI/CD Security Risks)
+
+OWASP's Top 10 CI/CD Security Risks project (`owasp.org/www-project-top-10-ci-cd-security-risks/`,
+retrieved 2026-08-14; v1.0, initial release September 2022, stable release
+October 2022) is a new external source for this leaf, not cited by the
+predecessor. Mapping its ten categories against this workspace's tracked CI
+surface (`.github/workflows/*.yml`, `.github/workflow-contract.yml`) gives a
+risk-shaped view the control-map table above does not:
+
+| CICD-SEC risk | Category | Tracked workspace disposition |
+| --- | --- | --- |
+| 1 | Insufficient Flow Control Mechanisms | Seven workflows declare top-level `permissions`; branch-protection *intent* is tracked in `.github/rulesets/main-protection.md` but live enforcement is `UNVERIFIED` (`SEC-AUTO-007`). |
+| 2 | Inadequate Identity and Access Management | Single CODEOWNERS principal (`@buenhyden`) across all listed protected paths; no tracked evidence of scoped per-path bot/service identities. |
+| 3 | Dependency Chain Abuse | Dependabot (`SEC-AUTO-004`, Implemented) plus scoped npm audit; broad multi-ecosystem SCA is the one tracked Gap (`SEC-AUTO-012`). |
+| 4 | Poisoned Pipeline Execution (PPE) | All 17 tracked `uses:` action references are pinned to full 40-character commit SHAs (re-verified today), which forecloses the tag-mutation variant of PPE for registered actions; no tracked evidence rules out script-injection PPE via untrusted workflow inputs. |
+| 5 | Insufficient PBAC (Pipeline-Based Access Controls) | Workflow permissions are declared per-workflow; no tracked environment-protection-rule evidence was found for this leaf's re-survey. |
+| 6 | Insufficient Credential Hygiene | Gitleaks (`.gitleaks.toml`, extends the upstream default ruleset) plus the file-based Docker Secrets contract; secret rotation cadence is not tracked (unchanged finding). |
+| 7 | Insecure System Configuration | Eleven-tier hardening script PASS is the closest tracked control; it is selected-assertion evidence, not full runner/registry configuration audit. |
+| 8 | Ungoverned Usage of 3rd Party Services | The 8-action registry in `.github/workflow-contract.yml` is the tracked allow-list; no tracked policy blocks arbitrary unregistered third-party actions at the GitHub-platform level (`UNVERIFIED`, requires live Actions-permission readback). |
+| 9 | Improper Artifact Integrity Validation | This is exactly the gap the prior subsection names: declared image pins are tracked; signature/provenance verification is sample-scoped only, not applied to the 47 tracked infra variants. |
+| 10 | Insufficient Logging and Visibility | `zizmor` SARIF upload is tracked (`ci-quality.yml`); no tracked evidence of centralized CI audit-log retention or alerting was found. |
+
+This mapping does not change any severity-ranked finding below; it re-frames
+the same tracked evidence against an external, named risk taxonomy so a
+reviewer can see which of the ten categories have zero tracked mitigation
+(none do) versus partial (most: 1, 2, 5, 7, 8, 10) versus substantially closed
+for the registered scope (4, 6) versus an explicit named gap (3, 9).
 
 ### Severity-ranked findings
 
@@ -235,6 +359,15 @@ not a statement that no Critical runtime vulnerability exists.
 | [Supply-chain tool registry](../../../../infra/supply-chain.tool-images.json)                                                                                   | 2026-08-08                  | Workspace tracked                    | Digest-pinned tool identities; execution/release integration unverified.                                                                                                                                                                                                                      |
 | [Security disclosure policy](../../../../.github/SECURITY.md)                                                                                                   | 2026-08-08                  | Workspace tracked                    | Private reporting paths and response targets; operational attainment unverified.                                                                                                                                                                                                              |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                                                     | 2026-08-08                  | Workspace tracked stale/advisory     | Built from `f8a72211`; corroborated and not used as security proof.                                                                                                                                                                                                                           |
+| [OWASP Top 10 CI/CD Security Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/) | 2026-08-14 | External fixed publication | Verified official project page; v1.0, stable release October 2022. New source for this leaf; ten-category risk mapping added. |
+| [SLSA v1.2 build provenance](https://slsa.dev/spec/v1.2/build-provenance) | 2026-08-14 | External fixed version | Verified Approved v1.2 page; predicate structure (`buildDefinition`, `runDetails`, `builder.id`) read directly, not inferred from the summary landing page. |
+| [Sigstore cosign verification](https://docs.sigstore.dev/cosign/verifying/verify/) | 2026-08-14 | External mutable | Verified official page; signature/certificate/digest verification mechanism and Fulcio trust root confirmed; explicit non-claims (not vulnerability-free) noted. |
+| [CODEOWNERS](../../../../.github/CODEOWNERS) | 2026-08-14 | Workspace tracked | Read in full; single principal (`@buenhyden`) across all listed protected paths. |
+| [Main branch protection proposal](../../../../.github/rulesets/main-protection.md) | 2026-08-14 | Workspace tracked | Read in full; states its own live-enforcement observation boundary explicitly and lists 16 proposed required-check job names. |
+| [Gitleaks configuration](../../../../.gitleaks.toml) | 2026-08-14 | Workspace tracked | Read in full; extends the upstream default ruleset, no repository-specific secret allowlist beyond that default. |
+| Direct Python re-scan of `.github/workflows/*.yml` `uses:` lines and `.github/workflow-contract.yml` `actions` registry | 2026-08-14 | Workspace tracked | Independently re-derived (not `rg`, to avoid a local shell alias) 17 `uses:` occurrences across 8 distinct SHA-pinned actions; cross-checked against the registry's 12 file-level consumer pairs and found consistent. |
+| [Security readiness generator](../../../../scripts/validation/generate-security-automation-readiness.sh) | 2026-08-14 (was 2026-08-11) | Workspace tracked/executed read-only | Re-executed at HEAD `ece3eda9`: `--check` PASS (fresh, exit 0); `--dry-run` still 11/1/1 over 7 workflows/37 scripts/54 reachable typed gates, unchanged from the 2026-08-11 re-verification; no `.github` or generator-script commit occurred in between. |
+| [Sample-service supply-chain rehearsal script](../../../../scripts/security/verify-sample-service-supply-chain.sh) and [cosign offline config](../../../../infra/supply-chain.cosign-offline-signing-config.json) | 2026-08-14 | Workspace tracked | Read in full (not executed); digest-pinned `alpine:3.21` and `nginxinc/nginx-unprivileged` build/runtime materials confirmed; four execution modes (`--fixture-only`, `--preflight`, `--advisory`, `--scorecard-advisory`) read directly, none invoked. |
 
 ## Maintenance
 
