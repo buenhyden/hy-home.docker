@@ -645,6 +645,38 @@ records the observed `selected`/`violations` counts before staging.
   fix-4 six. The fix-3 increase came from a self-clearing design that added a
   new destructive operation; removing that design reversed the trend.
 
+- Plan fix-5 outcome, recorded 2026-08-14. Committed as `a17281a8` with the
+  Plan's declared subject; metadata, traceability, and the repository contract
+  all passed. The Python/security re-review returned `Approved; C0/I0/M6`, the
+  first approval in this correction gate. The specification re-review returned
+  `Needs fixes; C0/I2/M5`, closing five of the six fix-4 defects.
+
+  Both reviewers verified against primitives rather than accepting the Plan's
+  account. The Python/security reviewer measured `setitimer` armed before `open`
+  interrupting a parked FIFO open at 0.500 seconds on CPython 3.12.3, confirmed
+  `poll()` returns `POLLIN` immediately on a regular descriptor so its demotion
+  is correct, and read the exit-1 convention out of the helper's own ternary at
+  `agentic-research-gate9-evidence.py:3507`. The specification reviewer verified
+  the same exit convention and the size-independent predicate against the helper,
+  and confirmed the namespace enumeration is `for-each-ref`-only, so a `.lock` is
+  invisible today rather than misreported as fix-4 had claimed.
+
+  Both confirmed no Spec 137 mutation was reintroduced and nothing fix-4
+  established was weakened. The new planted-lock fixture creates its file as a
+  test action inside a temporary root, with the gate's non-interference asserted.
+
+  The two remaining Important findings share one root: the Plan contradicts its
+  own other clauses. The claim that no omitted leaf reaches `for-each-ref`
+  through the gate is falsified by the Plan's own sub-case 2, and the retargeted
+  disagreement instantiation is unreachable for the same class of reason as the
+  one it replaced, which the reviewer established by measuring git 2.43.0 rather
+  than by reading the Plan.
+
+  Important-finding trend across the Plan-only gate: fix-2 four, fix-3 eight,
+  fix-4 six, fix-5 two. Structure, Spec-boundary compliance, round accounting,
+  and the security dimension are now all settled; what remains is internal
+  consistency of two statements.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
