@@ -273,6 +273,11 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | G3 SDLC and documentation | Frontmatter and section census | All five leaves keep `status: draft`, carry `reviewed_at: 2026-08-14`, and retain nine top-level sections |
 | 2026-08-14 | G3 SDLC and documentation | External source re-pin | Spec Kit and OpenSpec re-pinned at fresh commits after upstream evolution; Diataxis re-fetched successfully after its earlier HTTP 429; `agents.md` recorded as having moved under Linux Foundation governance; `iso.org` not re-attempted and routed to a browser-capable reviewer |
 
+| 2026-08-14 | G1 Foundation | Changed-document metadata against `f2e96ed4` | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | G1 Foundation | Fourteen-scope axis preservation check | All fourteen normative scope identifiers remain present in the matrix leaf |
+| 2026-08-14 | G1 Foundation | Governance contract validator run by the cluster agent | `PASS contracts=3 agents=14 functions=24 providers=3 failures=0` and `PASS mode=repository failures=0` |
+| 2026-08-14 | G1 Foundation | Governance test suite run by the cluster agent | 159 tests, `OK` |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
