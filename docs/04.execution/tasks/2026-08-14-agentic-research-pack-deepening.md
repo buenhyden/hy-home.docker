@@ -209,11 +209,13 @@ Each cluster agent must:
 
 ## Work Log
 
-| Date       | Step                       | Result                                                                                                                                                                                                                              |
-| ---------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-08-14 | Pre-task discovery         | Confirmed the requested twenty categories map one-to-one onto the canonical pack's twenty leaves; recorded the 2026-08-11 refresh as immediate predecessor with nine leaves at `reviewed_at: 2026-08-11` and eleven at `2026-08-08` |
-| 2026-08-14 | Deletion-gate discovery    | Read the Plan's Task 11 section and confirmed Step 0d is `BLOCKED` under its review breaker and the user-approved Step 0e recovery is unimplemented; deletion therefore stays outside this ledger                                   |
-| 2026-08-14 | Branch and ledger creation | Created branch `docs/agentic-research-pack-deepening` from BASE `2ca5f4b8` and authored this ledger from the Stage 99 Task template                                                                                                 |
+| Date       | Step                        | Result                                                                                                                                                                                                                              |
+| ---------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-08-14 | Pre-task discovery          | Confirmed the requested twenty categories map one-to-one onto the canonical pack's twenty leaves; recorded the 2026-08-11 refresh as immediate predecessor with nine leaves at `reviewed_at: 2026-08-11` and eleven at `2026-08-08` |
+| 2026-08-14 | Deletion-gate discovery     | Read the Plan's Task 11 section and confirmed Step 0d is `BLOCKED` under its review breaker with no round 6; deletion therefore stays outside this ledger                                                                           |
+| 2026-08-14 | Branch and ledger creation  | Created branch `docs/agentic-research-pack-deepening` from BASE `2ca5f4b8` and authored this ledger from the Stage 99 Task template                                                                                                 |
+| 2026-08-14 | Cluster dispatch            | Dispatched six non-overlapping cluster agents across the twenty leaves under one shared brief contract                                                                                                                              |
+| 2026-08-14 | Step 0e routing observation | Corrected the earlier discovery note: Step 0e is implemented through fix round 1, not unimplemented. Ran the Gate 9 evidence test module read-only, recorded the result under Blocked Items, and took no Task 11 action             |
 
 ## Verification Evidence
 
@@ -239,22 +241,32 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 
 ### Actual evidence
 
-| Date       | Unit            | Command                                           | Observed result                                                                                      |
-| ---------- | --------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 2026-08-14 | Ledger creation | Changed-document metadata against BASE `2ca5f4b8` | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0`                                 |
-| 2026-08-14 | Ledger creation | `check-doc-traceability.sh`                       | `catalog_pairs_total=46 failures=0`, PASS                                                            |
-| 2026-08-14 | Ledger creation | `check-repo-contracts.sh`                         | `failures=1`; the sole failure is `AGC-DEPENDENCY-MISSING path=html5lib location=validation-runtime` |
+| Date       | Unit                   | Command                                                                                                                       | Observed result                                                                                      |
+| ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 2026-08-14 | Ledger creation        | Changed-document metadata against BASE `2ca5f4b8`                                                                             | `selected=2 violations=0 legacy_exceptions=0 transition_overrides=0`                                 |
+| 2026-08-14 | Ledger creation        | `check-doc-traceability.sh`                                                                                                   | `catalog_pairs_total=46 failures=0`, PASS                                                            |
+| 2026-08-14 | Ledger creation        | `check-repo-contracts.sh` on the host interpreter                                                                             | `failures=1`; the sole failure is `AGC-DEPENDENCY-MISSING path=html5lib location=validation-runtime` |
+| 2026-08-14 | Validation environment | `python3 -m venv --system-site-packages /tmp/agentic-research-validation-venv` then `pip install -r scripts/requirements.txt` | `html5lib` 1.1, `PyYAML`, and `markdown-it-py` importable                                            |
+| 2026-08-14 | Ledger creation        | `check-repo-contracts.sh` with the prepared interpreter on `PATH`                                                             | `failures=0`, PASS: repository Docker/docs contracts are synchronized                                |
 
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results
 
-The ledger-creation unit passes changed-document metadata and traceability. The
-single repository-contract failure is the pre-existing, unowned `html5lib`
-validation-runtime dependency gap already recorded by the 2026-08-11 predecessor.
-It is not attributable to this Task and is not suppressed. The isolated
-interpreter used by the predecessor is absent on this host, so only the default
-interpreter result is recorded.
+The ledger-creation unit passes changed-document metadata and traceability.
+
+The repository contract initially returned `failures=1` on the host interpreter.
+That failure is not a repository defect and is not unowned: `scripts/requirements.txt`
+line 4 declares `html5lib>=1.1,<2.0` as a required validation dependency, and
+`scripts/validation/agent_governance_contract.py` line 32 imports it fail-closed.
+The host simply lacked the declared dependency. Preparing an interpreter from the
+repository's own requirements file resolves it, and the full contract then passes
+at `failures=0`.
+
+This corrects the characterization inherited from the predecessor record, which
+described the gap as pre-existing and unowned. The owner is the declared
+requirements file; the missing element was local environment preparation. Later
+units in this Task run the repository contract with the prepared interpreter.
 
 Both LLM Wiki generator checks are `Not Run` for this unit because it adds no
 research path and changes no generated input.
@@ -344,10 +356,29 @@ records the observed `selected`/`violations` counts before staging.
 ### Blocked items
 
 - Old-pack deletion is blocked outside this ledger. `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`
-  records Task 11 Step 0d as `BLOCKED` under its five-round review breaker, and
-  the user-approved Step 0e tree-object, sealed-descriptor, and atomic-bundle
-  recovery is unimplemented. Deletion requires that recovery, two independent
-  C0/I0/M0 reviews, and a rerun of Phase A gates one through nine.
+  records Task 11 Step 0d as `BLOCKED` under its five-round review breaker with
+  no round 6. The user-approved Step 0e tree-object, sealed-descriptor, and
+  atomic-bundle recovery is the sole current path.
+
+- Step 0e readiness observed on 2026-08-14 for routing purposes only. This Task
+  performs no Task 11 action; the observation is recorded so the deletion owner
+  can resume from a known state.
+
+  | Item                                                                        | Observed state                                                                             |
+  | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+  | Step 0e round 1 implementation `6817a76f`                                   | Ancestor of this branch `HEAD`                                                             |
+  | Step 0e round 1 reviews                                                     | Needs fixes C0/I1/M0 (specification) and C0/I2/M0 (Python/security) per the rebuild ledger |
+  | Step 0e fix round 1                                                         | Rebuild ledger records all three findings addressed in the minimal helper/test/Task subset |
+  | `scripts/validation/agentic-research-gate9-evidence.py`                     | Present, 128.7 KB                                                                          |
+  | `tests/validation/test_agentic_research_gate9_evidence.py`                  | Present, 112.6 KB                                                                          |
+  | `python3 -m unittest tests.validation.test_agentic_research_gate9_evidence` | 32 tests, `OK`, 114.671s, run on 2026-08-14                                                |
+
+  The blocking item is therefore review state, not code state: the fresh
+  independent specification and Python/security re-reviews of Step 0e fix
+  round 1 remain `Not Run`, and both must return C0/I0/M0 before a real Gate 9
+  bundle, package reviews, evidence-ref publication, real-index staging,
+  deletion, and pinned lifecycle reconciliation may proceed. Two of the five
+  recovery rounds are consumed.
 
 ### Deferral destination
 
