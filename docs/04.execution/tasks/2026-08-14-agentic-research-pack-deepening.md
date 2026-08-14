@@ -269,6 +269,10 @@ bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 | 2026-08-14 | G2b Model and memory | Frontmatter and section census | All four leaves keep `status: draft`, carry `reviewed_at: 2026-08-14`, and retain nine top-level sections |
 | 2026-08-14 | G2b Model and memory | External catalog re-pin | `agency-agents` default-branch SHA re-verified unchanged since the 2026-08-08 pin via `git ls-remote` rather than a re-clone |
 
+| 2026-08-14 | G3 SDLC and documentation | Changed-document metadata against `9f931ff1` | `selected=5 violations=0 legacy_exceptions=0 transition_overrides=0` |
+| 2026-08-14 | G3 SDLC and documentation | Frontmatter and section census | All five leaves keep `status: draft`, carry `reviewed_at: 2026-08-14`, and retain nine top-level sections |
+| 2026-08-14 | G3 SDLC and documentation | External source re-pin | Spec Kit and OpenSpec re-pinned at fresh commits after upstream evolution; Diataxis re-fetched successfully after its earlier HTTP 429; `agents.md` recorded as having moved under Linux Foundation governance; `iso.org` not re-attempted and routed to a browser-capable reviewer |
+
 Cluster rows are appended to this table as each cluster closes.
 
 ### Verification results

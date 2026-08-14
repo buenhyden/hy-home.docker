@@ -3,7 +3,7 @@ status: draft
 artifact_id: reference:agentic-engineering-research:document-metadata-lifecycle
 artifact_type: reference
 parent_ids: []
-reviewed_at: 2026-08-11
+reviewed_at: 2026-08-14
 review_cycle: on-source-change
 ---
 
@@ -18,10 +18,12 @@ template, lifecycle values, transition rules, and explicit exceptions.
 Human-readable contracts explain intent; the metadata checker interprets the
 machine contract.
 
-This analysis was re-derived at Task 5 baseline
-`0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee`. It separates current-path counts,
-frontmatter states, typed migration depth, template sources, generated outputs,
-README exceptions, and archive tombstones so none is mistaken for another.
+This analysis was re-derived at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
+(2026-08-14), superseding the Task 5 baseline
+`0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee` previously cited. It separates
+current-path counts, frontmatter states, typed migration depth, template
+sources, generated outputs, README exceptions, and archive tombstones so none
+is mistaken for another.
 
 ## Purpose
 
@@ -83,21 +85,26 @@ manufacture a parent to satisfy a field.
 
 The following counts exclude `README.md` unless stated otherwise and were
 derived from current canonical paths after the 2026-08-08 archive migration.
-Re-verified at the 2026-08-11 source-refresh boundary: the Stage 01-05 and
-Stage 04 totals are one leaf higher than the Task 5 baseline because this
-pack's own source-refresh Task leaf is counted in Stage 04; the
-draft/completed split below moves whenever that Task's own status moves.
+Re-verified directly with `find`/`grep` at the 2026-08-14 boundary: the Stage
+01-05 and Stage 04 totals are now two leaves higher than the Task 5 baseline,
+and the `draft` bucket that previously held 2 leaves is empty. Both movements
+trace to the same cause: this deepening effort's own governing Task,
+`docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
+(`status: active`), is itself a Stage 04 leaf and entered the corpus already
+`active`. The draft/completed split moves whenever any Task's own status
+moves, including this pack's.
 
-| Population                              | Count and state                               | Typed-depth interpretation                                                                                                       |
-| --------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Stage 01-05 non-README leaves           | 532: 295 `active`, 235 `completed`, 2 `draft` | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration.                                       |
-| PRD / ARD / ADR role paths              | 25 / 25 / 25                                  | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated.               |
-| Parent Specs                            | 28 current, 32 archived                       | Current and archived Spec populations coexist; archive zero is obsolete.                                                         |
-| Stage 04 role paths                     | 103 Plans, 132 Tasks                          | 16 Plans and 19 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints. |
-| Stage 05 role paths                     | 66 Guides, 64 Policies, 62 Runbooks           | Current typed role coverage is 1 Guide, 1 Policy, and 2 Runbooks; current path remains the role evidence for legacy leaves.      |
-| Incident / Postmortem / Release targets | 0 / 0 / 0                                     | Profiles/templates exist but no real target has exercised them.                                                                  |
-| Stage 98 non-README leaves              | 52, all `archived`                            | 32 expose `artifact_type: archive`; 20 are legacy tombstones. Stage 98 total Markdown is 69 including navigation.                |
-| Stage 99 non-README Markdown            | 35                                            | 24 declare template-source `status: draft`; support contracts are governance inputs rather than copyable lifecycle targets.      |
+| Population                              | Count and state                                       | Typed-depth interpretation                                                                                                                                                                                                                                                                                                                |
+| --------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stage 01-05 non-README leaves           | 533: 298 `active`, 235 `completed`, 0 `draft`         | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration. The `draft` bucket is transiently empty.                                                                                                                                                                                                       |
+| PRD / ARD / ADR role paths              | 25 / 25 / 25                                          | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated.                                                                                                                                                                                                                        |
+| Parent Specs                            | 28 current, 32 archived                               | Current and archived Spec populations coexist; archive zero is obsolete.                                                                                                                                                                                                                                                                  |
+| Stage 04 role paths                     | 103 Plans, 133 Tasks                                  | 16 Plans and 20 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints.                                                                                                                                                                                                          |
+| Stage 05 role paths                     | 66 Guides, 64 Policies, 62 Runbooks                   | Current typed role coverage is 1 Guide, 1 Policy, and 2 Runbooks; current path remains the role evidence for legacy leaves.                                                                                                                                                                                                               |
+| Incident / Postmortem / Release targets | 0 / 0 / 0                                             | Profiles/templates exist but no real target has exercised them. Unchanged since 2026-08-08; re-confirmed twice now.                                                                                                                                                                                                                       |
+| Stage 98 non-README leaves              | 52, all `archived`                                    | 32 expose `artifact_type: archive`; 20 are legacy tombstones. Stage 98 total Markdown is 69 including navigation.                                                                                                                                                                                                                         |
+| Stage 99 non-README Markdown            | 35                                                    | 24 declare template-source `status: draft`; support contracts are governance inputs rather than copyable lifecycle targets.                                                                                                                                                                                                               |
+| Registered profile catalog              | 21 `profiles:` entries, 17 `readme_profiles:` entries | Directly re-counted from the registry's top-level keys: `prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit, readme, repo-support, generated, template-source, governance, archive, unsupported` — 12 human SDLC roles plus 9 non-lifecycle governance/navigation/archive profiles. |
 
 The historical corpus is intentionally not bulk-rewritten. A changed legacy
 leaf outside the approved migration set may use the checker's legacy exception
@@ -213,6 +220,31 @@ specification and quality reviews.
 Remote CI required-check configuration, provider enforcement, runtime state,
 and archive/deployment outcomes remain separate observations.
 
+### Checker modes and the transition-override mechanism
+
+`scripts/validation/check-document-metadata.py` (5,630 lines) is a single
+interpreter with four `--mode` values, re-read directly this revision rather
+than assumed from its one cited invocation:
+
+| Mode              | What it validates                                                                                                                                  |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `report`          | Full-corpus profile/field/relation audit without failing the run; a survey mode.                                                                   |
+| `check-changed`   | The exact changed-path set against an explicit `--base-ref`; the enforcement-gate mode named above and in the companion role/lifecycle references. |
+| `check-active`    | Currently-active-family documents only, independent of what changed in a given diff.                                                               |
+| `check-contracts` | Registry/contract self-consistency, independent of any target document set.                                                                        |
+
+The "Reverse transitions require explicit scoped Stage 04 override evidence
+and checker acceptance" claim elsewhere in this reference has a concrete
+mechanism: `--transition-override-file` accepts a YAML file whose only
+top-level key is `transition_overrides` (a non-empty list); the checker
+raises `ProfileError` if either constraint is violated. This flag is
+rejected outright — `"configuration-error: --transition-override-file
+requires --mode check-changed"` — under any other mode. An override is
+therefore always both an explicit file (not an inline flag or prose
+assertion) and always scoped to the one mode that already requires an exact
+base ref and changed-path set; there is no path to an override under
+`report`, `check-active`, or `check-contracts`.
+
 ## Scope Implications
 
 | Scope          | Application and disposition                                                                                                                         |
@@ -234,21 +266,21 @@ and archive/deployment outcomes remain separate observations.
 
 ## Sources
 
-| Source                                                                                                                         | Accessed   | Class                      | Use and verification state                                                                      |
-| ------------------------------------------------------------------------------------------------------------------------------ | ---------- | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary  | Identifier/type/relation comparison only; no schema adoption.                                   |
-| [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard    | Provenance/revision comparison only; workspace registry remains canonical.                      |
-| [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard    | Relation semantics comparison; no repository profile adoption.                                  |
-| [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article     | HTTP 200; preserved/superseded ADR history comparison.                                          |
-| [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                         |
-| [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked          | Canonical routing, template-first, language, and changed/new enforcement boundary.              |
-| [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)                                             | 2026-08-08 | Workspace tracked          | Sole machine-readable fields, relations, headings, states, exceptions, and serialization owner. |
-| [Lifecycle status](../../../99.templates/support/lifecycle-status.md)                                                          | 2026-08-08 | Workspace tracked          | Human lifecycle vocabulary and interpretation boundary.                                         |
-| [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)                                              | 2026-08-08 | Workspace tracked          | Human role, relation, feedback, and release boundary.                                           |
-| [Common document contract](../../../99.templates/support/common-document-contract.md)                                          | 2026-08-08 | Workspace tracked          | Reference/audit/archive/generated/governance ownership.                                         |
-| [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)                                  | 2026-08-08 | Workspace tracked          | Provenance, confidentiality, review signals, and directory budgets.                             |
-| [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-08 | Workspace tracked          | Executable profile and lifecycle interpreter.                                                   |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                    | 2026-08-08 | Workspace stale/advisory   | Built from `f8a72211`; no uncorroborated graph inference used.                                  |
+| Source                                                                                                                         | Accessed   | Class                        | Use and verification state                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary    | Identifier/type/relation comparison only; no schema adoption.                                                             |
+| [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard      | Provenance/revision comparison only; workspace registry remains canonical.                                                |
+| [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
+| [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
+| [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
+| [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
+| [Metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
+| [Lifecycle status](../../../99.templates/support/lifecycle-status.md)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
+| [SDLC document contract](../../../99.templates/support/sdlc-document-contract.md)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |
+| [Common document contract](../../../99.templates/support/common-document-contract.md)                                          | 2026-08-08 | Workspace tracked            | Reference/audit/archive/generated/governance ownership.                                                                   |
+| [Archive and retention contract](../../../99.templates/support/archive-retention-contract.md)                                  | 2026-08-08 | Workspace tracked            | Provenance, confidentiality, review signals, and directory budgets.                                                       |
+| [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
+| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
 
 ## Maintenance
 
