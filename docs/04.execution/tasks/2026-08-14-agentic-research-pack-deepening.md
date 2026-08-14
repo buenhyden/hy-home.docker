@@ -724,6 +724,50 @@ records the observed `selected`/`violations` counts before staging.
   recovery round 4, and Plan-only rounds do not consume implementation rounds, so
   the loop has no breaker of its own.
 
+- Plan fix-7 outcome, recorded 2026-08-15. The user approved a scope reduction
+  on 2026-08-14 rather than a seventh repair of the same material. Committed as
+  `6ca30313`; metadata, traceability, and the repository contract passed.
+  Specification re-review returned `Needs fixes; C0/I4/M6`; Python/security
+  returned `Needs fixes; C0/I3/M3`.
+
+  The premise was independently upheld by both reviewers. No implemented control
+  was removed, all five previously approved properties survive as normative
+  text, the Spec restatement is item-for-item accurate, Spec 137 requires
+  substitution resistance nowhere, and no substitution hazard is reachable by a
+  principal short of total bypass, including a reviewer subagent under either
+  tool profile. Four of the fix-6 Important findings are genuinely closed.
+
+  Two defects were introduced by the controller, not by the reduction design,
+  and are recorded here as such.
+
+  The first is an incomplete commit. The agent writing fix-7 was terminated by a
+  session limit before reporting completion, with its final action described as
+  addressing method 4's preamble and sub-case 2's `SIGKILL` rationale. The
+  controller checked that the deletions the disposition table promised had
+  occurred, judged the remaining areas handled through the new R2 and R4 backlog
+  items, and committed. That judgement was wrong: lines 3249-3253 are untouched
+  and still declare open the ground R4 withdraws, which contradicts R4 and makes
+  it unactionable. Both reviewers found this independently. The controller
+  verified promised deletions but did not verify that the surviving text agrees
+  with the promises.
+
+  The second is a design flaw in where the split was drawn. The reduction was
+  specified as keeping liveness obligations and demoting adversarial-proof
+  obligations, but the split was applied at fixture granularity, so the demoted
+  injecting tests were also the only mandated demonstration of the retained
+  liveness controls. After fix-7 no gate-blocking test exercises any funnel
+  bound, grace, reap, park prevention, or `STALE_REF_LOCK` classification. The
+  correct boundary is at assertion granularity: the same injection can remain a
+  gate requirement for finishing within its bound while its exact-code claim
+  moves to the backlog.
+
+  Three further findings are text-consistency defects: a pass condition that
+  says exactly one added requirement and lists five, five contract areas left
+  with no defined blocking status, a sub-case that restates what its own
+  preamble forbids restating, and new non-blocking language contradicting the
+  unchanged C0/I0/M0 requirement, which leaves Spec 137 pre-deletion gate 6 with
+  two answers.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
