@@ -84,11 +84,14 @@ branch `docs/agentic-research-pack-deepening`.
 - `docs/90.references/llm-wiki/llm-wiki-index.md` and
   `docs/90.references/data/knowledge/llm-wiki-stage-category-coverage.md`,
   through their generators only, never by hand
+- `docs/04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`, for the
+  Plan-only Gate 9 correction the user approved on 2026-08-14, one file per
+  commit and no other Plan
 
 ### Forbidden paths
 
 - `docs/90.references/research/2026-07-05-agentic-research-pack-refresh/`
-- `docs/03.specs/`, `docs/04.execution/plans/`
+- `docs/03.specs/` and every Plan other than the Gate 9 rebuild Plan
 - `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`
 - `llms.txt`, all LLM Wiki generators, and every other generated artifact
 - `infra/`, `secrets/`, any credential-bearing surface
@@ -479,6 +482,87 @@ records the observed `selected`/`violations` counts before staging.
   closed. The implementation count remains three of five. A fix-3 would need to
   re-target the correction at the calls that actually block, rather than extend
   the existing name-scoped bound.
+
+- Gate redesign review, approved by the user on 2026-08-14 after three
+  successive Plan corrections each targeted a hazard that was not where the
+  correction assumed. Two independent read-only investigations were dispatched:
+  one on threat-model coherence, one on measured hazard surface. Both are
+  recorded here because they change what a fix-3 must say.
+
+  Threat-model finding. Gate 9's stated trust boundary defends against a
+  reviewer subagent asserting a review it did not perform. That principal can
+  emit text and nothing else; the tracked review-family roles in `.claude/agents/`
+  are provisioned `Read`, `Grep`, and `Glob` only. The findings that keep failing
+  the gate defend against a principal with write access to `.git` or to a
+  same-UID temporary path. Those are disjoint principal sets, not two points on
+  one spectrum.
+
+  The decisive point is that the second principal already holds strictly easier
+  total bypass. The helper executes from the worktree as a user-writable file;
+  its self-integrity preflight validates its own already-loaded bytes from
+  inside the same process; `run_git` invokes bare `git` with an inherited
+  environment, and the repository root is resolved before any authority check.
+  The Plan itself names this adversary a concurrent same-UID actor and concedes
+  the guarantee is unattainable under POSIX, then resolves the round by
+  redefining the linearization point rather than closing the finding. A defence
+  whose own specification concedes impossibility cannot terminate.
+
+  Measured hazard surface. An AST-derived inventory found 151 external call
+  sites, 59 process and 92 filesystem, funnelling through three physical
+  `subprocess.run` calls. The string `timeout` appears zero times in 3,512
+  lines, and none of the three calls passes a timeout. Eight sites were measured
+  as actually blocking under substitution against a regular-file control that
+  completes in single-digit milliseconds:
+
+  | Site                                                                      | Blocking condition                                                                            |
+  | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+  | `git symbolic-ref --quiet`                                                | FIFO, symlink to FIFO, symlink to device                                                      |
+  | `git update-ref --no-deref`                                               | Creates `<ref>.lock` before the blocking read                                                 |
+  | `git diff --quiet`, `git diff --cached --quiet`, `git status --porcelain` | FIFO at `.git/index`, reached before the only `S_ISREG` index guard, so the guard never fires |
+  | `os.open` in the control-file reader                                      | Bare FIFO at any of ten CLI control-file arguments                                            |
+  | `os.open` in the bundle reader                                            | FIFO matching the bundle name pattern                                                         |
+  | Eight `Path.read_bytes()` sites                                           | Their respective paths                                                                        |
+
+  The calls fix-1 and fix-2 bounded were measured as not blocking. `for-each-ref`
+  returns exit zero with empty output for all six substitutions, which satisfies
+  the existing guard and forces the unbounded fallback. That is why two
+  corrections in a row missed.
+
+  Test-coverage finding, correcting the specification reviewer's reading. No
+  hazard assertion in the suite is vacuous. The defect is absence: `mkfifo` and
+  `mknod` appear zero times in the test file, so all eight measured blocking
+  sites are untested. Two tests whose names read as special-file coverage
+  exercise regular-file dirent races instead.
+
+  Recovery finding. A terminated blocked run leaves an orphan zero-byte `.lock`.
+  If the substitution persists the helper re-blocks; if it is removed the helper
+  rejects permanently as `FOREIGN_REF`, a misleading terminal code because no
+  `.lock` inspection exists anywhere in the source. A blocked child also
+  survives parent termination, because no call establishes a new session or
+  process group and nothing reaps it.
+
+  Proportionality finding. The deletion under guard is locally reversible and
+  remotely replicated. All twenty blobs at `HEAD` are byte-identical to
+  `origin/main`, the deletion occurs on a local-only branch, and restoration was
+  verified by execution at twenty of twenty files with the worktree untouched.
+  Permanent loss would additionally require local garbage collection and a
+  force-push that the approved boundary already forbids.
+
+  Consequent redesign direction, carried into fix-3: keep the security claim
+  scoped to reviewer-identity binding, where it is well matched and already
+  sufficient; reclassify the filesystem hazards as availability and robustness
+  requirements, where the obligation is a finite measured list rather than an
+  unbounded space of imagined races; and place the bounds at the three
+  `subprocess.run` funnels and the descriptor-opening helpers rather than at
+  individually named commands.
+
+  One real capability gap was found and is not the one under repair.
+  `qa-engineer` is the only review-family role provisioned with `Edit`, `Write`,
+  and `Bash`. If a Gate 9 reviewer role resolves to it, the distrusted reviewer
+  acquires exactly the capability set the gate treats as hostile, and
+  simultaneously the ability to bypass the gate. The proportionate control is a
+  role-assignment constraint at capability provisioning, not another filesystem
+  race defence.
 
 ### Deferral destination
 
