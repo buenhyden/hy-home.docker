@@ -430,12 +430,35 @@ records the observed `selected`/`violations` counts before staging.
   | `tests/validation/test_agentic_research_gate9_evidence.py`                  | Present, 112.6 KB                                                                          |
   | `python3 -m unittest tests.validation.test_agentic_research_gate9_evidence` | 32 tests, `OK`, 114.671s, run on 2026-08-14                                                |
 
-  The blocking item is therefore review state, not code state: the fresh
-  independent specification and Python/security re-reviews of Step 0e fix
-  round 1 remain `Not Run`, and both must return C0/I0/M0 before a real Gate 9
-  bundle, package reviews, evidence-ref publication, real-index staging,
-  deletion, and pinned lifecycle reconciliation may proceed. Two of the five
-  recovery rounds are consumed.
+  The blocking item is review state, not code state. A first reading of this
+  Task placed the open review at Step 0e fix round 1; a closer reading of the
+  Plan's reviewed correction gate corrected that. The actual sequence is
+  recorded below, and the earlier characterization is superseded.
+
+  Recovery rounds consumed, per the Plan's own accounting:
+
+  | Round                     | Commit     | Review outcome                                                                                           |
+  | ------------------------- | ---------- | -------------------------------------------------------------------------------------------------------- |
+  | 1, initial implementation | `6817a76f` | Specification Needs fixes C0/I1/M0; Python/security Needs fixes C0/I2/M0                                 |
+  | 2, first fix              | `cfc271c5` | Both re-reviews Needs fixes C0/I2/M0; the original semantic finding closed, two residual findings opened |
+  | 3, second fix             | `96d06221` | Recorded in the Plan only; the rebuild Task ledger still carries this commit identity as pending         |
+
+  The Plan states that the residual findings after round 3 do not authorize
+  another same-implementer edit, and that round 4 requires a fresh, more capable
+  implementer. Before round 4 may begin, the Plan itself must pass a Plan-only
+  correction gate:
+
+  | Plan-only step | Commit     | Review outcome                                                                                                                              |
+  | -------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Correction     | `1cd723fa` | Found insufficient: `--bundle` alone cannot bind a later consumer to the controller-captured build receipt                                  |
+  | fix-1          | `bb1794cd` | Specification Approved C0/I0/M0; Python/security Needs fixes C0/I1/M0 on a FIFO substituted after raw snapshot blocking Git ref enumeration |
+  | fix-2          | `0b9bd01b` | Both independent re-reviews dispatched on 2026-08-14; verdicts recorded in this Task when returned                                          |
+
+  Plan-only fixes do not consume an implementation round. The Plan forbids
+  beginning round 4, or editing the Task, helper, or tests, until both fix-2
+  re-reviews return C0/I0/M0. Package construction, Phase A, evidence-ref
+  publication, real-index staging, deletion, pinned lifecycle reconciliation,
+  Task 12, remote actions, and push all remain closed.
 
 ### Deferral destination
 
