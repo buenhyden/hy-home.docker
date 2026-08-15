@@ -2605,13 +2605,14 @@ three of five. Every downstream action named above remains closed.
 
 Both fix-10 re-reviews returned Needs fixes, specification C0/I2/M0 and
 Python/security C0/I1/M1, on two defects that the fix-10 paragraph itself
-introduced and that both reviewers found independently. Both reviewers separately
-confirmed that nothing either fix-9 approval rested on had moved: the demotion
-criterion body stayed byte-identical across all four sites, R2's applied list
-still agreed with the RED scoping enumeration case for case, the three retained
-classes were unaltered, the code-agnostic fail-closed form stayed anchored to the
-unmodified helper, and the narrowing clause narrowed by reference to an unchanged
-normative criterion without re-placing anything.
+introduced and that both reviewers found independently. Each seat also confirmed,
+within its own scope, that nothing either fix-9 approval rested on had moved.
+Both seats confirmed the demotion criterion body stayed byte-identical across all
+four sites and that the narrowing clause narrowed by reference to an unchanged
+normative criterion without re-placing anything. The Python/security seat alone
+verified that R2's applied list still agreed with the RED scoping enumeration
+case for case, that the three retained classes were unaltered, and that the
+code-agnostic fail-closed form stayed anchored to the unmodified helper.
 
 The first defect is a fabricated identifier. The fix-10 paragraph cited a clean
 base whose eight-character prefix was correct and whose remaining thirty-two
@@ -2637,6 +2638,42 @@ reviewer must each return C0/I0/M0 over that one-file range before recovery
 round 4 may begin. No Plan-only fix consumes a Step 0e implementation round, so
 the implementation count remains three of five. Every downstream action named
 above remains closed.
+
+The fix-11 Python/security re-review returned Approved C0/I0/M0. It confirmed the
+corrected base resolves and is the exact parent of the fix-10 commit, that the
+fabricated predecessor no longer appears and still fails an object existence
+check, that every full object identifier this Plan cites resolves apart from the
+Git null-OID sentinel, which is a literal command argument rather than a
+citation, and that a whole-document paragraph comparison returns a single
+non-equal opcode covering two word substitutions and the inserted bookkeeping
+paragraphs and nothing else. It also re-confirmed the criterion body, the
+error-code multiset, the fail-closed form, and byte-identical helper and test
+blobs across the range.
+
+The fix-11 specification re-review returned Needs fixes C0/I1/M1. It confirmed
+both named fix-10 defects fully repaired, then found two further defects in the
+bookkeeping text. The Important one is a scope defect with a downstream
+consequence: the round-4 Task-recording clause enumerated fixes by name and
+stated a fixed count of review pairs, so a round following it literally would
+omit the later rounds from the evidence ledger. That clause was already one round
+stale before fix-11 and fix-11 widened the gap rather than closing it. The Minor
+is an overclaim: a sentence attributed to both seats a set of confirmations that
+only the Python/security seat made.
+
+Correct only this Plan again from clean
+`82287daa5708901c0801af52652c1c5c3a6f47fb`. Commit exact subject
+`docs(plan): make round four evidence scope count-independent`. The correction
+replaces the enumerated fix list and fixed pair count with a count-independent
+obligation covering every numbered Plan-only fix and every review pair each one
+received, and splits the confirmation sentence so each claim is attributed to the
+seat that made it. It changes no criterion body, no placement, no error code, no
+blocking status, and no liveness assertion. Both fix-12 independent re-reviews
+are `Not Run` until that one-file commit is dispatched; do not predict their
+verdicts. One fresh independent specification reviewer and one fresh independent
+Python/security reviewer must each return C0/I0/M0 over that one-file range
+before recovery round 4 may begin. No Plan-only fix consumes a Step 0e
+implementation round, so the implementation count remains three of five. Every
+downstream action named above remains closed.
 
 Fix-4 replaces the fix-3 stale-lock clearance with a fail-closed terminal
 state because the clearance violated the Gate 9 evidence architecture boundary
@@ -2773,8 +2810,9 @@ six-file ceiling:
    stable-identity regressions.
 3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
    for the actual immutable Plan
-   correction/fix-1/fix-2/fix-3/fix-4/fix-5/fix-6/fix-7/fix-8/fix-9
-   commit ranges and all ten independent review/re-review pairs, the round-3
+   correction and every numbered Plan-only fix in this gate, whatever their
+   final count, with their commit ranges and every independent
+   review/re-review pair each one received, the round-3
    implementation
    findings, and round-4 RED/GREEN/full evidence with the new implementation
    reviews left `Not Run` until dispatch. No separate Task-only prerequisite
