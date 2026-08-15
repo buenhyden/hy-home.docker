@@ -2582,14 +2582,14 @@ because every stdout write in the helper is a terminal-success statement, and
 confirming that the first stderr line is the only position where a mapped
 diagnostic and an interpreter traceback differ. It also checked the four
 statements of the demotion criterion mechanically as byte-identical. The
-specification re-review returned Approved C0/I0/M3, the first specification
+specification re-review returned Approved C0/I0/M3, the second specification
 approval any correction in this gate has earned, and judged the closed-enumeration
 device an honest resolution rather than a concealed rule because an unplaced case
 requires a reviewed Plan amendment.
 
 Step 0e admits no parked Minor, so those three specification Minors still block.
 Correct only this Plan again from clean
-`f87746dbb2ab1f4e78fb0a56e8be1a1cf6bb0d3d`. Commit exact subject
+`f87746db9eb273425b9ecc05693cf53e46a5c235`. Commit exact subject
 `docs(plan): close residual gate 9 wording findings`. The correction attaches the
 criterion's narrowing to the moved-out bullet without restating or overriding its
 three retained exceptions, repairs an approval count that this Plan states one too
@@ -2602,6 +2602,41 @@ reviewer and one fresh independent Python/security reviewer must each return
 C0/I0/M0 over that one-file range before recovery round 4 may begin. No Plan-only
 fix consumes a Step 0e implementation round, so the implementation count remains
 three of five. Every downstream action named above remains closed.
+
+Both fix-10 re-reviews returned Needs fixes, specification C0/I2/M0 and
+Python/security C0/I1/M1, on two defects that the fix-10 paragraph itself
+introduced and that both reviewers found independently. Both reviewers separately
+confirmed that nothing either fix-9 approval rested on had moved: the demotion
+criterion body stayed byte-identical across all four sites, R2's applied list
+still agreed with the RED scoping enumeration case for case, the three retained
+classes were unaltered, the code-agnostic fail-closed form stayed anchored to the
+unmodified helper, and the narrowing clause narrowed by reference to an unchanged
+normative criterion without re-placing anything.
+
+The first defect is a fabricated identifier. The fix-10 paragraph cited a clean
+base whose eight-character prefix was correct and whose remaining thirty-two
+characters were invented rather than read from the repository. Every other full
+object identifier this Plan cites resolves. An identifier that resolves only by
+prefix abbreviation and fails an exact check leaves the round's provenance
+unverifiable, which is why this is recorded as a defect of record rather than a
+typo. The second defect is a third instance of the approval-count error that
+fix-10 existed to repair: its own new sentence called the fix-9 specification
+approval the first in this gate, against this Plan's record of fix-1's approved
+specification review.
+
+Correct only this Plan again from clean
+`684f5fc33635d228c9ce2e9faef4a72c4d2ebabf`. Commit exact subject
+`docs(plan): correct fabricated base identifier and approval count`. The
+correction replaces the invented identifier with the object identifier read from
+the repository, and makes the fix-9 specification approval read as the second.
+It changes no criterion body, no placement, no error code, no blocking status,
+and no liveness assertion. Both fix-11 independent re-reviews are `Not Run` until
+that one-file commit is dispatched; do not predict their verdicts. One fresh
+independent specification reviewer and one fresh independent Python/security
+reviewer must each return C0/I0/M0 over that one-file range before recovery
+round 4 may begin. No Plan-only fix consumes a Step 0e implementation round, so
+the implementation count remains three of five. Every downstream action named
+above remains closed.
 
 Fix-4 replaces the fix-3 stale-lock clearance with a fail-closed terminal
 state because the clearance violated the Gate 9 evidence architecture boundary
