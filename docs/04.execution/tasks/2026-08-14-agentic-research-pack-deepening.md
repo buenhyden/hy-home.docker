@@ -835,6 +835,47 @@ records the observed `selected`/`violations` counts before staging.
   Important-finding trend: fix-2 four, fix-3 eight, fix-4 six, fix-5 two,
   fix-6 five, fix-7 five unique, fix-8 two, fix-9 zero.
 
+- Plan-only correction gate closed 2026-08-15. Fix-13 at `b999da7d` earned
+  `Approved; C0/I0/M0` from both independent seats, each stating that no Minor
+  remains and that the Step 0e no-parked-Minor pass condition is therefore
+  satisfiable from its seat. Thirteen Plan-only corrections were consumed; none
+  consumed a Step 0e implementation round, so the implementation count remains
+  three of five.
+
+  How the chain resolved. The substantive contract work settled at fix-9, which
+  earned the first dual approval. Everything after it was bookkeeping repair, and
+  the four rounds the controller wrote directly reproduced the same failure the
+  delegated rounds had shown: each correction closed its named findings and
+  introduced roughly one new defect of the same class. The severity fell
+  monotonically across those rounds — two Important, then one Important and one
+  Minor, then one Minor found identically by both seats, then none.
+
+  Two controller defects are recorded rather than smoothed over. Fix-10 cited a
+  clean base whose eight-character prefix was correct and whose remaining
+  thirty-two characters were invented rather than read from the repository, which
+  both seats classified as a defect of record because an identifier resolving
+  only by prefix leaves a round's provenance unverifiable. Fix-11 left a
+  round-4 evidence clause that enumerated fixes by name with a fixed review-pair
+  count; it had already gone stale one round earlier and fix-11 widened the gap.
+  Fix-12 replaced that enumeration with a count-independent obligation, and the
+  specification seat confirmed at fix-13 that the replacement swept the new round
+  in without edit on its first live test.
+
+  What the closing reviews verified mechanically, across the last four commits:
+  the demotion criterion body stayed four occurrences of 1018 characters at
+  digest `6a319faf4717cd49`, unchanged since fix-9; the code-token multiset
+  stayed identical at 277; the code-agnostic fail-closed form stayed anchored to
+  the helper's `Gate9Error` construction and its single `main()` boundary
+  handler; the helper and test blobs stayed byte-identical; destructive
+  operations remained absent from the helper; and every full object identifier
+  the Plan cites resolves apart from the Git null-OID sentinel, which is a
+  literal command argument.
+
+  Recovery round 4 is now open. It uses a fresh, more capable implementer, edits
+  exactly the helper, its tests, and the rebuild Task, and is the fourth of five
+  implementation rounds. Deletion, lifecycle reconciliation, Task 12, remote
+  actions, and push all remain closed until it and its own reviews complete.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
