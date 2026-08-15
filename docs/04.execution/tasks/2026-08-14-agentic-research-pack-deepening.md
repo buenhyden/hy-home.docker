@@ -804,6 +804,37 @@ records the observed `selected`/`violations` counts before staging.
   Important-finding trend: fix-2 four, fix-3 eight, fix-4 six, fix-5 two,
   fix-6 five, fix-7 five unique, fix-8 two.
 
+- Plan fix-9 outcome, recorded 2026-08-15. Committed as `a8d4e046`; metadata,
+  traceability, and the repository contract passed. **Both re-reviews approved**:
+  Python/security `Approved; C0/I0/M0` with no findings at any severity, and
+  specification `Approved; C0/I0/M3`, the first specification approval in this
+  correction gate.
+
+  Both fix-8 Important findings are closed. The Python/security reviewer anchored
+  the code-agnostic fail-closed form in helper source, confirming that
+  `Gate9Error` emits `code: detail`, that `main()` has a single exception
+  boundary, that empty stdout holds because all six stdout writes are
+  terminal-success statements, and that the first stderr line is the only
+  position where a mapped diagnostic and a CPython traceback differ. The four
+  statements of the demotion criterion were checked mechanically as byte-identical
+  at 1018 characters each, and R2's applied list now agrees with the RED
+  enumeration case for case.
+
+  The specification reviewer judged the decision to declare the enumeration the
+  criterion's closed application an honest resolution rather than a hidden rule,
+  workable because an unplaced case requires a reviewed Plan amendment. That
+  judgement matters: the recurring defect class in this gate was two normative
+  routes yielding opposite answers, and closing the enumeration removes the
+  second route rather than papering over it.
+
+  Three specification Minors remain, all narrow text-consistency items. Step 0e
+  requires C0/I0/M0 from both reviewers with no Minor parked, so they still block.
+  One of them, an approval count off by one, is inherited from a pre-existing
+  sentence rather than introduced by fix-9; the correction must fix both.
+
+  Important-finding trend: fix-2 four, fix-3 eight, fix-4 six, fix-5 two,
+  fix-6 five, fix-7 five unique, fix-8 two, fix-9 zero.
+
 ### Deferral destination
 
 Deletion and its lifecycle reconciliation remain owned by Task 11 in
