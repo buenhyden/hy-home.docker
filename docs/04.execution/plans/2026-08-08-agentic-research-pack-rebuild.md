@@ -2608,11 +2608,12 @@ Python/security C0/I1/M1, on two defects that the fix-10 paragraph itself
 introduced and that both reviewers found independently. Each seat also confirmed,
 within its own scope, that nothing either fix-9 approval rested on had moved.
 Both seats confirmed the demotion criterion body stayed byte-identical across all
-four sites and that the narrowing clause narrowed by reference to an unchanged
+four sites, that the three retained classes named inside that body were therefore
+unaltered, and that the narrowing clause narrowed by reference to an unchanged
 normative criterion without re-placing anything. The Python/security seat alone
 verified that R2's applied list still agreed with the RED scoping enumeration
-case for case, that the three retained classes were unaltered, and that the
-code-agnostic fail-closed form stayed anchored to the unmodified helper.
+case for case and that the code-agnostic fail-closed form stayed anchored to the
+unmodified helper.
 
 The first defect is a fabricated identifier. The fix-10 paragraph cited a clean
 base whose eight-character prefix was correct and whose remaining thirty-two
@@ -2674,6 +2675,41 @@ Python/security reviewer must each return C0/I0/M0 over that one-file range
 before recovery round 4 may begin. No Plan-only fix consumes a Step 0e
 implementation round, so the implementation count remains three of five. Every
 downstream action named above remains closed.
+
+Both fix-12 re-reviews returned Approved with zero Critical and zero Important,
+each carrying the same single Minor, found independently and with the same
+prescribed repair. The specification seat confirmed the repaired round-4 clause is
+genuinely count-independent and binds strictly more than the enumerated form it
+replaced, because review pairs now attach per item rather than by a fixed total;
+it swept the Plan for sibling enumerations and found that the repaired clause was
+the only forward-looking one over the fix set; and it re-derived the approval
+ordinals and the historical counts as accurate. The Python/security seat
+re-confirmed the criterion body at four occurrences of identical content, an
+identical code-token multiset, and byte-identical helper and test blobs across
+the range, with the whole-document paragraph comparison returning changes only in
+bookkeeping prose.
+
+The shared Minor is an over-correction this Plan made when repairing an earlier
+over-claim. Splitting a confirmation sentence by seat moved one item too far: the
+three retained classes are named inside the demotion criterion body, so a seat
+confirming that body byte-identical has thereby confirmed those classes
+unaltered, and attributing that item to one seat alone contradicted the sentence
+immediately before it. Step 0e admits no parked Minor, so it is repaired rather
+than carried.
+
+Correct only this Plan again from clean
+`339688ec9dd691a7d51b7fea28960e330f6671fb`. Commit exact subject
+`docs(plan): attribute retained-class confirmation to both seats`. The correction
+moves the retained-class item back into the both-seats clause and leaves R2's
+applied list and the helper anchoring as the Python/security-only pair. It
+changes no criterion body, no placement, no error code, no blocking status, and
+no liveness assertion. Both fix-13 independent re-reviews are `Not Run` until
+that one-file commit is dispatched; do not predict their verdicts. One fresh
+independent specification reviewer and one fresh independent Python/security
+reviewer must each return C0/I0/M0 over that one-file range before recovery
+round 4 may begin. No Plan-only fix consumes a Step 0e implementation round, so
+the implementation count remains three of five. Every downstream action named
+above remains closed.
 
 Fix-4 replaces the fix-3 stale-lock clearance with a fail-closed terminal
 state because the clearance violated the Gate 9 evidence architecture boundary
