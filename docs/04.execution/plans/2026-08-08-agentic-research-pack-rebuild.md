@@ -2404,8 +2404,9 @@ contract. Commit only this Plan with exact subject
 specification reviewer and a Python/security reviewer must return C0/I0/M0
 over that one-file range. That commit and its review pair are the superseded
 initial gate: the range is immutable, its review produced the `--bundle`
-finding recorded below, and the operative gate is now the fix-8 gate stated in
-the pass condition below. The Task owns the actual review receipts. Package
+finding recorded below, and the operative gate is now the one stated in the pass
+condition below, as amended through fix-9. The Task owns the actual review
+receipts. Package
 construction, package or ref consumption, Phase A, evidence-ref publication,
 deletion, lifecycle mutation, Task 12, remote actions, and push remain closed.
 
@@ -2522,7 +2523,7 @@ filesystem-substitution resistance nowhere; and no substitution hazard in the
 demoted set is reachable by a principal that does not already hold a cheaper
 total bypass. Four of the five outstanding fix-6 Important findings are
 genuinely closed. What both re-reviews found are defects in how fix-7 carried
-the reduction out, and fix-8 corrects exactly those five: it completes the
+the reduction out, and fix-8 corrects those five: it completes the
 withdrawal the fix-7 disposition table promised but did not perform; it redraws
 the split at assertion granularity rather than by whole fixture, so the liveness
 obligations this gate keeps mandatory have gate-blocking demonstrations again;
@@ -2530,17 +2531,48 @@ it corrects the restated pass condition's own count and gives every contract
 area a defined blocking status instead of leaving five of them unassigned; it
 brings method 4 sub-case 2 into line with the prohibition its own preamble and
 R1 state; and it resolves the conflict between the new non-blocking language and
-this Plan's unchanged C0/I0/M0 requirement. Both fix-8 independent re-reviews
-are `Not Run` until that one-file commit is dispatched; do not predict their
-verdicts. One fresh independent specification reviewer and one fresh independent
-Python/security reviewer must each return C0/I0/M0 over that one-file range
-before recovery round 4 may begin. No Plan-only fix consumes a Step 0e
-implementation round, so the implementation count remains three of five. Do not
-begin recovery round 4 or edit the Task, helper, or tests until both fix-8
-re-reviews return C0/I0/M0. Package construction, package or
-ref consumption, Phase A, evidence-ref publication, real-index staging,
-deletion, lifecycle mutation, Task 12, remote actions, and push all remain
-closed.
+this Plan's unchanged C0/I0/M0 requirement. As a sixth change outside that
+enumerated set, fix-8 also rewrites R3 to bar the `SIGALRM`-blocking closure
+route as deadline-defeating. Both fix-8 independent re-reviews are complete and
+they split. The Python/security re-review returned Approved C0/I0/M4 — the
+second approval any correction in this gate has earned — after tracing the
+helper source rather than this Plan's prose to verify that every retained
+liveness control now carries a gate-blocking assertion at a site where it can
+actually fire, that all five properties the fix-5 approval rested on survive,
+and that method 4 sub-cases 4 and 6 were promoted to fully gate-blocking rather
+than demoted. The specification re-review returned Needs fixes C0/I2/M6: it
+confirmed everything else fix-8 claimed — the liveness demonstrations, sub-case
+3's independence from R1, the performed withdrawal, the corrected pass-condition
+count, the default rule, and the no-amnesty blocking-status resolution — and
+left two internal contradictions between how the new per-assertion rule is
+stated and how it is applied. Those two, and the ten Minors across both fix-8
+reviews, are dispositioned by fix-9 below.
+
+Correct only this Plan a ninth time. Commit exact subject
+`docs(plan): align gate 9 backlog enumeration with placements`. Fix-9 moves no
+boundary and reopens nothing either fix-8 review upheld: every retained liveness
+control keeps a gate-blocking assertion at a site where it can fire, the five
+properties the fix-5 and fix-8 Python/security approvals rested on survive,
+method 4 sub-cases 4 and 6 stay gate-blocking in full, the no-amnesty
+blocking-status resolution stands unchanged, and R3's removal of the
+`SIGALRM`-blocking route stands. Fix-9 closes the two fix-8 specification
+Important findings and the ten Minors across both fix-8 reviews. It makes R2's
+enumeration agree with the RED scoping list and with sub-case 3 itself on where
+sub-case 3's `FOREIGN_REF` verdict sits, and it replaces the demotion criterion's
+`in the evidence namespace` qualifier — which selected neither the placements
+this Plan makes nor a consistent rule — with one criterion, three named retained
+exceptions, and an explicit statement that the RED scoping enumeration is that
+criterion's closed application, stated identically in all four places the
+criterion appears. Both fix-9 independent re-reviews are `Not Run` until that
+one-file commit is dispatched; do not predict their verdicts. One fresh
+independent specification reviewer and one fresh independent Python/security
+reviewer must each return C0/I0/M0 over that one-file range before recovery
+round 4 may begin. No Plan-only fix consumes a Step 0e implementation round, so
+the implementation count remains three of five. Do not begin recovery round 4 or
+edit the Task, helper, or tests until both fix-9 re-reviews return C0/I0/M0.
+Package construction, package or ref consumption, Phase A, evidence-ref
+publication, real-index staging, deletion, lifecycle mutation, Task 12, remote
+actions, and push all remain closed.
 
 Fix-4 replaces the fix-3 stale-lock clearance with a fail-closed terminal
 state because the clearance violated the Gate 9 evidence architecture boundary
@@ -2573,10 +2605,15 @@ Python/security approval rested on: the no-mutation property, the
 `setitimer`-before-`open` mechanism, the exit-1 convention, the
 size-independent lock predicate, and the fixture's test-side creation boundary
 are all carried forward unchanged. It corrects two statements this Plan's own
-other clauses contradict. It bounds the `for-each-ref` omission claim to the
-snapshot phase it is true of, so it no longer contradicts sub-case 2's
-mid-flight injection, which this Plan itself requires to reach the exact-ref
-fallback. And it settles the raw/union disagreement rule's reachability
+other clauses contradict. It bounded the `for-each-ref` omission claim to the
+snapshot phase it is true of, so that it would no longer contradict sub-case 2's
+mid-flight injection, which this Plan at that time still required to reach the
+exact-ref fallback. Both fix-6 re-reviews found that scoping still contradictory
+with this Plan's own snapshot ordering, and fix-7 and fix-8 superseded it: the
+classification is now robustness-backlog item R1, and sub-case 2 is backlog in
+whole and explicitly not a specification round 4 may build from, so this Plan no
+longer requires that mid-flight injection of any round. And it settles the
+raw/union disagreement rule's reachability
 question that fix-4 and fix-5 each answered with an instantiation that cannot
 occur: rather than naming a third construction, it records the one measured
 condition under which the two views actually disagree by omission — a leaf
@@ -2610,14 +2647,55 @@ classification. Fix-8 redraws the line at assertion granularity instead, because
 the same injection produces two claims that belong on different sides: that the
 operation finishes within its stated bound, that any child this gate spawned is
 terminated and synchronously reaped, that no site parks, and that the gate
-reaches some fail-closed terminal state instead of proceeding all stay gate
-requirements, while the claim that the injection produces one named code, and
-the classification argument about which clause catches which substitution, are
-the part that moves. Fix-8 also completes the withdrawal the fix-7 disposition
+reaches a mapped fail-closed terminal state — exit 1, empty stdout, and a stderr
+whose first line is a `<CODE>: <detail>` diagnostic rather than an unmapped
+traceback — instead of proceeding all stay gate requirements, while the named
+code and the classification argument about which clause catches which
+substitution are the part that moves. The criterion for that, in the form fix-9
+repeats identically in every place this Plan states it. Demoted: a claim that
+names one specific error code as the outcome of an adversarial substitution or
+removal the fixture directs at a path the gate reads. Retained: every other claim
+those same fixtures make, and three named classes of code claim — methods 1 and
+2's external-bundle transport codes, whose surface this Plan's capability
+analysis places with a weaker different-UID local principal rather than with the
+total-bypass principal whose proof obligation is unbounded; method 4 sub-case 4's
+`STALE_REF_LOCK`, whose residue is planted and arises with no adversary; and
+method 4 sub-case 6's `FOREIGN_REF` guards, which the fixture injects into
+`git`'s own output rather than at a path the gate reads. A criterion of this
+shape cannot decide every case unaided, because a leaf a fixture creates and one
+it substitutes are the same file on disk, so the RED scoping enumeration that
+applies it to every method and sub-case is its closed application, and where the
+two could be read apart that enumeration governs. Fix-8 also completes the
+withdrawal the fix-7 disposition
 table recorded but the fix-7 commit did not make, gives every area of the
 executable contract a defined blocking status instead of leaving most of it
 unassigned between two lists, and states one answer where fix-7 left two on
 whether a finding naming a backlog item blocks passage.
+
+Fix-9 moves no boundary, removes no implemented control, and reopens nothing
+either fix-8 review upheld. It corrects two ways fix-8 stated its own line
+rather than where fix-8 drew it. First, fix-8's R2 enumeration excluded method 4
+sub-case 3 from that item while the RED scoping list and sub-case 3 itself
+placed sub-case 3's `FOREIGN_REF` verdict inside it, so this Plan carried two
+normative routes to opposite answers on one assertion — the same undefined-status
+class fix-8 exists to eliminate. Fix-9 corrects the enumeration rather than the
+placement, because sub-case 3's `FOREIGN_REF` verdict is exactly what the split
+moves — one named code claimed as the outcome of an injected substitution — while
+its funnel-1 bound, process-group signal, child absence, and synchronous reap are
+exactly what the split keeps. Promoting the verdict instead would have returned a
+named-code obligation to the gate that the split exists to remove, and it is not
+needed to make sub-case 3's gate-blocking claim meaningful: fix-9 states the
+retained fail-closed assertion in a form that proves the run left through the
+contract's own mapped fail-closed path, and therefore did not surface an unmapped
+traceback, without naming which code it emitted. Second, fix-8's demotion
+criterion was scoped `in the evidence namespace` in three places and unscoped in a
+fourth; with the qualifier it retained method 4 sub-case 5's `CONTROL_FILE_DRIFT`
+against two explicit demotions, and without it it demoted methods 1 and 2's
+transport codes against their explicit retention, so the stated rule selected the
+placements this Plan makes under neither reading. Fix-9 replaces it with one
+criterion, three named retained exceptions, and an explicit statement that the
+RED scoping enumeration is that criterion's closed application, and states the
+whole of it identically in all four places it appears.
 
 After the Plan-only gate passes, recovery round 4 uses a fresh more-capable
 implementer and modifies exactly these three files within the existing
@@ -2631,8 +2709,8 @@ six-file ceiling:
    stable-identity regressions.
 3. `docs/04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md` only
    for the actual immutable Plan
-   correction/fix-1/fix-2/fix-3/fix-4/fix-5/fix-6/fix-7/fix-8
-   commit ranges and all nine independent review/re-review pairs, the round-3
+   correction/fix-1/fix-2/fix-3/fix-4/fix-5/fix-6/fix-7/fix-8/fix-9
+   commit ranges and all ten independent review/re-review pairs, the round-3
    implementation
    findings, and round-4 RED/GREEN/full evidence with the new implementation
    reviews left `Not Run` until dispatch. No separate Task-only prerequisite
@@ -2685,7 +2763,8 @@ complete when the gate reaches a fail-closed verdict within a stated bound and
 leaves no unreaped child or unrecoverable residue, not when substitution is
 proved impossible.
 
-**Fix-8 pass condition — what this gate requires for passage:**
+**Gate 9 pass condition, as amended through fix-9 — what this gate requires for
+passage:**
 
 Gate 9 passes when the Spec 137 pre-deletion gates are satisfied and the
 reviewer-identity attestation holds. Spec 137 requires, before deletion: every
@@ -2740,17 +2819,18 @@ present:
 - the entire no-mutation property, which Spec 137 requires directly and on
   which the fix-5 Python/security approval rested.
 
-Moved out of the passing requirements and into the non-blocking robustness
-backlog below. Fix-8 states this list at assertion granularity, because fix-7
-stated it at fixture granularity and thereby carried the mandated demonstrations
-of the kept liveness requirements out of the gate along with it:
+Moved out of the passing requirements and into the robustness backlog below.
+Fix-8 states this list at assertion granularity, because fix-7 stated it at
+fixture granularity and thereby carried the mandated demonstrations of the kept
+liveness requirements out of the gate along with it:
 
-- the obligation to _prove_ that a named adversarial substitution in the
-  evidence namespace produces one named error code — but not the obligation
-  that the gate finish within its bound, park nowhere, leave no live or unreaped
-  child, and reach some fail-closed terminal state under that same injection,
-  which stays a passing requirement and is what the injecting fixtures now
-  demonstrate;
+- the obligation to _prove_ that a named adversarial substitution produces one
+  named error code — but not the obligation that the gate finish within its
+  bound, park nowhere, leave no live or unreaped child, and reach a mapped
+  fail-closed terminal state, meaning exit 1, empty stdout, and a stderr whose
+  first line is a `<CODE>: <detail>` diagnostic rather than an unmapped
+  traceback, under that same injection, which stays a passing requirement and is
+  what the injecting fixtures now demonstrate;
 - the raw/union omission classification claims, which three consecutive rounds
   failed to state consistently, and every argument about which clause catches
   which substitution;
@@ -2758,6 +2838,23 @@ of the kept liveness requirements out of the gate along with it:
   naming of the observing call are that same unsettled classification;
 - the descriptor-slot requirement fix-6 introduced, which both fix-6 reviewers
   measured to be unsatisfiable.
+
+State the criterion that places a code claim on one side or the other, in the
+form fix-9 repeats identically in every place this Plan states it — here, in R2
+below, in the RED scoping paragraph below, and in the fix-8 narrative above.
+Demoted: a claim that names one specific error code as the outcome of an
+adversarial substitution or removal the fixture directs at a path the gate reads.
+Retained: every other claim those same fixtures make, and three named classes of
+code claim — methods 1 and 2's external-bundle transport codes, whose surface
+this Plan's capability analysis places with a weaker different-UID local
+principal rather than with the total-bypass principal whose proof obligation is
+unbounded; method 4 sub-case 4's `STALE_REF_LOCK`, whose residue is planted and
+arises with no adversary; and method 4 sub-case 6's `FOREIGN_REF` guards, which
+the fixture injects into `git`'s own output rather than at a path the gate reads.
+A criterion of this shape cannot decide every case unaided, because a leaf a
+fixture creates and one it substitutes are the same file on disk, so the RED
+scoping enumeration that applies it to every method and sub-case is its closed
+application, and where the two could be read apart that enumeration governs.
 
 Nothing outside those two lists is left without a status. State the default
 rather than leaving it to be derived: every obligation the executable contract
@@ -2805,7 +2902,8 @@ action exactly as any other finding does. Citing the backlog does not resolve a
 finding, and no round may treat this demotion as authority to close the gate
 over a standing Critical or Important verdict.
 
-**Robustness backlog — named, owned by no round yet, and non-blocking:**
+**Robustness backlog — named, owned by no round yet, and removed from what this
+gate requires rather than from what a finding does:**
 
 - **R1 — omission-clause classification.** Which window a substituted or
   concurrently removed leaf lands in, and which clause catches it, is unsettled.
@@ -2820,20 +2918,39 @@ over a standing Critical or Important verdict.
   this Plan's own snapshot ordering. Whichever round takes this item must
   reconcile the scoped claim, the snapshot ordering, and the omission clause in
   one statement; until then no round may assert any direction as settled.
-- **R2 — adversarial code assertions in the evidence namespace.** This item is
-  the named error code an injection is asserted to produce, not the fixture that
-  produces it. It covers the code asserted by method 3's injection cases, by
-  method 4 sub-case 1, and by the two FIFO parts of method 4 sub-case 5; the
-  same fixtures' assertions that the gate finishes within its bound, parks
-  nowhere, leaves no live or unreaped child, and reaches a fail-closed terminal
-  state instead of proceeding are gate-blocking and are not in this item. It
-  also covers method 4 sub-case 2 in whole, because that sub-case's injection
-  point and observing call are the direction R1 owns, so it can carry no gate
-  requirement until R1 closes. Method 4 sub-cases 3 and 4 and the index part of
-  sub-case 5 are not in this item at all. The RED scoping paragraph below places
-  each assertion individually, and the text below it remains the description of
-  how to build the fixtures. The controls they exercise stay mandatory
-  regardless.
+- **R2 — adversarial code assertions under injection.** This item is the named
+  error code an injection is asserted to produce, not the fixture that produces
+  it, and the criterion that places it is the one stated in the pass condition
+  above, repeated here in the same words. Demoted: a claim that names one
+  specific error code as the outcome of an adversarial substitution or removal
+  the fixture directs at a path the gate reads. Retained: every other claim those
+  same fixtures make, and three named classes of code claim — methods 1 and 2's
+  external-bundle transport codes, whose surface this Plan's capability analysis
+  places with a weaker different-UID local principal rather than with the
+  total-bypass principal whose proof obligation is unbounded; method 4 sub-case
+  4's `STALE_REF_LOCK`, whose residue is planted and arises with no adversary;
+  and method 4 sub-case 6's `FOREIGN_REF` guards, which the fixture injects into
+  `git`'s own output rather than at a path the gate reads. A criterion of this
+  shape cannot decide every case unaided, because a leaf a fixture creates and
+  one it substitutes are the same file on disk, so the RED scoping enumeration
+  that applies it to every method and sub-case is its closed application, and
+  where the two could be read apart that enumeration governs. Applied, this item
+  covers the code asserted by method 3's injection cases together with the clause
+  attribution R1 owns, by method 4 sub-case 1, by method 4 sub-case 3, and by the
+  control-file FIFO part of method 4 sub-case 5. The same fixtures' assertions
+  that the gate finishes within its bound, parks nowhere, leaves no live or
+  unreaped child, and reaches a mapped fail-closed terminal state — exit 1, empty
+  stdout, and a stderr whose first line is a `<CODE>: <detail>` diagnostic rather
+  than an unmapped traceback — instead of proceeding are gate-blocking and are
+  not in this item. It also covers method 4 sub-case 2 in whole, because that
+  sub-case's injection point and observing call are the direction R1 owns, so it
+  can carry no gate requirement until R1 closes. Methods 1 and 2, method 4
+  sub-cases 4 and 6, the `--task`/`--spec`/`--plan` FIFO part of sub-case 5, and
+  the index part of sub-case 5 are not in this item at all. The RED scoping
+  paragraph below places each assertion individually, and the text below it
+  remains the description of how to build the fixtures, except sub-case 2, whose
+  retained text is R1's unreconciled starting point rather than a build
+  specification. The controls they exercise stay mandatory regardless.
 - **R3 — the descriptor bind window.** An alarm landing between the C-level
   `open()` returning and the Python bind leaves one read-only `O_CLOEXEC`
   descriptor unclosed until the fail-closed process exits. This is accepted as a
@@ -3243,42 +3360,81 @@ raw discovery contract:
   commit OID that the raw walk has already admitted, and that is unlinked
   before the `for-each-ref` of the same snapshot runs, is dropped with exit 0,
   empty stdout, and empty stderr, so no preserved guard fires on it. Those are
-  recorded observations of those reviews. Classifying every other candidate
-  condition against this clause, and mandating a regression that constructs
-  one, are robustness-backlog items R1 and R2 rather than passing requirements:
-  the clause's job in this contract is to fail closed on a one-sided raw/union
-  membership the contract does not otherwise admit, and it does that whatever
-  produced the membership.
+  recorded observations of those reviews. State the split at assertion
+  granularity here too, since fix-8 redrew it and this sentence was left at
+  fixture granularity. Classifying every other candidate condition against this
+  clause is robustness-backlog item R1, and the named code plus the clause
+  attribution that a constructed regression is asserted to yield are R2; neither
+  is a passing requirement. The regression itself is not deferred with them:
+  method 3 mandates one, and its assertions that discovery finishes within its
+  bound, parks nowhere, and reaches a mapped fail-closed terminal state rather
+  than proceeding are passing requirements. The clause's job in this contract is
+  to fail closed on a one-sided raw/union membership the contract does not
+  otherwise admit, and it does that whatever produced the membership.
 
 Write RED first with these exact focused methods. Fix-8 scopes which of their
 _assertions_ round 4 must satisfy for passage, at assertion granularity rather
 than by whole sub-case, because the same injection produces two claims that
-belong on different sides. The gate-blocking kind: that the operation finishes
-within its stated bound, that any child this gate spawned is terminated and
-synchronously reaped, that no site parks, and that the gate reaches some
-fail-closed terminal state instead of proceeding. The kind moved to
-robustness-backlog items R1 and R2: that a named adversarial substitution in the
-evidence namespace produces one named error code, and the classification
-argument about which clause catches which substitution. Constructing an
-injection is not what places an assertion; what the assertion claims is.
+belong on different sides; fix-9 corrects where fix-8 stated that line
+inconsistently with how it applied it. The gate-blocking kind: that the
+operation finishes within its stated bound, that any child this gate spawned is
+terminated and synchronously reaped, that no site parks, and that the gate
+reaches a mapped fail-closed terminal state — exit 1, empty stdout, and a stderr
+whose first line is a `<CODE>: <detail>` diagnostic rather than an unmapped
+traceback — instead of proceeding. State that last one in that form rather than
+leaving its form to the implementer: an unhandled Python traceback also exits
+nonzero with empty stdout and a non-empty stderr, so a generic "reached some
+fail-closed state" assertion cannot tell a mapped terminal code from a crash,
+while this form proves the run left through the contract's own mapped
+fail-closed path — the same path the late-alarm mapping clause above requires —
+without naming which code it emitted, and so adds nothing to the demoted
+obligation. The kind moved to robustness-backlog items R1 and R2: the named
+error code, and the classification argument about which clause catches which
+substitution. Constructing an injection is not what places an assertion; what
+the assertion claims is.
 
-Apply that line to the four methods as follows, so that no method and no
-sub-case is left with an undefined status, including the one sub-case whose own
-premise puts all of its assertions in the backlog.
+The criterion that places a code claim, in the same words the pass condition and
+R2 above use. Demoted: a claim that names one specific error code as the outcome
+of an adversarial substitution or removal the fixture directs at a path the gate
+reads. Retained: every other claim those same fixtures make, and three named
+classes of code claim — methods 1 and 2's external-bundle transport codes, whose
+surface this Plan's capability analysis places with a weaker different-UID local
+principal rather than with the total-bypass principal whose proof obligation is
+unbounded; method 4 sub-case 4's `STALE_REF_LOCK`, whose residue is planted and
+arises with no adversary; and method 4 sub-case 6's `FOREIGN_REF` guards, which
+the fixture injects into `git`'s own output rather than at a path the gate reads.
+A criterion of this shape cannot decide every case unaided, because a leaf a
+fixture creates and one it substitutes are the same file on disk, so the RED
+scoping enumeration that applies it to every method and sub-case is its closed
+application, and where the two could be read apart that enumeration governs.
 
-- Methods 1 and 2 stay gate-blocking in full. They bind bundle transport, not
-  the evidence namespace, and their codes are the transport binding the contract
-  keeps normative.
-- Method 3 stays gate-blocking for its non-injection coverage and for the
-  bounded, non-parking, non-reopening, fail-closed behaviour of each of its
-  injection cases, including the FIFO case's bounded join/timeout. Only the
-  named code each injection is asserted to yield is backlog.
+That enumeration is the following list. It is the closed application to the four
+methods, so that no method and no sub-case is left with an undefined status,
+including the one sub-case whose own premise puts all of its assertions in the
+backlog. A round that finds a case the criterion does not place cleanly amends
+this list in a reviewed Plan amendment rather than reasoning from the criterion
+to a placement this list does not state.
+
+- Methods 1 and 2 stay gate-blocking in full, including their
+  `BUNDLE_TRANSPORT_DRIFT` and `BUNDLE_READ_FAILURE` codes. They are the first of
+  the criterion's three named retained classes: they bind the external bundle at
+  the literal `/tmp` direct child, a surface this Plan's capability analysis
+  places with a weaker different-UID local principal rather than with the
+  total-bypass principal, and their codes are the all-or-none transport binding
+  the default rule above already carries into passage.
+- Method 3 stays gate-blocking for its non-injection coverage, including the
+  codes that coverage asserts, and for the bounded, non-parking, non-reopening,
+  mapped fail-closed behaviour of each of its injection cases, including the FIFO
+  case's bounded join/timeout. Only the named code each injection is asserted to
+  yield, and the clause attribution R1 owns, are backlog — stated together
+  because R1 forbids any round to assert a clause attribution as settled, so
+  leaving the attribution gate-blocking would mandate exactly what R1 forbids.
 - Method 4's opening proof that a regular raw/direct snapshot succeeds stays
   gate-blocking.
 - Sub-case 1 stays gate-blocking for the absence it asserts — no timeout, no
   termination grace, no reaped child, no `<ref>.lock` — because that is a
   liveness claim that depends on no unsettled classification. Only its
-  `FOREIGN_REF` verdict is backlog.
+  `FOREIGN_REF` verdict is backlog, under R2.
 - Sub-case 2 is backlog in whole, and the reason is stated rather than left to
   be derived: its injection point and its naming of the observing call are the
   direction R1 owns and this Plan does not assert as settled, so it can carry no
@@ -3286,34 +3442,52 @@ premise puts all of its assertions in the backlog.
 - Sub-case 3 carries the mandatory funnel-1 demonstration and stays
   gate-blocking for it — bound expiry, the signal delivered to the child process
   group this gate created, child absence, and synchronous reap within the bound
-  plus grace — because its injection point is the `commit-tree` boundary between
-  an absent-ref lookup and the CAS, which does not depend on R1. Only its
-  `FOREIGN_REF` verdict is backlog. This is the gate-blocking demonstration of
+  plus grace, together with reaching a mapped fail-closed terminal state — because
+  its injection point is the `commit-tree` boundary between an absent-ref lookup
+  and the CAS, which does not depend on R1. Only its `FOREIGN_REF` verdict is
+  backlog, under R2, because that verdict names one specific code as the outcome
+  of a substitution the fixture directs at a path the gate reads, which is the
+  demoted class exactly. Demoting the code identity does not hollow out the
+  demonstration: the four liveness assertions and the mapped fail-closed form
+  above are gate-blocking without it. This is the gate-blocking demonstration of
   funnel 1's bound, grace, and reap; no other gate-blocking assertion in these
   four methods supplies one.
 - Sub-case 4 is gate-blocking in full, including the size-independent
   `STALE_REF_LOCK` predicate across both variants, exit 1 with stderr-only
   diagnostics, and the assertion that the run performed no unlink and changed
-  nothing. Its residue is planted, not substituted, and arises with no adversary,
-  so no assertion in it is an adversarial code assertion.
+  nothing. It is the second of the criterion's three named retained classes: its
+  residue is planted by the fixture rather than substituted at a path the gate
+  reads, and it arises with no adversary at all, so no assertion in it is an
+  adversarial code assertion.
 - Sub-case 5 has three parts and each is placed individually rather than as a
-  half. The FIFO at a control-file argument and the FIFO at `--task`, `--spec`,
-  or `--plan` stay gate-blocking for park prevention, the absence of an
-  unbounded read, and failing closed rather than proceeding; only the named
-  `CONTROL_FILE_DRIFT` code is backlog. The non-regular repository index part is
+  half. The FIFO at a control-file argument stays gate-blocking for park
+  prevention, the absence of an unbounded read, and reaching a mapped fail-closed
+  terminal state rather than proceeding; only its named `CONTROL_FILE_DRIFT` code
+  is backlog, under R2. The FIFO at `--task`, `--spec`, or `--plan` is
+  gate-blocking in full, because it names no code at all: its whole claim is that
+  funnel 3 fails closed without an unbounded read, so the demotion has nothing to
+  cover there and R2 does not name it. The non-regular repository index part is
   gate-blocking in full, because it names no substitution code and asserts guard
   ordering against the first index-reading Git invocation.
-- Sub-case 6 is gate-blocking in full. Its byte-for-byte victim, outside-ref,
-  and object-inventory comparison is the verification of the no-mutation
-  property Spec 137 requires directly and that the fix-5 Python/security
-  approval rested on, so it cannot be non-blocking.
+- Sub-case 6 is gate-blocking in full, including its `FOREIGN_REF` assertions.
+  Its byte-for-byte victim, outside-ref, and object-inventory comparison is the
+  verification of the no-mutation property Spec 137 requires directly and that
+  the fix-5 Python/security approval rested on, so it cannot be non-blocking. Its
+  separate injected nonzero-exit and stderr-with-zero-exit cases are the third of
+  the criterion's three named retained classes, and their placement is stated
+  rather than left to the default rule: the fixture injects them into `git`'s own
+  output rather than at a path the gate reads, and they exercise the preserved
+  nonzero-exit and stderr guards this contract keeps normative rather than a
+  classification R1 owns.
 
 Round 4 must satisfy every gate-blocking assertion above. It may also implement
 the backlog assertions; their text below remains the specification of how to
-build them. A review finding that names only a backlog assertion is recorded
-against the item that owns it and is governed by the status stated in the fix-8
-pass condition above — a reviewer following this Plan has no ground to raise the
-absence of a backlog assertion, and a Critical or Important finding filed
+build them, except sub-case 2, whose retained text is R1's unreconciled starting
+point rather than a build specification and which no round may implement until
+R1 reconciles it. A review finding that names only a backlog assertion is
+recorded against the item that owns it and is governed by the status stated in
+the pass condition above — a reviewer following this Plan has no ground to raise
+the absence of a backlog assertion, and a Critical or Important finding filed
 against one anyway remains unresolved and blocking until repaired or re-scoped.
 This scoping removes no control: everything these sub-cases exercise stays
 mandatory in the executable contract above.
@@ -3400,8 +3574,9 @@ mandatory in the executable contract above.
       mandatory funnel-1 demonstration is sub-case 3, whose injection point does
       not depend on R1. The process-group observation point named at the end of
       this sub-case is a definition rather than one of its assertions, and it is
-      not demoted with them: gate-blocking sub-case 3 and backlog item R4 both
-      use it.
+      not demoted with them: backlog item R4 uses it, and gate-blocking sub-case
+      3 restates it below in full rather than reading it out of this sub-case, so
+      no gate-blocking assertion is sourced from demoted text.
       A round that does implement it asserts that funnel 1 expires the
       2.0-second bound, signals the child
       process group, and that within that bound plus the 0.5-second grace the
@@ -3436,15 +3611,32 @@ mandatory in the executable contract above.
       that lookup returns absent and before the CAS runs, using the
       `commit-tree` invocation between them as the observable boundary — the
       same mid-flight substitution technique the sibling method already uses
-      between the two namespace snapshots. Assert the same funnel-1 expiry,
-      process-group signal, child absence and synchronous reap within the bound
-      plus grace, and `FOREIGN_REF`, under the same prohibition on asserting an
-      escalation that does not fire. This sub-case carries the gate-blocking
-      funnel-1 demonstration: its expiry, process-group signal, child-absence,
-      and synchronous-reap assertions are passing requirements, and its injection
-      point is fixed by this contract's own ordering rather than by the
-      classification R1 owns, so it does not inherit sub-case 2's unsettled
-      premise. Only its `FOREIGN_REF` verdict is a backlog assertion under R2.
+      between the two namespace snapshots. State this sub-case's assertions in
+      full here rather than by reference, because it is the mandatory funnel-1
+      demonstration and must not read its assertion list out of demoted
+      sub-case 2. Assert that funnel 1 expires its 2.0-second bound; that the
+      signal goes to the child process group this gate created, observed by
+      recording the
+      helper's descendant PIDs and their process-group ID before the bound
+      expires and then requiring every recorded PID gone and
+      `os.killpg(pgid, 0)` to raise `ESRCH` after bound plus grace; that within
+      that bound plus the 0.5-second grace the child is absent and has been
+      reaped synchronously; and that the run reaches a mapped fail-closed
+      terminal state — exit 1, empty stdout, and a stderr whose first line is a
+      `<CODE>: <detail>` diagnostic rather than an unmapped traceback. Also
+      assert `FOREIGN_REF`. Do not assert that the `SIGKILL` escalation fired:
+      the fix-4 specification review measured that a blocked
+      `git update-ref --no-deref` exits on `SIGTERM` well inside one second, so
+      the conditional kill normally never runs and asserting it would fail for a
+      reason unrelated to the missing Step 0e contract. This sub-case carries the
+      gate-blocking funnel-1 demonstration: its expiry, process-group signal,
+      child-absence, synchronous-reap, and mapped fail-closed assertions are
+      passing requirements, and its injection point is fixed by this contract's
+      own ordering rather than by the classification R1 owns, so it does not
+      inherit sub-case 2's unsettled premise. Only its `FOREIGN_REF` verdict is a
+      backlog assertion under R2, because that verdict is the one thing here that
+      names a specific code as the outcome of the substitution; every assertion
+      listed above it is gate-blocking without it.
    4. **Lock residue.** Do not chain this sub-case off sub-case 3. The residue
       cannot arise from this gate's own termination path: per the measurement
       recorded above, the blocked child exits on `SIGTERM` and Git's lock-file
