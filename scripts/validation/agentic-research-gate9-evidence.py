@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import contextlib
 import dataclasses
 import fcntl
 import hashlib
@@ -13,11 +14,14 @@ import os
 import pathlib
 import re
 import secrets
+import select
 import shutil
+import signal
 import stat
 import subprocess
 import sys
-from collections.abc import Mapping, Sequence
+import time
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any, Final
 
 
@@ -107,6 +111,23 @@ EXPECTED_REQUIREMENTS: Final = frozenset(
 TASK_REQUIREMENT_SUMMARY_PATTERN: Final = re.compile(
     rb"(?<![0-9])36/36 requirements(?![A-Za-z0-9_-])"
 )
+FUNNEL_SECONDS: Final = 2.0
+FUNNEL_GRACE_SECONDS: Final = 0.5
+FOR_EACH_REF_MAX_BYTES: Final = 4 * 1024
+LOOSE_LEAF_MIN_BYTES: Final = 1
+LOOSE_LEAF_MAX_BYTES: Final = 65
+NAMESPACE_COMPONENTS: Final = tuple(REF_PREFIX.split("/"))
+ATTEMPT_DIRECTORY_PATTERN: Final = re.compile(r"attempt-[12]")
+LOOSE_LEAF_PATTERN: Final = re.compile(r"[0-9a-f]{64}")
+EXPECTED_HEX_PATTERN: Final = re.compile(r"[0-9a-f]{64}")
+EXTERNAL_BUNDLE_MODES: Final = (
+    "verify-package",
+    "verify-assignments",
+    "verify-backfill",
+    "publish-evidence-ref",
+    "verify-authorized",
+)
+REF_RECORD_FORMAT: Final = "%(refname)%00%(objectname)%00%(objecttype)%00%(symref)%00"
 
 
 class Gate9Error(RuntimeError):
@@ -120,6 +141,200 @@ class Gate9Error(RuntimeError):
 
 def fail(code: str, detail: str) -> None:
     raise Gate9Error(code, detail)
+
+
+class FunnelDeadline(Exception):
+    """Raised by the ``ITIMER_REAL`` handler that bounds a Gate 9 funnel."""
+
+
+def _raise_funnel_deadline(signum: int, frame: object) -> None:
+    del signum, frame
+    raise FunnelDeadline()
+
+
+def _reap_funnel_child(process: subprocess.Popen[bytes]) -> None:
+    """Terminate, grace, conditionally kill, and synchronously reap one child.
+
+    Funnel 1 signals only a process group this gate created; it never signals
+    its own group, its session, or its parent.
+    """
+    own_group = os.getpgrp()
+    try:
+        group = os.getpgid(process.pid)
+    except OSError:
+        group = None
+    signalled_group = group is not None and group != own_group
+    try:
+        if signalled_group:
+            os.killpg(group, signal.SIGTERM)
+        else:
+            process.terminate()
+    except OSError:
+        pass
+    try:
+        process.communicate(timeout=FUNNEL_GRACE_SECONDS)
+    except subprocess.TimeoutExpired:
+        try:
+            if signalled_group:
+                os.killpg(group, signal.SIGKILL)
+            else:
+                process.kill()
+        except OSError:
+            pass
+        with contextlib.suppress(subprocess.TimeoutExpired):
+            process.communicate(timeout=FUNNEL_GRACE_SECONDS)
+    except OSError:
+        pass
+    process.wait()
+
+
+def funnel_spawn(
+    argv: Sequence[str],
+    *,
+    cwd: pathlib.Path | None,
+    env: Mapping[str, str],
+    input_bytes: bytes | None = None,
+    pass_fds: Sequence[int] = (),
+    code: str,
+    label: str,
+) -> subprocess.CompletedProcess[bytes]:
+    """Funnel 1 — every Gate 9 subprocess invocation, bounded and reaped."""
+    try:
+        process = subprocess.Popen(
+            list(argv),
+            cwd=cwd,
+            env=dict(env),
+            stdin=subprocess.PIPE if input_bytes is not None else subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+            pass_fds=tuple(pass_fds),
+        )
+    except OSError as error:
+        fail(code, f"{label} cannot be spawned: {error}")
+    try:
+        stdout, stderr = process.communicate(input_bytes, timeout=FUNNEL_SECONDS)
+    except subprocess.TimeoutExpired:
+        _reap_funnel_child(process)
+        fail(code, f"{label} exceeded the {FUNNEL_SECONDS}s Gate 9 funnel bound")
+    except BaseException:
+        _reap_funnel_child(process)
+        raise
+    return subprocess.CompletedProcess(list(argv), process.returncode, stdout, stderr)
+
+
+def funnel_descriptor_read(
+    opener: Callable[[], int],
+    *,
+    code: str,
+    label: str,
+    max_bytes: int,
+    require: Callable[[os.stat_result], str | None] | None = None,
+) -> tuple[os.stat_result, os.stat_result, bytes]:
+    """Funnels 2 and 3 — one bounded, non-following, non-blocking read.
+
+    The ``ITIMER_REAL`` alarm is armed **before** ``open`` because a park
+    inside ``open`` is the residual hazard this deadline exists for. ``poll()``
+    is used only as an additional read-phase cap. A late alarm arriving after
+    the guarded call returned and before the disarm is caught at this funnel
+    boundary and mapped to this site's fail-closed code.
+    """
+    slot: list[int] = []
+    payload: bytes | None = None
+    before: os.stat_result | None = None
+    after: os.stat_result | None = None
+    previous = signal.signal(signal.SIGALRM, _raise_funnel_deadline)
+    signal.setitimer(signal.ITIMER_REAL, FUNNEL_SECONDS)
+    deadline = time.monotonic() + FUNNEL_SECONDS
+    try:
+        try:
+            slot.append(opener())
+            descriptor = slot[0]
+            before = os.fstat(descriptor)
+            if not stat.S_ISREG(before.st_mode):
+                fail(code, f"{label} is not a regular file")
+            if require is not None:
+                complaint = require(before)
+                if complaint is not None:
+                    fail(code, complaint)
+            if before.st_size > max_bytes:
+                fail(code, f"{label} exceeds its {max_bytes}-byte bound")
+            if os.lseek(descriptor, 0, os.SEEK_CUR) != 0:
+                fail(code, f"{label} descriptor offset is not zero")
+            chunks: list[bytes] = []
+            observed = 0
+            poller = select.poll()
+            poller.register(descriptor, select.POLLIN)
+            while observed < before.st_size:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0 or not poller.poll(remaining * 1000.0):
+                    fail(
+                        code,
+                        f"{label} exceeded the {FUNNEL_SECONDS}s Gate 9 funnel bound",
+                    )
+                chunk = os.read(descriptor, min(1024 * 1024, before.st_size - observed))
+                if not chunk:
+                    fail(code, f"{label} ended before its stated size")
+                chunks.append(chunk)
+                observed += len(chunk)
+            if before.st_size and os.read(descriptor, 1):
+                fail(code, f"{label} exceeds its stated size")
+            after = os.fstat(descriptor)
+            payload = b"".join(chunks)
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, previous)
+    except FunnelDeadline:
+        fail(code, f"{label} exceeded the {FUNNEL_SECONDS}s Gate 9 funnel bound")
+    except Gate9Error:
+        raise
+    except OSError as error:
+        fail(code, f"{label}: {error}")
+    finally:
+        for descriptor in slot:
+            os.close(descriptor)
+    if before is None or after is None or payload is None:
+        fail(code, f"{label} produced no bounded observation")
+    return before, after, payload
+
+
+def whole_file_bytes(
+    path: "pathlib.Path | MemoryBlob", *, code: str, label: str
+) -> bytes:
+    if isinstance(path, MemoryBlob):
+        return path.read_bytes()
+    return funnel_whole_file(path, code=code, label=label)
+
+
+def funnel_whole_file(path: pathlib.Path, *, code: str, label: str) -> bytes:
+    """Funnel 3 — every ``Path.read_bytes()``-class whole-file read."""
+    literal = pathlib.Path(path).absolute()
+
+    def opener() -> int:
+        return os.open(
+            literal,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+        )
+
+    def require(metadata: os.stat_result) -> str | None:
+        if metadata.st_size > BUNDLE_MAX_BYTES:
+            return f"{label} exceeds the Gate 9 whole-file bound"
+        return None
+
+    before, after, payload = funnel_descriptor_read(
+        opener,
+        code=code,
+        label=label,
+        max_bytes=BUNDLE_MAX_BYTES,
+        require=require,
+    )
+    if (before.st_dev, before.st_ino, before.st_size) != (
+        after.st_dev,
+        after.st_ino,
+        after.st_size,
+    ):
+        fail(code, f"{label} changed during its bounded read")
+    return payload
 
 
 @dataclasses.dataclass(frozen=True)
@@ -186,6 +401,7 @@ def run_git(
     check: bool = True,
     pass_fds: Sequence[int] = (),
     isolate_config: bool = False,
+    funnel_code: str = "GIT_FAILURE",
 ) -> subprocess.CompletedProcess[bytes]:
     command_env = (
         {
@@ -202,14 +418,16 @@ def run_git(
     if env:
         command_env.update(env)
     command_env["GIT_NO_REPLACE_OBJECTS"] = "1"
-    result = subprocess.run(
+    result = funnel_spawn(
         ["git", *args],
         cwd=root,
         env=command_env,
-        input=input_bytes,
-        capture_output=True,
-        check=False,
-        pass_fds=tuple(pass_fds),
+        input_bytes=input_bytes,
+        pass_fds=pass_fds,
+        code=(
+            "FOREIGN_REF" if any(REF_PREFIX in value for value in args) else funnel_code
+        ),
+        label=f"git {' '.join(args)}",
     )
     if check and result.returncode:
         stderr = result.stderr.decode("utf-8", "replace").strip()
@@ -218,15 +436,54 @@ def run_git(
 
 
 def repository_root() -> pathlib.Path:
-    result = subprocess.run(
+    result = funnel_spawn(
         ["git", "rev-parse", "--show-toplevel"],
-        capture_output=True,
-        text=True,
-        check=False,
+        cwd=None,
+        env=os.environ.copy(),
+        code="NOT_A_REPOSITORY",
+        label="git rev-parse --show-toplevel",
     )
     if result.returncode:
-        fail("NOT_A_REPOSITORY", result.stderr.strip())
-    return pathlib.Path(result.stdout.strip()).resolve()
+        fail("NOT_A_REPOSITORY", result.stderr.decode("utf-8", "replace").strip())
+    return pathlib.Path(result.stdout.decode("utf-8", "replace").strip()).resolve()
+
+
+def repository_index_path(root: pathlib.Path) -> pathlib.Path:
+    raw = (
+        run_git(root, ["rev-parse", "--absolute-git-dir"])
+        .stdout.decode("utf-8", "replace")
+        .strip()
+    )
+    if not raw:
+        fail("NON_REGULAR_INDEX", "the repository index path cannot be resolved")
+    return pathlib.Path(raw) / "index"
+
+
+def assert_regular_repository_index(root: pathlib.Path) -> None:
+    """Reject a non-regular index before the first index-reading Git call.
+
+    This guard is unconditional. It runs immediately after the repository-root
+    probe and before the authority preflight in every mode, because the first
+    index-reading Git invocation is the preflight's ``git diff`` pair.
+    """
+    index_path = repository_index_path(root)
+    try:
+        metadata = os.lstat(index_path)
+    except FileNotFoundError:
+        return
+    except OSError as error:
+        fail("NON_REGULAR_INDEX", f"the repository index cannot be inspected: {error}")
+    if not stat.S_ISREG(metadata.st_mode):
+        fail(
+            "NON_REGULAR_INDEX",
+            f"the repository index is not a regular file: {os.fspath(index_path)}",
+        )
+
+
+def gate9_repository(root: pathlib.Path | None = None) -> pathlib.Path:
+    resolved = repository_root() if root is None else root
+    assert_regular_repository_index(resolved)
+    return resolved
 
 
 def repo_path(root: pathlib.Path, raw: str) -> tuple[pathlib.PurePosixPath, pathlib.Path]:
@@ -1005,14 +1262,14 @@ def _run_generator_from_manifest(
             "PYTHONNOUSERSITE": "1",
             "PYTHONSAFEPATH": "1",
         }
-        result = subprocess.run(
+        result = funnel_spawn(
             [trusted_bash, "-s", "--", "--stdout"],
             cwd=root,
             env=environment,
-            input=generator_bytes,
-            capture_output=True,
-            check=False,
+            input_bytes=generator_bytes,
             pass_fds=(descriptor,),
+            code="GENERATOR_STDOUT_DRIFT",
+            label=f"sealed-manifest generator {label}",
         )
     finally:
         os.close(descriptor)
@@ -1112,7 +1369,13 @@ def assert_unambiguous_history(root: pathlib.Path) -> None:
     grafts = common_dir / "info/grafts"
     shallow = common_dir / "shallow"
     try:
-        graft_bytes = grafts.read_bytes() if grafts.exists() else b""
+        graft_bytes = (
+            funnel_whole_file(
+                grafts, code="AMBIGUOUS_GIT_HISTORY", label="Git grafts file"
+            )
+            if grafts.exists()
+            else b""
+        )
         shallow_exists = shallow.exists()
     except OSError as error:
         fail("AMBIGUOUS_GIT_HISTORY", f"history boundary cannot be inspected: {error}")
@@ -1230,7 +1493,11 @@ def authority_preflight(
             fail("REVIEWED_CODE_DRIFT", f"reviewed code path is dirty: {path}")
         live_blobs.append(live_blob)
     try:
-        task_bytes = (root / pathlib.Path(*TASK_PATH.parts)).read_bytes()
+        task_bytes = funnel_whole_file(
+            root / pathlib.Path(*TASK_PATH.parts),
+            code="REVIEWED_CODE_DRIFT",
+            label="tracked Task code binding",
+        )
     except OSError as error:
         fail("REVIEWED_CODE_DRIFT", f"Task code binding cannot be read: {error}")
     bindings = re.findall(
@@ -1275,7 +1542,11 @@ def snapshot_directory_tree(root: pathlib.Path) -> tuple[tuple[str, str, int, in
                 payload = b""
             elif stat.S_ISREG(metadata.st_mode):
                 kind = "file"
-                payload = pathlib.Path(entry.path).read_bytes()
+                payload = funnel_whole_file(
+                    pathlib.Path(entry.path),
+                    code="SCRATCH_SCOPE_DRIFT",
+                    label=f"worktree registry entry {entry.name}",
+                )
             elif stat.S_ISLNK(metadata.st_mode):
                 kind = "symlink"
                 payload = os.fsencode(os.readlink(entry.path))
@@ -1297,6 +1568,24 @@ def snapshot_directory_tree(root: pathlib.Path) -> tuple[tuple[str, str, int, in
 
     visit(root, pathlib.PurePosixPath())
     return tuple(rows)
+
+
+def strict_evidence_namespace_evidence(root: pathlib.Path) -> object:
+    """Reuse the strict namespace snapshot for before/after drift evidence.
+
+    ``PROJECTED_INDEX_SCOPE_DRIFT`` wins over ``FOREIGN_REF`` on this path so
+    the operator diagnosis names the failing invariant, except for the
+    ``STALE_REF_LOCK`` residue diagnosis, which stays distinct.
+    """
+    try:
+        return evidence_namespace_snapshot(root)
+    except Gate9Error as error:
+        if error.code == "STALE_REF_LOCK":
+            raise
+        fail(
+            "PROJECTED_INDEX_SCOPE_DRIFT",
+            f"the Gate 9 evidence namespace is not provable: {error.code}: {error.detail}",
+        )
 
 
 def capture_repository_snapshot(
@@ -1328,10 +1617,7 @@ def capture_repository_snapshot(
         for path in (INDEX, COVERAGE)
     )
     registry = git_common_dir(root) / "worktrees"
-    refs = run_git(
-        root,
-        ["for-each-ref", "--format=%(refname) %(objectname)", f"{REF_PREFIX}/"],
-    ).stdout
+    refs = strict_evidence_namespace_evidence(root)
     return RepositorySnapshot(
         expected_head,
         capture_real_index(root),
@@ -1364,10 +1650,7 @@ def prove_repository_snapshot(root: pathlib.Path, snapshot: RepositorySnapshot) 
             fail("PROJECTED_INDEX_SCOPE_DRIFT", f"generated output changed: {path}")
     if snapshot_directory_tree(git_common_dir(root) / "worktrees") != snapshot.worktree_registry:
         fail("PROJECTED_INDEX_SCOPE_DRIFT", "linked-worktree registry changed")
-    refs = run_git(
-        root,
-        ["for-each-ref", "--format=%(refname) %(objectname)", f"{REF_PREFIX}/"],
-    ).stdout
+    refs = strict_evidence_namespace_evidence(root)
     if refs != snapshot.evidence_refs:
         fail("PROJECTED_INDEX_SCOPE_DRIFT", "Gate 9 evidence refs changed")
 
@@ -1450,15 +1733,327 @@ def fixed_evidence_ref(attempt: int, package_sha256: str) -> str:
     return f"{REF_PREFIX}/attempt-{attempt}/{package_sha256}"
 
 
-def existing_evidence_refs(root: pathlib.Path) -> list[str]:
+@dataclasses.dataclass(frozen=True)
+class LooseEvidenceLeaf:
+    """One raw loose evidence leaf observed without following any symlink."""
+
+    name: str
+    oid: str
+    identity: tuple[int, int, int, int]
+    payload: bytes
+
+
+def _open_namespace_directory(root: pathlib.Path) -> tuple[int | None, pathlib.Path]:
+    """Open the fixed evidence namespace with descriptor-relative traversal.
+
+    Absence of the namespace is an empty loose snapshot; a symlink, a
+    non-directory ancestor, or an unreadable or ambiguous entry is
+    ``FOREIGN_REF``.
+    """
+    common = git_common_dir(root)
+    try:
+        current = os.open(
+            os.fspath(common), os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC
+        )
+    except OSError as error:
+        fail("FOREIGN_REF", f"the Git common directory cannot be opened: {error}")
+    try:
+        for component in NAMESPACE_COMPONENTS:
+            try:
+                child = os.open(
+                    component,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                    dir_fd=current,
+                )
+            except FileNotFoundError:
+                os.close(current)
+                return None, common
+            except OSError as error:
+                fail(
+                    "FOREIGN_REF",
+                    f"evidence namespace component {component!r} is not a "
+                    f"plain directory: {error}",
+                )
+            os.close(current)
+            current = child
+    except BaseException:
+        os.close(current)
+        raise
+    return current, common
+
+
+def _stale_ref_lock(
+    root: pathlib.Path,
+    common: pathlib.Path,
+    attempt_fd: int,
+    attempt: str,
+    lock_name: str,
+    leaf_names: Sequence[str],
+) -> None:
+    """Diagnose an evidence-ref lock residue read-only, and stop.
+
+    The gate never removes, truncates, renames, opens for writing, or otherwise
+    touches the lock, its siblings, its directory, the corresponding ref leaf,
+    any object, the branch, the index, or the worktree. Byte size is not a
+    discriminator and no ownership claim is made.
+    """
+    leaf_name = lock_name[: -len(".lock")]
+    try:
+        metadata = os.stat(lock_name, dir_fd=attempt_fd, follow_symlinks=False)
+    except OSError as error:
+        fail(
+            "STALE_REF_LOCK",
+            f"an evidence-ref lock residue cannot be inspected: {error}",
+        )
+    if stat.S_ISREG(metadata.st_mode):
+        kind = "regular file"
+    elif stat.S_ISDIR(metadata.st_mode):
+        kind = "directory"
+    elif stat.S_ISLNK(metadata.st_mode):
+        kind = "symlink"
+    elif stat.S_ISFIFO(metadata.st_mode):
+        kind = "fifo"
+    elif stat.S_ISSOCK(metadata.st_mode):
+        kind = "socket"
+    else:
+        kind = "device or other"
+    if leaf_name not in leaf_names:
+        leaf_state = "absent"
+    else:
+        leaf_state = "present"
+    literal = common / pathlib.Path(REF_PREFIX) / attempt / lock_name
+    fail(
+        "STALE_REF_LOCK",
+        "an evidence-ref lock residue must be inspected and removed by an "
+        f"operator: common_dir={os.fspath(common)} lock={os.fspath(literal)} "
+        f"type={kind} bytes={metadata.st_size} "
+        f"mtime_ns={metadata.st_mtime_ns} ref_leaf={leaf_state}",
+    )
+
+
+def _read_loose_leaf(
+    root: pathlib.Path,
+    attempt_fd: int,
+    attempt: str,
+    leaf_name: str,
+    width: int,
+) -> LooseEvidenceLeaf:
+    directory = attempt_fd
+
+    def opener() -> int:
+        return os.open(
+            leaf_name,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+            dir_fd=directory,
+        )
+
+    def require(metadata: os.stat_result) -> str | None:
+        if metadata.st_nlink != 1:
+            return f"loose evidence leaf {attempt}/{leaf_name} is not exclusive"
+        if not (LOOSE_LEAF_MIN_BYTES <= metadata.st_size <= LOOSE_LEAF_MAX_BYTES):
+            return f"loose evidence leaf {attempt}/{leaf_name} has an unadmitted size"
+        return None
+
+    before, after, payload = funnel_descriptor_read(
+        opener,
+        code="FOREIGN_REF",
+        label=f"loose evidence leaf {attempt}/{leaf_name}",
+        max_bytes=LOOSE_LEAF_MAX_BYTES,
+        require=require,
+    )
+    if (
+        (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+        != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+        or after.st_nlink != 1
+        or not stat.S_ISREG(after.st_mode)
+    ):
+        fail("FOREIGN_REF", f"loose evidence leaf {attempt}/{leaf_name} is unstable")
+    if len(payload) != width + 1 or not payload.endswith(b"\n"):
+        fail(
+            "FOREIGN_REF",
+            f"loose evidence leaf {attempt}/{leaf_name} is not one direct ref",
+        )
+    raw_oid = payload[:-1]
+    if re.fullmatch(rb"[0-9a-f]+", raw_oid) is None or len(raw_oid) != width:
+        fail(
+            "FOREIGN_REF",
+            f"loose evidence leaf {attempt}/{leaf_name} is not a full object-format OID",
+        )
+    oid = raw_oid.decode("ascii", "strict")
+    kind = run_git(
+        root,
+        ["cat-file", "-t", oid],
+        check=False,
+        funnel_code="FOREIGN_REF",
+    )
+    if kind.returncode or kind.stdout != b"commit\n":
+        fail(
+            "FOREIGN_REF",
+            f"loose evidence leaf {attempt}/{leaf_name} does not name a commit",
+        )
+    return LooseEvidenceLeaf(
+        f"{attempt}/{leaf_name}",
+        oid,
+        (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns),
+        payload,
+    )
+
+
+def raw_loose_snapshot(root: pathlib.Path, width: int) -> tuple[LooseEvidenceLeaf, ...]:
+    """Enumerate every loose descendant as raw names and bytes."""
+    namespace_fd, common = _open_namespace_directory(root)
+    if namespace_fd is None:
+        return ()
+    leaves: list[LooseEvidenceLeaf] = []
+    try:
+        try:
+            attempts = sorted(os.listdir(namespace_fd), key=os.fsencode)
+        except OSError as error:
+            fail("FOREIGN_REF", f"the evidence namespace cannot be read: {error}")
+        for attempt in attempts:
+            if ATTEMPT_DIRECTORY_PATTERN.fullmatch(attempt) is None:
+                fail(
+                    "FOREIGN_REF",
+                    f"evidence namespace entry {attempt!r} is not an admitted "
+                    "attempt directory",
+                )
+            try:
+                attempt_fd = os.open(
+                    attempt,
+                    os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+                    dir_fd=namespace_fd,
+                )
+            except OSError as error:
+                fail(
+                    "FOREIGN_REF",
+                    f"evidence attempt directory {attempt!r} is not a plain "
+                    f"directory: {error}",
+                )
+            try:
+                try:
+                    names = sorted(os.listdir(attempt_fd), key=os.fsencode)
+                except OSError as error:
+                    fail(
+                        "FOREIGN_REF",
+                        f"evidence attempt directory {attempt!r} cannot be "
+                        f"read: {error}",
+                    )
+                admitted = [
+                    name
+                    for name in names
+                    if LOOSE_LEAF_PATTERN.fullmatch(name) is not None
+                ]
+                for name in names:
+                    if name.endswith(".lock") and LOOSE_LEAF_PATTERN.fullmatch(
+                        name[: -len(".lock")]
+                    ):
+                        _stale_ref_lock(
+                            root, common, attempt_fd, attempt, name, admitted
+                        )
+                for name in names:
+                    if LOOSE_LEAF_PATTERN.fullmatch(name) is None:
+                        fail(
+                            "FOREIGN_REF",
+                            f"evidence leaf name {attempt}/{name!r} is not "
+                            "admitted by EVIDENCE_REF_PATTERN",
+                        )
+                    leaves.append(
+                        _read_loose_leaf(root, attempt_fd, attempt, name, width)
+                    )
+            finally:
+                os.close(attempt_fd)
+    finally:
+        os.close(namespace_fd)
+    return tuple(sorted(leaves, key=lambda leaf: os.fsencode(leaf.name)))
+
+
+def for_each_ref_records(
+    root: pathlib.Path, selector: str
+) -> tuple[tuple[str, str, str, str], ...]:
+    """The packed/direct-ref view, read through one trailing-NUL format."""
     result = run_git(
         root,
-        ["for-each-ref", "--format=%(refname)", f"{REF_PREFIX}/"],
+        ["for-each-ref", f"--format={REF_RECORD_FORMAT}", selector],
+        check=False,
+        env={
+            "GIT_CONFIG_GLOBAL": "/dev/null",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "LANG": "C",
+            "LC_ALL": "C",
+        },
+        funnel_code="FOREIGN_REF",
     )
-    try:
-        refs = sorted(filter(None, result.stdout.decode("ascii", "strict").splitlines()))
-    except UnicodeDecodeError as error:
-        fail("FOREIGN_REF", f"evidence ref name is not ASCII: {error}")
+    if (
+        result.returncode != 0
+        or result.stderr
+        or len(result.stdout) > FOR_EACH_REF_MAX_BYTES
+    ):
+        fail("FOREIGN_REF", "the evidence ref namespace cannot be inspected")
+    raw = result.stdout
+    if not raw:
+        return ()
+    if not raw.endswith(b"\0\n"):
+        fail("FOREIGN_REF", "the evidence ref record stream is malformed")
+    records: list[tuple[str, str, str, str]] = []
+    for chunk in raw.split(b"\0\n")[:-1]:
+        fields = chunk.split(b"\0")
+        if len(fields) != 4:
+            fail("FOREIGN_REF", "an evidence ref record is incomplete")
+        try:
+            decoded = tuple(field.decode("ascii", "strict") for field in fields)
+        except UnicodeDecodeError as error:
+            fail("FOREIGN_REF", f"an evidence ref record is not ASCII: {error}")
+        records.append(decoded)
+    return tuple(records)
+
+
+def evidence_namespace_snapshot(
+    root: pathlib.Path,
+) -> tuple[tuple[str, str, object], ...]:
+    """One complete namespace snapshot: raw loose first, packed view second."""
+    width = object_format_width(root)
+    loose = raw_loose_snapshot(root, width)
+    packed = for_each_ref_records(root, f"{REF_PREFIX}/")
+    loose_by_name = {f"{REF_PREFIX}/{leaf.name}": leaf for leaf in loose}
+    packed_by_name: dict[str, str] = {}
+    for name, oid, object_type, symref in packed:
+        if (
+            EVIDENCE_REF_PATTERN.fullmatch(name) is None
+            or re.fullmatch(rf"[0-9a-f]{{{width}}}", oid) is None
+            or object_type != "commit"
+            or symref
+        ):
+            fail("FOREIGN_REF", "evidence ref discovery is not one direct commit ref")
+        if name in packed_by_name:
+            fail("FOREIGN_REF", "the evidence ref namespace reports a duplicate row")
+        packed_by_name[name] = oid
+    rows: list[tuple[str, str, object]] = []
+    for name in sorted(set(loose_by_name) | set(packed_by_name)):
+        leaf = loose_by_name.get(name)
+        packed_oid = packed_by_name.get(name)
+        if leaf is not None and packed_oid is None:
+            fail(
+                "FOREIGN_REF",
+                "a raw loose evidence leaf is omitted from the packed/direct view",
+            )
+        if leaf is None:
+            rows.append((name, packed_oid, None))
+            continue
+        if leaf.oid != packed_oid:
+            fail(
+                "FOREIGN_REF",
+                "the raw loose and packed/direct views disagree on an evidence ref",
+            )
+        rows.append((name, packed_oid, (leaf.identity, leaf.payload)))
+    return tuple(rows)
+
+
+def existing_evidence_refs(root: pathlib.Path) -> list[str]:
+    first = evidence_namespace_snapshot(root)
+    second = evidence_namespace_snapshot(root)
+    if first != second:
+        fail("FOREIGN_REF", "the evidence ref namespace changed during validation")
+    refs = [name for name, _, _ in first]
     for evidence_ref in refs:
         if (
             EVIDENCE_REF_PATTERN.fullmatch(evidence_ref) is None
@@ -1591,48 +2186,36 @@ class MemoryBlob:
 
 def read_control_file_once(path: pathlib.Path | str, label: str) -> MemoryBlob:
     supplied = pathlib.Path(path).absolute()
-    descriptor: int | None = None
-    try:
-        descriptor = os.open(
+
+    def opener() -> int:
+        return os.open(
             supplied,
-            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
         )
-        before = os.fstat(descriptor)
+
+    def require(metadata: os.stat_result) -> str | None:
         if (
-            not stat.S_ISREG(before.st_mode)
-            or before.st_nlink != 1
-            or before.st_size < 1
-            or before.st_size > CONTROL_MAX_BYTES
+            metadata.st_nlink != 1
+            or metadata.st_size < 1
+            or metadata.st_size > CONTROL_MAX_BYTES
         ):
-            fail("CONTROL_FILE_DRIFT", f"{label} is not an exclusive bounded file")
-        if os.lseek(descriptor, 0, os.SEEK_CUR) != 0:
-            fail("CONTROL_FILE_DRIFT", f"{label} offset is not zero")
-        chunks: list[bytes] = []
-        observed = 0
-        while observed < before.st_size:
-            chunk = os.read(descriptor, min(1024 * 1024, before.st_size - observed))
-            if not chunk:
-                fail("CONTROL_FILE_DRIFT", f"{label} ended before its stated size")
-            chunks.append(chunk)
-            observed += len(chunk)
-        if os.read(descriptor, 1):
-            fail("CONTROL_FILE_DRIFT", f"{label} exceeds its stated size")
-        after = os.fstat(descriptor)
-        if (
-            (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
-            != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
-            or after.st_nlink != 1
-            or not stat.S_ISREG(after.st_mode)
-        ):
-            fail("CONTROL_FILE_DRIFT", f"{label} changed during its bounded read")
-        value = b"".join(chunks)
-    except Gate9Error:
-        raise
-    except OSError as error:
-        fail("CONTROL_FILE_DRIFT", f"{label}: {error}")
-    finally:
-        if descriptor is not None:
-            os.close(descriptor)
+            return f"{label} is not an exclusive bounded file"
+        return None
+
+    before, after, value = funnel_descriptor_read(
+        opener,
+        code="CONTROL_FILE_DRIFT",
+        label=label,
+        max_bytes=CONTROL_MAX_BYTES,
+        require=require,
+    )
+    if (
+        (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+        != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+        or after.st_nlink != 1
+        or not stat.S_ISREG(after.st_mode)
+    ):
+        fail("CONTROL_FILE_DRIFT", f"{label} changed during its bounded read")
     return MemoryBlob(supplied.name, value)
 
 
@@ -1852,60 +2435,34 @@ def write_atomic_bundle(attempt: int, payloads: Mapping[str, bytes]) -> BundleDa
             or sha256_bytes(final_readback) != sha256_bytes(outer)
         ):
             fail("BUNDLE_CREATE_FAILURE", "bundle final entry readback drift")
-        final_descriptor_before_sync = os.fstat(final_descriptor)
-        final_entry_before_sync = os.stat(
-            name,
-            dir_fd=parent_fd,
-            follow_symlinks=False,
-        )
-        if (
-            (
-                final_descriptor_before_sync.st_dev,
-                final_descriptor_before_sync.st_ino,
-                final_descriptor_before_sync.st_mode,
-                final_descriptor_before_sync.st_nlink,
-                final_descriptor_before_sync.st_size,
-                final_descriptor_before_sync.st_mtime_ns,
-            )
-            != expected_metadata
-            or (
-                final_entry_before_sync.st_dev,
-                final_entry_before_sync.st_ino,
-                final_entry_before_sync.st_mode,
-                final_entry_before_sync.st_nlink,
-                final_entry_before_sync.st_size,
-                final_entry_before_sync.st_mtime_ns,
-            )
-            != expected_metadata
-        ):
-            fail("BUNDLE_CREATE_FAILURE", "bundle final directory entry drift")
         os.fsync(parent_fd)
-        final_descriptor_after_sync = os.fstat(final_descriptor)
-        final_entry_after_sync = os.stat(
+        # One final paired validation, immediately after the final successful
+        # parent-directory fsync. The successful completion of the second
+        # member of this pair is the writer operation's linearization point;
+        # no further finite pathname probe extends the publication interval.
+        final_descriptor_pair = os.fstat(final_descriptor)
+        if (
+            final_descriptor_pair.st_dev,
+            final_descriptor_pair.st_ino,
+            final_descriptor_pair.st_mode,
+            final_descriptor_pair.st_nlink,
+            final_descriptor_pair.st_size,
+            final_descriptor_pair.st_mtime_ns,
+        ) != expected_metadata:
+            fail("BUNDLE_CREATE_FAILURE", "bundle post-fsync descriptor drift")
+        final_entry_pair = os.stat(
             name,
             dir_fd=parent_fd,
             follow_symlinks=False,
         )
         if (
-            (
-                final_descriptor_after_sync.st_dev,
-                final_descriptor_after_sync.st_ino,
-                final_descriptor_after_sync.st_mode,
-                final_descriptor_after_sync.st_nlink,
-                final_descriptor_after_sync.st_size,
-                final_descriptor_after_sync.st_mtime_ns,
-            )
-            != expected_metadata
-            or (
-                final_entry_after_sync.st_dev,
-                final_entry_after_sync.st_ino,
-                final_entry_after_sync.st_mode,
-                final_entry_after_sync.st_nlink,
-                final_entry_after_sync.st_size,
-                final_entry_after_sync.st_mtime_ns,
-            )
-            != expected_metadata
-        ):
+            final_entry_pair.st_dev,
+            final_entry_pair.st_ino,
+            final_entry_pair.st_mode,
+            final_entry_pair.st_nlink,
+            final_entry_pair.st_size,
+            final_entry_pair.st_mtime_ns,
+        ) != expected_metadata:
             fail("BUNDLE_CREATE_FAILURE", "bundle post-fsync directory entry drift")
     except Gate9Error:
         raise
@@ -1921,7 +2478,20 @@ def write_atomic_bundle(attempt: int, payloads: Mapping[str, bytes]) -> BundleDa
     return _decode_bundle_bytes(outer, path)
 
 
-def read_bundle_once(path: pathlib.Path | str) -> BundleData:
+def read_bundle_once(
+    path: pathlib.Path | str,
+    expected_bundle_sha256: str | None = None,
+    expected_package_sha256: str | None = None,
+) -> BundleData:
+    """The first untrusted-input operation after argument parsing.
+
+    It opens and reads the literal ``/tmp`` direct child once, validates stable
+    descriptor metadata and EOF, reconstructs canonical outer bytes, and
+    compares the observed literal path, ``bundle_sha256``, and
+    ``package_sha256`` to the controller-trusted arguments before any authority
+    preflight, semantic replay, ref discovery, projection, generator execution,
+    object write, or ref publication.
+    """
     supplied = pathlib.Path(path)
     if supplied.parent != pathlib.Path("/tmp") or not re.fullmatch(
         r"agentic-research-gate9-attempt-[12]-[0-9a-f]{32}\.bundle\.json",
@@ -1929,63 +2499,67 @@ def read_bundle_once(path: pathlib.Path | str) -> BundleData:
     ):
         fail("BUNDLE_READ_FAILURE", "bundle is not a literal /tmp direct child")
     parent_fd: int | None = None
-    descriptor: int | None = None
     try:
         parent_fd = os.open(
             "/tmp", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
         )
-        descriptor = os.open(
-            supplied.name,
-            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC,
-            dir_fd=parent_fd,
-        )
-        before = os.fstat(descriptor)
-        if (
-            not stat.S_ISREG(before.st_mode)
-            or before.st_nlink != 1
-            or stat.S_IMODE(before.st_mode) != 0o444
-            or before.st_size < 1
-        ):
-            fail("BUNDLE_READ_FAILURE", "bundle is not an exclusive 0444 regular file")
-        if before.st_size > BUNDLE_MAX_BYTES:
-            fail("BUNDLE_SIZE_DRIFT", "bundle exceeds 32 MiB")
-        if os.lseek(descriptor, 0, os.SEEK_CUR) != 0:
-            fail("BUNDLE_READ_FAILURE", "bundle descriptor offset is not zero")
-        chunks: list[bytes] = []
-        observed = 0
-        while observed < before.st_size:
-            chunk = os.read(descriptor, min(1024 * 1024, before.st_size - observed))
-            if not chunk:
-                fail("BUNDLE_SIZE_DRIFT", "bundle ended before declared size")
-            chunks.append(chunk)
-            observed += len(chunk)
-        if os.read(descriptor, 1):
-            fail("BUNDLE_SIZE_DRIFT", "bundle has bytes beyond declared size")
-        after = os.fstat(descriptor)
-        if (
-            (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
-            != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
-            or after.st_nlink != 1
-            or stat.S_IMODE(after.st_mode) != 0o444
-        ):
-            fail("BUNDLE_READ_FAILURE", "bundle changed during bounded read")
-        value = b"".join(chunks)
-    except Gate9Error:
-        raise
     except OSError as error:
         fail("BUNDLE_READ_FAILURE", str(error))
+    try:
+        directory = parent_fd
+
+        def opener() -> int:
+            return os.open(
+                supplied.name,
+                os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+                dir_fd=directory,
+            )
+
+        def require(metadata: os.stat_result) -> str | None:
+            if (
+                metadata.st_nlink != 1
+                or stat.S_IMODE(metadata.st_mode) != 0o444
+                or metadata.st_size < 1
+            ):
+                return "bundle is not an exclusive 0444 regular file"
+            return None
+
+        before, after, value = funnel_descriptor_read(
+            opener,
+            code="BUNDLE_READ_FAILURE",
+            label="bundle",
+            max_bytes=BUNDLE_MAX_BYTES,
+            require=require,
+        )
     finally:
-        if descriptor is not None:
-            os.close(descriptor)
-        if parent_fd is not None:
-            os.close(parent_fd)
-    return _decode_bundle_bytes(value, supplied)
+        os.close(parent_fd)
+    if (
+        (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
+        != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns)
+        or after.st_nlink != 1
+        or stat.S_IMODE(after.st_mode) != 0o444
+    ):
+        fail("BUNDLE_READ_FAILURE", "bundle changed during bounded read")
+    data = _decode_bundle_bytes(value, supplied)
+    if expected_bundle_sha256 is not None or expected_package_sha256 is not None:
+        if (
+            data.path is None
+            or os.fspath(data.path) != os.fspath(supplied)
+            or data.bundle_sha256 != expected_bundle_sha256
+            or data.package_sha256 != expected_package_sha256
+        ):
+            fail(
+                "BUNDLE_TRANSPORT_DRIFT",
+                "the observed bundle receipt tuple differs from the "
+                "controller-captured build receipt",
+            )
+    return data
 
 
 def build_package(args: argparse.Namespace) -> None:
     if args.attempt not in (1, 2):
         fail("THIRD_ATTEMPT", f"attempt {args.attempt} is forbidden")
-    root = repository_root()
+    root = gate9_repository()
     authority = authority_from_args(root, args)
     task_relative, task_path = repo_path(root, args.task)
     spec_relative, spec_path = repo_path(root, args.spec)
@@ -1994,13 +2568,22 @@ def build_package(args: argparse.Namespace) -> None:
     assert_clean_real_index(root)
     assert_task_only_worktree(root, task_relative)
     current_head = authority.live_head
-    before = run_git(root, ["show", f"{current_head}:{task_relative.as_posix()}"]).stdout
-    candidate = task_path.read_bytes()
-    spec_bytes = spec_path.read_bytes()
+    before = run_git(
+        root, ["show", f"{current_head}:{task_relative.as_posix()}"]
+    ).stdout
+    candidate = funnel_whole_file(
+        task_path, code="INPUT_READ_FAILURE", label="--task"
+    )
+    spec_bytes = funnel_whole_file(
+        spec_path, code="INPUT_READ_FAILURE", label="--spec"
+    )
     marker, _ = parse_marker(candidate)
     derived_attempt = derive_attempt(root, marker, authority)
     if args.attempt != derived_attempt:
-        fail("ATTEMPT_STATE_MISMATCH", f"derived {derived_attempt}, asserted {args.attempt}")
+        fail(
+            "ATTEMPT_STATE_MISMATCH",
+            f"derived {derived_attempt}, asserted {args.attempt}",
+        )
     old_manifest = tree_manifest(root, current_head, OLD_PACK)
     new_manifest = tree_manifest(root, current_head, NEW_PACK)
     validate_pack_semantics(
@@ -2057,7 +2640,9 @@ def build_package(args: argparse.Namespace) -> None:
         "llm-wiki-stage-category-coverage.md": projection.coverage_markdown,
         "new-manifest.tsv": new_manifest,
         "old-manifest.tsv": old_manifest,
-        "plan.md": plan_path.read_bytes(),
+        "plan.md": funnel_whole_file(
+            plan_path, code="INPUT_READ_FAILURE", label="--plan"
+        ),
         "proposed-deletion.patch": projection.proposed_deletion_patch,
         "spec.md": spec_bytes,
         "task-before.md": before,
@@ -2249,9 +2834,9 @@ def verify_package_mapping(
 
 
 def verify_package(args: argparse.Namespace) -> None:
-    root = repository_root()
+    root = gate9_repository()
+    bundle = external_bundle(args)
     authority = authority_from_args(root, args)
-    bundle = read_bundle_once(args.bundle)
     result = verify_package_mapping(
         root,
         bundle.attachments,
@@ -2324,9 +2909,9 @@ def load_attestation(
 
 
 def verify_assignments(args: argparse.Namespace) -> None:
-    root = repository_root()
+    root = gate9_repository()
+    bundle = external_bundle(args)
     authority = authority_from_args(root, args)
-    bundle = read_bundle_once(args.bundle)
     package_result = verify_package_mapping(
         root,
         bundle.attachments,
@@ -2462,7 +3047,9 @@ def validate_task_state(
     receipts: Mapping[str, dict[str, Any]],
 ) -> None:
     candidate = package["task-candidate.md"]
-    current = task_path.read_bytes()
+    current = whole_file_bytes(
+        task_path, code="INPUT_READ_FAILURE", label="--task"
+    )
     candidate_marker, candidate_span = parse_marker(candidate)
     current_marker, current_span = parse_marker(current)
     if expect_state == "PACKAGE_REVIEWED":
@@ -2485,9 +3072,9 @@ def validate_task_state(
 
 
 def verify_backfill(args: argparse.Namespace) -> None:
-    root = repository_root()
+    root = gate9_repository()
+    bundle = external_bundle(args)
     authority = authority_from_args(root, args)
-    bundle = read_bundle_once(args.bundle)
     package = bundle.attachments
     package_result = verify_package_mapping(
         root,
@@ -2791,8 +3378,16 @@ def build_evidence_leaves(
     terminal_report = checked_report(terminal_report_path, "terminal report")
     leaves["terminal/report.md"] = terminal_report
     candidate = package["task-candidate.md"]
-    task_after = task_path.read_bytes() if state == "AUTHORIZED" else candidate
-    task_patch = task_transition_patch(root, candidate, task_after, task_relative) if state == "AUTHORIZED" else b""
+    task_after = (
+        whole_file_bytes(task_path, code="INPUT_READ_FAILURE", label="--task")
+        if state == "AUTHORIZED"
+        else candidate
+    )
+    task_patch = (
+        task_transition_patch(root, candidate, task_after, task_relative)
+        if state == "AUTHORIZED"
+        else b""
+    )
     leaves["task/task-after.md"] = task_after
     leaves["task/task-candidate-to-after.patch"] = task_patch
     task_tuple = {
@@ -2956,9 +3551,9 @@ def build_evidence_leaves(
 
 
 def publish_evidence_ref(args: argparse.Namespace) -> None:
-    root = repository_root()
+    root = gate9_repository()
+    bundle = external_bundle(args)
     authority = authority_from_args(root, args)
-    bundle = read_bundle_once(args.bundle)
     package = bundle.attachments
     package_result = verify_package_mapping(
         root,
@@ -3239,24 +3834,27 @@ def replay_terminal_evidence_ref(
     }
 
 def verify_authorized(args: argparse.Namespace) -> None:
-    root = repository_root()
+    root = gate9_repository()
+    external = external_bundle(args) if args.bundle else None
     authority = authority_from_args(root, args)
     task_relative, task_path = repo_path(root, args.task)
-    live_task = task_path.read_bytes()
+    live_task = funnel_whole_file(
+        task_path, code="INPUT_READ_FAILURE", label="--task"
+    )
     task_marker, _ = parse_marker(live_task)
     evidence_ref = resolve_evidence_ref(task_marker, args.evidence_ref)
     evidence_commit, leaves = read_ref_leaves(root, evidence_ref)
     preflight_evidence_ref_authority(root, evidence_commit, leaves, authority.live_head)
-    external_bundle = read_bundle_once(args.bundle) if args.bundle else None
+    external_bundle_data = external
     package = {name: leaves[f"package/{name}"] for name in PACKAGE_ATTACHMENTS}
     ref_outer, _ = _bundle_bytes(package)
     ref_bundle = _decode_bundle_bytes(ref_outer, None)
-    if external_bundle is not None:
+    if external_bundle_data is not None:
         if (
-            external_bundle.package_sha256 != ref_bundle.package_sha256
-            or external_bundle.outer_bytes != ref_bundle.outer_bytes
-            or external_bundle.bundle_sha256 != ref_bundle.bundle_sha256
-            or external_bundle.attachments != package
+            external_bundle_data.package_sha256 != ref_bundle.package_sha256
+            or external_bundle_data.outer_bytes != ref_bundle.outer_bytes
+            or external_bundle_data.bundle_sha256 != ref_bundle.bundle_sha256
+            or external_bundle_data.attachments != package
         ):
             fail("BUNDLE_TRANSPORT_DRIFT", "external and ref bundles differ")
     package_result = verify_package_mapping(
@@ -3427,6 +4025,67 @@ def add_authority_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--reviewed-code-head")
 
 
+def add_expected_receipt_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--expected-bundle-sha256")
+    parser.add_argument("--expected-package-sha256")
+
+
+def _flag_occurrences(argv: Sequence[str], flag: str) -> int:
+    return sum(1 for value in argv if value == flag or value.startswith(f"{flag}="))
+
+
+def validate_bundle_transport(args: argparse.Namespace, argv: Sequence[str]) -> None:
+    """Enforce the all-or-none external-bundle transport group.
+
+    Omission, partial supply, duplication, malformed hex, or use with
+    ``--bundle-from-ref`` is a usage failure before input consumption.
+    """
+    if args.mode not in EXTERNAL_BUNDLE_MODES:
+        return
+    for flag in (
+        "--bundle",
+        "--expected-bundle-sha256",
+        "--expected-package-sha256",
+    ):
+        if _flag_occurrences(argv, flag) > 1:
+            fail("BUNDLE_TRANSPORT_USAGE", f"{flag} is supplied more than once")
+    expected_bundle = getattr(args, "expected_bundle_sha256", None)
+    expected_package = getattr(args, "expected_package_sha256", None)
+    if getattr(args, "bundle_from_ref", False):
+        if expected_bundle is not None or expected_package is not None:
+            fail(
+                "BUNDLE_TRANSPORT_USAGE",
+                "--bundle-from-ref forbids --expected-bundle-sha256 and "
+                "--expected-package-sha256",
+            )
+        return
+    if getattr(args, "bundle", None) is None:
+        return
+    if expected_bundle is None or expected_package is None:
+        fail(
+            "BUNDLE_TRANSPORT_USAGE",
+            "an external bundle requires --bundle, --expected-bundle-sha256, "
+            "and --expected-package-sha256 together",
+        )
+    for flag, value in (
+        ("--expected-bundle-sha256", expected_bundle),
+        ("--expected-package-sha256", expected_package),
+    ):
+        if EXPECTED_HEX_PATTERN.fullmatch(value) is None:
+            fail(
+                "BUNDLE_TRANSPORT_USAGE",
+                f"{flag} is not exact lowercase 64-character hex",
+            )
+
+
+def external_bundle(args: argparse.Namespace) -> BundleData:
+    return read_bundle_once(
+        args.bundle,
+        args.expected_bundle_sha256,
+        args.expected_package_sha256,
+    )
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="mode", required=True)
@@ -3438,13 +4097,16 @@ def make_parser() -> argparse.ArgumentParser:
     add_authority_arguments(build)
     verify = subparsers.add_parser("verify-package")
     verify.add_argument("--bundle", required=True)
+    add_expected_receipt_arguments(verify)
     add_authority_arguments(verify)
     assignments = subparsers.add_parser("verify-assignments")
     assignments.add_argument("--bundle", required=True)
     assignments.add_argument("--attestation", required=True)
+    add_expected_receipt_arguments(assignments)
     add_authority_arguments(assignments)
     backfill = subparsers.add_parser("verify-backfill")
     backfill.add_argument("--bundle", required=True)
+    add_expected_receipt_arguments(backfill)
     backfill.add_argument("--migration-receipt", required=True)
     backfill.add_argument("--quality-receipt", required=True)
     backfill.add_argument("--assignment-attestation", required=True)
@@ -3455,6 +4117,7 @@ def make_parser() -> argparse.ArgumentParser:
     add_authority_arguments(backfill)
     publish = subparsers.add_parser("publish-evidence-ref")
     publish.add_argument("--bundle", required=True)
+    add_expected_receipt_arguments(publish)
     publish.add_argument("--task", required=True)
     publish.add_argument(
         "--terminal-state", choices=("AUTHORIZED", "REJECTED", "INVALIDATED"), required=True
@@ -3476,6 +4139,7 @@ def make_parser() -> argparse.ArgumentParser:
     package_source = authorized.add_mutually_exclusive_group(required=True)
     package_source.add_argument("--bundle")
     package_source.add_argument("--bundle-from-ref", action="store_true")
+    add_expected_receipt_arguments(authorized)
     authorized.add_argument("--task", required=True)
     authorized.add_argument("--evidence-ref", required=True)
     add_authority_arguments(authorized)
@@ -3486,8 +4150,10 @@ def make_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     parser = make_parser()
-    args = parser.parse_args()
+    argv = list(sys.argv[1:])
+    args = parser.parse_args(argv)
     try:
+        validate_bundle_transport(args, argv)
         if args.mode == "build-package":
             build_package(args)
         elif args.mode == "verify-package":

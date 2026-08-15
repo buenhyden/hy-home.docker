@@ -16,9 +16,10 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import types
 import unittest
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from unittest import mock
 
 
@@ -71,6 +72,18 @@ def canonical_json(value: object) -> bytes:
 
 def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def expected_transport(receipt: Mapping[str, object]) -> list[str]:
+    """The mandatory all-or-none external-bundle transport group."""
+    return [
+        "--bundle",
+        os.fspath(receipt["bundle_path"]),
+        "--expected-bundle-sha256",
+        str(receipt["bundle_sha256"]),
+        "--expected-package-sha256",
+        str(receipt["package_sha256"]),
+    ]
 
 
 def logical_package_fixture() -> dict[str, bytes]:
@@ -305,6 +318,7 @@ fi
         *args: str,
         env: Mapping[str, str] | None = None,
         bind_live: bool = True,
+        timeout: float | None = None,
     ) -> subprocess.CompletedProcess[str]:
         command_env = os.environ.copy()
         if env:
@@ -324,9 +338,16 @@ fi
             env=command_env,
             capture_output=True,
             text=True,
+            timeout=timeout,
         )
 
-    def build_process(self, attempt: int = 1) -> subprocess.CompletedProcess[str]:
+    def build_process(
+        self,
+        attempt: int = 1,
+        *,
+        env: Mapping[str, str] | None = None,
+        timeout: float | None = None,
+    ) -> subprocess.CompletedProcess[str]:
         return self.run(
             "build-package",
             "--attempt",
@@ -337,6 +358,8 @@ fi
             PLAN,
             "--task",
             TASK,
+            env=env,
+            timeout=timeout,
         )
 
     def build(self, attempt: int = 1) -> dict[str, object]:
@@ -679,8 +702,7 @@ fi
         terminal.write_text(terminal_text, encoding="utf-8")
         arguments = [
             "publish-evidence-ref",
-            "--bundle",
-            os.fspath(receipt["bundle_path"]),
+            *expected_transport(receipt),
             "--task",
             TASK,
             "--terminal-state",
@@ -802,10 +824,10 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         self.fixture.cleanup()
         self.temporary.cleanup()
 
-    def verify_bundle(self, receipt: Mapping[str, object]) -> subprocess.CompletedProcess[str]:
-        return self.fixture.run(
-            "verify-package", "--bundle", os.fspath(receipt["bundle_path"])
-        )
+    def verify_bundle(
+        self, receipt: Mapping[str, object]
+    ) -> subprocess.CompletedProcess[str]:
+        return self.fixture.run("verify-package", *expected_transport(receipt))
 
     def verify_assignments(
         self,
@@ -814,8 +836,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         return self.fixture.run(
             "verify-assignments",
-            "--bundle",
-            os.fspath(receipt["bundle_path"]),
+            *expected_transport(receipt),
             "--attestation",
             os.fspath(materials["attestation"]),
         )
@@ -828,8 +849,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         return self.fixture.run(
             "verify-backfill",
-            "--bundle",
-            os.fspath(receipt["bundle_path"]),
+            *expected_transport(receipt),
             "--migration-receipt",
             os.fspath(materials["migration-specification-receipt"]),
             "--quality-receipt",
@@ -849,7 +869,7 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         receipt: Mapping[str, object] | None = None,
     ) -> subprocess.CompletedProcess[str]:
         source = (
-            ["--bundle", os.fspath(receipt["bundle_path"])]
+            list(expected_transport(receipt))
             if receipt is not None
             else ["--bundle-from-ref"]
         )
@@ -1403,127 +1423,215 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                     path.chmod(0o600)
                     path.unlink()
 
-    def test_atomic_bundle_writer_rejects_late_directory_entry_substitution(
+    def _run_bundle_publication_window(
+        self,
+        module: object,
+        payloads: Mapping[str, bytes],
+        window: str | None,
+        replacement_bytes: bytes,
+    ) -> dict[str, object]:
+        token = secrets.token_hex(16)
+        path = pathlib.Path(
+            f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+        )
+        displaced = pathlib.Path(f"{path}.displaced")
+        victim = pathlib.Path(f"{path}.victim")
+        victim.write_bytes(replacement_bytes)
+        victim.chmod(0o444)
+        counters = {
+            "entry_stat": 0,
+            "final_fstat": 0,
+            "final_read": 0,
+            "parent_fsync": 0,
+        }
+        state: dict[str, object] = {
+            "parent": None,
+            "final": None,
+            "attacked": False,
+        }
+        real_open = module.os.open
+        real_fstat = module.os.fstat
+        real_stat = module.os.stat
+        real_read = module.os.read
+        real_fsync = module.os.fsync
+
+        def substitute() -> None:
+            if state["attacked"]:
+                return
+            state["attacked"] = True
+            path.rename(displaced)
+            victim.rename(path)
+
+        def hooked_open(
+            name: object, flags: int, *args: object, **kwargs: object
+        ) -> int:
+            descriptor = real_open(name, flags, *args, **kwargs)
+            if name == "/tmp" and kwargs.get("dir_fd") is None:
+                state["parent"] = descriptor
+            elif kwargs.get("dir_fd") == state["parent"] and not flags & os.O_CREAT:
+                state["final"] = descriptor
+            return descriptor
+
+        def hooked_fstat(descriptor: int) -> os.stat_result:
+            if descriptor == state["final"]:
+                counters["final_fstat"] += 1
+            observed = real_fstat(descriptor)
+            if (
+                descriptor == state["final"]
+                and window == "after-final-open-fstat"
+                and counters["final_fstat"] == 1
+            ):
+                substitute()
+            return observed
+
+        def hooked_stat(*args: object, **kwargs: object) -> object:
+            if kwargs.get("dir_fd") is not None:
+                counters["entry_stat"] += 1
+                if window == "during-final-pair" and counters["entry_stat"] == 2:
+                    substitute()
+            observed = real_stat(*args, **kwargs)
+            if kwargs.get("dir_fd") is not None:
+                if window == "after-first-entry-stat" and counters["entry_stat"] == 1:
+                    substitute()
+                elif window == "after-final-pair" and counters["entry_stat"] == 2:
+                    substitute()
+            return observed
+
+        def hooked_read(descriptor: int, size: int) -> bytes:
+            value = real_read(descriptor, size)
+            if descriptor == state["final"]:
+                counters["final_read"] += 1
+                if window == "during-final-read" and counters["final_read"] == 1:
+                    substitute()
+            return value
+
+        def hooked_fsync(descriptor: int) -> None:
+            if descriptor == state["parent"]:
+                counters["parent_fsync"] += 1
+                if (
+                    window == "before-final-parent-fsync"
+                    and counters["parent_fsync"] == 2
+                ):
+                    substitute()
+            real_fsync(descriptor)
+            if descriptor == state["parent"]:
+                if (
+                    window == "after-first-parent-fsync"
+                    and counters["parent_fsync"] == 1
+                ):
+                    substitute()
+                elif window == "before-final-pair" and counters["parent_fsync"] == 2:
+                    substitute()
+
+        output = io.StringIO()
+        caught: object | None = None
+        result: object | None = None
+        try:
+            with (
+                mock.patch.object(module.secrets, "token_hex", return_value=token),
+                mock.patch.object(module.os, "open", side_effect=hooked_open),
+                mock.patch.object(module.os, "fstat", side_effect=hooked_fstat),
+                mock.patch.object(module.os, "stat", side_effect=hooked_stat),
+                mock.patch.object(module.os, "read", side_effect=hooked_read),
+                mock.patch.object(module.os, "fsync", side_effect=hooked_fsync),
+                contextlib.redirect_stdout(output),
+            ):
+                try:
+                    result = module.write_atomic_bundle(1, payloads)
+                except module.Gate9Error as error:
+                    caught = error
+            observed_bytes = path.read_bytes() if path.exists() else None
+        finally:
+            for artifact in (path, displaced, victim):
+                if artifact.exists():
+                    artifact.chmod(0o600)
+                    artifact.unlink()
+        return {
+            "attacked": bool(state["attacked"]),
+            "caught": caught,
+            "counters": dict(counters),
+            "observed_bytes": observed_bytes,
+            "path": path,
+            "result": result,
+            "stdout": output.getvalue(),
+        }
+
+    def test_atomic_bundle_publication_linearizes_at_final_post_fsync_pair(
         self,
     ) -> None:
-        module = load_helper("gate9_late_bundle_substitution")
+        module = load_helper("gate9_bundle_publication_linearization")
         payloads = logical_package_fixture()
         outer, _ = module._bundle_bytes(payloads)
+
+        with self.subTest(contract="one-final-pair-after-the-final-parent-fsync"):
+            clean = self._run_bundle_publication_window(
+                module, payloads, None, b"unused replacement\n"
+            )
+            self.assertIsNone(clean["caught"])
+            self.assertIsNotNone(clean["result"])
+            self.assertEqual(
+                2,
+                clean["counters"]["entry_stat"],
+                "publication must probe the literal direct-child entry exactly "
+                "twice: once before the final parent fsync and once as the "
+                "second member of the single final post-fsync pair",
+            )
+            self.assertEqual(2, clean["counters"]["parent_fsync"])
+            self.assertGreaterEqual(clean["counters"]["final_fstat"], 2)
+
         for window in (
-            "after-final-first-fstat",
+            "after-first-entry-stat",
+            "after-first-parent-fsync",
+            "after-final-open-fstat",
             "during-final-read",
-            "before-last-parent-fsync",
-            "after-last-parent-fsync",
-            "before-final-validation",
-            "after-final-validation",
+            "before-final-parent-fsync",
+            "before-final-pair",
+            "during-final-pair",
         ):
             with self.subTest(window=window):
-                token = secrets.token_hex(16)
-                path = pathlib.Path(
-                    f"/tmp/agentic-research-gate9-attempt-1-{token}.bundle.json"
+                observed = self._run_bundle_publication_window(
+                    module, payloads, window, outer
                 )
-                displaced = pathlib.Path(f"{path}.displaced")
-                victim = pathlib.Path(f"{path}.victim")
-                victim.write_bytes(outer)
-                victim.chmod(0o444)
-                real_open = module.os.open
-                real_fstat = module.os.fstat
-                real_read = module.os.read
-                real_fsync = module.os.fsync
-                parent_descriptor: int | None = None
-                final_descriptor: int | None = None
-                final_fstats = 0
-                final_reads = 0
-                attacked = False
+                self.assertTrue(
+                    observed["attacked"], f"attack hook was not reached: {window}"
+                )
+                self.assertEqual(outer, observed["observed_bytes"])
+                self.assertEqual("", observed["stdout"])
+                self.assertIsNotNone(
+                    observed["caught"],
+                    f"substitution before or during the final pair was accepted: {window}",
+                )
+                self.assertEqual("BUNDLE_CREATE_FAILURE", observed["caught"].code)
+                self.assertIsNone(
+                    observed["result"],
+                    f"substitution before or during the final pair produced a receipt: {window}",
+                )
 
-                def substitute() -> None:
-                    nonlocal attacked
-                    if attacked:
-                        return
-                    attacked = True
-                    path.rename(displaced)
-                    victim.rename(path)
-
-                def observed_open(
-                    name: object, flags: int, *args: object, **kwargs: object
-                ) -> int:
-                    nonlocal parent_descriptor, final_descriptor
-                    descriptor = real_open(name, flags, *args, **kwargs)
-                    if name == "/tmp" and kwargs.get("dir_fd") is None:
-                        parent_descriptor = descriptor
-                    elif (
-                        kwargs.get("dir_fd") == parent_descriptor
-                        and not flags & os.O_CREAT
-                    ):
-                        final_descriptor = descriptor
-                    return descriptor
-
-                def observed_fstat(descriptor: int) -> os.stat_result:
-                    nonlocal final_fstats
-                    if descriptor == final_descriptor:
-                        final_fstats += 1
-                        if window == "before-final-validation" and final_fstats == 2:
-                            substitute()
-                    observed = real_fstat(descriptor)
-                    if descriptor == final_descriptor:
-                        if window == "after-final-first-fstat" and final_fstats == 1:
-                            substitute()
-                        elif window == "after-final-validation" and final_fstats == 2:
-                            substitute()
-                    return observed
-
-                def observed_read(descriptor: int, size: int) -> bytes:
-                    nonlocal final_reads
-                    value = real_read(descriptor, size)
-                    if descriptor == final_descriptor:
-                        final_reads += 1
-                        if window == "during-final-read" and final_reads == 1:
-                            substitute()
-                    return value
-
-                def observed_fsync(descriptor: int) -> None:
-                    if (
-                        descriptor == parent_descriptor
-                        and window == "before-last-parent-fsync"
-                    ):
-                        substitute()
-                    real_fsync(descriptor)
-                    if (
-                        descriptor == parent_descriptor
-                        and window == "after-last-parent-fsync"
-                    ):
-                        substitute()
-
-                output = io.StringIO()
-                caught: object | None = None
-                result: object | None = None
-                try:
-                    with mock.patch.object(
-                        module.secrets, "token_hex", return_value=token
-                    ), mock.patch.object(
-                        module.os, "open", side_effect=observed_open
-                    ), mock.patch.object(
-                        module.os, "fstat", side_effect=observed_fstat
-                    ), mock.patch.object(
-                        module.os, "read", side_effect=observed_read
-                    ), mock.patch.object(
-                        module.os, "fsync", side_effect=observed_fsync
-                    ), contextlib.redirect_stdout(output):
-                        try:
-                            result = module.write_atomic_bundle(1, payloads)
-                        except module.Gate9Error as error:
-                            caught = error
-                    self.assertTrue(attacked, f"attack hook was not reached: {window}")
-                    self.assertEqual(outer, path.read_bytes())
-                    self.assertEqual("", output.getvalue())
-                    self.assertIsNotNone(caught, f"late substitution was accepted: {window}")
-                    self.assertEqual("BUNDLE_CREATE_FAILURE", caught.code)
-                    self.assertIsNone(result, "late substitution produced a false receipt")
-                finally:
-                    for artifact in (path, displaced, victim):
-                        if artifact.exists():
-                            artifact.chmod(0o600)
-                            artifact.unlink()
+        with self.subTest(window="after-final-pair"):
+            replacement = b"non-identical post-publication drift\n"
+            observed = self._run_bundle_publication_window(
+                module, payloads, "after-final-pair", replacement
+            )
+            self.assertTrue(observed["attacked"])
+            self.assertEqual(replacement, observed["observed_bytes"])
+            self.assertEqual("", observed["stdout"])
+            self.assertIsNone(
+                observed["caught"],
+                "a substitution after the linearization point must not revoke "
+                "the already published receipt",
+            )
+            self.assertIsNotNone(observed["result"])
+            self.assertEqual(
+                (
+                    sha256_bytes(outer),
+                    os.fspath(observed["path"]),
+                ),
+                (
+                    observed["result"].bundle_sha256,
+                    os.fspath(observed["result"].path),
+                ),
+            )
+            self.assertEqual(outer, observed["result"].outer_bytes)
 
         with self.subTest(contract="entry-check-before-directory-fsync"):
             token = secrets.token_hex(16)
@@ -1609,7 +1717,11 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                 self.assertLess(
                     events.index("directory-fsync"), events.index("final-reopen")
                 )
-                self.assertLess(events.index("final-reopen"), events.index("final-fstat"))
+                self.assertLess(
+                    events.index("final-reopen"), events.index("final-fstat")
+                )
+                self.assertEqual("entry-stat", events[-1])
+                self.assertEqual("directory-fsync", events[-3])
             finally:
                 if path.exists():
                     path.chmod(0o600)
@@ -1717,16 +1829,15 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
             wrong_parent_commit,
             evidence_commit,
         )
-        bundle_path = pathlib.Path(receipt["bundle_path"])
-        hidden_bundle = bundle_path.with_name(bundle_path.name + ".hidden")
-        bundle_path.rename(hidden_bundle)
+        # The external bundle is now the first untrusted-input operation, so it
+        # must remain present for the later evidence-commit identity check to
+        # be the observed failure.
         try:
             before = self.fixture.generator_calls()
             wrong_parent = self.verify_authorized(evidence_ref, receipt=receipt)
             self.assert_fails(wrong_parent, "EVIDENCE_COMMIT_IDENTITY_DRIFT")
             self.assertEqual(before, self.fixture.generator_calls())
         finally:
-            hidden_bundle.rename(bundle_path)
             git(
                 self.root,
                 "update-ref",
@@ -2138,8 +2249,13 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         receipt = self.fixture.build()
         attachments = self.fixture.attachments(receipt)
         attachments["plan.md"] += b"forged\n"
-        forged_path, _ = self.fixture.rewritten_bundle(receipt, attachments)
-        result = self.fixture.run("verify-package", "--bundle", os.fspath(forged_path))
+        forged_path, forged_receipt = self.fixture.rewritten_bundle(
+            receipt, attachments
+        )
+        del forged_path
+        result = self.fixture.run(
+            "verify-package", *expected_transport(forged_receipt)
+        )
         self.assertNotEqual(0, result.returncode)
         self.assertRegex(result.stderr, r"BUNDLE_SCHEMA_DRIFT|CHECKSUM_DRIFT|PACKAGE_SEMANTIC_DRIFT")
 
@@ -2154,7 +2270,15 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
         document = self.fixture.read_bundle(receipt)
         document["attachments"][0]["base64"] = document["attachments"][0]["base64"].rstrip("=")
         noncanonical = self.fixture.write_bundle(document)
-        result = self.fixture.run("verify-package", "--bundle", os.fspath(noncanonical))
+        result = self.fixture.run(
+            "verify-package",
+            "--bundle",
+            os.fspath(noncanonical),
+            "--expected-bundle-sha256",
+            sha256_bytes(noncanonical.read_bytes()),
+            "--expected-package-sha256",
+            str(document["package_sha256"]),
+        )
         self.assert_fails(result, "BUNDLE_SCHEMA_DRIFT")
 
     def test_build_rejects_dirty_real_index_and_third_attempt(self) -> None:
@@ -2771,3 +2895,944 @@ class AgenticResearchGate9EvidenceTests(unittest.TestCase):
                 sha256_root, evidence_ref, parent, tree, message
             ),
         )
+
+    def _external_consumer_invocations(
+        self,
+        materials: Mapping[str, pathlib.Path],
+        transport: list[str],
+    ) -> dict[str, list[str]]:
+        terminal = self.root / "evidence/terminal.md"
+        terminal.parent.mkdir(parents=True, exist_ok=True)
+        terminal.write_text("AUTHORIZED\n", encoding="utf-8")
+        return {
+            "verify-package": ["verify-package", *transport],
+            "verify-assignments": [
+                "verify-assignments",
+                *transport,
+                "--attestation",
+                os.fspath(materials["attestation"]),
+            ],
+            "verify-backfill": [
+                "verify-backfill",
+                *transport,
+                "--migration-receipt",
+                os.fspath(materials["migration-specification-receipt"]),
+                "--quality-receipt",
+                os.fspath(materials["quality-receipt"]),
+                "--assignment-attestation",
+                os.fspath(materials["attestation"]),
+                "--task",
+                TASK,
+                "--expect-state",
+                "TASK_BACKFILLED",
+            ],
+            "publish-evidence-ref": [
+                "publish-evidence-ref",
+                *transport,
+                "--task",
+                TASK,
+                "--terminal-state",
+                "AUTHORIZED",
+                "--terminal-report",
+                os.fspath(terminal),
+                "--assignment-attestation",
+                os.fspath(materials["attestation"]),
+                "--migration-report",
+                os.fspath(materials["migration-specification-report"]),
+                "--migration-receipt",
+                os.fspath(materials["migration-specification-receipt"]),
+                "--quality-report",
+                os.fspath(materials["quality-report"]),
+                "--quality-receipt",
+                os.fspath(materials["quality-receipt"]),
+                "--migration-closure-report",
+                os.fspath(materials["migration-specification-closure-report"]),
+                "--migration-closure",
+                os.fspath(materials["migration-specification-closure"]),
+                "--quality-closure-report",
+                os.fspath(materials["quality-closure-report"]),
+                "--quality-closure",
+                os.fspath(materials["quality-closure"]),
+                "--evidence-ref",
+                "auto",
+            ],
+            "verify-authorized": [
+                "verify-authorized",
+                *transport,
+                "--task",
+                TASK,
+                "--evidence-ref",
+                "auto",
+            ],
+        }
+
+    def test_all_external_bundle_consumers_reject_post_publication_transport_drift_before_authority(
+        self,
+    ) -> None:
+        fixture = self.fixture
+        receipt = fixture.build()
+        materials = fixture.review_materials(receipt)
+        fixture.backfill_task(receipt, materials)
+        fixture.closure_materials(receipt, materials)
+        first_path = pathlib.Path(os.fspath(receipt["bundle_path"]))
+
+        attachments = dict(fixture.attachments(receipt))
+        attachments["plan.md"] = attachments["plan.md"] + b"second canonical bundle\n"
+        attachments["SHA256SUMS"] = b"".join(
+            f"{sha256_bytes(attachments[name])}  {name}\n".encode()
+            for name in sorted(attachments)
+            if name != "SHA256SUMS"
+        )
+        second_value, second_digest = fixture.canonical_bundle(attachments)
+        second_document = json.loads(second_value)
+        second_path = fixture.write_bundle(second_document)
+        self.assertNotEqual(receipt["bundle_sha256"], second_digest)
+        self.assertNotEqual(
+            receipt["package_sha256"], second_document["package_sha256"]
+        )
+        os.rename(second_path, first_path)
+        self.assertEqual(second_value, first_path.read_bytes())
+
+        transport = [
+            "--bundle",
+            os.fspath(first_path),
+            "--expected-bundle-sha256",
+            str(receipt["bundle_sha256"]),
+            "--expected-package-sha256",
+            str(receipt["package_sha256"]),
+        ]
+        forbidden = {
+            "cat-file",
+            "commit-tree",
+            "diff",
+            "for-each-ref",
+            "hash-object",
+            "ls-tree",
+            "merge-base",
+            "mktree",
+            "symbolic-ref",
+            "update-ref",
+        }
+        invocations = self._external_consumer_invocations(materials, transport)
+        before = fixture.repository_state()
+        for mode, arguments in invocations.items():
+            with self.subTest(consumer=mode):
+                environment = fixture.git_wrapper(
+                    f"transport-{mode}",
+                    'printf "%s\\n" "$1" >> "$GATE9_WRAPPER_MARKER"\n'
+                    'exec "$REAL_GIT" "$@"\n',
+                )
+                log = pathlib.Path(environment["GATE9_WRAPPER_MARKER"])
+                calls_before = fixture.generator_calls()
+                result = fixture.run(*arguments, env=environment, timeout=120)
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertEqual("", result.stdout)
+                self.assertTrue(
+                    result.stderr.splitlines()[0].startswith(
+                        "BUNDLE_TRANSPORT_DRIFT: "
+                    ),
+                    result.stderr,
+                )
+                observed = (
+                    [line.strip() for line in log.read_text().splitlines()]
+                    if log.exists()
+                    else []
+                )
+                self.assertFalse(
+                    forbidden.intersection(observed),
+                    f"{mode} reached {sorted(forbidden.intersection(observed))} "
+                    "before the transport check",
+                )
+                self.assertEqual(calls_before, fixture.generator_calls())
+                after = fixture.repository_state()
+                self.assertEqual(before, after)
+
+        with self.subTest(parser="transport-group"):
+            base = os.fspath(first_path)
+            good_bundle = str(receipt["bundle_sha256"])
+            good_package = str(receipt["package_sha256"])
+            cases = {
+                "both-missing": ["--bundle", base],
+                "bundle-hash-missing": [
+                    "--bundle",
+                    base,
+                    "--expected-package-sha256",
+                    good_package,
+                ],
+                "package-hash-missing": [
+                    "--bundle",
+                    base,
+                    "--expected-bundle-sha256",
+                    good_bundle,
+                ],
+                "duplicate-bundle-hash": [
+                    "--bundle",
+                    base,
+                    "--expected-bundle-sha256",
+                    good_bundle,
+                    "--expected-bundle-sha256",
+                    good_bundle,
+                    "--expected-package-sha256",
+                    good_package,
+                ],
+                "uppercase-hex": [
+                    "--bundle",
+                    base,
+                    "--expected-bundle-sha256",
+                    good_bundle.upper(),
+                    "--expected-package-sha256",
+                    good_package,
+                ],
+                "short-hex": [
+                    "--bundle",
+                    base,
+                    "--expected-bundle-sha256",
+                    good_bundle[:63],
+                    "--expected-package-sha256",
+                    good_package,
+                ],
+                "nonhex": [
+                    "--bundle",
+                    base,
+                    "--expected-bundle-sha256",
+                    "z" * 64,
+                    "--expected-package-sha256",
+                    good_package,
+                ],
+            }
+            for label, source in cases.items():
+                for mode in (
+                    "verify-package",
+                    "verify-assignments",
+                    "verify-backfill",
+                    "publish-evidence-ref",
+                    "verify-authorized",
+                ):
+                    with self.subTest(parser=label, consumer=mode):
+                        arguments = list(invocations[mode])
+                        head = arguments[0]
+                        tail = arguments[1 + len(transport) :]
+                        result = fixture.run(head, *source, *tail, timeout=120)
+                        self.assertEqual(1, result.returncode, result.stdout)
+                        self.assertEqual("", result.stdout)
+                        self.assertTrue(
+                            result.stderr.splitlines()[0].startswith(
+                                "BUNDLE_TRANSPORT_USAGE: "
+                            ),
+                            result.stderr,
+                        )
+            for label, source in (
+                (
+                    "ref-source-with-bundle-hash",
+                    [
+                        "--bundle-from-ref",
+                        "--expected-bundle-sha256",
+                        good_bundle,
+                    ],
+                ),
+                (
+                    "ref-source-with-package-hash",
+                    [
+                        "--bundle-from-ref",
+                        "--expected-package-sha256",
+                        good_package,
+                    ],
+                ),
+            ):
+                with self.subTest(parser=label):
+                    result = fixture.run(
+                        "verify-authorized",
+                        *source,
+                        "--task",
+                        TASK,
+                        "--evidence-ref",
+                        "auto",
+                        timeout=120,
+                    )
+                    self.assertEqual(1, result.returncode, result.stdout)
+                    self.assertEqual("", result.stdout)
+                    self.assertTrue(
+                        result.stderr.splitlines()[0].startswith(
+                            "BUNDLE_TRANSPORT_USAGE: "
+                        ),
+                        result.stderr,
+                    )
+
+    def _gate9_namespace(self, attempt: int = 1) -> pathlib.Path:
+        return (
+            self.root
+            / ".git/refs/codex/review-evidence/agentic-research/gate9/v1"
+            / f"attempt-{attempt}"
+        )
+
+    def _namespace_inventory(self) -> dict[str, object]:
+        prefix = b"refs/codex/review-evidence/agentic-research/gate9/v1/"
+        rows = git(
+            self.root,
+            "for-each-ref",
+            "--format=%(refname) %(objectname) %(symref)",
+        ).stdout.splitlines()
+        return {
+            "objects": sorted(
+                git(
+                    self.root,
+                    "cat-file",
+                    "--batch-all-objects",
+                    "--batch-check=%(objectname) %(objecttype)",
+                ).stdout.splitlines()
+            ),
+            "outside_refs": sorted(
+                row for row in rows if not row.startswith(prefix)
+            ),
+        }
+
+    def _plant_victim(self) -> tuple[pathlib.Path, bytes]:
+        victim = pathlib.Path(
+            f"/tmp/gate9-discovery-victim-{secrets.token_hex(16)}.txt"
+        )
+        payload = b"discovery victim must remain byte-identical\n"
+        victim.write_bytes(payload)
+        self.addCleanup(victim.unlink, missing_ok=True)
+        return victim, payload
+
+    def test_evidence_ref_discovery_finds_dangling_loose_symbolic_refs_and_stays_stable(
+        self,
+    ) -> None:
+        module = load_helper("gate9_raw_evidence_ref_discovery")
+        fixture = self.fixture
+        namespace = self._gate9_namespace()
+        namespace.mkdir(parents=True, exist_ok=True)
+        canonical = "a" * 64
+        victim, victim_bytes = self._plant_victim()
+        blob = (
+            git(fixture.root, "hash-object", "-w", "--stdin", input_bytes=b"blob\n")
+            .stdout.decode()
+            .strip()
+        )
+
+        def clear_namespace() -> None:
+            if namespace.exists():
+                for child in sorted(namespace.rglob("*"), reverse=True):
+                    if child.is_dir() and not child.is_symlink():
+                        child.rmdir()
+                    else:
+                        child.unlink()
+            namespace.mkdir(parents=True, exist_ok=True)
+
+        def discovery_error() -> object | None:
+            try:
+                module.existing_evidence_refs(fixture.root)
+            except module.Gate9Error as error:
+                return error
+            return None
+
+        with self.subTest(case="dangling-loose-symbolic-ref"):
+            leaf = namespace / canonical
+            leaf.write_bytes(b"ref: refs/heads/gate9-absent-target\n")
+            try:
+                listed = git(
+                    fixture.root,
+                    "for-each-ref",
+                    "--format=%(refname)",
+                    f"{module.REF_PREFIX}/",
+                )
+                self.assertEqual(b"", listed.stdout)
+                self.assertEqual(b"", listed.stderr)
+                before = self._namespace_inventory()
+                caught = discovery_error()
+                self.assertIsNotNone(
+                    caught,
+                    "for-each-ref omits a dangling loose symbolic ref, so raw "
+                    "discovery must reject it",
+                )
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertEqual(before, self._namespace_inventory())
+                self.assertEqual(victim_bytes, victim.read_bytes())
+            finally:
+                clear_namespace()
+
+        for label, relative, payload in (
+            ("malformed-name", "NOT-SIXTY-FOUR-HEX", f"{fixture.head}\n"),
+            ("uppercase-name", "A" * 64, f"{fixture.head}\n"),
+            ("extra-depth", f"{canonical}/suffix", f"{fixture.head}\n"),
+            ("short-oid", canonical, f"{fixture.head[:-1]}\n"),
+            ("noncommit-oid", canonical, f"{blob}\n"),
+            ("missing-terminator", canonical, fixture.head),
+        ):
+            with self.subTest(case=label):
+                target = namespace / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(payload, encoding="ascii")
+                try:
+                    caught = discovery_error()
+                    self.assertIsNotNone(caught, f"{label} was admitted")
+                    self.assertEqual("FOREIGN_REF", caught.code)
+                finally:
+                    clear_namespace()
+
+        with self.subTest(case="filesystem-symlink-leaf"):
+            leaf = namespace / canonical
+            os.symlink(os.fspath(victim), leaf)
+            try:
+                caught = discovery_error()
+                self.assertIsNotNone(caught, "a symlink leaf was admitted")
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertEqual(victim_bytes, victim.read_bytes())
+            finally:
+                clear_namespace()
+
+        with self.subTest(case="fifo-leaf-before-open"):
+            leaf = namespace / canonical
+            os.mkfifo(leaf)
+            environment = fixture.git_wrapper(
+                "discovery-fifo",
+                'printf "%s\\n" "$*" >> "$GATE9_WRAPPER_MARKER"\n'
+                'exec "$REAL_GIT" "$@"\n',
+            )
+            log = pathlib.Path(environment["GATE9_WRAPPER_MARKER"])
+            try:
+                result = fixture.build_process(env=environment, timeout=20)
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertEqual("", result.stdout)
+                self.assertTrue(
+                    result.stderr.splitlines()[0].startswith("FOREIGN_REF: "),
+                    result.stderr,
+                )
+                lines = log.read_text().splitlines() if log.exists() else []
+                reopened = [
+                    line
+                    for line in lines
+                    if canonical in line
+                    or (
+                        module.REF_PREFIX in line
+                        and line.split(" ", 1)[0]
+                        in {"for-each-ref", "symbolic-ref", "update-ref"}
+                    )
+                ]
+                self.assertEqual(
+                    [], reopened, "discovery reopened the FIFO evidence leaf"
+                )
+            finally:
+                clear_namespace()
+
+        with self.subTest(case="substitution-between-snapshots"):
+            leaf = namespace / canonical
+            leaf.write_text(f"{fixture.head}\n", encoding="ascii")
+            replacement = (
+                git(
+                    fixture.root,
+                    "commit-tree",
+                    git(fixture.root, "rev-parse", "HEAD^{tree}")
+                    .stdout.decode()
+                    .strip(),
+                    "-p",
+                    fixture.head,
+                    input_bytes=b"substituted evidence commit\n",
+                )
+                .stdout.decode()
+                .strip()
+            )
+            git(fixture.root, "update-ref", "refs/heads/gate9-substitute", replacement)
+            before = self._namespace_inventory()
+            real_run_git = module.run_git
+            snapshots = {"count": 0}
+
+            def substitute_between_snapshots(
+                root: pathlib.Path,
+                arguments: Sequence[str],
+                **kwargs: object,
+            ) -> subprocess.CompletedProcess[bytes]:
+                result = real_run_git(root, arguments, **kwargs)
+                if (
+                    arguments
+                    and arguments[0] == "for-each-ref"
+                    and any(module.REF_PREFIX in value for value in arguments)
+                ):
+                    snapshots["count"] += 1
+                    if snapshots["count"] == 1:
+                        leaf.write_text(f"{replacement}\n", encoding="ascii")
+                return result
+
+            try:
+                with mock.patch.object(
+                    module, "run_git", side_effect=substitute_between_snapshots
+                ):
+                    caught = discovery_error()
+                self.assertGreaterEqual(snapshots["count"], 1)
+                self.assertIsNotNone(
+                    caught, "a leaf substituted between snapshots was admitted"
+                )
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertEqual(victim_bytes, victim.read_bytes())
+                after = self._namespace_inventory()
+                self.assertEqual(before["objects"], after["objects"])
+            finally:
+                git(
+                    fixture.root,
+                    "update-ref",
+                    "-d",
+                    "refs/heads/gate9-substitute",
+                    check=False,
+                )
+                clear_namespace()
+
+        with self.subTest(case="raw-union-omission-clause"):
+            leaf = namespace / canonical
+            leaf.write_text(f"{fixture.head}\n", encoding="ascii")
+            before = self._namespace_inventory()
+            real_run_git = module.run_git
+            observed: dict[str, object] = {"unlinked": False, "boundary": None}
+
+            def unlink_before_for_each_ref(
+                root: pathlib.Path,
+                arguments: Sequence[str],
+                **kwargs: object,
+            ) -> subprocess.CompletedProcess[bytes]:
+                if (
+                    not observed["unlinked"]
+                    and arguments
+                    and arguments[0] == "for-each-ref"
+                    and any(module.REF_PREFIX in value for value in arguments)
+                ):
+                    observed["unlinked"] = True
+                    leaf.unlink()
+                    result = real_run_git(root, arguments, **kwargs)
+                    observed["boundary"] = (
+                        result.returncode,
+                        result.stdout,
+                        result.stderr,
+                    )
+                    return result
+                return real_run_git(root, arguments, **kwargs)
+
+            try:
+                with mock.patch.object(
+                    module, "run_git", side_effect=unlink_before_for_each_ref
+                ):
+                    caught = discovery_error()
+                self.assertTrue(observed["unlinked"])
+                self.assertEqual(
+                    (0, b"", b""),
+                    observed["boundary"],
+                    "the omission boundary invocation must exit zero with empty "
+                    "stdout and stderr so no preserved guard can fire",
+                )
+                self.assertIsNotNone(
+                    caught, "a one-sided raw membership was admitted"
+                )
+                self.assertEqual("FOREIGN_REF", caught.code)
+                self.assertEqual(victim_bytes, victim.read_bytes())
+                self.assertEqual(before, self._namespace_inventory())
+            finally:
+                clear_namespace()
+
+    def test_evidence_ref_hazard_funnels_are_bounded_reaped_and_fail_closed(
+        self,
+    ) -> None:
+        module = load_helper("gate9_hazard_funnels")
+        fixture = self.fixture
+        namespace = self._gate9_namespace()
+        namespace.mkdir(parents=True, exist_ok=True)
+        canonical = "b" * 64
+        victim, victim_bytes = self._plant_victim()
+
+        def clear_namespace() -> None:
+            if namespace.exists():
+                for child in sorted(namespace.rglob("*"), reverse=True):
+                    if child.is_dir() and not child.is_symlink():
+                        child.rmdir()
+                    else:
+                        child.unlink()
+            namespace.mkdir(parents=True, exist_ok=True)
+
+        with self.subTest(case="regular-raw-direct-snapshot-succeeds"):
+            leaf = namespace / canonical
+            leaf.write_text(f"{fixture.head}\n", encoding="ascii")
+            git(
+                fixture.root,
+                "update-ref",
+                f"{module.REF_PREFIX}/attempt-1/{canonical}",
+                fixture.head,
+            )
+            try:
+                self.assertEqual(
+                    [f"{module.REF_PREFIX}/attempt-1/{canonical}"],
+                    module.existing_evidence_refs(fixture.root),
+                )
+            finally:
+                git(
+                    fixture.root,
+                    "update-ref",
+                    "-d",
+                    f"{module.REF_PREFIX}/attempt-1/{canonical}",
+                    check=False,
+                )
+                clear_namespace()
+
+        with self.subTest(case="measured-for-each-ref-baseline"):
+            namespace.mkdir(parents=True, exist_ok=True)
+            leaf = namespace / canonical
+            os.mkfifo(leaf)
+            try:
+                started = time.monotonic()
+                baseline = git(
+                    fixture.root,
+                    "for-each-ref",
+                    "--format=%(refname)",
+                    f"{module.REF_PREFIX}/attempt-1/{canonical}",
+                    check=False,
+                )
+                elapsed = time.monotonic() - started
+                self.assertEqual(0, baseline.returncode)
+                self.assertEqual(b"", baseline.stdout)
+                self.assertEqual(b"", baseline.stderr)
+                self.assertLess(elapsed, 2.0)
+            finally:
+                clear_namespace()
+
+        with self.subTest(case="sub-case-1-pre-snapshot-fifo"):
+            namespace.mkdir(parents=True, exist_ok=True)
+            leaf = namespace / canonical
+            os.mkfifo(leaf)
+            environment = fixture.git_wrapper(
+                "pre-snapshot-fifo",
+                'printf "%s\\n" "$*" >> "$GATE9_WRAPPER_MARKER"\n'
+                'exec "$REAL_GIT" "$@"\n',
+            )
+            log = pathlib.Path(environment["GATE9_WRAPPER_MARKER"])
+            try:
+                started = time.monotonic()
+                result = fixture.build_process(env=environment, timeout=60)
+                elapsed = time.monotonic() - started
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertEqual("", result.stdout)
+                self.assertTrue(
+                    result.stderr.splitlines()[0].startswith("FOREIGN_REF: "),
+                    result.stderr,
+                )
+                lines = log.read_text().splitlines() if log.exists() else []
+                namespace_calls = [
+                    line
+                    for line in lines
+                    if module.REF_PREFIX in line
+                    and line.split(" ", 1)[0]
+                    in {"for-each-ref", "symbolic-ref", "update-ref"}
+                ]
+                self.assertEqual([], namespace_calls)
+                self.assertEqual([], sorted(namespace.glob("*.lock")))
+                self.assertLess(
+                    elapsed,
+                    30.0,
+                    "the pre-snapshot FIFO must be rejected without a funnel bound",
+                )
+            finally:
+                clear_namespace()
+
+        with self.subTest(case="sub-case-3-create-only-cas-funnel"):
+            task_before_publish = (self.root / TASK).read_bytes()
+            receipt = fixture.build()
+            materials = fixture.review_materials(receipt)
+            fixture.backfill_task(receipt, materials)
+            fixture.closure_materials(receipt, materials)
+            namespace.mkdir(parents=True, exist_ok=True)
+            leaf_name = str(receipt["package_sha256"])
+            leaf = namespace / leaf_name
+            before = self._namespace_inventory()
+            spawned: list[int] = []
+            real_popen = module.subprocess.Popen
+            real_run_git = module.run_git
+
+            def recording_popen(*args: object, **kwargs: object) -> object:
+                process = real_popen(*args, **kwargs)
+                spawned.append(process.pid)
+                return process
+
+            def inject_fifo_at_commit_tree(
+                root: pathlib.Path,
+                arguments: Sequence[str],
+                **kwargs: object,
+            ) -> subprocess.CompletedProcess[bytes]:
+                if arguments and arguments[0] == "commit-tree" and not leaf.exists():
+                    leaf.parent.mkdir(parents=True, exist_ok=True)
+                    os.mkfifo(leaf)
+                return real_run_git(root, arguments, **kwargs)
+
+            stdout_buffer = io.StringIO()
+            stderr_buffer = io.StringIO()
+            previous = os.getcwd()
+            terminal = self.root / "evidence/terminal.md"
+            terminal.parent.mkdir(parents=True, exist_ok=True)
+            terminal.write_text("AUTHORIZED\n", encoding="utf-8")
+            argv = [
+                os.fspath(HELPER),
+                "publish-evidence-ref",
+                "--require-live-head",
+                "--live-reviewed-head",
+                fixture.head,
+                "--reviewed-code-head",
+                fixture.reviewed_code_head,
+                "--bundle",
+                os.fspath(receipt["bundle_path"]),
+                "--expected-bundle-sha256",
+                str(receipt["bundle_sha256"]),
+                "--expected-package-sha256",
+                str(receipt["package_sha256"]),
+                "--task",
+                TASK,
+                "--terminal-state",
+                "AUTHORIZED",
+                "--terminal-report",
+                os.fspath(terminal),
+                "--assignment-attestation",
+                os.fspath(materials["attestation"]),
+                "--migration-report",
+                os.fspath(materials["migration-specification-report"]),
+                "--migration-receipt",
+                os.fspath(materials["migration-specification-receipt"]),
+                "--quality-report",
+                os.fspath(materials["quality-report"]),
+                "--quality-receipt",
+                os.fspath(materials["quality-receipt"]),
+                "--migration-closure-report",
+                os.fspath(materials["migration-specification-closure-report"]),
+                "--migration-closure",
+                os.fspath(materials["migration-specification-closure"]),
+                "--quality-closure-report",
+                os.fspath(materials["quality-closure-report"]),
+                "--quality-closure",
+                os.fspath(materials["quality-closure"]),
+                "--evidence-ref",
+                "auto",
+            ]
+            try:
+                os.chdir(fixture.root)
+                started = time.monotonic()
+                with mock.patch.object(
+                    module.subprocess, "Popen", side_effect=recording_popen
+                ), mock.patch.object(
+                    module, "run_git", side_effect=inject_fifo_at_commit_tree
+                ), mock.patch.object(
+                    module.sys, "argv", argv
+                ), contextlib.redirect_stdout(
+                    stdout_buffer
+                ), contextlib.redirect_stderr(
+                    stderr_buffer
+                ):
+                    status = module.main()
+                elapsed = time.monotonic() - started
+            finally:
+                os.chdir(previous)
+                fixture.hide_control_files()
+                (self.root / TASK).write_bytes(task_before_publish)
+            self.assertTrue(leaf.is_fifo(), "the mid-flight FIFO was not injected")
+            self.assertEqual(1, status)
+            self.assertEqual("", stdout_buffer.getvalue())
+            first_line = stderr_buffer.getvalue().splitlines()[0]
+            self.assertRegex(first_line, r"^[A-Z][A-Z0-9_]*: .+")
+            self.assertGreaterEqual(
+                elapsed, 2.0, "funnel 1 returned before its 2.0-second bound expired"
+            )
+            self.assertLess(elapsed, 30.0)
+            self.assertTrue(spawned, "no funnel-1 child was recorded")
+            blocked_pid = spawned[-1]
+            self.assertFalse(
+                pathlib.Path(f"/proc/{blocked_pid}").exists(),
+                "the blocked funnel-1 child is still present",
+            )
+            with self.assertRaises(ChildProcessError):
+                os.waitpid(blocked_pid, os.WNOHANG)
+            after = self._namespace_inventory()
+            self.assertEqual(before["outside_refs"], after["outside_refs"])
+            self.assertEqual(victim_bytes, victim.read_bytes())
+            leaf.unlink()
+            clear_namespace()
+            fixture.hide_control_files()
+
+        for variant, payload in (
+            ("empty", b""),
+            ("full-width-oid", f"{fixture.head}\n".encode()),
+        ):
+            with self.subTest(case="sub-case-4-lock-residue", variant=variant):
+                namespace.mkdir(parents=True, exist_ok=True)
+                lock = namespace / f"{canonical}.lock"
+                lock.write_bytes(payload)
+                lock_before = (
+                    lock.lstat().st_mode,
+                    lock.lstat().st_size,
+                    lock.lstat().st_mtime_ns,
+                    lock.read_bytes(),
+                )
+                before = self._namespace_inventory()
+                state_before = fixture.repository_state()
+                try:
+                    result = fixture.build_process(timeout=60)
+                    self.assertEqual(1, result.returncode, result.stdout)
+                    self.assertEqual("", result.stdout)
+                    first_line = result.stderr.splitlines()[0]
+                    self.assertTrue(
+                        first_line.startswith("STALE_REF_LOCK: "), result.stderr
+                    )
+                    self.assertIn(os.fspath(lock), result.stderr)
+                    self.assertTrue(lock.exists(), "the lock residue was removed")
+                    self.assertEqual(
+                        lock_before,
+                        (
+                            lock.lstat().st_mode,
+                            lock.lstat().st_size,
+                            lock.lstat().st_mtime_ns,
+                            lock.read_bytes(),
+                        ),
+                    )
+                    self.assertFalse((namespace / canonical).exists())
+                    self.assertEqual(before, self._namespace_inventory())
+                    self.assertEqual(state_before, fixture.repository_state())
+                    self.assertEqual(victim_bytes, victim.read_bytes())
+                finally:
+                    clear_namespace()
+
+        with self.subTest(case="sub-case-5-control-file-fifo"):
+            receipt = fixture.build()
+            control = self.root / "evidence/fifo-attestation.json"
+            control.parent.mkdir(parents=True, exist_ok=True)
+            os.mkfifo(control)
+            try:
+                started = time.monotonic()
+                result = fixture.run(
+                    "verify-assignments",
+                    "--bundle",
+                    os.fspath(receipt["bundle_path"]),
+                    "--expected-bundle-sha256",
+                    str(receipt["bundle_sha256"]),
+                    "--expected-package-sha256",
+                    str(receipt["package_sha256"]),
+                    "--attestation",
+                    os.fspath(control),
+                    timeout=60,
+                )
+                elapsed = time.monotonic() - started
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertEqual("", result.stdout)
+                self.assertRegex(
+                    result.stderr.splitlines()[0], r"^[A-Z][A-Z0-9_]*: .+"
+                )
+                self.assertLess(elapsed, 30.0)
+            finally:
+                control.unlink()
+                fixture.hide_control_files()
+
+        with self.subTest(case="sub-case-5-whole-file-fifo"):
+            fifo_task = self.root / "docs/04.execution/tasks/gate9-fifo-task.md"
+            fifo_task.parent.mkdir(parents=True, exist_ok=True)
+            os.mkfifo(fifo_task)
+            try:
+                started = time.monotonic()
+                result = fixture.run(
+                    "verify-authorized",
+                    "--bundle-from-ref",
+                    "--task",
+                    "docs/04.execution/tasks/gate9-fifo-task.md",
+                    "--evidence-ref",
+                    "auto",
+                    timeout=60,
+                )
+                elapsed = time.monotonic() - started
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertEqual("", result.stdout)
+                self.assertRegex(
+                    result.stderr.splitlines()[0], r"^[A-Z][A-Z0-9_]*: .+"
+                )
+                self.assertLess(elapsed, 30.0)
+            finally:
+                fifo_task.unlink()
+
+        for variant in ("fifo", "dangling-symlink"):
+            with self.subTest(case="sub-case-5-non-regular-index", variant=variant):
+                receipt = fixture.build()
+                index_path = self.root / ".git/index"
+                saved = index_path.read_bytes()
+                index_path.unlink()
+                if variant == "fifo":
+                    os.mkfifo(index_path)
+                else:
+                    os.symlink(
+                        os.fspath(self.root / ".git/gate9-absent-index"), index_path
+                    )
+                environment = fixture.git_wrapper(
+                    f"index-guard-{variant}",
+                    'printf "%s\\n" "$*" >> "$GATE9_WRAPPER_MARKER"\n'
+                    'exec "$REAL_GIT" "$@"\n',
+                )
+                log = pathlib.Path(environment["GATE9_WRAPPER_MARKER"])
+                try:
+                    started = time.monotonic()
+                    result = fixture.run(
+                        "verify-package",
+                        "--bundle",
+                        os.fspath(receipt["bundle_path"]),
+                        "--expected-bundle-sha256",
+                        str(receipt["bundle_sha256"]),
+                        "--expected-package-sha256",
+                        str(receipt["package_sha256"]),
+                        env=environment,
+                        timeout=60,
+                    )
+                    elapsed = time.monotonic() - started
+                    self.assertEqual(1, result.returncode, result.stdout)
+                    self.assertEqual("", result.stdout)
+                    self.assertRegex(
+                        result.stderr.splitlines()[0], r"^[A-Z][A-Z0-9_]*: .+"
+                    )
+                    lines = log.read_text().splitlines() if log.exists() else []
+                    index_readers = [
+                        line
+                        for line in lines
+                        if line.split(" ", 1)[0] in {"diff", "status"}
+                    ]
+                    self.assertEqual(
+                        [],
+                        index_readers,
+                        "the index guard must run before the first index-reading "
+                        "Git invocation in the authority preflight",
+                    )
+                    self.assertLess(elapsed, 30.0)
+                finally:
+                    index_path.unlink()
+                    index_path.write_bytes(saved)
+
+        for injection, body in (
+            (
+                "nonzero-exit",
+                'if [[ "$1" == for-each-ref && "$*" == *'
+                "codex/review-evidence/agentic-research/gate9"
+                '* ]]; then\n'
+                '  "$REAL_GIT" "$@" || true\n'
+                "  exit 41\n"
+                "fi\n"
+                'exec "$REAL_GIT" "$@"\n',
+            ),
+            (
+                "stderr-with-zero-exit",
+                'if [[ "$1" == for-each-ref && "$*" == *'
+                "codex/review-evidence/agentic-research/gate9"
+                '* ]]; then\n'
+                '  "$REAL_GIT" "$@"\n'
+                '  printf "advisory\\n" >&2\n'
+                "  exit 0\n"
+                "fi\n"
+                'exec "$REAL_GIT" "$@"\n',
+            ),
+        ):
+            with self.subTest(case="sub-case-6-injected-git-output", injection=injection):
+                environment = fixture.git_wrapper(f"injected-{injection}", body)
+                before = self._namespace_inventory()
+                state_before = fixture.repository_state()
+                result = fixture.build_process(env=environment, timeout=60)
+                self.assertEqual(1, result.returncode, result.stdout)
+                self.assertEqual("", result.stdout)
+                self.assertTrue(
+                    result.stderr.splitlines()[0].startswith("FOREIGN_REF: "),
+                    result.stderr,
+                )
+                self.assertEqual(before, self._namespace_inventory())
+                self.assertEqual(state_before, fixture.repository_state())
+                self.assertEqual(victim_bytes, victim.read_bytes())
