@@ -2469,7 +2469,7 @@ Correct only this Plan a fifth time from clean
 `a6613da90cd9b8e2c5a21ae420065b3af28dbcfb`. Commit exact subject
 `docs(plan): correct gate 9 deadline and terminal status`. Both fix-5
 independent re-reviews are complete and they split. The Python/security
-re-review returned Approved C0/I0/M6 — the first approval any correction in
+re-review returned Approved C0/I0/M6 — the second approval any correction in
 this gate has earned — after verifying the no-mutation property, the
 `setitimer`-before-`open` mechanism, the exit-1 convention, and the
 size-independent lock predicate against the primitives and the helper source
@@ -2535,7 +2535,7 @@ this Plan's unchanged C0/I0/M0 requirement. As a sixth change outside that
 enumerated set, fix-8 also rewrites R3 to bar the `SIGALRM`-blocking closure
 route as deadline-defeating. Both fix-8 independent re-reviews are complete and
 they split. The Python/security re-review returned Approved C0/I0/M4 — the
-second approval any correction in this gate has earned — after tracing the
+third approval any correction in this gate has earned — after tracing the
 helper source rather than this Plan's prose to verify that every retained
 liveness control now carries a gate-blocking assertion at a site where it can
 actually fire, that all five properties the fix-5 approval rested on survive,
@@ -2573,6 +2573,35 @@ edit the Task, helper, or tests until both fix-9 re-reviews return C0/I0/M0.
 Package construction, package or ref consumption, Phase A, evidence-ref
 publication, real-index staging, deletion, lifecycle mutation, Task 12, remote
 actions, and push all remain closed.
+
+Both fix-9 re-reviews returned Approved. The Python/security re-review returned
+Approved C0/I0/M0 with no finding at any severity, after anchoring the
+code-agnostic fail-closed form in the helper's own `Gate9Error` message
+construction and single `main()` exception boundary, confirming empty stdout
+because every stdout write in the helper is a terminal-success statement, and
+confirming that the first stderr line is the only position where a mapped
+diagnostic and an interpreter traceback differ. It also checked the four
+statements of the demotion criterion mechanically as byte-identical. The
+specification re-review returned Approved C0/I0/M3, the first specification
+approval any correction in this gate has earned, and judged the closed-enumeration
+device an honest resolution rather than a concealed rule because an unplaced case
+requires a reviewed Plan amendment.
+
+Step 0e admits no parked Minor, so those three specification Minors still block.
+Correct only this Plan again from clean
+`f87746dbb2ab1f4e78fb0a56e8be1a1cf6bb0d3d`. Commit exact subject
+`docs(plan): close residual gate 9 wording findings`. The correction attaches the
+criterion's narrowing to the moved-out bullet without restating or overriding its
+three retained exceptions, repairs an approval count that this Plan states one too
+low in two places rather than only in the sentence fix-9 added, and gives the two
+verbless criterion lead-ins a main verb so all four read as sentences. It changes
+no criterion body, no placement, no error code, and no blocking status. Both
+fix-10 independent re-reviews are `Not Run` until that one-file commit is
+dispatched; do not predict their verdicts. One fresh independent specification
+reviewer and one fresh independent Python/security reviewer must each return
+C0/I0/M0 over that one-file range before recovery round 4 may begin. No Plan-only
+fix consumes a Step 0e implementation round, so the implementation count remains
+three of five. Every downstream action named above remains closed.
 
 Fix-4 replaces the fix-3 stale-lock clearance with a fail-closed terminal
 state because the clearance violated the Gate 9 evidence architecture boundary
@@ -2651,8 +2680,8 @@ reaches a mapped fail-closed terminal state — exit 1, empty stdout, and a stde
 whose first line is a `<CODE>: <detail>` diagnostic rather than an unmapped
 traceback — instead of proceeding all stay gate requirements, while the named
 code and the classification argument about which clause catches which
-substitution are the part that moves. The criterion for that, in the form fix-9
-repeats identically in every place this Plan states it. Demoted: a claim that
+substitution are the part that moves. The criterion for that is stated here in
+the form this Plan repeats identically in every place it states it. Demoted: a claim that
 names one specific error code as the outcome of an adversarial substitution or
 removal the fixture directs at a path the gate reads. Retained: every other claim
 those same fixtures make, and three named classes of code claim — methods 1 and
@@ -2825,7 +2854,9 @@ fixture granularity and thereby carried the mandated demonstrations of the kept
 liveness requirements out of the gate along with it:
 
 - the obligation to _prove_ that a named adversarial substitution produces one
-  named error code — but not the obligation that the gate finish within its
+  named error code, as narrowed by the criterion stated immediately below, whose
+  three retained classes this bullet does not restate and does not override —
+  but not the obligation that the gate finish within its
   bound, park nowhere, leave no live or unreaped child, and reach a mapped
   fail-closed terminal state, meaning exit 1, empty stdout, and a stderr whose
   first line is a `<CODE>: <detail>` diagnostic rather than an unmapped
@@ -3393,8 +3424,8 @@ error code, and the classification argument about which clause catches which
 substitution. Constructing an injection is not what places an assertion; what
 the assertion claims is.
 
-The criterion that places a code claim, in the same words the pass condition and
-R2 above use. Demoted: a claim that names one specific error code as the outcome
+The criterion that places a code claim is stated here in the same words the pass
+condition and R2 above use. Demoted: a claim that names one specific error code as the outcome
 of an adversarial substitution or removal the fixture directs at a path the gate
 reads. Retained: every other claim those same fixtures make, and three named
 classes of code claim — methods 1 and 2's external-bundle transport codes, whose
