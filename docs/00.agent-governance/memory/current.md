@@ -7,70 +7,102 @@ status: active
 
 ## Current objective
 
-- Current task: `docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md`
-- The active unit re-verifies the canonical 2026-08-08 research pack in place
-  against live external sources and current tracked workspace evidence.
+- Current task: `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
+- The active unit continues that Task from its interruption point: the canonical
+  2026-08-08 research pack is deepened and committed, and the open work is the
+  Gate 9 Step 0e recovery round 4 review pair plus consolidation of the tracked
+  worktrees.
 
 ## Approved decisions
 
-- The user approved refresh over rebuild: no new dated pack, no relocation, and
-  no change to the twenty-leaf topic decomposition.
-- Leaf scope is volatility-prioritized. Nine Tier A leaves get full external
-  re-research; eleven Tier B leaves get workspace re-verification plus source
-  survival checks.
-- One new Stage 04 Task is the only governance artifact for this unit; no new
-  Spec or Plan is created.
-- After the ignored-scratch deletion, the user directed recording the breakage
-  as a Memory note and continuing the approved refresh.
+- The user approved in-place deepening of the existing canonical pack on
+  2026-08-14: no new dated pack, no relocation, and no change to the twenty-leaf
+  decomposition, the fourteen-scope axis, or the thirty-six requirement
+  destinations.
+- The user approved a Gate 9 scope reduction on 2026-08-14 rather than a seventh
+  repair of the same material, keeping the security claim scoped to
+  reviewer-identity binding and reclassifying filesystem hazards as availability
+  and robustness requirements.
+- The user directed on 2026-08-17 that Spec, Plan, and Task be inspected and
+  reconciled, that work resume from the interruption point, and that subagents
+  are permitted. Constraints set in the same direction: per-logical-unit commits,
+  one-off file cleanup, cross-link reconciliation after each change, and
+  consolidation of this session's worktrees into `main`.
+- Worktree consolidation is directed but its per-branch disposition is not yet
+  decided. Merge-versus-discard requires the evidence named under Blockers.
 
 ## Active boundary
 
-- This handoff covers the twenty pack leaves, the pack index, the new Task
-  ledger, the execution index row, one Memory note, and this record.
-- The retiring 2026-07-05 pack, Spec 137, the rebuild Plan, Task 10b, Task 11,
-  LLM Wiki generators and outputs, `infra/`, runtime state, and all remote
-  actions stay outside this unit.
+- This handoff covers the twenty pack leaves and pack index, the deepening Task
+  ledger, the rebuild Task's review-receipt rows, the execution index row, and
+  this record.
+- Spec 137, every Plan other than the Gate 9 rebuild Plan, the retiring
+  2026-07-05 pack, `infra/`, `secrets/`, runtime state, and all remote actions
+  stay outside this unit.
+- `.superpowers/` ignored scratch is not deleted. A prior deletion destroyed
+  SHA-256-cited advisory inputs; see the linked Memory note.
 
 ## Verified state
 
-- Verified commit: `3f433e6808e0f4503fbf6ac0ed34c09baa371492`
-- Verified at: `2026-08-11T10:16:09+09:00`
-- The pack keeps 21 files, 20 leaves, the fourteen-scope axis, and 36
-  requirement destinations; only claim text changed.
-- Eleven leaves survived re-verification unchanged; nine leaves received
-  corrected counts, source rows, or freshness routing.
-- Changed-path metadata validation returned zero violations before every commit.
-  The repository contract returned `failures=0` in an isolated interpreter and
-  `failures=1` in the default interpreter, where only the pre-existing
-  `html5lib` dependency gap remains.
-- Two independent reviews returned specification `PASS`; quality was `Approved`
-  on one range and `Needs fixes` with one Important finding on the other, fixed
-  and independently re-derived.
-- Security readiness was re-confirmed by direct execution: `--check` exits 0 and
-  the snapshot carries 11 implemented, one partially implemented, and one gap.
+- Verified commit: `1b5a83da`
+- Verified at: `2026-08-17T20:27:50+09:00`
+- All twenty leaves were deepened and committed across eight logical commits.
+  Nineteen carry `reviewed_at: 2026-08-14`; `loop-engineering.md` carries
+  `2026-08-17` after its REQ-03 adoption-rules section was added.
+- A coverage audit confirmed all twenty-three requested categories are covered,
+  the fourteen-scope axis is named in all twenty leaves, 401 relative links
+  resolve with zero breaks, and no leaf is external-only.
+- Gate 9 Step 0e recovery round 4 is implemented as `43cc3298` with BASE
+  `530b848a`, changing exactly the helper, its tests, and the rebuild Task.
+- The Plan-only correction gate closed at fix-13 (`b999da7d`) with
+  `Approved; C0/I0/M0` from both independent seats. Thirteen Plan-only
+  corrections consumed no implementation round.
+- At `1b5a83da`: changed-document metadata `selected=2 violations=0`,
+  traceability `catalog_pairs_total=46 failures=0`, repository contract
+  `failures=0`, and both LLM Wiki generator checks PASS fresh.
+- The `html5lib` validation dependency is declared at `scripts/requirements.txt`
+  and imports cleanly from the default interpreter. The earlier
+  "pre-existing and unowned" characterization was corrected by the deepening
+  Task: the owner is the requirements file and the gap was local environment
+  preparation.
 
 ## Blockers and unverified facts
 
+- Round 4's two independent reviews are the gate. Until both return
+  `C0/I0/M0` with no Minor parked, the Task-only Step 0e closure, package
+  construction, Phase A, evidence-ref publication, real-index staging,
+  deletion, lifecycle mutation, Task 12, remote actions, and push all remain
+  closed. Four of five implementation rounds are consumed.
+- Three record defects remain open: rebuild Task lines near 83 and 316 still
+  say round-4 implementation is `Not Run`, and the Plan's repeated
+  "implementation count remains three of five" lines are pre-round-4. The Plan
+  is outside the deepening Task's allowed paths, so its correction needs its own
+  approval boundary.
+- Three worktree branches hold unmerged work whose disposition is undecided:
+  `codex/agentic-research-generated-freshness` (1 commit),
+  `codex/agentic-research-rebuild-finish` (94 commits, including a
+  direct-deletion controller/worker design absent from `main`, plus four
+  uncommitted files), and `codex/sdlc-taxonomy-convergence` (67 commits, plus
+  three uncommitted files).
 - Three advisory input files cited by SHA-256 in the rebuild Task were destroyed
-  with this worktree's ignored `.superpowers/` scratch and are unrecoverable.
-  Reconciling those dangling citations belongs to the rebuild Task's owner.
-- The `html5lib` validation-runtime dependency gap is pre-existing and unowned.
+  with an ignored `.superpowers/` scratch tree and are unrecoverable.
 - `iso.org` refuses automated retrieval with HTTP 403; dependent claims are
   retained with a revalidation note rather than treated as verified.
-- Provider runtime acceptance, remote enforcement, live Compose state, and
-  generator re-execution remain unobserved in this unit.
+- Provider runtime acceptance, remote enforcement, and live Compose state remain
+  unobserved.
 
 ## Evidence links
 
-- [Source refresh Task](../../04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md)
+- [Deepening Task](../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)
 - [Rebuild Task holding the Task 11 deletion gate](../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md)
+- [Rebuild Plan](../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Ignored scratch deletion note](./ignored-sdd-scratch-deletion.md)
 - [Active specification](../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 
 ## Next handoff
 
-- Decide whether the rebuild Task's owner reconciles or retires the three
-  dangling SHA-256 input citations before Task 11 proceeds.
-- Task 11 deletion and pinned lifecycle reconciliation remain closed and
-  unchanged by this unit; its gate still requires its own pre-deletion evidence.
+- Record round 4's two review verdicts in the rebuild Task, which the Plan
+  designates as receipt owner, then either close Step 0e or open round 5.
+- Decide each worktree branch's disposition against the consolidation evidence,
+  then reconcile the record defects named under Blockers.
