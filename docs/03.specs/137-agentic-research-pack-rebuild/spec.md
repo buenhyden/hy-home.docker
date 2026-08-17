@@ -130,6 +130,24 @@ The Task must distinguish defects corrected within the approved documentation
 migration from unrelated or environment-owned predecessors. A known failure
 may not be converted into a pass by omission.
 
+Baseline currency, recorded 2026-08-18 from a read-only gate audit. Three of the
+defects above have since been resolved and now pass: the LLM Wiki coverage
+snapshot, the security automation readiness snapshot, and the repository
+contract check, whose dependency is declared in the repository's own
+requirements file and was a local environment gap rather than an unowned defect.
+Document implementation alignment currently reports 181 findings, below its
+pinned 184 predecessor, with zero attributable to this work. The bullets above
+are retained as the original baseline record; this note is the current reading,
+and a gate must cite a fresh measurement rather than either list. The
+no-silent-normalization rule is unchanged and cuts both ways: a resolved defect
+is recorded as resolved, and a regression may not be hidden behind a stale
+baseline.
+
+One scope limit of that alignment number, so it is not read as broader than it
+is: the alignment check scans Stage 01 through 05 only, so it cannot observe the
+retiring pack under Stage 90. Zero attributable findings means zero in Stage 01
+through 05, not that the pack is clean.
+
 ### Normative requirement inventory
 
 The implementation requirement matrix uses the following closed set. A
