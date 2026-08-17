@@ -54,7 +54,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: prom/prometheus:v3.13.1
+    image: prom/prometheus:v3.13.2
     container_name: infra-prometheus
     tmpfs:
       - /tmp
@@ -200,7 +200,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.18.0
+    image: grafana/alloy:v1.18.1
     container_name: infra-alloy
     tmpfs:
       - /tmp
@@ -255,7 +255,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.1.0
+    image: grafana/grafana:13.1.3
     container_name: infra-grafana
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
@@ -401,7 +401,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.1.1
+    image: grafana/pyroscope:2.2.1
     container_name: infra-pyroscope
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
