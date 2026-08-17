@@ -17,9 +17,29 @@ import old_path_gate_contract as contract  # noqa: E402
 SLUG = contract.SLUG
 ALLOWLIST_HEADER = (
     "### Old-path allowlist\n\n"
-    "| Path | Anchor | Class | Reason | Review |\n"
+    "| Path | Anchor | Literal class | Reason | Review |\n"
     "| --- | --- | --- | --- | --- |\n"
 )
+
+# Every clickable form the review measured as evading the first implementation.
+# Each must be detected both on its own and inside a reviewed-allowlisted file,
+# because gate 4 admits no clickable-link exception.
+EVASIONS = {
+    "inline": f"[a]({SLUG}/x.md)",
+    "dot_slash": f"[a](./{SLUG}/x.md)",
+    "angle_bracket": f"[a](<../{SLUG}/x.md>)",
+    "directory_without_trailing_slash": f"[a](../research/{SLUG})",
+    "reference_definition": f"[a][r]\n\n[r]: ../{SLUG}/x.md",
+    "html_href": f'<a href="../{SLUG}/x.md">a</a>',
+    "split_across_lines": f"[a](../{SLUG}/\nx.md)",
+    "percent_encoded_slash": f"[a](..%2F{SLUG}%2Fx.md)",
+    # Built from parts rather than written out, so this file does not itself
+    # contain a percent-decodable copy of the slug. Writing the literal here
+    # made the scanner report its own test file, correctly.
+    "percent_encoded_slug_character": (f"[a](../{SLUG[:-2]}%73{SLUG[-1]}/x.md)"),
+    "autolink": f"<../{SLUG}/x.md>",
+    "uppercased_slug": f"[a](../{SLUG.upper()}/x.md)",
+}
 
 
 def codes(findings: list[contract.Finding]) -> set[str]:
@@ -27,7 +47,7 @@ def codes(findings: list[contract.Finding]) -> set[str]:
 
 
 class OldPathGateFixtureTests(unittest.TestCase):
-    """Behaviour against synthetic repositories under /tmp."""
+    """Behaviour against synthetic repositories under the system temp root."""
 
     def _repo(self, directory: str) -> pathlib.Path:
         root = pathlib.Path(directory)
@@ -37,99 +57,65 @@ class OldPathGateFixtureTests(unittest.TestCase):
         return root
 
     def _commit(self, root: pathlib.Path) -> None:
-        subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+        subprocess.run(
+            ["git", "-C", str(root), "add", "-A"], check=True, capture_output=True
+        )
 
     def _allow(
-        self, root: pathlib.Path, *paths: str, verdict: str = "reviewed"
+        self,
+        root: pathlib.Path,
+        *paths: str,
+        verdict: str = "reviewed",
+        literal_class: str = "Factual history",
+        anchor: str = "# anchor",
     ) -> None:
         rows = "".join(
-            f"| `{path}` | `# anchor` | Factual history | reason | {verdict} |\n"
+            f"| `{path}` | `{anchor}` | {literal_class} | reason | {verdict} |\n"
             for path in paths
         )
         (root / contract.TASK_PATH).write_text(
             ALLOWLIST_HEADER + rows, encoding="utf-8"
         )
 
-    def test_allowlist_row_without_settled_verdict_grants_no_exemption(self) -> None:
-        """A proposed row is not an exemption until a review settles it."""
-        with tempfile.TemporaryDirectory() as directory:
-            root = self._repo(directory)
-            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
-            self._allow(root, "docs/note.md", verdict="independent review pending")
-            self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual({"OLD-PATH-ALLOWLIST-UNREVIEWED"}, codes(findings))
-
-    def test_empty_verdict_grants_no_exemption(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = self._repo(directory)
-            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
-            self._allow(root, "docs/note.md", verdict="")
-            self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual({"OLD-PATH-ALLOWLIST-UNREVIEWED"}, codes(findings))
-
-    def test_future_activity_does_not_unsettle_a_reviewed_verdict(self) -> None:
-        """Regression: an earlier predicate banned the word "pending" outright.
-
-        Several reviewed rows note that post-deletion lifecycle reconciliation is
-        still pending. That is a future activity, not an open review, and reading
-        it as one produced 28 false findings against the live repository.
-        """
-        with tempfile.TemporaryDirectory() as directory:
-            root = self._repo(directory)
-            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
-            self._allow(
-                root,
-                "docs/note.md",
-                verdict="Task 10b boundary reviewed; lifecycle reconciliation "
-                "pending after deletion",
-            )
-            self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual([], findings)
-
     def test_clean_repository_passes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = self._repo(directory)
             (root / "docs/note.md").write_text("no old path here\n", encoding="utf-8")
             self._commit(root)
-            findings, generated = contract.scan(root)
-            self.assertEqual([], findings)
-            self.assertEqual(0, generated)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
+            self.assertEqual(0, result.generated_occurrences)
 
-    def test_clickable_link_is_a_finding(self) -> None:
-        """The exact regression class that survived five days undetected."""
-        with tempfile.TemporaryDirectory() as directory:
-            root = self._repo(directory)
-            (root / "docs/leaf.md").write_text(
-                f"| [Predecessor]({SLUG}/workspace-baseline.md) | row |\n",
-                encoding="utf-8",
-            )
-            self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual({"OLD-PATH-CLICKABLE-LINK"}, codes(findings))
-            self.assertEqual(1, findings[0].line)
+    def test_every_clickable_form_is_detected(self) -> None:
+        """Each form the review measured as an escape must now be caught."""
+        for name, body in EVASIONS.items():
+            with self.subTest(form=name):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = self._repo(directory)
+                    (root / "docs/leaf.md").write_text(body + "\n", encoding="utf-8")
+                    self._commit(root)
+                    result = contract.scan(root)
+                    self.assertIn("OLD-PATH-CLICKABLE-LINK", codes(result.findings))
 
-    def test_clickable_link_is_a_finding_even_when_allowlisted(self) -> None:
-        """Gate 4 admits no clickable-link exception, allowlist notwithstanding."""
-        with tempfile.TemporaryDirectory() as directory:
-            root = self._repo(directory)
-            (root / "docs/leaf.md").write_text(
-                f"[x](../{SLUG}/README.md)\n", encoding="utf-8"
-            )
-            self._allow(root, "docs/leaf.md")
-            self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual({"OLD-PATH-CLICKABLE-LINK"}, codes(findings))
+    def test_no_clickable_form_is_suppressed_by_the_allowlist(self) -> None:
+        """The amplification the review found: a reviewed row swallowed five forms."""
+        for name, body in EVASIONS.items():
+            with self.subTest(form=name):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = self._repo(directory)
+                    (root / "docs/leaf.md").write_text(body + "\n", encoding="utf-8")
+                    self._allow(root, "docs/leaf.md")
+                    self._commit(root)
+                    result = contract.scan(root)
+                    self.assertIn("OLD-PATH-CLICKABLE-LINK", codes(result.findings))
 
     def test_unallowlisted_literal_is_a_finding(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = self._repo(directory)
             (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
             self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual({"OLD-PATH-UNALLOWLISTED"}, codes(findings))
+            result = contract.scan(root)
+            self.assertEqual({"OLD-PATH-UNALLOWLISTED"}, codes(result.findings))
 
     def test_allowlisted_literal_passes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -137,8 +123,27 @@ class OldPathGateFixtureTests(unittest.TestCase):
             (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
             self._allow(root, "docs/note.md")
             self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual([], findings)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
+
+    def test_forbidden_literal_class_grants_nothing(self) -> None:
+        """Spec 137 denies an allowlist to routers and canonical-owner statements."""
+        for literal_class in (
+            "Current router",
+            "Generated navigation",
+            "Canonical-owner statement",
+            "Mutable configuration route",
+        ):
+            with self.subTest(literal_class=literal_class):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = self._repo(directory)
+                    (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+                    self._allow(root, "docs/note.md", literal_class=literal_class)
+                    self._commit(root)
+                    result = contract.scan(root)
+                    self.assertEqual(
+                        {"OLD-PATH-FORBIDDEN-CLASS"}, codes(result.findings)
+                    )
 
     def test_retiring_directory_itself_is_excluded(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -149,22 +154,43 @@ class OldPathGateFixtureTests(unittest.TestCase):
                 f"[self]({SLUG}/leaf.md) and `{SLUG}/`\n", encoding="utf-8"
             )
             self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual([], findings)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
 
-    def test_generated_surface_is_counted_not_failed(self) -> None:
-        """Never silently dropped: the occurrence count is always reported."""
+    def test_prefix_sibling_directory_is_still_scanned(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            sibling = root / f"docs/90.references/research/{SLUG}-notes"
+            sibling.mkdir(parents=True)
+            (sibling / "n.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+            self._commit(root)
+            result = contract.scan(root)
+            self.assertEqual({"OLD-PATH-UNALLOWLISTED"}, codes(result.findings))
+
+    def test_generated_surface_counts_occurrences_not_lines(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = self._repo(directory)
             generated = root / "graphify-out"
             generated.mkdir()
             (generated / "GRAPH_REPORT.md").write_text(
-                f"[a]({SLUG}/x.md)\n`{SLUG}/`\n", encoding="utf-8"
+                f"`{SLUG}/` and `{SLUG}/` again\n", encoding="utf-8"
             )
             self._commit(root)
-            findings, count = contract.scan(root)
-            self.assertEqual([], findings)
-            self.assertEqual(2, count)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
+            self.assertEqual(2, result.generated_occurrences)
+
+    def test_clickable_link_inside_the_generated_surface_still_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            generated = root / "graphify-out"
+            generated.mkdir()
+            (generated / "GRAPH_REPORT.md").write_text(
+                f"[a](../{SLUG}/x.md)\n", encoding="utf-8"
+            )
+            self._commit(root)
+            result = contract.scan(root)
+            self.assertIn("OLD-PATH-CLICKABLE-LINK", codes(result.findings))
 
     def test_untracked_file_is_not_scanned(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -173,31 +199,113 @@ class OldPathGateFixtureTests(unittest.TestCase):
             (root / "docs/untracked.md").write_text(
                 f"[x]({SLUG}/y.md)\n", encoding="utf-8"
             )
-            findings, _ = contract.scan(root)
-            self.assertEqual([], findings)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
 
     def test_binary_file_does_not_crash_the_scan(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = self._repo(directory)
             (root / "blob.bin").write_bytes(b"\x00\xff\xfe binary")
             self._commit(root)
-            findings, _ = contract.scan(root)
-            self.assertEqual([], findings)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
+
+    def test_escaped_pipe_in_a_cell_does_not_shift_the_verdict_column(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+            (root / contract.TASK_PATH).write_text(
+                ALLOWLIST_HEADER
+                + "| `docs/note.md` | `# a` | Factual history | a \\| b | reviewed |\n",
+                encoding="utf-8",
+            )
+            self._commit(root)
+            result = contract.scan(root)
+            self.assertEqual([], result.findings)
+
+    def test_a_deeper_heading_ends_the_allowlist_table(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+            (root / contract.TASK_PATH).write_text(
+                ALLOWLIST_HEADER
+                + "#### Unrelated\n\n"
+                + "| Path | Anchor | Literal class | Reason | Review |\n"
+                + "| --- | --- | --- | --- | --- |\n"
+                + "| `docs/note.md` | `# a` | Factual history | r | reviewed |\n",
+                encoding="utf-8",
+            )
+            self._commit(root)
+            result = contract.scan(root)
+            self.assertEqual({"OLD-PATH-UNALLOWLISTED"}, codes(result.findings))
+
+
+class SettledVerdictTests(unittest.TestCase):
+    """The verdict predicate, including every case the review measured."""
+
+    SETTLED = (
+        "Approved C0/I0/M0",
+        "Task 10b boundary reviewed; lifecycle reconciliation pending after deletion",
+        "Focused GREEN and freshness PASS; scoped re-reviews Approved C0/I0/M0",
+    )
+    UNSETTLED = (
+        "",
+        "Not Run",
+        "independent pack review pending",
+        "Not Run; independent review requested 2026-08-18",
+        "review not approved",
+        "NOT approved",
+        "review pending; gates do not pass yet",
+        "no review; will PASS later",
+        "REVIEWED-BY-NOBODY",
+        "independent review returned an Important finding; not approved",
+    )
+
+    def test_settled_forms(self) -> None:
+        for verdict in self.SETTLED:
+            with self.subTest(verdict=verdict):
+                self.assertTrue(contract._is_settled(verdict))
+
+    def test_unsettled_forms(self) -> None:
+        for verdict in self.UNSETTLED:
+            with self.subTest(verdict=verdict):
+                self.assertFalse(contract._is_settled(verdict))
+
+    def test_bare_pass_alone_does_not_settle(self) -> None:
+        """The review measured that the bare word carried no live row."""
+        self.assertFalse(contract._is_settled("gates pass in the next unit"))
 
 
 class OldPathGateRepositoryTests(unittest.TestCase):
     """Behaviour against the live repository."""
 
-    def test_allowlist_parses_from_the_task(self) -> None:
-        reviewed, unreviewed = contract.read_allowlist(ROOT)
-        self.assertGreaterEqual(len(reviewed), 30)
-        self.assertTrue(all(not path.startswith("`") for path in reviewed | unreviewed))
+    EXPECTED_UNREVIEWED = {
+        "docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md",
+        "docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md",
+        "scripts/validation/agentic-research-gate9-evidence.py",
+        "scripts/validation/old_path_gate_contract.py",
+        "tests/validation/test_agentic_research_gate9_evidence.py",
+    }
+
+    def test_allowlist_split_is_exact(self) -> None:
+        """Pins the split, so a forced-settled regression cannot survive."""
+        rows = contract.read_allowlist(ROOT)
+        unreviewed = {path for path, row in rows.items() if not row.settled}
+        self.assertEqual(self.EXPECTED_UNREVIEWED, unreviewed)
+        self.assertEqual(34, sum(1 for row in rows.values() if row.settled))
+
+    def test_no_live_row_declares_a_forbidden_class(self) -> None:
+        rows = contract.read_allowlist(ROOT)
+        offenders = [path for path, row in rows.items() if row.forbidden_class]
+        self.assertEqual([], offenders)
 
     def test_no_clickable_old_pack_link_survives(self) -> None:
         """Gate 4's absolute half: this must stay at zero."""
-        findings, _ = contract.scan(ROOT)
+        result = contract.scan(ROOT)
         clickable = [
-            finding for finding in findings if finding.code == "OLD-PATH-CLICKABLE-LINK"
+            finding
+            for finding in result.findings
+            if finding.code == "OLD-PATH-CLICKABLE-LINK"
         ]
         self.assertEqual([], clickable, f"clickable old-pack links: {clickable}")
 
