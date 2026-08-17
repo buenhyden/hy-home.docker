@@ -260,9 +260,7 @@ class LineAttributionTests(unittest.TestCase):
         self.assertEqual({2: "inline-link"}, contract._clickable_lines(text))
 
     def test_several_links_report_their_own_lines(self) -> None:
-        text = "\n".join(
-            ["x", f"[a](../{SLUG}/a.md)", "y", f"[a](../{SLUG}/b.md)"]
-        )
+        text = "\n".join(["x", f"[a](../{SLUG}/a.md)", "y", f"[a](../{SLUG}/b.md)"])
         self.assertEqual([2, 4], sorted(contract._clickable_lines(text)))
 
 
@@ -333,6 +331,14 @@ class SettledVerdictTests(unittest.TestCase):
         "Not Run",
         "independent pack review pending",
         "Not Run; independent review requested 2026-08-18",
+        # A requested review is an open state even when the leading clause
+        # settles. Round 3 dropped the "requested" token to stop it demoting
+        # "requested changes", and tested only that benign direction, so these
+        # two settled while every open row in the ledger uses this exact phrase.
+        "Task 10b implementer reviewed; independent review requested 2026-08-18",
+        "Task 10b implementer reviewed; independent re-review requested",
+        "Approved by the implementer; a second review is requested",
+        "Reviewed; re-reviews have been requested from both seats",
         "review not approved",
         "NOT approved",
         "review pending; gates do not pass yet",

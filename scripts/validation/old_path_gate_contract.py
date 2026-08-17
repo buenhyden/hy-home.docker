@@ -121,6 +121,10 @@ TERMINAL_NEGATION = re.compile(
     r"|\bpre[-\s]?reviewed\b"
     r"|\bnobody\b"
     r"|\breview\s+pending\b|\bpending\s+review\b"
+    # A requested review is an open state. The bare token cannot be used: it
+    # demotes "Approved; requested changes were applied", where "requested"
+    # modifies the changes rather than the review. Bind it to its subject.
+    r"|\b(?:re-?)?reviews?\s+(?:has\s+been\s+|have\s+been\s+|is\s+|are\s+|was\s+|were\s+)?requested\b"
     r"|\b(?:to\s+be|will\s+be|scheduled\s+to\s+be)\s+(?:reviewed|approved)\b"
     # Self-approval. The ledger requires a seat other than the author, and the
     # checker cannot see who settled a row, so at least the wording is rejected.
