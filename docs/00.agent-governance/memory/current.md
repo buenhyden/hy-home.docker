@@ -39,8 +39,8 @@ status: active
 
 ## Verified state
 
-- Verified commit: `95b564aa54ab17a4879b028e3a32b7b84bbb0e02`
-- Verified at: `2026-08-17T20:45:00+09:00`
+- Verified commit: `b64a4d35d4929f437aa50ccd17138668a65770bd`
+- Verified at: `2026-08-17T21:16:43+09:00`
 - All twenty leaves were deepened across eight logical commits. Nineteen carry
   `reviewed_at: 2026-08-14`; `loop-engineering.md` carries `2026-08-17` after
   its REQ-03 adoption-rules section was added.
@@ -60,24 +60,37 @@ status: active
 - `codex/agentic-research-generated-freshness` and its worktree were removed
   after verifying a clean tree, content that is a strict subset of `main`, and
   the commit surviving as an ancestor of another branch. Two worktrees remain.
-- At this commit the changed-document metadata and traceability checks reported
-  no violation.
+- The user reviewed the approval evidence behind both deletion lines on
+  2026-08-17 and approved decoupling deletion authority from the Gate 9
+  publication mechanism. Spec 137 carries the amendment at `f905e92a`, the Plan
+  withdrew Step 0e's precondition status at `f10ff328`, and the Task applied it
+  at `b64a4d35`. Gate 9's own text was already the direct-evidence form, so no
+  gate text changed.
+- The branch's tracked-direct-deletion-controller amendment was not adopted. The
+  user recorded uncertainty and its only repository evidence is a date stamp.
+- At every commit in this session the changed-document metadata, traceability,
+  and repository contract checks reported no violation.
 
 ## Blockers and unverified facts
 
-- Round 4 fails the Step 0e pass condition, which asks for C0/I0/M0 from both
-  seats with no Minor parked. Four of five implementation rounds are consumed.
-  Package construction, Phase A, evidence-ref publication, real-index staging,
-  deletion, lifecycle mutation, Task 12, and remote actions all stay closed.
-- Authority conflict, unresolved. `codex/agentic-research-rebuild-finish` is
-  newer than `main`, carries two dated 2026-08-13 user approvals absent from
-  `main`, and declares Step 0e terminally blocked while superseding the
-  deletion-coupling steps with a direct-deletion design. `main` revived Step 0e
-  on 2026-08-15 with no textual awareness of that branch. Which line is
-  authoritative is a user decision, not an agent inference.
-- The rebuild Task's GREEN row for round 4 carries two clauses the committed
-  test cannot produce. The row is annotated in place; the clauses themselves
-  await the authority decision.
+- Deletion is still unauthorized. The nine pre-deletion gates and every
+  post-deletion gate stay in force verbatim and are unsatisfied. What changed is
+  only the route: gate 9 is met by this Task's direct evidence, so no Gate 9
+  package, bundle, evidence ref, or Step 0e round bounds deletion any longer.
+- Gates 1 through 8 need evidence gathered and independently reviewed before
+  deletion. No unit in this session collected it.
+- Round 4's two `Needs fixes` verdicts stand as recorded and are not retracted.
+  They no longer block deletion because the mechanism they belong to no longer
+  gates it. Round 5 is available to the durability-enhancement track only.
+- The rebuild Task's round-4 GREEN row carries two clauses the committed test
+  cannot produce. The row is annotated in place so the clauses cannot be read as
+  evidence; correcting the wording belongs to whoever next edits that track.
+- `main` did not revive a killed step. Its merge-base predates the branch's
+  Step 0e kill, so it continued the step uninformed. The linked note carries the
+  timeline and the approval-evidence comparison.
+- `codex/agentic-research-rebuild-finish` is preserved, not merged and not
+  discarded. It holds twelve branch-only tracked paths and Git-unbacked
+  working-tree work, under a design this Spec does not authorize.
 - `codex/sdlc-taxonomy-convergence` holds the only execution of `main`'s own
   active Spec 136, including the sole migration ledger, and is roughly four of
   seven slices complete. The user decided on 2026-08-17 to preserve it and hold
@@ -98,12 +111,15 @@ status: active
 - [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Ignored scratch deletion note](./ignored-sdd-scratch-deletion.md)
 - [Spec 136 migration branch preservation](./spec-136-migration-branch-preservation.md)
+- [Direct-deletion branch unadopted design](./direct-deletion-branch-unadopted-design.md)
 - [Active specification](../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 - [Spec 136](../../03.specs/136-sdlc-taxonomy-convergence/spec.md)
 
 ## Next handoff
 
-- Obtain the user's decision on which deletion line is authoritative before any
-  further Gate 9 round or worktree merge. Round 5 is the last one available.
-- After that decision, reconcile the annotated GREEN row, the stale round-count
-  statements in the Plan, and each worktree branch's disposition.
+- Deletion's remaining work is gathering and independently reviewing evidence for
+  pre-deletion gates 1 through 8, then recording gate 9's four items in the Task.
+  That is a new unit and needs its own approval; no session unit opened it.
+- Leave the two preserved branches untouched until their own units begin. The
+  taxonomy migration is replayed, not merged, and only after the deletion track
+  settles, because both rewrite `docs/04.execution`.
