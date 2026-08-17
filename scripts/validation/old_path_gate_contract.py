@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import pathlib
 import re
+import html
 import subprocess
 import sys
 import urllib.parse
@@ -52,7 +53,7 @@ _SLUG_BODY = re.escape(SLUG)
 # A destination reaches the retiring directory when the slug is followed by a
 # path separator or ends the destination. The earlier form required a trailing
 # slash and therefore missed a direct link to the directory itself.
-_DEST = rf"{_SLUG_BODY}(?:/|(?=[)>\"'\s\]]|$))"
+_DEST = rf"{_SLUG_BODY}(?:/|(?=[)>\"'\s\]?#&,;]|$))"
 
 # Clickable forms. Each is matched against whole-file text so a destination
 # split across lines is still seen, and against a percent-decoded, case-folded
@@ -72,7 +73,10 @@ CLICKABLE_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
     ),
     (
         "html-attribute",
-        re.compile(rf"(?:href|src)\s*=\s*[\"'][^\"']*{_DEST}", re.IGNORECASE),
+        re.compile(
+            rf"(?:href|src)\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}",
+            re.IGNORECASE,
+        ),
     ),
     ("autolink", re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)),
 )
@@ -83,18 +87,38 @@ CLICKABLE_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
 # still pending, which is a future activity and not an open review. The bare word
 # "pass" is deliberately absent: it occurs in ordinary prose and was load-bearing
 # for no live row.
-# Two ways to settle, preferring the structured form. A severity triple is a
-# token an author cannot write ambiguously, so it stands alone. Prose markers are
-# accepted only when the cell carries no negation at all, because polarity in free
-# text cannot be chased reliably: an earlier attempt to read polarity positionally
-# still settled "REVIEWED-BY-NOBODY".
+# Settling is checked negation-first. An earlier version let a `C0/I0` token
+# short-circuit ahead of the negation guard, which settled "Not Run; C0/I0
+# placeholder" and "quality Needs fixes C0/I2/M10" — the second being the exact
+# cell text these rows were likeliest to receive next. Thirty of the thirty-four
+# live rows settle through the token, so that ordering left the guard protecting
+# four rows.
 SETTLED_SEVERITY = re.compile(r"\bC0/I0\b")
 SETTLED_MARKER = re.compile(r"(?i)\b(?:reviewed|approved)\b")
-NEGATION = re.compile(
-    r"(?i)\b(?:not|no|nobody|none|never|without|un(?:reviewed|approved)|non"
-    r"|fail|fails|failed|reject|rejected|outstanding|blocked|pending review"
-    r"|review pending)\b"
+# Negation targets the review assertion, not any negative word. A blanket list
+# demoted ordinary approved cells such as "Approved; no new findings" and
+# "Approved; non-blocking Minors only".
+# Two tiers, because these cells are narratives rather than structured verdicts.
+# A terminal status describes the row's current state and always blocks. A
+# historical negation describes a round that was later closed, so it blocks only
+# when no settling marker follows it. Several reviewed rows legitimately narrate
+# "quality Needs fixes ... then received both external C0/I0/M0 approvals", and a
+# blanket rule demoted them.
+TERMINAL_NEGATION = re.compile(
+    r"(?i)(?:"
+    r"\bnot\s+(?:yet\s+)?(?:been\s+)?(?:reviewed|approved|run)\b"
+    r"|\bno\s+(?:independent\s+)?review\b"
+    r"|\bnever\s+(?:reviewed|approved)\b"
+    r"|\bun[-\s]?(?:reviewed|approved)\b"
+    r"|\bpre[-\s]?reviewed\b"
+    r"|\bself[-\s]?reviewed\s+only\b"
+    r"|\bnobody\b"
+    r"|\breview\s+pending\b|\bpending\s+review\b"
+    r"|\brequested\b"
+    r"|\b(?:to\s+be|will\s+be|scheduled\s+to\s+be)\s+(?:reviewed|approved)\b"
+    r")"
 )
+HISTORICAL_NEGATION = re.compile(r"(?i)\b(?:needs?\s+fixes|rejected)\b")
 
 
 @dataclass(frozen=True)
@@ -196,42 +220,87 @@ def read_allowlist(root: pathlib.Path) -> dict[str, AllowRow]:
 
 
 def _is_settled(verdict: str) -> bool:
-    """True when the cell positively states a completed review."""
-    if SETTLED_SEVERITY.search(verdict):
-        return True
-    if NEGATION.search(verdict):
+    """True when the cell positively states a completed review.
+
+    Negation is evaluated first and applies to both settling routes, including
+    the structured severity token.
+    """
+    if TERMINAL_NEGATION.search(verdict):
         return False
-    return bool(SETTLED_MARKER.search(verdict))
+
+    def settles(text: str) -> bool:
+        return bool(SETTLED_SEVERITY.search(text) or SETTLED_MARKER.search(text))
+
+    historical = [match.end() for match in HISTORICAL_NEGATION.finditer(verdict)]
+    if historical:
+        # Blocked unless the record shows the round was later closed.
+        return settles(verdict[historical[-1] :])
+    return settles(verdict)
 
 
 def _normalize(text: str) -> str:
-    """Percent-decode and case-fold so encoding or case cannot hide a match."""
-    try:
-        decoded = urllib.parse.unquote(text)
-    except (UnicodeDecodeError, ValueError):
-        decoded = text
-    return decoded.casefold()
+    """Percent-decode, resolve HTML entities, and case-fold.
+
+    Newlines introduced by decoding are neutralized so a decoded `%0A` cannot
+    shift line numbering. Line alignment is a correctness property here: the
+    finding's line is evidence, and an earlier version counted newlines in the
+    decoded copy while enumerating the original, which both lost findings and
+    misattributed them.
+    """
+    decoded = html.unescape(urllib.parse.unquote(text))
+    return decoded.replace("\r", " ").replace("\n", " ").casefold()
+
+
+def _normalized_lines(text: str) -> list[str]:
+    """Normalize per line, so indices match the original exactly."""
+    return [_normalize(line) for line in text.split("\n")]
 
 
 def _clickable_lines(text: str) -> dict[int, str]:
-    """Return {line number: form name} for every clickable destination."""
-    normalized = _normalize(text)
+    """Return {original line number: form name} for clickable destinations."""
+    lines = _normalized_lines(text)
     hits: dict[int, str] = {}
-    for name, pattern in CLICKABLE_FORMS:
-        for match in pattern.finditer(normalized):
-            line = normalized.count("\n", 0, match.start()) + 1
-            hits.setdefault(line, name)
+    for number, line in enumerate(lines, start=1):
+        for name, pattern in CLICKABLE_FORMS:
+            if name == "multiline-link":
+                continue
+            if pattern.search(line):
+                hits.setdefault(number, name)
+        # A destination may wrap onto the next line. A two-line window keeps
+        # indices exact where a whole-file match could not.
+        if number < len(lines):
+            window = f"{line}\n{lines[number]}"
+            if dict(CLICKABLE_FORMS)["multiline-link"].search(window):
+                hits.setdefault(number, "multiline-link")
     return hits
 
 
-def _headings_by_line(text: str) -> dict[int, str]:
-    """Map each line to its enclosing Markdown heading text."""
-    current = ""
-    mapping: dict[int, str] = {}
+_HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
+
+
+def _anchor_text(anchor: str) -> str:
+    """Declared anchors carry their `#` prefix; heading chains do not."""
+    return anchor.lstrip("#").strip().lower()
+
+
+def _headings_by_line(text: str, markdown: bool) -> dict[int, tuple[str, ...]]:
+    """Map each line to its enclosing heading chain.
+
+    The chain, not just the innermost heading: a row may declare a file-scope
+    anchor such as `# Title` while the literal sits under a deeper heading, and
+    an innermost-only model reports those as unbound. Non-Markdown files return
+    empty chains, because a leading `#` there is a shebang or a comment.
+    """
+    mapping: dict[int, tuple[str, ...]] = {}
+    chain: list[tuple[int, str]] = []
     for number, line in enumerate(text.split("\n"), start=1):
-        if line.startswith("#"):
-            current = line.lstrip("#").strip()
-        mapping[number] = current
+        if markdown:
+            match = _HEADING.match(line)
+            if match:
+                level = len(match.group(1))
+                chain = [entry for entry in chain if entry[0] < level]
+                chain.append((level, match.group(2).strip()))
+        mapping[number] = tuple(title for _, title in chain)
     return mapping
 
 
@@ -255,7 +324,7 @@ def scan(root: pathlib.Path) -> ScanResult:
             continue
 
         clickable = _clickable_lines(text)
-        headings = _headings_by_line(text)
+        headings = _headings_by_line(text, relative.endswith(".md"))
         row = rows.get(relative)
         generated = relative.startswith(GENERATED_PREFIXES)
 
@@ -319,9 +388,9 @@ def scan(root: pathlib.Path) -> ScanResult:
             # prose descriptors rather than machine-precise locators, so binding
             # the exemption to them would manufacture findings against reviewed
             # rows. The unbound count is reported instead of hidden.
+            chain = " \n".join(headings[number]).lower()
             if row.anchors and not any(
-                anchor.lower() in headings[number].lower()
-                or anchor.lower() in line.lower()
+                _anchor_text(anchor) in chain or _anchor_text(anchor) in line.lower()
                 for anchor in row.anchors
             ):
                 result.anchor_unbound += occurrences

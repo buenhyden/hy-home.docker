@@ -39,6 +39,17 @@ EVASIONS = {
     "percent_encoded_slug_character": (f"[a](../{SLUG[:-2]}%73{SLUG[-1]}/x.md)"),
     "autolink": f"<../{SLUG}/x.md>",
     "uppercased_slug": f"[a](../{SLUG.upper()}/x.md)",
+    # Forms the fix-round-1 re-review measured as still escaping.
+    "query_string_terminator": f"[a](../{SLUG}?x=1)",
+    "fragment_terminator": f"[a](../{SLUG}#frag)",
+    "unquoted_html_attribute": f"<a href=../{SLUG}/x.md>a</a>",
+    # Also assembled at runtime: written out, the entity decodes to the slug and
+    # the scanner reports this file, which is correct behaviour.
+    "html_numeric_entity": (f'<a href="../&#{ord(SLUG[0])};{SLUG[1:]}/x.md">a</a>'),
+    "image": f"![a](../{SLUG}/x.png)",
+    "destination_with_title": f'[a](../{SLUG}/x.md "t")',
+    "img_src": f'<img src="../{SLUG}/x.png">',
+    "true_multiline_destination": f"[a](../\n{SLUG}/x.md)",
 }
 
 
@@ -247,6 +258,15 @@ class SettledVerdictTests(unittest.TestCase):
         "Approved C0/I0/M0",
         "Task 10b boundary reviewed; lifecycle reconciliation pending after deletion",
         "Focused GREEN and freshness PASS; scoped re-reviews Approved C0/I0/M0",
+        # A closed round narrated in the past must not demote the row.
+        "quality Needs fixes on the omission; Step 8 then received both external "
+        "C0/I0/M0 approvals",
+        # Ordinary approved wording that a blanket negation list demoted.
+        "Approved; no new findings",
+        "Approved; no Critical or Important findings",
+        "Reviewed; no blocking findings",
+        "Approved; non-blocking Minors only",
+        "Approved, none outstanding",
     )
     UNSETTLED = (
         "",
@@ -259,6 +279,19 @@ class SettledVerdictTests(unittest.TestCase):
         "no review; will PASS later",
         "REVIEWED-BY-NOBODY",
         "independent review returned an Important finding; not approved",
+        # Dropped from this fixture last round instead of being fixed.
+        "pre-reviewed draft",
+        "un-reviewed",
+        "to be reviewed",
+        "will be reviewed after deletion",
+        "scheduled to be reviewed",
+        "self-reviewed only",
+        # The severity token must not outrank an explicit negation.
+        "Not Run; C0/I0 placeholder",
+        "review not approved, C0/I0",
+        "no review happened; C0/I0",
+        "Not Run; awaiting C0/I0 confirmation",
+        "specification Approved C0/I0/M5; quality Needs fixes C0/I2/M10",
     )
 
     def test_settled_forms(self) -> None:
