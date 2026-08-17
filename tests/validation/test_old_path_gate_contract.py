@@ -21,7 +21,8 @@ ALLOWLIST_HEADER = (
     "| --- | --- | --- | --- | --- |\n"
 )
 
-# Every clickable form the review measured as evading the first implementation.
+# Clickable forms this fixture pins. Some evaded an earlier implementation and
+# some are baseline forms that must not regress; per-entry comments mark which.
 # Each must be detected both on its own and inside a reviewed-allowlisted file,
 # because gate 4 admits no clickable-link exception.
 EVASIONS = {
@@ -251,6 +252,62 @@ class OldPathGateFixtureTests(unittest.TestCase):
             self.assertEqual({"OLD-PATH-UNALLOWLISTED"}, codes(result.findings))
 
 
+class LineAttributionTests(unittest.TestCase):
+    """Findings must name the line the link is actually on."""
+
+    def test_no_finding_is_fabricated_on_the_preceding_line(self) -> None:
+        text = f"This line is totally clean.\n[a](../{SLUG}/x.md)"
+        self.assertEqual({2: "inline-link"}, contract._clickable_lines(text))
+
+    def test_several_links_report_their_own_lines(self) -> None:
+        text = "\n".join(
+            ["x", f"[a](../{SLUG}/a.md)", "y", f"[a](../{SLUG}/b.md)"]
+        )
+        self.assertEqual([2, 4], sorted(contract._clickable_lines(text)))
+
+
+class CrossLineDestinationTests(unittest.TestCase):
+    """A URL parser strips CR and LF, so a broken destination still links."""
+
+    CASES = {
+        "attribute_split_inside_url": (
+            '<a href="../2026-07-05\n-agentic-research-pack-refresh/x.md">'
+        ),
+        "reference_definition_on_next_line": f"[r]:\n../{SLUG}/x.md",
+        "newline_before_equals": f'<a href\n="../{SLUG}/x.md">',
+        "backslash_separator": f'<a href="..\\{SLUG}\\x.md">',
+    }
+
+    def test_cross_line_destinations_are_detected(self) -> None:
+        for name, text in self.CASES.items():
+            with self.subTest(form=name):
+                self.assertTrue(contract._clickable_lines(text), name)
+
+
+class NormalizationTests(unittest.TestCase):
+    """Pins the normalization behaviours whose mutants previously survived."""
+
+    def test_newlines_are_deleted_not_replaced(self) -> None:
+        self.assertEqual("ab", contract._normalize("a\nb"))
+        self.assertEqual("ab", contract._normalize("a%0Ab"))
+
+    def test_headings_only_parsed_in_markdown(self) -> None:
+        text = "#!/usr/bin/env python3\nSLUG = 'x'"
+        self.assertEqual((), contract._headings_by_line(text, False)[1])
+        self.assertEqual(
+            ("!/usr/bin/env python3",),
+            contract._headings_by_line("# !/usr/bin/env python3\nx", True)[2],
+        )
+
+    def test_heading_chain_keeps_ancestors(self) -> None:
+        chain = contract._headings_by_line("# Top\n\n## Inner\n\nbody", True)[5]
+        self.assertEqual(("Top", "Inner"), chain)
+
+    def test_anchor_text_strips_the_declared_hash_prefix(self) -> None:
+        self.assertEqual("top", contract._anchor_text("# Top"))
+        self.assertEqual("inner", contract._anchor_text("### Inner"))
+
+
 class SettledVerdictTests(unittest.TestCase):
     """The verdict predicate, including every case the review measured."""
 
@@ -267,6 +324,9 @@ class SettledVerdictTests(unittest.TestCase):
         "Reviewed; no blocking findings",
         "Approved; non-blocking Minors only",
         "Approved, none outstanding",
+        # "requested" is ordinary approved prose and must not demote.
+        "Approved; requested changes were applied",
+        "Reviewed and approved after the requested fixes landed",
     )
     UNSETTLED = (
         "",
@@ -292,6 +352,21 @@ class SettledVerdictTests(unittest.TestCase):
         "no review happened; C0/I0",
         "Not Run; awaiting C0/I0 confirmation",
         "specification Approved C0/I0/M5; quality Needs fixes C0/I2/M10",
+        # Same two clauses, reversed. The verdict must not depend on order.
+        "quality Needs fixes C0/I2/M10; specification Approved C0/I0/M0",
+        "Needs fixes; re-reviewed round 2",
+        "Needs fixes; awaiting C0/I0",
+        "Needs fixes; target is C0/I0",
+        "Needs fixes; do not mark approved",
+        "Needs fixes / reviewed",
+        "Rejected. The neighbouring literal was approved.",
+        "outstanding Important finding; reviewed 2026-08-01",
+        "review in progress; last approved 2026-07-01",
+        "review abandoned; previously approved",
+        # Self-approval wording, which the ledger's seat constraint forbids.
+        "auto-approved",
+        "approved by the author",
+        "Approved (self)",
     )
 
     def test_settled_forms(self) -> None:

@@ -53,32 +53,40 @@ _SLUG_BODY = re.escape(SLUG)
 # A destination reaches the retiring directory when the slug is followed by a
 # path separator or ends the destination. The earlier form required a trailing
 # slash and therefore missed a direct link to the directory itself.
-_DEST = rf"{_SLUG_BODY}(?:/|(?=[)>\"'\s\]?#&,;]|$))"
+_DEST = rf"{_SLUG_BODY}(?:[/\\]|(?=[)>\"'\s\]?#&,;\\]|$))"
 
-# Clickable forms. Each is matched against whole-file text so a destination
-# split across lines is still seen, and against a percent-decoded, case-folded
-# copy so encoding or case cannot hide a working link.
+_INLINE = re.compile(rf"\]\(\s*<?[^)\n]*{_DEST}", re.IGNORECASE)
+_REFERENCE = re.compile(rf"^\s*\[[^\]]+\]:\s*<?[^\s]*{_DEST}", re.IGNORECASE | re.M)
+_HTML_ATTR = re.compile(
+    rf"(?:href|src)\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}", re.IGNORECASE
+)
+_AUTOLINK = re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)
+# The newline is mandatory. With it optional this pattern also matched wholly
+# inside the second line of the window while the hit was recorded against the
+# first, fabricating a finding on the line before every inline link.
+_MULTILINE = re.compile(rf"\]\(\s*<?[^)\n]*\n[^)\n]*{_DEST}", re.IGNORECASE)
+
+# Forms evaluated against a single line.
 CLICKABLE_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("inline-link", re.compile(rf"\]\(\s*<?[^)\n]*{_DEST}", re.IGNORECASE)),
-    # A destination may wrap onto the next line. Bounded to a single newline and
-    # no blank line, so the pattern cannot span unrelated content and misreport
-    # the offending line.
-    (
-        "multiline-link",
-        re.compile(rf"\]\(\s*<?[^)\n]*\n?[^)\n]*{_DEST}", re.IGNORECASE),
-    ),
-    (
-        "reference-definition",
-        re.compile(rf"^\s*\[[^\]]+\]:\s*<?[^\s]*{_DEST}", re.IGNORECASE | re.M),
-    ),
-    (
-        "html-attribute",
-        re.compile(
-            rf"(?:href|src)\s*=\s*(?:[\"'][^\"']*|[^\s>\"']*){_DEST}",
-            re.IGNORECASE,
-        ),
-    ),
-    ("autolink", re.compile(rf"<[^<>\s]*{_DEST}[^<>]*>", re.IGNORECASE)),
+    ("inline-link", _INLINE),
+    ("reference-definition", _REFERENCE),
+    ("html-attribute", _HTML_ATTR),
+    ("autolink", _AUTOLINK),
+)
+
+# Forms evaluated against a two-line window joined by a newline.
+NEWLINE_WINDOW_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("multiline-link", _MULTILINE),
+)
+
+# Forms evaluated against a two-line window joined with nothing at all. A URL
+# parser strips CR and LF before parsing, so a destination broken across lines
+# rejoins into a working link. Only concatenation reproduces that, and only
+# these constructs can legally span the break.
+CONCAT_WINDOW_FORMS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("split-inline-link", _INLINE),
+    ("split-reference-definition", _REFERENCE),
+    ("split-html-attribute", _HTML_ATTR),
 )
 
 # A settled verdict states positively that a review happened. Requiring a
@@ -111,14 +119,33 @@ TERMINAL_NEGATION = re.compile(
     r"|\bnever\s+(?:reviewed|approved)\b"
     r"|\bun[-\s]?(?:reviewed|approved)\b"
     r"|\bpre[-\s]?reviewed\b"
-    r"|\bself[-\s]?reviewed\s+only\b"
     r"|\bnobody\b"
     r"|\breview\s+pending\b|\bpending\s+review\b"
-    r"|\brequested\b"
     r"|\b(?:to\s+be|will\s+be|scheduled\s+to\s+be)\s+(?:reviewed|approved)\b"
+    # Self-approval. The ledger requires a seat other than the author, and the
+    # checker cannot see who settled a row, so at least the wording is rejected.
+    r"|\bself[-\s]?(?:reviewed|approved)\b"
+    r"|\bauto[-\s]?approved\b"
+    r"|\b(?:reviewed|approved)\s+by\s+the\s+(?:author|module\s+author|maintainer)\b"
+    r"|\bapproved\s*\(\s*self\s*\)"
     r")"
 )
 HISTORICAL_NEGATION = re.compile(r"(?i)\b(?:needs?\s+fixes|rejected)\b")
+# An open state anywhere after a historical negation keeps the row unsettled.
+OPEN_STATE = re.compile(
+    r"(?i)(?:\bawaiting\b|\bexpected\b|\btarget\s+is\b|\bin\s+progress\b"
+    r"|\babandoned\b|\bdo\s+not\b|\bcannot\b|\bhas\s+not\b"
+    r"|\boutstanding\s+(?:critical|important|finding|findings|issue)\b)"
+)
+# Closing a historical negation requires an explicit statement that the round
+# closed, not merely a later approval token. Two seats' verdicts listed side by
+# side — "quality Needs fixes ...; specification Approved ..." — must not settle,
+# and must not settle differently depending on which clause is written first.
+CLOSURE = re.compile(
+    r"(?i)(?:\bthen\s+received\b|\bclosure\b|\bclosed\b|\bresolved\b"
+    r"|\bsubsequently\s+approved\b"
+    r"|\bre-?review(?:s|ed)?\s+(?:returned|approved|are\s+approved)\b)"
+)
 
 
 @dataclass(frozen=True)
@@ -225,7 +252,7 @@ def _is_settled(verdict: str) -> bool:
     Negation is evaluated first and applies to both settling routes, including
     the structured severity token.
     """
-    if TERMINAL_NEGATION.search(verdict):
+    if TERMINAL_NEGATION.search(verdict) or OPEN_STATE.search(verdict):
         return False
 
     def settles(text: str) -> bool:
@@ -233,8 +260,15 @@ def _is_settled(verdict: str) -> bool:
 
     historical = [match.end() for match in HISTORICAL_NEGATION.finditer(verdict)]
     if historical:
-        # Blocked unless the record shows the round was later closed.
-        return settles(verdict[historical[-1] :])
+        # Blocked unless the record explicitly states the round closed. The tail
+        # must carry a closure statement and a structured severity token, and
+        # must not carry an open state. Requiring the closure statement rather
+        # than any later approval token makes the result independent of the order
+        # the clauses were written in.
+        tail = verdict[historical[-1] :]
+        if OPEN_STATE.search(tail) or TERMINAL_NEGATION.search(tail):
+            return False
+        return bool(CLOSURE.search(tail) and SETTLED_SEVERITY.search(tail))
     return settles(verdict)
 
 
@@ -248,7 +282,9 @@ def _normalize(text: str) -> str:
     misattributed them.
     """
     decoded = html.unescape(urllib.parse.unquote(text))
-    return decoded.replace("\r", " ").replace("\n", " ").casefold()
+    # Deleted rather than replaced with a space: a URL parser strips CR and LF,
+    # so an encoded newline inside a destination must not break the slug apart.
+    return decoded.replace("\r", "").replace("\n", "").casefold()
 
 
 def _normalized_lines(text: str) -> list[str]:
@@ -262,16 +298,22 @@ def _clickable_lines(text: str) -> dict[int, str]:
     hits: dict[int, str] = {}
     for number, line in enumerate(lines, start=1):
         for name, pattern in CLICKABLE_FORMS:
-            if name == "multiline-link":
-                continue
             if pattern.search(line):
                 hits.setdefault(number, name)
-        # A destination may wrap onto the next line. A two-line window keeps
-        # indices exact where a whole-file match could not.
-        if number < len(lines):
-            window = f"{line}\n{lines[number]}"
-            if dict(CLICKABLE_FORMS)["multiline-link"].search(window):
-                hits.setdefault(number, "multiline-link")
+        if number >= len(lines):
+            continue
+        following = lines[number]
+        for name, pattern in NEWLINE_WINDOW_FORMS:
+            if pattern.search(f"{line}\n{following}"):
+                hits.setdefault(number, name)
+        for name, pattern in CONCAT_WINDOW_FORMS:
+            # The match must actually cross the line boundary. Testing only that
+            # the joined text matches re-created the very defect this round is
+            # closing: a match lying wholly inside the following line was
+            # recorded against this one.
+            match = pattern.search(line + following)
+            if match and match.start() < len(line) < match.end():
+                hits.setdefault(number, name)
     return hits
 
 
