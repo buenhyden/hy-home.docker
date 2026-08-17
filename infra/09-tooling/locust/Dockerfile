@@ -1,2 +1,2 @@
 # Dockerfile
-FROM locustio/locust:2.46.0
+FROM locustio/locust:2.46.3

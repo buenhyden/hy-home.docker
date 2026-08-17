@@ -1,4 +1,4 @@
-FROM grafana/loki:3.7.3 AS upstream
+FROM grafana/loki:3.7.6 AS upstream
 
 FROM alpine:3.24.1
 
