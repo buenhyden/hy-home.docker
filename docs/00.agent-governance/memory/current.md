@@ -57,6 +57,9 @@ status: active
 - Four Git-unbacked working-tree files in the rebuild-finish worktree and three
   in the taxonomy worktree were copied to durable storage outside the
   repository, with digests compared against the live files.
+- `codex/agentic-research-generated-freshness` and its worktree were removed
+  after verifying a clean tree, content that is a strict subset of `main`, and
+  the commit surviving as an ancestor of another branch. Two worktrees remain.
 - At this commit the changed-document metadata and traceability checks reported
   no violation.
 
@@ -77,10 +80,9 @@ status: active
   await the authority decision.
 - `codex/sdlc-taxonomy-convergence` holds the only execution of `main`'s own
   active Spec 136, including the sole migration ledger, and is roughly four of
-  seven slices complete. It removes a tree `main` has since grown and renames
-  the retiring pack to canonical identities, so it cannot merge as-is.
-- `codex/agentic-research-generated-freshness` is a strict subset of `main` and
-  is also preserved inside the rebuild-finish history.
+  seven slices complete. The user decided on 2026-08-17 to preserve it and hold
+  it outside this session's boundary; the linked note carries the detail and the
+  replay conditions.
 - Advisory input files cited by digest in the rebuild Task were destroyed with
   an ignored scratch tree and are unrecoverable.
 - `iso.org` refuses automated retrieval; dependent claims carry a revalidation
@@ -95,6 +97,7 @@ status: active
 - [Rebuild Plan](../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md)
 - [Canonical research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - [Ignored scratch deletion note](./ignored-sdd-scratch-deletion.md)
+- [Spec 136 migration branch preservation](./spec-136-migration-branch-preservation.md)
 - [Active specification](../../03.specs/137-agentic-research-pack-rebuild/spec.md)
 - [Spec 136](../../03.specs/136-sdlc-taxonomy-convergence/spec.md)
 
