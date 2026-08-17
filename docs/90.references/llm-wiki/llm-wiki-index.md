@@ -125,12 +125,14 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
 | [docs/00.agent-governance/memory/agentic-harness-contract-hardening.md](../../00.agent-governance/memory/agentic-harness-contract-hardening.md) | Markdown reference |
 | [docs/00.agent-governance/memory/current.md](../../00.agent-governance/memory/current.md) | Markdown reference |
+| [docs/00.agent-governance/memory/direct-deletion-branch-unadopted-design.md](../../00.agent-governance/memory/direct-deletion-branch-unadopted-design.md) | Markdown reference |
 | [docs/00.agent-governance/memory/docker-doc-contract-backlog.md](../../00.agent-governance/memory/docker-doc-contract-backlog.md) | Markdown reference |
 | [docs/00.agent-governance/memory/execution-stage-legacy-debt.md](../../00.agent-governance/memory/execution-stage-legacy-debt.md) | Markdown reference |
 | [docs/00.agent-governance/memory/governance-memory-usage-contract.md](../../00.agent-governance/memory/governance-memory-usage-contract.md) | Markdown reference |
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/ignored-sdd-scratch-deletion.md](../../00.agent-governance/memory/ignored-sdd-scratch-deletion.md) | Markdown reference |
 | [docs/00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md) | Markdown reference |
+| [docs/00.agent-governance/memory/spec-136-migration-branch-preservation.md](../../00.agent-governance/memory/spec-136-migration-branch-preservation.md) | Markdown reference |
 | [docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md](../../00.agent-governance/memory/stage-docs-lifecycle-audit.md) | Markdown reference |
 | [docs/00.agent-governance/providers/agents-md.md](../../00.agent-governance/providers/agents-md.md) | Markdown reference |
 | [docs/00.agent-governance/providers/claude.md](../../00.agent-governance/providers/claude.md) | Markdown reference |
