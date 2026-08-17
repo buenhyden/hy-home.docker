@@ -218,10 +218,21 @@ scope matrix와 해당 scope의 canonical contract가 결정합니다.
   외부 source를 다시 조사하고 각 scope의 tracked evidence를 leaf 산문에서
   상속하지 않고 직접 재도출했습니다. pack의 21-file/20-leaf 구성, 14-scope 축,
   36개 requirement destination, leaf `status: draft`는 모두 그대로입니다.
-  20개 leaf 전부가 `reviewed_at: 2026-08-14`를 가지며, deepening evidence와
+  20개 leaf 전부가 `reviewed_at: 2026-08-14`를 받았으며, deepening evidence와
   재도출 과정에서 확인된 correction은
   [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)가
   소유합니다.
+- 2026-08-17에 coverage 감사가 REQ-03의 loop 측 결손 하나를 확인했습니다.
+  `harness-engineering.md`는 `### Environment and rules for workspace application`
+  섹션을 가지고 있었으나 `loop-engineering.md`에는 대응 섹션이 없어, 해당
+  leaf에만 동일 구조의 섹션을 추가했습니다. 추가된 8개 규칙은 모두 그 leaf가
+  이미 확립하고 인용한 사실의 재진술이며 새로운 주장이나 canonical owner의
+  정책 본문 복사를 포함하지 않습니다. 이 변경으로 `loop-engineering.md`만
+  `reviewed_at: 2026-08-17`을 가지고 나머지 19개 leaf는 `2026-08-14`에
+  머무릅니다. pack의 21-file/20-leaf 구성, 14-scope 축, 36개 requirement
+  destination, leaf `status: draft`는 바뀌지 않았습니다. 증거는
+  [Deepening Task](../../../04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md)가
+  계속 소유합니다.
 
 ## Related Documents
 
