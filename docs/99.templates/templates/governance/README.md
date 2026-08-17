@@ -22,17 +22,22 @@ layer: agentic
 
 ## Structure
 
-| Need | Template |
-| --- | --- |
-| 문제, 해결, 예방, 증거를 남기는 Memory 기록 | [memory.template.md](./memory.template.md) |
-| Stage 00 Progress 구조 작성 | [progress.template.md](./progress.template.md) |
+| Need                                        | Template                                       |
+| ------------------------------------------- | ---------------------------------------------- |
+| 문제, 해결, 예방, 증거를 남기는 Memory 기록 | [memory.template.md](./memory.template.md)     |
+| Stage 00 Progress 구조 작성                 | [progress.template.md](./progress.template.md) |
 
 ## How to Work in This Area
 
 1. Memory와 Progress 대상은 [template selection](../../support/template-selection.md)에서 canonical 원본을 확인한다.
 2. 선택한 원본의 모든 토큰을 대상 기록의 실제 내용으로 바꾼다.
-3. 사용·보존·검증 규칙은 [Governance Memory](../../../00.agent-governance/memory/README.md)와 support 소유자에서 확인한다.
-4. 일반 작업과 harness 작업의 실행 증거는 [SDLC Task 원본](../sdlc/task.template.md)을 사용한다.
+3. frontmatter는 토큰이 아니므로 복사 후 대상 profile에 맞게 조정한다. 원본은
+   template 계약에 따라 `layer: agentic`과 `status: draft`를 반드시 가지지만,
+   대상 profile은 다른 키 집합을 요구한다. Memory 기록은 `layer`만 가지므로
+   `status`를 제거한다. Progress 기록은 `layer`와 `status`를 가지며 `status`는
+   `active`로 바꾼다. 원본을 그대로 복사하면 검증이 실패한다.
+4. 사용·보존·검증 규칙은 [Governance Memory](../../../00.agent-governance/memory/README.md)와 support 소유자에서 확인한다.
+5. 일반 작업과 harness 작업의 실행 증거는 [SDLC Task 원본](../sdlc/task.template.md)을 사용한다.
 
 ## Related Documents
 
