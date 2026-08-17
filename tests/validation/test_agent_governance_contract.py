@@ -2326,12 +2326,12 @@ class Task2GovernanceSurfaceTests(unittest.TestCase):
                 codes(contract.validate_repository(root, bundle, "harness")),
             )
 
-    def test_repository_harness_inventory_has_114_uniquely_routed_artifacts(
+    def test_repository_harness_inventory_has_116_uniquely_routed_artifacts(
         self,
     ) -> None:
         bundle = contract.load_contract_bundle(ROOT)
         inventory = contract._governed_inventory_paths(ROOT, bundle.artifacts)
-        self.assertEqual(114, len(inventory))
+        self.assertEqual(116, len(inventory))
         self.assertTrue(
             {
                 ROOT / "docs/00.agent-governance/agents/functions/"
@@ -3727,7 +3727,7 @@ class Task3SharedProjectMemoryTests(unittest.TestCase):
     # the fixture copies only this Task and the stale-state check resolves the
     # named Task's status.
     CURRENT_TASK = (
-        "docs/04.execution/tasks/2026-08-11-agentic-research-pack-source-refresh.md"
+        "docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md"
     )
     EXPECTED_SECTIONS = (
         "Current objective",

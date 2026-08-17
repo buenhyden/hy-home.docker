@@ -1,6 +1,5 @@
 ---
 layer: agentic
-status: active
 ---
 
 # Direct-deletion branch holds unique work under an unadopted design

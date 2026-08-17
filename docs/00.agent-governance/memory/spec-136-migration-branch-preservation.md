@@ -1,6 +1,5 @@
 ---
 layer: agentic
-status: active
 ---
 
 # Spec 136 migration lives only on an unmerged branch

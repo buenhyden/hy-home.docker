@@ -150,7 +150,7 @@ artifacts:
       layer: agentic
   - profile_id: governance-memory-note
     artifact_type: governance-document
-    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,docker-doc-contract-backlog,execution-stage-legacy-debt,governance-memory-usage-contract,harness-agent-first-gap-audit,ignored-sdd-scratch-deletion,stage-docs-lifecycle-audit}.md
+    path_pattern: docs/00.agent-governance/memory/{2026-05-31-gemini-model-tier-review,agentic-harness-contract-hardening,direct-deletion-branch-unadopted-design,docker-doc-contract-backlog,execution-stage-legacy-debt,governance-memory-usage-contract,harness-agent-first-gap-audit,ignored-sdd-scratch-deletion,spec-136-migration-branch-preservation,stage-docs-lifecycle-audit}.md
     repository_section: harness
     canonical: true
     required_keys: [layer]
