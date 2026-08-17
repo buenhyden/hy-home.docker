@@ -17,6 +17,8 @@ parent_ids:
 **Deletion-evidence decoupling amendment approval date:** 2026-08-17
 (Asia/Seoul)
 
+**Pre-deletion gate scope amendment approval date:** 2026-08-18 (Asia/Seoul)
+
 The user approved the original design direction in conversation. That written
 artifact then passed independent specification and documentation reviews with
 zero Critical or Important findings and became active for Stage 04 planning.
@@ -25,7 +27,11 @@ adds REQ-36, the twenty-one-file cardinality, and the Gate 9 architecture
 boundary is user-approved, but the original verdicts do not cover it. The
 2026-08-17 amendment that decouples deletion authority from the Gate 9
 publication mechanism is likewise user-approved and is covered by neither set of
-verdicts. Exact amendment commit ranges and independent review verdicts are
+verdicts. The 2026-08-18 amendment that states the quantification scope of
+pre-deletion requirements 5 and 6 and their closure kinds is user-approved on the
+same basis, after a read-only audit found both gates unsatisfiable by
+construction under their literal wording; it adds no gate and relaxes no
+threshold. Exact amendment commit ranges and independent review verdicts are
 recorded only in the Stage 04 Task and are never asserted by this Spec.
 Old-pack deletion authority remains conditional on every pre-deletion gate
 below.
@@ -686,6 +692,41 @@ Deletion of the old twenty files is authorized only when all of these are true:
 Requirement 4 is evaluated over the complete tracked-text universe defined in
 Old-path inventory and allowlist. Every permitted historical non-link literal
 must appear in the reviewed allowlist; there is no clickable-link exception.
+
+Requirement 5 is evaluated over the requirements and scopes whose delivery
+precedes deletion. A requirement whose Spec-assigned owner is a post-deletion
+unit is complete for this gate when its pre-deletion portion is satisfied and
+its remaining portion is recorded as pending against that named owner. REQ-35 is
+the only such requirement: its logical-unit commits and independent reviews are
+pre-deletion obligations, while final verification and branch handoff belong to
+Task 12, which runs after deletion. Without this rule the gate is unsatisfiable
+by construction, because it would require a post-deletion unit to have finished
+before deletion.
+
+Requirement 6 quantifies over independent reviews of units inside this gate set.
+A separately tracked track that gates nothing outside itself, such as the Gate 9
+publication mechanism after the deletion-evidence decoupling amendment, is
+outside that quantification: its findings bind that track and do not block
+deletion. This is a scope statement, not a threshold change. Every unit bearing
+on deletion still requires zero unresolved Critical and Important findings, and
+a finding may not be moved out of scope by reclassifying its unit after the
+finding is recorded.
+
+Requirement 6 recognizes three closures for a recorded Critical or Important
+finding: a re-review of the corrected range returning zero at that severity, an
+explicit reviewed disposition closing the finding, or withdrawal of the
+finding's subject. Withdrawal applies when the code, design, or contract the
+finding was raised against is no longer current. It requires the withdrawal to
+be recorded and the finding to be marked closed-by-withdrawal in the Task with a
+citation to the withdrawing decision. A withdrawn subject cannot receive a
+re-review, so without this closure such findings stay unresolved permanently and
+the gate is again unsatisfiable by construction. Withdrawal closes the finding;
+it does not assert the finding was wrong, and it does not license withdrawing a
+subject in order to escape a finding.
+
+The Task enumerates every closure it relies on for requirement 6, by finding,
+closure kind, and citation, so the gate is auditable without re-deriving the
+review history.
 
 ### Post-deletion gates
 
