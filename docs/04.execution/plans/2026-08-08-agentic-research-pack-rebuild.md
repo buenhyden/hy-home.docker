@@ -1913,10 +1913,43 @@ only this deletion gate's evidence state; it must never remove a worktree file,
 write a generated output in the current worktree, write the real Git index,
 advance the current branch, or update a remote ref. Step 0d supersedes the
 round-5 projection only as historical evidence and then failed its own breaker.
-Step 0e is the sole current recovery: it removes every filesystem/index
-projection, generator-write, materialization, and cleanup path. The finite
-evidence state machine, logical package/evidence schemas, attempt bounds, and
-reviewer identity contract below remain unchanged.
+Step 0e removes every filesystem/index projection, generator-write,
+materialization, and cleanup path. The finite evidence state machine, logical
+package/evidence schemas, attempt bounds, and reviewer identity contract below
+remain unchanged.
+
+**Amendment, 2026-08-17: Step 0e is no longer gating.** This step's text
+previously called Step 0e "the sole current recovery" for pre-deletion gate 9.
+That clause is withdrawn. The user approved a Spec 137 deletion-evidence
+decoupling amendment on 2026-08-17, recorded in that Spec's `Deletion-evidence
+decoupling amendment` section, under which pre-deletion gate 9 is satisfied by
+the Task recording the before/after file manifest, deletion diff, recovery
+commit, and reviewer verdict directly. That is what Spec 137's gate 9 text
+already required.
+
+Consequences for this step, and nothing beyond them:
+
+- Step 0e and its helper become a separately tracked durability enhancement.
+  Every constraint in this step and in the Spec's Gate 9 evidence architecture
+  boundary continues to govern the helper whenever it is exercised.
+- Step 0e is not a precondition for deletion, lifecycle reconciliation, or any
+  pre-deletion gate. Its round accounting no longer bounds deletion: four of
+  five implementation rounds are consumed, and round 5 is available for the
+  enhancement track but is not required by any gate.
+- Every statement elsewhere in this retained historical Plan that makes a Gate 9
+  package, bundle, evidence ref, or Step 0e round a condition of deletion is
+  historical and not executable. Where such a statement conflicts with this
+  amendment, this amendment governs.
+- Four per-fix statements in the Plan-only correction gate below record the
+  implementation count as three of five. Each was accurate when written, before
+  round 4 landed, so they are preserved as pre-round-4 records rather than
+  rewritten. The current count is the one stated in this amendment.
+- Nothing else changes. All nine pre-deletion gates and every post-deletion gate
+  stay in force verbatim, and deletion stays unauthorized until each is
+  independently satisfied and recorded in the Task.
+- The tracked-direct-deletion-controller design on the unmerged branch is not
+  adopted and grants no authority here, per the same Spec section.
+
 Its public modes are:
 
 ```text
