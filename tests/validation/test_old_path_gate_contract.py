@@ -39,14 +39,55 @@ class OldPathGateFixtureTests(unittest.TestCase):
     def _commit(self, root: pathlib.Path) -> None:
         subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
 
-    def _allow(self, root: pathlib.Path, *paths: str) -> None:
+    def _allow(
+        self, root: pathlib.Path, *paths: str, verdict: str = "reviewed"
+    ) -> None:
         rows = "".join(
-            f"| `{path}` | `# anchor` | Factual history | reason | reviewed |\n"
+            f"| `{path}` | `# anchor` | Factual history | reason | {verdict} |\n"
             for path in paths
         )
         (root / contract.TASK_PATH).write_text(
             ALLOWLIST_HEADER + rows, encoding="utf-8"
         )
+
+    def test_allowlist_row_without_settled_verdict_grants_no_exemption(self) -> None:
+        """A proposed row is not an exemption until a review settles it."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+            self._allow(root, "docs/note.md", verdict="independent review pending")
+            self._commit(root)
+            findings, _ = contract.scan(root)
+            self.assertEqual({"OLD-PATH-ALLOWLIST-UNREVIEWED"}, codes(findings))
+
+    def test_empty_verdict_grants_no_exemption(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+            self._allow(root, "docs/note.md", verdict="")
+            self._commit(root)
+            findings, _ = contract.scan(root)
+            self.assertEqual({"OLD-PATH-ALLOWLIST-UNREVIEWED"}, codes(findings))
+
+    def test_future_activity_does_not_unsettle_a_reviewed_verdict(self) -> None:
+        """Regression: an earlier predicate banned the word "pending" outright.
+
+        Several reviewed rows note that post-deletion lifecycle reconciliation is
+        still pending. That is a future activity, not an open review, and reading
+        it as one produced 28 false findings against the live repository.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._repo(directory)
+            (root / "docs/note.md").write_text(f"`{SLUG}/`\n", encoding="utf-8")
+            self._allow(
+                root,
+                "docs/note.md",
+                verdict="Task 10b boundary reviewed; lifecycle reconciliation "
+                "pending after deletion",
+            )
+            self._commit(root)
+            findings, _ = contract.scan(root)
+            self.assertEqual([], findings)
 
     def test_clean_repository_passes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -148,9 +189,9 @@ class OldPathGateRepositoryTests(unittest.TestCase):
     """Behaviour against the live repository."""
 
     def test_allowlist_parses_from_the_task(self) -> None:
-        allowed = contract.read_allowlist(ROOT)
-        self.assertGreaterEqual(len(allowed), 30)
-        self.assertTrue(all(not path.startswith("`") for path in allowed))
+        reviewed, unreviewed = contract.read_allowlist(ROOT)
+        self.assertGreaterEqual(len(reviewed), 30)
+        self.assertTrue(all(not path.startswith("`") for path in reviewed | unreviewed))
 
     def test_no_clickable_old_pack_link_survives(self) -> None:
         """Gate 4's absolute half: this must stay at zero."""

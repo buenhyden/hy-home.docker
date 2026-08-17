@@ -29,6 +29,11 @@ ALLOWLIST_HEADING = "### Old-path allowlist"
 GENERATED_PREFIXES = ("graphify-out/",)
 
 CLICKABLE = re.compile(rf"\]\([^)]*{re.escape(SLUG)}/")
+# A settled verdict states positively that a review happened. Requiring a
+# positive marker rather than banning the word "pending" matters: several
+# reviewed rows legitimately note that post-deletion lifecycle reconciliation is
+# still pending, which is a future activity and not an open review.
+SETTLED_VERDICT = re.compile(r"(?i)\breviewed\b|\bapproved\b|\bC0/I0\b|\bPASS\b")
 
 
 @dataclass(frozen=True)
@@ -52,8 +57,14 @@ def tracked_files(root: pathlib.Path) -> list[str]:
     return [line for line in _git(root, "ls-files").splitlines() if line]
 
 
-def read_allowlist(root: pathlib.Path) -> set[str]:
-    """Return the allowlisted repository paths the Task records."""
+def read_allowlist(root: pathlib.Path) -> tuple[set[str], set[str]]:
+    """Return (reviewed paths, paths whose review verdict is still open).
+
+    Spec 137 requires the allowlist to carry path, anchor, reason, and review
+    verdict. A row without a settled verdict is an unreviewed proposal, so it
+    grants no exemption. This distinction exists because a prior record was
+    upgraded from "review pending" to "Approved" without a covering review.
+    """
     text = (root / TASK_PATH).read_text(encoding="utf-8")
     lines = text.split("\n")
     try:
@@ -63,8 +74,9 @@ def read_allowlist(root: pathlib.Path) -> set[str]:
             if line.startswith(ALLOWLIST_HEADING)
         )
     except StopIteration:
-        return set()
-    allowed: set[str] = set()
+        return set(), set()
+    reviewed: set[str] = set()
+    unreviewed: set[str] = set()
     for line in lines[start + 1 :]:
         if line.startswith("### ") or line.startswith("## "):
             break
@@ -73,8 +85,13 @@ def read_allowlist(root: pathlib.Path) -> set[str]:
         cells = line.split("|")
         if len(cells) < 3:
             continue
-        allowed.add(cells[1].strip().strip("`"))
-    return allowed
+        path = cells[1].strip().strip("`")
+        verdict = cells[5].strip() if len(cells) > 5 else ""
+        if SETTLED_VERDICT.search(verdict):
+            reviewed.add(path)
+        else:
+            unreviewed.add(path)
+    return reviewed, unreviewed
 
 
 def _is_text(path: pathlib.Path) -> bool:
@@ -87,7 +104,7 @@ def _is_text(path: pathlib.Path) -> bool:
 
 def scan(root: pathlib.Path) -> tuple[list[Finding], int]:
     """Return gate-4 findings plus the generated-surface occurrence count."""
-    allowed = read_allowlist(root)
+    reviewed, unreviewed = read_allowlist(root)
     findings: list[Finding] = []
     generated_hits = 0
     for relative in tracked_files(root):
@@ -115,15 +132,26 @@ def scan(root: pathlib.Path) -> tuple[list[Finding], int]:
                     )
                 )
                 continue
-            if relative not in allowed:
+            if relative in reviewed:
+                continue
+            if relative in unreviewed:
                 findings.append(
                     Finding(
-                        "OLD-PATH-UNALLOWLISTED",
+                        "OLD-PATH-ALLOWLIST-UNREVIEWED",
                         relative,
                         number,
-                        "non-link literal outside the reviewed allowlist",
+                        "allowlist row exists but its review verdict is not settled",
                     )
                 )
+                continue
+            findings.append(
+                Finding(
+                    "OLD-PATH-UNALLOWLISTED",
+                    relative,
+                    number,
+                    "non-link literal outside the reviewed allowlist",
+                )
+            )
     return findings, generated_hits
 
 
@@ -140,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     root = pathlib.Path(arguments.root).resolve()
 
     findings, generated_hits = scan(root)
-    allowed = read_allowlist(root)
+    reviewed, unreviewed = read_allowlist(root)
 
     for finding in sorted(findings, key=lambda item: (item.path, item.line)):
         print(
@@ -148,12 +176,18 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
 
-    clickable = sum(1 for item in findings if item.code == "OLD-PATH-CLICKABLE-LINK")
-    unallowlisted = len(findings) - clickable
+    def count(code: str) -> int:
+        return sum(1 for item in findings if item.code == code)
+
+    clickable = count("OLD-PATH-CLICKABLE-LINK")
+    unreviewed_hits = count("OLD-PATH-ALLOWLIST-UNREVIEWED")
+    unallowlisted = count("OLD-PATH-UNALLOWLISTED")
     print("Old-path gate 4 check")
-    print(f"allowlist_rows={len(allowed)}")
+    print(f"allowlist_rows_reviewed={len(reviewed)}")
+    print(f"allowlist_rows_unreviewed={len(unreviewed)}")
     print(f"clickable_links={clickable}")
     print(f"unallowlisted_literals={unallowlisted}")
+    print(f"unreviewed_allowlist_literals={unreviewed_hits}")
     print(f"generated_surface_occurrences={generated_hits}")
     print(f"failures={len(findings)}")
     if findings:
