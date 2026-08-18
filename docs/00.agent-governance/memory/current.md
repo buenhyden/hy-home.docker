@@ -37,7 +37,7 @@ status: active
 
 ## Verified state
 
-- Verified commit: `2004db0a`
+- Verified commit: `a89c101d`
 - Verified at: `2026-08-19`
 - Spec 137 carries `### Route-3 and disposition-vocabulary amendment`: the
   gate-4 scanner's own scan target is carved out of route 3's
@@ -57,15 +57,27 @@ status: active
 
 ## Blockers and unverified facts
 
-- Gate 4's only remaining blocking condition is the 10 unreviewed allowlist
-  rows; every literal now has a declared route. An independent allowlist
-  re-review is required and has not run.
-- Gate 1's second half and gate 3 stay NOT SATISFIED because all 68 sweep rows
-  carry `Not Run`. Two review seats dispatched for these terminated on a
-  transient provider `529` and need re-dispatch.
-- Gate 2 stays unsatisfied on one row: `ai-agent-catalogs.md` upstream-practice
-  research is barred from `carry` and needs `retain` into a successor leaf,
-  which is outside this unit's boundary.
+- Both independent review seats have now run and both returned Needs fixes.
+  Their verdicts and this Task's re-derivation of the load-bearing measurements
+  are recorded in the Task's Review Evidence.
+- Gate 4 has three open blockers, not one. Route 1 is met by no allowlist row,
+  because it requires a claim-ledger disposition the ledger has no slot to give
+  and the 2026-08-18 amendment rejected the vacuity reading without changing
+  route 1. The scanner keys allowlist rows by path at
+  `scripts/validation/old_path_gate_contract.py:422`, so a split row collapses to
+  its last member and the exactly-one-route requirement is unenforceable there.
+  Three rows declare a class the table marks withdrawn. Six of the twelve
+  unsettled rows do settle, including all three route 3 declarations.
+- Gate 2 is unsatisfied on forty rows, not one. Besides the mis-dispositioned
+  `ai-agent-catalogs.md` row, the 39 sweep rows labelled `Retain` or `Correct`
+  name the Task file as their own destination. The 2026-08-19 `carry` amendment
+  reached the other class exhibiting the same defect and not these, and they
+  cannot be relabelled as they stand because none states per-claim uniqueness or
+  a remediation owner, and at least 13 need a successor leaf this unit may not
+  create.
+- Gate 1 fails on coverage as well as on review: an unresolved Mythos Preview
+  lifecycle conflict has no ledger row, and the vendor catalog's `Caveat` column
+  was never swept as a claim family.
 - `check-document-metadata.py --mode check-changed` reports 12 violations on the
   Spec 137 Spec and Task. Their frontmatter is unchanged, so all 12 are the
   pre-existing four-digit-identity and co-located-Task debt owned by the
@@ -75,11 +87,17 @@ status: active
   pointing at pre-migration paths, of which 138 have multiple candidate targets
   and were deliberately left unresolved, and validator existence assertions that
   must be rewritten against the converged catalog rather than bulk-substituted.
-- `docs/90.references/llm-wiki/` holds both `llm-wiki-index.md` and
-  `ref-0082-llm-wiki-index.md` at different sizes, so a generated index exists
-  under both the pre-migration and converged names and only the converged name
-  is excluded from the English-only surface rule. Out of scope here; it belongs
-  to the taxonomy slices.
+- The LLM Wiki duplication is contract-converged but not code-converged. The
+  merge left two generator families alive; `scripts/manifest.yaml` registers only
+  `generate-llm-wiki.py`, which now carries the ported retiring-pack exclusion,
+  and the two shell generators are recorded as `lifecycle: transition`,
+  `disposition: merge`, successor `generate-llm-wiki.py`. All four generated
+  outputs were STALE and now pass. Deletion is deferred because the shell pair is
+  the only implementation of the gate 9 sealed internal-manifest protocol that
+  `agentic-research-gate9-evidence.py` consumes, proven by a dedicated regression
+  module; the Python generator implements only `--check` and `--write`.
+  `tests/validation/test_generate_llm_wiki.py` still fails on 43 versus 45
+  tracked scripts and will stay failing until that pair is deleted.
 - `scripts/validation/check-doc-traceability.sh` no longer exists; the branch
   consolidated the document governance validators into
   `scripts/lib/document_governance/`.
@@ -98,10 +116,11 @@ status: active
 
 ## Next handoff
 
-- Re-dispatch the two independent review seats: the allowlist re-review over the
-  10 unreviewed rows including the three withdrawn classifications, the
-  three-way `mig-0001` split, and the newly declared route 3 rows; and the
-  disposition review over the 68 sweep rows.
+- Decide the two route-level questions the seats surfaced: whether route 1 is
+  amended or every row admitted under it is re-routed, and whether the gate 4
+  scanner keys allowlist rows on path plus anchor so a split row survives.
+- Decide how the 39 self-referential sweep rows reach a real destination, given
+  that 13 of them need a successor leaf outside this unit's boundary.
 - Resume the taxonomy migration at slice 10E, domains 04 through 06.
 - The Spec 137 deletion gates stay unsatisfied; the retiring pack must not be
   deleted or relocated until every gate is independently recorded.
