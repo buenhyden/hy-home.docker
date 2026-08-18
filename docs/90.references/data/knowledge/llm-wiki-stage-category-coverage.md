@@ -108,7 +108,7 @@ This file is generated reference data. Runtime truth remains in tracked source f
 ## Sources
 
 - [LLM Wiki generated index](../../llm-wiki/llm-wiki-index.md) - full safe path index
-- [LLM Wiki repository map](../../llm-wiki/repository-map.md) - curated canonical source map
+- [LLM Wiki repository map](../../llm-wiki/ref-0083-repository-map.md) - curated canonical source map
 - [generate-llm-wiki-index.sh](../../../../scripts/knowledge/generate-llm-wiki-index.sh) - generated index source
 - [generate-llm-wiki-coverage.sh](../../../../scripts/knowledge/generate-llm-wiki-coverage.sh) - this coverage snapshot generator
 - [repo contract checker](../../../../scripts/validation/check-repo-contracts.sh) - freshness gate

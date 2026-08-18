@@ -104,5 +104,5 @@ tools yet.
 
 - **Spec**: [../../98.archive/03.specs/117-security-automation-readiness-snapshot/spec.md](../../tombstones/03.specs/spec-0117-security-automation-readiness-snapshot.md)
 - **Task**: [../tasks/2026-07-06-security-automation-readiness-snapshot.md](task.md)
-- **Generated reference**: [../../90.references/data/security/security-automation-readiness.md](../../../90.references/data/security/security-automation-readiness.md)
+- **Generated reference**: [../../90.references/data/security/security-automation-readiness.md](../../../90.references/data/security/ref-0078-security-automation-readiness.md)
 - **Security maturity audit**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)

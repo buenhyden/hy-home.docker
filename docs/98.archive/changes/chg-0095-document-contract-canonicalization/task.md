@@ -23,9 +23,9 @@ work. Corpus migration and remote enforcement remain later sub-projects.
 - **Canonical Audit**:
   [Implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Canonical Research**:
-  [Research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+  [Research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Registry**:
-  [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+  [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
 
 ## Goals and Non-goals
 
@@ -728,12 +728,12 @@ runtime remain separate approval-gated work.
 - **Parent Plan**:
   [Implementation plan](../plans/2026-07-13-document-contract-canonicalization.md)
 - **Stage 00 Governance**:
-  [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)
+  [Documentation protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage 99 Support**:
-  [Template support](../../99.templates/support/README.md)
+  [Template support](../../../99.templates/support/README.md)
 - **Canonical Audit**:
   [Implementation audit pack](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Canonical Research**:
-  [Research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+  [Research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Workspace Contract**:
-  [`_workspace` contract](../../../_workspace/README.md)
+  [`_workspace` contract](../../../../_workspace/README.md)

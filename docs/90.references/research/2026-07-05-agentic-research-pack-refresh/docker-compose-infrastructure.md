@@ -352,7 +352,7 @@ above. None is authorized by this reference; each needs its own approved task.
 - [OWASP SAMM Secure Deployment](https://owaspsamm.org/model/implementation/secure-deployment/) - deployment records, security milestones, integrity checks, and stop/reverse behavior
 - [Root Compose](../../../../docker-compose.yml) - root name, networks, secrets, and active includes
 - [Infra README](../../../../infra/README.md) - variant/service-directory inventory and documentation rubric
-- [Generated Compose coverage](../../data/docker/compose-profile-service-coverage.md) - canonical file, service, and profile snapshot
+- [Generated Compose coverage](../../data/docker/ref-0059-compose-profile-service-coverage.md) - canonical file, service, and profile snapshot
 - [Coverage generator](../../../../scripts/operations/generate-compose-profile-service-coverage.sh) - deterministic tracked-file derivation
 - [Compose validator](../../../../scripts/validation/validate-docker-compose.sh) - rendered profile validation and preflight boundary
 - [Hardening entry point](../../../../scripts/hardening/check-all-hardening.sh) - tiered infrastructure checks

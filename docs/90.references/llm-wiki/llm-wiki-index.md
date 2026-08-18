@@ -1362,7 +1362,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 ## Sources
 
 - [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement
-- [repository-map.md](./repository-map.md) - curated canonical source map
+- [repository-map.md](./ref-0083-repository-map.md) - curated canonical source map
 - [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator
 - [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator
 
@@ -1375,6 +1375,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 ## Related Documents
 
 - [LLM Wiki references](./README.md)
-- [LLM Wiki repository map](./repository-map.md)
+- [LLM Wiki repository map](./ref-0083-repository-map.md)
 - [LLM Wiki maintenance guide](../../05.operations/guides/00-workspace/llm-wiki-maintenance.md)
 - [Agent governance hub](../../00.agent-governance/README.md)

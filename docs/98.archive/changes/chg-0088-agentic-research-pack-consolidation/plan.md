@@ -1083,15 +1083,15 @@ verdict in this document.
 - **Previous Spec**:
   [Agentic Research Pack Refresh](../../98.archive/03.specs/104-agentic-research-pack-refresh/spec.md)
 - **Canonical Research Pack**:
-  [Agentic Engineering Research Pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+  [Agentic Engineering Research Pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Duplicate Pack**:
   `docs/90.references/research/2026-07-07-agentic-research-pack-update/README.md`
   (path removed after this Plan completed; the canonical destination mapping is
   preserved in the Superseded Paths table of
-  [research references](../../90.references/research/README.md). Path mentions
+  [research references](../../../90.references/research/README.md). Path mentions
   elsewhere in this Plan are historical execution records and are retained as
   written.)
 - **Research Category**:
-  [Research References](../../90.references/research/README.md)
+  [Research References](../../../90.references/research/README.md)
 - **Stage Authoring Matrix**:
-  [Stage Authoring Matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+  [Stage Authoring Matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

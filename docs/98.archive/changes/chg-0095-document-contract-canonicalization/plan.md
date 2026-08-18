@@ -795,14 +795,14 @@ waves still explicitly pending.
 - **Parent Program**:
   [Spec 128](../../98.archive/03.specs/128-agentic-audit-harness-consolidation/spec.md)
 - **Documentation Protocol**:
-  [Stage 00 protocol](../../00.agent-governance/rules/documentation-protocol.md)
+  [Stage 00 protocol](../../../00.agent-governance/rules/documentation-protocol.md)
 - **Metadata Registry**:
-  [Document metadata profiles](../../99.templates/support/document-metadata-profiles.yaml)
+  [Document metadata profiles](../../../99.templates/support/document-metadata-profiles.yaml)
 - **Template Support**:
-  [Stage 99 support](../../99.templates/support/README.md)
+  [Stage 99 support](../../../99.templates/support/README.md)
 - **Canonical Research**:
-  [2026-07-05 research pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+  [2026-07-05 research pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
 - **Canonical Audit**:
   [2026-07-05 implementation audit](../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
 - **Workspace Contract**:
-  [`_workspace` contract](../../../_workspace/README.md)
+  [`_workspace` contract](../../../../_workspace/README.md)

@@ -330,9 +330,9 @@ moved to Implemented, because none covers a released artifact.
 - [GitHub governance](../../../00.agent-governance/rules/github-governance.md) - workflow and remote-action control owner
 - [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - dependency, Compose, hardening, baseline, pre-commit, and zizmor jobs
 - [Pre-commit config](../../../../.pre-commit-config.yaml) - gitleaks and local hook definitions
-- [Security readiness snapshot](../../data/security/security-automation-readiness.md) - generated tracked-control/gap census
-- [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - dated public run/workflow metadata and authenticated-control boundary
-- [Tech-stack provenance snapshot](../../data/docker/tech-stack-version-provenance.md) - declaration provenance and explicit exclusions
+- [Security readiness snapshot](../../data/security/ref-0078-security-automation-readiness.md) - generated tracked-control/gap census
+- [GitHub Actions control-plane observation](../../data/governance/ref-0071-github-actions-control-plane-observation.yaml) - dated public run/workflow metadata and authenticated-control boundary
+- [Tech-stack provenance snapshot](../../data/docker/ref-0061-tech-stack-version-provenance.md) - declaration provenance and explicit exclusions
 - [Hardening entry point](../../../../scripts/hardening/check-all-hardening.sh) - 11-tier hardening checks
 - [Supply-chain verification rehearsal](../../../../scripts/security/verify-sample-service-supply-chain.sh) - syft, grype, cosign, and scorecard rehearsal with eight typed exit classes
 - [Supply-chain tool registry](../../../../infra/supply-chain.tool-images.json) - digest-pinned tool identities

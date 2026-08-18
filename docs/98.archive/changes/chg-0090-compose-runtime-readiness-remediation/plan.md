@@ -73,7 +73,7 @@ Inputs:
 - root [docker-compose.yml](../../../../docker-compose.yml)
 - [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh)
 - existing static evidence in
-  [compose-profile-service-coverage.md](../../../90.references/data/docker/compose-profile-service-coverage.md)
+  [compose-profile-service-coverage.md](../../../90.references/data/docker/ref-0059-compose-profile-service-coverage.md)
 
 Official behavior anchors:
 

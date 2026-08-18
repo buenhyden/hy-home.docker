@@ -92,5 +92,5 @@ generated provider hook parity matrix and Gemini behavioral reminder checklist.
 
 - **Parent Spec**: [Provider hook parity matrix spec](../../tombstones/03.specs/spec-0115-provider-hook-parity-matrix.md)
 - **Parent Plan**: [Provider hook parity matrix plan](plan.md)
-- **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../../90.references/data/governance/provider-hook-parity-matrix.md)
+- **Generated matrix**: [../../90.references/data/governance/provider-hook-parity-matrix.md](../../../90.references/data/governance/ref-0072-provider-hook-parity-matrix.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

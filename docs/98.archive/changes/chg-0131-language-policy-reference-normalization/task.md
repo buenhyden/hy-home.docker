@@ -62,13 +62,13 @@ surfaces reached zero Korean-character files.
 
 The following non-README reference files now have no Korean text:
 
-- [Docker image version interpretation](../../../90.references/data/docker/image-version-interpretation.md)
-- [Stable reference terms](../../../90.references/data/glossary/stable-reference-terms.md)
-- [HADS profile](../../../90.references/data/hads/profile.md)
-- [Docker Compose to k3s/k3d migration](../../../90.references/data/kubernetes/docker-compose-to-k3s-migration.md)
-- [Learning roadmap v1](../../../90.references/learning/roadmap-v1.md)
-- [Learning roadmap](../../../90.references/learning/roadmap.md)
-- [LLM Wiki repository map](../../../90.references/llm-wiki/repository-map.md)
+- [Docker image version interpretation](../../../90.references/data/docker/ref-0060-image-version-interpretation.md)
+- [Stable reference terms](../../../90.references/data/glossary/ref-0062-stable-reference-terms.md)
+- [HADS profile](../../../90.references/data/hads/ref-0075-profile.md)
+- [Docker Compose to k3s/k3d migration](../../../90.references/data/kubernetes/ref-0077-docker-compose-to-k3s-migration.md)
+- [Learning roadmap v1](../../../90.references/learning/ref-0080-roadmap-v1.md)
+- [Learning roadmap](../../../90.references/learning/ref-0081-roadmap.md)
+- [LLM Wiki repository map](../../../90.references/llm-wiki/ref-0083-repository-map.md)
 
 ## Validation Results
 

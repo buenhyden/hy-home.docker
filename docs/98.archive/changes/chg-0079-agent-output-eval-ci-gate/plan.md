@@ -102,4 +102,4 @@ fixture catalog drift, not semantic scoring of every agent response.
 - **Spec**: [../../98.archive/03.specs/120-agent-output-eval-ci-gate/spec.md](../../tombstones/03.specs/spec-0120-agent-output-eval-ci-gate.md)
 - **Task**: [../tasks/2026-07-06-agent-output-eval-ci-gate.md](task.md)
 - **Parent Runner Spec**: [../../98.archive/03.specs/116-agent-output-eval-runner/spec.md](../../tombstones/03.specs/spec-0116-agent-output-eval-runner.md)
-- **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
+- **Fixture Reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/ref-0064-agent-output-eval-fixtures.md)

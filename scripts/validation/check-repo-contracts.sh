@@ -569,6 +569,10 @@ allowed_prefixes = (
     "docs/05.operations/runbooks/",
     "docs/05.operations/incidents/",
     "docs/05.operations/{guides,policies,runbooks}/",
+    # Taxonomy convergence (Spec 136) moves operations into a domain-first
+    # catalog whose leaves keep the guide/policy/runbook role in the filename.
+    # Both layouts are accepted while the migration's remaining slices land.
+    "docs/05.operations/catalog/",
 )
 pattern = re.compile(r"<!--\s*Target:\s*(docs/05\.operations/[^ >]+)\s*-->")
 

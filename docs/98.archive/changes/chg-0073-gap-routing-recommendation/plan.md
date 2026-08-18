@@ -99,5 +99,5 @@ work while preserving human confirmation.
 
 - **Spec**: [../../98.archive/03.specs/109-gap-routing-recommendation/spec.md](../../tombstones/03.specs/spec-0109-gap-routing-recommendation.md)
 - **Task**: [../tasks/2026-07-05-gap-routing-recommendation.md](task.md)
-- **Gap routing reference**: [../../90.references/data/governance/gap-to-stage-routing.md](../../../90.references/data/governance/gap-to-stage-routing.md)
+- **Gap routing reference**: [../../90.references/data/governance/gap-to-stage-routing.md](../../../90.references/data/governance/ref-0070-gap-to-stage-routing.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

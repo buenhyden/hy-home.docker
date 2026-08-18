@@ -120,6 +120,6 @@ workflow behavior, secrets, or remote GitHub state.
 
 - **Spec**: [Agentic Engineering Implementation Audit Pack Spec](../../03.specs/105-agentic-engineering-implementation-audit-pack/spec.md)
 - **Task**: [Agentic Engineering Implementation Audit Pack Task](../tasks/2026-07-05-agentic-engineering-implementation-audit-pack.md)
-- **Research Pack**: [Agentic Engineering Research Pack](../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
-- **Audit References**: [Audit references index](../../90.references/audits/README.md)
-- **Reference Template**: [Reference template](../../99.templates/templates/common/reference.template.md)
+- **Research Pack**: [Agentic Engineering Research Pack](../../../90.references/research/2026-08-08-agentic-engineering-research-pack/README.md)
+- **Audit References**: [Audit references index](../../../90.references/audits/README.md)
+- **Reference Template**: [Reference template](../../../99.templates/templates/common/reference.template.md)

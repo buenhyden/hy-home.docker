@@ -85,5 +85,5 @@ infrastructure tasks.
 
 - **Parent Spec**: [Agent output eval fixtures spec](../../tombstones/03.specs/spec-0110-agent-output-eval-fixtures.md)
 - **Parent Plan**: [Agent output eval fixtures plan](plan.md)
-- **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/agent-output-eval-fixtures.md)
+- **Fixture reference**: [../../90.references/data/governance/agent-output-eval-fixtures.md](../../../90.references/data/governance/ref-0064-agent-output-eval-fixtures.md)
 - **Loop engineering audit**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/loop-engineering-implementation.md)

@@ -229,7 +229,7 @@ index` cover 1,052 of 1,324 rows, so most rows carry a label that
 - [Claude Code memory documentation](https://code.claude.com/docs/en/memory) - re-read 2026-08-07: "target under 200 lines per CLAUDE.md file"; CLAUDE.md files are loaded in full regardless of length; `@path` imports resolve to a maximum depth of four hops; Claude Code reads `CLAUDE.md`, not `AGENTS.md`, and recommends an `@AGENTS.md` import when both exist
 - [Codex AGENTS.md configuration](https://learn.chatgpt.com/docs/agent-configuration/agents-md) - re-read 2026-08-07: Codex "stops adding files once the combined size reaches the limit defined by `project_doc_max_bytes` (32 KiB by default)"; discovery walks global `~/.codex` then project root to cwd, closer files overriding earlier ones
 - [LLM Wiki category README](../../llm-wiki/README.md)
-- [Repository map](../../llm-wiki/repository-map.md)
+- [Repository map](../../llm-wiki/ref-0083-repository-map.md)
 - [LLM Wiki maintenance policy](../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md)
 - [Docs scope](../../../00.agent-governance/scopes/docs.md)
 

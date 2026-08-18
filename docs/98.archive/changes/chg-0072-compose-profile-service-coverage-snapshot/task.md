@@ -87,6 +87,6 @@ Compose profile/service coverage snapshot automation candidate.
 
 - **Parent Spec**: [Compose profile service coverage snapshot spec](../../tombstones/03.specs/spec-0108-compose-profile-service-coverage-snapshot.md)
 - **Parent Plan**: [Compose profile service coverage snapshot plan](plan.md)
-- **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../../90.references/data/docker/compose-profile-service-coverage.md)
+- **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../../90.references/data/docker/ref-0059-compose-profile-service-coverage.md)
 - **Docker data index**: [../../90.references/data/docker/README.md](../../../90.references/data/docker/README.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

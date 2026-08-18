@@ -103,5 +103,5 @@ Compose corpus.
 
 - **Spec**: [../../98.archive/03.specs/108-compose-profile-service-coverage-snapshot/spec.md](../../tombstones/03.specs/spec-0108-compose-profile-service-coverage-snapshot.md)
 - **Task**: [../tasks/2026-07-05-compose-profile-service-coverage-snapshot.md](task.md)
-- **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../../90.references/data/docker/compose-profile-service-coverage.md)
+- **Generated reference**: [../../90.references/data/docker/compose-profile-service-coverage.md](../../../90.references/data/docker/ref-0059-compose-profile-service-coverage.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

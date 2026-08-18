@@ -337,7 +337,7 @@ another merely because one automation loop completed successfully.
 - [Typed workflow contract](../../../../.github/workflow-contract.yml) - schema_version 2 registry of 7 workflows, 80 gate nodes, 16 job roots, 3 profile roots, and 8 pinned actions
 - [Typed gate runner](../../../../scripts/validation/run-ci-gate.py) - closed-grammar profile/gate executor shared by local and CI surfaces
 - [Main branch protection proposal](../../../../.github/rulesets/main-protection.md) - tracked required-check proposal that applies no remote setting
-- [GitHub Actions control-plane observation](../../data/governance/github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary
+- [GitHub Actions control-plane observation](../../data/governance/ref-0071-github-actions-control-plane-observation.yaml) - latest dated public workflow metadata and authenticated-control boundary
 
 ## Maintenance
 

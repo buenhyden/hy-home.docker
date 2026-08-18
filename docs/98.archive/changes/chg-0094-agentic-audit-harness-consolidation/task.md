@@ -519,6 +519,6 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
 - [Spec 128](../../tombstones/03.specs/spec-0128-agentic-audit-harness-consolidation.md)
 - [Implementation plan](plan.md)
 - [Canonical audit](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/README.md)
-- [Audit implementation matrix](../../../90.references/data/governance/audit-implementation-matrix.md)
-- [Security automation readiness](../../../90.references/data/security/security-automation-readiness.md)
+- [Audit implementation matrix](../../../90.references/data/governance/ref-0065-audit-implementation-matrix.md)
+- [Security automation readiness](../../../90.references/data/security/ref-0078-security-automation-readiness.md)
 - [Previous remediation task](../chg-0089-agentic-engineering-audit-remediation/task.md)

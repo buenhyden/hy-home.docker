@@ -97,5 +97,5 @@ generated audit implementation matrix snapshot.
 
 - **Parent Spec**: [Audit implementation matrix snapshot spec](../../tombstones/03.specs/spec-0118-audit-implementation-matrix-snapshot.md)
 - **Parent Plan**: [Audit implementation matrix snapshot plan](plan.md)
-- **Generated reference**: [../../90.references/data/governance/audit-implementation-matrix.md](../../../90.references/data/governance/audit-implementation-matrix.md)
+- **Generated reference**: [../../90.references/data/governance/audit-implementation-matrix.md](../../../90.references/data/governance/ref-0065-audit-implementation-matrix.md)
 - **Automation candidates**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/automation-candidates.md)

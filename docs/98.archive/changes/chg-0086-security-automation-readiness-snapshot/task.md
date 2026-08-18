@@ -95,5 +95,5 @@ generated security automation readiness snapshot.
 
 - **Parent Spec**: [Security automation readiness snapshot spec](../../tombstones/03.specs/spec-0117-security-automation-readiness-snapshot.md)
 - **Parent Plan**: [Security automation readiness snapshot plan](plan.md)
-- **Generated reference**: [../../90.references/data/security/security-automation-readiness.md](../../../90.references/data/security/security-automation-readiness.md)
+- **Generated reference**: [../../90.references/data/security/security-automation-readiness.md](../../../90.references/data/security/ref-0078-security-automation-readiness.md)
 - **Security maturity audit**: [../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md](../../../90.references/audits/2026-07-05-agentic-engineering-implementation-audit-pack/security-framework-maturity.md)
